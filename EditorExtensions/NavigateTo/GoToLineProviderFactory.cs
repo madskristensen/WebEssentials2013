@@ -46,10 +46,13 @@ namespace MadsKristensen.EditorExtensions
 
         public void StartSearch(INavigateToCallback callback, string searchValue)
         {
-            CssParser parser = new CssParser();
-            var state = new Tuple<CssParser, string, INavigateToCallback>(parser, searchValue, callback);
+            if (searchValue.Length > 0 && (searchValue[0] == '.' || searchValue[0] == '#'))
+            {
+                CssParser parser = new CssParser();
+                var state = new Tuple<CssParser, string, INavigateToCallback>(parser, searchValue, callback);
 
-            System.Threading.ThreadPool.QueueUserWorkItem(DoWork, state);
+                System.Threading.ThreadPool.QueueUserWorkItem(DoWork, state);
+            }
         }
 
         public void DoWork(object state)
