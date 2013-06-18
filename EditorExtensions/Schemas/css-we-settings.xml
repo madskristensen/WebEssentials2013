@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<CssModule name="Visual Studio Settings" standard-reference="#" status="WD" pub-date="2012-06-13">
+
+  <CssAtDirective name="-we-palette"
+                  include-root-directives="false"
+                  include-root-properties="false"
+                  syntax="@-we-palette"
+                  browsers="none"
+                  description="Parent directive for handling custom color palettes in Visual Studio.">
+
+
+    <CssAtDirective name="global"
+                    include-root-directives="false"
+                    include-root-properties="false"
+                    browsers="none"
+                    description="A collection of colors that apply to all CSS color properties">
+
+      <CssProperty ref="color" 
+                   description="A collection of colors that only applies to the specified property." />
+    </CssAtDirective>
+
+    <!--<CssAtDirective name="specific"
+                    include-root-directives="false"
+                    include-root-properties="false"
+                    browsers="none"
+                    description="A collection of colors that only applies to the specified property.">
+
+      <CssProperty ref="color" />
+
+      <CssProperty name="background"
+                   restriction="color"
+                   type="color"
+                   description="Defines colors used for 'background' and 'background-color' properties." />
+
+      <CssProperty name="border"
+                   restriction="color"
+                   type="color"
+                   description="Defines colors used for 'border' and 'border-color' properties" />
+    </CssAtDirective>
+
+    <CssAtDirective name="unspecified"
+                    include-root-directives="false"
+                    include-root-properties="false"
+                    browsers="none"
+                    description="A collection of colors that applies to all CSS color properties not declared in the @specific directive.">
+
+      <CssProperty ref="color" />
+    </CssAtDirective>-->
+
+  </CssAtDirective>
+
+</CssModule>

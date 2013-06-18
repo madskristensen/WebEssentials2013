@@ -1,0 +1,19 @@
+﻿<Window x:Class="MadsKristensen.EditorExtensions.BrowserSelector"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Select Browsers" Height="139.699" Width="396.001" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True" WindowStyle="ToolWindow">
+    <Grid>
+        <Image Source="..\..\resources\browsers\c.png" HorizontalAlignment="Left" Height="40" Margin="13.83,13,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"/>
+        <CheckBox Content="" HorizontalAlignment="Left" Margin="37.83,39,0,0" VerticalAlignment="Top" Name="cbChrome" Grid.Column="1"/>
+        <Button x:Name="btnOk" Content="Ok" HorizontalAlignment="Left" Margin="312,70,0,0" VerticalAlignment="Top" Width="60" Height="23" Click="Button_Click_2"/>
+        <Button Content="Cancel" Margin="237,70,84.34,0" VerticalAlignment="Top" Height="23" Click="Button_Click_1"/>
+        <Image Source="..\..\resources\browsers\ff.png" HorizontalAlignment="Left" Margin="91.83,14,0,0" Width="40" Height="40" VerticalAlignment="Top" Grid.Column="1"/>
+        <CheckBox Content="" HorizontalAlignment="Left" Margin="114.83,39,0,0" VerticalAlignment="Top" x:Name="cbFirefox" Grid.Column="1"/>
+        <Image Source="..\..\resources/Browsers/ie.png" HorizontalAlignment="Left" Height="40" Margin="171.83,13,0,0" VerticalAlignment="Top" Width="40" Grid.Column="1"/>
+        <CheckBox Content="" HorizontalAlignment="Left" Margin="194.83,39,0,0" VerticalAlignment="Top" x:Name="cbIE" Grid.Column="1"/>
+        <Image Source="..\..\resources/Browsers/o.png" HorizontalAlignment="Left" Margin="249.83,14,0,0" Width="40" Height="40" VerticalAlignment="Top" Grid.Column="1"/>
+        <CheckBox Content="" HorizontalAlignment="Left" Margin="274.83,39,0,0" VerticalAlignment="Top" x:Name="cbOpera" Grid.Column="1"/>
+        <Image Source="..\..\resources\browsers\s.png" Margin="324.83,14,0,0" HorizontalAlignment="Left" Width="40" Height="40" VerticalAlignment="Top" Grid.Column="1"/>
+        <CheckBox Content="" HorizontalAlignment="Left" Margin="349.83,39,0,0" VerticalAlignment="Top" x:Name="cbSafari" Grid.Column="1"/>
+    </Grid>
+</Window>

@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BestPracticeAddMissingStandardDirective" xml:space="preserve">
+    <value>Browser compatibility: Add missing standard directive ({0})</value>
+  </data>
+  <data name="BestPracticeAddMissingStandardProperty" xml:space="preserve">
+    <value>Browser compatibility: Add missing standard property ({0})</value>
+  </data>
+  <data name="BestPracticeAddMissingVendorSpecific" xml:space="preserve">
+    <value>Browser compatibility: Add missing vendor specific properties to '{0}' ({1})</value>
+  </data>
+  <data name="BestPracticeAddMissingVendorSpecificDirective" xml:space="preserve">
+    <value>Browser compatibility: Add missing vendor specific directives to '{0}' ({1})</value>
+  </data>
+  <data name="BestPracticeDuplicatePropertyInRule" xml:space="preserve">
+    <value>Best practice: The property '{0}' is already specified in the rule. Remove any unneeded duplicates</value>
+  </data>
+  <data name="BestPracticeDuplicatePropertyWithSameValueInRule" xml:space="preserve">
+    <value>Best practice: The property '{0}' with the same value is already specified in the rule and should be removed</value>
+  </data>
+  <data name="BestPracticeDuplicateSelectors" xml:space="preserve">
+    <value>Best practice: The exact same selector is already defined on line {0}. Consider consolidating the duplicate style rules</value>
+  </data>
+  <data name="BestPracticeInlineIncompat" xml:space="preserve">
+    <value>Best practice: The '{0}' property has no effect with 'display: inline' and should be removed</value>
+  </data>
+  <data name="BestPracticePseudosAfterOtherSelectors" xml:space="preserve">
+    <value>Best practice: "{0}" should be placed before any pseudo classes/elements</value>
+  </data>
+  <data name="BestPracticeStandardPropertyOrder" xml:space="preserve">
+    <value>Browser compatibility: Place the standard property below its vendor specific implementations</value>
+  </data>
+  <data name="BestPracticeZeroUnit" xml:space="preserve">
+    <value>Best Practice: Don't specify the unit type ({0}) when the value is zero. (Disable this check in Tools -&gt; Options)</value>
+  </data>
+  <data name="IE6OnlyPropertyHackName" xml:space="preserve">
+    <value>Make visible to IE6 only</value>
+  </data>
+  <data name="IE6OnlySelectorHackSmartTagActionName" xml:space="preserve">
+    <value>Make visible to IE6 only</value>
+  </data>
+  <data name="IE7AboveSelectorHackSmartTagActionName" xml:space="preserve">
+    <value>Make visible to IE7 and above</value>
+  </data>
+  <data name="IE7BelowPropertyHackName" xml:space="preserve">
+    <value>Make visible to IE7 and below</value>
+  </data>
+  <data name="IE7OnlySelectorHackSmartTagActionName" xml:space="preserve">
+    <value>Make visible to IE7 only</value>
+  </data>
+  <data name="IE8AboveSelectorHackSmartTagActionName" xml:space="preserve">
+    <value>Make visible to IE8 and above</value>
+  </data>
+  <data name="OverQualifiedSmartTagActionName" xml:space="preserve">
+    <value>Trim over qualified selectors</value>
+  </data>
+  <data name="PerformanceDontOverQualifySelectors" xml:space="preserve">
+    <value>Performance: Don't over qualify selectors. Remove all selectors before "{0}" ({1}). ID's must only occur once per web page and doesn't need further qualification.</value>
+  </data>
+  <data name="PerformanceDontUseStarSelector" xml:space="preserve">
+    <value>Performance: Never use the universal selector. It has a big negative performance impact on browser rendering.</value>
+  </data>
+  <data name="PerformanceEmbedImageAsDataUri" xml:space="preserve">
+    <value>Performance: The image is only {0} bytes and should be embedded as a base64 dataURI to reduce the number of HTTP requests.</value>
+  </data>
+  <data name="PerformanceUseShorthand" xml:space="preserve">
+    <value>Performance: Use shorthand notation. The properties {0} can be replaced by {1}</value>
+  </data>
+  <data name="RemoveSelectorHackSmartTagActionName" xml:space="preserve">
+    <value>Remove IE selector hack</value>
+  </data>
+  <data name="ReverseEmbedSmartTagActionName" xml:space="preserve">
+    <value>Save to file</value>
+  </data>
+  <data name="StandardSmartTagActionName" xml:space="preserve">
+    <value>Add missing standard property ({0})</value>
+  </data>
+  <data name="UpdateEmbedSmartTagActionName" xml:space="preserve">
+    <value>Re-embed dataURI from "{0}"</value>
+  </data>
+  <data name="UrlSmartTagActionName" xml:space="preserve">
+    <value>Embed as base64 DataURI</value>
+  </data>
+  <data name="ValidationColorValuesInRange" xml:space="preserve">
+    <value>Validation (WE): Values must be between 0 and 255</value>
+  </data>
+  <data name="ValidationDeprecatedVendorDeclaration" xml:space="preserve">
+    <value>Validation (WE): "{0}" has been deprecated and is safe to remove. Use the un-prefixed standard property instead.</value>
+  </data>
+  <data name="ValidationPseudoOrder" xml:space="preserve">
+    <value>Validation (WE): Pseudo elements ("{0}") must be specified after pseudo classes ("{1}").</value>
+  </data>
+  <data name="ValidationVendorDeclarations" xml:space="preserve">
+    <value>Validation (WE): "{0}" is not a valid vendor specific property or it may have been deprecated.</value>
+  </data>
+  <data name="ValidationVendorDirective" xml:space="preserve">
+    <value>Validation (WE): "{0}" is not a valid vendor specific @-directive or it may have been deprecated.</value>
+  </data>
+  <data name="ValidationVendorPseudo" xml:space="preserve">
+    <value>Validation (WE): "{0}" is not a valid vendor specific pseudo class/element or it may have been deprecated.</value>
+  </data>
+  <data name="VendorOrderSmartTagActionName" xml:space="preserve">
+    <value>Move property below last vendor specific</value>
+  </data>
+  <data name="VendorSmartTagActionName" xml:space="preserve">
+    <value>Add missing vendor specifics</value>
+  </data>
+</root>
