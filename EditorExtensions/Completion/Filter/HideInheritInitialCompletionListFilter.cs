@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions.Completion
             {
                 if (entry.DisplayText == "initial" || entry.DisplayText == "inherit")
                 {
-                    entry.FilterType = CompletionEntryFilterType.NeverVisible;
+                    entry.FilterType = CompletionEntryFilterTypes.NeverVisible;
                 }
             }
         }

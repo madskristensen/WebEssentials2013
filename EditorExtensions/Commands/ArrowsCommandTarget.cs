@@ -192,12 +192,12 @@ namespace MadsKristensen.EditorExtensions
                 if (direction == Direction.Down && model.HslLightness > 0)
                 {
                     model.Format = Editor.ColorFormat.RgbHex3;
-                    UpdateSpan(span, Editor.ColorFormatter.FormatColor(model.Darken()), "Darken color");
+                    UpdateSpan(span, Editor.ColorFormatter.FormatColor(model.Darken(), model.Format), "Darken color");
                 }
                 else if (direction == Direction.Up && model.HslLightness < 1)
                 {
                     model.Format = Editor.ColorFormat.RgbHex3;
-                    UpdateSpan(span, Editor.ColorFormatter.FormatColor(model.Brighten()), "Brighten color");
+                    UpdateSpan(span, Editor.ColorFormatter.FormatColor(model.Brighten(), model.Format), "Brighten color");
                 }
 
                 return true;

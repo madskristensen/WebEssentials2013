@@ -44,11 +44,11 @@ namespace MadsKristensen.EditorExtensions.Completion
             {
                 if (hasScrollbar)
                 {
-                    entry.FilterType = _cache.Contains(entry.DisplayText) ? entry.FilterType : CompletionEntryFilterType.NeverVisible;
+                    entry.FilterType = _cache.Contains(entry.DisplayText) ? entry.FilterType : CompletionEntryFilterTypes.NeverVisible;
                 }
                 else
                 {
-                    entry.FilterType = !_cache.Contains(entry.DisplayText) ? entry.FilterType : CompletionEntryFilterType.NeverVisible;
+                    entry.FilterType = !_cache.Contains(entry.DisplayText) ? entry.FilterType : CompletionEntryFilterTypes.NeverVisible;
                 }
             }
         }

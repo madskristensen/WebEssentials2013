@@ -56,7 +56,7 @@ namespace MadsKristensen.EditorExtensions
 
         private ElementNode ChildNode(ElementNode deepChild, ElementNode parent)
         {
-            if (deepChild.Parent != parent)
+            if (deepChild.Parent != null && deepChild.Parent != parent)
             {
                 return ChildNode(deepChild.Parent, parent);
             }
@@ -84,7 +84,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool IsEnabled()
         {
-            return true;
+            return !_view.Selection.IsEmpty;
         }
 
     }

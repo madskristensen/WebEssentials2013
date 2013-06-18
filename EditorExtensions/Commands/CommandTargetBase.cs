@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.Linq;
+using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -20,7 +21,13 @@ namespace MadsKristensen.EditorExtensions
             this.CommandGroup = commandGroup;
             this.CommandIds = commandIds;
             this.TextView = textView;
-            adapter.AddCommandFilter(this, out _nextCommandTarget);
+
+            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+            { 
+                // Add the target later to make sure it makes it in before other command handlers
+                adapter.AddCommandFilter(this, out _nextCommandTarget);
+
+            }), DispatcherPriority.ApplicationIdle, null);
         }
 
         protected abstract bool IsEnabled();
