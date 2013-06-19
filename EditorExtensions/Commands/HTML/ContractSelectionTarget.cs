@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using System;
+using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -35,23 +36,36 @@ namespace MadsKristensen.EditorExtensions
 
             if (tag == null)
                 return false;
-
+            
             if (tag.EndTag != null && tag.StartTag.Start == start && tag.EndTag.End == end)
             {
                 Select(tag.InnerRange.Start, tag.InnerRange.Length);
             }
+            else if (tag.Parent != null && tag.Children.Count > 0 && (tag.Start != start || tag.Parent.Children.Last().End != end))
+            {
+                Select(tag.Children.First().Start, tag.Children.Last().End - tag.Children.First().Start);
+            }
+            else if (tag.Parent != null && tag.Parent.Children.First().Start == start && tag.Parent.Children.Last().End == end)
+            {
+                SelectCaretNode(tree, tag.Parent);
+            }
             else if (tag.Children.Count > 0)
             {
-                var current = NodeAtCaret(tree);
-                var child = ChildNode(current, tag);
-
-                if (tag.Children.Contains(child))
-                    Select(child.Start, child.OuterRange.Length);
-                else
-                    Select(tag.Children[0].Start, tag.Children[0].End - tag.Children[0].Start);
+                SelectCaretNode(tree, tag);
             }
 
             return true;
+        }
+
+        private void SelectCaretNode(HtmlEditorTree tree, ElementNode tag)
+        {
+            var current = NodeAtCaret(tree);
+            var child = ChildNode(current, tag);
+
+            if (tag.Children.Contains(child))
+                Select(child.Start, child.OuterRange.Length);
+            else
+                Select(tag.Children[0].Start, tag.Children[0].End - tag.Children[0].Start);
         }
 
         private ElementNode ChildNode(ElementNode deepChild, ElementNode parent)

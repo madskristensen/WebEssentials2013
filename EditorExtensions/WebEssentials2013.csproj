@@ -482,6 +482,7 @@
     <Compile Include="SmartTags\CSS\Actions\MissingStandardDirectiveSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\VendorDirectiveSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\OverQualifySelectorSmartTagAction.cs" />
+    <Compile Include="SmartTags\HTML\HtmlRemoveParentSmartTag.cs" />
     <Compile Include="SmartTags\HTML\HtmlUnMinifySmartTag.cs" />
     <Compile Include="SmartTags\HTML\HtmlMinifyLanguageSmartTag.cs" />
     <Compile Include="SmartTags\HTML\HtmlConvertToFigureSmartTag.cs" />

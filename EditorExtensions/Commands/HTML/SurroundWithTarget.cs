@@ -78,6 +78,7 @@ namespace MadsKristensen.EditorExtensions
 
             _view.Caret.MoveTo(point);
             _view.Selection.Select(new SnapshotSpan(_buffer.CurrentSnapshot, point, 1), false);
+            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
 
             EditorExtensionsPackage.DTE.UndoContext.Close();
         }

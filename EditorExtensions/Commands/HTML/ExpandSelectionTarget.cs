@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using System;
+using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -40,6 +41,14 @@ namespace MadsKristensen.EditorExtensions
             {
                 Select(tag.Start, tag.OuterRange.Length);
             }
+            else if (tag.Children.Count > 1 && tag.Children[0].Start == start && tag.Children.Last().End == end)
+            {
+                Select(tag.InnerRange.Start, tag.InnerRange.Length);
+            } 
+            else if (tag.EndTag != null && tag.Children.Count> 1 && tag.StartTag.Start < start && tag.EndTag.End > end)
+            {                
+                Select(tag.Children[0].Start, tag.Children.Last().End - tag.Children[0].Start);
+            } 
             else if (tag.EndTag != null && tag.StartTag.Start < start && tag.EndTag.End > end)
             {
                 Select(tag.InnerRange.Start, tag.InnerRange.Length);
