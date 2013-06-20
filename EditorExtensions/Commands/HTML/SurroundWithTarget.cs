@@ -35,8 +35,6 @@ namespace MadsKristensen.EditorExtensions
                 Update(start, end);
                 return true;
             }
-
-            return false;
         }
 
         private bool HandleElement()

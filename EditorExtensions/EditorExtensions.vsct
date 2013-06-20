@@ -545,8 +545,8 @@
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildMinify" mod1="Shift Alt" key1="F" editor="guidVSStd97"/>
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildCoffeeScript" mod1="Shift Alt" key1="Z" editor="guidVSStd97"/>
     <KeyBinding guid="guidFormattingCmdSet" id="SurroundWith" mod1="Shift Alt" key1="W" editor="guidVSStd97"/>
-    <KeyBinding guid="guidFormattingCmdSet" id="ExpandSelection" mod1="Control" key1="1" editor="guidVSStd97"/>
-    <KeyBinding guid="guidFormattingCmdSet" id="ContractSelection" mod1="Control" key1="2" editor="guidVSStd97"/>
+    <KeyBinding guid="guidFormattingCmdSet" id="ExpandSelection" mod1="Alt" key1="1" editor="guidVSStd97"/>
+    <KeyBinding guid="guidFormattingCmdSet" id="ContractSelection" mod1="Alt" key1="2" editor="guidVSStd97"/>
   </KeyBindings>
 
   <CommandPlacements>

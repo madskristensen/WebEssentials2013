@@ -40,17 +40,18 @@ namespace MadsKristensen.EditorExtensions.Completion
                 hasScrollbar = prev.Text.Contains(":-webkit-resizer") || prev.Text.Contains(":-webkit-scrollbar");
             }
 
-            foreach (CssCompletionEntry entry in completions)
-            {
-                if (hasScrollbar)
-                {
-                    entry.FilterType = _cache.Contains(entry.DisplayText) ? entry.FilterType : CompletionEntryFilterTypes.NeverVisible;
-                }
-                else
-                {
-                    entry.FilterType = !_cache.Contains(entry.DisplayText) ? entry.FilterType : CompletionEntryFilterTypes.NeverVisible;
-                }
-            }
+            // TODO: enable for next update after Preview
+            //foreach (CssCompletionEntry entry in completions)
+            //{
+            //    if (hasScrollbar)
+            //    {
+            //        entry.FilterType = _cache.Contains(entry.DisplayText) ? entry.FilterType : CompletionEntryFilterTypes.NeverVisible;
+            //    }
+            //    else
+            //    {
+            //        entry.FilterType = !_cache.Contains(entry.DisplayText) ? entry.FilterType : CompletionEntryFilterTypes.NeverVisible;
+            //    }
+            //}
         }
     }
 }
