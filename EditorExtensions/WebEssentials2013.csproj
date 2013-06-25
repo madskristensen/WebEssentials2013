@@ -444,6 +444,10 @@
     <Compile Include="Options\General.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="QuickInfo\ImageHtml\ImageQuickInfo.cs" />
+    <Compile Include="QuickInfo\ImageHtml\ImageQuickInfoController.cs" />
+    <Compile Include="QuickInfo\ImageHtml\ImageQuickInfoControllerProvider.cs" />
+    <Compile Include="QuickInfo\ImageHtml\ImageQuickInfoSourceProvider.cs" />
     <Compile Include="QuickInfo\ValueOrder\RemoveCssSignatureHelpSource.cs" />
     <Compile Include="QuickInfo\ValueOrder\ValueOrderFactory.cs" />
     <Compile Include="QuickInfo\ValueOrder\ValueOrderSignature.cs" />
