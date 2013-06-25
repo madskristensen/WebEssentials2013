@@ -12,31 +12,23 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class ImageHtmlQuickInfo : IQuickInfoSource
     {
-        private ITextBuffer _buffer;
-        private HtmlEditorTree _tree;
-
         private static List<string> _imageExtensions = new List<string>() { ".png", ".jpg", "gif", ".jpeg", ".bmp", ".tif", ".tiff" };
-
-        public ImageHtmlQuickInfo(ITextBuffer subjectBuffer)
-        {
-            _buffer = subjectBuffer;
-        }
 
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> qiContent, out ITrackingSpan applicableToSpan)
         {
             applicableToSpan = null;
-
-            if (!EnsureTreeInitialized() || session == null || qiContent == null)
-                return;
-
+                    
             SnapshotPoint? point = session.GetTriggerPoint(session.TextView.TextBuffer.CurrentSnapshot);
+
             if (!point.HasValue)
                 return;
+
+            HtmlEditorTree tree = HtmlEditorDocument.FromTextView(session.TextView).HtmlEditorTree;    
 
             ElementNode node = null;
             AttributeNode attr = null;
 
-            _tree.GetPositionElement(point.Value.Position, out node, out attr);
+            tree.GetPositionElement(point.Value.Position, out node, out attr);
 
             if (attr == null || (attr.Name != "href" && attr.Name != "src"))
                 return;
@@ -45,7 +37,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (!string.IsNullOrEmpty(url))
             {
-                applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(point.Value.Position, 1, SpanTrackingMode.EdgeNegative);
+                applicableToSpan = session.TextView.TextBuffer.CurrentSnapshot.CreateTrackingSpan(point.Value.Position, 1, SpanTrackingMode.EdgeNegative);
                 var image = CreateImage(url);
                 if (image != null && image.Source != null)
                 {
@@ -55,64 +47,54 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        /// <summary>
-        /// This must be delayed so that the TextViewConnectionListener
-        /// has a chance to initialize the WebEditor host.
-        /// </summary>
-        public bool EnsureTreeInitialized()
-        {
-            if (_tree == null)
-            {
-                var view = ProjectHelpers.GetCurentTextView();
-                _tree = HtmlEditorDocument.FromTextView(view).HtmlEditorTree;
-            }
-
-            return _tree != null;
-        }
-
         public static string GetFileName(string text)
         {
-            if (!string.IsNullOrEmpty(text))
+            try
             {
-                if (text.StartsWith("data:", StringComparison.Ordinal))
-                    return text;
-
-                string imageUrl = text.Trim(new[] { '\'', '"' });
-                //if (!_imageExtensions.Contains(Path.GetExtension(imageUrl)))
-                //    return null;
-
-                string filePath = string.Empty;
-
-                if (text.StartsWith("//", StringComparison.Ordinal))
-                    text = "http:" + text;
-
-                if (text.StartsWith("http://", StringComparison.Ordinal) || text.Contains(";base64,"))
+                if (!string.IsNullOrEmpty(text))
                 {
-                    return text;
-                }
-                else if (imageUrl.StartsWith("/", StringComparison.Ordinal))
-                {
-                    string root = ProjectHelpers.GetProjectFolder(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
-                    if (root.Contains("://"))
-                        return root + imageUrl;
-                    else if (!string.IsNullOrEmpty(root))
-                        filePath = root + imageUrl;// new FileInfo(root).Directory + imageUrl;
-                }
-                else if (EditorExtensionsPackage.DTE.ActiveDocument != null)
-                {
-                    FileInfo fi = new FileInfo(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
-                    DirectoryInfo dir = fi.Directory;
-                    while (imageUrl.Contains("../"))
+                    if (text.StartsWith("data:", StringComparison.Ordinal))
+                        return text;
+
+                    string imageUrl = text.Trim(new[] { '\'', '"' });
+                    //if (!_imageExtensions.Contains(Path.GetExtension(imageUrl)))
+                    //    return null;
+
+                    string filePath = string.Empty;
+
+                    if (text.StartsWith("//", StringComparison.Ordinal))
+                        text = "http:" + text;
+
+                    if (text.StartsWith("http://", StringComparison.Ordinal) || text.Contains(";base64,"))
                     {
-                        imageUrl = imageUrl.Remove(imageUrl.IndexOf("../", StringComparison.Ordinal), 3);
-                        dir = dir.Parent;
+                        return text;
+                    }
+                    else if (imageUrl.StartsWith("/", StringComparison.Ordinal))
+                    {
+                        string root = ProjectHelpers.GetProjectFolder(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+                        if (root.Contains("://"))
+                            return root + imageUrl;
+                        else if (!string.IsNullOrEmpty(root))
+                            filePath = root + imageUrl;// new FileInfo(root).Directory + imageUrl;
+                    }
+                    else if (EditorExtensionsPackage.DTE.ActiveDocument != null)
+                    {
+                        FileInfo fi = new FileInfo(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+                        DirectoryInfo dir = fi.Directory;
+                        while (imageUrl.Contains("../"))
+                        {
+                            imageUrl = imageUrl.Remove(imageUrl.IndexOf("../", StringComparison.Ordinal), 3);
+                            dir = dir.Parent;
+                        }
+
+                        filePath = Path.Combine(dir.FullName, imageUrl.Replace("/", "\\"));
                     }
 
-                    filePath = Path.Combine(dir.FullName, imageUrl.Replace("/", "\\"));
+                    return File.Exists(filePath) ? filePath : "pack://application:,,,/WebEssentials2013;component/Resources/nopreview.png";
                 }
-
-                return File.Exists(filePath) ? filePath : "pack://application:,,,/WebEssentials2013;component/Resources/nopreview.png";
             }
+            catch
+            { }
 
             return null;
         }
