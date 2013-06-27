@@ -271,6 +271,7 @@
     <Compile Include="Commands\LESS\LessExtractVariableCommandTarget.cs" />
     <Compile Include="Commands\LESS\LessCreationListener.cs" />
     <Compile Include="Commands\Shared\EncodeSelectionCommandTarget.cs" />
+    <Compile Include="Commands\Shared\TouchCreationListener.cs" />
     <Compile Include="Commands\Shared\TextCreationListener.cs" />
     <Compile Include="Commands\Shared\MinifySelectionCommandTarget.cs" />
     <Compile Include="Commands\Css\CssAddMissingStandardCommandTarget.cs" />
@@ -486,6 +487,7 @@
     <Compile Include="SmartTags\CSS\Actions\MissingStandardDirectiveSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\VendorDirectiveSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\OverQualifySelectorSmartTagAction.cs" />
+    <Compile Include="SmartTags\HTML\HtmlAngularControllerSmartTag.cs" />
     <Compile Include="SmartTags\HTML\HtmlRemoveParentSmartTag.cs" />
     <Compile Include="SmartTags\HTML\HtmlUnMinifySmartTag.cs" />
     <Compile Include="SmartTags\HTML\HtmlMinifyLanguageSmartTag.cs" />

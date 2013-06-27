@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="5fb7364d-2e8c-44a4-95eb-2a382e30fec8" Version="0.1.4" Language="en-US" Publisher="Mads Kristensen" />
+    <Identity Id="5fb7364d-2e8c-44a4-95eb-2a382e30fec8" Version="0.1.6" Language="en-US" Publisher="Mads Kristensen" />
     <DisplayName>Web Essentials 2013 Preview</DisplayName>
     <Description xml:space="preserve">Adds many useful features to Visual Studio for web developers.</Description>
     <MoreInfo>http://vswebessentials.com/</MoreInfo>
