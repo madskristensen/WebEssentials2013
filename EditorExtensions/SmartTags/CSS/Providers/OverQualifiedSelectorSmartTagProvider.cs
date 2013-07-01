@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 
@@ -25,10 +26,10 @@ namespace MadsKristensen.EditorExtensions
             if (sel == null || !sel.IsValid)
                 yield break;
             
-            int index = sel.Text.IndexOf('#');
-            if (index > 0)
+            var idPart = sel.SimpleSelectors.Skip(1).FirstOrDefault(s => s.Text.StartsWith("#"));
+            if (idPart != null)
             {
-                yield  return new OverQualifySelectorSmartTagAction(sel, itemTrackingSpan, index);
+                yield return new OverQualifySelectorSmartTagAction(sel, itemTrackingSpan, idPart.Start - sel.Start);
             }
         }
     }
