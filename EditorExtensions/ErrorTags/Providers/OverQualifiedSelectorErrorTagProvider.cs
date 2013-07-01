@@ -1,6 +1,7 @@
 ﻿using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Utilities;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
@@ -19,15 +20,13 @@ namespace MadsKristensen.EditorExtensions
             if (!WESettings.GetBoolean(WESettings.Keys.ValidateOverQualifiedSelector) || !sel.IsValid || context == null)
                 return ItemCheckResult.Continue;
 
-            int index = sel.Text.IndexOf('#');
-
-            if (index > 0)
+            var idPart = sel.SimpleSelectors.Skip(1).FirstOrDefault(s => s.Text.StartsWith("#"));
+            if (idPart != null)
             {
-                string idName = sel.ItemAfterPosition(sel.Start + index).Text;
-                string remove = sel.Text.Substring(0, index);
-                string errorMessage = string.Format(CultureInfo.InvariantCulture, Resources.PerformanceDontOverQualifySelectors, idName, remove);
+                string remove = sel.Text.Substring(0, idPart.Start - sel.Start).TrimEnd();  // Remove the whitespace before the final part
+                string errorMessage = string.Format(CultureInfo.InvariantCulture, Resources.PerformanceDontOverQualifySelectors, idPart.Text, remove);
 
-                SimpleErrorTag tag = new SimpleErrorTag(sel, errorMessage, index);
+                SimpleErrorTag tag = new SimpleErrorTag(sel, errorMessage, remove.Length);
 
                 context.AddError(tag);
             }
