@@ -22,6 +22,14 @@ namespace MadsKristensen.EditorExtensions
             if (unit == null || context == null)
                 return ItemCheckResult.Continue;
 
+            // The 2nd and 3rd arguments to hsl() require units even when zero
+            var function = unit.Parent.Parent as FunctionColor;
+            if (function != null && function.FunctionName.Text.StartsWith("hsl", StringComparison.OrdinalIgnoreCase)) {
+                var arg = unit.Parent as FunctionArgument;
+                if (arg != function.Arguments[0])
+                    return ItemCheckResult.Continue;
+            }
+
             if (number.Number.Text == "0" && unit.UnitType != UnitType.Unknown && unit.UnitType != UnitType.Time)
             {
                 string message = string.Format(Resources.BestPracticeZeroUnit, unit.UnitToken.Text);
