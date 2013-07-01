@@ -92,19 +92,19 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.CSS.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\Web\Editor\Microsoft.CSS.Core.dll</HintPath>
+      <HintPath>\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\Web\Editor\Microsoft.CSS.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSS.Editor, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\Web\Editor\Microsoft.CSS.Editor.dll</HintPath>
+      <HintPath>\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\Web\Editor\Microsoft.CSS.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Html.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\Web\Editor\Microsoft.Html.Core.dll</HintPath>
+      <HintPath>\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\Web\Editor\Microsoft.Html.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Html.Editor, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\Web\Editor\Microsoft.Html.Editor.dll</HintPath>
+      <HintPath>\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\Web\Editor\Microsoft.Html.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -127,19 +127,18 @@
     <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.VisualStudio.Web, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\Microsoft.VisualStudio.Web.dll</HintPath>
+      <HintPath>\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\Microsoft.VisualStudio.Web.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Web.Extensions, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\Web Tools\Languages\Microsoft.VisualStudio.Web.Extensions.dll</HintPath>
+    <Reference Include="Microsoft.VisualStudio.Web.Extensions">
+      <HintPath>..\..\..\..\\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\Web Tools\Languages\Microsoft.VisualStudio.Web.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\Web\Editor\Microsoft.Web.Core.dll</HintPath>
+      <HintPath>\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\Web\Editor\Microsoft.Web.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Design.Client, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\Microsoft.Web.Design.Client.dll</HintPath>
+      <HintPath>\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\Microsoft.Web.Design.Client.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Editor, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
@@ -153,7 +152,7 @@
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.11.0" />
     <Reference Include="Microsoft.Web.Editor, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\Web\Editor\Microsoft.Web.Editor.dll</HintPath>
+      <HintPath>\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\CommonExtensions\Microsoft\Web\Editor\Microsoft.Web.Editor.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
