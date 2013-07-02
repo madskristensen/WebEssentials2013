@@ -223,7 +223,7 @@ namespace MadsKristensen.EditorExtensions
             if (task.Column > 0)
             {
                 var doc = (TextDocument)EditorExtensionsPackage.DTE.ActiveDocument.Object("textdocument");
-                doc.Selection.MoveToLineAndOffset(task.Line, task.Column, false);
+                doc.Selection.MoveToDisplayColumn(task.Line, task.Column);
             }
         }
 
