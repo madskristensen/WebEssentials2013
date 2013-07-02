@@ -42,8 +42,8 @@ namespace MadsKristensen.EditorExtensions
         private static readonly Regex _reHeader = new Regex(lineBegin + @"(?<Value>([#]{1,6})[^#\r\n]+(\1(?!#))?)", RegexOptions.Multiline);
         private static readonly Regex _reCode = new Regex(
             @"(?<Value>" + inlineCodeBlock + @")|"                      // Inline code block
-            + lineBegin + @"((?<= {3})| {4})(?<Value>.+$)|"             // Indented code block (even inside quote blocks)
-            + lineBegin + @"(?<Value>" + fencedCodeBlock + @")", // GitHub-style fenced code block (RedCarpet)
+            + lineBegin + @"((?<= {3}) | {4})(?<Value>.+$)|"            // Indented code block (even inside quote blocks)
+            + lineBegin + @"(?<Value>" + fencedCodeBlock + @")",        // GitHub-style fenced code block (RedCarpet)
             RegexOptions.Multiline);
 
         private IClassificationType _bold, _italic, _header, _code, _quote;
