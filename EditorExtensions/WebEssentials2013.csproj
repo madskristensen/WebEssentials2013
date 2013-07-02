@@ -554,6 +554,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Classifications\Markdown\Sample.md" />
     <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
