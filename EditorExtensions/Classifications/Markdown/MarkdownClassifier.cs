@@ -37,7 +37,7 @@ namespace MadsKristensen.EditorExtensions
         private static readonly Regex _reItalic = new Regex(@"(?<Value>((?<!\*)\*(?!\*)|(?<!_)_(?!_))[^\s].+?[^\s]\1\b)");
 
         // A multi-line fenced code block starting in a quote should all count as part of the quote
-        private static readonly Regex _reQuote = new Regex(@"(?=(?:" + lineBegin + fencedCodeBlock + @"[\s\S]+)*) {0,3}(> {0,3})+(?<Value>" + fencedCodeBlock + "|(?!(> {0,3})*```).+$)", RegexOptions.Multiline);
+        private static readonly Regex _reQuote = new Regex(lineBegin + @"( {0,3}>)+(?<Value> {0,3}(" + fencedCodeBlock + @"|(?!(> {0,3})*```)).+$)", RegexOptions.Multiline);
 
         private static readonly Regex _reHeader = new Regex(lineBegin + @"(?<Value>([#]{1,6})[^#\r\n]+(\1(?!#))?)", RegexOptions.Multiline);
         private static readonly Regex _reCode = new Regex(

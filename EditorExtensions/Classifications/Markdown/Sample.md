@@ -8,6 +8,8 @@ Here is code with underscores: `abc + _something_ + def`, ending later with `_pr
 
 However, single ` characters should not be affected, even if there is **bold** afterwards.  
 
+This is > not a quote
+
 `code`, then _italic_, or **bold**.
 Even  **_bold/italic_** or _**italic/bold**_
 
