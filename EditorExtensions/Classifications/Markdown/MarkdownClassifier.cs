@@ -100,7 +100,10 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;
+        public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged 
+        {
+            add { }
+            remove { }
+        }
     }
-
 }
