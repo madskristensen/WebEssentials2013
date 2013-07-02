@@ -130,7 +130,7 @@
       <HintPath>\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\Microsoft.VisualStudio.Web.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Web.Extensions">
-      <HintPath>..\..\..\..\\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\Web Tools\Languages\Microsoft.VisualStudio.Web.Extensions.dll</HintPath>
+      <HintPath>\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\Web Tools\Languages\Microsoft.VisualStudio.Web.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
