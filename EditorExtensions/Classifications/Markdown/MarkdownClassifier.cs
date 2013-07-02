@@ -46,7 +46,7 @@ namespace MadsKristensen.EditorExtensions
             + lineBegin + @"(?<Value>" + fencedCodeBlock + @")", // GitHub-style fenced code block (RedCarpet)
             RegexOptions.Multiline);
 
-        private IClassificationType _bold, _italic, _header, _code;
+        private IClassificationType _bold, _italic, _header, _code, _quote;
 
         public MarkdownClassifier(IClassificationTypeRegistryService registry)
         {
@@ -54,6 +54,7 @@ namespace MadsKristensen.EditorExtensions
             _italic = registry.GetClassificationType(MarkdownClassificationTypes.MarkdownItalic);
             _header = registry.GetClassificationType(MarkdownClassificationTypes.MarkdownHeader);
             _code = registry.GetClassificationType(MarkdownClassificationTypes.MarkdownCode);
+            _quote = registry.GetClassificationType(MarkdownClassificationTypes.MarkdownQuote);
         }
 
         // This does not work properly for multiline fenced code-blocks,
@@ -77,11 +78,12 @@ namespace MadsKristensen.EditorExtensions
                 text = new String(nonCodeBuilder);
             }
 
+            var quotes = FindMatches(span, text, _reQuote, _quote);
             var bolds = FindMatches(span, text, _reBold, _bold);
             var italics = FindMatches(span, text, _reItalic, _italic);
             var headers = FindMatches(span, text, _reHeader, _header);
-            
-            return bolds.Concat(italics).Concat(headers).Concat(codeBlocks).ToList();
+
+            return bolds.Concat(italics).Concat(headers).Concat(codeBlocks).Concat(quotes).ToList();
         }
 
         private IEnumerable<ClassificationSpan> FindMatches(SnapshotSpan span, string text, Regex regex, IClassificationType type)
