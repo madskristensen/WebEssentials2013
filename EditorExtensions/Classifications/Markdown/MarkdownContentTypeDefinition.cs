@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
         /// </summary>
         [Export(typeof(ContentTypeDefinition))]
         [Name(MarkdownContentType)]
-        [BaseDefinition("html")]
+        [BaseDefinition("htmlx")]
         public ContentTypeDefinition IMarkdownContentType { get; set; }
 
         /// <summary>
