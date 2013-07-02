@@ -77,7 +77,12 @@ namespace MadsKristensen.EditorExtensions
             return _tree != null;
         }
 
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+        public event EventHandler<SnapshotSpanEventArgs> TagsChanged 
+        {
+            add { }
+            remove { }
+        }
+
 
         void BufferChanged(object sender, TextContentChangedEventArgs e)
         {
