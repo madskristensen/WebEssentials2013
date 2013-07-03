@@ -64,7 +64,7 @@ namespace MadsKristensen.EditorExtensions
                 }
             }
 
-            return string.Empty;
+            return "<style>body{font: 1.1em 'Century Gothic'}</style>";
         }
 
         public static void CreateStylesheet()

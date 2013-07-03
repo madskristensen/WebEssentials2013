@@ -25,7 +25,6 @@ namespace MadsKristensen.EditorExtensions
     internal sealed class HtmlRegionTagger : ITagger<IOutliningRegionTag>
     {
         string startHide = "<!-- #region";     //the characters that start the outlining region
-        Regex startHideRegex = new Regex(@"<!--(\s)?#region(.*)?-->", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         string endHide = "#endregion -->";       //the characters that end the outlining region
         string hoverText = "Collapsed content"; //the contents of the tooltip for the collapsed span
         ITextBuffer buffer;

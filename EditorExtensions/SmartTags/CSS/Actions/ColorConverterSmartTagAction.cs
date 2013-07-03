@@ -72,6 +72,7 @@ namespace MadsKristensen.EditorExtensions
             switch (_format)
             {
                 case ColorFormat.Rgb:
+                    _colorModel.Format = ColorFormat.Rgb;
                     _displayText = string.Format(CultureInfo.InvariantCulture, format, ColorFormatter.FormatColor(_colorModel, ColorFormat.Rgb));
                     break;
 
