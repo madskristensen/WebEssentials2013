@@ -40,7 +40,7 @@ namespace MadsKristensen.EditorExtensions
         {
             object[] parameters = new object[] { session, context };
             BindingFlags flags = BindingFlags.Public | BindingFlags.Instance;
-            Type type = typeof(CssClassifier).Assembly.GetType("Microsoft.CSS.Editor.ColorPickerPresenter");
+            Type type = typeof(CssClassifier).Assembly.GetType("Microsoft.CSS.Editor.Intellisense.ColorPickerPresenter");
             object colorPicker = Activator.CreateInstance(type, flags, null, parameters, null);
 
             return new CompletionPresenterInfo((IIntellisensePresenter)colorPicker, false);
