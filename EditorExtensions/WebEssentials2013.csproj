@@ -246,6 +246,7 @@
     </Compile>
     <Compile Include="Adornments\Color\IntraTextAdornmentTagger.cs" />
     <Compile Include="Classifications\JavaScriptArrayOutlining.cs" />
+    <Compile Include="Classifications\HtmlRegionTagger.cs" />
     <Compile Include="Classifications\Markdown\MarkdownClassificationTypes.cs" />
     <Compile Include="Classifications\Markdown\MarkdownClassifier.cs" />
     <Compile Include="Classifications\Markdown\MarkdownContentTypeDefinition.cs" />
