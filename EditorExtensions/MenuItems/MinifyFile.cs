@@ -199,7 +199,7 @@ namespace MadsKristensen.EditorExtensions
                     // Folder
                     if (Directory.Exists(path))
                     {
-                        list.AddRange(Directory.GetFiles(path));
+                        list.AddRange(Directory.GetFiles(path, "*.*", SearchOption.AllDirectories));
                     }
                 }
             }
