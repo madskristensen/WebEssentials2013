@@ -8,6 +8,8 @@ Here is code with underscores: `abc + _something_ + def`, ending later with `_pr
 
 However, single ` characters should not be affected, even if there is **bold** afterwards.  
 
+This is > not a quote
+
 `code`, then _italic_, or **bold**.
 Even  **_bold/italic_** or _**italic/bold**_
 
@@ -26,6 +28,7 @@ var str = @"**Nor** in fenced code blocks
 > > Note that snake_case_is_not_italic! 
 >
 > Back to the first level.
+>   Three spaces _are not_ code
 With continued lines
 
 ## Second header
@@ -36,9 +39,8 @@ With continued lines
 > 2.   This is the second list item.
 > 
 > Here's some example code:
-> 
->     return shell _exec("echo $input | $markdown_ script");
->     string s = "Nested `code in code block`!";
+>    return shell _exec("echo $input | $markdown_ script");
+>    string s = "Nested `code in code block`!";
 
 > Here's a nested fence:
 > > ```
