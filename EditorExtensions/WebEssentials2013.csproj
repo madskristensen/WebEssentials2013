@@ -169,6 +169,9 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebMarkupMin.Core">
+      <HintPath>..\packages\WebMarkupMin.Core.0.8.7\lib\net40\WebMarkupMin.Core.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="ZenCoding, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -401,7 +404,6 @@
     <Compile Include="Margin\ScriptRunnerBase.cs" />
     <Compile Include="Margin\LessCompiler.cs" />
     <Compile Include="Helpers\OptionHelpers.cs" />
-    <None Include="app.config" />
     <Compile Include="Commands\JavaScript\JsHintProjectRunner.cs">
       <SubType>Code</SubType>
     </Compile>

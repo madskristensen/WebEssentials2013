@@ -21,15 +21,16 @@ namespace MadsKristensen.EditorExtensions
         {
             if (TextView != null)
             {
-                _dte.UndoContext.Open("Minify");
-
                 string content = TextView.Selection.SelectedSpans[0].GetText();
                 string extension = Path.GetExtension(_dte.ActiveDocument.FullName).ToLowerInvariant();
                 string result = MinifyFileMenu.MinifyString(extension, content);
 
-                TextView.TextBuffer.Replace(TextView.Selection.SelectedSpans[0].Span, result);
-
-                _dte.UndoContext.Close();
+                if (result != content)
+                {
+                    _dte.UndoContext.Open("Minify");
+                    TextView.TextBuffer.Replace(TextView.Selection.SelectedSpans[0].Span, result);
+                    _dte.UndoContext.Close();
+                }
             }
 
             return true;

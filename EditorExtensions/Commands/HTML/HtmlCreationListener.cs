@@ -48,6 +48,7 @@ namespace MadsKristensen.EditorExtensions
             textView.Properties.GetOrCreateSingletonProperty<ExpandSelection>(() => new ExpandSelection(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<ContactSelection>(() => new ContactSelection(textViewAdapter, textView));
             //textView.Properties.GetOrCreateSingletonProperty<EnterFormat>(() => new EnterFormat(textViewAdapter, textView));
+            textView.Properties.GetOrCreateSingletonProperty<MinifySelection>(() => new MinifySelection(textViewAdapter, textView));
         }
     }
 }
