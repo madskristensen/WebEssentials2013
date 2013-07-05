@@ -280,7 +280,6 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.JsHint_browser, true);
             dic.Add(Keys.JsHint_devel, true);
             dic.Add(Keys.JsHint_eqeqeq, true);
-            dic.Add(Keys.JsHint_es5, true);
             dic.Add(Keys.JsHint_expr, true);
             dic.Add(Keys.JsHint_debug, true);
             dic.Add(Keys.JsHint_jquery, true);
@@ -289,6 +288,8 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.JsHint_maxerr, 50);
             dic.Add(Keys.JsHint_regexdash, true);
             dic.Add(Keys.JsHint_smarttabs, true);
+            dic.Add(Keys.JsHint_undef, true);
+            dic.Add(Keys.JsHint_unused, true);
 
             // MISC
             dic.Add(Keys.ShowBrowserTooltip, true);

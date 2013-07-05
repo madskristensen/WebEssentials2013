@@ -264,6 +264,7 @@
     <Compile Include="Commands\HTML\HtmlCreationListener.cs" />
     <Compile Include="Commands\HTML\ExpandSelectionTarget.cs" />
     <Compile Include="Commands\HTML\SurroundWithTarget.cs" />
+    <Compile Include="Commands\HTML\EnterFormatCommandTarget.cs" />
     <Compile Include="Commands\HTML\ZenCodingCommandTarget.cs" />
     <Compile Include="Commands\JavaScript\JavaScriptFindReferencesCommandTarget.cs" />
     <Compile Include="Commands\JavaScript\JavaScriptCreationListener.cs" />
@@ -543,7 +544,6 @@
     <Compile Include="Options\WebEssentialsSettings.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Scripts\jshint.js" />
     <EmbeddedResource Include="Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -581,6 +581,7 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Resource Include="Resources\extract.png" />
+    <EmbeddedResource Include="Resources\Scripts\jshint-2.1.4.js" />
     <Content Include="Resources\Scripts\less-1.3.0.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

@@ -98,7 +98,6 @@ namespace MadsKristensen.EditorExtensions
             public const string JsHint_boss = "JsHint_boss";
             public const string JsHint_debug = "JsHint_debug";
             public const string JsHint_eqnull = "JsHint_eqnull";
-            public const string JsHint_es5 = "JsHint_es5";
             public const string JsHint_esnext = "JsHint_esnext";
             public const string JsHint_evil = "JsHint_evil";
             public const string JsHint_expr = "JsHint_expr";

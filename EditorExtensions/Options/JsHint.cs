@@ -42,7 +42,6 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.JsHint_boss, JsHint_boss);
             Settings.SetValue(WESettings.Keys.JsHint_debug, JsHint_debug);
             Settings.SetValue(WESettings.Keys.JsHint_eqnull, JsHint_eqnull);
-            Settings.SetValue(WESettings.Keys.JsHint_es5, JsHint_es5);
             Settings.SetValue(WESettings.Keys.JsHint_esnext, JsHint_esnext);
             Settings.SetValue(WESettings.Keys.JsHint_evil, JsHint_evil);
             Settings.SetValue(WESettings.Keys.JsHint_expr, JsHint_expr);
@@ -111,7 +110,6 @@ namespace MadsKristensen.EditorExtensions
             JsHint_boss = WESettings.GetBoolean(WESettings.Keys.JsHint_boss);
             JsHint_debug = WESettings.GetBoolean(WESettings.Keys.JsHint_debug);
             JsHint_eqnull = WESettings.GetBoolean(WESettings.Keys.JsHint_eqnull);
-            JsHint_es5 = WESettings.GetBoolean(WESettings.Keys.JsHint_es5);
             JsHint_esnext = WESettings.GetBoolean(WESettings.Keys.JsHint_esnext);
             JsHint_evil = WESettings.GetBoolean(WESettings.Keys.JsHint_evil);
             JsHint_expr = WESettings.GetBoolean(WESettings.Keys.JsHint_expr);
@@ -295,11 +293,6 @@ namespace MadsKristensen.EditorExtensions
         [Description("[eqnull] This option suppresses warnings about == null comparisons.")]
         [Category("Relaxing Options")]
         public bool JsHint_eqnull { get; set; }
-
-        [LocDisplayName("Use EcmaScript 5")]
-        [Description("[es5] This option tells JSHint that your code uses ECMAScript 5 specific features such as getters and setters.")]
-        [Category("Relaxing Options")]
-        public bool JsHint_es5 { get; set; }
 
         [LocDisplayName("Allow ES.next features")]
         [Description("[esnext] This option tells JSHint that your code uses ES.next specific features such as const.")]
