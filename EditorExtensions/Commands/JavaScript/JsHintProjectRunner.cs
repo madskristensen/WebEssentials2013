@@ -29,10 +29,21 @@ namespace MadsKristensen.EditorExtensions
                 return;
 
             ITextDocument document = (ITextDocument)sender;
+            if (_isDisposed || document.TextBuffer == null)
+                return;
 
-            if (document.TextBuffer != null && !_isDisposed && e.FileActionType == FileActionTypes.ContentSavedToDisk)
+            switch (e.FileActionType)
             {
-                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => _runner.RunCompiler()), DispatcherPriority.ApplicationIdle, null);
+                case FileActionTypes.ContentLoadedFromDisk:
+                    break;
+                case FileActionTypes.DocumentRenamed:
+                    _runner.Dispose();
+                    _runner = new JsHintRunner(_document.FilePath);
+
+                    goto case FileActionTypes.ContentSavedToDisk;
+                case FileActionTypes.ContentSavedToDisk:
+                    Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => _runner.RunCompiler()), DispatcherPriority.ApplicationIdle, null);
+                    break;
             }
         }
 
