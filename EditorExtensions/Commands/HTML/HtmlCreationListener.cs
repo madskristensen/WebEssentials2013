@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
+using Microsoft.Web.Editor.Formatting;
 using System.ComponentModel.Composition;
 
 namespace MadsKristensen.EditorExtensions
@@ -24,10 +26,6 @@ namespace MadsKristensen.EditorExtensions
             var textView = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
 
             textView.Properties.GetOrCreateSingletonProperty<ZenCoding>(() => new ZenCoding(textViewAdapter, textView, CompletionBroker));
-
-            //uint zenCoding;
-            //EditorExtensionsPackage.PriorityCommandTarget.RegisterPriorityCommandTarget(0, new ZenCoding(textViewAdapter, textView, CompletionBroker), out zenCoding);
-            //textView.Closed += delegate { EditorExtensionsPackage.PriorityCommandTarget.UnregisterPriorityCommandTarget(zenCoding); };
         }
     }
 
@@ -49,6 +47,7 @@ namespace MadsKristensen.EditorExtensions
             textView.Properties.GetOrCreateSingletonProperty<SurroundWith>(() => new SurroundWith(textViewAdapter, textView, CompletionBroker));
             textView.Properties.GetOrCreateSingletonProperty<ExpandSelection>(() => new ExpandSelection(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<ContactSelection>(() => new ContactSelection(textViewAdapter, textView));
+            //textView.Properties.GetOrCreateSingletonProperty<EnterFormat>(() => new EnterFormat(textViewAdapter, textView));
         }
     }
 }

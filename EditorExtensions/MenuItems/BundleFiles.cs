@@ -86,7 +86,7 @@ namespace MadsKristensen.EditorExtensions
         {
             string dir = ProjectHelpers.GetProjectFolder(changedFile);
 
-            if (string.IsNullOrEmpty(dir))
+            if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
                 return;
 
             //if (dir.Contains("."))
@@ -165,9 +165,7 @@ namespace MadsKristensen.EditorExtensions
         private void BeforeQueryStatus(object sender, string extension)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
-            //_selectedItems = ProjectHelpers.GetSelectedItems().Where(p => Path.GetExtension(p.FileNames[1]) == extension);
-
-            menuCommand.Enabled = GetSelectedItems(extension).Count() > 1;
+             menuCommand.Enabled = GetSelectedItems(extension).Count() > 1;
         }
 
         private IEnumerable<ProjectItem> GetSelectedItems(string extension)
@@ -175,22 +173,8 @@ namespace MadsKristensen.EditorExtensions
             return ProjectHelpers.GetSelectedItems().Where(p => Path.GetExtension(p.FileNames[1]) == extension);
         }
 
-        //private IEnumerable<string> GetSelectedFilePaths(string extension)
-        //{
-        //    var raw = ProjectHelpers.GetSelectedItems().Where(p => Path.GetExtension(p.Properties.Item("FullPath").ToString()) == extension);
-
-        //    foreach (string file in raw)
-        //    {
-        //        //if (!file.EndsWith(".min" + extension))
-        //        //{
-        //        yield return file;
-        //        //}
-        //    }
-        //}
-
         private void CreateBundlefile(string extension)
         {
-            //var selectedPaths = GetSelectedFilePaths(extension);
             StringBuilder sb = new StringBuilder();
             string firstFile = null;
             var items = GetSelectedItems(extension);
