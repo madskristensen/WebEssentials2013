@@ -294,10 +294,10 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.ShowBrowserTooltip, true);
             dic.Add(Keys.WrapCoffeeScriptClosure, true);
 
-            // TypeScript
-            //dic.Add(Keys.ShowTypeScriptPreviewWindow, true);
-            //dic.Add(Keys.GenerateJsFileFromTypeScript, true);
-            //dic.Add(Keys.TypeScriptAddGeneratedFilesToProject, true);
+             // TypeScript
+            dic.Add(Keys.ShowTypeScriptPreviewWindow, true);
+            dic.Add(Keys.GenerateJsFileFromTypeScript, true);
+            dic.Add(Keys.TypeScriptAddGeneratedFilesToProject, true);
 
             // Minification
             dic.Add(Keys.EnableCssMinification, true);

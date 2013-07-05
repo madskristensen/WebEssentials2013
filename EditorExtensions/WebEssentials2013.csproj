@@ -400,6 +400,10 @@
     <Compile Include="Margin\ScriptRunnerBase.cs" />
     <Compile Include="Margin\LessCompiler.cs" />
     <Compile Include="Helpers\OptionHelpers.cs" />
+    <Compile Include="Margin\TypeScriptMargin.cs" />
+    <Compile Include="TypeScripts.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <None Include="app.config" />
     <Compile Include="Commands\JavaScript\JsHintProjectRunner.cs">
       <SubType>Code</SubType>
