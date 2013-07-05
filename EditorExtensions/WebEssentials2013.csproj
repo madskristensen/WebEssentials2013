@@ -296,7 +296,6 @@
     <Compile Include="Classifications\ValueTaggerProvider.cs" />
     <Compile Include="Classifications\VendorClassifier.cs" />
     <Compile Include="Commands\Css\RetriggerCommandTarget.cs" />
-    <Compile Include="Commands\MoveRuleCommandTarget.cs" />
     <Compile Include="Completion\CompletionListEntry.cs" />
     <Compile Include="Completion\CompletionProviders\ClassCompletionProvider.cs" />
     <Compile Include="Completion\CompletionProviders\AnimationNameCompletionProvider.cs" />
