@@ -42,7 +42,8 @@ public class JsHintCompiler : ScriptRunnerBase
 
         string script = ReadResourceFile("MadsKristensen.EditorExtensions.Resources.Scripts.jshint.js") +
                         "var settings = " + (FindLocalSettings(filename) ?? "{" + _defaultSettings + "}") + ";" +   // If this file has no .jshintrc, fall back to the configured settings
-                        "JSHINT('" + source + "', settings, settings.globals);" +   // .jshintrc files have an optional globals section, which becomes the third parameter
+                        "var globals = settings.globals; delete settings.globals;" +  // .jshintrc files have an optional globals section, which becomes the third parameter.  (globals is not a valid option)
+                        "JSHINT('" + source + "', settings, globals);" + 
                         "window.external.Execute(JSON.stringify(JSHINT.errors), '" + filename.Replace("\\", "\\\\") + "')";
 
         return "<html><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\" /><script>" + script + "</script></head><html/>";
