@@ -3,7 +3,7 @@ namespace MadsKristensen.EditorExtensions
 {
     static class WESettings
     {
-        public class Keys
+        public static class Keys
         {
             // General
             public const string EnableHtmlZenCoding = "HtmlEnableZenCoding";

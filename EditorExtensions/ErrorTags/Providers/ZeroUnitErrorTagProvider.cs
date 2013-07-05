@@ -39,13 +39,6 @@ namespace MadsKristensen.EditorExtensions
             return ItemCheckResult.Continue;
         }
 
-        private static UnitType GetUnitType(ParseItem valueItem)
-        {
-            UnitValue unitValue = valueItem as UnitValue;
-
-            return (unitValue != null) ? unitValue.UnitType : UnitType.Unknown;
-        }
-
         public IEnumerable<Type> ItemTypes
         {
             get { return new[] { typeof(NumericalValue) }; }

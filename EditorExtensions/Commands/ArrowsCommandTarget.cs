@@ -120,10 +120,10 @@ namespace MadsKristensen.EditorExtensions
 
         private static int NumberDecimalPlaces(string value)
         {
-            if (value.IndexOf('.') == -1)
+            int s = value.IndexOf(".") + 1; // the first numbers plus decimal point
+            if (s == 0)                     // No decimal point
                 return 0;
 
-            int s = value.IndexOf(".") + 1; // the first numbers plus decimal point
             return value.Length - s;     //total length minus beginning numbers and decimal = number of decimal points
         }
 

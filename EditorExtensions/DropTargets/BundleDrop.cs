@@ -37,7 +37,7 @@ namespace MadsKristensen.EditorExtensions
         {
             string reference = FileHelpers.RelativePath(ProjectHelpers.GetRootFolder(), _draggedFilename);
 
-            if (reference.StartsWith("http://localhost:"))
+            if (reference.StartsWith("http://localhost:", StringComparison.OrdinalIgnoreCase))
             {
                 int index = reference.IndexOf('/', 20);
                 if (index > -1)

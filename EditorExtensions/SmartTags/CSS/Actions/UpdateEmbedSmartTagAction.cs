@@ -55,7 +55,6 @@ namespace MadsKristensen.EditorExtensions
         {
             EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
             Declaration dec = _url.FindType<Declaration>();
-            string text = dec.Text;
 
             _span.TextBuffer.Replace(_span.GetSpan(snapshot), dataUri);
 

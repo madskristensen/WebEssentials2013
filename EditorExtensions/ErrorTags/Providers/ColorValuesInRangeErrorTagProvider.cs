@@ -19,7 +19,7 @@ namespace MadsKristensen.EditorExtensions
             if (!function.IsValid || context == null)
                 return ItemCheckResult.Continue;
 
-            if (function.FunctionName.Text.StartsWith("rgb"))
+            if (function.FunctionName.Text.StartsWith("rgb", StringComparison.OrdinalIgnoreCase))
             {
                 ValidateRgb(context, function);
             }

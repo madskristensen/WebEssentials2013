@@ -3,7 +3,7 @@ using System;
 
 namespace MadsKristensen.EditorExtensions
 {
-    public class Logger
+    public static class Logger
     {
         private static IVsOutputWindowPane pane;
         private static object _syncRoot = new object();

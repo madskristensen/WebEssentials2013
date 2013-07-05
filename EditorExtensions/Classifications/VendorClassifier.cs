@@ -60,6 +60,7 @@ namespace MadsKristensen.EditorExtensions
             if (!WESettings.GetBoolean(WESettings.Keys.SyncVendorValues) || !EnsureInitialized())
                 return spans;
 
+            // HACK: What's this variable for?
             var declarations = Cache.Where(d => span.End <= d.AfterEnd && d.Start >= span.Start);
             foreach (Declaration dec in Cache.Where(d => d.PropertyName.Text.Length > 0 && span.Snapshot.Length >= d.AfterEnd))
             {
