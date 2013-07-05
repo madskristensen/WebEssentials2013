@@ -247,7 +247,7 @@ namespace MadsKristensen.EditorExtensions
             return classification.ClassificationType.Classification == "CSS Property Value";
         }
 
-        private bool IsSelectorEligible(ITextSnapshotLine line, int position)
+        private static bool IsSelectorEligible(ITextSnapshotLine line, int position)
         {
             string text = line.GetText();
             if (text.IndexOf('{') > -1)
@@ -266,7 +266,7 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-        private bool IsPropertyValueEligible(ITextSnapshotLine line, int position)
+        private static bool IsPropertyValueEligible(ITextSnapshotLine line, int position)
         {
             string text = line.GetText();
             int diff = text.Length - text.TrimEnd().Length;
@@ -280,7 +280,7 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-        private bool IsPropertyNameEligible(ITextSnapshotLine line)
+        private static bool IsPropertyNameEligible(ITextSnapshotLine line)
         {
             return !line.GetText().Contains(":");
         }

@@ -28,15 +28,11 @@ namespace MadsKristensen.EditorExtensions
     internal sealed class Base64Tagger : ITagger<IOutliningRegionTag>
     {
         private ITextBuffer buffer;
-        private ITextSnapshot snapshot;
-        private string text;
         private CssTree _tree;
 
         public Base64Tagger(ITextBuffer buffer)
         {
             this.buffer = buffer;
-            this.snapshot = buffer.CurrentSnapshot;
-            this.text = snapshot.GetText();
             this.buffer.Changed += BufferChanged;
         }
 

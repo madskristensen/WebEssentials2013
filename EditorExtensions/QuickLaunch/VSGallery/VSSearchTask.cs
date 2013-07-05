@@ -19,7 +19,7 @@ namespace Microsoft.MSDNSearch
 
         protected override void OnStartSearch()
         {
-            string webQuery = this.GetWebQuery(this.SearchQuery);
+            string webQuery = GetWebQuery(this.SearchQuery);
 
             try
             {
@@ -86,11 +86,11 @@ namespace Microsoft.MSDNSearch
             }
         }
 
-        public string GetWebQuery(IVsSearchQuery pSearchQuery)
+        public static string GetWebQuery(IVsSearchQuery searchQuery)
         {
             return string.Format(
                 "http://visualstudiogallery.msdn.microsoft.com/site/feeds/searchRss?f%5B0%5D.Type=SearchText&f%5B0%5D.Value={0}&f%5B1%5D.Type=RootCategory&f%5B1%5D.Value=tools&f%5B1%5D.Text=Tools&sortBy=Relevance",
-                HttpUtility.UrlEncode(pSearchQuery.SearchString));
+                HttpUtility.UrlEncode(searchQuery.SearchString));
         }
     }
 }

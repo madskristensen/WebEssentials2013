@@ -79,6 +79,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (_projectFileStep == _projectFileCount)
                 Logger.Log("CoffeeScript compiled");
+            ((IDisposable)sender).Dispose();
         }
 
         protected override void StartCompiler(string source)

@@ -43,23 +43,23 @@ namespace MadsKristensen.EditorExtensions
             _mcs.AddCommand(menuCoffee);
         }
 
-        private void BuildCoffeeScript()
+        private static void BuildCoffeeScript()
         {
             foreach (Project project in _dte.Solution.Projects)
             {
-                CoffeeScriptMargin margin = new CoffeeScriptMargin();
-                margin.CompileProject(project);
+                using(CoffeeScriptMargin margin = new CoffeeScriptMargin())
+                    margin.CompileProject(project);
             }
         }
 
-        private void UpdateBundleFiles()
+        private static void UpdateBundleFiles()
         {
             //Logger.Log("Updating bundles...");
             BundleFilesMenu.UpdateBundles(null, true);
             //Logger.Log("Bundles updated");
         }
 
-        private void BuildLess()
+        private static void BuildLess()
         {
             foreach (Project project in _dte.Solution.Projects)
             {
@@ -85,7 +85,7 @@ namespace MadsKristensen.EditorExtensions
                 string extension = Path.GetExtension(path);
                 string minPath = MinifyFileMenu.GetMinFileName(path, extension);
 
-                if (!path.EndsWith(".min" + extension) && File.Exists(minPath) && _dte.Solution.FindProjectItem(path) != null)
+                if (!path.EndsWith(".min" + extension, StringComparison.Ordinal) && File.Exists(minPath) && _dte.Solution.FindProjectItem(path) != null)
                 {
                     if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase))
                     {

@@ -136,7 +136,6 @@ namespace MadsKristensen.EditorExtensions
 
             if (projection != null)
             {
-                int position = TextView.Caret.Position.BufferPosition.Position;
                 var snapshotPoint = TextView.Caret.Position.BufferPosition;
 
                 var buffers = projection.SourceBuffers.Where(

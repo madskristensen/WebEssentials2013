@@ -55,7 +55,7 @@ namespace MadsKristensen.EditorExtensions
         {
             if (e.FileActionType == FileActionTypes.ContentSavedToDisk)
             {
-                string file = e.FilePath.EndsWith(_ext) ? null : e.FilePath;
+                string file = e.FilePath.EndsWith(_ext, StringComparison.OrdinalIgnoreCase) ? null : e.FilePath;
 
                 System.Threading.Tasks.Task.Run(() =>
                 {
@@ -168,7 +168,7 @@ namespace MadsKristensen.EditorExtensions
              menuCommand.Enabled = GetSelectedItems(extension).Count() > 1;
         }
 
-        private IEnumerable<ProjectItem> GetSelectedItems(string extension)
+        private static IEnumerable<ProjectItem> GetSelectedItems(string extension)
         {
             return ProjectHelpers.GetSelectedItems().Where(p => Path.GetExtension(p.FileNames[1]) == extension);
         }
@@ -206,7 +206,7 @@ namespace MadsKristensen.EditorExtensions
 
                     if (File.Exists(bundlePath))
                     {
-                        MessageBox.Show("The file already exist", "Web Essentials", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show("The bundle file already exists.", "Web Essentials", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                     else
                     {
@@ -236,7 +236,7 @@ namespace MadsKristensen.EditorExtensions
             return null;
         }
 
-        private void WriteFile(string filePath, IEnumerable<ProjectItem> files, string extension, string output)
+        private static void WriteFile(string filePath, IEnumerable<ProjectItem> files, string extension, string output)
         {
             string projectRoot = ProjectHelpers.GetProjectFolder(files.ElementAt(0).FileNames[1]);
             StringBuilder sb = new StringBuilder();
@@ -288,7 +288,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (outputAttr != null && (outputAttr.InnerText.Contains("/") || outputAttr.InnerText.Contains("\\")))
             {
-                MessageBox.Show("The 'output' attribute is for file names only - not paths", "Web Essentials");
+                MessageBox.Show("The 'output' attribute should contain a file name without a path", "Web Essentials");
                 return;
             }
             
@@ -298,11 +298,14 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (XmlNode node in nodes)
             {
-                string absolute = ProjectHelpers.ToAbsoluteFilePath(node.InnerText, ProjectHelpers.GetProjectFolder(filePath)).Replace("\\\\", "\\");
-
-                if (node.InnerText.Contains(":\\") || node.InnerText.StartsWith("\\\\"))
+                string absolute;
+                if (Path.IsPathRooted(node.InnerText))
                 {
                     absolute = node.InnerText;
+                }
+                else 
+                {
+                    absolute = ProjectHelpers.ToAbsoluteFilePath(node.InnerText, ProjectHelpers.GetProjectFolder(filePath)).Replace("\\\\", "\\");
                 }
 
                 if (File.Exists(absolute))
