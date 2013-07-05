@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <VCompress_TempFolder Condition=" '$(VZ_ExtractIntermediatePath)'=='' ">$(IntermediateOutputPath)VCompress\</VCompress_TempFolder>
+    <VCompress_MSBuildLibPath Condition=" '$(VCompress_MSBuildLibPath)'=='' ">$(MSBuildThisFileDirectory)</VCompress_MSBuildLibPath>
+    <!-- TODO: We should read the version number from the .nuspec file -->
+    <VCompress_MSBuildLibPathLocal Condition=" '$(VCompress_MSBuildLibPathLocal)'=='' ">$(LocalAppData)\Microsoft\MSBuild\VsixCompress\v1.0.0.5\</VCompress_MSBuildLibPathLocal>
+  </PropertyGroup>
+  
+  <ItemDefinitionGroup>
+    <AppFileNameItem>
+      <Visible>false</Visible>
+    </AppFileNameItem>
+    
+    <AppFolderItem>
+      <Visible>false</Visible>
+    </AppFolderItem>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <VCompress_SourceMSBuildAssemblies Include="$(VCompress_MSBuildLibPath)*.dll"/>
+  </ItemGroup>
+  
+  <Target Name="CopyMSBuildFilesToLocalAppData" 
+          Inputs="@(VCompress_SourceMSBuildAssemblies)"
+          Outputs="@(VCompress_SourceMSBuildAssemblies->'$(VCompress_MSBuildLibPathLocal)%(FileName)%(Extension)')">
+    <MakeDir Directories="$(VCompress_MSBuildLibPathLocal)"/>
+    <Copy SourceFiles="@(VCompress_SourceMSBuildAssemblies)"
+          DestinationFiles="@(VCompress_SourceMSBuildAssemblies->'$(VCompress_MSBuildLibPathLocal)%(FileName)%(Extension)')"
+          Condition="!Exists('$(VCompress_MSBuildLibPathLocal)%(VCompress_SourceMSBuildAssemblies.FileName)%(VCompress_SourceMSBuildAssemblies.Extension)')"
+          />
+  </Target>
+  
+  <UsingTask AssemblyFile="$(VCompress_MSBuildLibPathLocal)MSBuild.ExtensionPack.dll" TaskName="MSBuild.ExtensionPack.Compression.Zip" />
+
+  <PropertyGroup>
+    <RecompressVsixDependsOn>
+      CopyMSBuildFilesToLocalAppData;
+      CreateVsixContainer;
+      CleanVCompressTempFolder;
+      ExtractDefaultVsix;
+      CoreRecompressVsix;
+    </RecompressVsixDependsOn>
+    
+    <ExtractDefaultVsixDependsOn>CopyMSBuildFilesToLocalAppData;CreateVsixContainer</ExtractDefaultVsixDependsOn>
+  </PropertyGroup>
+  <Target Name="RecompressVsix" DependsOnTargets="$(RecompressVsixDependsOn)" AfterTargets="CreateVsixContainer">
+    <Message Text="RecompressVsix" Importance="high"/>
+  </Target>
+  
+  <Target Name="ExtractDefaultVsix" DependsOnTargets="$(ExtractDefaultVsixDependsOn)">
+    <MakeDir Directories="$(VCompress_TempFolder)" />
+
+    <Message Text="Extracting .vzix for reextraction, path [$(VCompress_TempFolder)]." Importance="high" />
+    <MSBuild.ExtensionPack.Compression.Zip 
+      TaskAction="Extract" 
+      ExtractPath="$(VCompress_TempFolder)extracted\" 
+      ZipFileName="@(_CreatedVsixContainer)"/>    
+  </Target>
+  <Target Name="CoreRecompressVsix">
+    <ItemGroup>
+      <__AppFilesToZip Remove="@(__AppFilesToZip)"/>
+      <_AppFilesToZip Include="$(VCompress_TempFolder)extracted\**\*"/>
+    </ItemGroup>
+    
+    <PropertyGroup>
+      <_TempVsixFilePath>$(VCompress_TempFolder)$(TargetVsixContainerName)</_TempVsixFilePath>
+    </PropertyGroup>
+
+    <Message Text="Creating new .vsix at [$(_TempVsixFilePath)]" />
+    
+    <MSBuild.ExtensionPack.Compression.Zip
+      TaskAction="Create"
+      CompressFiles="@(_AppFilesToZip)"
+      ZipFileName="$(_TempVsixFilePath)"
+      RemoveRoot="$(VCompress_TempFolder)extracted"
+      CompressionLevel="BestCompression" />
+
+    <Message Text="Copying recompressed .vsix to output folder"/>
+    <Copy SourceFiles="$(_TempVsixFilePath)"
+          DestinationFiles="$(TargetVsixContainer)"/>
+  </Target>
+  
+  <Target Name="CleanVCompressTempFolder">
+    <Message Text="CleanVCompressTempFolder" />
+    <!-- delete the entire VS_TempFolder -->
+    <Message Text="Deleting Vsix Compress temp folder at [$(VCompress_TempFolder)]" />
+    <RemoveDir Directories="$(VCompress_TempFolder)" Condition=" '$(VCompress_TempFolder)' !='' "/>
+  </Target>
+
+  <PropertyGroup>
+    <CleanDependsOn>$(CleanDependsOn);CleanVCompressTempFolder</CleanDependsOn>
+  </PropertyGroup>  
+</Project>
