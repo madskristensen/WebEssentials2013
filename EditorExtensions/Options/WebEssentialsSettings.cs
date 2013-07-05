@@ -39,7 +39,6 @@ namespace MadsKristensen.EditorExtensions
             public const string CssErrorLocation = "CssErrorLocation";
             public const string EnableCssSelectorHighligting = "CssEnableSelectorHighligting";
             public const string ValidateEmbedImages = "CssValidateEmbedImages";
-            public const string AutoCloseCurlyBraces = "CssAutoCloseCurlyBraces";
             public const string ShowBrowserTooltip = "CssShowBrowserTooltip";
             public const string SyncVendorValues = "CssSyncVendorValues";
             public const string ShowInitialInherit = "CssShowInitialInherit";

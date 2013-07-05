@@ -272,7 +272,6 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.SyncVendorValues, true);
             dic.Add(Keys.EnableCssSelectorHighligting, true);
             dic.Add(Keys.ShowUnsupported, true);
-            dic.Add(Keys.AutoCloseCurlyBraces, true);
 
             //JSHint
             dic.Add(Keys.EnableJsHint, true);

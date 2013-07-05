@@ -15,7 +15,6 @@ namespace MadsKristensen.EditorExtensions
         public override void SaveSettingsToStorage()
         {
             Settings.SetValue(WESettings.Keys.EnableCssSelectorHighligting, EnableCssSelectorHighligting);
-            Settings.SetValue(WESettings.Keys.AutoCloseCurlyBraces, AutoCloseCurlyBraces);
             Settings.SetValue(WESettings.Keys.EnableCssMinification, EnableCssMinification);
             Settings.SetValue(WESettings.Keys.ValidateStarSelector, ValidateStarSelector);
             Settings.SetValue(WESettings.Keys.ValidateOverQualifiedSelector, ValidateOverQualifiedSelector);
@@ -36,7 +35,6 @@ namespace MadsKristensen.EditorExtensions
         public override void LoadSettingsFromStorage()
         {
             EnableCssSelectorHighligting = WESettings.GetBoolean(WESettings.Keys.EnableCssSelectorHighligting);
-            AutoCloseCurlyBraces = WESettings.GetBoolean(WESettings.Keys.AutoCloseCurlyBraces);
             EnableCssMinification = WESettings.GetBoolean(WESettings.Keys.EnableCssMinification);
             ValidateStarSelector = WESettings.GetBoolean(WESettings.Keys.ValidateStarSelector);
             ValidateOverQualifiedSelector = WESettings.GetBoolean(WESettings.Keys.ValidateOverQualifiedSelector);
@@ -61,11 +59,6 @@ namespace MadsKristensen.EditorExtensions
         [Description("Highlight matching simple selectors when cursor position changes")]
         [Category("Misc")]
         public bool EnableCssSelectorHighligting { get; set; }
-
-        [LocDisplayName("Auto-close curly braces")]
-        [Description("when a open curly brace is typed, the closing curly is inserted automatically and type-through is enabled.")]
-        [Category("Misc")]
-        public bool AutoCloseCurlyBraces { get; set; }
 
         [LocDisplayName("Minify CSS files on save")]
         [Description("When a .css file (foo.css) is saved and a minified version (foo.min.css) exist, the minified file will be updated. Right-click any .css file to generate .min.css file")]
