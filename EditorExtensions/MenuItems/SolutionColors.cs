@@ -31,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
             menuCommand.Enabled = !settingsExist;
         }
 
-        private void ApplySolutionSettings()
+        private static void ApplySolutionSettings()
         {
             XmlColorPaletteProvider.CreateSolutionColors();
         }

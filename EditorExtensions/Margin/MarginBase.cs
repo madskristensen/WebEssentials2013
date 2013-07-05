@@ -24,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
         private Dispatcher _dispatcher;
         private ErrorListProvider _provider;
 
-        public MarginBase()
+        protected MarginBase()
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
         }
@@ -423,15 +423,17 @@ namespace MadsKristensen.EditorExtensions
         public void Dispose()
         {
             GC.SuppressFinalize(this);
-            Dispose(_isDisposed);
+            Dispose(true);
         }
 
-        protected virtual void Dispose(bool isDisposed)
+        protected virtual void Dispose(bool disposing)
         {
-            if (!_isDisposed)
-            {
-                _isDisposed = true;
+            if (_isDisposed)
+                return;
+            _isDisposed = true;
 
+            if (disposing)
+            {
                 if (_viewHost != null)
                 {
                     _viewHost.Close();
