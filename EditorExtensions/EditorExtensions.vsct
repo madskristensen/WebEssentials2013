@@ -477,13 +477,13 @@
           <ButtonText>Re-compile all LESS files</ButtonText>
         </Strings>
       </Button>
-      <!--<Button guid="guidBuildCmdSet" id="cmdBuildTypeScript" priority="0x0104" type="Button">
+      <Button guid="guidBuildCmdSet" id="cmdBuildTypeScript" priority="0x0104" type="Button">
         <Parent guid="guidBuildCmdSet" id="MyCompileMenuGroup"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Re-compile all TypesScript files</ButtonText>
         </Strings>
-      </Button>-->
+      </Button>
       <Button guid="guidBuildCmdSet" id="cmdBuildCoffeeScript" priority="0x0105" type="Button">
         <Parent guid="guidBuildCmdSet" id="MyCompileMenuGroup"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -541,7 +541,7 @@
 
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildBundles" mod1="Shift Alt" key1="I" editor="guidVSStd97"/>
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildLess" mod1="Shift Alt" key1="Y" editor="guidVSStd97"/>
-    <!--<KeyBinding guid="guidBuildCmdSet" id="cmdBuildTypeScript" mod1="Shift Alt" key1="Q" editor="guidVSStd97"/>-->
+    <KeyBinding guid="guidBuildCmdSet" id="cmdBuildTypeScript" mod1="Shift Alt" key1="Q" editor="guidVSStd97"/>
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildMinify" mod1="Shift Alt" key1="F" editor="guidVSStd97"/>
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildCoffeeScript" mod1="Shift Alt" key1="Z" editor="guidVSStd97"/>
     <KeyBinding guid="guidFormattingCmdSet" id="SurroundWith" mod1="Shift Alt" key1="W" editor="guidVSStd97"/>
@@ -685,7 +685,7 @@
       <IDSymbol name="MyBuildMenuGroup" value="0x1082" />
       <IDSymbol name="cmdBuildBundles" value="0x1083" />
       <IDSymbol name="cmdBuildLess" value="0x1084" />
-      <!--<IDSymbol name="cmdBuildTypeScript" value="0x1085" />-->
+      <IDSymbol name="cmdBuildTypeScript" value="0x1085" />
       <IDSymbol name="cmdBuildMinify" value="0x1086" />
       <IDSymbol name="cmdBuildCoffeeScript" value="0x1087" />
       <IDSymbol name="MyCompileMenuGroup" value="0x1088" />

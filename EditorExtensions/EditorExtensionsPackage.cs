@@ -24,11 +24,11 @@ namespace MadsKristensen.EditorExtensions
     [ProvideOptionPage(typeof(GeneralOptions), "Web Essentials", "General", 101, 101, true, new[] { "ZenCoding", "Mustache", "Handlebars", "Comments", "Bundling", "Bundle" })]
     [ProvideOptionPage(typeof(CssOptions), "Web Essentials", "CSS", 101, 102, true, new[] { "Minify", "Minification", "W3C", "CSS3" })]
     [ProvideOptionPage(typeof(JsHintOptions), "Web Essentials", "JSHint", 101, 103, true, new[] { "JSLint", "Lint" })]
-    //[ProvideOptionPage(typeof(TypeScriptOptions), "Web Essentials", "TypeScript", 101, 104, true, new[] { "Minify", "Minification" })]
+    [ProvideOptionPage(typeof(TypeScriptOptions), "Web Essentials", "TypeScript", 101, 104, true, new[] { "Minify", "Minification" })]
     [ProvideOptionPage(typeof(LessOptions), "Web Essentials", "LESS", 101, 105, true)]
     [ProvideOptionPage(typeof(CoffeeScriptOptions), "Web Essentials", "CoffeeScript", 101, 106, true, new[] { "Iced", "JavaScript", "JS", "JScript" })]
     [ProvideOptionPage(typeof(JavaScriptOptions), "Web Essentials", "JavaScript", 101, 107, true, new[] { "JScript", "JS", "Minify", "Minification", "EcmaScript" })]
-    //[ProvideOptionPage(typeof(ScssOptions), "Web Essentials", "SCSS", 101, 108, true)]
+    [ProvideOptionPage(typeof(ScssOptions), "Web Essentials", "SCSS", 101, 108, true)]
     [ProvideSearchProvider(typeof(Microsoft.MSDNSearch.VSSearchProvider), "VS Gallery Search")]
     public sealed class EditorExtensionsPackage : ExtensionPointPackage
     {
@@ -139,9 +139,9 @@ namespace MadsKristensen.EditorExtensions
         {
             if (Action != vsBuildAction.vsBuildActionClean)
             {
-                //if (WESettings.GetBoolean(WESettings.Keys.CompileTypeScriptOnBuild))
-                //    _dte.Commands.Raise(GuidList.guidBuildCmdSetString, (int)PkgCmdIDList.cmdBuildTypeScript, null, null);
-                //new TypeScriptMargin().CompileProjectFiles(null);
+                if (WESettings.GetBoolean(WESettings.Keys.CompileTypeScriptOnBuild))
+                    _dte.Commands.Raise(GuidList.guidBuildCmdSetString, (int)PkgCmdIDList.cmdBuildTypeScript, null, null);
+                new TypeScriptMargin().CompileProjectFiles(null);
 
                 if (WESettings.GetBoolean(WESettings.Keys.LessCompileOnBuild))
                     _dte.Commands.Raise(GuidList.guidBuildCmdSetString, (int)PkgCmdIDList.cmdBuildLess, null, null);

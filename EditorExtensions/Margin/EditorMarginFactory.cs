@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions
     [MarginContainer(PredefinedMarginNames.Right)]
     [ContentType("LESS")]
     [ContentType("CoffeeScript")]
-    //[ContentType("TypeScript")]
+   [ContentType("TypeScript")]
     [ContentType("Markdown")]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
     internal sealed class MarginFactory : IWpfTextViewMarginProvider
@@ -36,13 +36,13 @@ namespace MadsKristensen.EditorExtensions
                         bool showCoffee = WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow);
                         return new CoffeeScriptMargin("JavaScript", source, showCoffee, document);
 
-                    //case "TypeScript":
-                    //    if (!document.FilePath.EndsWith(".d.ts"))
-                    //    {
-                    //        bool showType = WESettings.GetBoolean(WESettings.Keys.ShowTypeScriptPreviewWindow);
-                    //        return new TypeScriptMargin("TypeScript", source, showType, document);
-                    //    }
-                    //    break;
+                    case "TypeScript":
+                        if (!document.FilePath.EndsWith(".d.ts"))
+                        {
+                            bool showType = WESettings.GetBoolean(WESettings.Keys.ShowTypeScriptPreviewWindow);
+                            return new TypeScriptMargin("TypeScript", source, showType, document);
+                        }
+                        break;
 
                     case "markdown":
                         return new MarkdownMargin("text", source, true, document);

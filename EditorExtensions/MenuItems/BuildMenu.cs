@@ -30,9 +30,9 @@ namespace MadsKristensen.EditorExtensions
             OleMenuCommand menuLess = new OleMenuCommand((s, e) => BuildLess(), cmdLess);
             _mcs.AddCommand(menuLess);
 
-            //CommandID cmdTS = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildTypeScript);
-            //OleMenuCommand menuTS = new OleMenuCommand((s, e) => BuildTypeScript(), cmdTS);
-            //_mcs.AddCommand(menuTS);
+            CommandID cmdTS = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildTypeScript);
+            OleMenuCommand menuTS = new OleMenuCommand((s, e) => BuildTypeScript(), cmdTS);
+            _mcs.AddCommand(menuTS);
 
             CommandID cmdMinify = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildMinify);
             OleMenuCommand menuMinify = new OleMenuCommand((s, e) => Minify(), cmdMinify);
@@ -67,13 +67,13 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        //private void BuildTypeScript()
-        //{
-        //    foreach (Project project in _dte.Solution.Projects)
-        //    {
-        //        new TypeScriptMargin().CompileProjectFiles(project);
-        //    }
-        //}
+        private void BuildTypeScript()
+        {
+            foreach (Project project in _dte.Solution.Projects)
+            {
+                new TypeScriptMargin().CompileProjectFiles(project);
+            }
+        }
 
         private void Minify()
         {

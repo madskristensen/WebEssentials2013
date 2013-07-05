@@ -51,7 +51,7 @@ namespace MadsKristensen.EditorExtensions
         // Build
         public const uint cmdBuildBundles = 0x1083;
         public const uint cmdBuildLess = 0x1084;
-        //public const uint cmdBuildTypeScript = 0x1085;
+        public const uint cmdBuildTypeScript = 0x1085;
         public const uint cmdBuildMinify = 0x1086;
         public const uint cmdBuildCoffeeScript = 0x1087;
     };
