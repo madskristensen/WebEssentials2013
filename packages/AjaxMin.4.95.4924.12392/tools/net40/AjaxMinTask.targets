@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <UsingTask TaskName="AjaxMinManifestTask" AssemblyFile="AjaxMinTask.dll" />
+    <UsingTask TaskName="AjaxMinManifestCleanTask" AssemblyFile="AjaxMinTask.dll" />
+
+    <!-- target to clean output for all ajaxmin manifest files in the project -->
+    <Target Name="CleanAjaxMinManifests" AfterTargets="Clean">
+        <Message Text="Cleaning AjaxMin Manifests" Importance="high" />
+        <CreateItem Include="@(None)" Condition="'%(Extension)'=='.ajaxmin'">
+            <Output TaskParameter="Include" ItemName="AjaxMinManifests"/>
+        </CreateItem>
+
+        <AjaxMinManifestCleanTask OutputFolder="$(ProjectDir)Content\" Manifests="@(AjaxMinManifests)" />
+    </Target>
+
+    <!-- target to build all ajaxmin manifest files in the project -->
+    <Target Name="BuildAjaxMinManifests" AfterTargets="Build">
+        <Message Text="Processing AjaxMin Manifests" Importance="high" />
+        <CreateItem Include="@(None)" Condition="'%(Extension)'=='.ajaxmin'">
+            <Output TaskParameter="Include" ItemName="AjaxMinManifests"/>
+        </CreateItem>
+
+        <AjaxMinManifestTask ProjectDefaultSwitches="-define:$(DefineConstants))"
+                             Configuration="$(Configuration)"
+                             TreatWarningsAsErrors="false"
+                             InputFolder="$(ProjectDir)"
+                             OutputFolder="$(ProjectDir)Content\"
+                             Manifests="@(AjaxMinManifests)" />
+    </Target>
+</Project>

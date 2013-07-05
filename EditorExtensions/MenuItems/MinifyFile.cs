@@ -35,11 +35,6 @@ namespace MadsKristensen.EditorExtensions
             OleMenuCommand menuCommandJs = new OleMenuCommand((s, e) => MinifyFile(".js"), commandJs);
             menuCommandJs.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".js"); };
             _mcs.AddCommand(menuCommandJs);
-
-            //CommandID commandSelection = new CommandID(GuidList.guidMinifyCmdSet, (int)PkgCmdIDList.MinifySelection);
-            //OleMenuCommand menuCommandSelection = new OleMenuCommand((s, e) => MinifySelection(), commandSelection);
-            //menuCommandSelection.BeforeQueryStatus += menuCommandSelection_BeforeQueryStatus;
-            //_mcs.AddCommand(menuCommandSelection);
         }
 
         private readonly string[] _supported = new[] { "CSS", "JAVASCRIPT" };
@@ -203,6 +198,5 @@ namespace MadsKristensen.EditorExtensions
                 }
             }
         }
-
     }
 }
