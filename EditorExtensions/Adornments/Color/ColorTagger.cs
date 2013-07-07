@@ -48,7 +48,7 @@ namespace IntraTextAdornmentSample
         private IEnumerable<ParseItem> GetColors(SnapshotSpan span)
         {
             List<ParseItem> items = new List<ParseItem>();
-            
+
             // TODO: Refine this so it goes directly to the individual HexColorValue, FunctionColor and TokenItem
             ParseItem complexItem = _tree.StyleSheet.ItemFromRange(span.Start, span.Length);
             if (complexItem == null || (!(complexItem is AtDirective) && !(complexItem is RuleBlock) && !(complexItem is LessVariableDeclaration)))
@@ -57,7 +57,7 @@ namespace IntraTextAdornmentSample
             IEnumerable<ParseItem> declarations = new ParseItem[0];
 
             var lessVar = complexItem as LessVariableDeclaration;
-            
+
             if (lessVar != null)
             {
                 declarations = new[] { lessVar.Value };
@@ -66,19 +66,21 @@ namespace IntraTextAdornmentSample
             {
                 var visitorRules = new CssItemCollector<Declaration>();
                 complexItem.Accept(visitorRules);
-                var mixinRefs = new CssItemCollector<LessMixinArgument>();
-                complexItem.Accept(mixinRefs);
 
                 declarations = from d in visitorRules.Items
                                where d.Values.TextAfterEnd > span.Start && d.Values.TextStart < span.End && d.Length > 2
                                select d;
                 if (_tree.StyleSheet is LessStyleSheet)
                 {
+                    var mixinRefs = new CssItemCollector<LessMixinArgument>();
+                    complexItem.Accept(mixinRefs);
+                    var mixinDeclArgs = new CssItemCollector<LessMixinDeclarationArgument>();
+                    complexItem.Accept(mixinDeclArgs);
                     declarations = declarations.Concat(
-                      from d in mixinRefs.Items
-                      let a = d.Argument
-                      where a.AfterEnd > span.Start && a.Start < span.End && a.Length > 2
-                      select a
+                      from e in mixinRefs.Items.Select(a => a.Argument)
+                                         .Concat(mixinDeclArgs.Items.Select(a => a.Variable.Value))
+                      where e != null && e.AfterEnd > span.Start && e.Start < span.End && e.Length > 2
+                      select e
                     );
                 }
             }
