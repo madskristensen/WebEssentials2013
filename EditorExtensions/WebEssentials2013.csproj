@@ -578,13 +578,13 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Resource Include="Resources\numbers.png" />
-    <EmbeddedResource Include="Resources\Scripts\CoffeeScript-1.4.js" />
     <Content Include="registry.pkgdef">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Resource Include="Resources\extract.png" />
     <EmbeddedResource Include="Resources\Scripts\jshint-2.1.4.js" />
+    <EmbeddedResource Include="Resources\Scripts\CoffeeScript-1.6.3.js" />
     <Content Include="Resources\Scripts\less-1.3.0.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
