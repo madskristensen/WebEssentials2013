@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.Text;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Less.Core;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -38,6 +39,9 @@ namespace MadsKristensen.EditorExtensions
 
             Selector sel = item.FindType<Selector>();
             if (sel == null)
+                return;
+            // Mixins don't have specificity
+            if (sel.SimpleSelectors.Count == 1 && sel.SimpleSelectors[0].SubSelectors.Count == 1 && sel.SimpleSelectors[0].SubSelectors[0] is LessMixinDeclaration)
                 return;
 
             applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(item.Start, item.Length, SpanTrackingMode.EdgeNegative);
