@@ -2,12 +2,11 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using MadsKristensen.EditorExtensions;
 using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CSS.Editor.Intellisense;
 
-namespace IntraTextAdornmentSample
+namespace MadsKristensen.EditorExtensions
 {
     internal sealed class ColorAdornment : Border
     {

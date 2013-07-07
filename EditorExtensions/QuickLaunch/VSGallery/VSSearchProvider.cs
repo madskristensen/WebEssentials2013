@@ -5,7 +5,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Windows.Media.Imaging;
 
-namespace Microsoft.MSDNSearch
+namespace MadsKristensen.EditorExtensions
 {
     /// <summary>
     ///  Search Provider for MSDN Library

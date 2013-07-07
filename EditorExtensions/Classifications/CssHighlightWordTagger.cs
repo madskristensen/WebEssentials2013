@@ -11,6 +11,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using Microsoft.Less.Core;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -96,13 +97,20 @@ namespace MadsKristensen.EditorExtensions
             if (item == null)
                 return;
 
-            ParseItem validItem = item.FindType<ItemName>();
+            ParseItem validItem;
+            validItem = item.FindType<ItemName>()
+                     ?? item.FindType<ClassSelector>()
+                     ?? item.FindType<IdSelector>()
+                     ?? item.FindType<LessVariableName>()
+                     ?? (ParseItem)item.FindType<LessMixinName>();
 
             if (validItem == null)
-                validItem = item.FindType<ClassSelector>();
-
-            if (validItem == null)
-                validItem = item.FindType<IdSelector>();
+            {   // There is no separate token type for a property name,
+                // so I need to ensure that we are in the name portion.
+                var decl = item.FindType<Declaration>();
+                if (decl != null && item.Parent != decl.PropertyName)
+                    validItem = decl.PropertyName;
+            }
 
             // If the new caret position is still within the current word (and on the same snapshot), we don't need to check it
             if (_currentWord.HasValue
