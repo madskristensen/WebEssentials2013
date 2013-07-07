@@ -19,14 +19,14 @@ namespace MadsKristensen.EditorExtensions
                 .Replace("'", "\\'");
 
             string bare = WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure) ? "false" : "true";
-
-            string compiler = "MadsKristensen.EditorExtensions.Resources.Scripts.CoffeeScript-1.4.js";
+            string script = ReadResourceFile("MadsKristensen.EditorExtensions.Resources.Scripts.CoffeeScript-1.6.3.js");
+            
             if (WESettings.GetBoolean(WESettings.Keys.EnableIcedCoffeeScript))
             {
-                compiler = "MadsKristensen.EditorExtensions.Resources.Scripts.IcedCoffeeScript-1.3.3.js";
+                script += ReadResourceFile("MadsKristensen.EditorExtensions.Resources.Scripts.IcedCoffeeScript-1.6.3-b.js");
             }
 
-            string script = ReadResourceFile(compiler) +
+            script += 
                     "try{" +
                         "var result = CoffeeScript.compile('" + clean + "', { bare: " + bare + ", runtime:'inline' });" +
                         "window.external.Execute(result, '" + state.Replace("\\", "\\\\") + "');" +

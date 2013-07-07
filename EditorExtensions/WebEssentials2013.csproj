@@ -592,7 +592,7 @@
     <Resource Include="Resources\graph_atdir.png" />
     <Resource Include="Resources\graph_class.png" />
     <Resource Include="Resources\graph_parent.png" />
-    <EmbeddedResource Include="Resources\Scripts\IcedCoffeeScript-1.3.3.js" />
+    <EmbeddedResource Include="Resources\Scripts\IcedCoffeeScript-1.6.3-b.js" />
     <Content Include="Resources\Scripts\JSDocComments.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
