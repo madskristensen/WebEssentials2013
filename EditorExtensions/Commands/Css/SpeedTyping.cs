@@ -253,6 +253,15 @@ namespace MadsKristensen.EditorExtensions
             if (text.IndexOf('{') > -1)
                 return false;
 
+            if (line.Snapshot.ContentType.DisplayName == "LESS")
+            {
+                var commentStart = text.IndexOf("//");
+                if (commentStart > position)
+                    return false;
+                if (commentStart > 0)
+                    text = text.Remove(commentStart);
+            }
+
             if (text.Trim().EndsWith(",", StringComparison.Ordinal))
                 return false;
 
