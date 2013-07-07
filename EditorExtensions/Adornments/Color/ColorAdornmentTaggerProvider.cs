@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 
-namespace IntraTextAdornmentSample
+namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(IViewTaggerProvider))]
     [ContentType("css")]

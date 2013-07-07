@@ -19,7 +19,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 
-namespace IntraTextAdornmentSample
+namespace MadsKristensen.EditorExtensions
 {
     /// <summary>
     /// Provides color swatch adornments in place of color constants.

@@ -1,5 +1,4 @@
-﻿using MadsKristensen.EditorExtensions;
-using Microsoft.CSS.Core;
+﻿using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.Less.Core;
@@ -12,7 +11,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Threading;
 
-namespace IntraTextAdornmentSample
+namespace MadsKristensen.EditorExtensions
 {
     internal sealed class ColorTagger : ITagger<ColorTag>
     {

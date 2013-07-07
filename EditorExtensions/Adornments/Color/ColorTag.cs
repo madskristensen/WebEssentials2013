@@ -14,7 +14,7 @@ using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 
-namespace IntraTextAdornmentSample
+namespace MadsKristensen.EditorExtensions
 {
     /// <summary>
     /// Data tag indicating that the tagged text represents a color.
