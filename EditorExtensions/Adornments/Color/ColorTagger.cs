@@ -47,66 +47,38 @@ namespace IntraTextAdornmentSample
 
         private IEnumerable<ParseItem> GetColors(SnapshotSpan span)
         {
-            List<ParseItem> items = new List<ParseItem>();
-
-            // TODO: Refine this so it goes directly to the individual HexColorValue, FunctionColor and TokenItem
             ParseItem complexItem = _tree.StyleSheet.ItemFromRange(span.Start, span.Length);
             if (complexItem == null || (!(complexItem is AtDirective) && !(complexItem is RuleBlock) && !(complexItem is LessVariableDeclaration) && !(complexItem is FunctionArgument)))
-                return items;
+                return Enumerable.Empty<ParseItem>();
 
-            IEnumerable<ParseItem> declarations = new ParseItem[0];
-
-            var lessVar = complexItem as LessVariableDeclaration;
-
-            if (lessVar != null)
+            var colorCrawler = new CssItemAggregator<ParseItem>(filter: e => e.AfterEnd > span.Start && e.Start < span.End)
             {
-                declarations = new[] { lessVar.Value };
-            }
-            else
-            {
-                var visitorRules = new CssItemCollector<Declaration>();
-                complexItem.Accept(visitorRules);
+                (HexColorValue h) => h,
+                (FunctionColor c) => c,
+                (TokenItem i) => (i.PreviousSibling == null || (i.PreviousSibling.Text != "@" && i.PreviousSibling.Text != "$"))
+                               && i.TokenType == CssTokenType.Identifier && Color.FromName(i.Text).IsNamedColor ? i : null
+            };
 
-                declarations = from d in visitorRules.Items
-                               where d.Values.TextAfterEnd > span.Start && d.Values.TextStart < span.End && d.Length > 2
-                               select d;
-                if (_tree.StyleSheet is LessStyleSheet)
-                {
-                    var mixinRefs = new CssItemCollector<LessMixinArgument>();
-                    complexItem.Accept(mixinRefs);
+            return colorCrawler.Crawl(complexItem).Where(o => o != null);
 
-                    var mixinDeclArgs = new CssItemCollector<LessMixinDeclarationArgument>();
-                    complexItem.Accept(mixinDeclArgs);
+            //IEnumerable<ParseItem> declarations;
+            //var lessVar = complexItem as LessVariableDeclaration;
 
-                    var funcArgs = new CssItemCollector<FunctionArgument>();
-                    complexItem.Accept(funcArgs);
-
-                    declarations = declarations.Concat(
-                      from e in mixinRefs.Items.Select(a => a.Argument)
-                                         .Concat(mixinDeclArgs.Items.Select(a => a.Variable.Value))
-                                         .Concat(funcArgs.Items.SelectMany(a => a.ArgumentItems))
-                      where e != null && e.AfterEnd > span.Start && e.Start < span.End && e.Length > 2
-                      select e
-                    );
-                }
-            }
-
-            foreach (var declaration in declarations.Where(d => d != null))
-            {
-                var visitorHex = new CssItemCollector<HexColorValue>();
-                declaration.Accept(visitorHex);
-                items.AddRange(visitorHex.Items);
-
-                var visitorFunc = new CssItemCollector<FunctionColor>();
-                declaration.Accept(visitorFunc);
-                items.AddRange(visitorFunc.Items);
-
-                var visitorName = new CssItemCollector<TokenItem>();
-                declaration.Accept(visitorName);
-                items.AddRange(visitorName.Items.Where(i => (i.PreviousSibling == null || (i.PreviousSibling.Text != "@" && i.PreviousSibling.Text != "$")) && i.TokenType == CssTokenType.Identifier && Color.FromName(i.Text).IsNamedColor));
-            }
-
-            return items;
+            //if (lessVar != null)
+            //{
+            //    declarations = new[] { lessVar.Value };
+            //}
+            //else
+            //{
+            //    declarations = new CssItemAggregator<ParseItem>(filter: e => e.AfterEnd > span.Start && e.Start < span.End)
+            //    {
+            //        (LessMixinArgument a) => a.Argument,
+            //        (LessMixinDeclarationArgument a) => a.Variable.Value,
+            //        (FunctionArgument a) => a.ArgumentItems
+            //    }.Crawl(complexItem).Where(d => d != null);
+            //}
+            //TODO: This doesn't seem to work correctly, probably because I'm reusing the mutable crawler.
+            //return declarations.SelectMany(colorCrawler.Crawl).Where(o => o != null);
         }
 
         public bool EnsureInitialized()
