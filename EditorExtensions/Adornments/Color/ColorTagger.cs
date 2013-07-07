@@ -57,20 +57,30 @@ namespace IntraTextAdornmentSample
             IEnumerable<ParseItem> declarations = new ParseItem[0];
 
             var lessVar = complexItem as LessVariableDeclaration;
-
+            
             if (lessVar != null)
             {
-                declarations = new List<ParseItem>() { lessVar.Value };
-
+                declarations = new[] { lessVar.Value };
             }
             else
             {
                 var visitorRules = new CssItemCollector<Declaration>();
                 complexItem.Accept(visitorRules);
+                var mixinRefs = new CssItemCollector<LessMixinArgument>();
+                complexItem.Accept(mixinRefs);
 
                 declarations = from d in visitorRules.Items
                                where d.Values.TextAfterEnd > span.Start && d.Values.TextStart < span.End && d.Length > 2
                                select d;
+                if (_tree.StyleSheet is LessStyleSheet)
+                {
+                    declarations = declarations.Concat(
+                      from d in mixinRefs.Items
+                      let a = d.Argument
+                      where a.AfterEnd > span.Start && a.Start < span.End && a.Length > 2
+                      select a
+                    );
+                }
             }
 
             foreach (var declaration in declarations.Where(d => d != null))
