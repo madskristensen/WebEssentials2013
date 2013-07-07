@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.MSDNSearch
+namespace MadsKristensen.EditorExtensions
 {
     public class VSSearchResult : IVsSearchItemResult
     {
@@ -16,7 +16,7 @@ namespace Microsoft.MSDNSearch
             this.Icon = provider.Icon;
         }
 
-        public VisualStudio.OLE.Interop.IDataObject DataObject
+        public Microsoft.VisualStudio.OLE.Interop.IDataObject DataObject
         {
             get { return null; }
         }

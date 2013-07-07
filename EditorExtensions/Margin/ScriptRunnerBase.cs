@@ -6,6 +6,7 @@ using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
+    [ComVisible(true)]  // Required to expose this instance to WebBrowser for JS
     public abstract class ScriptRunnerBase : IDisposable
     {
         private WebBrowser _browser = new WebBrowser();

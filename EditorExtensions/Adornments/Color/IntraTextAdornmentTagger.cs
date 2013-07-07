@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 
-namespace IntraTextAdornmentSample
+namespace MadsKristensen.EditorExtensions
 {
     /// <summary>
     /// Helper class for interspersing adornments into text.

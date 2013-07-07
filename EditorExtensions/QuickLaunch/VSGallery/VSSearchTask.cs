@@ -5,7 +5,7 @@ using System.Xml;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.MSDNSearch
+namespace MadsKristensen.EditorExtensions
 {
     public class VSSearchTask : VsSearchTask
     {
