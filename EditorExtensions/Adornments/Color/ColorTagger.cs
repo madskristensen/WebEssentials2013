@@ -51,7 +51,7 @@ namespace IntraTextAdornmentSample
 
             // TODO: Refine this so it goes directly to the individual HexColorValue, FunctionColor and TokenItem
             ParseItem complexItem = _tree.StyleSheet.ItemFromRange(span.Start, span.Length);
-            if (complexItem == null || (!(complexItem is AtDirective) && !(complexItem is RuleBlock) && !(complexItem is LessVariableDeclaration)))
+            if (complexItem == null || (!(complexItem is AtDirective) && !(complexItem is RuleBlock) && !(complexItem is LessVariableDeclaration) && !(complexItem is FunctionArgument)))
                 return items;
 
             IEnumerable<ParseItem> declarations = new ParseItem[0];
@@ -74,11 +74,17 @@ namespace IntraTextAdornmentSample
                 {
                     var mixinRefs = new CssItemCollector<LessMixinArgument>();
                     complexItem.Accept(mixinRefs);
+
                     var mixinDeclArgs = new CssItemCollector<LessMixinDeclarationArgument>();
                     complexItem.Accept(mixinDeclArgs);
+
+                    var funcArgs = new CssItemCollector<FunctionArgument>();
+                    complexItem.Accept(funcArgs);
+
                     declarations = declarations.Concat(
                       from e in mixinRefs.Items.Select(a => a.Argument)
                                          .Concat(mixinDeclArgs.Items.Select(a => a.Variable.Value))
+                                         .Concat(funcArgs.Items.SelectMany(a => a.ArgumentItems))
                       where e != null && e.AfterEnd > span.Start && e.Start < span.End && e.Length > 2
                       select e
                     );
