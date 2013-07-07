@@ -55,8 +55,11 @@ namespace IntraTextAdornmentSample
             {
                 (HexColorValue h) => h,
                 (FunctionColor c) => c,
-                (TokenItem i) => (i.PreviousSibling == null || (i.PreviousSibling.Text != "@" && i.PreviousSibling.Text != "$"))
-                               && i.TokenType == CssTokenType.Identifier && Color.FromName(i.Text).IsNamedColor ? i : null
+                (TokenItem i) => (i.PreviousSibling == null || (i.PreviousSibling.Text != "@" && i.PreviousSibling.Text != "$"))    // Ignore variable names that happen to be colors
+                               && i.TokenType == CssTokenType.Identifier
+                               && (i.FindType<Declaration>() != null || i.FindType<LessExpression>() != null)                       // Ignore classnames that happen to be colors
+                               && Color.FromName(i.Text).IsNamedColor 
+                               ? i : null
             };
 
             return colorCrawler.Crawl(complexItem).Where(o => o != null);
