@@ -392,6 +392,7 @@
     <Compile Include="ExtensionMethods\IVsExtensions.cs" />
     <Compile Include="Commands\JavaScript\JsHintRunner.cs" />
     <Compile Include="ExtensionMethods\PseudoExtensions.cs" />
+    <Compile Include="Helpers\CssItemAggregator.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Margin\CoffeeScriptCompiler.cs" />
     <Compile Include="Helpers\FileHelpers.cs" />

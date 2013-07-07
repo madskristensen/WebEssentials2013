@@ -47,48 +47,41 @@ namespace IntraTextAdornmentSample
 
         private IEnumerable<ParseItem> GetColors(SnapshotSpan span)
         {
-            List<ParseItem> items = new List<ParseItem>();
-            
-            // TODO: Refine this so it goes directly to the individual HexColorValue, FunctionColor and TokenItem
             ParseItem complexItem = _tree.StyleSheet.ItemFromRange(span.Start, span.Length);
-            if (complexItem == null || (!(complexItem is AtDirective) && !(complexItem is RuleBlock) && !(complexItem is LessVariableDeclaration)))
-                return items;
+            if (complexItem == null || (!(complexItem is AtDirective) && !(complexItem is RuleBlock) && !(complexItem is LessVariableDeclaration) && !(complexItem is FunctionArgument)))
+                return Enumerable.Empty<ParseItem>();
 
-            IEnumerable<ParseItem> declarations = new ParseItem[0];
-
-            var lessVar = complexItem as LessVariableDeclaration;
-
-            if (lessVar != null)
+            var colorCrawler = new CssItemAggregator<ParseItem>(filter: e => e.AfterEnd > span.Start && e.Start < span.End)
             {
-                declarations = new List<ParseItem>() { lessVar.Value };
+                (HexColorValue h) => h,
+                (FunctionColor c) => c,
+                (TokenItem i) => (i.PreviousSibling == null || (i.PreviousSibling.Text != "@" && i.PreviousSibling.Text != "$"))    // Ignore variable names that happen to be colors
+                               && i.TokenType == CssTokenType.Identifier
+                               && (i.FindType<Declaration>() != null || i.FindType<LessExpression>() != null)                       // Ignore classnames that happen to be colors
+                               && Color.FromName(i.Text).IsNamedColor 
+                               ? i : null
+            };
 
-            }
-            else
-            {
-                var visitorRules = new CssItemCollector<Declaration>();
-                complexItem.Accept(visitorRules);
+            return colorCrawler.Crawl(complexItem).Where(o => o != null);
 
-                declarations = from d in visitorRules.Items
-                               where d.Values.TextAfterEnd > span.Start && d.Values.TextStart < span.End && d.Length > 2
-                               select d;
-            }
+            //IEnumerable<ParseItem> declarations;
+            //var lessVar = complexItem as LessVariableDeclaration;
 
-            foreach (var declaration in declarations.Where(d => d != null))
-            {
-                var visitorHex = new CssItemCollector<HexColorValue>();
-                declaration.Accept(visitorHex);
-                items.AddRange(visitorHex.Items);
-
-                var visitorFunc = new CssItemCollector<FunctionColor>();
-                declaration.Accept(visitorFunc);
-                items.AddRange(visitorFunc.Items);
-
-                var visitorName = new CssItemCollector<TokenItem>();
-                declaration.Accept(visitorName);
-                items.AddRange(visitorName.Items.Where(i => (i.PreviousSibling == null || (i.PreviousSibling.Text != "@" && i.PreviousSibling.Text != "$")) && i.TokenType == CssTokenType.Identifier && Color.FromName(i.Text).IsNamedColor));
-            }
-
-            return items;
+            //if (lessVar != null)
+            //{
+            //    declarations = new[] { lessVar.Value };
+            //}
+            //else
+            //{
+            //    declarations = new CssItemAggregator<ParseItem>(filter: e => e.AfterEnd > span.Start && e.Start < span.End)
+            //    {
+            //        (LessMixinArgument a) => a.Argument,
+            //        (LessMixinDeclarationArgument a) => a.Variable.Value,
+            //        (FunctionArgument a) => a.ArgumentItems
+            //    }.Crawl(complexItem).Where(d => d != null);
+            //}
+            //TODO: This doesn't seem to work correctly, probably because I'm reusing the mutable crawler.
+            //return declarations.SelectMany(colorCrawler.Crawl).Where(o => o != null);
         }
 
         public bool EnsureInitialized()

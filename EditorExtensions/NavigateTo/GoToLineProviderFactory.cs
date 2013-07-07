@@ -64,11 +64,11 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                IEnumerable<string> files = GetFiles();
+                IList<string> files = GetFiles().ToList();
 
-                Parallel.For(0, files.Count(), i =>
+                Parallel.For(0, files.Count, i =>
                 {
-                    string file = files.ElementAt(i);
+                    string file = files[i];
 
                     IEnumerable<ParseItem> items = GetItems(file, parser, searchValue);
 
@@ -77,7 +77,7 @@ namespace MadsKristensen.EditorExtensions
                         callback.AddItem(new NavigateToItem(searchValue, NavigateToItemKind.Field, null, searchValue, new GoToLineTag(sel, file), MatchKind.Exact, _owner));
                     }
 
-                    callback.ReportProgress(i, files.Count());
+                    callback.ReportProgress(i, files.Count);
                 });
             }
             catch { }
@@ -95,25 +95,11 @@ namespace MadsKristensen.EditorExtensions
         {
             StyleSheet ss = parser.Parse(File.ReadAllText(file), true);
 
-            var visitorClass = new CssItemCollector<ClassSelector>(true);
-            ss.Accept(visitorClass);
-
-            var classes = from c in visitorClass.Items
-                          where c.Text.Contains(searchValue)
-                          select c;
-
-            var visitorIDs = new CssItemCollector<IdSelector>(true);
-            ss.Accept(visitorIDs);
-
-            var ids = from c in visitorIDs.Items
-                      where c.Text.Contains(searchValue)
-                      select c;
-
-            List<ParseItem> list = new List<ParseItem>();
-            list.AddRange(classes);
-            list.AddRange(ids);
-
-            return list;
+            return new CssItemAggregator<ParseItem>
+            {
+                (ClassSelector c) => c.Text.Contains(searchValue) ? c : null,
+                (IdSelector c) => c.Text.Contains(searchValue) ? c : null
+            }.Crawl(ss).Where(s => s != null);
         }
 
         private IEnumerable<string> GetFiles()
