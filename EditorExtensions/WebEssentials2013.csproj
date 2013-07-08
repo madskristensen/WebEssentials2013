@@ -314,6 +314,8 @@
     <Compile Include="Completion\ContextProviders\TagContextProvider.cs" />
     <Compile Include="Completion\CustomCompletionListEntry.cs" />
     <Compile Include="Completion\Filter\GradientCompletionListFilter.cs" />
+    <Compile Include="Completion\HTML\HtmlDataListCompletion.cs" />
+    <Compile Include="Completion\HTML\HtmlLabelForAttributeCompletion.cs" />
     <Compile Include="Completion\RegionCompletionListEntry.cs" />
     <Compile Include="Completion\Filter\WebkitScrollbarCompletionListFilter.cs" />
     <Compile Include="Completion\Filter\HideUnsupportedCompletionListFilter.cs" />
