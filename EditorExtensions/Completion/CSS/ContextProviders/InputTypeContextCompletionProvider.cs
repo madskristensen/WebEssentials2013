@@ -27,16 +27,61 @@ namespace MadsKristensen.EditorExtensions.Completion.ContextProviders
 
         public CssCompletionContext GetCompletionContext(Microsoft.CSS.Core.ParseItem item, int position)
         {
-            int equalsPosition = item.Text.IndexOf('=');
-            if (equalsPosition >= 0)
+            // Test cases
+            //
+            // The following should be ignored
+            //   a[type=""] {}          // ignore: not "input" element
+            //   input[wibble=""] {}    // ignore: not "type" attribute
+            //
+            // The following should be handled
+            //   input[type=""] {}
+            //   input[type=] {}                // note the lack of quotes - attributeSelector.AttributeValue is null
+            //   input[type|=""] {}
+            //   foo input[type=""] {}
+            //   input[type=""] foo {}
+            //   input[foo="bar"][type=""] {}
+
+
+            var attributeSelector = (AttributeSelector)item;
+            if (attributeSelector.AttributeName.Text != "type")
             {
-                string attributeName = item.Text.Substring(1, equalsPosition - 1);
-                if (attributeName == "type")
+                return null;
+            }
+            var parent = attributeSelector.Parent as SimpleSelector;
+            if (parent == null || parent.Name.Text != "input")
+            {
+                return null;
+            }
+            var attributeValue = attributeSelector.AttributeValue;
+            int start;
+            int length;
+            if (attributeValue == null)
+            {
+                start = attributeSelector.AttributeName.AfterEnd;
+                length = 0;
+            }
+            else
+            {
+                start = attributeValue.Start;
+                length = attributeValue.Length;
+
+                string attributeValueText = attributeValue.Text;
+                if (!string.IsNullOrEmpty(attributeValueText))
                 {
-                    return new CssCompletionContext(InputTypeCompletionProvider.ContextTypeValue, position, item.Length, null);
+                    if (attributeValue.Text.StartsWith("\""))
+                    {
+                        // ignore leading quote
+                        start += 1;
+                        length -= 1;
+                    }
+                    if (attributeValue.Text.EndsWith("\""))
+                    {
+                        // ignore trailing quote
+                        length -= 1;
+                    }
                 }
             }
-            return null;
+            return new CssCompletionContext(InputTypeCompletionProvider.ContextTypeValue, start, length, null);
         }
     }
 }
