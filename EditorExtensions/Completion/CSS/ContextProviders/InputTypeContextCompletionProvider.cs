@@ -30,8 +30,10 @@ namespace MadsKristensen.EditorExtensions.Completion.ContextProviders
             // Test cases
             //
             // The following should be ignored
-            //   a[type=""] {}          // ignore: not "input" element
             //   input[wibble=""] {}    // ignore: not "type" attribute
+            //   a[type=""] {}          // ignore: not "input" element. 
+            //                          // This case isn't handled correctly as it is an edge case and hugely complicates the handling of LESS scenarios such as 
+            //                          // input { &.myclass {  &[type=""] { } } }
             //
             // The following should be handled
             //   input[type=""] {}
@@ -40,15 +42,10 @@ namespace MadsKristensen.EditorExtensions.Completion.ContextProviders
             //   foo input[type=""] {}
             //   input[type=""] foo {}
             //   input[foo="bar"][type=""] {}
-
+            //   input.myclass[type=""] {}
 
             var attributeSelector = (AttributeSelector)item;
             if (attributeSelector.AttributeName.Text != "type")
-            {
-                return null;
-            }
-            var parent = attributeSelector.Parent as SimpleSelector;
-            if (parent == null || parent.Name.Text != "input")
             {
                 return null;
             }
