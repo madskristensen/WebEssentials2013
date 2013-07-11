@@ -1,9 +1,11 @@
 ﻿using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.Web.Editor;
+//using Microsoft.Web.Editor;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +15,6 @@ namespace MadsKristensen.EditorExtensions
     internal class HtmlGoToDefinition : CommandTargetBase
     {
         private HtmlEditorTree _tree;
-        private List<string> _tags = new List<string>() { "script", "link" };
         private string _path;
 
         public HtmlGoToDefinition(IVsTextView adapter, IWpfTextView textView)
@@ -31,13 +32,33 @@ namespace MadsKristensen.EditorExtensions
 
             if (File.Exists(absolute))
             {
-                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(absolute);
+                OpenFileInPreviewTab(absolute);
                 return true;
             }
 
             EditorExtensionsPackage.DTE.StatusBar.Text = "Couldn't find " + _path;
 
             return false;
+        }
+
+        private void OpenFileInPreviewTab(string file)
+        {
+            IVsNewDocumentStateContext newDocumentStateContext = null;
+            
+            try
+            {
+                IVsUIShellOpenDocument3 openDoc3 = EditorExtensionsPackage.GetGlobalService<SVsUIShellOpenDocument>() as IVsUIShellOpenDocument3;
+                
+                Guid reason = VSConstants.NewDocumentStateReason.Navigation;                
+                newDocumentStateContext = openDoc3.SetNewDocumentState((uint)__VSNEWDOCUMENTSTATE.NDS_Provisional, ref reason);
+
+                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
+            }
+            finally
+            {
+                if (newDocumentStateContext != null)
+                    newDocumentStateContext.Restore();
+            }
         }
 
         private bool TryGetPath(out string path)
@@ -54,15 +75,11 @@ namespace MadsKristensen.EditorExtensions
             if (element == null)
                 return false;
 
-            if (element.Name == "script" && element.GetAttribute("src") != null)
-            {
-                path = element.GetAttribute("src").Value;
-                return true;
-            }
+            attr = element.GetAttribute("src") ?? element.GetAttribute("href");
 
-            if (element.Name == "link" && element.GetAttribute("href") != null)
+            if (attr != null)
             {
-                path = element.GetAttribute("href").Value;
+                path = attr.Value;
                 return true;
             }
 
