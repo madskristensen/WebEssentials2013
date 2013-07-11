@@ -37,13 +37,26 @@ namespace MadsKristensen.EditorExtensions
                 {
                     case '!':
                     case '(':
+                    case '=':
                     case '/':
                         Retrigger();
+                        break;
+
+                    case '[':
+                        Dismiss();
                         break;
                 }
             }
 
             return _nextCommandTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+        }
+
+        private void Dismiss()
+        {
+            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+            {
+                CssCompletionController.FromView(_textView).DismissAllSessions();
+            }), DispatcherPriority.Normal, null);
         }
 
         private void Retrigger()

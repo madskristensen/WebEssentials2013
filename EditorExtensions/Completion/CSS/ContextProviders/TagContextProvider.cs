@@ -26,6 +26,9 @@ namespace MadsKristensen.EditorExtensions
 
         public CssCompletionContext GetCompletionContext(ParseItem item, int position)
         {
+            if (item.FindType<AttributeSelector>() != null)
+                return null;
+
             return new CssCompletionContext((CssCompletionContextType)601, item.Start, item.Length, null);
         }
     }

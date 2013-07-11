@@ -13,11 +13,11 @@ namespace MadsKristensen.EditorExtensions.Completion.CompletionProviders
     [Name("InputTypeCompletionProvider")]
     internal class InputTypeCompletionProvider : ICssCompletionListProvider
     {
-        public const CssCompletionContextType ContextTypeValue = (CssCompletionContextType)1337;
+        public const CssCompletionContextType InputTypeValue = (CssCompletionContextType)1337;
 
         public CssCompletionContextType ContextType
         {
-            get { return ContextTypeValue; }
+            get { return InputTypeValue; }
         }
         public IEnumerable<ICssCompletionListEntry> GetListEntries(CssCompletionContext context)
         {

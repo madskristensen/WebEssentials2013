@@ -44,41 +44,21 @@ namespace MadsKristensen.EditorExtensions.Completion.ContextProviders
             //   input[foo="bar"][type=""] {}
             //   input.myclass[type=""] {}
 
-            var attributeSelector = (AttributeSelector)item;
-            if (attributeSelector.AttributeName.Text != "type")
-            {
-                return null;
-            }
-            var attributeValue = attributeSelector.AttributeValue;
-            int start;
-            int length;
-            if (attributeValue == null)
-            {
-                start = attributeSelector.AttributeName.AfterEnd;
-                length = 0;
-            }
-            else
-            {
-                start = attributeValue.Start;
-                length = attributeValue.Length;
+            var attr = (AttributeSelector)item;
 
-                string attributeValueText = attributeValue.Text;
-                if (!string.IsNullOrEmpty(attributeValueText))
-                {
-                    if (attributeValue.Text.StartsWith("\""))
-                    {
-                        // ignore leading quote
-                        start += 1;
-                        length -= 1;
-                    }
-                    if (attributeValue.Text.EndsWith("\""))
-                    {
-                        // ignore trailing quote
-                        length -= 1;
-                    }
-                }
+            if (attr.AttributeName.Text != "type" || attr.Operation == null)
+                return null;
+
+            int start = attr.Operation.AfterEnd;
+            int length = 0;
+
+            if (attr.AttributeValue != null)
+            {
+                start = attr.AttributeValue.Start;
+                length = attr.AttributeValue.Length;
             }
-            return new CssCompletionContext(InputTypeCompletionProvider.ContextTypeValue, start, length, null);
+            
+            return new CssCompletionContext(InputTypeCompletionProvider.InputTypeValue, start, length, null);
         }
     }
 }
