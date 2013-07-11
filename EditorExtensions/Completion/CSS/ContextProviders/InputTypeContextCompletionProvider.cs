@@ -43,7 +43,7 @@ namespace MadsKristensen.EditorExtensions.Completion.ContextProviders
 
             var attr = (AttributeSelector)item;
 
-            if (attr.AttributeName != null && attr.AttributeName.Text != "type" || attr.Operation == null)
+            if (attr.AttributeName == null || attr.AttributeName.Text != "type" || attr.Operation == null)
                 return null;
 
             int start = attr.Operation.AfterEnd;
