@@ -309,12 +309,14 @@
     <Compile Include="Completion\CSS\CompletionProviders\RegionCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\ImportantCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\FontCompletionProvider.cs" />
+    <Compile Include="Completion\CSS\CompletionProviders\AttributeNameCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\UrlPickerCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\IdCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\TagCompletionProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\ClassContextProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\InputTypeContextCompletionProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\LessPseudoContextProvider.cs" />
+    <Compile Include="Completion\CSS\ContextProviders\AttributeNameContextProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\UrlPickerContextProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\IdContextProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\TagContextProvider.cs" />
