@@ -19,25 +19,38 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            var span = TextView.Selection.SelectedSpans[0];
-            var lines = TextView.TextViewLines.GetTextViewLinesIntersectingSpan(span).ToArray();
+            var span = GetSpan();
+            var lines = span.GetText().Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
-            var text = TextView.TextBuffer.CurrentSnapshot.GetText(lines.First().Start, lines.Last().End - lines.First().Start);
-            var textLines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            if (lines.Length == 0)
+                return false;
 
-            if (commandId == PkgCmdIDList.cmdidSortAsc)
-                Array.Sort(textLines, (a, b) => { return a.Trim().CompareTo(b.Trim()); });
-            else
-                Array.Sort(textLines, (a, b) => { return b.Trim().CompareTo(a.Trim()); });
+            string result = SortLines(commandId, lines);
 
-            string result = string.Join(Environment.NewLine, textLines);
-            var lineSpan = new Span(lines.First().Start, lines.Last().End - lines.First().Start);
-
-            _dte.UndoContext.Open("Alphabetize selected lines");
-            TextView.TextBuffer.Replace(lineSpan, result);
+            _dte.UndoContext.Open("Sort Selected Lines");
+            TextView.TextBuffer.Replace(span.Span, result);
             _dte.UndoContext.Close();
 
             return true;
+        }
+
+        private static string SortLines(uint commandId, string[] lines)
+        {
+            if (commandId == PkgCmdIDList.cmdidSortAsc)
+                lines = lines.OrderBy(t => t).ToArray();
+            else
+                lines = lines.OrderByDescending(t => t).ToArray();
+
+            return string.Join(Environment.NewLine, lines);
+        }
+
+        private SnapshotSpan GetSpan()
+        {
+            var sel = TextView.Selection.StreamSelectionSpan;
+            var start = new SnapshotPoint(TextView.TextSnapshot, sel.Start.Position).GetContainingLine().Start;
+            var end = new SnapshotPoint(TextView.TextSnapshot, sel.End.Position).GetContainingLine().End;
+
+            return new SnapshotSpan(start, end);
         }
 
         protected override bool IsEnabled()
