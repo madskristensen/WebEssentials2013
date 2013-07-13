@@ -23,7 +23,8 @@ namespace MadsKristensen.EditorExtensions
             var textView = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
 
             textView.Properties.GetOrCreateSingletonProperty<EncodeSelection>(() => new EncodeSelection(textViewAdapter, textView));
-            textView.Properties.GetOrCreateSingletonProperty<SortSelection>(() => new SortSelection(textViewAdapter, textView));
+            textView.Properties.GetOrCreateSingletonProperty<SortSelectedLines>(() => new SortSelectedLines(textViewAdapter, textView));
+            textView.Properties.GetOrCreateSingletonProperty<RemoveDuplicateLines>(() => new RemoveDuplicateLines(textViewAdapter, textView));
         }
     }
 }

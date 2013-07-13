@@ -298,6 +298,15 @@
           <ButtonText>Sort Selection Lines Descending</ButtonText>
         </Strings>
       </Button>
+      
+      <Button guid="guidEditorExtensionsCmdSet" id="cmdidRemoveDuplicateLines" priority="0x0106" type="Button">
+        <Parent guid="guidEditorExtensionsCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Remove Duplicate Lines</ButtonText>
+        </Strings>
+      </Button>
 
       <Button guid="guidCssCmdSet" id="cmdidCssRemoveDuplicates" priority="0x0100" type="Button">
         <Parent guid="guidCssCmdSet" id="CssSubMenuGroup" />
@@ -647,6 +656,7 @@
       <IDSymbol name="AddNewFileGroup" value="0x333" />
       <IDSymbol name="cmdidSortAsc" value="0x338" />
       <IDSymbol name="cmdidSortDesc" value="0x339" />
+    <IDSymbol name="cmdidRemoveDuplicateLines" value="0x340" />
     </GuidSymbol>
 
     <GuidSymbol name="guidCssCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e50}">

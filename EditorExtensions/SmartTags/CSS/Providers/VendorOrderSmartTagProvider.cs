@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions
         {
             Declaration dec = (Declaration)item;
 
-            if (!item.IsValid || position > dec.Colon.Start)
+            if (!item.IsValid || position > dec.Colon.Start || !view.TextBuffer.ContentType.IsOfType("css"))
                 yield break;
 
             RuleBlock rule = dec.FindType<RuleBlock>();

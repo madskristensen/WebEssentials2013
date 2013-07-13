@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class SortSelection : CommandTargetBase
+    internal class SortSelectedLines : CommandTargetBase
     {
         private DTE2 _dte;
 
-        public SortSelection(IVsTextView adapter, IWpfTextView textView)
+        public SortSelectedLines(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, GuidList.guidEditorExtensionsCmdSet, PkgCmdIDList.cmdidSortAsc, PkgCmdIDList.cmdidSortDesc)
         {
             _dte = EditorExtensionsPackage.DTE;

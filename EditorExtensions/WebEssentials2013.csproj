@@ -278,7 +278,8 @@
     <Compile Include="Commands\LESS\LessExtractMixinCommandTarget.cs" />
     <Compile Include="Commands\LESS\LessExtractVariableCommandTarget.cs" />
     <Compile Include="Commands\LESS\LessCreationListener.cs" />
-    <Compile Include="Commands\Shared\SortSelectionCommandTarget.cs" />
+    <Compile Include="Commands\Shared\RemoveDuplicateLinesCommandTarget.cs" />
+    <Compile Include="Commands\Shared\SortSelectedLinesCommandTarget.cs" />
     <Compile Include="Commands\Shared\EncodeSelectionCommandTarget.cs" />
     <Compile Include="Commands\Shared\TextCreationListener.cs" />
     <Compile Include="Commands\Shared\MinifySelectionCommandTarget.cs" />

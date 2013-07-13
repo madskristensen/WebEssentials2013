@@ -23,6 +23,7 @@ namespace MadsKristensen.EditorExtensions
         public const uint sha512Transform = 0x124;
         public const uint cmdidSortAsc = 0x338;
         public const uint cmdidSortDesc = 0x339;
+        public const uint cmdidRemoveDuplicateLines = 0x340;
         public const uint sortCssProperties = 0x125;
         public const uint addMissingVendor = 0x127;
         public const uint addMissingStandard = 0x128;
