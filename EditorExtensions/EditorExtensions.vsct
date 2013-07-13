@@ -281,6 +281,24 @@
         </Strings>
       </Button>
 
+      <Button guid="guidEditorExtensionsCmdSet" id="cmdidSortAsc" priority="0x0105" type="Button">
+        <Parent guid="guidEditorExtensionsCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Sort Selection Lines Ascending</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidEditorExtensionsCmdSet" id="cmdidSortDesc" priority="0x0106" type="Button">
+        <Parent guid="guidEditorExtensionsCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Sort Selection Lines Descending</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guidCssCmdSet" id="cmdidCssRemoveDuplicates" priority="0x0100" type="Button">
         <Parent guid="guidCssCmdSet" id="CssSubMenuGroup" />
         <Icon guid="guidNumbers" id="pic1"/>
@@ -547,6 +565,9 @@
     <KeyBinding guid="guidFormattingCmdSet" id="SurroundWith" mod1="Shift Alt" key1="W" editor="guidVSStd97"/>
     <KeyBinding guid="guidFormattingCmdSet" id="ExpandSelection" mod1="Alt" key1="1" editor="guidVSStd97"/>
     <KeyBinding guid="guidFormattingCmdSet" id="ContractSelection" mod1="Alt" key1="2" editor="guidVSStd97"/>
+    <KeyBinding guid="guidEditorExtensionsCmdSet" id="cmdidSortAsc" mod1="Alt" key1="3" editor="guidVSStd97"/>
+    <KeyBinding guid="guidEditorExtensionsCmdSet" id="cmdidSortDesc" mod1="Alt" key1="4" editor="guidVSStd97"/>
+    
   </KeyBindings>
 
   <CommandPlacements>
@@ -623,7 +644,9 @@
       <IDSymbol name="cmdidSha256Transform" value="0x0122" />
       <IDSymbol name="cmdidSha384Transform" value="0x0123" />
       <IDSymbol name="cmdidSha512Transform" value="0x0124" />
-      <IDSymbol name="AddNewFileGroup" value="0x333" />      
+      <IDSymbol name="AddNewFileGroup" value="0x333" />
+      <IDSymbol name="cmdidSortAsc" value="0x338" />
+      <IDSymbol name="cmdidSortDesc" value="0x339" />
     </GuidSymbol>
 
     <GuidSymbol name="guidCssCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e50}">
