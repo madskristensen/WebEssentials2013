@@ -45,7 +45,6 @@ namespace MadsKristensen.EditorExtensions
             public const string ShowUnsupported = "CssShowUnsupported";
             public const string EnableCssMinification = "CssEnableMinification";
             public const string ValidateZeroUnit = "CssValidateZeroUnit";
-            public const string OnlyW3cAllowed = "CssOnlyW3cAllowed";
             public const string ValidateVendorSpecifics = "ValidateVendorSpecifics";
             public const string EnableSpeedTyping = "EnableSpeedTyping";
 

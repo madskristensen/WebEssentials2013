@@ -396,9 +396,6 @@
     <Compile Include="Validation\CSS\Providers\VendorOrderErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Validation\CSS\Providers\W3cOnlyErrorTagProvider.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Validation\CSS\Providers\ZeroUnitErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -499,7 +496,6 @@
     <Compile Include="Schemas\ColorPaletteProvider.cs" />
     <Compile Include="Schemas\CssSchemaUpdater.cs" />
     <Compile Include="Schemas\ModernizrProvider.cs" />
-    <Compile Include="Schemas\W3cOnlySchemaFilter.cs" />
     <Compile Include="Schemas\XmlColorPaletteProvider.cs" />
     <Compile Include="SmartTags\CSS\Actions\LessExtractVariableSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\SortSmartTagAction.cs" />

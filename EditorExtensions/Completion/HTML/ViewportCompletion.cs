@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (attr != null && attr.Value.Equals("viewport", StringComparison.OrdinalIgnoreCase))
             {
-                result.Add(new SimpleHtmlCompletion("width=device-width, initial-scale=1.0"));
+                result.Add(new SimpleHtmlCompletion("width=device-width, initial-scale=1.0", "Example viewport value"));
             }
 
             return result;

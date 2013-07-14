@@ -27,11 +27,12 @@ namespace MadsKristensen.EditorExtensions.Validation.HTML
             {
                 var attr = element.Attributes[i];
 
-                if (attr.Name == "itemtype" && attr.HasValue())
+                if (attr.Name == "itemtype" && attr.HasValue() && !attr.Value.Contains("@"))
                 {                    
                     if (!Uri.IsWellFormedUriString(attr.Value, UriKind.Absolute))
                     {
                         results.AddAttributeError(element, "The value of itemtype must be an absolute URI", HtmlValidationErrorLocation.AttributeValue, i);
+                        break;
                     }
                 }
             }

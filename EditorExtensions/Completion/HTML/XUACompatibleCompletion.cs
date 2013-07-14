@@ -22,11 +22,11 @@ namespace MadsKristensen.EditorExtensions
 
             if (attr != null && attr.Value.Equals("X-UA-Compatible", StringComparison.OrdinalIgnoreCase))
             {
-                result.Add(new SimpleHtmlCompletion("IE=edge"));
-                result.Add(new SimpleHtmlCompletion("IE=7"));
-                result.Add(new SimpleHtmlCompletion("IE=8"));
-                result.Add(new SimpleHtmlCompletion("IE=9"));
-                result.Add(new SimpleHtmlCompletion("FF=3"));
+                result.Add(new SimpleHtmlCompletion("IE=edge", "Comma separate multiple value if needed"));
+                result.Add(new SimpleHtmlCompletion("IE=7", "Comma separate multiple value if needed"));
+                result.Add(new SimpleHtmlCompletion("IE=8", "Comma separate multiple value if needed"));
+                result.Add(new SimpleHtmlCompletion("IE=9", "Comma separate multiple value if needed"));
+                result.Add(new SimpleHtmlCompletion("FF=3", "Comma separate multiple value if needed"));
             }
 
             return result;

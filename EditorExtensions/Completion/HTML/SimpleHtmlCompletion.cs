@@ -9,8 +9,12 @@ namespace MadsKristensen.EditorExtensions
     {
         private static ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
 
-        public SimpleHtmlCompletion(string value)
-            : base(value, value, null, _glyph, HtmlIconAutomationText.AttributeIconText)
+        public SimpleHtmlCompletion(string displayText)
+            : base(displayText, displayText, null, _glyph, HtmlIconAutomationText.AttributeIconText)
+        { }
+
+        public SimpleHtmlCompletion(string displayText, string description)
+            : base(displayText, displayText, description, _glyph, HtmlIconAutomationText.AttributeIconText)
         { }
     }
 }

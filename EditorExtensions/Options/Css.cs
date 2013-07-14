@@ -19,7 +19,6 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.ValidateStarSelector, ValidateStarSelector);
             Settings.SetValue(WESettings.Keys.ValidateOverQualifiedSelector, ValidateOverQualifiedSelector);
             Settings.SetValue(WESettings.Keys.CssErrorLocation, (int)CssErrorLocation);
-            Settings.SetValue(WESettings.Keys.OnlyW3cAllowed, OnlyW3cAllowed);
             Settings.SetValue(WESettings.Keys.SyncVendorValues, SyncVendorValues);
             Settings.SetValue(WESettings.Keys.ShowInitialInherit, ShowInitialInherit);
             Settings.SetValue(WESettings.Keys.ShowUnsupported, ShowUnsupported);
@@ -39,7 +38,6 @@ namespace MadsKristensen.EditorExtensions
             ValidateStarSelector = WESettings.GetBoolean(WESettings.Keys.ValidateStarSelector);
             ValidateOverQualifiedSelector = WESettings.GetBoolean(WESettings.Keys.ValidateOverQualifiedSelector);
             CssErrorLocation = (WESettings.Keys.ErrorLocation)WESettings.GetInt(WESettings.Keys.CssErrorLocation);
-            OnlyW3cAllowed = WESettings.GetBoolean(WESettings.Keys.OnlyW3cAllowed);
             SyncVendorValues = WESettings.GetBoolean(WESettings.Keys.SyncVendorValues);
             ShowInitialInherit = WESettings.GetBoolean(WESettings.Keys.ShowInitialInherit);
             ShowUnsupported = WESettings.GetBoolean(WESettings.Keys.ShowUnsupported);
@@ -89,11 +87,6 @@ namespace MadsKristensen.EditorExtensions
         [Description("Controls where errors are located. To use the 'Errors' output window, select 'Warnings' and change the Visual Studio CSS settings to use 'Errors'")]
         [Category("Validation")]
         public WESettings.Keys.ErrorLocation CssErrorLocation { get; set; }
-
-        [LocDisplayName("Only allow W3C values")]
-        [Description("Ensures that the stylesheet only uses properties, @-directives, pseudos and values defined by the W3C.")]
-        [Category("Validation")]
-        public bool OnlyW3cAllowed { get; set; }
 
         [LocDisplayName("Validate vendor specifics")]
         [Description("Validates vendor specific properties, psuedos and @-directives.")]
