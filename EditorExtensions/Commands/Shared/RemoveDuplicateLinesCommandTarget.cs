@@ -37,9 +37,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static string RemoveDuplicates(string[] lines)
         {
-            lines = lines.Distinct(new LineComparer()).ToArray();
-
-            return string.Join(Environment.NewLine, lines);
+            return string.Join(Environment.NewLine, lines.Distinct(new LineComparer()));
         }
 
         private class LineComparer : IEqualityComparer<string>

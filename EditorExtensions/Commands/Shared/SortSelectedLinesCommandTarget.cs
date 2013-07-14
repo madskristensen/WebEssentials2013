@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -34,12 +35,12 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-        private static string SortLines(uint commandId, string[] lines)
+        private static string SortLines(uint commandId, IEnumerable<string> lines)
         {
             if (commandId == PkgCmdIDList.SortAsc)
-                lines = lines.OrderBy(t => t).ToArray();
+                lines = lines.OrderBy(t => t);
             else
-                lines = lines.OrderByDescending(t => t).ToArray();
+                lines = lines.OrderByDescending(t => t);
 
             return string.Join(Environment.NewLine, lines);
         }

@@ -8,8 +8,8 @@ using System.ComponentModel.Composition;
 namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(ICssCompletionProvider))]
-    [Name("AttributeNamdCompletionProvider")]
-    internal class AttributeNamdCompletionProvider : ICssCompletionListProvider
+    [Name("AttributeNameCompletionProvider")]
+    internal class AttributeNameCompletionProvider : ICssCompletionListProvider
     {
         private static IEnumerable<ICssCompletionListEntry> _entryCache = GetListEntriesCache();
 
@@ -25,94 +25,90 @@ namespace MadsKristensen.EditorExtensions
 
         private static IEnumerable<ICssCompletionListEntry> GetListEntriesCache()
         {
-            List<ICssCompletionListEntry> entries = new List<ICssCompletionListEntry>();
-
             // Global
-            entries.Add(new CompletionListEntry("accesskey"));
-            entries.Add(new CompletionListEntry("class"));
-            entries.Add(new CompletionListEntry("contenteditable"));
-            entries.Add(new CompletionListEntry("contextmenu"));
-            entries.Add(new CompletionListEntry("dir"));
-            entries.Add(new CompletionListEntry("draggable"));
-            entries.Add(new CompletionListEntry("dropzone"));
-            entries.Add(new CompletionListEntry("hidden"));
-            entries.Add(new CompletionListEntry("id"));
-            entries.Add(new CompletionListEntry("lang"));
-            entries.Add(new CompletionListEntry("spellcheck"));
-            entries.Add(new CompletionListEntry("style"));
-            entries.Add(new CompletionListEntry("tabindex"));
-            entries.Add(new CompletionListEntry("title"));
-            entries.Add(new CompletionListEntry("translate"));
+            yield return new CompletionListEntry("accesskey");
+            yield return new CompletionListEntry("class");
+            yield return new CompletionListEntry("contenteditable");
+            yield return new CompletionListEntry("contextmenu");
+            yield return new CompletionListEntry("dir");
+            yield return new CompletionListEntry("draggable");
+            yield return new CompletionListEntry("dropzone");
+            yield return new CompletionListEntry("hidden");
+            yield return new CompletionListEntry("id");
+            yield return new CompletionListEntry("lang");
+            yield return new CompletionListEntry("spellcheck");
+            yield return new CompletionListEntry("style");
+            yield return new CompletionListEntry("tabindex");
+            yield return new CompletionListEntry("title");
+            yield return new CompletionListEntry("translate");
 
             // Common
-            entries.Add(new CompletionListEntry("alt"));
-            entries.Add(new CompletionListEntry("height"));
-            entries.Add(new CompletionListEntry("rel"));
-            entries.Add(new CompletionListEntry("role"));
-            entries.Add(new CompletionListEntry("width"));
-            entries.Add(new CompletionListEntry("src"));
+            yield return new CompletionListEntry("alt");
+            yield return new CompletionListEntry("height");
+            yield return new CompletionListEntry("rel");
+            yield return new CompletionListEntry("role");
+            yield return new CompletionListEntry("width");
+            yield return new CompletionListEntry("src");
 
             // A element
-            entries.Add(new CompletionListEntry("target"));
-            entries.Add(new CompletionListEntry("href"));
-            entries.Add(new CompletionListEntry("media"));
-            entries.Add(new CompletionListEntry("ping"));
+            yield return new CompletionListEntry("target");
+            yield return new CompletionListEntry("href");
+            yield return new CompletionListEntry("media");
+            yield return new CompletionListEntry("ping");
 
             // Microdata
-            entries.Add(new CompletionListEntry("itemscope"));
-            entries.Add(new CompletionListEntry("itemprop"));
-            entries.Add(new CompletionListEntry("itemtype"));
-            entries.Add(new CompletionListEntry("itemref"));
-            entries.Add(new CompletionListEntry("itemid"));
+            yield return new CompletionListEntry("itemscope");
+            yield return new CompletionListEntry("itemprop");
+            yield return new CompletionListEntry("itemtype");
+            yield return new CompletionListEntry("itemref");
+            yield return new CompletionListEntry("itemid");
 
             // Form elements
-            entries.Add(new CompletionListEntry("action"));
-            entries.Add(new CompletionListEntry("autocomplete"));
-            entries.Add(new CompletionListEntry("autofocus"));
-            entries.Add(new CompletionListEntry("checked"));
-            entries.Add(new CompletionListEntry("disabled"));
-            entries.Add(new CompletionListEntry("enctype"));
-            entries.Add(new CompletionListEntry("for"));
-            entries.Add(new CompletionListEntry("high"));
-            entries.Add(new CompletionListEntry("list"));
-            entries.Add(new CompletionListEntry("low"));
-            entries.Add(new CompletionListEntry("max"));
-            entries.Add(new CompletionListEntry("maxlength"));
-            entries.Add(new CompletionListEntry("method"));
-            entries.Add(new CompletionListEntry("min"));
-            entries.Add(new CompletionListEntry("multiple"));
-            entries.Add(new CompletionListEntry("name"));
-            entries.Add(new CompletionListEntry("novalidate"));
-            entries.Add(new CompletionListEntry("optimum"));
-            entries.Add(new CompletionListEntry("placeholder"));
-            entries.Add(new CompletionListEntry("pattern"));
-            entries.Add(new CompletionListEntry("readonly"));
-            entries.Add(new CompletionListEntry("required"));
-            entries.Add(new CompletionListEntry("size"));
-            entries.Add(new CompletionListEntry("type"));
-            entries.Add(new CompletionListEntry("value"));
+            yield return new CompletionListEntry("action");
+            yield return new CompletionListEntry("autocomplete");
+            yield return new CompletionListEntry("autofocus");
+            yield return new CompletionListEntry("checked");
+            yield return new CompletionListEntry("disabled");
+            yield return new CompletionListEntry("enctype");
+            yield return new CompletionListEntry("for");
+            yield return new CompletionListEntry("high");
+            yield return new CompletionListEntry("list");
+            yield return new CompletionListEntry("low");
+            yield return new CompletionListEntry("max");
+            yield return new CompletionListEntry("maxlength");
+            yield return new CompletionListEntry("method");
+            yield return new CompletionListEntry("min");
+            yield return new CompletionListEntry("multiple");
+            yield return new CompletionListEntry("name");
+            yield return new CompletionListEntry("novalidate");
+            yield return new CompletionListEntry("optimum");
+            yield return new CompletionListEntry("placeholder");
+            yield return new CompletionListEntry("pattern");
+            yield return new CompletionListEntry("readonly");
+            yield return new CompletionListEntry("required");
+            yield return new CompletionListEntry("size");
+            yield return new CompletionListEntry("type");
+            yield return new CompletionListEntry("value");
 
             // RDFa
-            entries.Add(new CompletionListEntry("prefix"));
-            entries.Add(new CompletionListEntry("property"));
-            entries.Add(new CompletionListEntry("resource"));
-            entries.Add(new CompletionListEntry("typeof"));
-            entries.Add(new CompletionListEntry("vocab"));
+            yield return new CompletionListEntry("prefix");
+            yield return new CompletionListEntry("property");
+            yield return new CompletionListEntry("resource");
+            yield return new CompletionListEntry("typeof");
+            yield return new CompletionListEntry("vocab");
 
             // Video/audio
-            entries.Add(new CompletionListEntry("autoplay"));
-            entries.Add(new CompletionListEntry("controls"));
-            entries.Add(new CompletionListEntry("crossorigin"));
-            entries.Add(new CompletionListEntry("loop"));
-            entries.Add(new CompletionListEntry("mediagroup"));
-            entries.Add(new CompletionListEntry("muted"));
-            entries.Add(new CompletionListEntry("poster"));
-            entries.Add(new CompletionListEntry("preload"));
+            yield return new CompletionListEntry("autoplay");
+            yield return new CompletionListEntry("controls");
+            yield return new CompletionListEntry("crossorigin");
+            yield return new CompletionListEntry("loop");
+            yield return new CompletionListEntry("mediagroup");
+            yield return new CompletionListEntry("muted");
+            yield return new CompletionListEntry("poster");
+            yield return new CompletionListEntry("preload");
 
             // Blockquote
-            entries.Add(new CompletionListEntry("cite"));
-
-            return entries;
+            yield return new CompletionListEntry("cite");
         }
     }
 }

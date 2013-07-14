@@ -20,23 +20,19 @@ namespace MadsKristensen.EditorExtensions
 
         public IEnumerable<ICssCompletionListEntry> GetListEntries(CssCompletionContext context)
         {
-            HashSet<ICssCompletionListEntry> entries = new HashSet<ICssCompletionListEntry>();
             Declaration dec = context.ContextItem.FindType<Declaration>();
 
             if (dec == null || dec.PropertyName == null || (!dec.PropertyName.Text.EndsWith("animation-name", StringComparison.OrdinalIgnoreCase) && dec.PropertyName.Text != "animation"))
-                return entries;
+                yield break;
 
             StyleSheet stylesheet = context.ContextItem.StyleSheet;
             var visitor = new CssItemCollector<KeyFramesDirective>();
             stylesheet.Accept(visitor);
 
-            foreach (KeyFramesDirective keyframes in visitor.Items)
+            foreach (string name in visitor.Items.Select(d => d.Name.Text).Distinct(StringComparer.OrdinalIgnoreCase))
             {
-                if (!entries.Any(e => e.DisplayText.Equals(keyframes.Name.Text, StringComparison.OrdinalIgnoreCase)))
-                    entries.Add(new CompletionListEntry(keyframes.Name.Text));
+                yield return new CompletionListEntry(name);
             }
-
-            return entries;
         }
     }
 }
