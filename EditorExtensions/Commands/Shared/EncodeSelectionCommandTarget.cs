@@ -16,7 +16,6 @@ namespace MadsKristensen.EditorExtensions
             PkgCmdIDList.attrEncode,
             PkgCmdIDList.urlEncode,
             PkgCmdIDList.urlDecode,
-            PkgCmdIDList.urlPathEncode,
             PkgCmdIDList.jsEncode,
         };
 
@@ -42,8 +41,6 @@ namespace MadsKristensen.EditorExtensions
                     return Replace(HttpUtility.UrlEncode);
                 case PkgCmdIDList.urlDecode:
                     return Replace(HttpUtility.UrlDecode);
-                case PkgCmdIDList.urlPathEncode:
-                    return Replace(HttpUtility.UrlPathEncode);
                 case PkgCmdIDList.jsEncode:
                     return Replace(HttpUtility.JavaScriptStringEncode);
             }
@@ -70,12 +67,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool IsEnabled()
         {
-            if (TextView != null && TextView.Selection.SelectedSpans.Count > 0)
-            {
-                return TextView.Selection.SelectedSpans[0].Length > 0;
-            }
-
-            return false;
+            return !TextView.Selection.IsEmpty;
         }
     }
 }

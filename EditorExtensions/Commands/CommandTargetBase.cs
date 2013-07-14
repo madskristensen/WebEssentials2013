@@ -62,8 +62,7 @@ namespace MadsKristensen.EditorExtensions
                             return VSConstants.S_OK;
                         }
 
-                        prgCmds[0].cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;// | (uint)OLECMDF.OLECMDF_INVISIBLE;
-                        //return VSConstants.S_OK;
+                        prgCmds[0].cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
                     }
                 }
             }

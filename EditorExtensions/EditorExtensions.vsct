@@ -7,14 +7,13 @@
   <Commands package="guidEditorExtensionsPkg">
     <Menus>
       <Menu guid="guidEditorExtensionsCmdSet" id="SubMenu" priority="0x001" type="Menu">
-        <Parent guid="guidEditorExtensionsCmdSet" id="MyMenuGroup" />
+        <Parent guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" />
         <Strings>
           <ButtonText>Encode Selection</ButtonText>
-          <CommandName>Encode Selection</CommandName>
         </Strings>
       </Menu>
       <Menu guid="guidEditorExtensionsCmdSet" id="TransformSubMenu" priority="0x001" type="Menu">
-        <Parent guid="guidEditorExtensionsCmdSet" id="MyMenuGroup" />
+        <Parent guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" />
         <Strings>
           <ButtonText>Transform Selection</ButtonText>
           <CommandName>Transform Selection</CommandName>
@@ -46,8 +45,7 @@
         <Parent guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Lines</ButtonText>
-          <CommandName>Lines</CommandName>
+          <ButtonText>Selected Lines</ButtonText>
         </Strings>
       </Menu>
     </Menus>
@@ -116,10 +114,6 @@
       <Group guid="guidMinifyCmdSet" id="MyMenuGroup" priority="0x0009">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
       </Group>
-
-      <Group guid="guidEditorExtensionsCmdSet" id="MyMenuGroup" priority="0x9999">
-        <Parent guid="guidSHLMainMenu" id="IDG_VS_CODEWIN_TEXTEDIT"/>
-      </Group>
       
       <Group guid="guidSolutionExplorerCmdSet" id="MyMenuGroup" priority="0x0001">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
@@ -146,8 +140,8 @@
       <Button guid="guidEditorExtensionsCmdSet" id="cmdidHtmlEncode" priority="0x0101" type="Button">
         <Parent guid="guidEditorExtensionsCmdSet" id="HtmlEncodingMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <CommandName>cmdidHtmlEncode</CommandName>
           <ButtonText>HTML Encode</ButtonText>
         </Strings>
       </Button>
@@ -155,8 +149,8 @@
       <Button guid="guidEditorExtensionsCmdSet" id="cmdidAttrEncode" priority="0x0102" type="Button">
         <Parent guid="guidEditorExtensionsCmdSet" id="HtmlEncodingMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <CommandName>cmdidAttrDecode</CommandName>
           <ButtonText>HTML Attribute Encode</ButtonText>
         </Strings>
       </Button>
@@ -164,8 +158,8 @@
       <Button guid="guidEditorExtensionsCmdSet" id="cmdidHtmlDecode" priority="0x0103" type="Button">
         <Parent guid="guidEditorExtensionsCmdSet" id="HtmlEncodingMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <CommandName>cmdidHtmlDecode</CommandName>
           <ButtonText>HTML Decode</ButtonText>
         </Strings>
       </Button>
@@ -173,26 +167,17 @@
       <Button guid="guidEditorExtensionsCmdSet" id="cmdidUrlEncode" priority="0x0101" type="Button">
         <Parent guid="guidEditorExtensionsCmdSet" id="UrlEncodingMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <CommandName>cmdidUrlDecode</CommandName>
           <ButtonText>URL Encode</ButtonText>
-        </Strings>
-      </Button>
-
-      <Button guid="guidEditorExtensionsCmdSet" id="cmdidUrlPathEncode" priority="0x0102" type="Button">
-        <Parent guid="guidEditorExtensionsCmdSet" id="UrlEncodingMenuGroup" />
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <CommandName>cmdidUrlDecode</CommandName>
-          <ButtonText>URL Path Encode</ButtonText>
         </Strings>
       </Button>
 
       <Button guid="guidEditorExtensionsCmdSet" id="cmdidUrlDecode" priority="0x0103" type="Button">
         <Parent guid="guidEditorExtensionsCmdSet" id="UrlEncodingMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <CommandName>cmdidUrlDecode</CommandName>
           <ButtonText>URL Decode</ButtonText>
         </Strings>
       </Button>
@@ -200,8 +185,8 @@
       <Button guid="guidEditorExtensionsCmdSet" id="cmdidJavaScriptEncode" priority="0x0101" type="Button">
         <Parent guid="guidEditorExtensionsCmdSet" id="JavaScriptEncodingMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <CommandName>cmdidUrlDecode</CommandName>
           <ButtonText>JavaScript String Encode</ButtonText>
         </Strings>
       </Button>
@@ -210,7 +195,6 @@
         <Parent guid="guidEditorExtensionsCmdSet" id="CasingTransformMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>cmdidUrlDecode</CommandName>
           <ButtonText>To Upper Case</ButtonText>
         </Strings>
       </Button>
@@ -219,7 +203,6 @@
         <Parent guid="guidEditorExtensionsCmdSet" id="CasingTransformMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>cmdidUrlDecode</CommandName>
           <ButtonText>To Lower Case</ButtonText>
         </Strings>
       </Button>
@@ -228,7 +211,6 @@
         <Parent guid="guidEditorExtensionsCmdSet" id="CasingTransformMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>cmdidUrlDecode</CommandName>
           <ButtonText>To Title Case</ButtonText>
         </Strings>
       </Button>
@@ -237,7 +219,6 @@
         <Parent guid="guidEditorExtensionsCmdSet" id="MiscTransformMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>cmdidUrlDecode</CommandName>
           <ButtonText>Reverse</ButtonText>
         </Strings>
       </Button>
@@ -246,7 +227,6 @@
         <Parent guid="guidEditorExtensionsCmdSet" id="MiscTransformMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>cmdidUrlDecode</CommandName>
           <ButtonText>Remove Diacritics</ButtonText>
         </Strings>
       </Button>
@@ -255,7 +235,6 @@
         <Parent guid="guidEditorExtensionsCmdSet" id="CryptoTransformMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>cmdidUrlDecode</CommandName>
           <ButtonText>MD5</ButtonText>
         </Strings>
       </Button>
@@ -265,7 +244,6 @@
 
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>cmdidUrlDecode</CommandName>
           <ButtonText>SHA-1</ButtonText>
         </Strings>
       </Button>
@@ -274,7 +252,6 @@
         <Parent guid="guidEditorExtensionsCmdSet" id="CryptoTransformMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>cmdidUrlDecode</CommandName>
           <ButtonText>SHA-256</ButtonText>
         </Strings>
       </Button>
@@ -283,7 +260,6 @@
         <Parent guid="guidEditorExtensionsCmdSet" id="CryptoTransformMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>cmdidUrlDecode</CommandName>
           <ButtonText>SHA-384</ButtonText>
         </Strings>
       </Button>
@@ -292,7 +268,6 @@
         <Parent guid="guidEditorExtensionsCmdSet" id="CryptoTransformMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>cmdidUrlDecode</CommandName>
           <ButtonText>SHA-512</ButtonText>
         </Strings>
       </Button>
@@ -671,7 +646,6 @@
       <IDSymbol name="cmdidUrlDecode" value="0x0107" />
       <IDSymbol name="cmdidJavaScriptEncode" value="0x0108" />
       <IDSymbol name="cmdidAttrEncode" value="0x0109" />
-      <IDSymbol name="cmdidUrlPathEncode" value="0x0110" />
       <IDSymbol name="cmdidUpperCaseTransform" value="0x0111" />
       <IDSymbol name="TransformSubMenu" value="0x0112" />
       <IDSymbol name="CasingTransformMenuGroup" value="0x0113" />

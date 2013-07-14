@@ -10,7 +10,6 @@ namespace MadsKristensen.EditorExtensions
         public const uint urlDecode = 0x107;
         public const uint jsEncode = 0x108;
         public const uint attrEncode = 0x109;
-        public const uint urlPathEncode = 0x110;
         public const uint upperCaseTransform = 0x111;
         public const uint lowerCaseTransform = 0x114;
         public const uint titleCaseTransform = 0x115;
