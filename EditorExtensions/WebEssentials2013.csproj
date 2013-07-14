@@ -325,7 +325,7 @@
     <Compile Include="Completion\CSS\CompletionProviders\AnimationNameCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\ColorCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\FontFamilyCompletionProvider.cs" />
-    <Compile Include="Completion\CSS\CompletionProviders\InputTypeCompletionProvider.cs" />
+    <Compile Include="Completion\CSS\CompletionProviders\AttributeValueCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\RegionCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\ImportantCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\FontCompletionProvider.cs" />
@@ -334,7 +334,7 @@
     <Compile Include="Completion\CSS\CompletionProviders\IdCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\TagCompletionProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\ClassContextProvider.cs" />
-    <Compile Include="Completion\CSS\ContextProviders\InputTypeContextCompletionProvider.cs" />
+    <Compile Include="Completion\CSS\ContextProviders\AttributeValueContextCompletionProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\LessPseudoContextProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\AttributeNameContextProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\UrlPickerContextProvider.cs" />

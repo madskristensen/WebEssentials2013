@@ -1,0 +1,82 @@
+﻿using Microsoft.CSS.Core;
+using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.Html.Schemas;
+using Microsoft.Html.Schemas.Model;
+using Microsoft.VisualStudio.Utilities;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
+
+namespace MadsKristensen.EditorExtensions.Completion.CompletionProviders
+{
+    [Export(typeof(ICssCompletionProvider))]
+    [Name("AttributeValueCompletionProvider")]
+    internal class AttributeValueCompletionProvider : ICssCompletionListProvider
+    {
+        public const CssCompletionContextType InputTypeValue = (CssCompletionContextType)1337;
+        private static HashSet<string> _allAttributes;
+
+        public CssCompletionContextType ContextType
+        {
+            get { return InputTypeValue; }
+        }
+        public IEnumerable<ICssCompletionListEntry> GetListEntries(CssCompletionContext context)
+        {
+            HtmlSchemaManager mng = new HtmlSchemaManager();
+            IHtmlSchema schema = mng.GetSchema("http://schemas.microsoft.com/intellisense/html");
+
+            var tag = context.ContextItem.FindType<SimpleSelector>();
+            var attr = context.ContextItem as AttributeSelector;
+
+            if (tag != null && tag.Name != null && attr != null && attr.AttributeName != null)
+            {
+                return KnownTagName(schema, tag.Name.Text, attr.AttributeName.Text);
+            }
+            else if (attr != null && attr.AttributeName != null)
+            {
+                return UnknownTagName(schema, attr.AttributeName.Text);
+            }
+
+            return new List<ICssCompletionListEntry>();
+        }
+
+        private IEnumerable<ICssCompletionListEntry> KnownTagName(IHtmlSchema schema, string tagName, string attrName)
+        {
+            var element = schema.GetElementInfo(tagName);
+
+            if (element != null)
+            {
+                var attr = element.GetAttribute(attrName);
+
+                if (attr == null)
+                    yield break;
+
+                foreach (var value in attr.GetValues())
+                {
+                    yield return new CompletionListEntry(value.Value);
+                }
+            }
+        }
+
+        private IEnumerable<ICssCompletionListEntry> UnknownTagName(IHtmlSchema schema, string attrName)
+        {
+            var cache = new HashSet<string>();
+
+            foreach (var element in schema.GetTopLevelElements())
+            {
+                var attr = element.GetAttribute(attrName);
+
+                if (attr != null)
+                {
+                    foreach (var value in attr.GetValues())
+                    {
+                        if (!cache.Contains(value.Value))
+                            cache.Add(value.Value);
+                    }
+                }
+            }
+
+            return cache.Select(n => new CompletionListEntry(n));
+        }
+    }
+}
