@@ -555,6 +555,7 @@
     <Compile Include="SmartTags\CSS\CssSmartTagger.cs" />
     <Compile Include="Helpers\CssItemCollector.cs" />
     <Compile Include="Options\WebEssentialsSettings.cs" />
+    <Compile Include="Validation\HTML\ItemTypeValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
