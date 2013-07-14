@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions.Completion.ContextProviders
                 length = attr.AttributeValue.Length;
             }
 
-            return new CssCompletionContext(AttributeValueCompletionProvider.InputTypeValue, start, length, null);
+            return new CssCompletionContext(AttributeValueCompletionProvider.AttributeValue, start, length, null);
         }
     }
 }

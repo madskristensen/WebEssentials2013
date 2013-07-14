@@ -13,12 +13,11 @@ namespace MadsKristensen.EditorExtensions.Completion.CompletionProviders
     [Name("AttributeValueCompletionProvider")]
     internal class AttributeValueCompletionProvider : ICssCompletionListProvider
     {
-        public const CssCompletionContextType InputTypeValue = (CssCompletionContextType)1337;
-        private static HashSet<string> _allAttributes;
+        public const CssCompletionContextType AttributeValue = (CssCompletionContextType)1337;
 
         public CssCompletionContextType ContextType
         {
-            get { return InputTypeValue; }
+            get { return AttributeValue; }
         }
         public IEnumerable<ICssCompletionListEntry> GetListEntries(CssCompletionContext context)
         {
