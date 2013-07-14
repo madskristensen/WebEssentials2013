@@ -54,7 +54,10 @@ Licensed under the Apache 2.0 License.
             send: function () {
                 // get the file path relative to the input less file/directory
                 var currDir = fso.folderExists(input) ? input : fso.getParentFolderName(input);
-                var filename = fso.BuildPath(currDir, this.url);
+
+                var filename = this.url.replace(/\//g, '\\');
+                if (!/^([a-zA-Z]+:|[\/\\])/.test(filename))  // SLaks: If the filename is not already an absolute path, normalize it.
+                    filename = fso.BuildPath(currDir, filename);
 
                 //WScript.StdErr.WriteLine("XHR.send " + filename);
 
@@ -178,6 +181,10 @@ Licensed under the Apache 2.0 License.
                 data = util.readText(input);
             }
 
+            // SLaks: Make sure LESS can resolve relative import URLs.
+            // LESS.js tries to normalize \ to /, but they forgot that
+            // replace() with a non-regex only replaces the 1st match.
+            location.href = input.replace(/\\/g, '/');
             var parser = new less.Parser({
                 filename: input
             });
