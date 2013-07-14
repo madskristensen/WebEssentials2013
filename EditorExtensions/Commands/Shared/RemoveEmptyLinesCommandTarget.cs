@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions
 
             string result = RemoveLines(lines);
 
-            _dte.UndoContext.Open("Remove Duplicate Lines");
+            _dte.UndoContext.Open("Remove Empty Lines");
             TextView.TextBuffer.Replace(span.Span, result);
             _dte.UndoContext.Close();
 
@@ -38,15 +38,7 @@ namespace MadsKristensen.EditorExtensions
 
         private string RemoveLines(string[] lines)
         {
-            StringBuilder sb = new StringBuilder();
-
-            foreach (string line in lines)
-            {
-                if (!string.IsNullOrWhiteSpace(line))
-                    sb.AppendLine(line);
-            }
-
-            return string.Join(Environment.NewLine, sb.ToString());
+            return string.Join(Environment.NewLine, lines.Where(s => !string.IsNullOrWhiteSpace(s)));
         }
 
         private SnapshotSpan GetSpan()
