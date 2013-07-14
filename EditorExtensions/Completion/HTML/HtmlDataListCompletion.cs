@@ -1,6 +1,5 @@
 ﻿using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Intellisense;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 using System;
@@ -21,14 +20,12 @@ namespace MadsKristensen.EditorExtensions
         {
             var result = new List<HtmlCompletion>();
             var list = new List<string>();
-            var glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
 
             context.Document.HtmlEditorTree.RootNode.Accept(this, list);
 
             foreach (var item in list)
             {
-                var completion = new HtmlCompletion(item, item, item, glyph, HtmlIconAutomationText.AttributeIconText);
-                result.Add(completion);
+                result.Add(new SimpleHtmlCompletion(item));
             }
 
             return result;

@@ -323,6 +323,13 @@
     <Compile Include="Completion\CSS\ContextProviders\TagContextProvider.cs" />
     <Compile Include="Completion\CSS\CustomCompletionListEntry.cs" />
     <Compile Include="Completion\CSS\Filter\GradientCompletionListFilter.cs" />
+    <Compile Include="Completion\HTML\AppleLinkCompletion.cs" />
+    <Compile Include="Completion\HTML\SimpleHtmlCompletion.cs" />
+    <Compile Include="Completion\HTML\TwitterCardCompletion.cs" />
+    <Compile Include="Completion\HTML\AppleMetaCompletion.cs" />
+    <Compile Include="Completion\HTML\XUACompatibleCompletion.cs" />
+    <Compile Include="Completion\HTML\ViewportCompletion.cs" />
+    <Compile Include="Completion\HTML\MsApplicationCompletion.cs" />
     <Compile Include="Completion\HTML\HtmlDataListCompletion.cs" />
     <Compile Include="Completion\HTML\HtmlLabelForAttributeCompletion.cs" />
     <Compile Include="Completion\CSS\RegionCompletionListEntry.cs" />
