@@ -87,20 +87,10 @@ namespace MadsKristensen.EditorExtensions
             }
 
             string name = Path.GetFileName(file);
-
-            foreach (string regex in _ignoreList)
-            {
-                if (Regex.IsMatch(name, regex, RegexOptions.IgnoreCase))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return _ignoreRegex.IsMatch(name);
         }
 
-        private static List<string> _ignoreList = new List<string>()
-        {
+        private static Regex _ignoreRegex = new Regex("(" + String.Join(")|(", new [] {
             @"jquery-([0-9\.]+)\.js",
             @"jquery-ui-([0-9\.]+)\.js",
             @"knockout-([0-9\.]+)\.js",
@@ -129,7 +119,7 @@ namespace MadsKristensen.EditorExtensions
             @"bootstrap\.js",
             @"webfont\.js",
             @"zepto\.js",
-        };
+        }) + ")", RegexOptions.IgnoreCase);
 
         private void LintCompletedHandler(object sender, CompilerEventArgs e)
         {
