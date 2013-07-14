@@ -191,22 +191,6 @@
         </Strings>
       </Button>
 
-      <Button guid="guidEditorExtensionsCmdSet" id="cmdidUpperCaseTransform" priority="0x0101" type="Button">
-        <Parent guid="guidEditorExtensionsCmdSet" id="CasingTransformMenuGroup" />
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>To Upper Case</ButtonText>
-        </Strings>
-      </Button>
-
-      <Button guid="guidEditorExtensionsCmdSet" id="cmdidLowerCaseTransform" priority="0x0102" type="Button">
-        <Parent guid="guidEditorExtensionsCmdSet" id="CasingTransformMenuGroup" />
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>To Lower Case</ButtonText>
-        </Strings>
-      </Button>
-
       <Button guid="guidEditorExtensionsCmdSet" id="cmdidTitleCaseTransform" priority="0x0103" type="Button">
         <Parent guid="guidEditorExtensionsCmdSet" id="CasingTransformMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -646,10 +630,8 @@
       <IDSymbol name="cmdidUrlDecode" value="0x0107" />
       <IDSymbol name="cmdidJavaScriptEncode" value="0x0108" />
       <IDSymbol name="cmdidAttrEncode" value="0x0109" />
-      <IDSymbol name="cmdidUpperCaseTransform" value="0x0111" />
       <IDSymbol name="TransformSubMenu" value="0x0112" />
       <IDSymbol name="CasingTransformMenuGroup" value="0x0113" />
-      <IDSymbol name="cmdidLowerCaseTransform" value="0x0114" />
       <IDSymbol name="cmdidTitleCaseTransform" value="0x0115" />
       <IDSymbol name="cmdidReverseTransform" value="0x0116" />
       <IDSymbol name="MiscTransformMenuGroup" value="0x0117" />

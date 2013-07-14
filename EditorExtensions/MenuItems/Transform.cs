@@ -1,12 +1,10 @@
-﻿using System;
-using System.Security.Cryptography;
-using System.Linq;
-using System.ComponentModel.Design;
-using System.Web;
-using EnvDTE;
+﻿using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
+using System.ComponentModel.Design;
 using System.Globalization;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace MadsKristensen.EditorExtensions
@@ -25,8 +23,6 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            SetupCommand(PkgCmdIDList.upperCaseTransform, new Replacement(x => x.ToUpperInvariant()));
-            SetupCommand(PkgCmdIDList.lowerCaseTransform, new Replacement(x => x.ToLowerInvariant()));
             SetupCommand(PkgCmdIDList.titleCaseTransform, new Replacement(x => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(x)));
             SetupCommand(PkgCmdIDList.reverseTransform, new Replacement(x => new string(x.Reverse().ToArray())));
             SetupCommand(PkgCmdIDList.normalizeTransform, new Replacement(x => RemoveDiacritics(x)));
@@ -56,7 +52,9 @@ namespace MadsKristensen.EditorExtensions
 
         private static string Hash(string original, HashAlgorithm algorithm)
         {
-            byte[] hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(original));
+            byte[] hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(original));            
+            algorithm.Dispose();
+
             StringBuilder sb = new StringBuilder();
             
             foreach (byte b in hash)
