@@ -3,16 +3,18 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class SortSelectedLines : CommandTargetBase
+    internal class RemoveEmptyLines : CommandTargetBase
     {
         private DTE2 _dte;
 
-        public SortSelectedLines(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidEditorLinesCmdSet, PkgCmdIDList.SortAsc, PkgCmdIDList.SortDesc)
+        public RemoveEmptyLines(IVsTextView adapter, IWpfTextView textView)
+            : base(adapter, textView, GuidList.guidEditorLinesCmdSet, PkgCmdIDList.RemoveEmptyLines)
         {
             _dte = EditorExtensionsPackage.DTE;
         }
@@ -25,23 +27,26 @@ namespace MadsKristensen.EditorExtensions
             if (lines.Length == 0)
                 return false;
 
-            string result = SortLines(commandId, lines);
+            string result = RemoveLines(lines);
 
-            _dte.UndoContext.Open("Sort Selected Lines");
+            _dte.UndoContext.Open("Remove Duplicate Lines");
             TextView.TextBuffer.Replace(span.Span, result);
             _dte.UndoContext.Close();
 
             return true;
         }
 
-        private static string SortLines(uint commandId, string[] lines)
+        private string RemoveLines(string[] lines)
         {
-            if (commandId == PkgCmdIDList.SortAsc)
-                lines = lines.OrderBy(t => t).ToArray();
-            else
-                lines = lines.OrderByDescending(t => t).ToArray();
+            StringBuilder sb = new StringBuilder();
 
-            return string.Join(Environment.NewLine, lines);
+            foreach (string line in lines)
+            {
+                if (!string.IsNullOrWhiteSpace(line))
+                    sb.AppendLine(line);
+            }
+
+            return string.Join(Environment.NewLine, sb.ToString());
         }
 
         private SnapshotSpan GetSpan()
