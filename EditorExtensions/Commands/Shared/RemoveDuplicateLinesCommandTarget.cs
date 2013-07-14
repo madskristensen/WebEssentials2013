@@ -37,9 +37,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static string RemoveDuplicates(string[] lines)
         {
-            lines = lines.Distinct(new LineComparer()).ToArray();
-
-            return string.Join(Environment.NewLine, lines);
+            return string.Join(Environment.NewLine, lines.Distinct(new LineComparer()));
         }
 
         private class LineComparer : IEqualityComparer<string>
@@ -51,17 +49,14 @@ namespace MadsKristensen.EditorExtensions
 
                 if (Object.ReferenceEquals(x, y)) return true;
 
-                if (Object.ReferenceEquals(x, null) || Object.ReferenceEquals(y, null))
-                    return false;
-                
-                return x.ToLowerInvariant().Trim() == y.ToLowerInvariant().Trim();
+                return String.Equals(x.Trim(), y.Trim(), StringComparison.CurrentCultureIgnoreCase);
             }
 
             public int GetHashCode(string obj)
             {
                 if (Object.ReferenceEquals(obj, null)) return 0;
 
-                return obj.ToLowerInvariant().Trim().GetHashCode();
+                return StringComparer.CurrentCultureIgnoreCase.GetHashCode(obj.Trim());
             }
         }
 
