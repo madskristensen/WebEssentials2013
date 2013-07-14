@@ -51,17 +51,14 @@ namespace MadsKristensen.EditorExtensions
 
                 if (Object.ReferenceEquals(x, y)) return true;
 
-                if (Object.ReferenceEquals(x, null) || Object.ReferenceEquals(y, null))
-                    return false;
-                
-                return x.ToLowerInvariant().Trim() == y.ToLowerInvariant().Trim();
+                return string.Equals(x.Trim(), y.Trim(), StringComparison.CurrentCultureIgnoreCase);
             }
 
             public int GetHashCode(string obj)
             {
                 if (Object.ReferenceEquals(obj, null)) return 0;
 
-                return obj.ToLowerInvariant().Trim().GetHashCode();
+                return StringComparer.CurrentCultureIgnoreCase.GetHashCode(obj.Trim());
             }
         }
 
