@@ -9,12 +9,12 @@ using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class ContactSelection : CommandTargetBase
+    internal class ContractSelection : CommandTargetBase
     {
         private IWpfTextView _view;
         private ITextBuffer _buffer;
 
-        public ContactSelection(IVsTextView adapter, IWpfTextView textView)
+        public ContractSelection(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, GuidList.guidFormattingCmdSet, PkgCmdIDList.ContractSelection)
         {
             _view = textView;

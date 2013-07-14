@@ -59,7 +59,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags
 
             private bool CanSaveFile(string folder, out string fileName)
             {
-                string ext = GetExtension();
+                string ext = this.HtmlSmartTag.Element.IsStyleBlock() ? "css" : "js";
 
                 fileName = null;
 
@@ -77,14 +77,6 @@ namespace MadsKristensen.EditorExtensions.SmartTags
                 }
 
                 return true;
-            }
-
-            private string GetExtension()
-            {
-                if (this.HtmlSmartTag.Element.IsStyleBlock())
-                    return "css";
-
-                return "js";
             }
 
             private void MakeChanges(string root, string fileName)
