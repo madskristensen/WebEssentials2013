@@ -335,70 +335,70 @@
     <Compile Include="DropTargets\StylesheetDrop.cs" />
     <Compile Include="DropTargets\FontDrop.cs" />
     <Compile Include="DropTargets\ImageDrop.cs" />
-    <Compile Include="ErrorTags\Filters\ScssErrorFilter.cs" />
-    <Compile Include="ErrorTags\Providers\ColorValuesInRangeErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Filters\ScssErrorFilter.cs" />
+    <Compile Include="Validation\CSS\Providers\ColorValuesInRangeErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\MsViewState.cs" />
-    <Compile Include="ErrorTags\Providers\HoverOrderErrorTagProvider.cs" />
-    <Compile Include="ErrorTags\Providers\DisplayInlineErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\MsViewState.cs" />
+    <Compile Include="Validation\CSS\Providers\HoverOrderErrorTagProvider.cs" />
+    <Compile Include="Validation\CSS\Providers\DisplayInlineErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\DuplicatePropertyErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\DuplicatePropertyErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\DuplicateSelectorErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\DuplicateSelectorErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\EmbedImagesErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\EmbedImagesErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\Ie10PrefixErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\Ie10PrefixErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\InvalidVendorErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\InvalidVendorErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\MissingStandardDirectiveErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\MissingStandardDirectiveErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\MissingVendorDirectiveErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\MissingVendorDirectiveErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\MissingVendorErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\MissingVendorErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\MissingVendorPseudoErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\MissingVendorPseudoErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\OverQualifiedSelectorErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\OverQualifiedSelectorErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\OverriddenPropertyErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\OverriddenPropertyErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\ShorthandErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\ShorthandErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\StarSelectorErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\StarSelectorErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\UnknownTagErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\UnknownTagErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\VendorOrderErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\VendorOrderErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\W3cOnlyErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\W3cOnlyErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\Providers\ZeroUnitErrorTagProvider.cs">
+    <Compile Include="Validation\CSS\Providers\ZeroUnitErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ErrorTags\SelectorErrorTag.cs" />
-    <Compile Include="ErrorTags\Filters\Backslash9CssErrorFilter.cs" />
-    <Compile Include="ErrorTags\Filters\MsFilterCssErrorFilter.cs" />
-    <Compile Include="ErrorTags\Filters\MsKeyframesCssErrorFilter.cs" />
+    <Compile Include="Validation\CSS\SelectorErrorTag.cs" />
+    <Compile Include="Validation\CSS\Filters\Backslash9CssErrorFilter.cs" />
+    <Compile Include="Validation\CSS\Filters\MsFilterCssErrorFilter.cs" />
+    <Compile Include="Validation\CSS\Filters\MsKeyframesCssErrorFilter.cs" />
     <Compile Include="ExtensionMethods\AtDirectiveExtensions.cs" />
     <Compile Include="ExtensionMethods\IVsExtensions.cs" />
     <Compile Include="Commands\JavaScript\JsHintRunner.cs" />
@@ -508,9 +508,9 @@
     <Compile Include="SmartTags\HTML\HtmlConvertToFigureSmartTag.cs" />
     <Compile Include="SmartTags\CSS\Providers\LessExtractVariableSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\Providers\SortSmartTagProvider.cs" />
-    <Compile Include="ErrorTags\Filters\CustomCssErrorFilter.cs" />
+    <Compile Include="Validation\CSS\Filters\CustomCssErrorFilter.cs" />
     <Compile Include="Commands\ArrowsCommandTarget.cs" />
-    <Compile Include="ErrorTags\SimpleErrorTag.cs" />
+    <Compile Include="Validation\CSS\SimpleErrorTag.cs" />
     <Compile Include="ExtensionMethods\ColorModelExtensions.cs" />
     <Compile Include="ExtensionMethods\DeclarationExtensions.cs" />
     <Compile Include="Helpers\ProjectHelpers.cs" />
