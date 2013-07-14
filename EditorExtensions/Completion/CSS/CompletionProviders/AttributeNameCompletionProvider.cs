@@ -69,7 +69,9 @@ namespace MadsKristensen.EditorExtensions
 
         private static bool IsAllowed(string name)
         {
-            return !name.Any(c => char.IsUpper(c)) && !name.StartsWith("on", StringComparison.OrdinalIgnoreCase);
+            return !name.Any(c => char.IsUpper(c)) && // WebForms server attributes
+                   !name.StartsWith("on", StringComparison.OrdinalIgnoreCase) && // Client- and server-side event handlers
+                   !name.Equals("runat", StringComparison.OrdinalIgnoreCase);
         }
     }
 }
