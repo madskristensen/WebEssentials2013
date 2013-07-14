@@ -342,6 +342,7 @@
     <Compile Include="DropTargets\StylesheetDrop.cs" />
     <Compile Include="DropTargets\FontDrop.cs" />
     <Compile Include="DropTargets\ImageDrop.cs" />
+    <Compile Include="SmartTags\HTML\ExtractToFileSmartTag.cs" />
     <Compile Include="Validation\CSS\Filters\ScssErrorFilter.cs" />
     <Compile Include="Validation\CSS\Providers\ColorValuesInRangeErrorTagProvider.cs">
       <SubType>Code</SubType>
