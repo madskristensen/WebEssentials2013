@@ -22,13 +22,11 @@ namespace MadsKristensen.EditorExtensions
             List<ICssCompletionListEntry> entries = new List<ICssCompletionListEntry>();
             Declaration dec = context.ContextItem.FindType<Declaration>();
             if (dec == null || dec.Colon == null || dec.Important != null || dec.Values.Count == 0)
-                return entries;
+                yield break;
 
             ParseItem before = dec.ItemBeforePosition(context.SpanStart);
             if (before != null && before.Text == "!")
-                entries.Add(new CompletionListEntry("important", 1));
-
-            return entries;
+                yield return new CompletionListEntry("important", 1);
         }
     }
 }
