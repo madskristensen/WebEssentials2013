@@ -42,6 +42,14 @@
           <CommandName>Web Essentials</CommandName>
         </Strings>
       </Menu>
+      <Menu guid="guidEditorLinesCmdSet" id="LinesMenu" priority="0x201" type="Menu">
+        <Parent guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Lines</ButtonText>
+          <CommandName>Lines</CommandName>
+        </Strings>
+      </Menu>
     </Menus>
 
     <Groups>
@@ -123,6 +131,14 @@
 
       <Group guid="guidSolutionExplorerCmdSet" id="MyBundleGroup" priority="0x0002">
         <Parent guid="guidSolutionExplorerCmdSet" id="MySubMenuGroup"/>
+      </Group>
+
+      <Group guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" priority="0x0002">
+        <Parent guid="guidEditorExtensionsCmdSet" id="MyMenuGroup" />
+      </Group>
+
+      <Group guid="guidEditorLinesCmdSet" id="LinesMenuGroup" priority="0x0002">
+        <Parent guid="guidEditorLinesCmdSet" id="LinesMenu"/>
       </Group>
     </Groups>
 
@@ -281,8 +297,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidEditorExtensionsCmdSet" id="cmdidSortAsc" priority="0x0105" type="Button">
-        <Parent guid="guidEditorExtensionsCmdSet" id="MyMenuGroup" />
+      <Button guid="guidEditorLinesCmdSet" id="SortAsc" priority="0x0105" type="Button">
+        <Parent guid="guidEditorLinesCmdSet" id="LinesMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
@@ -290,8 +306,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidEditorExtensionsCmdSet" id="cmdidSortDesc" priority="0x0106" type="Button">
-        <Parent guid="guidEditorExtensionsCmdSet" id="MyMenuGroup" />
+      <Button guid="guidEditorLinesCmdSet" id="SortDesc" priority="0x0106" type="Button">
+        <Parent guid="guidEditorLinesCmdSet" id="LinesMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
@@ -299,12 +315,20 @@
         </Strings>
       </Button>
       
-      <Button guid="guidEditorExtensionsCmdSet" id="cmdidRemoveDuplicateLines" priority="0x0106" type="Button">
-        <Parent guid="guidEditorExtensionsCmdSet" id="MyMenuGroup" />
+      <Button guid="guidEditorLinesCmdSet" id="RemoveDuplicateLines" priority="0x0106" type="Button">
+        <Parent guid="guidEditorLinesCmdSet" id="LinesMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Remove Duplicate Lines</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidEditorLinesCmdSet" id="RemoveEmptyLines" priority="0x0106" type="Button">
+        <Parent guid="guidEditorLinesCmdSet" id="LinesMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Remove Empty Lines</ButtonText>
         </Strings>
       </Button>
 
@@ -574,18 +598,30 @@
     <KeyBinding guid="guidFormattingCmdSet" id="SurroundWith" mod1="Shift Alt" key1="W" editor="guidVSStd97"/>
     <KeyBinding guid="guidFormattingCmdSet" id="ExpandSelection" mod1="Alt" key1="1" editor="guidVSStd97"/>
     <KeyBinding guid="guidFormattingCmdSet" id="ContractSelection" mod1="Alt" key1="2" editor="guidVSStd97"/>
-    <KeyBinding guid="guidEditorExtensionsCmdSet" id="cmdidSortAsc" mod1="Alt" key1="3" editor="guidVSStd97"/>
-    <KeyBinding guid="guidEditorExtensionsCmdSet" id="cmdidSortDesc" mod1="Alt" key1="4" editor="guidVSStd97"/>
+    <KeyBinding guid="guidEditorLinesCmdSet" id="SortAsc" mod1="Alt" key1="3" editor="guidVSStd97"/>
+    <KeyBinding guid="guidEditorLinesCmdSet" id="SortDesc" mod1="Alt" key1="4" editor="guidVSStd97"/>
     
   </KeyBindings>
 
   <CommandPlacements>
-    <!--<CommandPlacement guid="guidEditorExtensionsCmdSet" id="MyMenuGroup" priority="0x0400">
+    <!-- Editor Lines start-->
+    <CommandPlacement guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" priority="0x0300">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_CODEWIN_TEXTEDIT"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" priority="0x0300">
       <Parent guid="jsEditorCommandSet" id="jsContextMenu"/>
-    </CommandPlacement>-->
-    <!--<CommandPlacement guid="guidEditorExtensionsCmdSet" id="MyMenuGroup" priority="0x0200">
+    </CommandPlacement>
+    <CommandPlacement guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" priority="0x0300">
       <Parent guid="cssEditorCommandSet" id="cssContextMenu"/>
-    </CommandPlacement>-->
+    </CommandPlacement>
+    <CommandPlacement guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" priority="0x0300">
+      <Parent guid="htmlEditorCommandSet" id="htmlContextMenu"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" priority="0x0300">
+      <Parent guid="htmlEditorCommandSetLibra" id="htmlContextMenuLibra"/>
+    </CommandPlacement>
+    <!-- Editor Lines end-->
+
     <CommandPlacement guid="guidCssCmdSet" id="MyMenuGroup" priority="0x0010">
       <Parent guid="jsEditorCommandSet" id="jsContextMenu"/>
     </CommandPlacement>
@@ -595,15 +631,9 @@
     <CommandPlacement guid="guidCssCmdSet" id="MyMenuGroup" priority="0x0010">
       <Parent guid="htmlEditorCommandSetLibra" id="htmlContextMenuLibra"/>
     </CommandPlacement>
-    <!--<CommandPlacement guid="guidCssCmdSet" id="MyMenuGroup" priority="0x0200">
-      <Parent guid="cssEditorCommandSet" id="cssContextMenu"/>
-    </CommandPlacement>-->
     <CommandPlacement guid="guidEditorExtensionsCmdSet" id="MyMenuGroup" priority="0x0600">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EDIT"/>
     </CommandPlacement>
-    <!--<CommandPlacement guid="guidDiffCmdSet" id="MyMenuGroup" priority="0x0010">
-      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_WEBITEMNODE"/>
-    </CommandPlacement>-->
     <CommandPlacement guid="guidSolutionExplorerCmdSet" id="MyMenuGroup" priority="0x0010">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_WEBITEMNODE"/>
     </CommandPlacement>
@@ -654,9 +684,16 @@
       <IDSymbol name="cmdidSha384Transform" value="0x0123" />
       <IDSymbol name="cmdidSha512Transform" value="0x0124" />
       <IDSymbol name="AddNewFileGroup" value="0x333" />
-      <IDSymbol name="cmdidSortAsc" value="0x338" />
-      <IDSymbol name="cmdidSortDesc" value="0x339" />
-    <IDSymbol name="cmdidRemoveDuplicateLines" value="0x340" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidEditorLinesCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e67}">
+      <IDSymbol name="LinesMenu" value="0x0001" />
+      <IDSymbol name="LinesMenuGroup" value="0x0002" />
+      <IDSymbol name="SortAsc" value="0x0003" />
+      <IDSymbol name="SortDesc" value="0x0004" />
+      <IDSymbol name="RemoveDuplicateLines" value="0x0005" />
+      <IDSymbol name="LinesTopMenuGroup" value="0x0006" />
+      <IDSymbol name="RemoveEmptyLines" value="0x0007" />
     </GuidSymbol>
 
     <GuidSymbol name="guidCssCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e50}">
@@ -740,8 +777,8 @@
       <IDSymbol name="htmlContextMenuLibra" value="1"/>
     </GuidSymbol>
 
-    <GuidSymbol name="cssEditorCommandSet" value="{A764E896-518D-11D2-9A89-00C04F79EFC3}">
-      <IDSymbol name="cssContextMenu" value="0x0102"/>
+    <GuidSymbol name="cssEditorCommandSet" value="{64DA400E-B4AD-4D67-AA92-4B7ACB01ECD5}">
+      <IDSymbol name="cssContextMenu" value="0x0002"/>
     </GuidSymbol>
 
     <GuidSymbol name="guidFormattingCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e66}">

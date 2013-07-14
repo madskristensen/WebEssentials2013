@@ -21,9 +21,6 @@ namespace MadsKristensen.EditorExtensions
         public const uint sha256Transform = 0x122;
         public const uint sha384Transform = 0x123;
         public const uint sha512Transform = 0x124;
-        public const uint cmdidSortAsc = 0x338;
-        public const uint cmdidSortDesc = 0x339;
-        public const uint cmdidRemoveDuplicateLines = 0x340;
         public const uint sortCssProperties = 0x125;
         public const uint addMissingVendor = 0x127;
         public const uint addMissingStandard = 0x128;
@@ -50,6 +47,12 @@ namespace MadsKristensen.EditorExtensions
         public const uint ExtractMixin = 0x1057;
         public const uint BundleCss = 0x1071;
         public const uint BundleJs = 0x1072;
+
+        // Lines
+        public const uint SortAsc = 0x0003;
+        public const uint SortDesc = 0x0004;
+        public const uint RemoveDuplicateLines = 0x0005;
+        public const uint RemoveEmptyLines = 0x0007;
 
         // Build
         public const uint cmdBuildBundles = 0x1083;

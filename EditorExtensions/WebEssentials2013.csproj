@@ -251,13 +251,20 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Adornments\Color\IntraTextAdornmentTagger.cs" />
-    <Compile Include="Classifications\JavaScriptArrayOutlining.cs" />
     <Compile Include="Classifications\HtmlRegionTagger.cs" />
+    <Compile Include="Classifications\JavaScriptArrayOutlining.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Classifications\JavaScriptOutlining.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Classifications\JavaScriptRegionTagger.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Classifications\Markdown\MarkdownClassificationTypes.cs" />
     <Compile Include="Classifications\Markdown\MarkdownClassifier.cs" />
     <Compile Include="Classifications\Markdown\MarkdownContentTypeDefinition.cs" />
     <Compile Include="Classifications\ModernizrClassifier.cs" />
-    <Compile Include="Classifications\JavaScriptOutlining.cs" />
     <Compile Include="Commands\CommandTargetBase.cs" />
     <Compile Include="Commands\Css\CssSelectBrowsers.cs" />
     <Compile Include="Commands\Css\CssFormatCommandTarget.cs" />
@@ -273,11 +280,28 @@
     <Compile Include="Commands\HTML\SurroundWithTarget.cs" />
     <Compile Include="Commands\HTML\EnterFormatCommandTarget.cs" />
     <Compile Include="Commands\HTML\ZenCodingCommandTarget.cs" />
-    <Compile Include="Commands\JavaScript\JavaScriptFindReferencesCommandTarget.cs" />
-    <Compile Include="Commands\JavaScript\JavaScriptCreationListener.cs" />
+    <Compile Include="Commands\JavaScript\JavaScriptCreationListener.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commands\JavaScript\JavaScriptFindReferencesCommandTarget.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commands\JavaScript\JavaScriptSaveListener.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commands\JavaScript\JsHintCompiler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commands\JavaScript\JsHintProjectRunner.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Commands\JavaScript\JsHintRunner.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Commands\LESS\LessExtractMixinCommandTarget.cs" />
     <Compile Include="Commands\LESS\LessExtractVariableCommandTarget.cs" />
     <Compile Include="Commands\LESS\LessCreationListener.cs" />
+    <Compile Include="Commands\Shared\RemoveEmptyLinesCommandTarget.cs" />
     <Compile Include="Commands\Shared\RemoveDuplicateLinesCommandTarget.cs" />
     <Compile Include="Commands\Shared\SortSelectedLinesCommandTarget.cs" />
     <Compile Include="Commands\Shared\EncodeSelectionCommandTarget.cs" />
@@ -287,17 +311,12 @@
     <Compile Include="Commands\Css\CssExtractToFileCommandTarget.cs" />
     <Compile Include="Commands\Css\CssCreationListener.cs" />
     <Compile Include="Commands\Css\CssSortPropertiesCommandTarget.cs" />
-    <Compile Include="Commands\JavaScriptSmartIndentCommandTarget.cs" />
     <Compile Include="Commands\Css\CssSaveListener.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Commands\JavaScript\JavaScriptSaveListener.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Commands\JsDocRegistry.cs" />
     <Compile Include="Classifications\Base64TaggerProvider.cs" />
     <Compile Include="Classifications\CssHighlightWordTagger.cs" />
-    <Compile Include="Classifications\JavaScriptRegionTagger.cs" />
     <Compile Include="Classifications\ValueTaggerProvider.cs" />
     <Compile Include="Classifications\VendorClassifier.cs" />
     <Compile Include="Commands\Css\RetriggerCommandTarget.cs" />
@@ -342,6 +361,24 @@
     <Compile Include="DropTargets\StylesheetDrop.cs" />
     <Compile Include="DropTargets\FontDrop.cs" />
     <Compile Include="DropTargets\ImageDrop.cs" />
+    <Compile Include="SmartTags\HTML\ExtractToFileSmartTag.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SmartTags\HTML\HtmlAngularControllerSmartTag.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SmartTags\HTML\HtmlConvertToFigureSmartTag.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SmartTags\HTML\HtmlMinifyLanguageSmartTag.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SmartTags\HTML\HtmlRemoveParentSmartTag.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SmartTags\HTML\HtmlUnMinifySmartTag.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Validation\CSS\Filters\ScssErrorFilter.cs" />
     <Compile Include="Validation\CSS\Providers\ColorValuesInRangeErrorTagProvider.cs">
       <SubType>Code</SubType>
@@ -405,7 +442,6 @@
     <Compile Include="Validation\CSS\Filters\MsKeyframesCssErrorFilter.cs" />
     <Compile Include="ExtensionMethods\AtDirectiveExtensions.cs" />
     <Compile Include="ExtensionMethods\IVsExtensions.cs" />
-    <Compile Include="Commands\JavaScript\JsHintRunner.cs" />
     <Compile Include="ExtensionMethods\PseudoExtensions.cs" />
     <Compile Include="Helpers\CssItemAggregator.cs" />
     <Compile Include="Logger.cs" />
@@ -419,12 +455,6 @@
     <Compile Include="Margin\ScriptRunnerBase.cs" />
     <Compile Include="Margin\LessCompiler.cs" />
     <Compile Include="Helpers\OptionHelpers.cs" />
-    <Compile Include="Commands\JavaScript\JsHintProjectRunner.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Commands\JavaScript\JsHintCompiler.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Margin\CoffeeScriptMargin.cs" />
     <Compile Include="Margin\MarginBase.cs" />
     <Compile Include="Margin\LessMargin.cs" />
@@ -504,11 +534,6 @@
     <Compile Include="SmartTags\CSS\Actions\MissingStandardDirectiveSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\VendorDirectiveSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\OverQualifySelectorSmartTagAction.cs" />
-    <Compile Include="SmartTags\HTML\HtmlAngularControllerSmartTag.cs" />
-    <Compile Include="SmartTags\HTML\HtmlRemoveParentSmartTag.cs" />
-    <Compile Include="SmartTags\HTML\HtmlUnMinifySmartTag.cs" />
-    <Compile Include="SmartTags\HTML\HtmlMinifyLanguageSmartTag.cs" />
-    <Compile Include="SmartTags\HTML\HtmlConvertToFigureSmartTag.cs" />
     <Compile Include="SmartTags\CSS\Providers\LessExtractVariableSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\Providers\SortSmartTagProvider.cs" />
     <Compile Include="Validation\CSS\Filters\CustomCssErrorFilter.cs" />

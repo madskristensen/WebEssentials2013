@@ -15,6 +15,7 @@ namespace MadsKristensen.EditorExtensions
         public const string guidExtractCmdSetString = "e396b698-e00e-444b-9f5f-3dcb1ef74e64";
         public const string guidBuildCmdSetString = "e396b698-e00e-444b-9f5f-3dcb1ef74e65";
         public const string guidFormattingCmdSetString = "e396b698-e00e-444b-9f5f-3dcb1ef74e66";
+        public const string guidEditorLinesCmdSetString = "e396b698-e00e-444b-9f5f-3dcb1ef74e67";
 
         public static readonly Guid guidEditorExtensionsCmdSet = new Guid(guidEditorExtensionsCmdSetString);
         public static readonly Guid guidCssCmdSet = new Guid(guidCssCmdSetString);
@@ -26,5 +27,6 @@ namespace MadsKristensen.EditorExtensions
         public static readonly Guid guidExtractCmdSet = new Guid(guidExtractCmdSetString);
         public static readonly Guid guidBuildCmdSet = new Guid(guidBuildCmdSetString);
         public static readonly Guid guidFormattingCmdSet = new Guid(guidFormattingCmdSetString);
+        public static readonly Guid guidEditorLinesCmdSet = new Guid(guidEditorLinesCmdSetString);
     };
 }

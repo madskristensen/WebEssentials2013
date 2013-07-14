@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions
         private DTE2 _dte;
 
         public RemoveDuplicateLines(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidEditorExtensionsCmdSet, PkgCmdIDList.cmdidRemoveDuplicateLines)
+            : base(adapter, textView, GuidList.guidEditorLinesCmdSet, PkgCmdIDList.RemoveDuplicateLines)
         {
             _dte = EditorExtensionsPackage.DTE;
         }
@@ -49,7 +49,7 @@ namespace MadsKristensen.EditorExtensions
 
                 if (Object.ReferenceEquals(x, y)) return true;
 
-                return String.Equals(x.Trim(), y.Trim(), StringComparison.CurrentCultureIgnoreCase);
+                return string.Equals(x.Trim(), y.Trim(), StringComparison.CurrentCultureIgnoreCase);
             }
 
             public int GetHashCode(string obj)

@@ -25,6 +25,7 @@ namespace MadsKristensen.EditorExtensions
             textView.Properties.GetOrCreateSingletonProperty<EncodeSelection>(() => new EncodeSelection(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<SortSelectedLines>(() => new SortSelectedLines(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<RemoveDuplicateLines>(() => new RemoveDuplicateLines(textViewAdapter, textView));
+            textView.Properties.GetOrCreateSingletonProperty<RemoveEmptyLines>(() => new RemoveEmptyLines(textViewAdapter, textView));
         }
     }
 }
