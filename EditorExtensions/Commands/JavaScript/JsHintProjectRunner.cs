@@ -19,7 +19,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (WESettings.GetBoolean(WESettings.Keys.EnableJsHint))
             {
-                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => _runner.RunCompiler()), DispatcherPriority.ApplicationIdle, null);
+                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(_runner.RunCompiler), DispatcherPriority.ApplicationIdle, null);
             }
         }
 
@@ -42,7 +42,7 @@ namespace MadsKristensen.EditorExtensions
 
                     goto case FileActionTypes.ContentSavedToDisk;
                 case FileActionTypes.ContentSavedToDisk:
-                    Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => _runner.RunCompiler()), DispatcherPriority.ApplicationIdle, null);
+                    Dispatcher.CurrentDispatcher.BeginInvoke(new Action(_runner.RunCompiler), DispatcherPriority.ApplicationIdle, null);
                     break;
             }
         }
