@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Windows.Forms;
+using System.Web;
 
 namespace MadsKristensen.EditorExtensions.SmartTags
 {
@@ -105,7 +106,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags
                 if (element.IsStyleBlock())
                     reference = "<link rel=\"stylesheet\" href=\"/{0}\" />";
 
-                return string.Format(reference, relative);
+                return string.Format(reference, HttpUtility.HtmlAttributeEncode(relative));
             }
         }
     }
