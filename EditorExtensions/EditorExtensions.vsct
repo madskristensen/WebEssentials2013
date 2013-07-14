@@ -620,6 +620,9 @@
     <CommandPlacement guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" priority="0x0300">
       <Parent guid="htmlEditorCommandSetLibra" id="htmlContextMenuLibra"/>
     </CommandPlacement>
+    <CommandPlacement guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" priority="0x0600">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EDIT"/>
+    </CommandPlacement>
     <!-- Editor Lines end-->
 
     <CommandPlacement guid="guidCssCmdSet" id="MyMenuGroup" priority="0x0010">
