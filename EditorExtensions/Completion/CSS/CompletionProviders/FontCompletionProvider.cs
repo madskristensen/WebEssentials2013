@@ -18,7 +18,6 @@ namespace MadsKristensen.EditorExtensions
     [Name("FontCompletionProvider")]
     internal class FontCompletionProvider : ICssCompletionListProvider, ICssCompletionCommitListener
     {
-        private static List<ICssCompletionListEntry> _emptyList = new List<ICssCompletionListEntry>();
         public CssCompletionContextType ContextType
         {
             get { return CssCompletionContextType.PropertyValue; }
@@ -43,35 +42,28 @@ namespace MadsKristensen.EditorExtensions
 
         public IEnumerable<ICssCompletionListEntry> GetListEntries(CssCompletionContext context)
         {
-            if (IsFontFamilyContext(context))
+            if (!IsFontFamilyContext(context))
+                yield break;
+
+            StyleSheet stylesheet = context.ContextItem.StyleSheet;
+            var visitorRules = new CssItemCollector<FontFaceDirective>();
+            stylesheet.Accept(visitorRules);
+
+            foreach (FontFaceDirective item in visitorRules.Items)
             {
-                List<ICssCompletionListEntry> entries = new List<ICssCompletionListEntry>();
-                List<string> idNames = new List<string>();
+                var visitorDec = new CssItemCollector<Declaration>();
+                item.Block.Accept(visitorDec);
 
-                StyleSheet stylesheet = context.ContextItem.StyleSheet;
-                var visitorRules = new CssItemCollector<FontFaceDirective>();
-                stylesheet.Accept(visitorRules);
+                Declaration family = visitorDec.Items.FirstOrDefault(i => i.PropertyName.Text == "font-family");
 
-                foreach (FontFaceDirective item in visitorRules.Items)
+                if (family != null)
                 {
-                    var visitorDec = new CssItemCollector<Declaration>();
-                    item.Block.Accept(visitorDec);
-
-                    Declaration family = visitorDec.Items.FirstOrDefault(i => i.PropertyName.Text == "font-family");
-
-                    if (family != null)
-                    {
-                        string value = string.Join(string.Empty, family.Values.Select(v => v.Text));
-                        entries.Add(new FontFamilyCompletionListEntry(value.Trim('\'', '"')));
-                    }
+                    string value = string.Join(string.Empty, family.Values.Select(v => v.Text));
+                    yield return new FontFamilyCompletionListEntry(value.Trim('\'', '"'));
                 }
-
-                entries.Add(new FontFamilyCompletionListEntry("Pick from file..."));
-
-                return entries;
             }
 
-            return _emptyList;
+            yield return new FontFamilyCompletionListEntry("Pick from file...");
         }
 
         public void OnCommitted(ICssCompletionListEntry entry, ITrackingSpan contextSpan, SnapshotPoint caret, ITextView textView)
@@ -80,10 +72,11 @@ namespace MadsKristensen.EditorExtensions
             {
                 string fontFamily;
                 string atDirective = GetFontFromFile(entry.DisplayText, (IWpfTextView)textView, out fontFamily);
+                if (atDirective == null)
+                    return;                 // If the user cancelled the dialog, do nothing.
 
                 Dispatcher.CurrentDispatcher.BeginInvoke(
                 new Action(() => Replace(contextSpan, textView, atDirective, fontFamily)), DispatcherPriority.Normal);
-
             }
         }
 
@@ -93,7 +86,6 @@ namespace MadsKristensen.EditorExtensions
             textView.TextBuffer.Insert(0, atDirective + Environment.NewLine + Environment.NewLine);
             textView.TextBuffer.Insert(contextSpan.GetSpan(textView.TextBuffer.CurrentSnapshot).Start, fontFamily);
             EditorExtensionsPackage.DTE.UndoContext.Close();
-
         }
 
         private static object _syncRoot = new object();
@@ -107,13 +99,11 @@ namespace MadsKristensen.EditorExtensions
                 dialog.Filter = "Fonts (*.woff;*.eot;*.ttf;*.otf;*.svg)|*.woff;*.eot;*.ttf;*.otf;*.svg";
                 dialog.DefaultExt = ".woff";
 
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    FontDropHandler fdh = new FontDropHandler(view);
-                    return fdh.GetCodeFromFile(dialog.FileName, out fontFamily);
-                }
+                if (dialog.ShowDialog() != DialogResult.OK)
+                    return null;
 
-                return text;
+                FontDropHandler fdh = new FontDropHandler(view);
+                return fdh.GetCodeFromFile(dialog.FileName, out fontFamily);
             }
         }
     }

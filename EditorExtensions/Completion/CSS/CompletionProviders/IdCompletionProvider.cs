@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.CSS.Core;
@@ -19,24 +20,14 @@ namespace MadsKristensen.EditorExtensions
 
         public IEnumerable<ICssCompletionListEntry> GetListEntries(CssCompletionContext context)
         {
-            List<string> idNames = new List<string>();
-            List<ICssCompletionListEntry> entries = new List<ICssCompletionListEntry>();
-
             StyleSheet stylesheet = context.ContextItem.StyleSheet;
             var visitorRules = new CssItemCollector<IdSelector>();
             stylesheet.Accept(visitorRules);
 
-            foreach (IdSelector item in visitorRules.Items)
+            foreach (string item in visitorRules.Items.Where(s => s != context.ContextItem).Select(s => s.Text).Distinct())
             {
-                if (item != context.ContextItem && !idNames.Contains(item.Text))
-                {
-                    idNames.Add(item.Text);
-                    entries.Add(new CompletionListEntry(item.Text));
-                }
+                yield return new CompletionListEntry(item);
             }
-
-            return entries;
         }
-
     }
 }
