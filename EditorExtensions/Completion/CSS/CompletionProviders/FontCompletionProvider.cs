@@ -72,6 +72,8 @@ namespace MadsKristensen.EditorExtensions
             {
                 string fontFamily;
                 string atDirective = GetFontFromFile(entry.DisplayText, (IWpfTextView)textView, out fontFamily);
+                if (atDirective == null)
+                    return;                 // If the user cancelled the dialog, do nothing.
 
                 Dispatcher.CurrentDispatcher.BeginInvoke(
                 new Action(() => Replace(contextSpan, textView, atDirective, fontFamily)), DispatcherPriority.Normal);
@@ -97,13 +99,11 @@ namespace MadsKristensen.EditorExtensions
                 dialog.Filter = "Fonts (*.woff;*.eot;*.ttf;*.otf;*.svg)|*.woff;*.eot;*.ttf;*.otf;*.svg";
                 dialog.DefaultExt = ".woff";
 
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    FontDropHandler fdh = new FontDropHandler(view);
-                    return fdh.GetCodeFromFile(dialog.FileName, out fontFamily);
-                }
+                if (dialog.ShowDialog() != DialogResult.OK)
+                    return null;
 
-                return text;
+                FontDropHandler fdh = new FontDropHandler(view);
+                return fdh.GetCodeFromFile(dialog.FileName, out fontFamily);
             }
         }
     }
