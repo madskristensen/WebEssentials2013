@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.Utilities;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Web;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -25,9 +26,9 @@ namespace MadsKristensen.EditorExtensions
     internal class StylesheetDropHandler : IDropHandler
     {
         IWpfTextView _view;
-        private readonly List<string> _imageExtensions = new List<string> { ".css", ".less", ".sass", ".scss" };
+        private readonly HashSet<string> _imageExtensions = new HashSet<string> { ".css", ".less", ".sass", ".scss" };
         private string _imageFilename;
-        string _background = "@import url('{0}');";
+        string _import = "@import url('{0}');";
 
         public StylesheetDropHandler(IWpfTextView view)
         {
@@ -44,8 +45,9 @@ namespace MadsKristensen.EditorExtensions
                 if (index > -1)
                     reference = reference.Substring(index).ToLowerInvariant();
             }
+            reference = HttpUtility.UrlPathEncode(reference);
 
-            _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(_background, reference));
+            _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(_import, reference));
 
             return DragDropPointerEffects.Copy;
         }
