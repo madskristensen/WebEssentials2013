@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using System.Web;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -97,6 +98,8 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else if (imageUrl.StartsWith("/", StringComparison.Ordinal))
                 {
+                    imageUrl = HttpUtility.UrlDecode(imageUrl);
+                    
                     string root = ProjectHelpers.GetProjectFolder(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
                     if (root.Contains("://"))
                         return root + imageUrl;
@@ -105,6 +108,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else if (EditorExtensionsPackage.DTE.ActiveDocument != null)
                 {
+                    imageUrl = HttpUtility.UrlDecode(imageUrl);
                     FileInfo fi = new FileInfo(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
                     DirectoryInfo dir = fi.Directory;
                     while (imageUrl.Contains("../"))

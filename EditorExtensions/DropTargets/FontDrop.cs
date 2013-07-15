@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Web;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -120,6 +121,7 @@ namespace MadsKristensen.EditorExtensions
             
             string sourceUrls = string.Join(", ", sources);
             fontFamily = fontName;
+            fontFamily = HttpUtility.UrlPathEncode(fontFamily);
             return string.Format(fontFace, fontName, sourceUrls);
         }
 
@@ -130,6 +132,7 @@ namespace MadsKristensen.EditorExtensions
                 draggedFilename = draggedFilename.Substring(index).ToLowerInvariant();
 
             string extension = Path.GetExtension(draggedFilename).ToLowerInvariant();
+            draggedFilename = HttpUtility.UrlPathEncode(draggedFilename);
             string sourceUrl = string.Format(fontUrls, draggedFilename, formats[extension]);
 
             return string.Format(fontFace, "MyFontName", sourceUrl);

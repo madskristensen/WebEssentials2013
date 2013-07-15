@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Web;
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -89,12 +90,10 @@ namespace MadsKristensen.EditorExtensions
 
         public string GetInsertionText(CssTextSource textSource, ITrackingSpan typingSpan)
         {
+            string text = HttpUtility.UrlPathEncode(DisplayText);
             if (IsFolder)
-            {
-                return DisplayText + "/";
-            }
-
-            return DisplayText;
+                text += "/";
+            return text;
         }
 
         public string GetVersionedAttribute(string name, Version version)
