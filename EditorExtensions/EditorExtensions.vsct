@@ -617,7 +617,7 @@
   </CommandPlacements>
 
   <Symbols>
-    <GuidSymbol name="guidEditorExtensionsPkg" value="{5fb7364d-2e8c-44a4-95eb-2a382e30fec7}" />
+    <GuidSymbol name="guidEditorExtensionsPkg" value="{5fb7364d-2e8c-44a4-95eb-2a382e30fec8}" />
     <GuidSymbol name="guidEditorExtensionsCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e41}">
       <IDSymbol name="MyMenuGroup" value="0x1020" />
       <IDSymbol name="cmdidHtmlEncode" value="0x0102" />

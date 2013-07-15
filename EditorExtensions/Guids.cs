@@ -4,7 +4,7 @@ namespace MadsKristensen.EditorExtensions
 {
     static class GuidList
     {
-        public const string guidEditorExtensionsPkgString = "5fb7364d-2e8c-44a4-95eb-2a382e30fec7";
+        public const string guidEditorExtensionsPkgString = "5fb7364d-2e8c-44a4-95eb-2a382e30fec8";
         public const string guidEditorExtensionsCmdSetString = "e396b698-e00e-444b-9f5f-3dcb1ef74e41";
         public const string guidCssCmdSetString = "e396b698-e00e-444b-9f5f-3dcb1ef74e50";
         public const string guidCssIntellisensCmdSetString = "e396b698-e00e-444b-9f5f-3dcb1ef74e51";
