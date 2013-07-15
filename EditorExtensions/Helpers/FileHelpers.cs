@@ -60,7 +60,7 @@ namespace MadsKristensen.EditorExtensions
             // Find common root
             for (index = 0; index < len; index++)
             {
-                if (absDirs[index] == relDirs[index]) lastCommonRoot = index;
+                if (absDirs[index].Equals(relDirs[index], StringComparison.OrdinalIgnoreCase)) lastCommonRoot = index;
                 else break;
             }
 
