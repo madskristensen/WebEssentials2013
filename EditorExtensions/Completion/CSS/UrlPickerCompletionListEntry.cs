@@ -3,16 +3,18 @@ using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.CSS.Editor.Intellisense;
+using System.IO;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class UrlPickerCompletionListEntry : ICssCompletionListEntry
     {
-        private string _name;
+        private readonly string _name;
 
-        public UrlPickerCompletionListEntry(string name)
+        public UrlPickerCompletionListEntry(FileSystemInfo file)
         {
-            _name = name;
+            _name = file.Name;
+            IsFolder = file is DirectoryInfo;
         }
 
         public bool AllowQuotedString
@@ -70,11 +72,7 @@ namespace MadsKristensen.EditorExtensions
             return GetAttribute(name);
         }
 
-        private bool IsFolder
-        {
-            get { return !DisplayText.Contains("."); }
-        }
-
+        private bool IsFolder { get; set; }
 
         public bool IsSupported(BrowserVersion browser)
         {
