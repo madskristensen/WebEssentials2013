@@ -511,9 +511,6 @@
     <Compile Include="QuickInfo\Font\FontQuickInfoController.cs" />
     <Compile Include="QuickInfo\Font\FontQuickInfo.cs" />
     <Compile Include="QuickInfo\Selector\SelectorSpecificity.cs" />
-    <Compile Include="QuickLaunch\VSGallery\VSSearchProvider.cs" />
-    <Compile Include="QuickLaunch\VSGallery\VSSearchResult.cs" />
-    <Compile Include="QuickLaunch\VSGallery\VSSearchTask.cs" />
     <Compile Include="Schemas\Browsers\BrowserSelector.xaml.cs">
       <DependentUpon>BrowserSelector.xaml</DependentUpon>
     </Compile>
