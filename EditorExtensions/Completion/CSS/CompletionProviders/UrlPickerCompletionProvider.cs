@@ -30,12 +30,10 @@ namespace MadsKristensen.EditorExtensions
             if (url.StartsWith("http") || url.Contains("//") || url.Contains(";base64,") || !Directory.Exists(directory))
                 yield break;
 
-            foreach (string item in Directory.GetFileSystemEntries(directory))
+            foreach (FileSystemInfo item in new DirectoryInfo(directory).EnumerateFileSystemInfos())
             {
-                string entry = item.Substring(item.LastIndexOf("\\") + 1);
-
-                //if (_imageExtensions.Contains(Path.GetExtension(entry)))
-                    yield return new UrlPickerCompletionListEntry(entry);
+                //if (_imageExtensions.Contains(item.Extension))
+                yield return new UrlPickerCompletionListEntry(item);
             }
         }
 

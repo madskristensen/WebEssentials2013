@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Web;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.DragDrop;
 using Microsoft.VisualStudio.Utilities;
@@ -25,7 +26,7 @@ namespace MadsKristensen.EditorExtensions
     internal class ImageDropHandler : IDropHandler
     {
         IWpfTextView _view;
-        private readonly List<string> _imageExtensions = new List<string> { ".jpg", ".jpeg", ".bmp", ".png", ".gif", ".svg", ".tif", ".tiff" };
+        private readonly HashSet<string> _imageExtensions = new HashSet<string> { ".jpg", ".jpeg", ".bmp", ".png", ".gif", ".svg", ".tif", ".tiff" };
         private string _imageFilename;
         string _background = "background-image: url({0});";
 
@@ -44,6 +45,7 @@ namespace MadsKristensen.EditorExtensions
                 if (index > -1)
                     reference = reference.Substring(index).ToLowerInvariant();
             }
+            reference = HttpUtility.UrlPathEncode(reference);
 
             _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(_background, reference));
 
