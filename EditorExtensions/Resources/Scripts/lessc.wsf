@@ -110,9 +110,9 @@ Licensed under the Apache 2.0 License.
 
     </script>
 
-    <!-- less.js from https://github.com/cloudhead/less.js/tree/master/dist/ -->
-    // vank: updated to LESS 1.3.1
-    <script language="jscript" src="less-1.3.0.js" />
+    <!-- less.js from https://github.com/less/less.js/tree/master/dist/ -->
+    <script language="jscript" src="es5-shim.min.js" />
+    <script language="jscript" src="less-1.4.1.min.js" />
 
     <script language="jscript">
         // Parse args
@@ -184,9 +184,11 @@ Licensed under the Apache 2.0 License.
             // SLaks: Make sure LESS can resolve relative import URLs.
             // LESS.js tries to normalize \ to /, but they forgot that
             // replace() with a non-regex only replaces the 1st match.
-            location.href = input.replace(/\\/g, '/');
+            // It also tries to detect drive letters but only supports
+            // lowercase.
+            var safeFilename = input.replace(/\\/g, '/').replace(/^[A-Z]+:/, function (m) { return m.toLowerCase(); });
             var parser = new less.Parser({
-                filename: input
+                filename: safeFilename
             });
 
             try {
