@@ -72,7 +72,7 @@
         this._deprecated = false;
         for (var i = 0; i < commentStringArr.length; i++) {
             var description = commentStringArr[i];
-            var desArr = description.split(" ");
+            var desArr = description.split(/\s+/);
             this["_" + desArr[0].substr(1)] = true;
             tagName = desArr[0];
             switch (tagName) {
