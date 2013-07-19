@@ -1,4 +1,14 @@
 ﻿(function () {
+	var xmlEscapes = {
+		"&": "&amp;",
+		"<": "&lt;",
+		">": "&gt;",
+		'"': "&quot;"
+	};
+	var xmlRegex = new RegExp(Object.keys(xmlEscapes).join('|'), 'g');
+	function xmlEscape(str) {
+		return str.replace(xmlRegex, function (ch) { return xmlEscapes[ch]; });; 
+	}
 
     intellisense.addEventListener("statementcompletionhint", function (event) {
         var itemValue = event.completionItem.value;
@@ -150,6 +160,7 @@
         var symHlp = event.symbolHelp;
         if (symHlp) symHlp.description = ((doc._deprecated && "[deprecated]") || "") + (doc.description || "");
         sig.description = ((doc._deprecated && "[deprecated]") || "") + (doc.description || "");
+        sig.description = xmlEscape(sig.description);
 
         if (symHlp) {
             symHlp.type = doc.type;
@@ -176,6 +187,7 @@
                     sig.params[j].type = param.type;
                     sig.params[j].optional = param.isOptional;
                     sig.params[j].description = param.description;
+                    sig.params[j].description = xmlEscape(sig.params[j].description);
                     break;
                 }
             }
