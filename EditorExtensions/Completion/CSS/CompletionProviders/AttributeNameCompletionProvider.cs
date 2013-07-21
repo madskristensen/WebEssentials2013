@@ -23,45 +23,58 @@ namespace MadsKristensen.EditorExtensions
 
         public IEnumerable<ICssCompletionListEntry> GetListEntries(CssCompletionContext context)
         {
-            HtmlSchemaManager mng = new HtmlSchemaManager();
-            IHtmlSchema schema = mng.GetSchema("http://schemas.microsoft.com/intellisense/html");
-
             var tag = context.ContextItem.FindType<SimpleSelector>();
+            var schemas = GetSchemas();
 
-            if (tag != null && tag.Name != null)
+            if (tag == null || tag.Name == null)
             {
-                return KnownTagName(schema, tag.Name.Text);
+                return UnknownTagName(schemas);
             }
 
-            return UnknownTagName(schema);
+            return KnownTagName(schemas, tag.Name.Text);
         }
 
-        private IEnumerable<ICssCompletionListEntry> KnownTagName(IHtmlSchema schema, string tagName)
+        public static List<IHtmlSchema> GetSchemas()
         {
-            var element = schema.GetElementInfo(tagName);
+            HtmlSchemaManager mng = new HtmlSchemaManager();
+            IHtmlSchema html = mng.GetSchema("http://schemas.microsoft.com/intellisense/html");
 
-            if (element != null)
+            var schemas = mng.CustomAttributePrefixes.SelectMany(p => mng.GetSupplementalSchemas(p, false)).ToList();
+            schemas.Insert(0, html);
+
+            return schemas;
+        }
+
+        private IEnumerable<ICssCompletionListEntry> KnownTagName(IEnumerable<IHtmlSchema> schemas, string tagName)
+        {
+            foreach (IHtmlSchema schema in schemas)
             {
-                foreach (var attr in element.GetAttributes())
+                var element = schema.GetElementInfo(tagName) ?? schema.GetElementInfo("___all___");
+
+                if (element != null)
                 {
-                    if (IsAllowed(attr.Name))
-                        yield return new CompletionListEntry(attr.Name);
+                    foreach (var attr in element.GetAttributes())
+                    {
+                        if (IsAllowed(attr.Name))
+                            yield return new CompletionListEntry(attr.Name);
+                    }
                 }
             }
         }
 
-        private IEnumerable<ICssCompletionListEntry> UnknownTagName(IHtmlSchema schema)
+        private IEnumerable<ICssCompletionListEntry> UnknownTagName(IEnumerable<IHtmlSchema> schemas)
         {
             if (_allAttributes == null)
             {
                 _allAttributes = new HashSet<string>();
 
-                foreach (var element in schema.GetTopLevelElements())
-                    foreach (var attr in element.GetAttributes())
-                    {
-                        if (!_allAttributes.Contains(attr.Name) && IsAllowed(attr.Name))
-                            _allAttributes.Add(attr.Name);
-                    }
+                foreach (var schema in schemas)
+                    foreach (var element in schema.GetTopLevelElements())
+                        foreach (var attr in element.GetAttributes())
+                        {
+                            if (!_allAttributes.Contains(attr.Name) && IsAllowed(attr.Name))
+                                _allAttributes.Add(attr.Name);
+                        }
             }
 
             return _allAttributes.Select(n => new CompletionListEntry(n));
