@@ -342,6 +342,7 @@
     <Compile Include="Completion\HTML\SimpleHtmlCompletion.cs" />
     <Compile Include="Completion\HTML\TwitterCardCompletion.cs" />
     <Compile Include="Completion\HTML\AppleMetaCompletion.cs" />
+    <Compile Include="Completion\HTML\OpenGraphTypeCompletion.cs" />
     <Compile Include="Completion\HTML\XUACompatibleCompletion.cs" />
     <Compile Include="Completion\HTML\ViewportCompletion.cs" />
     <Compile Include="Completion\HTML\MsApplicationCompletion.cs" />
