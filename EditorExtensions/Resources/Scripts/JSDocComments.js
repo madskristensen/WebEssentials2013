@@ -120,13 +120,13 @@
         }
     };
 
-    var splitAtRegExp = /[ *]*[\r\n][ *]*/;
+    var splitAtRegExp = /[ \t*]*[\r\n][ \t*]*/;
 
     function processComment(commentString) {
         //replace the first "*" with a "*\r\n"
         commentString = commentString.replace("*", "*\r\n");
         //remove consecutive spaces 
-        commentString = commentString.replace(/[ ]+/g, " ");
+        commentString = commentString.replace(/[ \t]+/g, " ");
         //split at each new line [strip leading "*"s and spaces]
         var arr = commentString.split(splitAtRegExp);
         index = 0;
