@@ -78,9 +78,9 @@ namespace MadsKristensen.EditorExtensions
 
             var textBufferFactory = componentModel.GetService<ITextBufferFactoryService>();
             var textViewFactory = componentModel.GetService<ITextEditorFactoryService>();
-
+            var textRoles = contentType == "JavaScript" ? new[] { PredefinedTextViewRoles.Document } : new[] { PredefinedTextViewRoles.Document, PredefinedTextViewRoles.Interactive };
             ITextBuffer textBuffer = textBufferFactory.CreateTextBuffer(string.Empty, type);
-            ITextViewRoleSet roles = textViewFactory.CreateTextViewRoleSet(PredefinedTextViewRoles.Interactive, PredefinedTextViewRoles.Document);
+            ITextViewRoleSet roles = textViewFactory.CreateTextViewRoleSet(textRoles);
             IWpfTextView textView = textViewFactory.CreateTextView(textBuffer, roles);
             IWpfTextViewHost host = textViewFactory.CreateTextViewHost(textView, false);
 
