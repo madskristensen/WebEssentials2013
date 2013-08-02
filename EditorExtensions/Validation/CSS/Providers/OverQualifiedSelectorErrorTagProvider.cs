@@ -1,10 +1,10 @@
 ﻿using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Utilities;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
+using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {

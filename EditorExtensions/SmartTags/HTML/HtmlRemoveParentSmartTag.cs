@@ -5,10 +5,8 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions.SmartTags
 {
@@ -33,20 +31,18 @@ namespace MadsKristensen.EditorExtensions.SmartTags
     {
         public HtmlRemoveParentSmartTag(ITextView textView, ITextBuffer textBuffer, ElementNode element)
             : base(textView, textBuffer, element, HtmlSmartTagPosition.ElementName)
-        {
-        }
+        { }
 
         protected override IEnumerable<ISmartTagAction> GetSmartTagActions(ITrackingSpan span)
         {
-            return new ISmartTagAction[] { new RemoveParentSmartTagAction(this) };
+            yield return new RemoveParentSmartTagAction(this);
         }
 
         class RemoveParentSmartTagAction : HtmlSmartTagAction
         {
             public RemoveParentSmartTagAction(HtmlSmartTag htmlSmartTag) :
                 base(htmlSmartTag, "Remove and keep children")
-            {
-            }
+            { }
 
             public override void Invoke()
             {
@@ -62,12 +58,9 @@ namespace MadsKristensen.EditorExtensions.SmartTags
 
                 using (var edit = textBuffer.CreateEdit())
                 {
-                    //edit.Delete(element.EndTag.Start, element.EndTag.Length);
-                    //edit.Delete(element.StartTag.Start, element.StartTag.Length);
                     edit.Replace(element.Start, element.OuterRange.Length, content);
                     edit.Apply();
                 }
-
                 
                 SnapshotSpan span = new SnapshotSpan(view.TextBuffer.CurrentSnapshot, start, length);
 

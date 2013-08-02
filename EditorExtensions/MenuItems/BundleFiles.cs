@@ -299,7 +299,7 @@ namespace MadsKristensen.EditorExtensions
             foreach (XmlNode node in nodes)
             {
                 string absolute;
-                if (Path.IsPathRooted(node.InnerText))
+                if (node.InnerText.Contains(":\\"))
                 {
                     absolute = node.InnerText;
                 }
@@ -307,7 +307,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     absolute = ProjectHelpers.ToAbsoluteFilePath(node.InnerText, ProjectHelpers.GetProjectFolder(filePath)).Replace("\\\\", "\\");
                 }
-
+                
                 if (File.Exists(absolute))
                 {
                     if (!files.ContainsKey(absolute))
