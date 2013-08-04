@@ -630,7 +630,7 @@
     <Content Include="Resources\Scripts\JSDocComments.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\Scripts\less-1.4.1.min.js">
+    <Content Include="Resources\Scripts\less-1.4.2.min.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\Scripts\lessc.wsf">

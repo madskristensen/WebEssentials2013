@@ -112,7 +112,7 @@ Licensed under the Apache 2.0 License.
 
     <!-- less.js from https://github.com/less/less.js/tree/master/dist/ -->
     <script language="jscript" src="es5-shim.min.js" />
-    <script language="jscript" src="less-1.4.1.min.js" />
+    <script language="jscript" src="less-1.4.2.min.js" />
 
     <script language="jscript">
         // Parse args
