@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions
             return _entryCache;
         }
 
-        private static IEnumerable<ICssCompletionListEntry> GetListEntriesCache()
+        public static IEnumerable<ICssCompletionListEntry> GetListEntriesCache()
         {
             var schemas = AttributeNameCompletionProvider.GetSchemas();
 
@@ -31,6 +31,12 @@ namespace MadsKristensen.EditorExtensions
                 {
                     if (!_ignore.Contains(element.Name))
                         yield return new CompletionListEntry(element.Name);
+
+                    foreach (var child in element.GetChildren())
+                    {
+                        if (!_ignore.Contains(child.Name))
+                            yield return new CompletionListEntry(child.Name);
+                    }
                 }
         }
     }

@@ -20,12 +20,9 @@ namespace MadsKristensen.EditorExtensions
         {
             yield return "*";
 
-            HtmlSchemaManager mng = new HtmlSchemaManager();
-            IHtmlSchema schema = mng.GetSchema("http://schemas.microsoft.com/intellisense/html");
-
-            foreach (var element in schema.GetTopLevelElements())
+            foreach (var element in TagCompletionProvider.GetListEntriesCache())
             {
-                yield return element.Name;
+                yield return element.DisplayText;
             }
         }
 

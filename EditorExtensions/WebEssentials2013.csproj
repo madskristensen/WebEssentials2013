@@ -603,10 +603,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <Content Include="ProjectTemplates\Google Chrome Extension.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <None Include="Properties\vsix-compress.props" />
     <None Include="Resources\Images.png" />
   </ItemGroup>
