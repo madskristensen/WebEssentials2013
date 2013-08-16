@@ -1,84 +1,107 @@
-﻿//using Microsoft.Html.Core;
-//using Microsoft.Html.Editor;
-//using Microsoft.VisualStudio.Text;
-//using Microsoft.VisualStudio.Text.Editor;
-//using Microsoft.VisualStudio.TextManager.Interop;
-//using System;
+﻿using Microsoft.Html.Core;
+using Microsoft.Html.Editor;
+using Microsoft.Html.Schemas;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Formatting;
+using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.Web.Editor.Formatting;
+using System;
+using System.Collections.Generic;
+using System.Windows.Threading;
 
-//namespace MadsKristensen.EditorExtensions
-//{
-//    internal class EnterFormat : CommandTargetBase
-//    {
-//        private HtmlEditorTree _tree;
+namespace MadsKristensen.EditorExtensions
+{
+    internal class EnterFormat : CommandTargetBase
+    {
+        private HtmlEditorTree _tree;
+        private IEditorRangeFormatter _formatter;
 
-//        public EnterFormat(IVsTextView adapter, IWpfTextView textView)
-//            : base(adapter, textView, typeof(Microsoft.VisualStudio.VSConstants.VSStd2KCmdID).GUID, 3)
-//        {
-//            _tree = HtmlEditorDocument.FromTextView(textView).HtmlEditorTree;
-//        }
+        public EnterFormat(IVsTextView adapter, IWpfTextView textView, IEditorFormatterProvider formatterProvider)
+            : base(adapter, textView, typeof(Microsoft.VisualStudio.VSConstants.VSStd2KCmdID).GUID, 3)
+        {
+            _tree = HtmlEditorDocument.FromTextView(textView).HtmlEditorTree;
+            _formatter = formatterProvider.CreateRangeFormatter();
+        }
 
-//        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
-//        {
-//            int position = TextView.Caret.Position.BufferPosition.Position;
-//            var point = new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, position);
-//            var line = TextView.GetTextViewLineContainingBufferPosition(point);
+        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        {
+            int position = TextView.Caret.Position.BufferPosition.Position;
+            SnapshotPoint point = new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, position);
+            IWpfTextViewLine line = TextView.GetTextViewLineContainingBufferPosition(point);
 
-//            ElementNode element = null;
-//            AttributeNode attr = null;
+            ElementNode element = null;
+            AttributeNode attr = null;
 
-//            _tree.GetPositionElement(position, out element, out attr);
+            _tree.GetPositionElement(position, out element, out attr);
 
-//            if (element == null || element.Name == "body" || position != element.StartTag.End || line.End.Position == position)
-//                return false;
+            if (element == null ||
+                line.End.Position == position || // caret at end of line (TODO: add ignore whitespace logic)
+                TextView.TextBuffer.CurrentSnapshot.GetText(element.InnerRange.Start, element.InnerRange.Length).Trim().Length == 0)
+                return false;
 
-//            UpdateTextBuffer(element, position);
+            UpdateTextBuffer(element, position);
 
-//            return true;
-//        }
+            return false;
+        }
 
-//        private void UpdateTextBuffer(ElementNode element, int position)
-//        {
-//            EditorExtensionsPackage.DTE.UndoContext.Open("Format on enter");
+        private void UpdateTextBuffer(ElementNode element, int position)
+        {
+            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+            {
+                FormatTag(element);
+                PlaceCaret(element, position);
 
-//            TextView.TextBuffer.Insert(position, Environment.NewLine);
+            }), DispatcherPriority.Normal, null);
+        }
 
-//            FormatTag(element);
-//            PlaceCaret(element, position);
+        private void FormatTag(ElementNode element)
+        {
+            var schemas = AttributeNameCompletionProvider.GetSchemas();
 
-//            EditorExtensionsPackage.DTE.UndoContext.Close();
-//        }
+            element = GetFirstBlockParent(element, schemas);
 
-//        private void FormatTag(ElementNode element)
-//        {
-//            // HACK: Use the RangeFormatter instead and format the first parent block element 
-//            element = element.Parent ?? element;
+            ITextBuffer buffer = HtmlEditorDocument.FromTextView(TextView).TextBuffer;
+            SnapshotSpan span = new SnapshotSpan(buffer.CurrentSnapshot, element.Start, element.Length);
 
-//            var span = new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, element.Start, element.Length);
-//            TextView.Selection.Select(span, false);
+            _formatter.FormatRange(TextView, buffer, span, true);
+        }
 
-//            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+        private ElementNode GetFirstBlockParent(ElementNode current, List<IHtmlSchema> schemas)
+        {
+            foreach (var schema in schemas)
+            {
+                IHtmlElementInfo element = schema.GetElementInfo(current.Name);
 
-//            TextView.Selection.Clear();
-//        }
+                if (element != null && element.IsPropertyValueEqual(ElementInfoProperty.Block, "true", true))
+                    return current;
+            }
 
-//        private void PlaceCaret(ElementNode element, int position)
-//        {
-//            string text = TextView.TextBuffer.CurrentSnapshot.GetText(element.InnerRange.Start, element.InnerRange.Length);
+            if (current.Parent != null)
+                return GetFirstBlockParent(current.Parent, schemas);
 
-//            for (int i = 0; i < text.Length; i++)
-//            {
-//                if (!char.IsWhiteSpace(text[i]))
-//                {
-//                    var firstChild = new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, element.InnerRange.Start + i);
-//                    TextView.Caret.MoveTo(firstChild);
-//                    break;
-//                }
-//            }
-//        }
+            return current;
+        }
 
-//        protected override bool IsEnabled()
-//        {
-//            return true;
-//        }
-//    }
-//}
+        private void PlaceCaret(ElementNode element, int position)
+        {
+            SnapshotPoint point = new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, TextView.Caret.Position.BufferPosition.Position);
+            IWpfTextViewLine line = TextView.GetTextViewLineContainingBufferPosition(point);
+            string text = TextView.TextBuffer.CurrentSnapshot.GetText(line.Start.Position, line.Length);
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (!char.IsWhiteSpace(text[i]))
+                {
+                    TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, line.Start.Position + i));
+                    break;
+                }
+            }
+        }
+
+        protected override bool IsEnabled()
+        {
+            return true;
+        }
+    }
+}

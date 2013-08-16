@@ -129,6 +129,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(DevEnvDir)\Microsoft.VisualStudio.Web.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Web.BrowserLink">
+      <HintPath>..\..\..\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\Web Tools\Page Inspector\Microsoft.VisualStudio.Web.BrowserLink.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.Web.Extensions">
       <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Languages\Microsoft.VisualStudio.Web.Extensions.dll</HintPath>
     </Reference>
@@ -247,6 +251,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Adornments\Color\IntraTextAdornmentTagger.cs" />
+    <Compile Include="BrowserLink\CssSync\CssSyncBrowserLink.cs" />
     <Compile Include="Classifications\HtmlRegionTagger.cs" />
     <Compile Include="Classifications\JavaScriptArrayOutlining.cs">
       <SubType>Code</SubType>
@@ -607,6 +612,7 @@
     <None Include="Resources\Images.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="BrowserLink\CssSync\CssSyncBrowserLink.js" />
     <Content Include="preview.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

@@ -39,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
             HtmlSchemaManager mng = new HtmlSchemaManager();
             IHtmlSchema html = mng.GetSchema("http://schemas.microsoft.com/intellisense/html");
 
-            var schemas = mng.CustomAttributePrefixes.SelectMany(p => mng.GetSupplementalSchemas(p, false)).ToList();
+            var schemas = mng.CustomAttributePrefixes.SelectMany(p => mng.GetSupplementalSchemas(p)).ToList();
             schemas.Insert(0, html);
 
             return schemas;
