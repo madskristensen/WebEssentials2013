@@ -8,9 +8,16 @@ namespace MadsKristensen.EditorExtensions
     [BrowserLinkFactoryName("CssSync")]
     public class CssSyncFactory : BrowserLinkExtensionFactory
     {
+        private static CssSync _extension;
+
         public override BrowserLinkExtension CreateInstance(BrowserLinkConnection connection)
         {
-            return new CssSync(connection);
+            if (_extension == null)
+            {
+                _extension = new CssSync();
+            }
+
+            return _extension;
         }
 
         public override string Script
@@ -28,24 +35,37 @@ namespace MadsKristensen.EditorExtensions
 
     public class CssSync : BrowserLinkExtension
     {
-        private BrowserLinkConnection _connection;
         private FileSystemWatcher _fsw;
 
-        public CssSync(BrowserLinkConnection connection)
+        public override void OnConnected(BrowserLinkConnection connection)
         {
-            _connection = connection;
-            Watch();
+            if (_fsw == null)
+            {
+                string path = connection.Project.Properties.Item("FullPath").Value.ToString();
+
+                // Check if the FullPath is a file and if so, get the directory. This is for Website Project compat.
+                if (File.Exists(path))
+                {
+                    path = Path.GetDirectoryName(path);
+                }
+                
+                Watch(path);
+            }
         }
 
-        private void Watch()
+        public override void OnDisconnecting(BrowserLinkConnection connection)
         {
-            string path = _connection.Project.Properties.Item("FullPath").Value.ToString();
-
-            if (File.Exists(path))
+            if (_fsw != null)
             {
-                path = Path.GetDirectoryName(path);
+                _fsw.Changed -= fsw_Changed;
+                _fsw.Created -= fsw_Changed;
+                _fsw.Deleted -= fsw_Changed;
+                _fsw.Dispose();
             }
+        }
 
+        private void Watch(string path)
+        {            
             _fsw = new FileSystemWatcher(path, "*.css");
             _fsw.Changed += fsw_Changed;
             _fsw.Created += fsw_Changed;
