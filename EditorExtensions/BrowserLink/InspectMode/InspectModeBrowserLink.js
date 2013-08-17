@@ -82,9 +82,9 @@
 
     return {
 
-        name: "InspectMode",
+        name: "InspectMode", // Has to match the BrowserLinkFactoryName attribute. Not needed in final version of VS2013
 
-        onInit: function () {
+        onInit: function () { // Renamed to 'onConnected' in final version of VS2013
 
             $(document).keypress(function (args) {
                 if (args.which === 27) {

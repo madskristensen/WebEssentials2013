@@ -6,7 +6,7 @@ using System.IO;
 namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(BrowserLinkExtensionFactory))]
-    [BrowserLinkFactoryName("InspectMode")]
+    [BrowserLinkFactoryName("InspectMode")] // Not needed in final version of VS2013
     public class InspectModeFactory : BrowserLinkExtensionFactory
     {
         public override BrowserLinkExtension CreateInstance(BrowserLinkConnection connection)

@@ -6,7 +6,7 @@
     /// <param name="$" value="jQuery" />
 
     return {
-        name: "CssSync", // Has to match the BrowserLinkFactoryName attribute
+        name: "CssSync", // Has to match the BrowserLinkFactoryName attribute. Not needed in final version of VS2013
 
         refresh: function () {
 
@@ -20,8 +20,8 @@
             });
         },
 
-        onInit: function () {
-            // Do nothing. This function doesn't need to be implemented.
+        onInit: function () { // Renamed to 'onConnected' in final version of VS2013
+            // This function doesn't need to be implemented. It can be deleted.
         }
     };
 });
