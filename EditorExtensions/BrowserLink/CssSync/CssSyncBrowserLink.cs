@@ -57,9 +57,9 @@ namespace MadsKristensen.EditorExtensions
         {
             if (_fsw != null)
             {
-                _fsw.Changed -= fsw_Changed;
-                _fsw.Created -= fsw_Changed;
-                _fsw.Deleted -= fsw_Changed;
+                _fsw.Changed -= RefreshStyles;
+                _fsw.Created -= RefreshStyles;
+                _fsw.Deleted -= RefreshStyles;
                 _fsw.Dispose();
             }
         }
@@ -67,15 +67,15 @@ namespace MadsKristensen.EditorExtensions
         private void Watch(string path)
         {            
             _fsw = new FileSystemWatcher(path, "*.css");
-            _fsw.Changed += fsw_Changed;
-            _fsw.Created += fsw_Changed;
-            _fsw.Deleted += fsw_Changed;
+            _fsw.Changed += RefreshStyles;
+            _fsw.Created += RefreshStyles;
+            _fsw.Deleted += RefreshStyles;
             _fsw.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.DirectoryName;
             _fsw.IncludeSubdirectories = true;
             _fsw.EnableRaisingEvents = true;
         }
 
-        void fsw_Changed(object sender, FileSystemEventArgs e)
+        private void RefreshStyles(object sender, FileSystemEventArgs e)
         {
             if (e.FullPath.EndsWith(".css"))
             {
