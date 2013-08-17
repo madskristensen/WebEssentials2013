@@ -5,13 +5,14 @@ using System.IO;
 namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(BrowserLinkExtensionFactory))]
-    [BrowserLinkFactoryName("CssSync")]
+    [BrowserLinkFactoryName("CssSync")] // Not needed in final version of VS2013
     public class CssSyncFactory : BrowserLinkExtensionFactory
     {
         private static CssSync _extension;
 
         public override BrowserLinkExtension CreateInstance(BrowserLinkConnection connection)
         {
+            // Instantiate the extension as a singleton
             if (_extension == null)
             {
                 _extension = new CssSync();
