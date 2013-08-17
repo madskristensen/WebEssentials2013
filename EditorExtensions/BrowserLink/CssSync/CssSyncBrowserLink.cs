@@ -1,7 +1,6 @@
 ﻿using Microsoft.VisualStudio.Web.BrowserLink;
 using System.ComponentModel.Composition;
 using System.IO;
-using System.Reflection;
 
 namespace MadsKristensen.EditorExtensions
 {

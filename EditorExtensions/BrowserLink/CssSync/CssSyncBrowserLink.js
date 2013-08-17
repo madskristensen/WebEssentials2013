@@ -1,12 +1,14 @@
-﻿/// <reference path="../intellisense/browserlink.intellisense.js" />
+﻿/// <reference path="../_intellisense/browserlink.intellisense.js" />
+/// <reference path="../_intellisense/jquery-1.8.2.js" />
 
-(function (browserLink, $) { 
+(function (browserLink, $) {
     /// <param name="browserLink" value="bl" />
-    
+    /// <param name="$" value="jQuery" />
+
     return {
         name: "CssSync", // Has to match the BrowserLinkFactoryName attribute
 
-        refresh: function (hey) {
+        refresh: function () {
 
             $("link[rel=stylesheet]").each(function (i, link) {
                 var href = $(link).attr('href');
@@ -22,4 +24,4 @@
             // Do nothing. This function doesn't need to be implemented.
         }
     };
-})
+});

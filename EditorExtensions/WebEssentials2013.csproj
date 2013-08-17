@@ -251,6 +251,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Adornments\Color\IntraTextAdornmentTagger.cs" />
+    <Compile Include="BrowserLink\InspectMode\InspectModeBrowserLink.cs" />
     <Compile Include="BrowserLink\CssSync\CssSyncBrowserLink.cs" />
     <Compile Include="Classifications\HtmlRegionTagger.cs" />
     <Compile Include="Classifications\JavaScriptArrayOutlining.cs">
@@ -613,6 +614,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="BrowserLink\CssSync\CssSyncBrowserLink.js" />
+    <EmbeddedResource Include="BrowserLink\InspectMode\InspectModeBrowserLink.js" />
+    <None Include="BrowserLink\_intellisense\browserlink.intellisense.js" />
+    <None Include="BrowserLink\_intellisense\jquery-1.8.2.intellisense.js" />
+    <None Include="BrowserLink\_intellisense\jquery-1.8.2.js" />
     <Content Include="preview.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
