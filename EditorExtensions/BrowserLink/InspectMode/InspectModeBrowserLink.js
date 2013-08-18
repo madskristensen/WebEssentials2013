@@ -15,7 +15,7 @@
             $("body").append("<div id=\"__browserLink_InspectOverlay\"></div");
             $("body").append(
                 "<style>" +
-                    "#__browserLink_InspectOverlay {position:fixed; cursor: crosshair; box-sizing: border-box; top: 0; left: 0; bottom: 0; right: 0; background-color: #000; opacity: 0.2; overflow: visible; z-index: 9999999999; /*overrde*/ width: auto; height: auto; margin: 0; padding: 0; background-image: none; display:none}" +
+                    "#__browserLink_InspectOverlay {position:fixed; cursor: crosshair; box-sizing: border-box; top: 0; left: 0; bottom: 0; right: 0; background-color: #888; opacity: 0.2; overflow: visible; z-index: 9999999999; /*overrde*/ width: auto; height: auto; margin: 0; padding: 0; background-image: none; display:none}" +
                     ".__browserLink_selected {outline: 3px solid lightblue;}" +
                 "</style>");
 
@@ -78,22 +78,15 @@
         if (e.keyCode === 73 && e.ctrlKey && e.altKey) { // 73 = i
             turnOnInspectMode();
         }
+        else if (e.which === 27) { // ESC
+            turnOffInspectMode();
+        }
     });
 
     return {
 
         name: "InspectMode", // Has to match the BrowserLinkFactoryName attribute. Not needed in final version of VS2013
-
-        onInit: function () { // Renamed to 'onConnected' in final version of VS2013
-
-            $(document).keypress(function (args) {
-                if (args.which === 27) {
-                    // ESC
-                    turnOffInspectMode();
-                }
-            });
-        },
-
+        
         setInspectMode: function (inspectModeOn) {
             if (inspectModeOn) {
                 turnOnInspectMode();
