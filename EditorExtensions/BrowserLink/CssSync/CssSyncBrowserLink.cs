@@ -62,6 +62,7 @@ namespace MadsKristensen.EditorExtensions
                 _fsw.Created -= RefreshStyles;
                 _fsw.Deleted -= RefreshStyles;
                 _fsw.Dispose();
+                _fsw = null;
             }
         }
 
