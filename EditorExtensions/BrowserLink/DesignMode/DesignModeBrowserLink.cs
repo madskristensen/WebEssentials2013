@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
@@ -75,32 +76,49 @@ namespace MadsKristensen.EditorExtensions
 
                 html.HtmlEditorTree.GetPositionElement(position + 1, out element, out attribute);
 
-                if (element != null && element.EndTag != null && element.InnerRange.Start <= element.InnerRange.End)
+                // HTML element
+                if (element != null && element.Start == position)
                 {
                     Span span = new Span(element.InnerRange.Start, element.InnerRange.Length);
                     string text = html.TextBuffer.CurrentSnapshot.GetText(span);
 
                     if (text != innerHTML)
                     {
-                        try
-                        {
-                            EditorExtensionsPackage.DTE.UndoContext.Open("Design Mode changes");
-                            html.TextBuffer.Replace(span, innerHTML);
-                            EditorExtensionsPackage.DTE.ActiveDocument.Save();
-                            //html.HtmlEditorTree.RequestFullParse();                            
-                        }
-                        catch
-                        {
-                            // Do nothing
-                        }
-                        finally
-                        {
-                            EditorExtensionsPackage.DTE.UndoContext.Close();
-                        }
+                        UpdateBuffer(innerHTML, html, span);
+                    }
+                }
+                // ActionLink
+                else if (element.Start != position)
+                {
+                    //@Html.ActionLink("Application name", "Index", "Home", null, new { @class = "brand" })
+                    Span span = new Span(position, 100);
+                    if (position + 100 < html.TextBuffer.CurrentSnapshot.Length)
+                    {
+                        string text = html.TextBuffer.CurrentSnapshot.GetText(span);
+                        var result = Regex.Replace(text, @"^html.actionlink\(""([^""]+)""", "Html.ActionLink(\"" + innerHTML + "\"", RegexOptions.IgnoreCase);
+                        UpdateBuffer(result, html, span);
                     }
                 }
 
             }), DispatcherPriority.ApplicationIdle, null);
+        }
+
+        private static void UpdateBuffer(string innerHTML, HtmlEditorDocument html, Span span)
+        {
+            try
+            {
+                EditorExtensionsPackage.DTE.UndoContext.Open("Design Mode changes");
+                html.TextBuffer.Replace(span, innerHTML);
+                EditorExtensionsPackage.DTE.ActiveDocument.Save();
+            }
+            catch
+            {
+                // Do nothing
+            }
+            finally
+            {
+                EditorExtensionsPackage.DTE.UndoContext.Close();
+            }
         }
 
         [BrowserLinkCallback]

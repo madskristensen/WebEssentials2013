@@ -40,7 +40,7 @@
                             $(current).removeClass(selectedClass);
                         }
 
-                        map = browserLink.sourceMapping.getStartTagRange(target);
+                        map = browserLink.sourceMapping.getCompleteRange(target);
 
                         if (map) {
                             if (isValidFile(map.sourcePath.toLowerCase())) {
@@ -61,7 +61,7 @@
                 inspectOverlay.hide();
                 current.contentEditable = true;
                 current.focus();
-                $(current).keypress(typing);
+                $(current).keydown(typing);
             });
         }
 
@@ -108,6 +108,7 @@
 
     function typing(e) {
         if (inspectModeOn && map) {
+            console.log(e.keyCode);
             if (e.keyCode === 89 && e.ctrlKey) { // 89 = y
                 browserLink.call("Redo");
             }
@@ -120,6 +121,7 @@
             else {
                 hasChanged = true;
                 setTimeout(function () {
+                    console.log(current.innerHTML);
                     browserLink.call("UpdateSource", current.innerHTML, map.sourcePath, map.startPosition);
                 }, 50);
             }

@@ -96,7 +96,7 @@ namespace MadsKristensen.EditorExtensions
                     Document = id,
                     Line = 1,
                     Column = 1,
-                    ErrorCategory = TaskErrorCategory.Message,
+                    ErrorCategory = rule.Category,
                     Category = TaskCategory.Html,
                     Text = rule.Message,
                 };

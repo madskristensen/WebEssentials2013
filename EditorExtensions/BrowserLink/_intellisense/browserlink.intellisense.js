@@ -61,8 +61,8 @@ var bl = {
         "getElementAtPosition": function () {
             /// <signature>
             ///   <summary>Checks if the specified DOM element can be mapped to server source.</summary>
-            ///   <param name="x" type="Number">The X coordinate.</param>
-            ///   <param name="y" type="Number">The Y coordinate.</param>
+            ///   <param name="sourcePath" type="String">The absolute path to the source file.</param>
+            ///   <param name="position" type="Number">The position in the source file.</param>
             ///   <returns type="Element" />
             /// </signature>
         },
@@ -101,7 +101,7 @@ var bl = {
     }
 };
 
-var sourceMap = function(){
+var sourceMap = function () {
     return {
         /// <field name="sourcePath" type="String">The absolute file path of the file containing the element on disk.</field>
         "sourcePath": "",
