@@ -7,7 +7,8 @@
 
     var inspectModeOn;
     var inspectOverlay;
-    var current, map;
+    var current, map,
+        selectedClass = "__browserLink_selected_design";
 
     function getInspectOverlay() {
         if (!inspectOverlay) {
@@ -16,8 +17,7 @@
             $("body").append(
                 "<style>" +
                     "#__browserLink_InspectOverlay {position:fixed; cursor: crosshair; box-sizing: border-box; top: 0; left: 0; bottom: 0; right: 0; background-color: #888; opacity: 0.2; overflow: visible; z-index: 999999999; /*overrde*/ width: auto; height: auto; margin: 0; padding: 0; background-image: none; display:none}" +
-                    ".__browserLink_selected {outline: 3px solid lightblue;}" +
-                    ".__browserLink_selected:before {content: 'Design Mode'; background-color: lightblue; position:absolute; margin-top: -25px; margin-left: 10px; padding: 0 5px; border-radius: 3px 3px 0 0; font: bold 13px arial; height:25px; line-height: 1.9}" +
+                    "." + selectedClass + " {outline: 3px solid lightgreen;}" +
                 "</style>");
 
             inspectOverlay = $("#__browserLink_InspectOverlay");
@@ -36,7 +36,7 @@
 
                     if (target && target.innerHTML) {
                         if (current && current !== target) {
-                            $(current).removeClass("__browserLink_selected");
+                            $(current).removeClass(selectedClass);
                         }
 
                         map = browserLink.sourceMapping.getStartTagRange(target);
@@ -44,7 +44,7 @@
                         if (map) {
                             if (isValidFile(map.sourcePath.toLowerCase())) {
                                 current = target;
-                                $(target).addClass("__browserLink_selected");
+                                $(target).addClass(selectedClass);
                                 browserLink.sourceMapping.selectCompleteRange(current);
                             }
                             else {
@@ -71,7 +71,7 @@
         var exts = [".master", ".aspx", ".ascx"];
         var index = sourcePath.lastIndexOf(".");
         var extension = sourcePath.substring(index);
-        
+
         for (var i = 0; i < exts.length; i++) {
             if (exts[i] === extension)
                 return false;
@@ -87,7 +87,7 @@
             if (enabled && current) {
                 current.contentEditable = true;
                 current.focus();
-                $(current).addClass("__browserLink_selected");
+                $(current).addClass(selectedClass);
             }
             else if (enabled) {
                 getInspectOverlay().show();
@@ -96,7 +96,7 @@
                 getInspectOverlay().hide();
                 current.contentEditable = false;
                 current.blur();
-                $(current).removeClass("__browserLink_selected");
+                $(current).removeClass(selectedClass);
                 browserLink.call("Save");
             }
         }
@@ -120,7 +120,6 @@
                 setTimeout(function () {
                     browserLink.call("UpdateSource", current.innerHTML, map.sourcePath, map.startPosition);
                 }, 50);
-                
             }
         }
     }
@@ -134,6 +133,10 @@
         }
     });
 
+    window.__we_setDesignMode = function () {
+        enableDesignMode(true);
+    };
+
     return {
         name: "DesignMode", // Has to match the BrowserLinkFactoryName attribute. Not needed in final version of VS2013
 
@@ -141,4 +144,5 @@
             enableDesignMode(true);
         }
     };
+
 });

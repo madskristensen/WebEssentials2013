@@ -83,6 +83,8 @@
         }
     });
 
+    window.__we_setInspectMode = turnOnInspectMode;
+
     return {
 
         name: "InspectMode", // Has to match the BrowserLinkFactoryName attribute. Not needed in final version of VS2013
