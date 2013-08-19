@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <UseHostCompilerIfAvailable>false</UseHostCompilerIfAvailable>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <AppFileNameItem>
+      <Visible>false</Visible>
+    </AppFileNameItem>
+    <AppFolderItem>
+      <Visible>false</Visible>
+    </AppFolderItem>
+  </ItemDefinitionGroup>
+  
+  <UsingTask AssemblyFile="$(BuildLib)MSBuild.ExtensionPack.dll" TaskName="MSBuild.ExtensionPack.Compression.Zip" />
+  
+  <Target Name="Build">
+    <MakeDir Directories="$(OutputPath)" />
+    
+    <ItemGroup>
+      <_AppCandidateFilesToZip Remove="@(_AppCandidateFilesToZip)" />
+      <_AppCandidateFilesToZip Include="@(Content);@(None)" />
+    </ItemGroup>
+    
+    <FindUnderPath Path="$(AppFolder)" Files="@(_AppCandidateFilesToZip)">
+      <Output TaskParameter="InPath" ItemName="_AppFilesToZip" />
+    </FindUnderPath>
+    <Message Text="App files to zip: @(_AppFilesToZip->'%(RelativeDir)%(Filename)%(Extension)')" />
+
+    <PropertyGroup>
+      <_AppFolderFullPath>%(AppFolderItem.FullPath)</_AppFolderFullPath>
+    </PropertyGroup>
+
+    <Message Text="Creating package .zip at [%(AppFileNameItem.FullPath)]" Importance="high" />
+    <MSBuild.ExtensionPack.Compression.Zip 
+      TaskAction="Create" 
+      CompressFiles="@(_AppFilesToZip)" 
+      ZipFileName="%(AppFileNameItem.FullPath)" 
+      RemoveRoot="$(_AppFolderFullPath)" 
+      CompressionLevel="BestCompression" />
+  </Target>
+  
+  <PropertyGroup>
+    <RebuildDependsOn>
+      Clean;
+      Build;
+    </RebuildDependsOn>
+  </PropertyGroup>
+  <Target Name="Rebuild" DependsOnTargets="$(RebuildDependsOn)" />
+  <Target Name="Clean">
+    <!-- delete all the files in the output folder -->
+    <ItemGroup>
+      <_FilesToDelete Remove="@(_FilesToDelete)" />
+      <_FilesToDelete Include="$(OutputPath)**\*" />
+    </ItemGroup>
+    <Message Text="Deleting files: @(_FilesToDelete)" />
+    <Delete Files="@(_FilesToDelete)" />
+  </Target>
+</Project>
