@@ -30,5 +30,5 @@
 	"128" : "img/vs-128.png"
   },
   
-  "permissions": ["tabs", "contextMenus", "<all_urls>"]
+  "permissions": ["tabs", "<all_urls>"]
 }

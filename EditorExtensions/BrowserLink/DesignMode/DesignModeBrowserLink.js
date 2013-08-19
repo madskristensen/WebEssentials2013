@@ -8,19 +8,20 @@
     var inspectModeOn;
     var inspectOverlay;
     var current, map,
-        selectedClass = "__browserLink_selected_design";
+        selectedClass = "__browserLink_selected_design",
+        overlay ="__browserLink_InspectOverlay";
 
     function getInspectOverlay() {
         if (!inspectOverlay) {
 
-            $("body").append("<div id=\"__browserLink_InspectOverlay\"></div");
+            $("body").append("<div id=\"" + overlay+ "\"></div");
             $("body").append(
                 "<style>" +
-                    "#__browserLink_InspectOverlay {position:fixed; cursor: crosshair; box-sizing: border-box; top: 0; left: 0; bottom: 0; right: 0; background-color: #888; opacity: 0.2; overflow: visible; z-index: 999999999; /*overrde*/ width: auto; height: auto; margin: 0; padding: 0; background-image: none; display:none}" +
+                    "#" + overlay + " {position:fixed; cursor: crosshair; box-sizing: border-box; top: 0; left: 0; bottom: 0; right: 0; background-color: #888; opacity: 0.2; overflow: visible; z-index: 999999999; /*overrde*/ width: auto; height: auto; margin: 0; padding: 0; background-image: none; display:none}" +
                     "." + selectedClass + " {outline: 3px solid lightgreen;}" +
                 "</style>");
 
-            inspectOverlay = $("#__browserLink_InspectOverlay");
+            inspectOverlay = $("#" + overlay);
 
             inspectOverlay.mousemove(function (args) {
                 inspectOverlay.css("height", "0");
@@ -133,7 +134,7 @@
         }
     });
 
-    window.__we_setDesignMode = function () {
+    window.__weSetDesignMode = function () {
         enableDesignMode(true);
     };
 

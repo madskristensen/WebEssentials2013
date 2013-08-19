@@ -83,7 +83,7 @@
         }
     });
 
-    window.__we_setInspectMode = turnOnInspectMode;
+    window.__weSetInspectMode = turnOnInspectMode;
 
     return {
 

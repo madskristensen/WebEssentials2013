@@ -8,18 +8,18 @@
           sendResponse({});
       });
 
-    window.addEventListener("load", function (event) {
+    window.addEventListener("load", function () {
 
         if (document.getElementById("__browserLink_initializationData")) {
 
-            chrome.extension.sendRequest({}, function (response) { });
+            chrome.extension.sendRequest({ enabled: true }, function () { });
 
             var script = document.createElement("script");
             script.innerHTML = 'window.addEventListener("message", function (event) {' +
                                    'if (event.data.command === "inspectMode")' +
-                                       'window.__we_setInspectMode();' +
+                                       'window.__weSetInspectMode();' +
                                    'else if (event.data.command === "designMode")' +
-                                       'window.__we_setDesignMode();' +
+                                       'window.__weSetDesignMode();' +
                                '}, false);';
 
             document.body.appendChild(script);

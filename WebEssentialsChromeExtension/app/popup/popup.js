@@ -4,7 +4,7 @@
 
     function Execute(command) {
         chrome.tabs.getSelected(null, function (tab) {
-            chrome.tabs.sendMessage(tab.id, { command: command }, function (response) {
+            chrome.tabs.sendMessage(tab.id, { command: command }, function () {
                 window.close();
             });
         });
