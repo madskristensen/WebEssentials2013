@@ -4,7 +4,7 @@
 
     chrome.runtime.onMessage.addListener(
       function (request, sender, sendResponse) {
-          window.postMessage({ sender: "WE", command: request.command }, "*");
+          window.postMessage({ sender: "WE", command: request.command, result: request.result }, "*");
           sendResponse({});
       });
 
@@ -12,7 +12,7 @@
 
         if (document.getElementById("__browserLink_initializationData")) {
 
-            chrome.extension.sendRequest({ enabled: true }, function () { });
+            chrome.extension.sendRequest({ enabled: true, url: location.protocol + "//" + location.host }, function () { });
 
             var script = document.createElement("script");
             script.innerHTML = 'window.addEventListener("message", function (event) {' +
@@ -20,6 +20,8 @@
                                        'window.__weSetInspectMode();' +
                                    'else if (event.data.command === "designMode")' +
                                        'window.__weSetDesignMode();' +
+                                   'else if (event.data.command === "noRobotsTxt")' +
+                                       'window.__weReportError("robotstxt", event.data.result);' +
                                '}, false);';
 
             document.body.appendChild(script);

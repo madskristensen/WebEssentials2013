@@ -7,7 +7,7 @@
 
     var inspectModeOn;
     var inspectOverlay;
-    var current, map,
+    var current, map, hasChanged,
         selectedClass = "__browserLink_selected_design",
         overlay ="__browserLink_InspectOverlay";
 
@@ -85,7 +85,7 @@
         if (window.getSelection) {
             inspectModeOn = enabled;
 
-            if (enabled && current) {
+            if (enabled && hasChanged) {
                 current.contentEditable = true;
                 current.focus();
                 $(current).addClass(selectedClass);
@@ -118,6 +118,7 @@
                 e.preventDefault();
             }
             else {
+                hasChanged = true;
                 setTimeout(function () {
                     browserLink.call("UpdateSource", current.innerHTML, map.sourcePath, map.startPosition);
                 }, 50);

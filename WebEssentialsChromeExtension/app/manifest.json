@@ -4,7 +4,7 @@
   "name": "Web Essentials",
   "description": "This extension demonstrates a browser action with kittens.",
   "version": "1.0",
-  
+
    "background" : {
      "scripts": ["background.js"]
    },
