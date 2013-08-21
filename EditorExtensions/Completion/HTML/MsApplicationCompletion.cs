@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions
         private List<string> _booleanNames = new List<string>()
         {
             "msapplication-allowdomainapicalls",
-            "msapplication-allowdomainmetatags"
+            "msapplication-allowdomainmetatags",
         };
 
         public IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
