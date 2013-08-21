@@ -59,6 +59,7 @@
         if (!inspectModeOn) {
             inspectModeOn = true;
 
+            browserLink.call("SetInspectMode");
             getInspectOverlay().show();
         }
     }
@@ -68,6 +69,7 @@
             inspectModeOn = false;
 
             getInspectOverlay().hide();
+            browserLink.call("DisableInspectMode");
 
             if (current)
                 $(current).removeClass("__browserLink_selected");
@@ -95,6 +97,21 @@
             }
             else {
                 turnOffInspectMode();
+            }
+        },
+
+        select: function (sourcePath, position) {
+            var target = browserLink.sourceMapping.getElementAtPosition(sourcePath, position);
+            
+            if (target) {
+                if (current && current !== target) {
+                    $(current).removeClass("__browserLink_selected");
+                }
+
+                current = target;
+                $(target).addClass("__browserLink_selected");
+                if (current.scrollIntoView)
+                    current.scrollIntoView();
             }
         }
     };

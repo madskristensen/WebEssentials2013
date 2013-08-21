@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
@@ -27,6 +28,28 @@ namespace MadsKristensen.EditorExtensions
             var textView = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
 
             textView.Properties.GetOrCreateSingletonProperty<ZenCoding>(() => new ZenCoding(textViewAdapter, textView, CompletionBroker));
+
+            textView.MouseHover += textView_MouseHover;
+            textView.Closed += textView_Closed;
+        }
+
+        void textView_MouseHover(object sender, MouseHoverEventArgs e)
+        {
+            if (InspectMode.IsInspectModeEnabled)
+            {
+                var doc = EditorExtensionsPackage.DTE.ActiveDocument;
+                if (doc != null)
+                {
+                    InspectMode.Select(e.View.TextDataModel.DocumentBuffer.GetFileName(), e.Position);
+                }
+            }
+        }
+
+        private void textView_Closed(object sender, System.EventArgs e)
+        {
+            IWpfTextView view = (IWpfTextView)sender;
+            view.MouseHover -= textView_MouseHover;
+            view.Closed -= textView_Closed;
         }
     }
 

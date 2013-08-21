@@ -359,6 +359,7 @@
     <Compile Include="Completion\CSS\CustomCompletionListEntry.cs" />
     <Compile Include="Completion\CSS\Filter\GradientCompletionListFilter.cs" />
     <Compile Include="Completion\HTML\AppleLinkCompletion.cs" />
+    <Compile Include="Completion\HTML\MiscMetaCompletion.cs" />
     <Compile Include="Completion\HTML\SimpleHtmlCompletion.cs" />
     <Compile Include="Completion\HTML\TwitterCardCompletion.cs" />
     <Compile Include="Completion\HTML\AppleMetaCompletion.cs" />

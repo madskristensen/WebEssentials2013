@@ -33,6 +33,12 @@ namespace MadsKristensen.EditorExtensions
                 result.Add(new SimpleHtmlCompletion("telephone=yes"));
                 result.Add(new SimpleHtmlCompletion("telephone=no"));
             }
+            else if (attr.Value.Equals("apple-mobile-web-app-status-bar-style", StringComparison.OrdinalIgnoreCase))
+            {
+                result.Add(new SimpleHtmlCompletion("default"));
+                result.Add(new SimpleHtmlCompletion("black"));
+                result.Add(new SimpleHtmlCompletion("black-translucent"));
+            }
 
             return result;
         }

@@ -23,6 +23,9 @@ namespace MadsKristensen.EditorExtensions
             if (attr != null && attr.Value.Equals("viewport", StringComparison.OrdinalIgnoreCase))
             {
                 result.Add(new SimpleHtmlCompletion("width=device-width, initial-scale=1.0", "Example viewport value"));
+                result.Add(new SimpleHtmlCompletion("width=device-width, initial-scale=1.0, user-scalable=no", "Example viewport value"));
+                result.Add(new SimpleHtmlCompletion("width=device-width, initial-scale=1.0, maximum-scale=1", "Example viewport value"));
+                result.Add(new SimpleHtmlCompletion("width=device-width, initial-scale=1.0, minimum-scale=1", "Example viewport value"));
             }
 
             return result;
