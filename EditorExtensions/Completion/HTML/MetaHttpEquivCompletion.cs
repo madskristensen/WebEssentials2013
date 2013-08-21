@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions
 {
     [HtmlCompletionProvider(CompletionType.Values, "meta", "content")]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
-    public class XUACompatibleCompletion : IHtmlCompletionListProvider
+    public class MetaHttpEquivCompletion : IHtmlCompletionListProvider
     {
         public CompletionType CompletionType
         {
@@ -61,7 +61,7 @@ namespace MadsKristensen.EditorExtensions
             return result;
         }
 
-        private IEnumerable<string> GetAttributeValue(string elementName, string attributeName)
+        public static IEnumerable<string> GetAttributeValue(string elementName, string attributeName)
         {
             HtmlSchemaManager mng = new HtmlSchemaManager();
             IHtmlSchema schema = mng.GetSchema("http://schemas.microsoft.com/intellisense/html");

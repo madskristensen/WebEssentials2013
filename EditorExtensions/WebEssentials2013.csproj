@@ -364,7 +364,7 @@
     <Compile Include="Completion\HTML\TwitterCardCompletion.cs" />
     <Compile Include="Completion\HTML\AppleMetaCompletion.cs" />
     <Compile Include="Completion\HTML\OpenGraphTypeCompletion.cs" />
-    <Compile Include="Completion\HTML\XUACompatibleCompletion.cs" />
+    <Compile Include="Completion\HTML\MetaHttpEquivCompletion.cs" />
     <Compile Include="Completion\HTML\ViewportCompletion.cs" />
     <Compile Include="Completion\HTML\MsApplicationCompletion.cs" />
     <Compile Include="Completion\HTML\HtmlDataListCompletion.cs" />
@@ -598,6 +598,7 @@
     <Compile Include="SmartTags\CSS\CssSmartTagger.cs" />
     <Compile Include="Helpers\CssItemCollector.cs" />
     <Compile Include="Options\WebEssentialsSettings.cs" />
+    <Compile Include="Validation\HTML\OpenGrapPrefixValidator.cs" />
     <Compile Include="Validation\HTML\ItemTypeValidator.cs" />
   </ItemGroup>
   <ItemGroup>
