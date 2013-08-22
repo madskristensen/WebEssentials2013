@@ -9,71 +9,50 @@ namespace MadsKristensen.EditorExtensions
 {
     [HtmlCompletionProvider(CompletionType.Values, "meta", "content")]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
-    public class MsApplicationCompletion : IHtmlCompletionListProvider, IHtmlTreeVisitor
+    public class MsApplicationCompletion : StaticListCompletion, IHtmlTreeVisitor
     {
-        public CompletionType CompletionType
-        {
-            get { return CompletionType.Values; }
-        }
+        private static readonly IList<HtmlCompletion> BooleanValues = Values("false", "true");
 
-        private List<string> _booleanNames = new List<string>()
-        {
-            "msapplication-allowdomainapicalls",
-            "msapplication-allowdomainmetatags",
-        };
+        protected override string KeyProperty { get { return "name"; } }
+        public MsApplicationCompletion()
+            : base(new Dictionary<string, IList<HtmlCompletion>>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "MSApplication-AllowDomainApiCalls",  BooleanValues },
+                { "MSApplication-AllowDomainMetaTags",  BooleanValues },
+                { "MSApplication-Window",               Values("width=1024;height=768") },
+                { "MSApplication-StartURL",             Values("/", "./index.html", "/home/", "http://example.com") }
+            }) { }
+
 
         public IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
         {
-            var result = new List<HtmlCompletion>();
             var attr = context.Element.GetAttribute("name");
 
             if (attr == null)
-                return result;
+                return Empty;
 
-            if (_booleanNames.Contains(attr.Value.ToLowerInvariant()))
-            {
-                result.Add(new SimpleHtmlCompletion("false"));
-                result.Add(new SimpleHtmlCompletion("true"));
-            }
-            else if (attr.Value.Equals("msapplication-window", StringComparison.OrdinalIgnoreCase))
-            {
-                result.Add(new SimpleHtmlCompletion("width=1024;height=768"));
-            }
-            else if (attr.Value.Equals("msapplication-starturl", StringComparison.OrdinalIgnoreCase))
-            {
-                result.Add(new SimpleHtmlCompletion("/"));
-                result.Add(new SimpleHtmlCompletion("./index.html"));
-                result.Add(new SimpleHtmlCompletion("/home/"));
-                result.Add(new SimpleHtmlCompletion("http://example.com"));
-            }
-            else if (attr.Value.Equals("application-name", StringComparison.OrdinalIgnoreCase) ||
-                     attr.Value.Equals("msapplication-tooltip", StringComparison.OrdinalIgnoreCase))
+            if (attr.Value.Equals("application-name", StringComparison.OrdinalIgnoreCase)
+             || attr.Value.Equals("msapplication-tooltip", StringComparison.OrdinalIgnoreCase))
             {
                 if (context.Element.Parent == null)
-                    return result;
+                    return Empty;
 
-                var list = new List<string>();
+                var list = new HashSet<string>();
 
                 context.Element.Parent.Accept(this, list);
-
-                foreach (var item in list)
-                {
-                    result.Add(new SimpleHtmlCompletion(item));
-                }
+                return Values(list);
             }
 
-            return result;
+            return base.GetEntries(context);
         }
 
         public bool Visit(ElementNode element, object parameter)
         {
             if (element.Name.Equals("title", StringComparison.OrdinalIgnoreCase))
             {
-                var list = (List<string>)parameter;
-
+                var list = (HashSet<string>)parameter;
                 string text = element.GetText(element.InnerRange);
-                if (!list.Contains(text))
-                    list.Add(text);
+                list.Add(text);
             }
 
             return true;

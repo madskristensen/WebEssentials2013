@@ -8,29 +8,13 @@ namespace MadsKristensen.EditorExtensions
 {
     [HtmlCompletionProvider(CompletionType.Values, "link", "sizes")]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
-    public class AppleLinkCompletion : IHtmlCompletionListProvider
+    public class AppleLinkCompletion : StaticListCompletion
     {
-        public CompletionType CompletionType
-        {
-            get { return CompletionType.Values; }
-        }
-        
-        public IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
-        {
-            var result = new List<HtmlCompletion>();
-            var attr = context.Element.GetAttribute("rel");
-            
-            if (attr == null)
-                return result;
-
-            if (attr.Value.Equals("apple-touch-icon", StringComparison.OrdinalIgnoreCase))
+        protected override string KeyProperty { get { return "rel"; } }
+        public AppleLinkCompletion()
+            : base(new Dictionary<string, IList<HtmlCompletion>>(StringComparer.OrdinalIgnoreCase)
             {
-                result.Add(new SimpleHtmlCompletion("72x72"));
-                result.Add(new SimpleHtmlCompletion("114x114"));
-                result.Add(new SimpleHtmlCompletion("144x144"));
-            }
-
-            return result;
-        }
+                { "apple-touch-icon", Values("72x72", "114x114", "144x144") }
+            }) { }
     }
 }

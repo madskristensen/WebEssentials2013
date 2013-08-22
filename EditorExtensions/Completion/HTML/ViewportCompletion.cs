@@ -8,27 +8,18 @@ namespace MadsKristensen.EditorExtensions
 {
     [HtmlCompletionProvider(CompletionType.Values, "meta", "content")]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
-    public class ViewportCompletion : IHtmlCompletionListProvider
+    public class ViewportCompletion : StaticListCompletion
     {
-        public CompletionType CompletionType
-        {
-            get { return CompletionType.Values; }
-        }
-        
-        public IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
-        {
-            var result = new List<HtmlCompletion>();
-            var attr = context.Element.GetAttribute("name");
-
-            if (attr != null && attr.Value.Equals("viewport", StringComparison.OrdinalIgnoreCase))
+        protected override string KeyProperty { get { return "name"; } }
+        public ViewportCompletion()
+            : base(new Dictionary<string, IList<HtmlCompletion>>(StringComparer.OrdinalIgnoreCase)
             {
-                result.Add(new SimpleHtmlCompletion("width=device-width, initial-scale=1.0", "Example viewport value"));
-                result.Add(new SimpleHtmlCompletion("width=device-width, initial-scale=1.0, user-scalable=no", "Example viewport value"));
-                result.Add(new SimpleHtmlCompletion("width=device-width, initial-scale=1.0, maximum-scale=1", "Example viewport value"));
-                result.Add(new SimpleHtmlCompletion("width=device-width, initial-scale=1.0, minimum-scale=1", "Example viewport value"));
-            }
-
-            return result;
-        }
+                { "viewport", Values(
+                    "width=device-width, initial-scale=1.0", 
+                    "width=device-width, initial-scale=1.0, user-scalable=no", 
+                    "width=device-width, initial-scale=1.0, maximum-scale=1", 
+                    "width=device-width, initial-scale=1.0, minimum-scale=1"
+                ).WithDescription("Sample viewport value") }
+            }) { }
     }
 }
