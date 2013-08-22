@@ -36,6 +36,8 @@ namespace MadsKristensen.EditorExtensions
             _tree.GetPositionElement(position, out element, out attr);
 
             if (element == null ||
+                _tree.IsDirty ||
+                //(element.InnerRange.Start != position && element.InnerRange.End != position) ||
                 line.End.Position == position || // caret at end of line (TODO: add ignore whitespace logic)
                 TextView.TextBuffer.CurrentSnapshot.GetText(element.InnerRange.Start, element.InnerRange.Length).Trim().Length == 0)
                 return false;
@@ -86,15 +88,32 @@ namespace MadsKristensen.EditorExtensions
         private void PlaceCaret(ElementNode element, int position)
         {
             SnapshotPoint point = new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, TextView.Caret.Position.BufferPosition.Position);
-            IWpfTextViewLine line = TextView.GetTextViewLineContainingBufferPosition(point);
-            string text = TextView.TextBuffer.CurrentSnapshot.GetText(line.Start.Position, line.Length);
-
-            for (int i = 0; i < text.Length; i++)
+            
+            if (element.EndTag.Start == point.Position)
             {
-                if (!char.IsWhiteSpace(text[i]))
+                string text = element.GetText(element.InnerRange);
+
+                for (int i = text.Length -1; i > -1; i--)
                 {
-                    TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, line.Start.Position + i));
-                    break;
+                    if (!char.IsWhiteSpace(text[i]))
+                    {
+                        TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, element.InnerRange.Start + i + 1));
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                IWpfTextViewLine line = TextView.GetTextViewLineContainingBufferPosition(point);
+                string text = TextView.TextBuffer.CurrentSnapshot.GetText(line.Start.Position, line.Length);
+
+                for (int i = 0; i < text.Length; i++)
+                {
+                    if (!char.IsWhiteSpace(text[i]))
+                    {
+                        TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, line.Start.Position + i));
+                        break;
+                    }
                 }
             }
         }
