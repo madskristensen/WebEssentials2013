@@ -3,6 +3,7 @@ using Microsoft.Html.Editor.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace MadsKristensen.EditorExtensions
@@ -18,27 +19,19 @@ namespace MadsKristensen.EditorExtensions
 
         public IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
         {
-            var result = new List<HtmlCompletion>();
-            var list = new List<string>();
+            var list = new HashSet<string>();
 
             context.Document.HtmlEditorTree.RootNode.Accept(this, list);
 
-            foreach (var item in list)
-            {
-                result.Add(new SimpleHtmlCompletion(item));
-            }
-
-            return result;
+            return list.Select(s => new SimpleHtmlCompletion(s)).ToList<HtmlCompletion>();
         }
 
         public bool Visit(ElementNode element, object parameter)
         {
             if (element.Name.Equals("datalist", StringComparison.OrdinalIgnoreCase))
             {
-                var list = (List<string>)parameter;
-
-                if (!list.Contains(element.Id))
-                    list.Add(element.Id);
+                var list = (HashSet<string>)parameter;
+                list.Add(element.Id);
             }
 
             return true;
