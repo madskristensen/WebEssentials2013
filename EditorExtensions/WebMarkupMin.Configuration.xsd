@@ -211,7 +211,7 @@
 		</xs:attribute>
 		<xs:attribute name="removeHtmlComments" type="Boolean_SchemaType" use="optional" default="true">
 			<xs:annotation>
-				<xs:documentation>Flag for whether to remove all HTML comments except conditional and noindex comments</xs:documentation>
+				<xs:documentation>Flag for whether to remove all HTML comments except conditional, noindex and Knockout containerless comments</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="removeHtmlCommentsFromScriptsAndStyles" type="Boolean_SchemaType" use="optional" default="true">

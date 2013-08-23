@@ -1,7 +1,7 @@
 
 
    ----------------------------------------------------------------------
-              README file for Web Markup Minifier: Core 0.8.7
+              README file for Web Markup Minifier: Core 0.8.9
 
    ----------------------------------------------------------------------
 
@@ -40,6 +40,12 @@
    Minifier - http://ajaxmin.codeplex.com) and WebMarkupMin.Yui 
    (contains minifier-adapters for YUI Compressor for .Net - 
    http://yuicompressor.codeplex.com).
+   
+   =============
+   RELEASE NOTES
+   =============
+   Now in the HTML/XHTML Minifier during removing HTML comments are 
+   preserved Knockout containerless comments.
 
    =============
    DOCUMENTATION
