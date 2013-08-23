@@ -618,7 +618,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Classifications\RobotsTxt\Sample.md" />
+    <Content Include="Classifications\RobotsTxt\robots.txt" />
     <None Include="Classifications\Markdown\Sample.md" />
     <None Include="Key.snk" />
   </ItemGroup>
