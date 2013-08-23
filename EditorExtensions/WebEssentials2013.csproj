@@ -648,7 +648,6 @@
     </Content>
     <Resource Include="Resources\extract.png" />
     <EmbeddedResource Include="Resources\Scripts\jshint-2.1.4.js" />
-    <EmbeddedResource Include="Resources\Scripts\CoffeeScript-1.6.3.js" />
     <Content Include="Resources\Scripts\es5-shim.min.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -656,7 +655,7 @@
     <Resource Include="Resources\graph_atdir.png" />
     <Resource Include="Resources\graph_class.png" />
     <Resource Include="Resources\graph_parent.png" />
-    <EmbeddedResource Include="Resources\Scripts\IcedCoffeeScript-1.6.3-b.js" />
+    <EmbeddedResource Include="Resources\Scripts\IcedCoffeeScript-1.6.3-f.js" />
     <Content Include="Resources\Scripts\JSDocComments.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

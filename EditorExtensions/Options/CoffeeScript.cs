@@ -16,7 +16,6 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.ShowCoffeeScriptPreviewWindow, ShowCoffeeScriptPreviewWindow);
             Settings.SetValue(WESettings.Keys.WrapCoffeeScriptClosure, WrapCoffeeScriptClosure);
             Settings.SetValue(WESettings.Keys.CoffeeScriptMinify, CoffeeScriptMinify);
-            Settings.SetValue(WESettings.Keys.EnableIcedCoffeeScript, EnableIcedCoffeeScript);
             Settings.SetValue(WESettings.Keys.CoffeeScriptCompileToFolder, CoffeeScriptCompileToFolder);
             Settings.SetValue(WESettings.Keys.CoffeeScriptCompileOnBuild, CoffeeScriptCompileOnBuild);
 
@@ -29,7 +28,6 @@ namespace MadsKristensen.EditorExtensions
             ShowCoffeeScriptPreviewWindow = WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow);
             WrapCoffeeScriptClosure = WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure);
             CoffeeScriptMinify = WESettings.GetBoolean(WESettings.Keys.CoffeeScriptMinify);
-            EnableIcedCoffeeScript = WESettings.GetBoolean(WESettings.Keys.EnableIcedCoffeeScript);
             CoffeeScriptCompileToFolder = WESettings.GetBoolean(WESettings.Keys.CoffeeScriptCompileToFolder);
             CoffeeScriptCompileOnBuild = WESettings.GetBoolean(WESettings.Keys.CoffeeScriptCompileOnBuild);
         }
@@ -48,12 +46,7 @@ namespace MadsKristensen.EditorExtensions
         [Description("Wrap the generated JavaScript in an anonymous function.")]
         [Category("CoffeeScript")]
         public bool WrapCoffeeScriptClosure { get; set; }
-
-        [LocDisplayName("Enable Iced CoffeeScript")]
-        [Description("Switches to use the Iced CoffeeScript compiler.")]
-        [Category("CoffeeScript")]
-        public bool EnableIcedCoffeeScript { get; set; }
-
+        
         [LocDisplayName("Minify generated JavaScript")]
         [Description("Creates a minified version of the compiled JavaScript file (file.min.js)")]
         [Category("CoffeeScript")]

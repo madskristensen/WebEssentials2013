@@ -29,7 +29,6 @@ namespace MadsKristensen.EditorExtensions
             public const string ShowCoffeeScriptPreviewWindow = "CoffeeScriptShowPreviewWindow";
             public const string CoffeeScriptMinify = "CoffeeScriptMinify";
             public const string WrapCoffeeScriptClosure = "CoffeeScriptWrapClosure";
-            public const string EnableIcedCoffeeScript = "CoffeeScriptEnableIced";
             public const string CoffeeScriptCompileToFolder = "CoffeeScriptCompileToFolder";
             public const string CoffeeScriptCompileOnBuild = "CoffeeScriptCompileOnBuild";
 

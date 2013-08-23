@@ -19,13 +19,8 @@ namespace MadsKristensen.EditorExtensions
                 .Replace("'", "\\'");
 
             string bare = WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure) ? "false" : "true";
-            string script = ReadResourceFile("MadsKristensen.EditorExtensions.Resources.Scripts.CoffeeScript-1.6.3.js");
+            string script = ReadResourceFile("MadsKristensen.EditorExtensions.Resources.Scripts.IcedCoffeeScript-1.6.3-f.js");
             
-            if (WESettings.GetBoolean(WESettings.Keys.EnableIcedCoffeeScript))
-            {
-                script += ReadResourceFile("MadsKristensen.EditorExtensions.Resources.Scripts.IcedCoffeeScript-1.6.3-b.js");
-            }
-
             script += 
                     "try{" +
                         "var result = CoffeeScript.compile('" + clean + "', { bare: " + bare + ", runtime:'inline' });" +
