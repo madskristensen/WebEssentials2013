@@ -37,7 +37,6 @@ namespace MadsKristensen.EditorExtensions
 
             if (element == null ||
                 _tree.IsDirty ||
-                //(element.InnerRange.Start != position && element.InnerRange.End != position) ||
                 line.End.Position == position || // caret at end of line (TODO: add ignore whitespace logic)
                 TextView.TextBuffer.CurrentSnapshot.GetText(element.InnerRange.Start, element.InnerRange.Length).Trim().Length == 0)
                 return false;

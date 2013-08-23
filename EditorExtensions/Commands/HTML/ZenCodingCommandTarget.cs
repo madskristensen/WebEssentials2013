@@ -15,7 +15,6 @@ namespace MadsKristensen.EditorExtensions
     internal class ZenCoding : CommandTargetBase
     {
         private ICompletionBroker _broker;
-        private ITrackingSpan _trackingSpan;
 
         private static Regex _bracket = new Regex(@"<([a-z0-9]*)\b[^>]*>([^<]*)</\1>", RegexOptions.IgnoreCase);
         private static Regex _quotes = new Regex("(=\"()\")", RegexOptions.IgnoreCase);
@@ -36,57 +35,6 @@ namespace MadsKristensen.EditorExtensions
                     {
                         return true;
                     }
-                    else if (MoveToNextEmptySlot())
-                    {
-                        return true;
-                    }
-                }
-            }
-            else if (commandId == 5 && !_broker.IsCompletionActive(TextView))
-            {
-                if (WESettings.GetBoolean(WESettings.Keys.EnableHtmlZenCoding) && MoveToPrevEmptySlot())
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private bool MoveToNextEmptySlot()
-        {
-            if (_trackingSpan == null)
-                return false;
-
-            int position = TextView.Caret.Position.BufferPosition.Position + 1;
-            Span ts = _trackingSpan.GetSpan(TextView.TextBuffer.CurrentSnapshot);
-
-            if (ts.Contains(position))
-            {
-                Span span = new Span(position, ts.End - position);
-                SetCaret(span, false);
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool MoveToPrevEmptySlot()
-        {
-            if (_trackingSpan == null)
-                return false;
-
-            int position = TextView.Caret.Position.BufferPosition.Position;
-
-            if (position > 0)
-            {
-                Span ts = _trackingSpan.GetSpan(TextView.TextBuffer.CurrentSnapshot);
-
-                if (ts.Contains(position - 1))
-                {
-                    Span span = new Span(ts.Start, position - ts.Start - 1);
-                    SetCaret(span, true);
-                    return true;
                 }
             }
 
@@ -111,12 +59,7 @@ namespace MadsKristensen.EditorExtensions
 
                 ITextSelection selection = UpdateTextBuffer(zenSpan, result);
                 Span newSpan = new Span(zenSpan.Start, selection.SelectedSpans[0].Length);
-
-                if (result.Count(c => c == '>') > 2)
-                {
-                    _trackingSpan = TextView.TextBuffer.CurrentSnapshot.CreateTrackingSpan(newSpan, SpanTrackingMode.EdgeExclusive);
-                }
-
+                
                 selection.Clear();
 
                 EditorExtensionsPackage.DTE.UndoContext.Close();
@@ -163,31 +106,6 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-
-        //private bool IsValidTextBuffer()
-        //{
-        //    IProjectionBuffer projection = _textView.TextBuffer as IProjectionBuffer;            
-
-        //    if (projection != null)
-        //    {
-        //        int position = _textView.Caret.Position.BufferPosition.Position;
-        //        var buffers = projection.SourceBuffers.Where(s => s.ContentType.IsOfType("css") || s.ContentType.IsOfType("javascript"));
-
-        //        foreach (ITextBuffer buffer in buffers)
-        //        {
-        //            IProjectionSnapshot snapshot = buffer.CurrentSnapshot as IProjectionSnapshot;
-        //            bool containsPosition = snapshot.GetSourceSpans().Any(s => s.Contains(position));
-
-        //            if (containsPosition)
-        //            {
-        //                return false;
-        //            }
-        //        }
-        //    }
-
-        //    return true;
-        //}
-
         private bool SetCaret(Span zenSpan, bool isReverse)
         {
             string text = TextView.TextBuffer.CurrentSnapshot.GetText();
@@ -220,8 +138,6 @@ namespace MadsKristensen.EditorExtensions
         private void MoveTab(Span quote)
         {
             TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, quote.Start));
-            SnapshotSpan span = new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, quote);
-            TextView.Selection.Select(span, false);
         }
 
         private static Span FindTabSpan(Span zenSpan, bool isReverse, string text, Regex regex)
