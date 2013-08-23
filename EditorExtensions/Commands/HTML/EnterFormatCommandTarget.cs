@@ -87,7 +87,10 @@ namespace MadsKristensen.EditorExtensions
         private void PlaceCaret(ElementNode element, int position)
         {
             SnapshotPoint point = new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, TextView.Caret.Position.BufferPosition.Position);
-            
+
+            if (element.EndTag == null)
+                return;
+
             if (element.EndTag.Start == point.Position)
             {
                 string text = element.GetText(element.InnerRange);

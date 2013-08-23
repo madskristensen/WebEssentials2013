@@ -4,8 +4,8 @@ using Microsoft.Html.Schemas.Model;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions
                 { "X-UA-Compatible",    Values("IE=edge", "IE=7", "IE=8", "IE=9", "FF=3").WithDescription("Separate multiple values with commas if needed") },
                 { "Content-Type",       Values(GetAttributeValue("meta", "charset").Select(c => "text/html; charset=" + c)) },
                 { "refresh",            Values("3", "3; url=http://example.com") },
-                { "Content-Type",       Values(GetAttributeValue("html", "lang")) },
+                { "Content-Language",       Values(GetAttributeValue("html", "lang")) },
                 { "Set-Cookie",         Values("name=value; expires=Fri, 30 Dec 2019 12:00:00 GMT; path=/", "name=value; expires=Fri, 30 Dec 2019 12:00:00 GMT; path=http://example.com") },
             }) { }
 

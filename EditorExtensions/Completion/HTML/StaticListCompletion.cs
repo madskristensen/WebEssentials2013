@@ -1,6 +1,4 @@
 ﻿using Microsoft.Html.Editor.Intellisense;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -41,6 +39,8 @@ namespace MadsKristensen.EditorExtensions
         {
             IList<HtmlCompletion> result;
             var attr = context.Element.GetAttribute(KeyProperty);
+            if (attr == null)
+                return Empty;
 
             values.TryGetValue(attr.Value, out result);
             return result ?? Empty;

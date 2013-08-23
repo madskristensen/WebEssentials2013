@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
     public class OpenGraphTypeCompletion : StaticListCompletion, IHtmlTreeVisitor
     {
-        protected override string KeyProperty { get { return "name"; } }
+        protected override string KeyProperty { get { return "property"; } }
         public OpenGraphTypeCompletion()
             : base(new Dictionary<string, IList<HtmlCompletion>>(StringComparer.OrdinalIgnoreCase)
             {
