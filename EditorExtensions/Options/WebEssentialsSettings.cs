@@ -46,6 +46,7 @@ namespace MadsKristensen.EditorExtensions
             public const string ValidateZeroUnit = "CssValidateZeroUnit";
             public const string ValidateVendorSpecifics = "ValidateVendorSpecifics";
             public const string EnableSpeedTyping = "EnableSpeedTyping";
+            public const string CssEnableGzipping = "CssEnableGzipping";
 
             // JavaScript
             public const string EnableJavascriptRegions = "JavascriptEnableRegions";
@@ -53,6 +54,7 @@ namespace MadsKristensen.EditorExtensions
             public const string JavaScriptAutoCloseBraces = "JavaScriptAutoCloseBraces";
             public const string JavaScriptOutlining = "JavaScriptOutlining";
             public const string GenerateJavaScriptSourceMaps = "JavaScriptGenerateSourceMaps";
+            public const string JavaScriptEnableGzipping = "JavaScriptEnableGzipping";
 
             // TypeScript
             //public const string GenerateJsFileFromTypeScript = "TypeScriptGenerateJsFile";

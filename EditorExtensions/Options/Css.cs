@@ -16,6 +16,7 @@ namespace MadsKristensen.EditorExtensions
         {
             Settings.SetValue(WESettings.Keys.EnableCssSelectorHighligting, EnableCssSelectorHighligting);
             Settings.SetValue(WESettings.Keys.EnableCssMinification, EnableCssMinification);
+            Settings.SetValue(WESettings.Keys.CssEnableGzipping, EnableGzipping);
             Settings.SetValue(WESettings.Keys.ValidateStarSelector, ValidateStarSelector);
             Settings.SetValue(WESettings.Keys.ValidateOverQualifiedSelector, ValidateOverQualifiedSelector);
             Settings.SetValue(WESettings.Keys.CssErrorLocation, (int)CssErrorLocation);
@@ -35,6 +36,7 @@ namespace MadsKristensen.EditorExtensions
         {
             EnableCssSelectorHighligting = WESettings.GetBoolean(WESettings.Keys.EnableCssSelectorHighligting);
             EnableCssMinification = WESettings.GetBoolean(WESettings.Keys.EnableCssMinification);
+            EnableGzipping = WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping);
             ValidateStarSelector = WESettings.GetBoolean(WESettings.Keys.ValidateStarSelector);
             ValidateOverQualifiedSelector = WESettings.GetBoolean(WESettings.Keys.ValidateOverQualifiedSelector);
             CssErrorLocation = (WESettings.Keys.ErrorLocation)WESettings.GetInt(WESettings.Keys.CssErrorLocation);
@@ -62,6 +64,11 @@ namespace MadsKristensen.EditorExtensions
         [Description("When a .css file (foo.css) is saved and a minified version (foo.min.css) exist, the minified file will be updated. Right-click any .css file to generate .min.css file")]
         [Category("Misc")]
         public bool EnableCssMinification { get; set; }
+
+        [LocDisplayName("Gzip minified CSS files on save")]
+        [Description("When a .css file (foo.css) is saved and a minified version (foo.min.css) exist, a gzipped version of the file will be created.")]
+        [Category("Misc")]
+        public bool EnableGzipping { get; set; }
         
         [LocDisplayName("Enable Speed Typing")]
         [Description("Speed Typing makes it easier to write CSS by eliminating the need for typing curlies, colons and semi-colons.")]

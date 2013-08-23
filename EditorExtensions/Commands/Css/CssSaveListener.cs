@@ -1,8 +1,10 @@
 ﻿using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+using System;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -52,19 +54,53 @@ namespace MadsKristensen.EditorExtensions
             try
             {
                 string content = MinifyFileMenu.MinifyString(".css", File.ReadAllText(file));
-                //Minifier minifier = new Minifier();
-                //string content = minifier.MinifyStyleSheet(File.ReadAllText(file));
 
                 ProjectHelpers.CheckOutFileFromSourceControl(minFile);
                 using (StreamWriter writer = new StreamWriter(minFile, false, new UTF8Encoding(true)))
                 {
                     writer.Write(content);
                 }
+
+                GzipFile(file, minFile, content);
             }
             catch
             {
                 Logger.Log("Error minifying: " + file);
             }
+        }
+
+        public static void GzipFile(string file, string minFile, string content)
+        {
+            if (WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping))
+            {
+                string gzipFile = minFile + ".gzip";
+                ProjectHelpers.CheckOutFileFromSourceControl(gzipFile);
+                byte[] gzipContent = Compress(content);
+                File.WriteAllBytes(gzipFile, gzipContent);
+                ProjectHelpers.AddFileToActiveProject(gzipFile);
+                MarginBase.AddFileToProject(file, gzipFile);
+            }
+        }
+
+        public static byte[] Compress(string text)
+        {
+            byte[] buffer = Encoding.UTF8.GetBytes(text);
+            MemoryStream ms = new MemoryStream();
+            using (GZipStream zip = new GZipStream(ms, CompressionMode.Compress, true))
+            {
+                zip.Write(buffer, 0, buffer.Length);
+            }
+
+            ms.Position = 0;
+            MemoryStream outStream = new MemoryStream();
+
+            byte[] compressed = new byte[ms.Length];
+            ms.Read(compressed, 0, compressed.Length);
+
+            byte[] gzBuffer = new byte[compressed.Length + 4];
+            System.Buffer.BlockCopy(compressed, 0, gzBuffer, 4, compressed.Length);
+            System.Buffer.BlockCopy(BitConverter.GetBytes(buffer.Length), 0, gzBuffer, 0, 4);
+            return gzBuffer;
         }
     }
 }

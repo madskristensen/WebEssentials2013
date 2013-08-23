@@ -369,6 +369,8 @@ namespace MadsKristensen.EditorExtensions
                 {
                     MarginBase.AddFileToProject(filePath, minPath + ".map");
                 }
+
+                MarginBase.AddFileToProject(filePath, minPath + ".gzip");
             }
             else if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase))
             {
@@ -381,6 +383,8 @@ namespace MadsKristensen.EditorExtensions
                     writer.Write(minContent);
                 }
                 MarginBase.AddFileToProject(filePath, minPath);
+
+                CssSaveListener.GzipFile(filePath, minPath, minContent);
             }
         }
     }
