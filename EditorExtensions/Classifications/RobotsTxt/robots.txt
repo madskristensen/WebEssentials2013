@@ -1,0 +1,9 @@
+#test comment
+
+User-agent: *
+Disallow: /cgi-bin/ #foo #bar
+Disallow: /scripts/ #foo : bar
+Disallow: /tmp/
+
+
+sitemap: http://example.com/sitemap.xml

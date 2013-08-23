@@ -277,6 +277,9 @@
     <Compile Include="Classifications\JavaScriptRegionTagger.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Classifications\RobotsTxt\RobotsTxtClassificationTypes.cs" />
+    <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifier.cs" />
+    <Compile Include="Classifications\RobotsTxt\RobotsTxtContentTypeDefinition.cs" />
     <Compile Include="Classifications\Markdown\MarkdownClassificationTypes.cs" />
     <Compile Include="Classifications\Markdown\MarkdownClassifier.cs" />
     <Compile Include="Classifications\Markdown\MarkdownContentTypeDefinition.cs" />
@@ -615,6 +618,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Classifications\RobotsTxt\Sample.md" />
     <None Include="Classifications\Markdown\Sample.md" />
     <None Include="Key.snk" />
   </ItemGroup>
