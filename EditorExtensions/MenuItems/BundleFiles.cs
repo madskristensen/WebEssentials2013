@@ -55,11 +55,11 @@ namespace MadsKristensen.EditorExtensions
         {
             if (e.FileActionType == FileActionTypes.ContentSavedToDisk)
             {
-                string file = e.FilePath.EndsWith(_ext, StringComparison.OrdinalIgnoreCase) ? null : e.FilePath;
+                string file = e.FilePath.EndsWith(_ext, StringComparison.OrdinalIgnoreCase) ? e.FilePath : null;
 
                 System.Threading.Tasks.Task.Run(() =>
                 {
-                    UpdateBundles(file, file == null);
+                    UpdateBundles(file, true);
                 });
             }
         }
@@ -72,7 +72,8 @@ namespace MadsKristensen.EditorExtensions
                 {
                     if (project.ProjectItems.Count > 0)
                     {
-                        UpdateBundle(project.ProjectItems.Item(project.ProjectItems.Count).FileNames[1], isBuild);
+                        string folder = project.Properties.Item("FullPath").Value.ToString();
+                        UpdateBundle(folder, isBuild);
                     }
                 }
             }
@@ -82,29 +83,41 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static IEnumerable<Project> GetAllProjects(Project project = null)
+        private static IEnumerable<Project> GetAllProjects(Project project = null, List<Project> list = null)
         {
+            if (list == null)
+                list = new List<Project>();
+
             if (project == null)
             {
                 foreach (Project p in EditorExtensionsPackage.DTE.Solution.Projects)
                 {
-                    if (p.FullName == null)
+                    if (string.IsNullOrEmpty(p.FullName))
                     {
-                        GetAllProjects(p);
+                        GetAllProjects(p, list);
                     }
-
-                    yield return p;
                 }
             }
-            else
+            else if (string.IsNullOrEmpty(project.FullName))
             {
-                yield return project;
+                foreach (ProjectItem p in project.ProjectItems)
+                {
+                    if (p.SubProject != null)
+                    {
+                        list.Add(p.SubProject);
+                        break;
+                    }
+                }
             }
+
+            return list;
         }
 
         private static void UpdateBundle(string changedFile, bool isBuild)
         {
-            string dir = ProjectHelpers.GetProjectFolder(changedFile);
+            bool isDir = Directory.Exists(changedFile);
+
+            string dir = isDir ? changedFile : ProjectHelpers.GetProjectFolder(changedFile);
 
             if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
                 return;
