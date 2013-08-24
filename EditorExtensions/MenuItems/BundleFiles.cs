@@ -68,9 +68,9 @@ namespace MadsKristensen.EditorExtensions
         {
             if (string.IsNullOrEmpty(changedFile))
             {
-                foreach (Project project in EditorExtensionsPackage.DTE.Solution.Projects)
+                foreach (Project project in GetAllProjects())
                 {
-                    if (project.ProjectItems.Count > 1)
+                    if (project.ProjectItems.Count > 0)
                     {
                         UpdateBundle(project.ProjectItems.Item(project.ProjectItems.Count).FileNames[1], isBuild);
                     }
@@ -79,6 +79,26 @@ namespace MadsKristensen.EditorExtensions
             else
             {
                 UpdateBundle(changedFile, isBuild);
+            }
+        }
+
+        private static IEnumerable<Project> GetAllProjects(Project project = null)
+        {
+            if (project == null)
+            {
+                foreach (Project p in EditorExtensionsPackage.DTE.Solution.Projects)
+                {
+                    if (p.FullName == null)
+                    {
+                        GetAllProjects(p);
+                    }
+
+                    yield return p;
+                }
+            }
+            else
+            {
+                yield return project;
             }
         }
 
