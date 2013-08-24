@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
             if (attr == null || (attr.Name != "href" && attr.Name != "src"))
                 return;
 
-            string url = GetFileName(attr.Value.Trim('\'', '"'));
+            string url = GetFileName(attr.Value.Trim('\'', '"').TrimStart('~'));
 
             if (!string.IsNullOrEmpty(url))
             {

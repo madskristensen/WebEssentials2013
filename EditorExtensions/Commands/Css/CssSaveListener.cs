@@ -61,7 +61,8 @@ namespace MadsKristensen.EditorExtensions
                     writer.Write(content);
                 }
 
-                GzipFile(file, minFile, content);
+                if (WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping))
+                    GzipFile(file, minFile, content);
             }
             catch
             {
@@ -71,15 +72,12 @@ namespace MadsKristensen.EditorExtensions
 
         public static void GzipFile(string file, string minFile, string content)
         {
-            if (WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping))
-            {
-                string gzipFile = minFile + ".gzip";
-                ProjectHelpers.CheckOutFileFromSourceControl(gzipFile);
-                byte[] gzipContent = Compress(content);
-                File.WriteAllBytes(gzipFile, gzipContent);
-                ProjectHelpers.AddFileToActiveProject(gzipFile);
-                MarginBase.AddFileToProject(file, gzipFile);
-            }
+            string gzipFile = minFile + ".gzip";
+            ProjectHelpers.CheckOutFileFromSourceControl(gzipFile);
+            byte[] gzipContent = Compress(content);
+            File.WriteAllBytes(gzipFile, gzipContent);
+            ProjectHelpers.AddFileToActiveProject(gzipFile);
+            MarginBase.AddFileToProject(file, gzipFile);
         }
 
         public static byte[] Compress(string text)

@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Shell.Interop;
+﻿using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell.Interop;
 using System;
 
 namespace MadsKristensen.EditorExtensions
@@ -18,7 +19,6 @@ namespace MadsKristensen.EditorExtensions
                 if (EnsurePane())
                 {
                     pane.OutputString(DateTime.Now.ToString() + ": " + message + Environment.NewLine);
-                    //pane.Activate();
                 }
             }
             catch
@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     if (pane == null)
                     {
-                        pane = EditorExtensionsPackage.Instance.GetOutputPane(new Guid("f1536ef8-92ec-443c-9ed7-fdadf150da44"), "Web Essentials");
+                        pane = EditorExtensionsPackage.Instance.GetOutputPane(VSConstants.OutputWindowPaneGuid.BuildOutputPane_guid, "Web Essentials");
                     }
                 }
             }

@@ -165,7 +165,7 @@ namespace MadsKristensen.EditorExtensions
         private void BeforeQueryStatus(object sender, string extension)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
-             menuCommand.Enabled = GetSelectedItems(extension).Count() > 1;
+            menuCommand.Enabled = GetSelectedItems(extension).Count() > 1;
         }
 
         private static IEnumerable<ProjectItem> GetSelectedItems(string extension)
@@ -291,7 +291,7 @@ namespace MadsKristensen.EditorExtensions
                 MessageBox.Show("The 'output' attribute should contain a file name without a path", "Web Essentials");
                 return;
             }
-            
+
             Dictionary<string, string> files = new Dictionary<string, string>();
             string extension = Path.GetExtension(filePath.Replace(_ext, string.Empty));
             XmlNodeList nodes = doc.SelectNodes("//file");
@@ -303,11 +303,11 @@ namespace MadsKristensen.EditorExtensions
                 {
                     absolute = node.InnerText;
                 }
-                else 
+                else
                 {
                     absolute = ProjectHelpers.ToAbsoluteFilePath(node.InnerText, ProjectHelpers.GetProjectFolder(filePath)).Replace("\\\\", "\\");
                 }
-                
+
                 if (File.Exists(absolute))
                 {
                     if (!files.ContainsKey(absolute))
@@ -322,7 +322,7 @@ namespace MadsKristensen.EditorExtensions
                 }
             }
 
-            string bundlePath = outputAttr != null ? Path.Combine(Path.GetDirectoryName(filePath), outputAttr.InnerText) : filePath.Replace(_ext, string.Empty);            
+            string bundlePath = outputAttr != null ? Path.Combine(Path.GetDirectoryName(filePath), outputAttr.InnerText) : filePath.Replace(_ext, string.Empty);
             StringBuilder sb = new StringBuilder();
 
             foreach (string file in files.Keys)
@@ -382,9 +382,11 @@ namespace MadsKristensen.EditorExtensions
                 {
                     writer.Write(minContent);
                 }
+
                 MarginBase.AddFileToProject(filePath, minPath);
 
-                CssSaveListener.GzipFile(filePath, minPath, minContent);
+                if (WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping))
+                    CssSaveListener.GzipFile(filePath, minPath, minContent);
             }
         }
     }

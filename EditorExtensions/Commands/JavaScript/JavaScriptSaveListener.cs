@@ -124,20 +124,8 @@ namespace MadsKristensen.EditorExtensions
                 writer.Write(content);
             }
 
-            GzipFile(file, minFile, content);
-        }
-
-        private static void GzipFile(string file, string minFile, string content)
-        {
-            if (WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping))
-            {
-                string gzipFile = minFile + ".gzip";
-                ProjectHelpers.CheckOutFileFromSourceControl(gzipFile);
-                byte[] gzipContent = CssSaveListener.Compress(content);
-                File.WriteAllBytes(gzipFile, gzipContent);
-                ProjectHelpers.AddFileToActiveProject(gzipFile);
-                MarginBase.AddFileToProject(file, gzipFile);
-            }
+            if (WESettings.GetBoolean(WESettings.Keys.JavaScriptEnableGzipping))
+                CssSaveListener.GzipFile(file, minFile, content);
         }
     }
 }
