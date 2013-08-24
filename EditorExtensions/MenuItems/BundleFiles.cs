@@ -96,6 +96,10 @@ namespace MadsKristensen.EditorExtensions
                     {
                         GetAllProjects(p, list);
                     }
+                    else
+                    {
+                        list.Add(p);
+                    }
                 }
             }
             else if (string.IsNullOrEmpty(project.FullName))
