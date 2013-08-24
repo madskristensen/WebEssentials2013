@@ -70,6 +70,7 @@ namespace MadsKristensen.EditorExtensions
 
             // JSHint
             public const string EnableJsHint = "JsHintEnable";
+            public const string JsHint_ignoreFiles = "JsHint_ignoreFiles";
             public const string RunJsHintOnBuild = "JsHintRunOnBuild";
             public const string JsHintErrorLocation = "JsHintErrorLocation";
             public const string JsHint_eqeqeq = "JsHint_eqeqeq";
@@ -178,6 +179,18 @@ namespace MadsKristensen.EditorExtensions
             }
 
             return -1;
+        }
+
+        public static string GetString(string propertyName)
+        {
+            object value = Settings.GetValue(propertyName);
+
+            if (value != null)
+            {
+                return value.ToString();
+            }
+
+            return null;
         }
     }
 }

@@ -78,8 +78,9 @@ namespace MadsKristensen.EditorExtensions
         {
             if (!Path.GetExtension(file).Equals(".js", StringComparison.OrdinalIgnoreCase) ||
                 file.EndsWith(".min.js") ||
-                file.EndsWith(".debug.js") ||
+                file.EndsWith(".debug.js") ||                
                 file.EndsWith(".intellisense.js") ||
+                file.Contains("-vsdoc.js") ||
                 !File.Exists(file) ||
                 EditorExtensionsPackage.DTE.Solution.FindProjectItem(file) == null)
             {
@@ -87,37 +88,55 @@ namespace MadsKristensen.EditorExtensions
             }
 
             string name = Path.GetFileName(file);
-            return _ignoreRegex.IsMatch(name);
+            return MustIgnore(name);
+        }
+
+        private static bool MustIgnore(string name)
+        {
+            if (_ignoreRegex.IsMatch(name))
+                return true;
+
+            string ignoreFiles = WESettings.GetString(WESettings.Keys.JsHint_ignoreFiles);
+
+            if (string.IsNullOrEmpty(ignoreFiles))
+                return false;
+
+            string[] custom = ignoreFiles.Split(';');
+
+            return custom.Any(c => Regex.IsMatch(name, c.Trim(), RegexOptions.IgnoreCase));
         }
 
         private static Regex _ignoreRegex = new Regex("(" + String.Join(")|(", new [] {
-            @"jquery-([0-9\.]+)\.js",
-            @"jquery-ui-([0-9\.]+)\.js",
-            @"knockout-([0-9\.]+)\.js",
-            @"modernizr-([0-9\.]+)\.js",
-            @"backbone\.js",
-            @"angular\.js",
+            @"_references\.js",
             @"amplify\.js",
+            @"angular\.js",
+            @"backbone\.js",
+            @"bootstrap\.js",
             @"dojo\.js",
             @"ember\.js",
-            @"handlebars-([0-9a-z\.]+)\.js",
-            @"mustache\.js",
-            @"underscore\.js",
-            @"yepnope\.js",
             @"ext-core\.js",
+            @"handlebars.*",
             @"highlight\.js",
             @"history\.js",
-            @"require\.js",
-            @"sammy\.js",
+            @"jquery-([0-9\.]+)\.js",
+            @"jquery.blockui.*",
+            @"jquery.validate.*",
+            @"jquery.unobtrusive.*",
+            @"jquery-ui-([0-9\.]+)\.js",
             @"json2\.js",
-            @"_references\.js",
+            @"knockout-([0-9\.]+)\.js",
             @"MicrosoftAjax([a-z]+)\.js",
-            @"scriptaculous\.js ",
+            @"modernizr-([0-9\.]+)\.js",
+            @"mustache.*",
             @"prototype\.js ",
             @"qunit-([0-9a-z\.]+)\.js",
+            @"require\.js",
+            @"sammy\.js",
+            @"scriptaculous\.js ",
             @"swfobject\.js",
-            @"bootstrap\.js",
+            @"underscore\.js",
             @"webfont\.js",
+            @"yepnope\.js",
             @"zepto\.js",
         }) + ")", RegexOptions.IgnoreCase);
 

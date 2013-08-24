@@ -290,6 +290,7 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.JsHint_smarttabs, true);
             dic.Add(Keys.JsHint_undef, true);
             dic.Add(Keys.JsHint_unused, true);
+            dic.Add(Keys.JsHint_ignoreFiles, "kendo.*; globalize.*");
 
             // MISC
             dic.Add(Keys.ShowBrowserTooltip, true);

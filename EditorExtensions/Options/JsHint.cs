@@ -16,6 +16,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.JsHint_maxerr, JsHint_maxerr);
             Settings.SetValue(WESettings.Keys.RunJsHintOnBuild, RunJsHintOnBuild);
             Settings.SetValue(WESettings.Keys.EnableJsHint, EnableJsHint);
+            Settings.SetValue(WESettings.Keys.JsHint_ignoreFiles, IgnoreFiles);
             Settings.SetValue(WESettings.Keys.JsHintErrorLocation, (int)ErrorLocation);
             
             Settings.SetValue(WESettings.Keys.JsHint_bitwise, JsHint_bitwise);
@@ -82,6 +83,7 @@ namespace MadsKristensen.EditorExtensions
         public override void LoadSettingsFromStorage()
         {
             EnableJsHint = WESettings.GetBoolean(WESettings.Keys.EnableJsHint);
+            IgnoreFiles = WESettings.GetString(WESettings.Keys.JsHint_ignoreFiles);
             RunJsHintOnBuild = WESettings.GetBoolean(WESettings.Keys.RunJsHintOnBuild);
             ErrorLocation = (WESettings.Keys.FullErrorLocation)WESettings.GetInt(WESettings.Keys.JsHintErrorLocation);
             JsHint_maxerr = WESettings.GetInt(WESettings.Keys.JsHint_maxerr);
@@ -164,6 +166,11 @@ namespace MadsKristensen.EditorExtensions
         [Description("Runs JSHint in any open .js file when saved.")]
         [Category("Common")]
         public bool EnableJsHint { get; set; }
+
+        [LocDisplayName("Ignore files")]
+        [Description("A semicolon separated list of file name regex's to ignore")]
+        [Category("Common")]
+        public string IgnoreFiles { get; set; }
 
         [LocDisplayName("Run on build")]
         [Description("Runs JSHint on all .js files in the active project on build")]
