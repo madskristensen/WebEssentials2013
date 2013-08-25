@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.VisualStudio.Language.Intellisense;
-using System.Collections.ObjectModel;
+﻿using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
 using System.Windows.Media;
 
 namespace MadsKristensen.EditorExtensions
@@ -38,7 +34,7 @@ namespace MadsKristensen.EditorExtensions
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
             if (_disposed)
-                throw new ObjectDisposedException("OokCompletionSource");
+                return;
 
             List<Completion> completions = new List<Completion>();
             foreach (string item in RobotsTxtClassifier._valid)
@@ -57,7 +53,7 @@ namespace MadsKristensen.EditorExtensions
             int index = text.IndexOf(':');
             SnapshotPoint start = triggerPoint;
 
-            if (index > -1 && (start - line.Start.Position) > index)
+            if (index == -1 || (index > -1 && (start - line.Start.Position) > index))
                 return;
 
             while (start > line.Start && !char.IsWhiteSpace((start - 1).GetChar()))
