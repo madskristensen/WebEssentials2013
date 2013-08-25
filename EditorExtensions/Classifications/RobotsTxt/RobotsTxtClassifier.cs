@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(IVsTextViewCreationListener))]
     [Export(typeof(IClassifierProvider))]
-    [ContentType(RobotsTxtContentTypeDefinition.RobotsTxtContentType)]
+    [ContentType("plaintext")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     public class RobotsTxtClassifierProvider : IClassifierProvider, IVsTextViewCreationListener
     {

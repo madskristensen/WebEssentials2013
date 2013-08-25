@@ -258,10 +258,6 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.ShowLessPreviewWindow, true);
             dic.Add(Keys.LessMinify, true);
 
-            // SCSS
-            dic.Add(Keys.GenerateCssFileFromScss, true);
-            dic.Add(Keys.ShowScssPreviewWindow, true);
-            dic.Add(Keys.ScssMinify, true);
 
             // CoffeeScript
             dic.Add(Keys.GenerateJsFileFromCoffeeScript, true);

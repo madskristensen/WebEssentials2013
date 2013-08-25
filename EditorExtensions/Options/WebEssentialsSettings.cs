@@ -17,12 +17,6 @@ namespace MadsKristensen.EditorExtensions
             public const string LessCompileOnBuild = "LessCompileOnBuild";
             public const string LessCompileToFolder = "LessCompileToFolder";
 
-            // SCSS
-            public const string GenerateCssFileFromScss = "ScssGenerateCssFile";
-            public const string ShowScssPreviewWindow = "ScssShowPreviewWindow";
-            public const string ScssMinify = "ScssMinify";
-            public const string ScssCompileOnBuild = "ScssCompileOnBuild";
-            public const string ScssCompileToFolder = "ScssCompileToFolder";
 
             // CoffeeScript
             public const string GenerateJsFileFromCoffeeScript = "CoffeeScriptGenerateJsFile";

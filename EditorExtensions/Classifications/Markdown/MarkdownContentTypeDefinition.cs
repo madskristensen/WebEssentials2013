@@ -4,7 +4,7 @@ using System.ComponentModel.Composition;
 namespace MadsKristensen.EditorExtensions
 {
     /// <summary>
-    /// Exports the ScSS content type and file extension
+    /// Exports the Markdown content type and file extension
     /// </summary>
     public class MarkdownContentTypeDefinition
     {

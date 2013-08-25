@@ -280,7 +280,6 @@
     </Compile>
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassificationTypes.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifier.cs" />
-    <Compile Include="Classifications\RobotsTxt\RobotsTxtContentTypeDefinition.cs" />
     <Compile Include="Classifications\Markdown\MarkdownClassificationTypes.cs" />
     <Compile Include="Classifications\Markdown\MarkdownClassifier.cs" />
     <Compile Include="Classifications\Markdown\MarkdownContentTypeDefinition.cs" />
@@ -402,7 +401,6 @@
     <Compile Include="SmartTags\HTML\HtmlUnMinifySmartTag.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Validation\CSS\Filters\ScssErrorFilter.cs" />
     <Compile Include="Validation\CSS\Providers\ColorValuesInRangeErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -473,7 +471,6 @@
     <Compile Include="Margin\CompilerError.cs" />
     <Compile Include="Margin\CompilerResult.cs" />
     <Compile Include="Margin\MarkdownMargin.cs" />
-    <Compile Include="Margin\ScssMargin.cs" />
     <Compile Include="Margin\LessProjectCompiler.cs" />
     <Compile Include="Margin\ScriptRunnerBase.cs" />
     <Compile Include="Margin\LessCompiler.cs" />
@@ -494,9 +491,6 @@
     <Compile Include="MenuItems\Encoding.cs" />
     <Compile Include="NavigateTo\GoToLineProviderFactory.cs" />
     <Compile Include="Options\CoffeeScript.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Options\Scss.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Options\JavaScript.cs">

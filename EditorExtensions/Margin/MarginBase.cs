@@ -230,7 +230,6 @@ namespace MadsKristensen.EditorExtensions
             switch (extension.ToLowerInvariant())
             {
                 case ".less":
-                case ".scss":
                     fileName = GetCompiledFileName(currentFileName, ".css", UseCompiledFolder);
                     break;
 
