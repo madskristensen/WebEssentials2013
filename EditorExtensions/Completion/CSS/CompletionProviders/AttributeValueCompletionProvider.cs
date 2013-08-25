@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 
-namespace MadsKristensen.EditorExtensions.Completion.CompletionProviders
+namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(ICssCompletionProvider))]
     [Name("AttributeValueCompletionProvider")]

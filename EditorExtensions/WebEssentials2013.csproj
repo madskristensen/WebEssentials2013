@@ -379,6 +379,10 @@
     <Compile Include="Completion\CSS\FontFamilyCompletionListEntry.cs" />
     <Compile Include="Completion\CSS\UrlPickerCompletionListEntry.cs" />
     <Compile Include="Completion\CSS\Filter\HideInheritInitialCompletionListFilter.cs" />
+    <Compile Include="Completion\JavaScript\JavaScriptCompletionSourceProvider.cs" />
+    <Compile Include="Completion\JavaScript\JavaScriptCompletionController.cs" />
+    <Compile Include="Completion\RobotsTxt\RobotsCompletionController.cs" />
+    <Compile Include="Completion\RobotsTxt\RobotsCompletionSource.cs" />
     <Compile Include="DropTargets\BundleDrop.cs" />
     <Compile Include="DropTargets\StylesheetDrop.cs" />
     <Compile Include="DropTargets\FontDrop.cs" />

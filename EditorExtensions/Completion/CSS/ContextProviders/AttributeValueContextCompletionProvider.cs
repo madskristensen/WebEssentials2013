@@ -1,4 +1,4 @@
-﻿using MadsKristensen.EditorExtensions.Completion.CompletionProviders;
+﻿using MadsKristensen.EditorExtensions;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Utilities;
@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 
-namespace MadsKristensen.EditorExtensions.Completion.ContextProviders
+namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(ICssCompletionContextProvider))]
     [Name("AttributeValueCompletionContextProvider")]
