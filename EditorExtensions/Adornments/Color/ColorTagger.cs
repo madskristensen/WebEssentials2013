@@ -62,25 +62,6 @@ namespace MadsKristensen.EditorExtensions
             };
 
             return colorCrawler.Crawl(complexItem).Where(o => o != null);
-
-            //IEnumerable<ParseItem> declarations;
-            //var lessVar = complexItem as LessVariableDeclaration;
-
-            //if (lessVar != null)
-            //{
-            //    declarations = new[] { lessVar.Value };
-            //}
-            //else
-            //{
-            //    declarations = new CssItemAggregator<ParseItem>(filter: e => e.AfterEnd > span.Start && e.Start < span.End)
-            //    {
-            //        (LessMixinArgument a) => a.Argument,
-            //        (LessMixinDeclarationArgument a) => a.Variable.Value,
-            //        (FunctionArgument a) => a.ArgumentItems
-            //    }.Crawl(complexItem).Where(d => d != null);
-            //}
-            //TODO: This doesn't seem to work correctly, probably because I'm reusing the mutable crawler.
-            //return declarations.SelectMany(colorCrawler.Crawl).Where(o => o != null);
         }
 
         public bool EnsureInitialized()

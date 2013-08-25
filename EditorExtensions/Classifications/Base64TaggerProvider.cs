@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
+﻿using Microsoft.CSS.Core;
+using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
-using System.Text.RegularExpressions;
-using MadsKristensen.EditorExtensions.QuickInfo;
-using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.Web.Editor;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -21,7 +18,6 @@ namespace MadsKristensen.EditorExtensions
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
             return buffer.Properties.GetOrCreateSingletonProperty(() => new Base64Tagger(buffer)) as ITagger<T>;
-            //return new Base64Tagger(buffer) as ITagger<T>;
         }
     }
 
@@ -79,13 +75,10 @@ namespace MadsKristensen.EditorExtensions
             remove { }
         }
 
-
         void BufferChanged(object sender, TextContentChangedEventArgs e)
         {
-            // If this isn't the most up-to-date version of the buffer, then ignore it for now (we'll eventually get another change event).
             if (e.After != buffer.CurrentSnapshot)
                 return;
-            //this.ReParse();
         }
     }
 }

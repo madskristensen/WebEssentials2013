@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
                 return null;
 
             ITextStructureNavigator textStructureNavigator = TextStructureNavigatorSelector.GetTextStructureNavigator(buffer);
-            //return new HighlightWordTagger(textView, buffer, TextSearchService, textStructureNavigator) as ITagger<T>;
+            
             return buffer.Properties.GetOrCreateSingletonProperty(() => new CssHighlightWordTagger(textView, buffer, TextSearchService, textStructureNavigator)) as ITagger<T>;
         }
     }
@@ -123,7 +123,6 @@ namespace MadsKristensen.EditorExtensions
 
             _requestedPoint = point.Value;
             Task.Run(new Action(() => UpdateWordAdornments(validItem)));
-            //UpdateWordAdornments(validItem);
         }
 
         void UpdateWordAdornments(ParseItem item)
@@ -157,7 +156,6 @@ namespace MadsKristensen.EditorExtensions
             //If another change hasn't happened, do a real update
             if (currentRequest == _requestedPoint)
             {
-                //Task.Run(new Action(() => SynchronousUpdate(currentRequest, new NormalizedSnapshotSpanCollection(wordSpans), currentWord)));
                 SynchronousUpdate(currentRequest, new NormalizedSnapshotSpanCollection(wordSpans), currentWord);
             }
         }

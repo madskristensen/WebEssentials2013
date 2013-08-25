@@ -49,19 +49,7 @@ namespace MadsKristensen.EditorExtensions
             public const string JavaScriptOutlining = "JavaScriptOutlining";
             public const string GenerateJavaScriptSourceMaps = "JavaScriptGenerateSourceMaps";
             public const string JavaScriptEnableGzipping = "JavaScriptEnableGzipping";
-
-            // TypeScript
-            //public const string GenerateJsFileFromTypeScript = "TypeScriptGenerateJsFile";
-            //public const string ShowTypeScriptPreviewWindow = "TypeScriptShowPreviewWindow";
-            //public const string CompileTypeScriptOnBuild = "TypeScriptCompileOnBuild";
-            //public const string TypeScriptKeepComments = "TypeScriptKeepComments";
-            //public const string TypeScriptUseAmdModule = "TypeScriptUseAmdModule";
-            //public const string TypeScriptCompileES3 = "TypeScriptCompileES3";
-            //public const string TypeScriptProduceSourceMap = "TypeScriptProduceSourceMap";
-            //public const string TypeScriptMinify = "TypeScriptMinify";
-            //public const string TypeScriptAddGeneratedFilesToProject = "TypeScriptAddGeneratedFilesToProject";
-            //public const string TypeScriptResaveWithUtf8BOM = "TypeScriptResaveWithUtf8BOM";
-
+            
             // JSHint
             public const string EnableJsHint = "JsHintEnable";
             public const string JsHint_ignoreFiles = "JsHint_ignoreFiles";
