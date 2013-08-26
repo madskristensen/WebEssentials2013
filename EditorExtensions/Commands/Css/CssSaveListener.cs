@@ -91,9 +91,7 @@ namespace MadsKristensen.EditorExtensions
                     zip.Write(buffer, 0, buffer.Length);
                 }
 
-                byte[] compressed = ms.ToArray();
-
-                return compressed;
+                return ms.ToArray();
             }
         }
     }
