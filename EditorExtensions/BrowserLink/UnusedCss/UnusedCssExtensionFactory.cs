@@ -5,7 +5,7 @@ using System.IO;
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     [Export(typeof(BrowserLinkExtensionFactory))]
-    [BrowserLinkFactoryName("MadsKristensen.EditorExtensions.BrowserLink.UnusedCss")]
+    [BrowserLinkFactoryName("UnusedCss")]
     public class UnusedCssExtensionFactory : BrowserLinkExtensionFactory
     {
         public override BrowserLinkExtension CreateInstance(BrowserLinkConnection connection)

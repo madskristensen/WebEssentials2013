@@ -21,6 +21,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             IgnoreList = new List<string>();
         }
 
+        internal static void All(Action<UnusedCssExtension> method)
+        {
+            MessageDisplayManager.DisplaySource = MessageDisplaySource.Project;
+            foreach (var extension in ExtensionByConnection.Values)
+            {
+                method(extension);
+            }
+        }
+
         public BrowserLinkConnection Connection { get { return _connection; } }
 
         public UnusedCssExtension(BrowserLinkConnection connection)
@@ -111,7 +120,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             _isRecording = !_isRecording;
         }
 
-        private void SnapshotPage()
+        public void SnapshotPage()
         {
             Clients.Call(_connection, "snapshotPage", Guid.NewGuid());
         }

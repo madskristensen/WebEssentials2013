@@ -1,5 +1,6 @@
 ﻿using EnvDTE;
 using EnvDTE80;
+using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -94,6 +95,9 @@ namespace MadsKristensen.EditorExtensions
 
                 MarkdownStylesheetMenu markdownMenu = new MarkdownStylesheetMenu(DTE, mcs);
                 markdownMenu.SetupCommands();
+
+                UnusedCssMenu unusedCssMenu = new UnusedCssMenu(DTE, mcs);
+                unusedCssMenu.SetupCommands();
             }
 
             // Hook up event handlers

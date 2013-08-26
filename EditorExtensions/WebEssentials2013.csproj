@@ -288,6 +288,7 @@
     <Compile Include="BrowserLink\UnusedCss\SessionResult.cs" />
     <Compile Include="BrowserLink\UnusedCss\UnusedCssExtensionFactory.cs" />
     <Compile Include="BrowserLink\UnusedCss\UnusedCssExtension.cs" />
+    <Compile Include="BrowserLink\UnusedCss\UnusedCssMenu.cs" />
     <Compile Include="BrowserLink\UnusedCss\UsageRegistry.cs" />
     <Compile Include="BrowserLink\UploadHelper.cs" />
     <Compile Include="Classifications\HtmlRegionTagger.cs" />
