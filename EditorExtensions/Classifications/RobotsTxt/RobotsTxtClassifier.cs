@@ -1,56 +1,15 @@
-﻿using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.Text;
+﻿using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [Export(typeof(IVsTextViewCreationListener))]
-    [Export(typeof(IClassifierProvider))]
-    [ContentType("plaintext")]
-    [TextViewRole(PredefinedTextViewRoles.Document)]
-    public class RobotsTxtClassifierProvider : IClassifierProvider, IVsTextViewCreationListener
-    {
-        [Import]
-        internal IClassificationTypeRegistryService Registry { get; set; }
-
-        [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
-
-        public IClassifier GetClassifier(ITextBuffer textBuffer)
-        {
-            return textBuffer.Properties.GetOrCreateSingletonProperty<RobotsTxtClassifier>(() => new RobotsTxtClassifier(Registry));
-        }
-
-        public void VsTextViewCreated(Microsoft.VisualStudio.TextManager.Interop.IVsTextView textViewAdapter)
-        {
-            ITextDocument document;
-            RobotsTxtClassifier classifier;
-
-            var view = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
-            view.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
-            
-            if (document != null && document.FilePath.EndsWith("\\robots.txt"))
-            {
-                view.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(RobotsTxtClassifier), out classifier);
-
-                if (classifier != null)
-                {
-                    ITextSnapshot snapshot = view.TextBuffer.CurrentSnapshot;
-                    classifier.RaiseClassificationChanged(new SnapshotSpan(snapshot, 0, snapshot.Length));
-                }
-            }
-        }
-    }
-
     public class RobotsTxtClassifier : IClassifier
     {
         private IClassificationType _keyword, _comment;
         private bool _isRobotsTxt = false;
+        private TextType _textType;
         public static HashSet<string> _valid = new HashSet<string>() { "user-agent", "disallow", "sitemap", "crawl-delay", "host" };
 
         public RobotsTxtClassifier(IClassificationTypeRegistryService registry)
@@ -73,6 +32,9 @@ namespace MadsKristensen.EditorExtensions
                 var result = new SnapshotSpan(span.Snapshot, span.Start + index, text.Length - index);
                 list.Add(new ClassificationSpan(result, _comment));
             }
+
+            if (_textType != TextType.Robots)
+                return list;
             
             if (index == -1 || index > 0)
             {
@@ -88,9 +50,10 @@ namespace MadsKristensen.EditorExtensions
             return list;
         }
 
-        public void RaiseClassificationChanged(SnapshotSpan span)
+        public void RaiseClassificationChanged(SnapshotSpan span, TextType type)
         {
             _isRobotsTxt = true;
+            _textType = type;
             var handler = this.ClassificationChanged;
             
             if (handler != null)

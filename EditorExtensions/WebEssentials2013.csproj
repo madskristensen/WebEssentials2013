@@ -280,6 +280,7 @@
     </Compile>
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassificationTypes.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifier.cs" />
+    <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifierProvider.cs" />
     <Compile Include="Classifications\Markdown\MarkdownClassificationTypes.cs" />
     <Compile Include="Classifications\Markdown\MarkdownClassifier.cs" />
     <Compile Include="Classifications\Markdown\MarkdownContentTypeDefinition.cs" />
