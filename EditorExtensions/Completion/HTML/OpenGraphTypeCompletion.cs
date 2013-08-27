@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
                 { "apple-mobile-web-app-status-bar-style",  Values("default", "black", "black-translucent") }
             }) { }
 
-        public IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
+        public new IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
         {
             var attr = context.Element.GetAttribute("property");
 

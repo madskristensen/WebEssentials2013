@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
 
         public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
-            if (spans.Count == 0 || !WESettings.GetBoolean(WESettings.Keys.EnableJavascriptRegions))
+            if (spans.Count == 0)
                 yield break;
 
             List<Region> currentRegions = this.regions;

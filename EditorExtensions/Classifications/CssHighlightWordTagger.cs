@@ -85,9 +85,6 @@ namespace MadsKristensen.EditorExtensions
 
         private void UpdateAtCaretPosition(CaretPosition caretPosition)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.EnableCssSelectorHighligting))
-                return;
-
             SnapshotPoint? point = caretPosition.Point.GetPoint(_buffer, caretPosition.Affinity);
 
             if (!point.HasValue || !EnsureInitialized())

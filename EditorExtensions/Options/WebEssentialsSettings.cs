@@ -6,8 +6,6 @@ namespace MadsKristensen.EditorExtensions
         public static class Keys
         {
             // General
-            public const string EnableHtmlZenCoding = "HtmlEnableZenCoding";
-            public const string EnableMustache = "HtmlEnableMustache";
             public const string KeepImportantComments = "KeepImportantComments";
 
             // LESS
@@ -30,7 +28,6 @@ namespace MadsKristensen.EditorExtensions
             public const string ValidateStarSelector = "CssValidateStarSelector";
             public const string ValidateOverQualifiedSelector = "CSSValidateOverQualifiedSelector";
             public const string CssErrorLocation = "CssErrorLocation";
-            public const string EnableCssSelectorHighligting = "CssEnableSelectorHighligting";
             public const string ValidateEmbedImages = "CssValidateEmbedImages";
             public const string ShowBrowserTooltip = "CssShowBrowserTooltip";
             public const string SyncVendorValues = "CssSyncVendorValues";
@@ -43,10 +40,7 @@ namespace MadsKristensen.EditorExtensions
             public const string CssEnableGzipping = "CssEnableGzipping";
 
             // JavaScript
-            public const string EnableJavascriptRegions = "JavascriptEnableRegions";
             public const string EnableJsMinification = "JavaScriptEnableMinification";
-            public const string JavaScriptAutoCloseBraces = "JavaScriptAutoCloseBraces";
-            public const string JavaScriptOutlining = "JavaScriptOutlining";
             public const string GenerateJavaScriptSourceMaps = "JavaScriptGenerateSourceMaps";
             public const string JavaScriptEnableGzipping = "JavaScriptEnableGzipping";
             

@@ -11,22 +11,22 @@ namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(ICompletionSourceProvider))]
     [ContentType("plaintext")]
-    [Name("ookCompletion")]
-    class OokCompletionSourceProvider : ICompletionSourceProvider
+    [Name("RobotsTxtCompletion")]
+    class RobotsTxtCompletionSourceProvider : ICompletionSourceProvider
     {
         public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer)
         {
-            return new OokCompletionSource(textBuffer);
+            return new RobotsTxtCompletionSource(textBuffer);
         }
     }
 
-    class OokCompletionSource : ICompletionSource
+    class RobotsTxtCompletionSource : ICompletionSource
     {
         private ITextBuffer _buffer;
         private bool _disposed = false;
         private static ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
 
-        public OokCompletionSource(ITextBuffer buffer)
+        public RobotsTxtCompletionSource(ITextBuffer buffer)
         {
             _buffer = buffer;
         }
@@ -51,9 +51,10 @@ namespace MadsKristensen.EditorExtensions
             var line = triggerPoint.GetContainingLine();
             string text = line.GetText();
             int index = text.IndexOf(':');
+            int hash = text.IndexOf('#');
             SnapshotPoint start = triggerPoint;
 
-            if (index == -1 || (index > -1 && (start - line.Start.Position) > index))
+            if (hash > -1 && hash < triggerPoint.Position || (index > -1 && (start - line.Start.Position) > index))
                 return;
 
             while (start > line.Start && !char.IsWhiteSpace((start - 1).GetChar()))

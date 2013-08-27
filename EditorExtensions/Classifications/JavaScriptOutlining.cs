@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Utilities;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
@@ -17,12 +16,7 @@ namespace MadsKristensen.EditorExtensions
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            if (WESettings.GetBoolean(WESettings.Keys.JavaScriptOutlining))
-            {
-                return buffer.Properties.GetOrCreateSingletonProperty<JavaScriptOutliningTagger>(() => new JavaScriptOutliningTagger(buffer)) as ITagger<T>;
-            }
-
-            return null;
+            return buffer.Properties.GetOrCreateSingletonProperty<JavaScriptOutliningTagger>(() => new JavaScriptOutliningTagger(buffer)) as ITagger<T>;
         }
     }
 

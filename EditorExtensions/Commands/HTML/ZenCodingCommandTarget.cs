@@ -29,12 +29,9 @@ namespace MadsKristensen.EditorExtensions
         {
             if (commandId == 4 && !_broker.IsCompletionActive(TextView))
             {
-                if (WESettings.GetBoolean(WESettings.Keys.EnableHtmlZenCoding))
+                if (InvokeZenCoding())
                 {
-                    if (InvokeZenCoding())
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
 
@@ -59,7 +56,7 @@ namespace MadsKristensen.EditorExtensions
 
                 ITextSelection selection = UpdateTextBuffer(zenSpan, result);
                 Span newSpan = new Span(zenSpan.Start, selection.SelectedSpans[0].Length);
-                
+
                 selection.Clear();
 
                 EditorExtensionsPackage.DTE.UndoContext.Close();

@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class Settings
     {
-        public const string _fileName = "WE-settings.xml";
+        public const string _fileName = "WE2013-settings.xml";
         public const string _solutionFolder = "Solution Items";
 
         private static SortedDictionary<string, object> _cache = DefaultSettings();
@@ -55,15 +55,11 @@ namespace MadsKristensen.EditorExtensions
 
         public static void Save(string file = null)
         {
-            //_dispatcher.BeginInvoke(new Action(() =>
-            //{
             Task.Run(() =>
             {
                 SaveToDisk(file);
                 UpdateStatusBar("updated");
             });
-
-            //}), DispatcherPriority.ApplicationIdle, null);
         }
 
         internal static void CreateSolutionSettings()
@@ -90,7 +86,6 @@ namespace MadsKristensen.EditorExtensions
                 }
 
                 project.ProjectItems.AddFromFile(path);
-                //EditorExtensionsPackage.DTE.ItemOperations.OpenFile(path);
                 UpdateStatusBar("applied");
             }
         }
@@ -248,11 +243,7 @@ namespace MadsKristensen.EditorExtensions
         private static SortedDictionary<string, object> DefaultSettings()
         {
             var dic = new SortedDictionary<string, object>();
-
-            // MISC
-            dic.Add(Keys.EnableMustache, true);
-            dic.Add(Keys.EnableJavascriptRegions, true);
-
+            
             // LESS
             dic.Add(Keys.GenerateCssFileFromLess, true);
             dic.Add(Keys.ShowLessPreviewWindow, true);
@@ -266,7 +257,6 @@ namespace MadsKristensen.EditorExtensions
             // CSS
             dic.Add(Keys.CssErrorLocation, (int)Keys.ErrorLocation.Messages);
             dic.Add(Keys.SyncVendorValues, true);
-            dic.Add(Keys.EnableCssSelectorHighligting, true);
             dic.Add(Keys.ShowUnsupported, true);
 
             //JSHint
@@ -292,24 +282,15 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.ShowBrowserTooltip, true);
             dic.Add(Keys.WrapCoffeeScriptClosure, true);
 
-            // TypeScript
-            //dic.Add(Keys.ShowTypeScriptPreviewWindow, true);
-            //dic.Add(Keys.GenerateJsFileFromTypeScript, true);
-            //dic.Add(Keys.TypeScriptAddGeneratedFilesToProject, true);
-
             // Minification
             dic.Add(Keys.EnableCssMinification, true);
             dic.Add(Keys.EnableJsMinification, true);
 
             // Minification
             dic.Add(Keys.CoffeeScriptMinify, true);
-            //dic.Add(Keys.TypeScriptMinify, true);
+           
 
             dic.Add(Keys.GenerateJavaScriptSourceMaps, true);
-            dic.Add(Keys.EnableHtmlZenCoding, true);
-
-            dic.Add(Keys.JavaScriptAutoCloseBraces, true);
-            dic.Add(Keys.JavaScriptOutlining, true);
 
             return dic;
         }

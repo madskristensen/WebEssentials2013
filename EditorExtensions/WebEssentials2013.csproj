@@ -437,13 +437,7 @@
     <Compile Include="Validation\CSS\Providers\MissingVendorErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Validation\CSS\Providers\MissingVendorPseudoErrorTagProvider.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Validation\CSS\Providers\OverQualifiedSelectorErrorTagProvider.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Validation\CSS\Providers\OverriddenPropertyErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Validation\CSS\Providers\ShorthandErrorTagProvider.cs">
@@ -492,7 +486,6 @@
     <Compile Include="MenuItems\MinifyFile.cs" />
     <Compile Include="MenuItems\Diff.cs" />
     <Compile Include="MenuItems\Transform.cs" />
-    <Compile Include="MenuItems\Encoding.cs" />
     <Compile Include="NavigateTo\GoToLineProviderFactory.cs" />
     <Compile Include="Options\CoffeeScript.cs">
       <SubType>Component</SubType>
@@ -591,7 +584,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="EditorExtensionsPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PkgCmdID.cs" />
@@ -654,6 +646,7 @@
     </Content>
     <Resource Include="Resources\extract.png" />
     <EmbeddedResource Include="Resources\Scripts\jshint-2.1.4.js" />
+    <EmbeddedResource Include="Resources\Scripts\AngularController.js" />
     <Content Include="Resources\Scripts\es5-shim.min.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

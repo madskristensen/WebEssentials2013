@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Utilities;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
@@ -17,12 +16,7 @@ namespace MadsKristensen.EditorExtensions
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            if (WESettings.GetBoolean(WESettings.Keys.JavaScriptOutlining))
-            {
-                return buffer.Properties.GetOrCreateSingletonProperty<JavaScriptArrayOutliningTagger>(() => new JavaScriptArrayOutliningTagger(buffer)) as ITagger<T>;
-            }
-
-            return null;
+            return buffer.Properties.GetOrCreateSingletonProperty<JavaScriptArrayOutliningTagger>(() => new JavaScriptArrayOutliningTagger(buffer)) as ITagger<T>;
         }
     }
 
@@ -39,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
         {
             this.buffer = buffer;
             this.snapshot = buffer.CurrentSnapshot;
-            this.regions = new List<Region>();            
+            this.regions = new List<Region>();
             this.buffer.ChangedLowPriority += BufferChanged;
 
             Task.Run(() => this.ReParse());
@@ -55,14 +49,14 @@ namespace MadsKristensen.EditorExtensions
             SnapshotSpan entire = new SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End).TranslateTo(currentSnapshot, SpanTrackingMode.EdgeExclusive);
             int startLineNumber = entire.Start.GetContainingLine().LineNumber;
             int endLineNumber = entire.End.GetContainingLine().LineNumber;
-            
+
             foreach (var region in currentRegions)
             {
                 if (region.StartLine <= endLineNumber && region.EndLine >= startLineNumber)
                 {
                     var startLine = currentSnapshot.GetLineFromLineNumber(region.StartLine);
                     string lineText = startLine.GetText().Trim();
-                    
+
                     if (!lineText.Contains("function"))
                     {
                         var endLine = currentSnapshot.GetLineFromLineNumber(region.EndLine);

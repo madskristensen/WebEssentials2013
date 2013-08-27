@@ -17,12 +17,6 @@ namespace MadsKristensen.EditorExtensions
     [Export(typeof(INavigateToItemProviderFactory))]
     internal sealed class GoToLineProviderFactory : INavigateToItemProviderFactory, INavigateToItemDisplayFactory
     {
-        [Import]
-        internal IEditorOperationsFactoryService EditorOperationsFactoryService = null;
-
-        [Import]
-        internal IOutliningManagerService OutliningManagerService = null;
-
         public bool TryCreateNavigateToItemProvider(IServiceProvider serviceProvider, out INavigateToItemProvider provider)
         {
             provider = new GoToLineProvider(this);
