@@ -56,7 +56,6 @@ namespace MadsKristensen.EditorExtensions
         {
             base.Initialize();
             Instance = this;
-            JsDocComments.Register();
 
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (null != mcs)

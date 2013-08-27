@@ -333,7 +333,6 @@
     <Compile Include="Commands\Css\CssSaveListener.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Commands\JsDocRegistry.cs" />
     <Compile Include="Classifications\CSS\Base64TaggerProvider.cs" />
     <Compile Include="Classifications\CSS\CssHighlightWordTagger.cs" />
     <Compile Include="Classifications\CSS\ValueTaggerProvider.cs" />
@@ -548,7 +547,7 @@
     <Compile Include="SmartTags\CSS\Providers\LessExtractVariableSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\Providers\SortSmartTagProvider.cs" />
     <Compile Include="Validation\CSS\Filters\CustomCssErrorFilter.cs" />
-    <Compile Include="Commands\ArrowsCommandTarget.cs" />
+    <Compile Include="Commands\Css\ArrowsCommandTarget.cs" />
     <Compile Include="Validation\CSS\SimpleErrorTag.cs" />
     <Compile Include="ExtensionMethods\ColorModelExtensions.cs" />
     <Compile Include="ExtensionMethods\DeclarationExtensions.cs" />
@@ -655,9 +654,6 @@
     <Resource Include="Resources\graph_class.png" />
     <Resource Include="Resources\graph_parent.png" />
     <EmbeddedResource Include="Resources\Scripts\IcedCoffeeScript-1.6.3-f.js" />
-    <Content Include="Resources\Scripts\JSDocComments.js">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="Resources\Scripts\less-1.4.2.min.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
