@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         static UnusedCssExtension()
         {
-            IgnoreList = new List<string>();
+            IgnoreList = new List<string> { "boostrap*.css" };
         }
 
         internal static void All(Action<UnusedCssExtension> method)
@@ -30,12 +30,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
+        public static bool IsAnyConnectionAlive { get { return ExtensionByConnection.Count > 0; } }
+
         public BrowserLinkConnection Connection { get { return _connection; } }
 
         public UnusedCssExtension(BrowserLinkConnection connection)
         {
             _uploadHelper = new UploadHelper();
             _connection = connection;
+            _currentLocation = connection.Url.ToString().ToLowerInvariant();
         }
 
         public override void OnDisconnecting(BrowserLinkConnection connection)
@@ -51,7 +54,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         }
 
         [BrowserLinkCallback] // This method can be called from JavaScript
-        public void FinishedRecording(string expectLocation, Guid operationId, string chunkContents, int chunkNumber, int chunkCount)
+        public async void FinishedRecording(string expectLocation, string operationId, string chunkContents, int chunkNumber, int chunkCount)
         {
             if (_currentLocation != expectLocation)
             {
@@ -59,15 +62,16 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             SessionResult result;
-            if (_uploadHelper.TryFinishOperation(operationId, chunkContents, chunkNumber, chunkCount, out result))
+            if (_uploadHelper.TryFinishOperation(Guid.Parse(operationId), chunkContents, chunkNumber, chunkCount, out result))
             {
-                UsageRegistry.Merge(_connection, result);
+                await result.ResolveAsync(this);
+                UsageRegistry.Merge(this, result);
                 MessageDisplayManager.ShowWarningsFor(_connection, result);
             }
         }
 
         [BrowserLinkCallback]
-        public void FinishedSnapshot(string expectLocation, Guid operationId, string chunkContents, int chunkNumber, int chunkCount)
+        public async void FinishedSnapshot(string expectLocation, string operationId, string chunkContents, int chunkNumber, int chunkCount)
         {
             if (_currentLocation != expectLocation)
             {
@@ -75,9 +79,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             SessionResult result;
-            if (_uploadHelper.TryFinishOperation(operationId, chunkContents, chunkNumber, chunkCount, out result))
+            if (_uploadHelper.TryFinishOperation(Guid.Parse(operationId), chunkContents, chunkNumber, chunkCount, out result))
             {
-                UsageRegistry.Merge(_connection, result);
+                await result.ResolveAsync(this);
+                UsageRegistry.Merge(this, result);
                 MessageDisplayManager.ShowWarningsFor(_connection, result);
             }
         }
@@ -110,11 +115,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             if (_isRecording)
             {
-                Clients.Call(_connection, "stopRecording", Guid.NewGuid());
+                Clients.Call(_connection, "stopRecording");
             }
             else
             {
-                Clients.Call(_connection, "startRecording");
+                Clients.Call(_connection, "startRecording", Guid.NewGuid());
             }
 
             _isRecording = !_isRecording;
@@ -145,7 +150,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         }
 
         [BrowserLinkCallback]
-        public void ParseSheets(string expectLocation, Guid operationId, string chunkContents, int chunkNumber, int chunkCount)
+        public void ParseSheets(string expectLocation, string operationId, string chunkContents, int chunkNumber, int chunkCount)
         {
             if (_currentLocation != expectLocation)
             {
@@ -153,7 +158,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             List<string> result;
-            if (_uploadHelper.TryFinishOperation(operationId, chunkContents, chunkNumber, chunkCount, out result))
+            if (_uploadHelper.TryFinishOperation(Guid.Parse(operationId), chunkContents, chunkNumber, chunkCount, out result))
             {
                 _validSheetUrlsForPage.AddOrUpdate(_connection.Url.ToString().ToLowerInvariant(), u => new ConcurrentBag<string>(result), (u, x) => new ConcurrentBag<string>(result));
             }
@@ -161,10 +166,23 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public static List<string> IgnoreList { get; private set; }
 
+        private static List<string> IgnorePatternList
+        {
+            get
+            {
+                return IgnoreList.Select(FilePatternToRegex).ToList();
+            }
+        }
+
+        private string FilePatternToRegex(string filePattern)
+        {
+            return filePattern.Replace(".", "\\.").Replace("*", "[^\\\\]*").Replace("?", "[^\\\\]?");
+        }
+
         [BrowserLinkCallback]
         public void GetIgnoreList()
         {
-            Clients.Call(_connection, "getLinkedStyleSheetUrls", IgnoreList);
+            Clients.Call(_connection, "getLinkedStyleSheetUrls", IgnorePatternList, Guid.NewGuid());
         }
     }
 }

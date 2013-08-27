@@ -18,15 +18,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         private UnusedCssExtension _extension;
 
-        private readonly Lazy<IEnumerable<CssRule>> _allRules;
-
-        private IEnumerable<CssRule> _unusedRules;
-
-        public SessionResult()
-        {
-            _allRules = new Lazy<IEnumerable<CssRule>>(GetAllRules);
-        }
-
         private void ThrowIfNotResolved()
         {
             if(Volatile.Read(ref _isResolved) == 0)
@@ -35,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        public void Resolve(UnusedCssExtension extension)
+        public async System.Threading.Tasks.Task ResolveAsync(UnusedCssExtension extension)
         {
             if (Interlocked.CompareExchange(ref _isResolved, 1, 0) == 1)
             {
@@ -43,24 +34,23 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             _extension = extension;
-            _ruleUsages = CssRuleRegistry.Resolve(extension, RawUsageData);
-            _unusedRules = _allRules.Value.Except(_ruleUsages.Select(x => x.Rule)).ToList();
+            _ruleUsages = await CssRuleRegistry.ResolveAsync(extension, RawUsageData);
         }
 
         public IEnumerable<CssRule> GetAllRules()
         {
             ThrowIfNotResolved();
-            return _allRules.Value;
+            return CssRuleRegistry.GetAllRules(_extension);
         }
 
         public IEnumerable<CssRule> GetUnusedRules()
         {
-            return _unusedRules;
+            return GetAllRules().Except(_ruleUsages.Select(x => x.Rule)).ToList();
         }
 
         public IEnumerable<Task> GetWarnings()
         {
-            return _unusedRules.Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _extension.Connection.Project, "Unused CSS rule \"{0}\" in " + _extension.Connection.AppName));
+            return GetUnusedRules().Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _extension.Connection.Project, "Unused CSS rule \"{1}\" in " + _extension.Connection.AppName));
         }
 
         public IEnumerable<RuleUsage> GetRuleUsages()
@@ -70,7 +60,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     
         public IEnumerable<Task> GetWarnings(Uri uri)
         {
-            return _unusedRules.Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _extension.Connection.Project, "Unused CSS rule \"{0}\" in " + _extension.Connection.AppName + " on page " + (uri ?? _extension.Connection.Url)));
+            return GetUnusedRules().Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _extension.Connection.Project, "Unused CSS rule \"{1}\" in " + _extension.Connection.AppName + " on page " + (uri ?? _extension.Connection.Url)));
         }
     }
 }

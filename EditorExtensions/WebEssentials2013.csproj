@@ -292,8 +292,6 @@
     <Compile Include="BrowserLink\UnusedCss\UnusedCssMenu.cs" />
     <Compile Include="BrowserLink\UnusedCss\UsageRegistry.cs" />
     <Compile Include="BrowserLink\UploadHelper.cs" />
-    <Compile Include="Classifications\HtmlRegionTagger.cs" />
-    <Compile Include="Classifications\JavaScriptArrayOutlining.cs">
     <Compile Include="Classifications\HTML\HtmlRegionTagger.cs" />
     <Compile Include="Classifications\JavaScript\JavaScriptArrayOutlining.cs">
       <SubType>Code</SubType>
@@ -635,7 +633,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <Content Include="BrowserLink\UnusedCss\UnusedCss.js" />
+    <EmbeddedResource Include="BrowserLink\UnusedCss\UnusedCss.js" />
     <Content Include="Classifications\RobotsTxt\robots.txt" />
     <None Include="Classifications\Markdown\Sample.md" />
     <None Include="Key.snk" />

@@ -15,15 +15,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         private static readonly ConcurrentDictionary<Project, CompositeUsageData> UsageDataByProject = new ConcurrentDictionary<Project, CompositeUsageData>();
 
-        public static void Merge(BrowserLinkConnection connection, IUsageDataSource source)
+        public static void Merge(UnusedCssExtension extension, IUsageDataSource source)
         {
-            var url = connection.Url.ToString().ToLowerInvariant();
-            var crossBrowserPageBucket = UsageDataByLocation.GetOrAdd(url, location => new CompositeUsageData(connection.Project));
+            var url = extension.Connection.Url.ToString().ToLowerInvariant();
+            var crossBrowserPageBucket = UsageDataByLocation.GetOrAdd(url, location => new CompositeUsageData(extension));
 
-            var connectionSiteBucket = UsageDataByConnectionAndLocation.GetOrAdd(connection, conn => new ConcurrentDictionary<string, CompositeUsageData>());
-            var connectionPageBucket = connectionSiteBucket.GetOrAdd(url, location => new CompositeUsageData(connection.Project));
+            var connectionSiteBucket = UsageDataByConnectionAndLocation.GetOrAdd(extension.Connection, conn => new ConcurrentDictionary<string, CompositeUsageData>());
+            var connectionPageBucket = connectionSiteBucket.GetOrAdd(url, location => new CompositeUsageData(extension));
 
-            var projectBucket = UsageDataByProject.GetOrAdd(connection.Project, proj => new CompositeUsageData(connection.Project));
+            var projectBucket = UsageDataByProject.GetOrAdd(extension.Connection.Project, proj => new CompositeUsageData(extension));
 
             crossBrowserPageBucket.AddUsageSource(source);
             connectionPageBucket.AddUsageSource(source);

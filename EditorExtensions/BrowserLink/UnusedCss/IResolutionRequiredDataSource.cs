@@ -1,7 +1,9 @@
-﻿namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
+﻿using System.Threading.Tasks;
+
+namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public interface IResolutionRequiredDataSource
     {
-        void Resolve(UnusedCssExtension extension);
+        Task ResolveAsync(UnusedCssExtension extension);
     }
 }

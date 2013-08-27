@@ -8,16 +8,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public class CompositeUsageData : IUsageDataSource
     {
-        private readonly HashSet<CssRule> _allRules = new HashSet<CssRule>();
-        private readonly Project _project;
+        private readonly UnusedCssExtension _extension;
         private readonly HashSet<RuleUsage> _ruleUsages = new HashSet<RuleUsage>();
         private readonly List<IUsageDataSource> _sources = new List<IUsageDataSource>();
         private readonly object _sync = new object();
-        private readonly HashSet<CssRule> _unusedRules = new HashSet<CssRule>();
 
-        public CompositeUsageData(Project project)
+        public CompositeUsageData(UnusedCssExtension extension)
         {
-            _project = project;
+            _extension = extension;
         }
 
         public void AddUsageSource(IUsageDataSource source)
@@ -25,9 +23,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             lock (_sync)
             {
                 _sources.Add(source);
-                _allRules.UnionWith(source.GetAllRules());
                 _ruleUsages.UnionWith(source.GetRuleUsages());
-                _unusedRules.IntersectWith(source.GetUnusedRules());
             }
         }
 
@@ -35,7 +31,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             lock (_sync)
             {
-                return _allRules;
+                return CssRuleRegistry.GetAllRules(_extension);
             }
         }
 
@@ -51,7 +47,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             lock (_sync)
             {
-                return _unusedRules;
+                var unusedRules = new HashSet<CssRule>(GetAllRules());
+
+                foreach (var src in _sources)
+                {
+                    unusedRules.IntersectWith(src.GetUnusedRules());
+                }
+
+                return unusedRules;
             }
         }
 
@@ -59,7 +62,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             lock(_sync)
             {
-                return _unusedRules.Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _project, "Unused CSS rule \"{0}\""));
+                return GetUnusedRules().Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _extension.Connection.Project, "Unused CSS rule \"{1}\""));
             }
         }
         
@@ -67,7 +70,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             lock(_sync)
             {
-                return _unusedRules.Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _project, "Unused CSS rule \"{0}\" on page " + uri));
+                return GetUnusedRules().Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _extension.Connection.Project, "Unused CSS rule \"{1}\" on page " + uri));
             }
         }
     }

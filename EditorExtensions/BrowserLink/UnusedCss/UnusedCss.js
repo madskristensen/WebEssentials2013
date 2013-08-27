@@ -6,19 +6,13 @@
 
     var chunkSize = 20 * 1024; //<-- 20k chunk size
 
-    var demandXPathRecalculation = false;
-    
-    var anyXPathUpdated = false;
-
-    var firstXPathCalculation = true;
-
     var validSheetIndexes = [];
 
     //List of vendor prefixes from http://stackoverflow.com/a/5411098/1203388
     //var prefixRequiringLeadingDash = ["ms-", "moz-", "o-", "xv-", "atsc-", "wap-", "webkit-", "khtml-", "apple-", "ah-", "hp-", "ro-", "rim-", "tc-"];
 
     function getReferencedStyleSheets() {
-        return $("link[rel='stylesheet'][type='text/css']");
+        return $("link[rel='stylesheet']");
     }
 
     function chunk(obj) {
@@ -37,74 +31,55 @@
         return result;
     }
 
-    function computeXPath(element) {
-        anyXPathUpdated = true;
-        var currentElement = element;
-        var currentPath = "";
-        //Skip the document element
-        while (currentElement.length > 0 && currentElement[0].nodeType != 9) {
-            var tagName = currentElement[0].tagName;
-            var parent = currentElement.parent();
-            var siblingsAndSelf = parent.find(tagName).filter(function () {
-                return $(this).parent()[0] == parent[0];
-            });
-            var myIndex = Array.prototype.indexOf.apply(siblingsAndSelf, currentElement);
-            var pathPart = "/" + tagName;
-            if (siblingsAndSelf.length != 1) {
-                pathPart += "[" + (myIndex + 1) + "]";
+    function locationFor(elementOrSelector) {
+        var jqElem = $(elementOrSelector);
+        var ret = [];
+        for (var i = 0; i < jqElem.length; ++i) {
+            var target = jqElem[i];
+            if (browserLink.sourceMapping.canMapToSource(target)) {
+                ret.push(browserLink.sourceMapping.getCompleteRange(target));
             }
-            currentPath = pathPart + currentPath;
-            currentElement = parent;
+            else {
+                ret.push(null);
+            }
         }
-        return currentPath.toLowerCase();
-    }
-
-    function getXPath(element) {
-        return (!demandXPathRecalculation && (element.getAttribute("data-xpath") || "").length != 0) || (element.setAttribute("data-xpath", computeXPath(element)));
-    }
-
-    function xpathFor(elementOrSelector) {
-        var element = $(elementOrSelector);
-        var xpaths = [];
-        for (var i = 0; i < element.length; ++i) {
-            xpaths.push(getXPath(element[i]));
-        }
-        return xpaths;
+        return ret;
     }
 
     function getRuleReferenceData(ruleSelector) {
-        //Create xpaths for the whole document
-        xpathFor("*");
-        if (anyXPathUpdated && !firstXPathCalculation) {
-            demandXPathRecalculation = true;
-            xpathFor("*");
+        var locations = [];
+
+        try {
+            locations = locationFor($(ruleSelector));
+        }
+        catch (e) {
         }
 
-        anyXPathUpdated = false;
-        demandXPathRecalculation = false;
-
-        var xpaths = xpathFor($(ruleSelector));
         return {
             "Selector": ruleSelector,
-            "ReferencingXPaths": xpaths
+            "SourceLocations": locations
         };
     }
 
     function getRuleReferenceDataFast(ruleSelector) {
         var result = [];
-        if ($(ruleSelector).length > 0) {
-            result.push("//invalid");
+        try {
+            if ($(ruleSelector).length > 0) {
+                result.push(null);
+            }
+        }
+        catch (e) {
         }
         return {
             "Selector": ruleSelector,
-            "ReferencingXPaths": result
+            "SourceLocations": result
         };
     }
 
     function submitChunkedData(method, data, operationId) {
         var chunked = chunk(data);
         for(var i = 0; i < chunked.length; ++i){
-            browserLink.Call(method, document.location.href, operationId, chunked[i], i, chunked.length);
+            browserLink.call(method, document.location.href, operationId, chunked[i], i, chunked.length);
         }
     }
 
@@ -115,7 +90,7 @@
             var rules = sheet.rules || sheet.cssRules;
             for (var j = 0; j < rules.length; ++j) {
                 var result = getRuleReferenceData(rules[j].selectorText);
-                if (result.ReferencingXPaths.length > 0) {
+                if (result.SourceLocations.length > 0) {
                     catalog.push(result);
                 }
             }
@@ -130,7 +105,7 @@
             var rules = sheet.rules || sheet.cssRules;
             for (var j = 0; j < rules.length; ++j) {
                 var result = getRuleReferenceDataFast(rules[j].selectorText);
-                if (result.ReferencingXPaths.length > 0) {
+                if (result.SourceLocations.length > 0) {
                     catalog.push(result);
                 }
             }
@@ -156,9 +131,9 @@
             //<!------- NOTE: Since we're using the "Fast" variation for record, there is no real usage data, uncomment if switching back from "Fast" variation and wanting full data ----------->
             //else {
             //    var index = recordingSelectorLookup[selector];
-            //    for(var j = 0; j < rawFrameData[i].ReferencingXPaths.length; ++j){
-            //        if(!recordingState[index].ReferencingXPaths.contains(rawFrameData[i].ReferencingXPaths[j])){
-            //            recordingState[index].ReferencingXPaths.push(rawFrameData[i].ReferencingXPaths[j]);
+            //    for(var j = 0; j < rawFrameData[i].SourceLocations.length; ++j){
+            //        if(!recordingState[index].SourceLocations.contains(rawFrameData[i].SourceLocations[j])){
+            //            recordingState[index].SourceLocations.push(rawFrameData[i].SourceLocations[j]);
             //        }
             //    }
             //}
@@ -179,7 +154,7 @@
     //Return the brower link interop packet
     return {
 
-        name: "MadsKristensen.EditorExtensions.BrowserLink.UnusedCss",
+        name: "UnusedCss",
 
         startRecording: function (operationId) {
             recordingStopRequested = false;
@@ -206,12 +181,13 @@
             var sheets = getReferencedStyleSheets();
             var parseSheets = [];
             for (var i = 0; i < sheets.length; ++i) {
-                for (var j = 0; j < patterns.length; ++j) {
-                    if (!rxs[j].test(sheets[i].getAttribute("href"))) {
-                        validSheetIndexes.push(i);
-                        parseSheets.push(sheets[i].getAttribute("href"));
-                        break;
-                    }
+                var match = false;
+                for (var j = 0; !match && j < patterns.length; ++j) {
+                    match = rxs[j].test(sheets[i].getAttribute("href"));
+                }
+                if (!match) {
+                    validSheetIndexes.push(i);
+                    parseSheets.push(sheets[i].getAttribute("href"));
                 }
             }
 

@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public void SetupCommands()
         {
-            CommandID commandId = new CommandID(GuidList.guidDiffCmdSet, (int)PkgCmdIDList.cmdUnusedCssSnapshotCommandId);
+            CommandID commandId = new CommandID(GuidList.guidUnusedCssCmdSet, (int)PkgCmdIDList.cmdUnusedCssSnapshotCommandId);
             OleMenuCommand menuCommand = new OleMenuCommand(SnapshotAll, commandId);
             menuCommand.BeforeQueryStatus += menuCommand_BeforeQueryStatus;
             _mcs.AddCommand(menuCommand);
@@ -37,7 +37,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
 
-            menuCommand.Enabled = string.IsNullOrEmpty(MarkdownMargin.GetStylesheet());
+            menuCommand.Enabled = UnusedCssExtension.IsAnyConnectionAlive;
         }
     }
 }

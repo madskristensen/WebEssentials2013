@@ -1,8 +1,10 @@
 ﻿using EnvDTE;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -17,7 +19,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             var files = GetFiles(extension.Connection.Project, sheetLocations);
             var allRules = new List<CssRule>();
 
-            foreach(var file in files)
+            foreach (var file in files)
             {
                 var store = DocumentLookup.GetOrAdd(file.ToLowerInvariant(), f => new CssDocument(f, DeleteFile));
                 allRules.AddRange(store.Rules);
@@ -26,28 +28,70 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return allRules;
         }
 
+        public static Task<IReadOnlyCollection<CssRule>> GetAllRulesAsync(UnusedCssExtension extension)
+        {
+            return Task.Factory.StartNew(() => GetAllRules(extension));
+        }
+
         public static IEnumerable<string> GetFiles(Project project, IEnumerable<string> locations)
         {
             //TODO: This needs to expand bundles, convert urls to local file names, and move from .min.css files to .css files where applicable
             //NOTE: Project parameter here is for the discovery of linked files, ones that might exist outside of the project structure
-            return locations;
+            var projectPath = project.Properties.Item("FullPath").Value.ToString();
+            var projectUri = new Uri(projectPath, UriKind.Absolute);
+
+            foreach (var location in locations)
+            {
+                var locationUri = new Uri(location, UriKind.RelativeOrAbsolute);
+                Uri realLocation;
+
+                //No absolute paths, unless they map into the same project
+                if (locationUri.IsAbsoluteUri)
+                {
+                    if (!projectUri.IsBaseOf(locationUri))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        locationUri = locationUri.MakeRelativeUri(projectUri);
+                    }
+                }
+
+                var locationUrl = locationUri.ToString().TrimStart('/').ToLowerInvariant();
+                
+                //Hoist .min.css -> .css
+                if(locationUrl.EndsWith(".min.css"))
+                {
+                    locationUrl = locationUrl.Substring(0, locationUrl.Length - 8) + ".css";
+                }
+                
+                locationUri = new Uri(locationUrl, UriKind.Relative);
+
+                if (Uri.TryCreate(projectUri, locationUri, out realLocation))
+                {
+                    yield return realLocation.LocalPath;
+                }
+            }
+
+            yield break;
         }
 
-        public static HashSet<RuleUsage> Resolve(UnusedCssExtension extension, List<RawRuleUsage> rawUsageData)
+        public static async Task<HashSet<RuleUsage>> ResolveAsync(UnusedCssExtension extension, List<RawRuleUsage> rawUsageData)
         {
-            var allRules = GetAllRules(extension);
+            var allRules = await GetAllRulesAsync(extension);
             var result = new HashSet<RuleUsage>();
 
             foreach (var dataPoint in rawUsageData)
             {
                 var selector = StandardizeSelector(dataPoint.Selector);
-                var xpaths = new List<string>(dataPoint.ReferencingXPaths.Where(x => x != "//invalid"));
+                var locations = new HashSet<SourceLocation>(dataPoint.SourceLocations.Where(x => x != null));
 
                 foreach (var match in allRules.Where(x => x.CleansedSelectorName == selector))
                 {
                     result.Add(new RuleUsage
                     {
-                        ReferencingXPaths = xpaths,
+                        SourceLocations = locations,
                         Rule = match
                     });
                 }
@@ -58,11 +102,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         private static void DeleteFile(object sender, FileSystemEventArgs e)
         {
-            var path = e.FullPath.ToLowerInvariant();
-            CssDocument result;
-            DocumentLookup.TryRemove(path, out result);
-            result.Dispose();
+            //NOTE: VS apparently deletes the file on save and creates a new one, disposing here makes things not work
+
+            //var path = e.FullPath.ToLowerInvariant();
+            //CssDocument result;
+            //DocumentLookup.TryRemove(path, out result);
+            //result.Dispose();
         }
+
         private static string StandardizeSelector(string selectorText)
         {
             return selectorText.Replace('\r', '\n').Replace("\n", "").Trim();
