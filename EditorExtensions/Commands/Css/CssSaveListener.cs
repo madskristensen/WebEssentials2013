@@ -86,19 +86,12 @@ namespace MadsKristensen.EditorExtensions
 
             using (MemoryStream ms = new MemoryStream())
             {
-                using (GZipStream zip = new GZipStream(ms, CompressionMode.Compress, true))
+                using (GZipStream zip = new GZipStream(ms, CompressionMode.Compress))
                 {
                     zip.Write(buffer, 0, buffer.Length);
                 }
 
-                ms.Position = 0;
-                byte[] compressed = new byte[ms.Length];
-                ms.Read(compressed, 0, compressed.Length);
-
-                byte[] gzBuffer = new byte[compressed.Length + 4];
-                System.Buffer.BlockCopy(compressed, 0, gzBuffer, 4, compressed.Length);
-                System.Buffer.BlockCopy(BitConverter.GetBytes(buffer.Length), 0, gzBuffer, 0, 4);
-                return gzBuffer;
+                return ms.ToArray();
             }
         }
     }

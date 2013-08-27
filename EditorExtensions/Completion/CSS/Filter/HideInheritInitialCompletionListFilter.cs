@@ -5,7 +5,7 @@ using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.CSS.Editor.Intellisense;
 
-namespace MadsKristensen.EditorExtensions.Completion
+namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(ICssCompletionListFilter))]
     [Name("Inherit/Initial Filter")]

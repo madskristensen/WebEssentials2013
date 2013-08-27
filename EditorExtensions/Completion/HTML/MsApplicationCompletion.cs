@@ -24,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
             }) { }
 
 
-        public IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
+        public new IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
         {
             var attr = context.Element.GetAttribute("name");
 

@@ -11,7 +11,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
-namespace MadsKristensen.EditorExtensions.SmartTags
+namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(IHtmlSmartTagProvider))]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
@@ -84,15 +84,11 @@ namespace MadsKristensen.EditorExtensions.SmartTags
 
             private static string GetScript(string value)
             {
-                StringBuilder sb = new StringBuilder();
-                sb.AppendLine("var myApp = angular.module('myApp',[]);");
-                sb.AppendLine();
-                sb.AppendLine("myApp.controller('{0}', ['$scope', function($scope) {{");
-                sb.AppendLine("    $scope.greeting = 'Hola!';");
-                sb.AppendLine("}}]);");
-
-                string script = string.Format(sb.ToString(), value);
-                return script;
+                using (Stream stream = typeof(HtmlAngularControllerSmartTag).Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.Resources.Scripts.AngularController.js"))
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    return string.Format(reader.ReadToEnd(), value);
+                }
             }
         }
     }

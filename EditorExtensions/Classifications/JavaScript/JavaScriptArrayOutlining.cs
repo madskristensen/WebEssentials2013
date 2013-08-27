@@ -5,73 +5,65 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Windows.Threading;
+using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(ITaggerProvider))]
     [TagType(typeof(IOutliningRegionTag))]
-    [ContentType("html")]
-    [ContentType("htmlx")]
-    internal sealed class HtmlRegionTaggerProvider : ITaggerProvider
+    [ContentType("JavaScript")]
+    internal sealed class ArrayOutliningTaggerProvider : ITaggerProvider
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            return buffer.Properties.GetOrCreateSingletonProperty(() => new HtmlRegionTagger(buffer)) as ITagger<T>;
+            return buffer.Properties.GetOrCreateSingletonProperty<JavaScriptArrayOutliningTagger>(() => new JavaScriptArrayOutliningTagger(buffer)) as ITagger<T>;
         }
     }
 
-    internal sealed class HtmlRegionTagger : ITagger<IOutliningRegionTag>
+    internal sealed class JavaScriptArrayOutliningTagger : ITagger<IOutliningRegionTag>
     {
-        string startHide = "<!-- #region";     //the characters that start the outlining region
-        string endHide = "#endregion -->";       //the characters that end the outlining region
-        string hoverText = "Collapsed content"; //the contents of the tooltip for the collapsed span
+        string startHide = "[";     //the characters that start the outlining region
+        string endHide = "]";       //the characters that end the outlining region
+        string ellipsis = "...";    //the characters that are displayed when the region is collapsed
         ITextBuffer buffer;
         ITextSnapshot snapshot;
         List<Region> regions;
-        private static Regex regex = new Regex(@"#region(.*)?-->", RegexOptions.Compiled);
 
-        public HtmlRegionTagger(ITextBuffer buffer)
+        public JavaScriptArrayOutliningTagger(ITextBuffer buffer)
         {
             this.buffer = buffer;
             this.snapshot = buffer.CurrentSnapshot;
             this.regions = new List<Region>();
-            this.buffer.Changed += BufferChanged;
+            this.buffer.ChangedLowPriority += BufferChanged;
 
-            Dispatcher.CurrentDispatcher.BeginInvoke(
-                    new Action(() => ReParse()), DispatcherPriority.ApplicationIdle, null);
-
-            this.buffer.Changed += BufferChanged;
+            Task.Run(() => this.ReParse());
         }
 
         public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
-            if (spans.Count == 0 || !WESettings.GetBoolean(WESettings.Keys.EnableJavascriptRegions))
+            if (spans.Count == 0)
                 yield break;
 
             List<Region> currentRegions = this.regions;
             ITextSnapshot currentSnapshot = this.snapshot;
-
             SnapshotSpan entire = new SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End).TranslateTo(currentSnapshot, SpanTrackingMode.EdgeExclusive);
             int startLineNumber = entire.Start.GetContainingLine().LineNumber;
             int endLineNumber = entire.End.GetContainingLine().LineNumber;
+
             foreach (var region in currentRegions)
             {
                 if (region.StartLine <= endLineNumber && region.EndLine >= startLineNumber)
                 {
                     var startLine = currentSnapshot.GetLineFromLineNumber(region.StartLine);
-                    var endLine = currentSnapshot.GetLineFromLineNumber(region.EndLine);
+                    string lineText = startLine.GetText().Trim();
 
-                    var snapshot = new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End);
-                    Match match = regex.Match(snapshot.GetText());
-
-                    string text = string.IsNullOrWhiteSpace(match.Groups[1].Value) ? "#region" : match.Groups[1].Value.Trim();
-
-                    //the region starts at the beginning of the "[", and goes until the *end* of the line that contains the "]".
-                    yield return new TagSpan<IOutliningRegionTag>(
-                        snapshot,
-                        new OutliningRegionTag(false, true, " " + text + " ", hoverText));
+                    if (!lineText.Contains("function"))
+                    {
+                        var endLine = currentSnapshot.GetLineFromLineNumber(region.EndLine);
+                        var contentSpan = new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End);
+                        //the region starts at the beginning of the "[", and goes until the *end* of the line that contains the "]".
+                        yield return new TagSpan<IOutliningRegionTag>(contentSpan, new OutliningRegionTag(false, true, ellipsis, contentSpan.GetText()));
+                    }
                 }
             }
         }
@@ -84,8 +76,7 @@ namespace MadsKristensen.EditorExtensions
             if (e.After != buffer.CurrentSnapshot)
                 return;
 
-            Dispatcher.CurrentDispatcher.BeginInvoke(
-                    new Action(() => ReParse()), DispatcherPriority.ApplicationIdle, null);
+            Task.Run(() => this.ReParse());
         }
 
         void ReParse()
@@ -103,7 +94,7 @@ namespace MadsKristensen.EditorExtensions
                 string text = line.GetText();
 
                 //lines that contain a "[" denote the start of a new region.
-                if ((regionStart = text.IndexOf(startHide, StringComparison.Ordinal)) != -1 || (regionStart = text.IndexOf(startHide.Replace(" ", string.Empty), StringComparison.Ordinal)) != -1)
+                if ((regionStart = text.IndexOf(startHide, StringComparison.Ordinal)) != -1)
                 {
                     int currentLevel = (currentRegion != null) ? currentRegion.Level : 1;
                     int newLevel;
@@ -143,7 +134,7 @@ namespace MadsKristensen.EditorExtensions
                     }
                 }
                 //lines that contain "]" denote the end of a region
-                else if ((regionStart = text.IndexOf(endHide, StringComparison.Ordinal)) != -1 || (regionStart = text.IndexOf(endHide.Replace(" ", string.Empty), StringComparison.Ordinal)) != -1)
+                else if ((regionStart = text.IndexOf(endHide, StringComparison.Ordinal)) != -1)
                 {
                     int currentLevel = (currentRegion != null) ? currentRegion.Level : 1;
                     int closingLevel;
@@ -228,5 +219,20 @@ namespace MadsKristensen.EditorExtensions
                  : snapshot.GetLineFromLineNumber(region.EndLine);
             return new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End);
         }
+
     }
+
+    //class PartialRegion
+    //{
+    //    public int StartLine { get; set; }
+    //    public int StartOffset { get; set; }
+    //    public int Level { get; set; }
+    //    public PartialRegion PartialParent { get; set; }
+    //}
+
+    //class Region : PartialRegion
+    //{
+    //    public int EndLine { get; set; }
+    //}
+
 }

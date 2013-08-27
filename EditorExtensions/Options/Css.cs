@@ -14,7 +14,6 @@ namespace MadsKristensen.EditorExtensions
 
         public override void SaveSettingsToStorage()
         {
-            Settings.SetValue(WESettings.Keys.EnableCssSelectorHighligting, EnableCssSelectorHighligting);
             Settings.SetValue(WESettings.Keys.EnableCssMinification, EnableCssMinification);
             Settings.SetValue(WESettings.Keys.CssEnableGzipping, EnableGzipping);
             Settings.SetValue(WESettings.Keys.ValidateStarSelector, ValidateStarSelector);
@@ -34,7 +33,6 @@ namespace MadsKristensen.EditorExtensions
 
         public override void LoadSettingsFromStorage()
         {
-            EnableCssSelectorHighligting = WESettings.GetBoolean(WESettings.Keys.EnableCssSelectorHighligting);
             EnableCssMinification = WESettings.GetBoolean(WESettings.Keys.EnableCssMinification);
             EnableGzipping = WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping);
             ValidateStarSelector = WESettings.GetBoolean(WESettings.Keys.ValidateStarSelector);
@@ -54,12 +52,7 @@ namespace MadsKristensen.EditorExtensions
         {
             CssSchemaManager.SchemaManager.ReloadSchemas();
         }
-
-        [LocDisplayName("Enable selector highlighting")]
-        [Description("Highlight matching simple selectors when cursor position changes")]
-        [Category("Misc")]
-        public bool EnableCssSelectorHighligting { get; set; }
-
+                
         [LocDisplayName("Minify CSS files on save")]
         [Description("When a .css file (foo.css) is saved and a minified version (foo.min.css) exist, the minified file will be updated. Right-click any .css file to generate .min.css file")]
         [Category("Misc")]

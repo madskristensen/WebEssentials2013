@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Utilities;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
@@ -13,33 +12,28 @@ namespace MadsKristensen.EditorExtensions
     [Export(typeof(ITaggerProvider))]
     [TagType(typeof(IOutliningRegionTag))]
     [ContentType("JavaScript")]
-    internal sealed class ArrayOutliningTaggerProvider : ITaggerProvider
+    internal sealed class OutliningTaggerProvider : ITaggerProvider
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            if (WESettings.GetBoolean(WESettings.Keys.JavaScriptOutlining))
-            {
-                return buffer.Properties.GetOrCreateSingletonProperty<JavaScriptArrayOutliningTagger>(() => new JavaScriptArrayOutliningTagger(buffer)) as ITagger<T>;
-            }
-
-            return null;
+            return buffer.Properties.GetOrCreateSingletonProperty<JavaScriptOutliningTagger>(() => new JavaScriptOutliningTagger(buffer)) as ITagger<T>;
         }
     }
 
-    internal sealed class JavaScriptArrayOutliningTagger : ITagger<IOutliningRegionTag>
+    internal sealed class JavaScriptOutliningTagger : ITagger<IOutliningRegionTag>
     {
-        string startHide = "[";     //the characters that start the outlining region
-        string endHide = "]";       //the characters that end the outlining region
+        string startHide = "{";     //the characters that start the outlining region
+        string endHide = "}";       //the characters that end the outlining region
         string ellipsis = "...";    //the characters that are displayed when the region is collapsed
         ITextBuffer buffer;
         ITextSnapshot snapshot;
         List<Region> regions;
 
-        public JavaScriptArrayOutliningTagger(ITextBuffer buffer)
+        public JavaScriptOutliningTagger(ITextBuffer buffer)
         {
             this.buffer = buffer;
             this.snapshot = buffer.CurrentSnapshot;
-            this.regions = new List<Region>();            
+            this.regions = new List<Region>();
             this.buffer.ChangedLowPriority += BufferChanged;
 
             Task.Run(() => this.ReParse());
@@ -55,20 +49,20 @@ namespace MadsKristensen.EditorExtensions
             SnapshotSpan entire = new SnapshotSpan(spans[0].Start, spans[spans.Count - 1].End).TranslateTo(currentSnapshot, SpanTrackingMode.EdgeExclusive);
             int startLineNumber = entire.Start.GetContainingLine().LineNumber;
             int endLineNumber = entire.End.GetContainingLine().LineNumber;
-            
+
             foreach (var region in currentRegions)
             {
                 if (region.StartLine <= endLineNumber && region.EndLine >= startLineNumber)
                 {
                     var startLine = currentSnapshot.GetLineFromLineNumber(region.StartLine);
                     string lineText = startLine.GetText().Trim();
-                    
+
                     if (!lineText.Contains("function"))
                     {
                         var endLine = currentSnapshot.GetLineFromLineNumber(region.EndLine);
                         var contentSpan = new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End);
                         //the region starts at the beginning of the "[", and goes until the *end* of the line that contains the "]".
-                        yield return new TagSpan<IOutliningRegionTag>(contentSpan, new OutliningRegionTag(false, true, ellipsis, contentSpan.GetText()));
+                        yield return new TagSpan<IOutliningRegionTag>(contentSpan, new OutliningRegionTag(false, false, ellipsis, contentSpan.GetText()));
                     }
                 }
             }
@@ -98,6 +92,9 @@ namespace MadsKristensen.EditorExtensions
             {
                 int regionStart = -1;
                 string text = line.GetText();
+
+                if (text.IndexOf(startHide) > -1 && text.IndexOf(endHide) > -1)
+                    continue;
 
                 //lines that contain a "[" denote the start of a new region.
                 if ((regionStart = text.IndexOf(startHide, StringComparison.Ordinal)) != -1)
