@@ -12,10 +12,6 @@ using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
-    // The key for registering option pages in Text Editors -> CSS
-    //HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\11.0_Config\Languages\Language Services\CSS\EditorToolsOptions\Format
-
-
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     [Guid(GuidList.guidEditorExtensionsPkgString)]
@@ -27,7 +23,6 @@ namespace MadsKristensen.EditorExtensions
     [ProvideOptionPage(typeof(LessOptions), "Web Essentials", "LESS", 101, 105, true)]
     [ProvideOptionPage(typeof(CoffeeScriptOptions), "Web Essentials", "CoffeeScript", 101, 106, true, new[] { "Iced", "JavaScript", "JS", "JScript" })]
     [ProvideOptionPage(typeof(JavaScriptOptions), "Web Essentials", "JavaScript", 101, 107, true, new[] { "JScript", "JS", "Minify", "Minification", "EcmaScript" })]
-    //[ProvideSearchProvider(typeof(VSSearchProvider), "VS Gallery Search")]
     public sealed class EditorExtensionsPackage : Package
     {
         private static DTE2 _dte;

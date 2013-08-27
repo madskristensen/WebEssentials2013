@@ -268,14 +268,14 @@
     <Compile Include="BrowserLink\DesignMode\DesignModeBrowserLink.cs" />
     <Compile Include="BrowserLink\InspectMode\InspectModeBrowserLink.cs" />
     <Compile Include="BrowserLink\CssSync\CssSyncBrowserLink.cs" />
-    <Compile Include="Classifications\HtmlRegionTagger.cs" />
-    <Compile Include="Classifications\JavaScriptArrayOutlining.cs">
+    <Compile Include="Classifications\HTML\HtmlRegionTagger.cs" />
+    <Compile Include="Classifications\JavaScript\JavaScriptArrayOutlining.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Classifications\JavaScriptOutlining.cs">
+    <Compile Include="Classifications\JavaScript\JavaScriptOutlining.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Classifications\JavaScriptRegionTagger.cs">
+    <Compile Include="Classifications\JavaScript\JavaScriptRegionTagger.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassificationTypes.cs" />
@@ -283,7 +283,7 @@
     <Compile Include="Classifications\Markdown\MarkdownClassificationTypes.cs" />
     <Compile Include="Classifications\Markdown\MarkdownClassifier.cs" />
     <Compile Include="Classifications\Markdown\MarkdownContentTypeDefinition.cs" />
-    <Compile Include="Classifications\ModernizrClassifier.cs" />
+    <Compile Include="Classifications\CSS\ModernizrClassifier.cs" />
     <Compile Include="Commands\CommandTargetBase.cs" />
     <Compile Include="Commands\Css\CssSelectBrowsers.cs" />
     <Compile Include="Commands\Css\CssFormatCommandTarget.cs" />
@@ -334,10 +334,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Commands\JsDocRegistry.cs" />
-    <Compile Include="Classifications\Base64TaggerProvider.cs" />
-    <Compile Include="Classifications\CssHighlightWordTagger.cs" />
-    <Compile Include="Classifications\ValueTaggerProvider.cs" />
-    <Compile Include="Classifications\VendorClassifier.cs" />
+    <Compile Include="Classifications\CSS\Base64TaggerProvider.cs" />
+    <Compile Include="Classifications\CSS\CssHighlightWordTagger.cs" />
+    <Compile Include="Classifications\CSS\ValueTaggerProvider.cs" />
+    <Compile Include="Classifications\CSS\VendorClassifier.cs" />
     <Compile Include="Commands\Css\RetriggerCommandTarget.cs" />
     <Compile Include="Completion\CSS\CompletionListEntry.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\ClassCompletionProvider.cs" />
