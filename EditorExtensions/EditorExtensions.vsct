@@ -135,9 +135,9 @@
         <Parent guid="guidEditorLinesCmdSet" id="LinesMenu"/>
       </Group>
 
-      <Group guid="guidUnusedCssCmdSet" id="UnusedCssExtensionGroup" priority="0x0600">
+      <!--<Group guid="guidUnusedCssCmdSet" id="UnusedCssExtensionGroup" priority="0x0600">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
-      </Group>
+      </Group>-->
     </Groups>
 
     <Buttons>
@@ -536,14 +536,14 @@
         </Strings>
       </Button>
 
-      <Button guid="guidUnusedCssCmdSet" id="UnusedCssSnapshotCommandId" priority="0x0012" type="Button">
+      <Button guid="guidUnusedCssCmdSet" id="UnusedCssSnapshotCommandId" priority="0x2000" type="Button">
         <Parent guid="guidBrowserLinkCmdSet" id="IDG_BROWSERLINK_COMMANDS"/>
         <Strings>
           <ButtonText>Snapshot CSS Usage (All Browsers)</ButtonText>
         </Strings>
       </Button>
       
-      <Button guid="guidUnusedCssCmdSet" id="UnusedCssResetCommandId" priority="0x0013" type="Button">
+      <Button guid="guidUnusedCssCmdSet" id="UnusedCssResetCommandId" priority="0x2001" type="Button">
         <Parent guid="guidBrowserLinkCmdSet" id="IDG_BROWSERLINK_COMMANDS"/>
         <Strings>
           <ButtonText>Clear CSS Usage Data</ButtonText>

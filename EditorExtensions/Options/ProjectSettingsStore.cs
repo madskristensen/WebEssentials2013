@@ -292,6 +292,9 @@ namespace MadsKristensen.EditorExtensions
 
             dic.Add(Keys.GenerateJavaScriptSourceMaps, true);
 
+            // Unused CSS
+            dic.Add(Keys.UnusedCss_IgnorePatterns, "bootstrap*; reset.css; normalize.css; jquery*");
+
             return dic;
         }
 

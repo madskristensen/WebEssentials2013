@@ -184,7 +184,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             get
             {
                 string ignorePatterns = WESettings.GetString(WESettings.Keys.UnusedCss_IgnorePatterns) ?? "";
-                return new List<string>(ignorePatterns.Split(new []{';'}, StringSplitOptions.RemoveEmptyEntries));
+
+                return ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
             }
         }
 
