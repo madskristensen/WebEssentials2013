@@ -4,17 +4,20 @@ using System.IO;
 using System.Linq;
 using Microsoft.CSS.Core;
 using System.Threading;
+using System.Collections.Concurrent;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public class CssDocument : IDisposable
     {
         private readonly string _file;
-        private readonly FileSystemEventHandler _fileDeletedCallback;
+        private FileSystemEventHandler _fileDeletedCallback;
         private readonly FileSystemWatcher _watcher;
         private readonly string _localFileName;
+        private static readonly Dictionary<string, CssDocument> FileLookup = new Dictionary<string, CssDocument>();
+        private static readonly object _sync = new object();
 
-        public CssDocument(string file, FileSystemEventHandler fileDeletedCallback)
+        private CssDocument(string file, FileSystemEventHandler fileDeletedCallback)
         {
             _fileDeletedCallback = fileDeletedCallback;
             _file = file;
@@ -33,7 +36,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             _watcher.Renamed += ProxyRename;
             _watcher.Created += Reparse;
             _watcher.EnableRaisingEvents = true;
-            Reparse(null, null);
+            Reparse();
         }
 
         public IEnumerable<CssRule> Rules { get; private set; }
@@ -60,7 +63,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             if (e.Name.ToLowerInvariant() == _localFileName)
             {
-                Reparse(null, null);
+                Reparse();
             }
             else if(e.OldName.ToLowerInvariant() == _localFileName)
             {
@@ -68,7 +71,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        private void Reparse(object sender, FileSystemEventArgs e)
+        private async void Reparse(object sender, FileSystemEventArgs e)
         {
             if (e != null && e.Name.ToLowerInvariant() != _localFileName)
             {
@@ -93,7 +96,48 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 }
             }
 
-            MessageDisplayManager.Refresh();
+            await UsageRegistry.ResyncAsync();
+        }
+
+        public void Reparse()
+        {
+            Reparse(null, null);
+        }
+
+        internal static CssDocument For(string fullPath, FileSystemEventHandler fileDeletedCallback = null)
+        {
+            var fileName = fullPath.ToLowerInvariant();
+            CssDocument existing;
+
+            lock (_sync)
+            {
+                if (FileLookup.TryGetValue(fileName, out existing))
+                {
+                    if (fileDeletedCallback != null)
+                    {
+                        existing._fileDeletedCallback += fileDeletedCallback;
+                    }
+
+                    return existing;
+                }
+
+                if (fileDeletedCallback != null)
+                {
+                    return FileLookup[fileName] = new CssDocument(fileName, fileDeletedCallback);
+                }
+
+                return null;
+            }
+        }
+
+        internal void Reparse(string text)
+        {
+            var parser = new CssParser();
+            var success = false;
+
+            var parseResult = parser.Parse(text, false);
+            Rules = parseResult.RuleSets.Select(x => new CssRule(_file, text, x)).ToList();
+            success = true;
         }
     }
 }
