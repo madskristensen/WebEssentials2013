@@ -80,8 +80,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             var parser = new CssParser();
             var success = false;
+            var tryCount = 0;
+            const int maxTries = 20;
             
-            while (!success)
+            while (!success && tryCount++ < maxTries)
             {
                 try
                 {
@@ -97,6 +99,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             await UsageRegistry.ResyncAsync();
+            UnusedCssExtension.All(x => x.SnapshotPage());
         }
 
         public void Reparse()
