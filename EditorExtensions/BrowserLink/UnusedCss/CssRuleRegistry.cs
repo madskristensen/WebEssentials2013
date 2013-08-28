@@ -1,4 +1,6 @@
 ﻿using EnvDTE;
+using Microsoft.VisualStudio.Web.BrowserLink;
+using Microsoft.VisualStudio.Web.PageInspector.Package;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,7 +18,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             //This lookup needs to be Project -> Browser -> Page (but page -> sheets should be tracked internally by the extension)
             var sheetLocations = extension.GetValidSheetUrlsForCurrentLocation();
-            var files = GetFiles(extension.Connection.Project, sheetLocations);
+            var files = GetFiles(extension, sheetLocations);
             var allRules = new List<CssRule>();
 
             foreach (var file in files)
@@ -33,8 +35,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return Task.Factory.StartNew(() => GetAllRules(extension));
         }
 
-        public static IEnumerable<string> GetFiles(Project project, IEnumerable<string> locations)
+        public static IEnumerable<string> GetFiles(UnusedCssExtension extension, IEnumerable<string> locations)
         {
+            var project = extension.Connection.Project;
             //TODO: This needs to expand bundles, convert urls to local file names, and move from .min.css files to .css files where applicable
             //NOTE: Project parameter here is for the discovery of linked files, ones that might exist outside of the project structure
             var projectPath = project.Properties.Item("FullPath").Value.ToString();
@@ -48,24 +51,30 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 //No absolute paths, unless they map into the same project
                 if (locationUri.IsAbsoluteUri)
                 {
-                    if (!projectUri.IsBaseOf(locationUri))
+                    if (projectUri.IsBaseOf(locationUri))
                     {
-                        continue;
+                        locationUri = locationUri.MakeRelativeUri(projectUri);
                     }
                     else
                     {
-                        locationUri = locationUri.MakeRelativeUri(projectUri);
+                        //TODO: Fix this, it'll only work if the site is at the root of the server as is
+                        locationUri = new Uri(locationUri.LocalPath, UriKind.Relative);
+                    }
+
+                    if (locationUri.IsAbsoluteUri)
+                    {
+                        continue;
                     }
                 }
 
                 var locationUrl = locationUri.ToString().TrimStart('/').ToLowerInvariant();
-                
+
                 //Hoist .min.css -> .css
-                if(locationUrl.EndsWith(".min.css"))
+                if (locationUrl.EndsWith(".min.css"))
                 {
                     locationUrl = locationUrl.Substring(0, locationUrl.Length - 8) + ".css";
                 }
-                
+
                 locationUri = new Uri(locationUrl, UriKind.Relative);
 
                 if (Uri.TryCreate(projectUri, locationUri, out realLocation))

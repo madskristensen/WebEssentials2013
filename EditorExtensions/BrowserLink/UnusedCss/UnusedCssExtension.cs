@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
@@ -11,14 +12,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private readonly ConcurrentDictionary<string, ConcurrentBag<string>> _validSheetUrlsForPage = new ConcurrentDictionary<string, ConcurrentBag<string>>();
         private readonly UploadHelper _uploadHelper;
         private readonly BrowserLinkConnection _connection;
-        private string _currentLocation;
+        private readonly string _currentLocation;
         private bool _isRecording;
         private bool _isAggregatingRecordingData;
         private bool _isRunningShapshot;
+        private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>> BrowserLocationContinuationActions = new ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>>();
 
         static UnusedCssExtension()
         {
-            IgnoreList = new List<string> { "boostrap*.css" };
+            IgnoreList = new List<string> { "/bootstrap*.css" };
         }
 
         internal static void All(Action<UnusedCssExtension> method)
@@ -53,12 +55,18 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             obj.ButtonText = _isRecording ? "Stop Recording" : "Start Recording";
         }
 
-        [BrowserLinkCallback] // This method can be called from JavaScript
+        [BrowserLinkCallback]
         public async void FinishedRecording(string expectLocation, string operationId, string chunkContents, int chunkNumber, int chunkCount)
         {
-            if (_currentLocation != expectLocation)
+            if (_currentLocation != expectLocation.ToLowerInvariant())
             {
                 return;
+            }
+
+            if (_isRecording)
+            {
+                var appBag = BrowserLocationContinuationActions.GetOrAdd(_connection.AppName, n => new ConcurrentDictionary<string, Action<UnusedCssExtension>>());
+                appBag.AddOrUpdate(_connection.Project.UniqueName, n => c => c.ToggleRecordingMode(), (n, a) => c => c.ToggleRecordingMode());
             }
 
             SessionResult result;
@@ -73,7 +81,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         [BrowserLinkCallback]
         public async void FinishedSnapshot(string expectLocation, string operationId, string chunkContents, int chunkNumber, int chunkCount)
         {
-            if (_currentLocation != expectLocation)
+            if (_currentLocation != expectLocation.ToLowerInvariant())
             {
                 return;
             }
@@ -85,14 +93,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 UsageRegistry.Merge(this, result);
                 MessageDisplayManager.ShowWarningsFor(_connection, result);
             }
-        }
-
-        [BrowserLinkCallback]
-        public void PageLoaded(string currentLocation)
-        {
-            _currentLocation = currentLocation;
-            _uploadHelper.Reset();
-            ResetCollectionStatuses();
         }
 
         private void ResetCollectionStatuses()
@@ -113,7 +113,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         private void ToggleRecordingMode()
         {
-            if (_isRecording)
+            _isRecording = !_isRecording;
+
+            if (!_isRecording)
             {
                 Clients.Call(_connection, "stopRecording");
             }
@@ -121,8 +123,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             {
                 Clients.Call(_connection, "startRecording", Guid.NewGuid());
             }
-
-            _isRecording = !_isRecording;
         }
 
         public void SnapshotPage()
@@ -152,7 +152,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         [BrowserLinkCallback]
         public void ParseSheets(string expectLocation, string operationId, string chunkContents, int chunkNumber, int chunkCount)
         {
-            if (_currentLocation != expectLocation)
+            if (_currentLocation != expectLocation.ToLowerInvariant())
             {
                 return;
             }
@@ -161,6 +161,16 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             if (_uploadHelper.TryFinishOperation(Guid.Parse(operationId), chunkContents, chunkNumber, chunkCount, out result))
             {
                 _validSheetUrlsForPage.AddOrUpdate(_connection.Url.ToString().ToLowerInvariant(), u => new ConcurrentBag<string>(result), (u, x) => new ConcurrentBag<string>(result));
+            }
+
+            CssRuleRegistry.GetAllRules(this);
+
+            //Apply any deferred actions
+            var appBag = BrowserLocationContinuationActions.GetOrAdd(_connection.AppName, n => new ConcurrentDictionary<string, Action<UnusedCssExtension>>());
+            Action<UnusedCssExtension> act;
+            if (appBag.TryRemove(_connection.Project.UniqueName, out act))
+            {
+                act(this);
             }
         }
 
@@ -174,9 +184,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        private string FilePatternToRegex(string filePattern)
+        private static string FilePatternToRegex(string filePattern)
         {
-            return filePattern.Replace(".", "\\.").Replace("*", "[^\\\\]*").Replace("?", "[^\\\\]?");
+            return filePattern.Replace(@"\", @"[\\\\/]").Replace(".", @"\.").Replace("*", @"[^\\\\/]*").Replace("?", @"[^\\\\/]?");
         }
 
         [BrowserLinkCallback]

@@ -12,7 +12,17 @@
     //var prefixRequiringLeadingDash = ["ms-", "moz-", "o-", "xv-", "atsc-", "wap-", "webkit-", "khtml-", "apple-", "ah-", "hp-", "ro-", "rim-", "tc-"];
 
     function getReferencedStyleSheets() {
-        return $("link[rel='stylesheet']");
+        var sheets = [];
+        for (var i = 0; i < document.styleSheets.length; ++i) {
+            var sheet = document.styleSheets[i];
+            if (sheet.href && sheet.href.length > 0) {
+                sheets.push(sheet.href);
+            }
+            else {
+                sheets.push(null);
+            }
+        }
+        return sheets;
     }
 
     function chunk(obj) {
@@ -175,7 +185,7 @@
         getLinkedStyleSheetUrls: function (patterns, operationId) {
             var rxs = [];
             for(var p = 0; p < patterns.length; ++p) {
-                rxs = new RegExp(patterns[p]);
+                rxs.push(new RegExp(patterns[p], "i"));
             }
 
             var sheets = getReferencedStyleSheets();
@@ -183,11 +193,11 @@
             for (var i = 0; i < sheets.length; ++i) {
                 var match = false;
                 for (var j = 0; !match && j < patterns.length; ++j) {
-                    match = rxs[j].test(sheets[i].getAttribute("href"));
+                    match = !sheets[i] || rxs[j].test(sheets[i]);
                 }
                 if (!match) {
                     validSheetIndexes.push(i);
-                    parseSheets.push(sheets[i].getAttribute("href"));
+                    parseSheets.push(sheets[i]);
                 }
             }
 
@@ -196,6 +206,7 @@
 
         onInit: function () { // Optional. Is called when a connection is established
             browserLink.call("GetIgnoreList");
+            $(window).bind('beforeunload', function () { recordingStopRequested = true; });
         }
     };
 });

@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.Web.BrowserLink;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -28,6 +29,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             crossBrowserPageBucket.AddUsageSource(source);
             connectionPageBucket.AddUsageSource(source);
             projectBucket.AddUsageSource(source);
+
+            OnUsageDataUpdated();
         }
 
         public static IEnumerable<Task> GetWarnings(Project project)
@@ -53,6 +56,21 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             return data.GetWarnings(uri);
+        }
+
+        public static IEnumerable<CssRule> GetAllUnusedRules()
+        {
+            return UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()).Distinct();
+        }
+
+        public static event EventHandler UsageDataUpdated;
+
+        private static void OnUsageDataUpdated()
+        {
+            if (UsageDataUpdated != null)
+            {
+                UsageDataUpdated(null, null);
+            }
         }
     }
 }
