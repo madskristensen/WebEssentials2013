@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public static class CssRuleRegistry
     {
-        public static ConcurrentDictionary<string, CssDocument> DocumentLookup = new ConcurrentDictionary<string, CssDocument>();
+        private static ConcurrentDictionary<string, CssDocument> DocumentLookup = new ConcurrentDictionary<string, CssDocument>();
 
         public static IReadOnlyCollection<CssRule> GetAllRules(UnusedCssExtension extension)
         {
@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             foreach (var file in files)
             {
-                var store = DocumentLookup.GetOrAdd(file.ToLowerInvariant(), f => new CssDocument(f, DeleteFile));
+                var store = DocumentLookup.GetOrAdd(file.ToLowerInvariant(), f => CssDocument.For(f, DeleteFile));
                 allRules.AddRange(store.Rules);
             }
 
@@ -81,11 +81,25 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 }
 
                 locationUri = new Uri(locationUrl, UriKind.Relative);
+                string filePath;
 
-                if (Uri.TryCreate(projectUri, locationUri, out realLocation))
+                try
                 {
-                    yield return realLocation.LocalPath;
+                    if (Uri.TryCreate(projectUri, locationUri, out realLocation) && File.Exists(realLocation.LocalPath))
+                    {
+                        filePath = realLocation.LocalPath;
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
+                catch (IOException)
+                {
+                    continue;
+                }
+
+                yield return filePath;
             }
 
             yield break;
@@ -127,6 +141,29 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private static string StandardizeSelector(string selectorText)
         {
             return selectorText.Replace('\r', '\n').Replace("\n", "").Trim();
+        }
+
+        internal static HashSet<RuleUsage> Resolve(UnusedCssExtension extension, List<RawRuleUsage> rawUsageData)
+        {
+            var allRules = GetAllRules(extension);
+            var result = new HashSet<RuleUsage>();
+
+            foreach (var dataPoint in rawUsageData)
+            {
+                var selector = StandardizeSelector(dataPoint.Selector);
+                var locations = new HashSet<SourceLocation>(dataPoint.SourceLocations.Where(x => x != null));
+
+                foreach (var match in allRules.Where(x => x.CleansedSelectorName == selector))
+                {
+                    result.Add(new RuleUsage
+                    {
+                        SourceLocations = locations,
+                        Rule = match
+                    });
+                }
+            }
+
+            return result;
         }
     }
 }

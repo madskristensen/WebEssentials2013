@@ -44,7 +44,6 @@ namespace MadsKristensen.EditorExtensions.Classifications
         private CssTree _tree;
         internal SortedRangeList<Declaration> Cache = new SortedRangeList<Declaration>();
         private IClassificationType _decClassification;
-        private IClassificationType _valClassification;
 
         internal UnusedCssClassifier(IClassificationTypeRegistryService registry, ITextBuffer buffer)
         {
@@ -54,11 +53,19 @@ namespace MadsKristensen.EditorExtensions.Classifications
             UsageRegistry.UsageDataUpdated += UsageRegistry_UsageDataUpdated;
         }
 
+        private bool _isInManualUpdate;
+
         void UsageRegistry_UsageDataUpdated(object sender, EventArgs e)
         {
-            _tree = null;
+            if (_isInManualUpdate)
+            {
+                return;
+            }
+
+            _isInManualUpdate = true;
             var snapshotSpan = new SnapshotSpan(_buffer.CurrentSnapshot, 0, _buffer.CurrentSnapshot.Length);
             RaiseClassificationChanged(snapshotSpan);
+            _isInManualUpdate = false;
         }
 
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
@@ -68,12 +75,22 @@ namespace MadsKristensen.EditorExtensions.Classifications
                 return new ClassificationSpan[0];
             }
 
+
+            var currentFile = _buffer.GetFileName().ToLowerInvariant();
+            var document = CssDocument.For(currentFile);
+
+            if (document == null)
+            {
+                return new ClassificationSpan[0];
+            }
+
             List<ClassificationSpan> spans = new List<ClassificationSpan>();
             var fileName = _buffer.GetFileName().ToLowerInvariant();
+            var sheetRules = new HashSet<CssRule>(document.Rules);
 
-            foreach(var unusedRule in UsageRegistry.GetAllUnusedRules())
+            foreach(var unusedRule in UsageRegistry.GetAllUnusedRules(sheetRules))
             {
-                if (unusedRule.Offset + unusedRule.Length > span.Snapshot.Length || fileName != unusedRule.File.ToLowerInvariant())
+                if (unusedRule.Offset + unusedRule.Length > span.Snapshot.Length)
                 {
                     continue;
                 }
@@ -94,9 +111,8 @@ namespace MadsKristensen.EditorExtensions.Classifications
                 {
                     CssEditorDocument document = CssEditorDocument.FromTextBuffer(_buffer);
                     _tree = document.Tree;
-                    _tree.TreeUpdated += TreeUpdated;
-                    _tree.ItemsChanged += TreeItemsChanged;
-                    UpdateDeclarationCache(_tree.StyleSheet);
+                    _tree.TreeUpdated += _tree_TreeUpdated;
+                    _tree.ItemsChanged += _tree_ItemsChanged;
                 }
                 catch (ArgumentNullException)
                 {
@@ -106,41 +122,57 @@ namespace MadsKristensen.EditorExtensions.Classifications
             return _tree != null;
         }
 
-        private void UpdateDeclarationCache(ParseItem item)
+        private static readonly object _sync = new object();
+
+        private void ReparseSheet()
         {
-            var visitor = new CssItemCollector<Declaration>(true);
-            item.Accept(visitor);
-
-            HashSet<RuleBlock> rules = new HashSet<RuleBlock>();
-
-            foreach (Declaration dec in visitor.Items)
+            if (_tree.StyleSheet.ContainsParseErrors)
             {
-                RuleBlock rule = dec.Parent as RuleBlock;
-                if (rule == null || rules.Contains(rule))
-                    continue;
+                return;
+            }
 
-                rules.Add(rule);
+            try
+            {
+                _isInManualUpdate = true;
+
+                if (!EnsureInitialized())
+                {
+                    return;
+                }
+
+                var currentFile = _buffer.GetFileName().ToLowerInvariant();
+                var document = CssDocument.For(currentFile);
+                var documentText = _tree.TextProvider.Text;
+
+                if (document != null && documentText != null)
+                {
+                    lock (_sync)
+                    {
+                        document.Reparse(documentText);
+                    }
+
+                    UsageRegistry.Resync();
+                }
+            }
+            catch(Exception ex)
+            {
+                Logger.Log(ex);
+                //Swallow exceptions...
+            }
+            finally
+            {
+                _isInManualUpdate = false;
             }
         }
 
-        private void TreeUpdated(object sender, CssTreeUpdateEventArgs e)
+        private void _tree_ItemsChanged(object sender, CssItemsChangedEventArgs e)
         {
-            Cache.Clear();
-            UpdateDeclarationCache(e.Tree.StyleSheet);
+            ReparseSheet();
         }
 
-        private void TreeItemsChanged(object sender, CssItemsChangedEventArgs e)
+        private async void _tree_TreeUpdated(object sender, CssTreeUpdateEventArgs e)
         {
-            foreach (ParseItem item in e.DeletedItems)
-            {
-                if (Cache.Contains(item))
-                    Cache.Remove((Declaration)item);
-            }
-
-            foreach (ParseItem item in e.InsertedItems)
-            {
-                UpdateDeclarationCache(item);
-            }
+            ReparseSheet();
         }
 
         public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;

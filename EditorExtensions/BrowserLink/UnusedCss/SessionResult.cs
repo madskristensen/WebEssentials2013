@@ -62,5 +62,16 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             return GetUnusedRules().Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _extension.Connection.Project, "Unused CSS rule \"{1}\" in " + _extension.Connection.AppName + " on page " + (uri ?? _extension.Connection.Url)));
         }
+        
+        public async System.Threading.Tasks.Task ResyncAsync()
+        {
+            _ruleUsages = await CssRuleRegistry.ResolveAsync(_extension, RawUsageData);
+        }
+
+
+        public void Resync()
+        {
+            _ruleUsages = CssRuleRegistry.Resolve(_extension, RawUsageData);
+        }
     }
 }
