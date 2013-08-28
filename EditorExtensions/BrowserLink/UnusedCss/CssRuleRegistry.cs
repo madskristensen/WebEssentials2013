@@ -81,11 +81,25 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 }
 
                 locationUri = new Uri(locationUrl, UriKind.Relative);
+                string filePath;
 
-                if (Uri.TryCreate(projectUri, locationUri, out realLocation))
+                try
                 {
-                    yield return realLocation.LocalPath;
+                    if (Uri.TryCreate(projectUri, locationUri, out realLocation) && File.Exists(realLocation.LocalPath))
+                    {
+                        filePath = realLocation.LocalPath;
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
+                catch (IOException)
+                {
+                    continue;
+                }
+
+                yield return filePath;
             }
 
             yield break;
