@@ -110,6 +110,10 @@ namespace MadsKristensen.EditorExtensions
             public const string JsHint_worker = "JsHint_worker";
             public const string JsHint_wsh = "JsHint_wsh";
 
+            //Unused Css
+            public const string UnusedCss_IgnorePatterns = "UnusedCss_IgnorePatterns";
+            public const string UnusedCss_IgnoreRemoteFiles = "UnusedCss_IgnoreRemoteFiles";
+
             public enum ErrorLocation
             {
                 Warnings = 0,

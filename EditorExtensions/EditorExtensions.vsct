@@ -134,6 +134,10 @@
       <Group guid="guidEditorLinesCmdSet" id="LinesMenuGroup" priority="0x0002">
         <Parent guid="guidEditorLinesCmdSet" id="LinesMenu"/>
       </Group>
+
+      <Group guid="guidUnusedCssCmdSet" id="UnusedCssExtensionGroup" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
+      </Group>
     </Groups>
 
     <Buttons>
@@ -531,6 +535,20 @@
           <ButtonText>Contract Selection</ButtonText>
         </Strings>
       </Button>
+
+      <Button guid="guidUnusedCssCmdSet" id="UnusedCssSnapshotCommandId" priority="0x0012" type="Button">
+        <Parent guid="guidBrowserLinkCmdSet" id="IDG_BROWSERLINK_COMMANDS"/>
+        <Strings>
+          <ButtonText>Snapshot CSS Usage (All Browsers)</ButtonText>
+        </Strings>
+      </Button>
+      
+      <Button guid="guidUnusedCssCmdSet" id="UnusedCssResetCommandId" priority="0x0013" type="Button">
+        <Parent guid="guidBrowserLinkCmdSet" id="IDG_BROWSERLINK_COMMANDS"/>
+        <Strings>
+          <ButtonText>Clear CSS Usage Data</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
     <Bitmaps>
@@ -760,6 +778,16 @@
       <IDSymbol name="MyMenuGroup" value="0x1020" />
       <IDSymbol name="cmdPasteJsonAsClasses" value="0x334" />
     </GuidSymbol>-->
+
+    <GuidSymbol name="guidUnusedCssCmdSet" value="{47BA41E6-C7AB-49F1-984A-30E672AFF9FC}">
+      <IDSymbol name="UnusedCssExtensionGroup" value="0x2020" />
+      <IDSymbol name="UnusedCssSnapshotCommandId" value="0x2100" />
+      <IDSymbol name="UnusedCssResetCommandId" value="0x2101" />
+    </GuidSymbol>
+    
+    <GuidSymbol name="guidBrowserLinkCmdSet" value="{30947ebe-9147-45f9-96cf-401bfc671a82}">
+      <IDSymbol name="IDG_BROWSERLINK_COMMANDS" value="0x2001" />
+    </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{51f54cc4-4444-4ae5-a1a6-d44f9a6b7cbc}" >
       <IDSymbol name="bmpPic1" value="1" />
