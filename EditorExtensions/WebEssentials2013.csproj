@@ -415,6 +415,9 @@
     <Compile Include="DropTargets\StylesheetDrop.cs" />
     <Compile Include="DropTargets\FontDrop.cs" />
     <Compile Include="DropTargets\ImageDrop.cs" />
+    <Compile Include="Options\UnusedCssOptions.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="SmartTags\HTML\ExtractToFileSmartTag.cs">
       <SubType>Code</SubType>
     </Compile>

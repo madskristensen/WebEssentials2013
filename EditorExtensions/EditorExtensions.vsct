@@ -542,6 +542,13 @@
           <ButtonText>Snapshot CSS Usage (All Browsers)</ButtonText>
         </Strings>
       </Button>
+      
+      <Button guid="guidUnusedCssCmdSet" id="UnusedCssResetCommandId" priority="0x0013" type="Button">
+        <Parent guid="guidBrowserLinkCmdSet" id="IDG_BROWSERLINK_COMMANDS"/>
+        <Strings>
+          <ButtonText>Clear CSS Usage Data</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
     <Bitmaps>
@@ -775,6 +782,7 @@
     <GuidSymbol name="guidUnusedCssCmdSet" value="{47BA41E6-C7AB-49F1-984A-30E672AFF9FC}">
       <IDSymbol name="UnusedCssExtensionGroup" value="0x2020" />
       <IDSymbol name="UnusedCssSnapshotCommandId" value="0x2100" />
+      <IDSymbol name="UnusedCssResetCommandId" value="0x2101" />
     </GuidSymbol>
     
     <GuidSymbol name="guidBrowserLinkCmdSet" value="{30947ebe-9147-45f9-96cf-401bfc671a82}">

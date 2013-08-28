@@ -33,6 +33,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             OnUsageDataUpdated();
         }
 
+        public static void Reset()
+        {
+            UsageDataByLocation.Clear();
+            UsageDataByConnectionAndLocation.Clear();
+            UsageDataByProject.Clear();
+
+            OnUsageDataUpdated();
+        }
+
         public static IEnumerable<Task> GetWarnings(Project project)
         {
             CompositeUsageData data;

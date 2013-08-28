@@ -18,11 +18,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private bool _isRunningShapshot;
         private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>> BrowserLocationContinuationActions = new ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>>();
 
-        static UnusedCssExtension()
-        {
-            IgnoreList = new List<string> { "/bootstrap*.css" };
-        }
-
         internal static void All(Action<UnusedCssExtension> method)
         {
             MessageDisplayManager.DisplaySource = MessageDisplaySource.Project;
@@ -38,15 +33,25 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public UnusedCssExtension(BrowserLinkConnection connection)
         {
+            ExtensionByConnection[connection] = this;
             _uploadHelper = new UploadHelper();
             _connection = connection;
             _currentLocation = connection.Url.ToString().ToLowerInvariant();
+            UnusedCssOptions.SettingsUpdated += InstallIgnorePatterns;
+        }
+
+        private void InstallIgnorePatterns(object sender, EventArgs e)
+        {
+            UsageRegistry.Reset();
+            GetIgnoreList();
+            MessageDisplayManager.Refresh();
         }
 
         public override void OnDisconnecting(BrowserLinkConnection connection)
         {
             UnusedCssExtension extension;
             ExtensionByConnection.TryRemove(connection, out extension);
+            UnusedCssOptions.SettingsUpdated -= InstallIgnorePatterns;
         }
 
         private void SetRecordingButtonDisplayProperties(BrowserLinkAction obj)
@@ -174,7 +179,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        public static List<string> IgnoreList { get; private set; }
+        public static List<string> IgnoreList
+        {
+            get
+            {
+                string ignorePatterns = WESettings.GetString(WESettings.Keys.UnusedCss_IgnorePatterns) ?? "";
+                return new List<string>(ignorePatterns.Split(new []{';'}, StringSplitOptions.RemoveEmptyEntries));
+            }
+        }
 
         private static List<string> IgnorePatternList
         {

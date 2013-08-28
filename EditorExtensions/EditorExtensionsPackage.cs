@@ -24,6 +24,7 @@ namespace MadsKristensen.EditorExtensions
     [ProvideOptionPage(typeof(LessOptions), "Web Essentials", "LESS", 101, 105, true)]
     [ProvideOptionPage(typeof(CoffeeScriptOptions), "Web Essentials", "CoffeeScript", 101, 106, true, new[] { "Iced", "JavaScript", "JS", "JScript" })]
     [ProvideOptionPage(typeof(JavaScriptOptions), "Web Essentials", "JavaScript", 101, 107, true, new[] { "JScript", "JS", "Minify", "Minification", "EcmaScript" })]
+    [ProvideOptionPage(typeof(UnusedCssOptions), "Web Essentials", "Unused CSS", 101, 108, true, new[] { "Ignore", "Filter" })]
     public sealed class EditorExtensionsPackage : Package
     {
         private static DTE2 _dte;

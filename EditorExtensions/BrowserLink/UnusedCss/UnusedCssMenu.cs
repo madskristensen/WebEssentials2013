@@ -26,6 +26,16 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             OleMenuCommand menuCommand = new OleMenuCommand(SnapshotAll, commandId);
             menuCommand.BeforeQueryStatus += menuCommand_BeforeQueryStatus;
             _mcs.AddCommand(menuCommand);
+
+            commandId = new CommandID(GuidList.guidUnusedCssCmdSet, (int)PkgCmdIDList.cmdUnusedCssResetCommandId);
+            OleMenuCommand resetCommand = new OleMenuCommand(ResetUsageData, commandId);
+            _mcs.AddCommand(resetCommand);
+        }
+
+        private void ResetUsageData(object sender, EventArgs e)
+        {
+            UsageRegistry.Reset();
+            MessageDisplayManager.Refresh();
         }
 
         private void SnapshotAll(object sender, EventArgs e)
