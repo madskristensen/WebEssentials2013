@@ -81,5 +81,58 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 UsageDataUpdated(null, null);
             }
         }
+
+        public static async System.Threading.Tasks.Task ResyncAsync()
+        {
+            foreach (var value in UsageDataByProject.Values)
+            {
+                await value.ResyncAsync();
+            }
+
+            foreach (var value in UsageDataByLocation.Values)
+            {
+                await value.ResyncAsync();
+            }
+
+            foreach (var bag in UsageDataByConnectionAndLocation.Values)
+            {
+                foreach (var value in bag.Values)
+                {
+                    await value.ResyncAsync();
+                }
+            }
+
+            OnUsageDataUpdated();
+            MessageDisplayManager.Refresh();
+        }
+
+        public static void Resync()
+        {
+            foreach (var value in UsageDataByProject.Values)
+            {
+                value.Resync();
+            }
+
+            foreach (var value in UsageDataByLocation.Values)
+            {
+                value.Resync();
+            }
+
+            foreach (var bag in UsageDataByConnectionAndLocation.Values)
+            {
+                foreach (var value in bag.Values)
+                {
+                    value.Resync();
+                }
+            }
+
+            OnUsageDataUpdated();
+            MessageDisplayManager.Refresh();
+        }
+
+        internal static IEnumerable<CssRule> GetAllUnusedRules(HashSet<CssRule> sheetRules)
+        {
+            return sheetRules.Intersect(UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()));
+        }
     }
 }
