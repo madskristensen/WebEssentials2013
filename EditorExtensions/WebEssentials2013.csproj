@@ -130,11 +130,16 @@
       <HintPath>$(DevEnvDir)\Microsoft.VisualStudio.Web.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Web.BrowserLink">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\Web Tools\Page Inspector\Microsoft.VisualStudio.Web.BrowserLink.dll</HintPath>
       <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Page Inspector\Microsoft.VisualStudio.Web.BrowserLink.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Web.Extensions">
       <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Languages\Microsoft.VisualStudio.Web.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Web.PageInspector.Package">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\Web Tools\Page Inspector\Microsoft.VisualStudio.Web.PageInspector.Package.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -156,6 +161,10 @@
     <Reference Include="Microsoft.Web.Editor, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Web.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -268,6 +277,25 @@
     <Compile Include="BrowserLink\DesignMode\DesignModeBrowserLink.cs" />
     <Compile Include="BrowserLink\InspectMode\InspectModeBrowserLink.cs" />
     <Compile Include="BrowserLink\CssSync\CssSyncBrowserLink.cs" />
+    <Compile Include="BrowserLink\UnusedCss\CompositeUsageData.cs" />
+    <Compile Include="BrowserLink\UnusedCss\CssDocument.cs" />
+    <Compile Include="BrowserLink\UnusedCss\CssRule.cs" />
+    <Compile Include="BrowserLink\UnusedCss\CssRuleRegistry.cs" />
+    <Compile Include="BrowserLink\UnusedCss\ErrorList.cs" />
+    <Compile Include="BrowserLink\UnusedCss\IResolutionRequiredDataSource.cs" />
+    <Compile Include="BrowserLink\UnusedCss\IUsageDataSource.cs" />
+    <Compile Include="BrowserLink\UnusedCss\MessageDisplayManager.cs" />
+    <Compile Include="BrowserLink\UnusedCss\MessageDisplaySource.cs" />
+    <Compile Include="BrowserLink\UnusedCss\RawRuleUsage.cs" />
+    <Compile Include="BrowserLink\UnusedCss\CssRuleExtensions.cs" />
+    <Compile Include="BrowserLink\UnusedCss\RuleUsage.cs" />
+    <Compile Include="BrowserLink\UnusedCss\SessionResult.cs" />
+    <Compile Include="BrowserLink\UnusedCss\UnusedCssExtensionFactory.cs" />
+    <Compile Include="BrowserLink\UnusedCss\UnusedCssExtension.cs" />
+    <Compile Include="BrowserLink\UnusedCss\UnusedCssMenu.cs" />
+    <Compile Include="BrowserLink\UnusedCss\UsageRegistry.cs" />
+    <Compile Include="BrowserLink\UploadHelper.cs" />
+    <Compile Include="Classifications\CSS\UnusedRuleClassifier.cs" />
     <Compile Include="Classifications\HTML\HtmlRegionTagger.cs" />
     <Compile Include="Classifications\JavaScript\JavaScriptArrayOutlining.cs">
       <SubType>Code</SubType>
@@ -387,6 +415,9 @@
     <Compile Include="DropTargets\StylesheetDrop.cs" />
     <Compile Include="DropTargets\FontDrop.cs" />
     <Compile Include="DropTargets\ImageDrop.cs" />
+    <Compile Include="Options\UnusedCssOptions.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="SmartTags\HTML\ExtractToFileSmartTag.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -609,6 +640,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <EmbeddedResource Include="BrowserLink\UnusedCss\UnusedCss.js" />
     <Content Include="Classifications\RobotsTxt\robots.txt" />
     <None Include="Classifications\Markdown\Sample.md" />
     <None Include="Key.snk" />
