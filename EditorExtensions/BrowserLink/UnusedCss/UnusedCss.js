@@ -126,6 +126,7 @@
     var recordingState = [];
     var recordingSelectorLookup = {};
     var recordingStopRequested = false;
+    var finishRecording;
 
     function record(operationId) {
         var frameData = captureCssUsageFrameFast();
@@ -156,8 +157,7 @@
             }, 200);
         }
         else {
-            var result = { "RawUsageData": recordingState };
-            submitChunkedData("FinishedRecording", result, operationId);
+            finishRecording();
         }
     }
 
@@ -167,6 +167,11 @@
         name: "UnusedCss",
 
         startRecording: function (operationId) {
+            finishRecording = function () {
+                var result = { "RawUsageData": recordingState };
+                submitChunkedData("FinishedRecording", result, operationId);
+            };
+
             recordingStopRequested = false;
             recordingState = [];
             recordingSelectorLookup = {};
@@ -206,7 +211,7 @@
 
         onInit: function () { // Optional. Is called when a connection is established
             browserLink.call("GetIgnoreList");
-            $(window).bind('beforeunload', function () { recordingStopRequested = true; });
+            $(window).bind('beforeunload', function () { if (recordingState.length > 0) { finishRecording(); } });
         }
     };
 });

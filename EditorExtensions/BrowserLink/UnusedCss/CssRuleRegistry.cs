@@ -45,6 +45,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             foreach (var location in locations)
             {
+                if (location == null)
+                {
+                    continue;
+                }
+
                 var locationUri = new Uri(location, UriKind.RelativeOrAbsolute);
                 Uri realLocation;
 
