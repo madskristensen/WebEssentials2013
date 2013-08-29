@@ -138,9 +138,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             //result.Dispose();
         }
 
-        private static string StandardizeSelector(string selectorText)
+        public static string StandardizeSelector(string selectorText)
         {
-            return selectorText.Replace('\r', '\n').Replace("\n", "").Trim();
+            return selectorText.Replace('\r', ' ').Replace('\n', ' ').Replace(" ", "").Trim().ToLowerInvariant();
         }
 
         internal static HashSet<RuleUsage> Resolve(UnusedCssExtension extension, List<RawRuleUsage> rawUsageData)
