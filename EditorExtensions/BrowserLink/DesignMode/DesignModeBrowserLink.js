@@ -9,12 +9,12 @@
     var inspectOverlay;
     var current, map, hasChanged,
         selectedClass = "__browserLink_selected_design",
-        overlay ="__browserLink_InspectOverlay";
+        overlay = "__browserLink_InspectOverlay";
 
     function getInspectOverlay() {
         if (!inspectOverlay) {
 
-            $("body").append("<div id=\"" + overlay+ "\"></div");
+            $("body").append("<div id=\"" + overlay + "\"></div");
             $("body").append(
                 "<style>" +
                     "#" + overlay + " {position:fixed; cursor: crosshair; box-sizing: border-box; top: 0; left: 0; bottom: 0; right: 0; background-color: #888; opacity: 0.2; overflow: visible; z-index: 999999999; /*overrde*/ width: auto; height: auto; margin: 0; padding: 0; background-image: none; display:none}" +
@@ -108,7 +108,7 @@
 
     function typing(e) {
         if (inspectModeOn && map) {
-            console.log(e.keyCode);
+
             if (e.keyCode === 89 && e.ctrlKey) { // 89 = y
                 browserLink.call("Redo");
             }
@@ -121,7 +121,7 @@
             else {
                 hasChanged = true;
                 setTimeout(function () {
-                    console.log(current.innerHTML);
+
                     browserLink.call("UpdateSource", current.innerHTML, map.sourcePath, map.startPosition);
                 }, 50);
             }
