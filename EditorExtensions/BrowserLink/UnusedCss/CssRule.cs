@@ -9,8 +9,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public CssRule(string sourceFile, string fileText, RuleSet ruleSet)
         {
             RuleSet = ruleSet;
-            SelectorName = ruleSet.Text;
-            CleansedSelectorName = ruleSet.Text.Substring(0, ruleSet.Block.Start - ruleSet.Start).Replace('\r', '\n').Replace("\n", "").Trim();
+            SelectorName = GetSelectorName(ruleSet);
+            CleansedSelectorName = CssRuleRegistry.StandardizeSelector(SelectorName);
+            DisplaySelectorName = SelectorName.Replace('\r', '\n').Replace("\n", "").Trim();
             File = sourceFile;
             int line, column;
             CalculateLineAndColumn(fileText, ruleSet, out line, out column);
@@ -19,6 +20,13 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             Offset = ruleSet.Range.Start;
             Length = ruleSet.Range.Length;
         }
+
+        private static string GetSelectorName(RuleSet ruleSet)
+        {
+            return ruleSet.Text.Substring(0, ruleSet.Block.Start - ruleSet.Start);
+        }
+
+        public string DisplaySelectorName { get; private set; }
 
         public string CleansedSelectorName { get; private set; }
 
@@ -53,7 +61,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public override string ToString()
         {
-            return CleansedSelectorName + " (" + File + ")";
+            return DisplaySelectorName + " (" + File + ")";
         }
 
         private static void CalculateLineAndColumn(string fileText, RuleSet ruleSet, out int lineNumber, out int columnNumber)
