@@ -147,7 +147,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 tmp = tmp.Replace("  ", " ");
             }
 
-            return tmp;
+            return tmp.Replace(", ", ",");
         }
 
         internal static HashSet<RuleUsage> Resolve(UnusedCssExtension extension, List<RawRuleUsage> rawUsageData)
