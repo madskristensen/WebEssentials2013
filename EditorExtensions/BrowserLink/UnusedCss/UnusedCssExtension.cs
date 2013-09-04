@@ -49,6 +49,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public override void OnDisconnecting(BrowserLinkConnection connection)
         {
+            if (_isRecording)
+            {
+                var appBag = BrowserLocationContinuationActions.GetOrAdd(_connection.AppName, n => new ConcurrentDictionary<string, Action<UnusedCssExtension>>());
+                appBag.AddOrUpdate(_connection.Project.UniqueName, n => c => c.ToggleRecordingMode(), (n, a) => c => c.ToggleRecordingMode());
+            }
+
             UnusedCssExtension extension;
             ExtensionByConnection.TryRemove(connection, out extension);
             UnusedCssOptions.SettingsUpdated -= InstallIgnorePatterns;
@@ -71,13 +77,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             SessionResult result;
             if (_uploadHelper.TryFinishOperation(Guid.Parse(operationId), chunkContents, chunkNumber, chunkCount, out result))
             {
-
-                if (_isRecording && !result.Continue)
-                {
-                    var appBag = BrowserLocationContinuationActions.GetOrAdd(_connection.AppName, n => new ConcurrentDictionary<string, Action<UnusedCssExtension>>());
-                    appBag.AddOrUpdate(_connection.Project.UniqueName, n => c => c.ToggleRecordingMode(), (n, a) => c => c.ToggleRecordingMode());
-                }
-
                 await result.ResolveAsync(this);
                 UsageRegistry.Merge(this, result);
                 MessageDisplayManager.ShowWarningsFor(_connection, result);
