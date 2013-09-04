@@ -127,15 +127,19 @@
     var recordingSelectorLookup = {};
     var recordingStopRequested = false;
     var finishRecording;
+    var isRecording;
 
     function record(operationId) {
         var frameData = captureCssUsageFrameFast();
+        isRecording = true;
+        var dataUpdated = false;
 
         //Merge
         var rawFrameData = frameData.RawUsageData;
         for(var i = 0; i < rawFrameData.length; ++i){
             var selector = rawFrameData[i].Selector;
             if (!recordingSelectorLookup.hasOwnProperty(selector)) {
+                dataUpdated = true;
                 recordingState.push(rawFrameData[i]);
                 recordingSelectorLookup[selector] = recordingState.length - 1;
             }
@@ -152,11 +156,16 @@
         //End Merge
 
         if (!recordingStopRequested) {
+            if (dataUpdated) {
+                finishRecording(true);
+            }
+
             setTimeout(function() {
                 record(operationId);
-            }, 200);
+            }, 50);
         }
         else {
+            isRecording = false;
             finishRecording();
         }
     }
@@ -167,8 +176,8 @@
         name: "UnusedCss",
 
         startRecording: function (operationId) {
-            finishRecording = function () {
-                var result = { "RawUsageData": recordingState };
+            finishRecording = function (doContinue) {
+                var result = { "RawUsageData": recordingState, "Continue": !!doContinue };
                 submitChunkedData("FinishedRecording", result, operationId);
             };
 
@@ -211,7 +220,7 @@
 
         onInit: function () { // Optional. Is called when a connection is established
             browserLink.call("GetIgnoreList");
-            $(window).bind('beforeunload', function () { if (recordingState.length > 0) { finishRecording(); } });
+            $(window).bind('beforeunload', function () { if (isRecording) { finishRecording(); } });
         }
     };
 });

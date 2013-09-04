@@ -10,7 +10,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     public class SessionResult : IUsageDataSource, IResolutionRequiredDataSource
     {
         [JsonProperty]
-        public List<RawRuleUsage> RawUsageData {get;set;}
+        public List<RawRuleUsage> RawUsageData { get; set; }
+
+        [JsonProperty]
+        public bool Continue { get; set; }
 
         private HashSet<RuleUsage> _ruleUsages;
 
