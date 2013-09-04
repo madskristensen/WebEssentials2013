@@ -18,6 +18,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private bool _isRunningShapshot;
         private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>> BrowserLocationContinuationActions = new ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>>();
 
+        internal static bool Any(Func<UnusedCssExtension, bool> predicate)
+        {
+            return ExtensionByConnection.Values.Any(predicate);
+        }
+
         internal static void All(Action<UnusedCssExtension> method)
         {
             MessageDisplayManager.DisplaySource = MessageDisplaySource.Project;
@@ -207,5 +212,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             Clients.Call(_connection, "getLinkedStyleSheetUrls", IgnorePatternList, Guid.NewGuid());
         }
+
+        public void EnsureRecordingMode(bool targetRecordingStatus)
+        {
+            if (_isRecording ^ targetRecordingStatus)
+            {
+                ToggleRecordingMode();
+            }
+        }
+
+        public bool IsRecording { get { return _isRecording; } }
     }
 }

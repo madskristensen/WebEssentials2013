@@ -30,6 +30,34 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             commandId = new CommandID(GuidList.guidUnusedCssCmdSet, (int)PkgCmdIDList.cmdUnusedCssResetCommandId);
             OleMenuCommand resetCommand = new OleMenuCommand(ResetUsageData, commandId);
             _mcs.AddCommand(resetCommand);
+
+            commandId = new CommandID(GuidList.guidUnusedCssCmdSet, (int)PkgCmdIDList.cmdUnusedCssRecordAllCommandId);
+            OleMenuCommand recordAllCommand = new OleMenuCommand(RecordAll, commandId);
+            _mcs.AddCommand(recordAllCommand);
+
+            commandId = new CommandID(GuidList.guidUnusedCssCmdSet, (int)PkgCmdIDList.cmdUnusedCssStopRecordAllCommandId);
+            OleMenuCommand stopRecordAllCommand = new OleMenuCommand(StopRecordAll, EmptyChangeHandler, RecordAllBeforeQueryStatus, commandId);
+            _mcs.AddCommand(stopRecordAllCommand);
+        }
+
+        private void EmptyChangeHandler(object sender, EventArgs e)
+        {
+        }
+
+        private void RecordAllBeforeQueryStatus(object sender, EventArgs e)
+        {
+            var menu = (OleMenuCommand)sender;
+            menu.Visible = UnusedCssExtension.Any(x => x.IsRecording);
+        }
+
+        private void RecordAll(object sender, EventArgs e)
+        {
+            UnusedCssExtension.All(x => x.EnsureRecordingMode(true));
+        }
+
+        private void StopRecordAll(object sender, EventArgs e)
+        {
+            UnusedCssExtension.All(x => x.EnsureRecordingMode(false));
         }
 
         private void ResetUsageData(object sender, EventArgs e)

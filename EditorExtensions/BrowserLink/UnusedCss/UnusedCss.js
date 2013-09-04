@@ -220,11 +220,6 @@
 
         onInit: function () { // Optional. Is called when a connection is established
             browserLink.call("GetIgnoreList");
-            $(window).bind('beforeunload', function () {
-                if (isRecording) {
-                    finishRecording(false);
-                }
-            });
         }
     };
 });
