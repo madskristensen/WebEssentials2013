@@ -132,13 +132,23 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
+        protected virtual IEnumerable<RuleSet> ExpandRuleSets(IEnumerable<RuleSet> ruleSets)
+        {
+            return ruleSets;
+        }
+
         public void Reparse(string text)
         {
             var parser = GetParser();
             var parseResult = parser.Parse(text, false);
-            Rules = parseResult.RuleSets.Select(x => new CssRule(_file, text, x)).ToList();
+            Rules = ExpandRuleSets(parseResult.RuleSets).Select(x => new CssRule(_file, text, x, this)).ToList();
         }
  
         protected abstract ICssParser GetParser();
+
+        public virtual string GetSelectorName(RuleSet ruleSet)
+        {
+            return ruleSet.Text.Substring(0, ruleSet.Block.Start - ruleSet.Start);
+        }
     }
 }

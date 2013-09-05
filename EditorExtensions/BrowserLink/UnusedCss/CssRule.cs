@@ -6,9 +6,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public class CssRule : IStylingRule
     {
-        public CssRule(string sourceFile, string fileText, RuleSet ruleSet)
+        public CssRule(string sourceFile, string fileText, RuleSet ruleSet, IDocument document)
         {
-            SelectorName = GetSelectorName(ruleSet);
+            SelectorName = document.GetSelectorName(ruleSet);
             CleansedSelectorName = RuleRegistry.StandardizeSelector(SelectorName);
             DisplaySelectorName = SelectorName.Replace('\r', '\n').Replace("\n", "").Trim();
             File = sourceFile;
@@ -18,11 +18,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             Column = column;
             Offset = ruleSet.Range.Start;
             Length = ruleSet.Range.Length;
-        }
-
-        private static string GetSelectorName(RuleSet ruleSet)
-        {
-            return ruleSet.Text.Substring(0, ruleSet.Block.Start - ruleSet.Start);
         }
 
         public string DisplaySelectorName { get; private set; }
