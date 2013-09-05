@@ -87,11 +87,32 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 {
                     if (Uri.TryCreate(projectUri, locationUri, out realLocation) && File.Exists(realLocation.LocalPath))
                     {
+                        //Try to move from .css -> .less
+                        var lessFile = Path.ChangeExtension(realLocation.LocalPath, ".less");
+
+                        if (File.Exists(lessFile))
+                        {
+                            locationUri = new Uri(lessFile, UriKind.Relative);
+                            Uri.TryCreate(projectUri, locationUri, out realLocation);
+                        }
+                        
                         filePath = realLocation.LocalPath;
                     }
                     else
                     {
-                        continue;
+                        //Try to move from .min.css -> .less
+                        var lessFile = Path.ChangeExtension(realLocation.LocalPath, ".less");
+
+                        if (!File.Exists(lessFile))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            locationUri = new Uri(lessFile, UriKind.Relative);
+                            Uri.TryCreate(projectUri, locationUri, out realLocation);
+                            filePath = realLocation.LocalPath;
+                        }
                     }
                 }
                 catch (IOException)

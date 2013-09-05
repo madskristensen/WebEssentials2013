@@ -17,8 +17,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             {
                 case ".CSS":
                     return CssDocument.For;
-                //case ".LESS":
-                //    return LessDocument.For;
+                case ".LESS":
+                    return LessDocument.For;
                 default:
                     Logger.Log("No document factory could be found for file type: " + extension);
                     return null;
@@ -27,6 +27,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         internal static IDocument GetDocument(string fullPath, FileSystemEventHandler fileDeletedCallback = null)
         {
+            if (string.IsNullOrWhiteSpace(fullPath))
+            {
+                return null;
+            }
+
             var fileName = fullPath.ToLowerInvariant();
             var factory = GetFactory(fileName);
 

@@ -279,6 +279,8 @@
     <Compile Include="BrowserLink\UnusedCss\CompositeUsageData.cs" />
     <Compile Include="BrowserLink\UnusedCss\CssDocument.cs" />
     <Compile Include="BrowserLink\UnusedCss\CssRule.cs" />
+    <Compile Include="BrowserLink\UnusedCss\DocumentBase.cs" />
+    <Compile Include="BrowserLink\UnusedCss\LessDocument.cs" />
     <Compile Include="BrowserLink\UnusedCss\RuleRegistry.cs" />
     <Compile Include="BrowserLink\UnusedCss\DocumentFactory.cs" />
     <Compile Include="BrowserLink\UnusedCss\ErrorList.cs" />

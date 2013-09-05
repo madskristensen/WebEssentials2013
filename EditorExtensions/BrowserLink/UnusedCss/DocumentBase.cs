@@ -1,0 +1,144 @@
+﻿using Microsoft.CSS.Core;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
+{
+    public abstract class DocumentBase : IDocument
+    {
+        private readonly string _file;
+        private FileSystemEventHandler _fileDeletedCallback;
+        private readonly FileSystemWatcher _watcher;
+        private readonly string _localFileName;
+        private static readonly Dictionary<string, DocumentBase> FileLookup = new Dictionary<string, DocumentBase>();
+        private static readonly object _sync = new object();
+
+        protected DocumentBase(string file, FileSystemEventHandler fileDeletedCallback)
+        {
+            _fileDeletedCallback = fileDeletedCallback;
+            _file = file;
+            var path = Path.GetDirectoryName(file);
+            _localFileName = Path.GetFileName(file).ToLowerInvariant();
+
+            _watcher = new FileSystemWatcher
+            {
+                Path = path,
+                Filter = _localFileName //"*.css"
+            };
+            
+            _watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.DirectoryName;
+            _watcher.Changed += Reparse;
+            _watcher.Deleted += ProxyDeletion;
+            _watcher.Renamed += ProxyRename;
+            _watcher.Created += Reparse;
+            _watcher.EnableRaisingEvents = true;
+            Reparse();
+        }
+
+        public IEnumerable<IStylingRule> Rules { get; private set; }
+
+        public void Dispose()
+        {
+            _watcher.Changed -= Reparse;
+            _watcher.Deleted -= ProxyDeletion;
+            _watcher.Renamed -= ProxyRename;
+            _watcher.Dispose();
+        }
+
+        private void ProxyDeletion(object sender, FileSystemEventArgs e)
+        {
+            if (e.Name.ToLowerInvariant() != _localFileName)
+            {
+                return;
+            }
+
+            _fileDeletedCallback(sender, e);
+        }
+
+        private void ProxyRename(object sender, RenamedEventArgs e)
+        {
+            if (e.Name.ToLowerInvariant() == _localFileName)
+            {
+                Reparse();
+            }
+            else if(e.OldName.ToLowerInvariant() == _localFileName)
+            {
+                _fileDeletedCallback(sender, e);
+            }
+        }
+
+        private async void Reparse(object sender, FileSystemEventArgs e)
+        {
+            if (e != null && e.Name.ToLowerInvariant() != _localFileName)
+            {
+                return;
+            }
+
+            var success = false;
+            var tryCount = 0;
+            const int maxTries = 20;
+            
+            while (!success && tryCount++ < maxTries)
+            {
+                try
+                {
+                    var text = File.ReadAllText(_file);
+                    Reparse(text);
+                    success = true;
+                }
+                catch (IOException)
+                {
+                    Thread.Sleep(100);
+                }
+            }
+
+            await UsageRegistry.ResyncAsync();
+            UnusedCssExtension.All(x => x.SnapshotPage());
+        }
+
+        public void Reparse()
+        {
+            Reparse(null, null);
+        }
+
+        protected static IDocument For(string fullPath, FileSystemEventHandler fileDeletedCallback, Func<string, FileSystemEventHandler, DocumentBase> documentFactory)
+        {
+            var fileName = fullPath.ToLowerInvariant();
+            DocumentBase existing;
+
+            lock (_sync)
+            {
+                if (FileLookup.TryGetValue(fileName, out existing))
+                {
+                    if (fileDeletedCallback != null)
+                    {
+                        existing._fileDeletedCallback += fileDeletedCallback;
+                    }
+
+                    return existing;
+                }
+
+                if (fileDeletedCallback != null)
+                {
+                    return FileLookup[fileName] = documentFactory(fileName, fileDeletedCallback);
+                }
+
+                return null;
+            }
+        }
+
+        public void Reparse(string text)
+        {
+            var parser = GetParser();
+            var parseResult = parser.Parse(text, false);
+            Rules = parseResult.RuleSets.Select(x => new CssRule(_file, text, x)).ToList();
+        }
+ 
+        protected abstract ICssParser GetParser();
+    }
+}

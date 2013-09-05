@@ -141,7 +141,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
                 }
 
                 var currentFile = _buffer.GetFileName().ToLowerInvariant();
-                var document = CssDocument.For(currentFile);
+                var document = DocumentFactory.GetDocument(currentFile);
                 var documentText = _tree.TextProvider.Text;
 
                 if (document != null && documentText != null)
