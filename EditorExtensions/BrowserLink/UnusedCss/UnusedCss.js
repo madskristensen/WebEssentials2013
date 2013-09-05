@@ -170,6 +170,20 @@
         }
     }
 
+    function toggleRecordingMode() {
+        browserLink.call("ToggleRecordingMode");
+    }
+
+    window.__weToggleRecordingMode = function () {
+        toggleRecordingMode();
+    };
+
+    $(document).keydown(function (e) {
+        if (e.keyCode === 82 && e.ctrlKey && e.altKey) { // 82 = r
+            toggleRecordingMode();
+        }
+    });
+
     //Return the brower link interop packet
     return {
 

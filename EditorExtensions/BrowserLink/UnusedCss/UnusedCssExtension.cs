@@ -121,7 +121,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        private void ToggleRecordingMode()
+        [BrowserLinkCallback]
+        public void ToggleRecordingMode()
         {
             _isRecording = !_isRecording;
 
