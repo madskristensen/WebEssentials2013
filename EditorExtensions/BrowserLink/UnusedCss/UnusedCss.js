@@ -176,6 +176,7 @@
 
     window.__weToggleRecordingMode = function () {
         toggleRecordingMode();
+        return false;
     };
 
     $(document).keydown(function (e) {
@@ -183,6 +184,24 @@
             toggleRecordingMode();
         }
     });
+
+    var recordingNotificationHeight = 30;
+    var recordingNotificationWidth = 157;
+    var tailOffset = 28;
+    var hiddenLeftPosition = "-" + (recordingNotificationWidth - tailOffset) + "px";
+    var recordingNotification = $('<div style="border:black solid 1px;font-weight:demi-bold;display:inline-block;padding:0;font-family:verdana,arial;height:' + recordingNotificationHeight + 'px;width:' + recordingNotificationWidth + 'px;position:absolute;top:0;left:' + hiddenLeftPosition + ';z-index:9999;background:none;font-size:16px;cursor:pointer">\
+        <div style="opacity:.6;background:white;width:' + recordingNotificationWidth + 'px;height:' + recordingNotificationHeight + 'px;position:absolute"></div>\
+		    <div style="position:relative">\
+			    <span style="display:inline-block;position:absolute;top:5px;margin-left:5px;text-decoration:none;color:black" title="CTRL+ALT+R">Stop Recording</span>\
+			    <div style="border-radius:5px;background:#F00;width:10px;height:10px;display:inline-block;position:absolute;top:' + ((recordingNotificationHeight - 10) / 2) + 'px;left:' + (recordingNotificationWidth - (tailOffset - 10) / 2 - 11) + 'px">&nbsp;</div>\
+		    </div>\
+        </div>').bind("mouseover", function () {
+            recordingNotification.css("left", 0);
+        }).bind("mouseout", function () {
+            recordingNotification.css("left", hiddenLeftPosition);
+        }).bind("click", __weToggleRecordingMode)
+        .hide();
+    $("body").append(recordingNotification);
 
     //Return the brower link interop packet
     return {
@@ -198,11 +217,13 @@
             recordingStopRequested = false;
             recordingState = [];
             recordingSelectorLookup = {};
+            recordingNotification.show();
             record(operationId);
         },
 
         stopRecording: function () {
             recordingStopRequested = true;
+            recordingNotification.hide();
         },
 
         snapshotPage: function (operationId) {
