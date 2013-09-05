@@ -6,9 +6,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public interface IUsageDataSource
     {
-        IEnumerable<CssRule> GetAllRules();
+        IEnumerable<IStylingRule> GetAllRules();
 
-        IEnumerable<CssRule> GetUnusedRules();
+        IEnumerable<IStylingRule> GetUnusedRules();
 
         IEnumerable<Task> GetWarnings();
 

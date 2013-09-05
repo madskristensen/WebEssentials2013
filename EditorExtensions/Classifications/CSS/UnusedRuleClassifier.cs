@@ -77,7 +77,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
 
 
             var currentFile = _buffer.GetFileName().ToLowerInvariant();
-            var document = CssDocument.For(currentFile);
+            var document = DocumentFactory.GetDocument(currentFile);
 
             if (document == null)
             {
@@ -86,7 +86,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
 
             List<ClassificationSpan> spans = new List<ClassificationSpan>();
             var fileName = _buffer.GetFileName().ToLowerInvariant();
-            var sheetRules = new HashSet<CssRule>(document.Rules);
+            var sheetRules = new HashSet<IStylingRule>(document.Rules);
 
             foreach(var unusedRule in UsageRegistry.GetAllUnusedRules(sheetRules))
             {

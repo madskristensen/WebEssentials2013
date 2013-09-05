@@ -8,7 +8,7 @@ using System.Collections.Concurrent;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
-    public class CssDocument : IDisposable
+    public class CssDocument : IDocument
     {
         private readonly string _file;
         private FileSystemEventHandler _fileDeletedCallback;
@@ -39,7 +39,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             Reparse();
         }
 
-        public IEnumerable<CssRule> Rules { get; private set; }
+        public IEnumerable<IStylingRule> Rules { get; private set; }
 
         public void Dispose()
         {
@@ -133,7 +133,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        internal void Reparse(string text)
+        public void Reparse(string text)
         {
             var parser = new CssParser();
             var success = false;

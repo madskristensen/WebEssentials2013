@@ -173,9 +173,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 _validSheetUrlsForPage.AddOrUpdate(_connection.Url.ToString().ToLowerInvariant(), u => new ConcurrentBag<string>(result), (u, x) => new ConcurrentBag<string>(result));
             }
 
-            CssRuleRegistry.GetAllRules(this);
+            RuleRegistry.GetAllRules(this);
 
             //Apply any deferred actions
+            //NOTE: There should be some kind of check here to determine whether or not this is a new session for the browser (as the user may have closed the window during the recording session and opened a new browser)
             var appBag = BrowserLocationContinuationActions.GetOrAdd(_connection.AppName, n => new ConcurrentDictionary<string, Action<UnusedCssExtension>>());
             Action<UnusedCssExtension> act;
             if (appBag.TryRemove(_connection.Project.UniqueName, out act))

@@ -4,13 +4,12 @@ using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
-    public class CssRule : IEquatable<CssRule>
+    public class CssRule : IStylingRule
     {
         public CssRule(string sourceFile, string fileText, RuleSet ruleSet)
         {
-            RuleSet = ruleSet;
             SelectorName = GetSelectorName(ruleSet);
-            CleansedSelectorName = CssRuleRegistry.StandardizeSelector(SelectorName);
+            CleansedSelectorName = RuleRegistry.StandardizeSelector(SelectorName);
             DisplaySelectorName = SelectorName.Replace('\r', '\n').Replace("\n", "").Trim();
             File = sourceFile;
             int line, column;
@@ -40,13 +39,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public int Offset { get; private set; }
 
-        public RuleSet RuleSet { get; private set; }
-
         public string SelectorName { get; private set; }
 
-        public bool Equals(CssRule other)
+        public bool Equals(IStylingRule other)
         {
-            return !ReferenceEquals(other, null) && other.File == File && other.CleansedSelectorName == CleansedSelectorName && other.Line == Line && other.Column == Column && other.Offset == Offset && other.Length == Length;
+            return !ReferenceEquals(other, null) && other.File == File && other.IsMatch(CleansedSelectorName) && other.Line == Line && other.Column == Column && other.Offset == Offset && other.Length == Length;
         }
 
         public override bool Equals(object obj)
@@ -84,6 +81,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 lineNumber = lineCount + 1;
                 columnNumber = lastLine.Length;
             }
+        }
+
+
+        public bool IsMatch(string standardizedSelectorText)
+        {
+            return string.Equals(CleansedSelectorName, standardizedSelectorText, StringComparison.Ordinal);
         }
     }
 }

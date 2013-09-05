@@ -33,6 +33,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             OnUsageDataUpdated();
         }
 
+        public static bool IsAnyUsageDataCaptured
+        {
+            get { return UsageDataByLocation.Count > 0; }
+        }
+
         public static void Reset()
         {
             UsageDataByLocation.Clear();
@@ -67,7 +72,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return data.GetWarnings(uri);
         }
 
-        public static IEnumerable<CssRule> GetAllUnusedRules()
+        public static IEnumerable<IStylingRule> GetAllUnusedRules()
         {
             return UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()).Distinct();
         }
@@ -130,7 +135,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             MessageDisplayManager.Refresh();
         }
 
-        internal static IEnumerable<CssRule> GetAllUnusedRules(HashSet<CssRule> sheetRules)
+        internal static IEnumerable<IStylingRule> GetAllUnusedRules(HashSet<IStylingRule> sheetRules)
         {
             return sheetRules.Intersect(UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()));
         }
