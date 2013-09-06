@@ -1,4 +1,5 @@
 ﻿using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Text;
@@ -12,6 +13,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions.Classifications
@@ -95,7 +98,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
                     continue;
                 }
 
-                var ss = new SnapshotSpan(span.Snapshot, unusedRule.Offset, unusedRule.Length);
+                var ss = new SnapshotSpan(span.Snapshot, unusedRule.Offset, unusedRule.SelectorLength);
                 var s = new ClassificationSpan(ss, _decClassification);
                 spans.Add(s);
             }
@@ -197,8 +200,9 @@ namespace MadsKristensen.EditorExtensions.Classifications
     {
         public UnusedCssFormatDefinition()
         {
-            ForegroundOpacity = 0.5;
             DisplayName = "Unused CSS";
+            TextDecorations = new TextDecorationCollection();
+            TextDecorations.Add(SquigglyHelper.Squiggly(Colors.SteelBlue));
         }
     }
 }

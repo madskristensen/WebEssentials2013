@@ -6,6 +6,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public class CssRule : IStylingRule
     {
+        private readonly RuleSet _ruleSet;
+
         public CssRule(string sourceFile, string fileText, RuleSet ruleSet, IDocument document)
         {
             SelectorName = document.GetSelectorName(ruleSet);
@@ -18,6 +20,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             Column = column;
             Offset = ruleSet.Range.Start;
             Length = ruleSet.Range.Length;
+            var lastSelector = ruleSet.Selectors[ruleSet.Selectors.Count - 1];
+            SelectorLength = lastSelector.Length + lastSelector.Start - ruleSet.Selectors[0].Start;
+            _ruleSet = ruleSet;
         }
 
         public string DisplaySelectorName { get; private set; }
@@ -82,6 +87,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public bool IsMatch(string standardizedSelectorText)
         {
             return string.Equals(CleansedSelectorName, standardizedSelectorText, StringComparison.Ordinal);
+        }
+
+
+        public int SelectorLength { get; private set; }
+
+
+        public bool Is(RuleSet rule)
+        {
+            return rule.Text == _ruleSet.Text && rule.StyleSheet.Text == rule.StyleSheet.Text;
         }
     }
 }

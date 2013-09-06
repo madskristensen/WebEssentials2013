@@ -419,9 +419,12 @@
     <Compile Include="DropTargets\StylesheetDrop.cs" />
     <Compile Include="DropTargets\FontDrop.cs" />
     <Compile Include="DropTargets\ImageDrop.cs" />
+    <Compile Include="Helpers\SquigglyHelper.cs" />
     <Compile Include="Options\UnusedCssOptions.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="SmartTags\CSS\Actions\RemoveCssRuleSmartTagAction.cs" />
+    <Compile Include="SmartTags\CSS\Providers\RemoveCssRuleSmartTagProvider.cs" />
     <Compile Include="SmartTags\HTML\ExtractToFileSmartTag.cs">
       <SubType>Code</SubType>
     </Compile>

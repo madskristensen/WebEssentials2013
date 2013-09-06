@@ -186,6 +186,9 @@
   <data name="RemoveSelectorHackSmartTagActionName" xml:space="preserve">
     <value>Remove IE selector hack</value>
   </data>
+  <data name="RemoveUnusedCssRuleSmartTagActionName" xml:space="preserve">
+    <value>Remove unused rule</value>
+  </data>
   <data name="ReverseEmbedSmartTagActionName" xml:space="preserve">
     <value>Save to file</value>
   </data>
