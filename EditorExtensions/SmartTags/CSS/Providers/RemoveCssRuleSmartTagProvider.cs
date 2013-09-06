@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Providers
     {
         public Type ItemType
         {
-            get { return typeof(RuleSet); }
+            get { return typeof(Selector); }
         }
 
         public IEnumerable<ISmartTagAction> GetSmartTagActions(ParseItem item, int position, ITrackingSpan itemTrackingSpan, ITextView view)
@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Providers
             if (rule == null || !rule.IsValid || !rule.Block.IsValid || UsageRegistry.IsRuleUsed(rule))
                 yield break;
 
-            yield return new RemoveCssRuleSmartTagAction(itemTrackingSpan, rule);
+            yield return new RemoveCssRuleSmartTagAction(itemTrackingSpan, position, rule);
         }
     }
 }
