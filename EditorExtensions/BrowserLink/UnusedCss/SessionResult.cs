@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public IEnumerable<IStylingRule> GetUnusedRules()
         {
-            return GetAllRules().Except(_ruleUsages.Select(x => x.Rule)).ToList();
+            return GetAllRules().Except(_ruleUsages.Select(x => x.Rule)).Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
         }
 
         public IEnumerable<Task> GetWarnings()

@@ -89,7 +89,7 @@
     function submitChunkedData(method, data, operationId) {
         var chunked = chunk(data);
         for(var i = 0; i < chunked.length; ++i){
-            browserLink.call(method, document.location.href, operationId, chunked[i], i, chunked.length);
+            browserLink.call(method, operationId, chunked[i], i, chunked.length);
         }
     }
 
@@ -127,11 +127,15 @@
     var recordingSelectorLookup = {};
     var recordingStopRequested = false;
     var finishRecording;
-    var isRecording;
+    var currentRecordingOperationId = false;
 
     function record(operationId) {
+        if (currentRecordingOperationId && currentRecordingOperationId !== operationId) {
+            return;
+        }
+
         var frameData = captureCssUsageFrameFast();
-        isRecording = true;
+        currentRecordingOperationId = operationId;
         var dataUpdated = false;
 
         //Merge
@@ -162,10 +166,10 @@
 
             setTimeout(function() {
                 record(operationId);
-            }, 50);
+            }, 100);
         }
         else {
-            isRecording = false;
+            currentRecordingOperationId = false;
             finishRecording(false);
         }
     }
@@ -174,14 +178,28 @@
         browserLink.call("ToggleRecordingMode");
     }
 
+    function snapshotCssUsage() {
+        browserLink.call("SnapshotPage");
+    }
+
     window.__weToggleRecordingMode = function () {
         toggleRecordingMode();
         return false;
     };
 
+    window.__weSnapshotCssUsage = function () {
+        snapshotCssUsage();
+        return false;
+    };
+
     $(document).keydown(function (e) {
-        if (e.keyCode === 82 && e.ctrlKey && e.altKey) { // 82 = r
-            toggleRecordingMode();
+        if (e.ctrlKey && e.altKey) {
+            if (e.keyCode === 82) {// 82 = r
+                toggleRecordingMode();
+            }
+            else if (e.keyCode === 83) { //83 = s
+                snapshotCssUsage();
+            }
         }
     });
 
@@ -195,13 +213,7 @@
 			    <span style="display:inline-block;position:absolute;top:5px;margin-left:5px;text-decoration:none;color:black" title="CTRL+ALT+R">Stop Recording</span>\
 			    <div style="border-radius:5px;background:#F00;width:10px;height:10px;display:inline-block;position:absolute;top:' + ((recordingNotificationHeight - 10) / 2) + 'px;left:' + (recordingNotificationWidth - (tailOffset - 10) / 2 - 11) + 'px">&nbsp;</div>\
 		    </div>\
-        </div>').bind("mouseover", function () {
-            recordingNotification.css("left", 0);
-        }).bind("mouseout", function () {
-            recordingNotification.css("left", hiddenLeftPosition);
-        }).bind("click", __weToggleRecordingMode)
-        .hide();
-    $("body").append(recordingNotification);
+        </div>');
 
     //Return the brower link interop packet
     return {
@@ -217,13 +229,18 @@
             recordingStopRequested = false;
             recordingState = [];
             recordingSelectorLookup = {};
-            recordingNotification.show();
+            $("body").append(recordingNotification);
+            recordingNotification.bind("mouseover", function () {
+                recordingNotification.css("left", 0);
+            }).bind("mouseout", function () {
+                recordingNotification.css("left", hiddenLeftPosition);
+            }).bind("click", __weToggleRecordingMode);
             record(operationId);
         },
 
         stopRecording: function () {
             recordingStopRequested = true;
-            recordingNotification.hide();
+            recordingNotification.remove();
         },
 
         snapshotPage: function (operationId) {

@@ -52,7 +52,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
                 foreach (var src in _sources)
                 {
-                    unusedRules.IntersectWith(src.GetUnusedRules());
+                    unusedRules.IntersectWith(src.GetUnusedRules().Where(x => !UsageRegistry.IsAProtectedClass(x)));
                 }
 
                 return unusedRules;

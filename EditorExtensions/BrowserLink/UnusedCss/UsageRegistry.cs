@@ -139,5 +139,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             return sheetRules.Intersect(UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()));
         }
+        
+        public static bool IsAProtectedClass(IStylingRule rule)
+        {
+            var selectorName = rule.DisplaySelectorName;
+            var cleansedName = RuleRegistry.StandardizeSelector(selectorName);
+            return cleansedName.IndexOf(":visited", StringComparison.Ordinal) > -1 || cleansedName.IndexOf(":hover", StringComparison.Ordinal) > -1 || cleansedName.IndexOf(":active", StringComparison.Ordinal) > -1;
+        }
     }
 }

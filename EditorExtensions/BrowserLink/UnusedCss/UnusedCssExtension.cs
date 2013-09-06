@@ -41,7 +41,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             ExtensionByConnection[connection] = this;
             _uploadHelper = new UploadHelper();
             _connection = connection;
-            _currentLocation = connection.Url.ToString().ToLowerInvariant();
+            _currentLocation = StandardizeLocation(connection.Url.ToString());
             UnusedCssOptions.SettingsUpdated += InstallIgnorePatterns;
         }
 
@@ -72,13 +72,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         }
 
         [BrowserLinkCallback]
-        public async void FinishedRecording(string expectLocation, string operationId, string chunkContents, int chunkNumber, int chunkCount)
+        public async void FinishedRecording(string operationId, string chunkContents, int chunkNumber, int chunkCount)
         {
-            if (_currentLocation != expectLocation.ToLowerInvariant())
-            {
-                return;
-            }
-
             SessionResult result;
             if (_uploadHelper.TryFinishOperation(Guid.Parse(operationId), chunkContents, chunkNumber, chunkCount, out result))
             {
@@ -88,14 +83,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        [BrowserLinkCallback]
-        public async void FinishedSnapshot(string expectLocation, string operationId, string chunkContents, int chunkNumber, int chunkCount)
+        private string StandardizeLocation(string location)
         {
-            if (_currentLocation != expectLocation.ToLowerInvariant())
-            {
-                return;
-            }
+            return location.ToLowerInvariant().Split('#')[0].TrimEnd('/');
+        }
 
+        [BrowserLinkCallback]
+        public async void FinishedSnapshot(string operationId, string chunkContents, int chunkNumber, int chunkCount)
+        {
             SessionResult result;
             if (_uploadHelper.TryFinishOperation(Guid.Parse(operationId), chunkContents, chunkNumber, chunkCount, out result))
             {
@@ -136,6 +131,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
+        [BrowserLinkCallback]
         public void SnapshotPage()
         {
             Clients.Call(_connection, "snapshotPage", Guid.NewGuid());
@@ -161,13 +157,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         }
 
         [BrowserLinkCallback]
-        public void ParseSheets(string expectLocation, string operationId, string chunkContents, int chunkNumber, int chunkCount)
+        public void ParseSheets(string operationId, string chunkContents, int chunkNumber, int chunkCount)
         {
-            if (_currentLocation != expectLocation.ToLowerInvariant())
-            {
-                return;
-            }
-
             List<string> result;
             if (_uploadHelper.TryFinishOperation(Guid.Parse(operationId), chunkContents, chunkNumber, chunkCount, out result))
             {
