@@ -27,20 +27,15 @@ Licensed under the Apache 2.0 License.
         var util = {
             readText: function (filename) {
                 //WScript.StdErr.WriteLine("readText: " + filename);
-                var file = fso.OpenTextFile(filename, 1, 0, -2);
-                // Don't error on empty files
-                var text = file.AtEndOfStream ? '' : file.ReadAll();
+                var stream = new ActiveXObject("ADODB.Stream")
 
-                // Strip off any UTF-8 BOM
-                for(bi = 0; bi < bomArr.length; bi++) { 
-                   utf8bom = bomArr[bi]; 
-                   if (text.substr(0, utf8bom.length) == utf8bom) { 
-                      text = text.substr(utf8bom.length); 
-                      break; 
-                   } 
-                 } 
+                stream.CharSet = "utf-8"
+                stream.Open();
+                stream.LoadFromFile(filename);
 
-                file.Close();
+                var text = stream.ReadText();
+
+                stream.Close();
                 return text;
             }
         };
@@ -214,7 +209,7 @@ Licensed under the Apache 2.0 License.
                                     checkfile.Attributes = checkfile.Attributes ^ 1
                                 }
                             }
-                            var outputfile = fso.CreateTextFile(output);
+                            var outputfile = fso.CreateTextFile(output, true, true);	// filename, overwrite, writeUTF16
                             outputfile.Write(css);
                             outputfile.Close();
                         }
