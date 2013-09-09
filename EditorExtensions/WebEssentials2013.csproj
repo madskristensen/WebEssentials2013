@@ -423,6 +423,8 @@
     <Compile Include="Options\UnusedCssOptions.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="QuickInfo\Selector\UnusedSelectorQuickInfo.cs" />
+    <Compile Include="QuickInfo\Selector\UnusedSelectorQuickInfoSourceProvider.cs" />
     <Compile Include="SmartTags\CSS\Actions\RemoveCssRuleSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Providers\RemoveCssRuleSmartTagProvider.cs" />
     <Compile Include="SmartTags\HTML\ExtractToFileSmartTag.cs">

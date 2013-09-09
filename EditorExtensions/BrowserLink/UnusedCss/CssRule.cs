@@ -13,6 +13,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             SelectorName = document.GetSelectorName(ruleSet);
             CleansedSelectorName = RuleRegistry.StandardizeSelector(SelectorName);
             DisplaySelectorName = SelectorName.Replace('\r', '\n').Replace("\n", "").Trim();
+            string oldDisplaySelectorName = null;
+
+            while (DisplaySelectorName != oldDisplaySelectorName)
+            {
+                oldDisplaySelectorName = DisplaySelectorName;
+                DisplaySelectorName = DisplaySelectorName.Replace("  ", " ");
+            }
+
             File = sourceFile;
             int line, column;
             CalculateLineAndColumn(fileText, ruleSet, out line, out column);
