@@ -150,5 +150,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             return ruleSet.Text.Substring(0, ruleSet.Block.Start - ruleSet.Start);
         }
+        public void Import(StyleSheet styleSheet)
+        {
+            Rules = ExpandRuleSets(styleSheet.RuleSets).Select(x => new CssRule(_file, styleSheet.Text, x, this)).ToList();
+        }
     }
 }

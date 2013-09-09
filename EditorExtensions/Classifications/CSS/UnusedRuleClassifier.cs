@@ -106,14 +106,16 @@ namespace MadsKristensen.EditorExtensions.Classifications
             return spans;
         }
 
+        private CssEditorDocument _document;
+
         public bool EnsureInitialized()
         {
             if (_tree == null && WebEditor.Host != null)
             {
                 try
                 {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(_buffer);
-                    _tree = document.Tree;
+                    _document = CssEditorDocument.FromTextBuffer(_buffer);
+                    _tree = _document.Tree;
                     _tree.TreeUpdated += _tree_TreeUpdated;
                     _tree.ItemsChanged += _tree_ItemsChanged;
                 }
@@ -151,7 +153,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
                 {
                     lock (_sync)
                     {
-                        document.Reparse(documentText);
+                        document.Import(_document.StyleSheet);
                     }
 
                     UsageRegistry.Resync();
