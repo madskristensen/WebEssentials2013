@@ -175,7 +175,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
             ReparseSheet();
         }
 
-        private async void _tree_TreeUpdated(object sender, CssTreeUpdateEventArgs e)
+        private void _tree_TreeUpdated(object sender, CssTreeUpdateEventArgs e)
         {
             ReparseSheet();
         }
