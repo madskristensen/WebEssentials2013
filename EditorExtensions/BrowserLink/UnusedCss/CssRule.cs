@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
@@ -83,24 +84,21 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         private static void CalculateLineAndColumn(string fileText, RuleSet ruleSet, out int lineNumber, out int columnNumber)
         {
-            var offset = ruleSet.Start;
-            var textSoFar = fileText.Substring(0, offset);
+            var leadingContent = fileText.Substring(0, ruleSet.Start)
+                .Split(new[] {"\r\n"}, StringSplitOptions.None)
+                .Select(x => x.Split(new[]{'\r', '\n'}, StringSplitOptions.None))
+                .SelectMany(x => x)
+                .ToArray();
 
-            using (var reader = new StringReader(textSoFar))
+            if (leadingContent.Length == 0)
             {
-                var lineCount = 0;
-                var lastLine = "";
-                string currentLine;
-
-                while ((currentLine = reader.ReadLine()) != null)
-                {
-                    lastLine = currentLine;
-                    ++lineCount;
-                }
-
-                lineNumber = lineCount + 1;
-                columnNumber = lastLine.Length;
+                lineNumber = 1;
+                columnNumber = 1;
+                return;
             }
+
+            lineNumber = leadingContent.Length;
+            columnNumber = leadingContent[leadingContent.Length - 1].Length;
         }
 
 
@@ -115,7 +113,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public bool Is(RuleSet rule)
         {
-            return rule.Text == _ruleSet.Text && rule.StyleSheet.Text == _ruleSet.StyleSheet.Text;
+            return rule.Text == _ruleSet.Text;
         }
     }
 }

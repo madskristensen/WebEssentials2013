@@ -75,7 +75,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public static IEnumerable<IStylingRule> GetAllUnusedRules()
         {
-            return UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()).Distinct();
+            return UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()).Distinct().ToList();
         }
 
         public static event EventHandler UsageDataUpdated;

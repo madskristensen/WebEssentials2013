@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Threading.Tasks;
-using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+﻿using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
@@ -44,7 +42,6 @@ namespace MadsKristensen.EditorExtensions.Classifications
         private CssTree _tree;
         internal SortedRangeList<Declaration> Cache = new SortedRangeList<Declaration>();
         private readonly IClassificationType _decClassification;
-        private static readonly ConcurrentDictionary<UnusedCssClassifier, Task> UpdateTasks = new ConcurrentDictionary<UnusedCssClassifier, Task>();
 
         internal UnusedCssClassifier(IClassificationTypeRegistryService registry, ITextBuffer buffer)
         {
@@ -54,13 +51,13 @@ namespace MadsKristensen.EditorExtensions.Classifications
 
             if (!string.IsNullOrEmpty(currentFile))
             {
-                UsageRegistry.UsageDataUpdated += UsageRegistry_UsageDataUpdated;
+                UsageRegistry.UsageDataUpdated += ResyncClassificationSpans;
             }
         }
 
         private bool _isInManualUpdate;
 
-        void UsageRegistry_UsageDataUpdated(object sender, EventArgs e)
+        void ResyncClassificationSpans(object sender, EventArgs e)
         {
             if (_isInManualUpdate)
             {
@@ -126,8 +123,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
                 {
                     _document = CssEditorDocument.FromTextBuffer(_buffer);
                     _tree = _document.Tree;
-                    _tree.TreeUpdated += _tree_TreeUpdated;
-                    _tree.ItemsChanged += _tree_ItemsChanged;
+                    _buffer.PostChanged += _buffer_PostChanged;
                 }
                 catch (ArgumentNullException)
                 {
@@ -135,6 +131,11 @@ namespace MadsKristensen.EditorExtensions.Classifications
             }
 
             return _tree != null;
+        }
+
+        private void _buffer_PostChanged(object sender, EventArgs e)
+        {
+            ReparseSheet();
         }
 
         private static readonly object Sync = new object();
@@ -148,8 +149,6 @@ namespace MadsKristensen.EditorExtensions.Classifications
 
             try
             {
-                _isInManualUpdate = true;
-
                 if (!EnsureInitialized())
                 {
                     return;
@@ -163,7 +162,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
                 {
                     lock (Sync)
                     {
-                        document.Import(_document.StyleSheet);
+                        document.Reparse(documentText);
                     }
 
                     UsageRegistry.Resync();
@@ -174,35 +173,6 @@ namespace MadsKristensen.EditorExtensions.Classifications
                 Logger.Log(ex);
                 //Swallow exceptions...
             }
-            finally
-            {
-                _isInManualUpdate = false;
-            }
-        }
-
-        private Task ProduceReparseTask()
-        {
-            var task = Task.Delay(1000);
-            task.ContinueWith(x =>
-            {
-                Task currentTask;
-                if (UpdateTasks.TryGetValue(this, out currentTask) && currentTask == task)
-                {
-                    ReparseSheet();
-                }
-            });
-
-            return task;
-        }
-
-        private void _tree_ItemsChanged(object sender, CssItemsChangedEventArgs e)
-        {
-            UpdateTasks.AddOrUpdate(this, k => ProduceReparseTask(), (k, x) => ProduceReparseTask());
-        }
-
-        private void _tree_TreeUpdated(object sender, CssTreeUpdateEventArgs e)
-        {
-            UpdateTasks.AddOrUpdate(this, k => ProduceReparseTask(), (k, x) => ProduceReparseTask());
         }
 
         public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;
@@ -218,7 +188,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
 
         public void Dispose()
         {
-            UsageRegistry.UsageDataUpdated -= UsageRegistry_UsageDataUpdated;
+            UsageRegistry.UsageDataUpdated -= ResyncClassificationSpans;
         }
 
         ~UnusedCssClassifier()
