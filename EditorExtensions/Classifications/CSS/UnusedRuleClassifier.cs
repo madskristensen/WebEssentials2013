@@ -1,4 +1,6 @@
-﻿using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+﻿using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
@@ -42,6 +44,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
         private CssTree _tree;
         internal SortedRangeList<Declaration> Cache = new SortedRangeList<Declaration>();
         private readonly IClassificationType _decClassification;
+        private static readonly ConcurrentDictionary<UnusedCssClassifier, Task> UpdateTasks = new ConcurrentDictionary<UnusedCssClassifier, Task>();
 
         internal UnusedCssClassifier(IClassificationTypeRegistryService registry, ITextBuffer buffer)
         {
@@ -177,14 +180,29 @@ namespace MadsKristensen.EditorExtensions.Classifications
             }
         }
 
+        private Task ProduceReparseTask()
+        {
+            var task = Task.Delay(1000);
+            task.ContinueWith(x =>
+            {
+                Task currentTask;
+                if (UpdateTasks.TryGetValue(this, out currentTask) && currentTask == task)
+                {
+                    ReparseSheet();
+                }
+            });
+
+            return task;
+        }
+
         private void _tree_ItemsChanged(object sender, CssItemsChangedEventArgs e)
         {
-            ReparseSheet();
+            UpdateTasks.AddOrUpdate(this, k => ProduceReparseTask(), (k, x) => ProduceReparseTask());
         }
 
         private void _tree_TreeUpdated(object sender, CssTreeUpdateEventArgs e)
         {
-            ReparseSheet();
+            UpdateTasks.AddOrUpdate(this, k => ProduceReparseTask(), (k, x) => ProduceReparseTask());
         }
 
         public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;
