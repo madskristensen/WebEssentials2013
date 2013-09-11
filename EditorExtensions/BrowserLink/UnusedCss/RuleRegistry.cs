@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public static IReadOnlyCollection<IStylingRule> GetAllRules(UnusedCssExtension extension)
         {
             //This lookup needs to be Project -> Browser -> Page (but page -> sheets should be tracked internally by the extension)
-            var files = extension.GetValidSheetUrlsForCurrentLocation();
+            var files = UnusedCssExtension.GetValidSheetUrls();
             var allRules = new List<IStylingRule>();
 
             foreach (var file in files)

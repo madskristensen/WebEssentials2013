@@ -234,6 +234,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return _validSheetUrlsForPage;
         }
 
+        public static IEnumerable<string> GetValidSheetUrls()
+        {
+            return ExtensionByConnection.Values.SelectMany(x => x._validSheetUrlsForPage).Distinct().ToList();
+        }
+            
         [BrowserLinkCallback]
         public void ParseSheets(string operationId, string chunkContents, int chunkNumber, int chunkCount)
         {

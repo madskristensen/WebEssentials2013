@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         private static readonly ConcurrentDictionary<BrowserLinkConnection, ConcurrentDictionary<string, CompositeUsageData>> UsageDataByConnectionAndLocation = new ConcurrentDictionary<BrowserLinkConnection, ConcurrentDictionary<string, CompositeUsageData>>();
 
-        private static readonly ConcurrentDictionary<Project, CompositeUsageData> UsageDataByProject = new ConcurrentDictionary<Project, CompositeUsageData>();
+        private static readonly ConcurrentDictionary<string, CompositeUsageData> UsageDataByProject = new ConcurrentDictionary<string, CompositeUsageData>();
 
         public static void Merge(UnusedCssExtension extension, IUsageDataSource source)
         {
@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             var connectionSiteBucket = UsageDataByConnectionAndLocation.GetOrAdd(extension.Connection, conn => new ConcurrentDictionary<string, CompositeUsageData>());
             var connectionPageBucket = connectionSiteBucket.GetOrAdd(url, location => new CompositeUsageData(extension));
 
-            var projectBucket = UsageDataByProject.GetOrAdd(extension.Connection.Project, proj => new CompositeUsageData(extension));
+            var projectBucket = UsageDataByProject.GetOrAdd(extension.Connection.Project.UniqueName, proj => new CompositeUsageData(extension));
 
             crossBrowserPageBucket.AddUsageSource(source);
             connectionPageBucket.AddUsageSource(source);
@@ -52,7 +52,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             CompositeUsageData data;
 
-            if (!UsageDataByProject.TryGetValue(project, out data))
+            if (!UsageDataByProject.TryGetValue(project.UniqueName, out data))
             {
                 return new Task[0];
             }

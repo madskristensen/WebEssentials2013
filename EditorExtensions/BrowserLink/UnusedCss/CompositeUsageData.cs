@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.Shell;
-using System.Collections.Concurrent;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -10,7 +9,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     {
         private readonly UnusedCssExtension _extension;
         private readonly HashSet<RuleUsage> _ruleUsages = new HashSet<RuleUsage>();
-        private readonly ConcurrentBag<IUsageDataSource> _sources = new ConcurrentBag<IUsageDataSource>();
+        private readonly HashSet<IUsageDataSource> _sources = new HashSet<IUsageDataSource>();
         private readonly object _sync = new object();
 
         public CompositeUsageData(UnusedCssExtension extension)
@@ -49,7 +48,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             {
                 var unusedRules = new HashSet<IStylingRule>(GetAllRules());
                 unusedRules.ExceptWith(_ruleUsages.Select(x => x.Rule).Distinct());
-                return unusedRules;//.Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
+                return unusedRules.Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
             }
         }
 
@@ -71,7 +70,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public async System.Threading.Tasks.Task ResyncAsync()
         {
-            foreach (var source in _sources)
+            IEnumerable<IUsageDataSource> srcs;
+
+            lock (_sync)
+            {
+                srcs = _sources.ToList();
+            }
+
+            foreach (var source in srcs)
             {
                 await source.ResyncAsync();
             }
@@ -89,7 +95,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public void Resync()
         {
-            foreach (var source in _sources)
+            IEnumerable<IUsageDataSource> srcs;
+
+            lock (_sync)
+            {
+                srcs = _sources.ToList();
+            }
+
+            foreach (var source in srcs)
             {
                 source.Resync();
             }
