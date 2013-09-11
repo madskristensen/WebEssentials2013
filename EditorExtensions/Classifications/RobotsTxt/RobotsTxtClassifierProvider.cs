@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private TextType GetTextType(string fileName)
+        public static TextType GetTextType(string fileName)
         {
             switch (System.IO.Path.GetFileName(fileName).ToLowerInvariant())
             {

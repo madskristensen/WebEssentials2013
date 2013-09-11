@@ -31,6 +31,15 @@ namespace MadsKristensen.EditorExtensions
             IWpfTextView view = AdaptersFactory.GetWpfTextView(textViewAdapter);
             Debug.Assert(view != null);
 
+            ITextDocument document;
+            view.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
+
+            if (document == null) 
+                return;
+            TextType type = RobotsTxtClassifierProvider.GetTextType(document.FilePath);
+            if (type == TextType.Unsupported)
+                return;
+
             CommandFilter filter = new CommandFilter(view, CompletionBroker);
 
             IOleCommandTarget next;
