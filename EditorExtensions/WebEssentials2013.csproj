@@ -130,7 +130,6 @@
       <HintPath>$(DevEnvDir)\Microsoft.VisualStudio.Web.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Web.BrowserLink">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\Web Tools\Page Inspector\Microsoft.VisualStudio.Web.BrowserLink.dll</HintPath>
       <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Page Inspector\Microsoft.VisualStudio.Web.BrowserLink.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <Private>True</Private>
@@ -139,7 +138,7 @@
       <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Languages\Microsoft.VisualStudio.Web.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Web.PageInspector.Package">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\Extensions\Microsoft\Web Tools\Page Inspector\Microsoft.VisualStudio.Web.PageInspector.Package.dll</HintPath>
+      <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Page Inspector\Microsoft.VisualStudio.Web.PageInspector.Package.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
