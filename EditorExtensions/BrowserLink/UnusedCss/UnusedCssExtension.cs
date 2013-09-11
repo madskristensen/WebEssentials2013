@@ -18,6 +18,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private bool _isRunningShapshot;
         private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>> BrowserLocationContinuationActions = new ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>>();
 
+        internal static bool Any(Func<UnusedCssExtension, bool> predicate)
+        {
+            return ExtensionByConnection.Values.Any(predicate);
+        }
+
         internal static void All(Action<UnusedCssExtension> method)
         {
             MessageDisplayManager.DisplaySource = MessageDisplaySource.Project;
@@ -36,7 +41,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             ExtensionByConnection[connection] = this;
             _uploadHelper = new UploadHelper();
             _connection = connection;
-            _currentLocation = connection.Url.ToString().ToLowerInvariant();
+            _currentLocation = StandardizeLocation(connection.Url.ToString());
             UnusedCssOptions.SettingsUpdated += InstallIgnorePatterns;
         }
 
@@ -49,6 +54,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public override void OnDisconnecting(BrowserLinkConnection connection)
         {
+            if (_isRecording)
+            {
+                var appBag = BrowserLocationContinuationActions.GetOrAdd(_connection.AppName, n => new ConcurrentDictionary<string, Action<UnusedCssExtension>>());
+                appBag.AddOrUpdate(_connection.Project.UniqueName, n => c => c.ToggleRecordingMode(), (n, a) => c => c.ToggleRecordingMode());
+            }
+
             UnusedCssExtension extension;
             ExtensionByConnection.TryRemove(connection, out extension);
             UnusedCssOptions.SettingsUpdated -= InstallIgnorePatterns;
@@ -61,19 +72,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         }
 
         [BrowserLinkCallback]
-        public async void FinishedRecording(string expectLocation, string operationId, string chunkContents, int chunkNumber, int chunkCount)
+        public async void FinishedRecording(string operationId, string chunkContents, int chunkNumber, int chunkCount)
         {
-            if (_currentLocation != expectLocation.ToLowerInvariant())
-            {
-                return;
-            }
-
-            if (_isRecording)
-            {
-                var appBag = BrowserLocationContinuationActions.GetOrAdd(_connection.AppName, n => new ConcurrentDictionary<string, Action<UnusedCssExtension>>());
-                appBag.AddOrUpdate(_connection.Project.UniqueName, n => c => c.ToggleRecordingMode(), (n, a) => c => c.ToggleRecordingMode());
-            }
-
             SessionResult result;
             if (_uploadHelper.TryFinishOperation(Guid.Parse(operationId), chunkContents, chunkNumber, chunkCount, out result))
             {
@@ -83,14 +83,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        [BrowserLinkCallback]
-        public async void FinishedSnapshot(string expectLocation, string operationId, string chunkContents, int chunkNumber, int chunkCount)
+        private string StandardizeLocation(string location)
         {
-            if (_currentLocation != expectLocation.ToLowerInvariant())
-            {
-                return;
-            }
+            return location.ToLowerInvariant().Split('#')[0].TrimEnd('/');
+        }
 
+        [BrowserLinkCallback]
+        public async void FinishedSnapshot(string operationId, string chunkContents, int chunkNumber, int chunkCount)
+        {
             SessionResult result;
             if (_uploadHelper.TryFinishOperation(Guid.Parse(operationId), chunkContents, chunkNumber, chunkCount, out result))
             {
@@ -116,7 +116,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        private void ToggleRecordingMode()
+        [BrowserLinkCallback]
+        public void ToggleRecordingMode()
         {
             _isRecording = !_isRecording;
 
@@ -130,6 +131,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
+        [BrowserLinkCallback]
         public void SnapshotPage()
         {
             Clients.Call(_connection, "snapshotPage", Guid.NewGuid());
@@ -155,22 +157,18 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         }
 
         [BrowserLinkCallback]
-        public void ParseSheets(string expectLocation, string operationId, string chunkContents, int chunkNumber, int chunkCount)
+        public void ParseSheets(string operationId, string chunkContents, int chunkNumber, int chunkCount)
         {
-            if (_currentLocation != expectLocation.ToLowerInvariant())
-            {
-                return;
-            }
-
             List<string> result;
             if (_uploadHelper.TryFinishOperation(Guid.Parse(operationId), chunkContents, chunkNumber, chunkCount, out result))
             {
                 _validSheetUrlsForPage.AddOrUpdate(_connection.Url.ToString().ToLowerInvariant(), u => new ConcurrentBag<string>(result), (u, x) => new ConcurrentBag<string>(result));
             }
 
-            CssRuleRegistry.GetAllRules(this);
+            RuleRegistry.GetAllRules(this);
 
             //Apply any deferred actions
+            //NOTE: There should be some kind of check here to determine whether or not this is a new session for the browser (as the user may have closed the window during the recording session and opened a new browser)
             var appBag = BrowserLocationContinuationActions.GetOrAdd(_connection.AppName, n => new ConcurrentDictionary<string, Action<UnusedCssExtension>>());
             Action<UnusedCssExtension> act;
             if (appBag.TryRemove(_connection.Project.UniqueName, out act))
@@ -207,5 +205,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             Clients.Call(_connection, "getLinkedStyleSheetUrls", IgnorePatternList, Guid.NewGuid());
         }
+
+        public void EnsureRecordingMode(bool targetRecordingStatus)
+        {
+            if (_isRecording ^ targetRecordingStatus)
+            {
+                ToggleRecordingMode();
+            }
+        }
+
+        public bool IsRecording { get { return _isRecording; } }
     }
 }

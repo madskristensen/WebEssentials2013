@@ -536,14 +536,30 @@
         </Strings>
       </Button>
 
-      <Button guid="guidUnusedCssCmdSet" id="UnusedCssSnapshotCommandId" priority="0x2000" type="Button">
+      <Button guid="guidUnusedCssCmdSet" id="UnusedCssSnapshotCommandId" priority="0x2002" type="Button">
         <Parent guid="guidBrowserLinkCmdSet" id="IDG_BROWSERLINK_COMMANDS"/>
         <Strings>
           <ButtonText>Snapshot CSS Usage (All Browsers)</ButtonText>
         </Strings>
       </Button>
+
+      <Button guid="guidUnusedCssCmdSet" id="UnusedCssRecordAllCommandId" priority="0x2000" type="Button">
+        <Parent guid="guidBrowserLinkCmdSet" id="IDG_BROWSERLINK_COMMANDS"/>
+        <Strings>
+          <ButtonText>Start Recording (All Browsers)</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidUnusedCssCmdSet" id="UnusedCssStopRecordAllCommandId" priority="0x2001" type="Button">
+        <Parent guid="guidBrowserLinkCmdSet" id="IDG_BROWSERLINK_COMMANDS"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Stop Recording (All Browsers)</ButtonText>
+        </Strings>
+      </Button>
       
-      <Button guid="guidUnusedCssCmdSet" id="UnusedCssResetCommandId" priority="0x2001" type="Button">
+      <Button guid="guidUnusedCssCmdSet" id="UnusedCssResetCommandId" priority="0x2003" type="Button">
         <Parent guid="guidBrowserLinkCmdSet" id="IDG_BROWSERLINK_COMMANDS"/>
         <Strings>
           <ButtonText>Clear CSS Usage Data</ButtonText>
@@ -783,6 +799,8 @@
       <IDSymbol name="UnusedCssExtensionGroup" value="0x2020" />
       <IDSymbol name="UnusedCssSnapshotCommandId" value="0x2100" />
       <IDSymbol name="UnusedCssResetCommandId" value="0x2101" />
+      <IDSymbol name="UnusedCssRecordAllCommandId" value="0x2102" />
+      <IDSymbol name="UnusedCssStopRecordAllCommandId" value="0x2103" />
     </GuidSymbol>
     
     <GuidSymbol name="guidBrowserLinkCmdSet" value="{30947ebe-9147-45f9-96cf-401bfc671a82}">

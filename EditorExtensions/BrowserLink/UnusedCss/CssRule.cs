@@ -4,14 +4,23 @@ using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
-    public class CssRule : IEquatable<CssRule>
+    public class CssRule : IStylingRule
     {
-        public CssRule(string sourceFile, string fileText, RuleSet ruleSet)
+        private readonly RuleSet _ruleSet;
+
+        public CssRule(string sourceFile, string fileText, RuleSet ruleSet, IDocument document)
         {
-            RuleSet = ruleSet;
-            SelectorName = GetSelectorName(ruleSet);
-            CleansedSelectorName = CssRuleRegistry.StandardizeSelector(SelectorName);
+            SelectorName = document.GetSelectorName(ruleSet);
+            CleansedSelectorName = RuleRegistry.StandardizeSelector(SelectorName);
             DisplaySelectorName = SelectorName.Replace('\r', '\n').Replace("\n", "").Trim();
+            string oldDisplaySelectorName = null;
+
+            while (DisplaySelectorName != oldDisplaySelectorName)
+            {
+                oldDisplaySelectorName = DisplaySelectorName;
+                DisplaySelectorName = DisplaySelectorName.Replace("  ", " ");
+            }
+
             File = sourceFile;
             int line, column;
             CalculateLineAndColumn(fileText, ruleSet, out line, out column);
@@ -19,11 +28,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             Column = column;
             Offset = ruleSet.Range.Start;
             Length = ruleSet.Range.Length;
-        }
-
-        private static string GetSelectorName(RuleSet ruleSet)
-        {
-            return ruleSet.Text.Substring(0, ruleSet.Block.Start - ruleSet.Start);
+            var lastSelector = ruleSet.Selectors[ruleSet.Selectors.Count - 1];
+            SelectorLength = lastSelector.Length + lastSelector.Start - ruleSet.Selectors[0].Start;
+            _ruleSet = ruleSet;
         }
 
         public string DisplaySelectorName { get; private set; }
@@ -40,13 +47,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public int Offset { get; private set; }
 
-        public RuleSet RuleSet { get; private set; }
-
         public string SelectorName { get; private set; }
 
-        public bool Equals(CssRule other)
+        public bool Equals(IStylingRule other)
         {
-            return !ReferenceEquals(other, null) && other.File == File && other.CleansedSelectorName == CleansedSelectorName && other.Line == Line && other.Column == Column && other.Offset == Offset && other.Length == Length;
+            return !ReferenceEquals(other, null) && other.File == File && other.IsMatch(CleansedSelectorName) && other.Line == Line && other.Column == Column && other.Offset == Offset && other.Length == Length;
         }
 
         public override bool Equals(object obj)
@@ -84,6 +89,21 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 lineNumber = lineCount + 1;
                 columnNumber = lastLine.Length;
             }
+        }
+
+
+        public bool IsMatch(string standardizedSelectorText)
+        {
+            return string.Equals(CleansedSelectorName, standardizedSelectorText, StringComparison.Ordinal);
+        }
+
+
+        public int SelectorLength { get; private set; }
+
+
+        public bool Is(RuleSet rule)
+        {
+            return rule.Text == _ruleSet.Text && rule.StyleSheet.Text == rule.StyleSheet.Text;
         }
     }
 }

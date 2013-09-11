@@ -279,14 +279,19 @@
     <Compile Include="BrowserLink\UnusedCss\CompositeUsageData.cs" />
     <Compile Include="BrowserLink\UnusedCss\CssDocument.cs" />
     <Compile Include="BrowserLink\UnusedCss\CssRule.cs" />
-    <Compile Include="BrowserLink\UnusedCss\CssRuleRegistry.cs" />
+    <Compile Include="BrowserLink\UnusedCss\DocumentBase.cs" />
+    <Compile Include="BrowserLink\UnusedCss\LessDocument.cs" />
+    <Compile Include="BrowserLink\UnusedCss\RuleRegistry.cs" />
+    <Compile Include="BrowserLink\UnusedCss\DocumentFactory.cs" />
     <Compile Include="BrowserLink\UnusedCss\ErrorList.cs" />
+    <Compile Include="BrowserLink\UnusedCss\IDocument.cs" />
     <Compile Include="BrowserLink\UnusedCss\IResolutionRequiredDataSource.cs" />
+    <Compile Include="BrowserLink\UnusedCss\IRule.cs" />
     <Compile Include="BrowserLink\UnusedCss\IUsageDataSource.cs" />
     <Compile Include="BrowserLink\UnusedCss\MessageDisplayManager.cs" />
     <Compile Include="BrowserLink\UnusedCss\MessageDisplaySource.cs" />
     <Compile Include="BrowserLink\UnusedCss\RawRuleUsage.cs" />
-    <Compile Include="BrowserLink\UnusedCss\CssRuleExtensions.cs" />
+    <Compile Include="BrowserLink\UnusedCss\RuleExtensions.cs" />
     <Compile Include="BrowserLink\UnusedCss\RuleUsage.cs" />
     <Compile Include="BrowserLink\UnusedCss\SessionResult.cs" />
     <Compile Include="BrowserLink\UnusedCss\UnusedCssExtensionFactory.cs" />
@@ -414,9 +419,14 @@
     <Compile Include="DropTargets\StylesheetDrop.cs" />
     <Compile Include="DropTargets\FontDrop.cs" />
     <Compile Include="DropTargets\ImageDrop.cs" />
+    <Compile Include="Helpers\SquigglyHelper.cs" />
     <Compile Include="Options\UnusedCssOptions.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="QuickInfo\Selector\UnusedSelectorQuickInfo.cs" />
+    <Compile Include="QuickInfo\Selector\UnusedSelectorQuickInfoSourceProvider.cs" />
+    <Compile Include="SmartTags\CSS\Actions\RemoveCssRuleSmartTagAction.cs" />
+    <Compile Include="SmartTags\CSS\Providers\RemoveCssRuleSmartTagProvider.cs" />
     <Compile Include="SmartTags\HTML\ExtractToFileSmartTag.cs">
       <SubType>Code</SubType>
     </Compile>

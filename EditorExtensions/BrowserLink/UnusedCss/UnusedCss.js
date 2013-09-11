@@ -89,7 +89,7 @@
     function submitChunkedData(method, data, operationId) {
         var chunked = chunk(data);
         for(var i = 0; i < chunked.length; ++i){
-            browserLink.call(method, document.location.href, operationId, chunked[i], i, chunked.length);
+            browserLink.call(method, operationId, chunked[i], i, chunked.length);
         }
     }
 
@@ -127,15 +127,23 @@
     var recordingSelectorLookup = {};
     var recordingStopRequested = false;
     var finishRecording;
+    var currentRecordingOperationId = false;
 
     function record(operationId) {
+        if (currentRecordingOperationId && currentRecordingOperationId !== operationId) {
+            return;
+        }
+
         var frameData = captureCssUsageFrameFast();
+        currentRecordingOperationId = operationId;
+        var dataUpdated = false;
 
         //Merge
         var rawFrameData = frameData.RawUsageData;
         for(var i = 0; i < rawFrameData.length; ++i){
             var selector = rawFrameData[i].Selector;
             if (!recordingSelectorLookup.hasOwnProperty(selector)) {
+                dataUpdated = true;
                 recordingState.push(rawFrameData[i]);
                 recordingSelectorLookup[selector] = recordingState.length - 1;
             }
@@ -152,14 +160,60 @@
         //End Merge
 
         if (!recordingStopRequested) {
+            if (dataUpdated) {
+                finishRecording(true);
+            }
+
             setTimeout(function() {
                 record(operationId);
-            }, 200);
+            }, 100);
         }
         else {
-            finishRecording();
+            currentRecordingOperationId = false;
+            finishRecording(false);
         }
     }
+
+    function toggleRecordingMode() {
+        browserLink.call("ToggleRecordingMode");
+    }
+
+    function snapshotCssUsage() {
+        browserLink.call("SnapshotPage");
+    }
+
+    window.__weToggleRecordingMode = function () {
+        toggleRecordingMode();
+        return false;
+    };
+
+    window.__weSnapshotCssUsage = function () {
+        snapshotCssUsage();
+        return false;
+    };
+
+    $(document).keydown(function (e) {
+        if (e.ctrlKey && e.altKey) {
+            if (e.keyCode === 82) {// 82 = r
+                toggleRecordingMode();
+            }
+            else if (e.keyCode === 83) { //83 = s
+                snapshotCssUsage();
+            }
+        }
+    });
+
+    var recordingNotificationHeight = 30;
+    var recordingNotificationWidth = 157;
+    var tailOffset = 28;
+    var hiddenLeftPosition = "-" + (recordingNotificationWidth - tailOffset) + "px";
+    var recordingNotification = $('<div style="border:black solid 1px;font-weight:demi-bold;display:inline-block;padding:0;font-family:verdana,arial;height:' + recordingNotificationHeight + 'px;width:' + recordingNotificationWidth + 'px;position:absolute;top:0;left:' + hiddenLeftPosition + ';z-index:9999;background:none;font-size:16px;cursor:pointer">\
+        <div style="opacity:.6;background:white;width:' + recordingNotificationWidth + 'px;height:' + recordingNotificationHeight + 'px;position:absolute"></div>\
+		    <div style="position:relative">\
+			    <span style="display:inline-block;position:absolute;top:5px;margin-left:5px;text-decoration:none;color:black" title="CTRL+ALT+R">Stop Recording</span>\
+			    <div style="border-radius:5px;background:#F00;width:10px;height:10px;display:inline-block;position:absolute;top:' + ((recordingNotificationHeight - 10) / 2) + 'px;left:' + (recordingNotificationWidth - (tailOffset - 10) / 2 - 11) + 'px">&nbsp;</div>\
+		    </div>\
+        </div>');
 
     //Return the brower link interop packet
     return {
@@ -167,19 +221,26 @@
         name: "UnusedCss",
 
         startRecording: function (operationId) {
-            finishRecording = function () {
-                var result = { "RawUsageData": recordingState };
+            finishRecording = function (doContinue) {
+                var result = { "RawUsageData": recordingState, "Continue": !!doContinue };
                 submitChunkedData("FinishedRecording", result, operationId);
             };
 
             recordingStopRequested = false;
             recordingState = [];
             recordingSelectorLookup = {};
+            $("body").append(recordingNotification);
+            recordingNotification.bind("mouseover", function () {
+                recordingNotification.css("left", 0);
+            }).bind("mouseout", function () {
+                recordingNotification.css("left", hiddenLeftPosition);
+            }).bind("click", __weToggleRecordingMode);
             record(operationId);
         },
 
         stopRecording: function () {
             recordingStopRequested = true;
+            recordingNotification.remove();
         },
 
         snapshotPage: function (operationId) {
@@ -211,7 +272,6 @@
 
         onInit: function () { // Optional. Is called when a connection is established
             browserLink.call("GetIgnoreList");
-            $(window).bind('beforeunload', function () { if (recordingState.length > 0) { finishRecording(); } });
         }
     };
 });

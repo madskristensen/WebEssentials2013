@@ -5,9 +5,9 @@ using System;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
-    public static class CssRuleExtensions
+    public static class RuleExtensions
     {
-        public static Task ProduceErrorListTask(this CssRule rule, TaskErrorCategory category, Project project, string format)
+        public static Task ProduceErrorListTask(this IStylingRule rule, TaskErrorCategory category, Project project, string format)
         {
             var item = ResolveVsHierarchyItem(project.UniqueName);
 

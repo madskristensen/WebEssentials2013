@@ -1,4 +1,5 @@
 ﻿using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Text;
@@ -12,6 +13,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions.Classifications
@@ -77,7 +80,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
 
 
             var currentFile = _buffer.GetFileName().ToLowerInvariant();
-            var document = CssDocument.For(currentFile);
+            var document = DocumentFactory.GetDocument(currentFile);
 
             if (document == null)
             {
@@ -86,7 +89,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
 
             List<ClassificationSpan> spans = new List<ClassificationSpan>();
             var fileName = _buffer.GetFileName().ToLowerInvariant();
-            var sheetRules = new HashSet<CssRule>(document.Rules);
+            var sheetRules = new HashSet<IStylingRule>(document.Rules);
 
             foreach(var unusedRule in UsageRegistry.GetAllUnusedRules(sheetRules))
             {
@@ -95,7 +98,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
                     continue;
                 }
 
-                var ss = new SnapshotSpan(span.Snapshot, unusedRule.Offset, unusedRule.Length);
+                var ss = new SnapshotSpan(span.Snapshot, unusedRule.Offset, unusedRule.SelectorLength);
                 var s = new ClassificationSpan(ss, _decClassification);
                 spans.Add(s);
             }
@@ -103,14 +106,16 @@ namespace MadsKristensen.EditorExtensions.Classifications
             return spans;
         }
 
+        private CssEditorDocument _document;
+
         public bool EnsureInitialized()
         {
             if (_tree == null && WebEditor.Host != null)
             {
                 try
                 {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(_buffer);
-                    _tree = document.Tree;
+                    _document = CssEditorDocument.FromTextBuffer(_buffer);
+                    _tree = _document.Tree;
                     _tree.TreeUpdated += _tree_TreeUpdated;
                     _tree.ItemsChanged += _tree_ItemsChanged;
                 }
@@ -141,14 +146,14 @@ namespace MadsKristensen.EditorExtensions.Classifications
                 }
 
                 var currentFile = _buffer.GetFileName().ToLowerInvariant();
-                var document = CssDocument.For(currentFile);
+                var document = DocumentFactory.GetDocument(currentFile);
                 var documentText = _tree.TextProvider.Text;
 
                 if (document != null && documentText != null)
                 {
                     lock (_sync)
                     {
-                        document.Reparse(documentText);
+                        document.Import(_document.StyleSheet);
                     }
 
                     UsageRegistry.Resync();
@@ -197,8 +202,9 @@ namespace MadsKristensen.EditorExtensions.Classifications
     {
         public UnusedCssFormatDefinition()
         {
-            ForegroundOpacity = 0.5;
             DisplayName = "Unused CSS";
+            TextDecorations = new TextDecorationCollection();
+            TextDecorations.Add(SquigglyHelper.Squiggly(Colors.SteelBlue));
         }
     }
 }

@@ -10,27 +10,27 @@ using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
-    public static class CssRuleRegistry
+    public static class RuleRegistry
     {
-        private static ConcurrentDictionary<string, CssDocument> DocumentLookup = new ConcurrentDictionary<string, CssDocument>();
+        private static ConcurrentDictionary<string, IDocument> DocumentLookup = new ConcurrentDictionary<string, IDocument>();
 
-        public static IReadOnlyCollection<CssRule> GetAllRules(UnusedCssExtension extension)
+        public static IReadOnlyCollection<IStylingRule> GetAllRules(UnusedCssExtension extension)
         {
             //This lookup needs to be Project -> Browser -> Page (but page -> sheets should be tracked internally by the extension)
             var sheetLocations = extension.GetValidSheetUrlsForCurrentLocation();
             var files = GetFiles(extension, sheetLocations);
-            var allRules = new List<CssRule>();
+            var allRules = new List<IStylingRule>();
 
             foreach (var file in files)
             {
-                var store = DocumentLookup.GetOrAdd(file.ToLowerInvariant(), f => CssDocument.For(f, DeleteFile));
+                var store = DocumentLookup.GetOrAdd(file.ToLowerInvariant(), f => DocumentFactory.GetDocument(f, DeleteFile));
                 allRules.AddRange(store.Rules);
             }
 
             return allRules;
         }
 
-        public static Task<IReadOnlyCollection<CssRule>> GetAllRulesAsync(UnusedCssExtension extension)
+        public static Task<IReadOnlyCollection<IStylingRule>> GetAllRulesAsync(UnusedCssExtension extension)
         {
             return Task.Factory.StartNew(() => GetAllRules(extension));
         }
@@ -87,11 +87,32 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 {
                     if (Uri.TryCreate(projectUri, locationUri, out realLocation) && File.Exists(realLocation.LocalPath))
                     {
+                        //Try to move from .css -> .less
+                        var lessFile = Path.ChangeExtension(realLocation.LocalPath, ".less");
+
+                        if (File.Exists(lessFile))
+                        {
+                            locationUri = new Uri(lessFile, UriKind.Relative);
+                            Uri.TryCreate(projectUri, locationUri, out realLocation);
+                        }
+                        
                         filePath = realLocation.LocalPath;
                     }
                     else
                     {
-                        continue;
+                        //Try to move from .min.css -> .less
+                        var lessFile = Path.ChangeExtension(realLocation.LocalPath, ".less");
+
+                        if (!File.Exists(lessFile))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            locationUri = new Uri(lessFile, UriKind.Relative);
+                            Uri.TryCreate(projectUri, locationUri, out realLocation);
+                            filePath = realLocation.LocalPath;
+                        }
                     }
                 }
                 catch (IOException)
@@ -115,7 +136,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 var selector = StandardizeSelector(dataPoint.Selector);
                 var locations = new HashSet<SourceLocation>(dataPoint.SourceLocations.Where(x => x != null));
 
-                foreach (var match in allRules.Where(x => x.CleansedSelectorName == selector))
+                foreach (var match in allRules.Where(x => x.IsMatch(selector)))
                 {
                     result.Add(new RuleUsage
                     {
@@ -160,7 +181,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 var selector = StandardizeSelector(dataPoint.Selector);
                 var locations = new HashSet<SourceLocation>(dataPoint.SourceLocations.Where(x => x != null));
 
-                foreach (var match in allRules.Where(x => x.CleansedSelectorName == selector))
+                foreach (var match in allRules.Where(x => x.IsMatch(selector)))
                 {
                     result.Add(new RuleUsage
                     {
