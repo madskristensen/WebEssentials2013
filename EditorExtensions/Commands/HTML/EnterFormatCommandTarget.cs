@@ -1,6 +1,7 @@
 ﻿using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
 using Microsoft.Html.Schemas;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
@@ -16,16 +17,21 @@ namespace MadsKristensen.EditorExtensions
     {
         private HtmlEditorTree _tree;
         private IEditorRangeFormatter _formatter;
+        private ICompletionBroker _broker;
 
-        public EnterFormat(IVsTextView adapter, IWpfTextView textView, IEditorFormatterProvider formatterProvider)
+        public EnterFormat(IVsTextView adapter, IWpfTextView textView, IEditorFormatterProvider formatterProvider, ICompletionBroker broker)
             : base(adapter, textView, typeof(Microsoft.VisualStudio.VSConstants.VSStd2KCmdID).GUID, 3)
         {
             _tree = HtmlEditorDocument.FromTextView(textView).HtmlEditorTree;
             _formatter = formatterProvider.CreateRangeFormatter();
+            _broker = broker;
         }
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
+            if (_broker.IsCompletionActive(TextView))
+                return false;
+
             int position = TextView.Caret.Position.BufferPosition.Position;
             SnapshotPoint point = new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, position);
             IWpfTextViewLine line = TextView.GetTextViewLineContainingBufferPosition(point);
@@ -37,6 +43,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (element == null ||
                 _tree.IsDirty ||
+                element.Parent == null ||
                 line.End.Position == position || // caret at end of line (TODO: add ignore whitespace logic)
                 TextView.TextBuffer.CurrentSnapshot.GetText(element.InnerRange.Start, element.InnerRange.Length).Trim().Length == 0)
                 return false;
