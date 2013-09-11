@@ -8,9 +8,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     {
         private readonly RuleSet _ruleSet;
 
-        public CssRule(string sourceFile, string fileText, RuleSet ruleSet, IDocument document)
+        private CssRule(string sourceFile, string fileText, RuleSet ruleSet, string selectorName)
         {
-            SelectorName = document.GetSelectorName(ruleSet);
+            SelectorName = selectorName;
             CleansedSelectorName = RuleRegistry.StandardizeSelector(SelectorName);
             DisplaySelectorName = SelectorName.Replace('\r', '\n').Replace("\n", "").Trim();
             string oldDisplaySelectorName = null;
@@ -31,6 +31,18 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             var lastSelector = ruleSet.Selectors[ruleSet.Selectors.Count - 1];
             SelectorLength = lastSelector.Length + lastSelector.Start - ruleSet.Selectors[0].Start;
             _ruleSet = ruleSet;
+        }
+
+        public static IStylingRule From(string sourceFile, string fileText, RuleSet ruleSet, IDocument document)
+        {
+            var selectorName = document.GetSelectorName(ruleSet);
+
+            if (selectorName == null)
+            {
+                return null;
+            }
+
+            return new CssRule(sourceFile, fileText, ruleSet, selectorName);
         }
 
         public string DisplaySelectorName { get; private set; }

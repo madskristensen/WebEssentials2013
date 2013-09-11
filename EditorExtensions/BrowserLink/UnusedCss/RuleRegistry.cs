@@ -2,12 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using EnvDTE;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public static class RuleRegistry
     {
-        public static IReadOnlyCollection<IStylingRule> GetAllRules(UnusedCssExtension extension)
+        public static IReadOnlyCollection<IStylingRule> GetAllRules()
         {
             //This lookup needs to be Project -> Browser -> Page (but page -> sheets should be tracked internally by the extension)
             var files = UnusedCssExtension.GetValidSheetUrls();
@@ -26,14 +27,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return allRules;
         }
 
-        public static Task<IReadOnlyCollection<IStylingRule>> GetAllRulesAsync(UnusedCssExtension extension)
+        public static Task<IReadOnlyCollection<IStylingRule>> GetAllRulesAsync()
         {
-            return Task.Factory.StartNew(() => GetAllRules(extension));
+            return Task.Factory.StartNew(() => AmbientRuleContext.GetAllRules());
         }
 
-        public static async Task<HashSet<RuleUsage>> ResolveAsync(UnusedCssExtension extension, List<RawRuleUsage> rawUsageData)
+        public static async Task<HashSet<RuleUsage>> ResolveAsync(List<RawRuleUsage> rawUsageData)
         {
-            var allRules = await GetAllRulesAsync(extension);
+            var allRules = await GetAllRulesAsync();
             var result = new HashSet<RuleUsage>();
 
             foreach (var dataPoint in rawUsageData)
@@ -76,9 +77,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return tmp.Replace(", ", ",");
         }
 
-        internal static HashSet<RuleUsage> Resolve(UnusedCssExtension extension, List<RawRuleUsage> rawUsageData)
+        internal static HashSet<RuleUsage> Resolve(List<RawRuleUsage> rawUsageData)
         {
-            var allRules = GetAllRules(extension);
+            var allRules = AmbientRuleContext.GetAllRules();
             var result = new HashSet<RuleUsage>();
 
             foreach (var dataPoint in rawUsageData)

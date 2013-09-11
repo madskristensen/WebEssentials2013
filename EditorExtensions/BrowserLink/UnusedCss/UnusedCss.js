@@ -172,15 +172,6 @@
                 recordingState.push(rawFrameData[i]);
                 recordingSelectorLookup[selector] = recordingState.length - 1;
             }
-            //<!------- NOTE: Since we're using the "Fast" variation for record, there is no real usage data, uncomment if switching back from "Fast" variation and wanting full data ----------->
-            //else {
-            //    var index = recordingSelectorLookup[selector];
-            //    for(var j = 0; j < rawFrameData[i].SourceLocations.length; ++j){
-            //        if(!recordingState[index].SourceLocations.contains(rawFrameData[i].SourceLocations[j])){
-            //            recordingState[index].SourceLocations.push(rawFrameData[i].SourceLocations[j]);
-            //        }
-            //    }
-            //}
         }
         //End Merge
 
@@ -208,11 +199,13 @@
     }
 
     window.__weToggleRecordingMode = function () {
+        getLinkedStyleSheets();
         toggleRecordingMode();
         return false;
     };
 
     window.__weSnapshotCssUsage = function () {
+        getLinkedStyleSheets();
         snapshotCssUsage();
         return false;
     };
@@ -246,6 +239,8 @@
         name: "UnusedCss",
 
         startRecording: function (operationId) {
+            getLinkedStyleSheets();
+            
             finishRecording = function (doContinue) {
                 var sheets = getLinkedStyleSheets();
                 var result = { "RawUsageData": recordingState, "Continue": !!doContinue, "Sheets": sheets };
@@ -270,14 +265,20 @@
         },
 
         snapshotPage: function (operationId) {
+            getLinkedStyleSheets();
             var frame = captureCssUsageFrame();
             submitChunkedData("FinishedSnapshot", frame, operationId);
         },
 
-        getLinkedStyleSheetUrls: function (patterns, operationId) {
+        installIgnorePatterns: function (patterns) {
             currentPatterns = patterns;
-            var parseSheets = getLinkedStyleSheets();
-            submitChunkedData("ParseSheets", parseSheets, operationId);
+            //var parseSheets = getLinkedStyleSheets();
+            //submitChunkedData("ParseSheets", parseSheets, operationId);
+        },
+        
+        blipRecording: function() {
+            recordingState = [];
+            recordingSelectorLookup = {};
         },
 
         onInit: function () { // Optional. Is called when a connection is established

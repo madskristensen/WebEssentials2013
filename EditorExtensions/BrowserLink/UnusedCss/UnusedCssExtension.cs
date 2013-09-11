@@ -10,30 +10,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public class UnusedCssExtension : BrowserLinkExtension, IBrowserLinkActionProvider
     {
-        private static readonly ConcurrentDictionary<BrowserLinkConnection, UnusedCssExtension> ExtensionByConnection = new ConcurrentDictionary<BrowserLinkConnection, UnusedCssExtension>();
-        private readonly HashSet<string> _validSheetUrlsForPage = new HashSet<string>();
-        private readonly UploadHelper _uploadHelper;
-        private readonly BrowserLinkConnection _connection;
-        private bool _isRecording;
         private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>> BrowserLocationContinuationActions = new ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>>();
-
-        internal static bool Any(Func<UnusedCssExtension, bool> predicate)
-        {
-            return ExtensionByConnection.Values.Any(predicate);
-        }
-
-        internal static void All(Action<UnusedCssExtension> method)
-        {
-            MessageDisplayManager.DisplaySource = MessageDisplaySource.Project;
-            foreach (var extension in ExtensionByConnection.Values)
-            {
-                method(extension);
-            }
-        }
-
-        public static bool IsAnyConnectionAlive { get { return ExtensionByConnection.Count > 0; } }
-
-        public BrowserLinkConnection Connection { get { return _connection; } }
+        private static readonly ConcurrentDictionary<BrowserLinkConnection, UnusedCssExtension> ExtensionByConnection = new ConcurrentDictionary<BrowserLinkConnection, UnusedCssExtension>();
+        private static readonly HashSet<string> ValidSheetUrls = new HashSet<string>();
+        private readonly BrowserLinkConnection _connection;
+        private readonly IList<Guid> _operationsInProgress = new List<Guid>();
+        private readonly UploadHelper _uploadHelper;
 
         public UnusedCssExtension(BrowserLinkConnection connection)
         {
@@ -43,16 +25,137 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             UnusedCssOptions.SettingsUpdated += InstallIgnorePatterns;
         }
 
-        private void InstallIgnorePatterns(object sender, EventArgs e)
+        public static List<string> IgnoreList
         {
-            UsageRegistry.Reset();
-            GetIgnoreList();
-            MessageDisplayManager.Refresh();
+            get
+            {
+                var ignorePatterns = WESettings.GetString(WESettings.Keys.UnusedCss_IgnorePatterns) ?? "";
+
+                return ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
+            }
+        }
+
+        public static bool IsAnyConnectionAlive { get { return ExtensionByConnection.Count > 0; } }
+
+        public IEnumerable<BrowserLinkAction> Actions
+        {
+            get
+            {
+                yield return new BrowserLinkAction("Snapshot Page", SnapshotPage);
+                yield return new BrowserLinkAction("Start Recording", ToggleRecordingMode, SetRecordingButtonDisplayProperties);
+            }
+        }
+
+        public BrowserLinkConnection Connection { get { return _connection; } }
+
+        public bool IsRecording { get; private set; }
+
+        private static List<string> IgnorePatternList
+        {
+            get { return IgnoreList.Select(FilePatternToRegex).ToList(); }
+        }
+
+        public static IEnumerable<string> GetValidSheetUrls()
+        {
+            HashSet<string> set;
+
+            lock (ValidSheetUrls)
+            {
+                set = new HashSet<string>(ValidSheetUrls);
+            }
+
+            return set;
+        }
+
+        public void BlipRecording()
+        {
+            Clients.Call(_connection, "blipRecording");
+        }
+
+        public void EnsureRecordingMode(bool targetRecordingStatus)
+        {
+            if (IsRecording ^ targetRecordingStatus)
+            {
+                ToggleRecordingMode();
+            }
+        }
+
+        [BrowserLinkCallback]
+        public async void FinishedRecording(string operationId, string chunkContents, int chunkNumber, int chunkCount)
+        {
+            SessionResult result;
+            var opId = Guid.Parse(operationId);
+            if (_uploadHelper.TryFinishOperation(opId, chunkContents, chunkNumber, chunkCount, out result))
+            {
+                lock (_operationsInProgress)
+                {
+                    _operationsInProgress.Remove(opId);
+                }
+
+                ImportSheets(result.Sheets);
+
+                using (AmbientRuleContext.GetOrCreate())
+                {
+                    await result.ResolveAsync(this);
+                    UsageRegistry.Merge(this, result);
+                    MessageDisplayManager.ShowWarningsFor(_connection.Url, _connection.Project, result);
+                }
+            }
+        }
+
+        [BrowserLinkCallback]
+        public async void FinishedSnapshot(string operationId, string chunkContents, int chunkNumber, int chunkCount)
+        {
+            SessionResult result;
+            var opId = Guid.Parse(operationId);
+            if (_uploadHelper.TryFinishOperation(opId, chunkContents, chunkNumber, chunkCount, out result))
+            {
+                lock (_operationsInProgress)
+                {
+                    _operationsInProgress.Remove(opId);
+                }
+
+                ImportSheets(result.Sheets);
+
+                using (AmbientRuleContext.GetOrCreate())
+                {
+                    await result.ResolveAsync(this);
+                    UsageRegistry.Merge(this, result);
+                    MessageDisplayManager.ShowWarningsFor(_connection.Url, _connection.Project, result);
+                }
+            }
+        }
+
+        [BrowserLinkCallback]
+        public void GetIgnoreList()
+        {
+            Clients.Call(_connection, "installIgnorePatterns", IgnorePatternList);
+            //Apply any deferred actions
+            //NOTE: There should be some kind of check here to determine whether or not this is a new session for the browser (as the user may have closed the window during the recording session and opened a new browser)
+            var appBag = BrowserLocationContinuationActions.GetOrAdd(_connection.AppName, n => new ConcurrentDictionary<string, Action<UnusedCssExtension>>());
+            Action<UnusedCssExtension> act;
+            if (appBag.TryRemove(_connection.Project.UniqueName, out act))
+            {
+                act(this);
+            }
+
+            if (Any(x => x.Connection.AppName == _connection.AppName && x.IsRecording))
+            {
+                EnsureRecordingMode(true);
+            }
         }
 
         public override void OnDisconnecting(BrowserLinkConnection connection)
         {
-            if (_isRecording)
+            lock (_operationsInProgress)
+            {
+                foreach (var opId in _operationsInProgress)
+                {
+                    _uploadHelper.CancelOperation(opId);
+                }
+            }
+
+            if (IsRecording)
             {
                 var appBag = BrowserLocationContinuationActions.GetOrAdd(_connection.AppName, n => new ConcurrentDictionary<string, Action<UnusedCssExtension>>());
 
@@ -71,56 +174,60 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             UnusedCssOptions.SettingsUpdated -= InstallIgnorePatterns;
         }
 
-        private void SetRecordingButtonDisplayProperties(BrowserLinkAction obj)
+        [BrowserLinkCallback]
+        public void SnapshotPage()
         {
-            obj.ButtonText = _isRecording ? "Stop Recording" : "Start Recording";
-        }
-
-        private void ImportSheets(IEnumerable<string> sheetUrls)
-        {
-            var sheets = GetFiles(sheetUrls).Select(x => x.ToLowerInvariant());
-
-            lock (_validSheetUrlsForPage)
+            var opId = Guid.NewGuid();
+            
+            lock (_operationsInProgress)
             {
-                _validSheetUrlsForPage.UnionWith(sheets);
+                _operationsInProgress.Add(opId);
             }
+
+            Clients.Call(_connection, "snapshotPage", opId);
         }
 
         [BrowserLinkCallback]
-        public async void FinishedRecording(string operationId, string chunkContents, int chunkNumber, int chunkCount)
+        public void ToggleRecordingMode()
         {
-            SessionResult result;
-            if (_uploadHelper.TryFinishOperation(Guid.Parse(operationId), chunkContents, chunkNumber, chunkCount, out result))
+            IsRecording = !IsRecording;
+
+            if (!IsRecording)
             {
-                ImportSheets(result.Sheets);
-                await result.ResolveAsync(this);
-                UsageRegistry.Merge(this, result);
-                MessageDisplayManager.ShowWarningsFor(_connection, result);
+                Clients.Call(_connection, "stopRecording");
+            }
+            else
+            {
+                var opId = Guid.NewGuid();
+
+                lock (_operationsInProgress)
+                {
+                    _operationsInProgress.Add(opId);
+                }
+
+                Clients.Call(_connection, "startRecording", opId);
             }
         }
 
-        [BrowserLinkCallback]
-        public async void FinishedSnapshot(string operationId, string chunkContents, int chunkNumber, int chunkCount)
+        internal static void All(Action<UnusedCssExtension> method)
         {
-            SessionResult result;
-            if (_uploadHelper.TryFinishOperation(Guid.Parse(operationId), chunkContents, chunkNumber, chunkCount, out result))
+            MessageDisplayManager.DisplaySource = MessageDisplaySource.Project;
+            foreach (var extension in ExtensionByConnection.Values)
             {
-                ImportSheets(result.Sheets);
-                await result.ResolveAsync(this);
-                UsageRegistry.Merge(this, result);
-                MessageDisplayManager.ShowWarningsFor(_connection, result);
+                method(extension);
             }
         }
 
-        public IEnumerable<BrowserLinkAction> Actions
+        internal static bool Any(Func<UnusedCssExtension, bool> predicate)
         {
-            get
-            {
-                yield return new BrowserLinkAction("Snapshot Page", SnapshotPage);
-                yield return new BrowserLinkAction("Start Recording", ToggleRecordingMode, SetRecordingButtonDisplayProperties);
-            }
+            return ExtensionByConnection.Values.Any(predicate);
         }
-        
+
+        private static string FilePatternToRegex(string filePattern)
+        {
+            return filePattern.Replace(@"\", @"[\\\\/]").Replace(".", @"\.").Replace("*", @"[^\\\\/]*").Replace("?", @"[^\\\\/]?");
+        }
+
         private IEnumerable<string> GetFiles(IEnumerable<string> locations)
         {
             var project = Connection.Project;
@@ -208,100 +315,31 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        [BrowserLinkCallback]
-        public void ToggleRecordingMode()
+        private void ImportSheets(IEnumerable<string> sheetUrls)
         {
-            _isRecording = !_isRecording;
+            var sheets = GetFiles(sheetUrls).Select(x => x.ToLowerInvariant());
 
-            if (!_isRecording)
+            lock (ValidSheetUrls)
             {
-                Clients.Call(_connection, "stopRecording");
-            }
-            else
-            {
-                Clients.Call(_connection, "startRecording", Guid.NewGuid());
+                ValidSheetUrls.UnionWith(sheets);
             }
         }
 
-        [BrowserLinkCallback]
-        public void SnapshotPage()
+        private void InstallIgnorePatterns(object sender, EventArgs e)
         {
-            Clients.Call(_connection, "snapshotPage", Guid.NewGuid());
-        }
-
-        public IEnumerable<string> GetValidSheetUrlsForCurrentLocation()
-        {
-            return _validSheetUrlsForPage;
-        }
-
-        public static IEnumerable<string> GetValidSheetUrls()
-        {
-            return ExtensionByConnection.Values.SelectMany(x => x._validSheetUrlsForPage).Distinct().ToList();
-        }
-            
-        [BrowserLinkCallback]
-        public void ParseSheets(string operationId, string chunkContents, int chunkNumber, int chunkCount)
-        {
-            List<string> result;
-            if (_uploadHelper.TryFinishOperation(Guid.Parse(operationId), chunkContents, chunkNumber, chunkCount, out result))
+            lock (ValidSheetUrls)
             {
-                var sheets = GetFiles(result).Select(x => x.ToLowerInvariant());
-
-                lock (_validSheetUrlsForPage)
-                {
-                    _validSheetUrlsForPage.UnionWith(sheets);
-                }
+                ValidSheetUrls.Clear();
             }
 
-            RuleRegistry.GetAllRules(this);
-
-            //Apply any deferred actions
-            //NOTE: There should be some kind of check here to determine whether or not this is a new session for the browser (as the user may have closed the window during the recording session and opened a new browser)
-            var appBag = BrowserLocationContinuationActions.GetOrAdd(_connection.AppName, n => new ConcurrentDictionary<string, Action<UnusedCssExtension>>());
-            Action<UnusedCssExtension> act;
-            if (appBag.TryRemove(_connection.Project.UniqueName, out act))
-            {
-                act(this);
-            }
+            UsageRegistry.Reset();
+            GetIgnoreList();
+            MessageDisplayManager.Refresh();
         }
 
-        public static List<string> IgnoreList
+        private void SetRecordingButtonDisplayProperties(BrowserLinkAction obj)
         {
-            get
-            {
-                string ignorePatterns = WESettings.GetString(WESettings.Keys.UnusedCss_IgnorePatterns) ?? "";
-
-                return ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
-            }
+            obj.ButtonText = IsRecording ? "Stop Recording" : "Start Recording";
         }
-
-        private static List<string> IgnorePatternList
-        {
-            get
-            {
-                return IgnoreList.Select(FilePatternToRegex).ToList();
-            }
-        }
-
-        private static string FilePatternToRegex(string filePattern)
-        {
-            return filePattern.Replace(@"\", @"[\\\\/]").Replace(".", @"\.").Replace("*", @"[^\\\\/]*").Replace("?", @"[^\\\\/]?");
-        }
-
-        [BrowserLinkCallback]
-        public void GetIgnoreList()
-        {
-            Clients.Call(_connection, "getLinkedStyleSheetUrls", IgnorePatternList, Guid.NewGuid());
-        }
-
-        public void EnsureRecordingMode(bool targetRecordingStatus)
-        {
-            if (_isRecording ^ targetRecordingStatus)
-            {
-                ToggleRecordingMode();
-            }
-        }
-
-        public bool IsRecording { get { return _isRecording; } }
     }
 }

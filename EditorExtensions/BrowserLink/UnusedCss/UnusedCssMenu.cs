@@ -52,7 +52,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             DocumentFactory.Clear();
             UsageRegistry.Reset();
             MessageDisplayManager.Refresh();
-            SnapshotAll(sender, e);
+            UnusedCssExtension.All(x => x.BlipRecording());
         }
 
         private static void ResetUsageDataBeforeQueryStatus(object sender, EventArgs e)

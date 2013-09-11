@@ -40,13 +40,13 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             _extension = extension;
-            _ruleUsages = await RuleRegistry.ResolveAsync(extension, RawUsageData);
+            _ruleUsages = await RuleRegistry.ResolveAsync(RawUsageData);
         }
 
         public IEnumerable<IStylingRule> GetAllRules()
         {
             ThrowIfNotResolved();
-            return RuleRegistry.GetAllRules(_extension);
+            return AmbientRuleContext.GetAllRules();
         }
 
         public IEnumerable<IStylingRule> GetUnusedRules()
@@ -71,13 +71,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         
         public async System.Threading.Tasks.Task ResyncAsync()
         {
-            _ruleUsages = await RuleRegistry.ResolveAsync(_extension, RawUsageData);
+            _ruleUsages = await RuleRegistry.ResolveAsync(RawUsageData);
         }
-
 
         public void Resync()
         {
-            _ruleUsages = RuleRegistry.Resolve(_extension, RawUsageData);
+            _ruleUsages = RuleRegistry.Resolve(RawUsageData);
         }
     }
 }

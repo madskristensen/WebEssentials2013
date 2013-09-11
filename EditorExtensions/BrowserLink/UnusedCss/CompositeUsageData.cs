@@ -1,10 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
+    internal class AmbientRuleContext : IDisposable
+    {
+        private static readonly AmbientRuleContext Instance = new AmbientRuleContext();
+        private IReadOnlyCollection<IStylingRule> _rules;
+        private int _referenceCount;
+
+        private void Update()
+        {
+            _rules = RuleRegistry.GetAllRules();
+        }
+
+        public IReadOnlyCollection<IStylingRule> Rules
+        {
+            get { return _rules; }
+        }
+
+        public static AmbientRuleContext GetOrCreate()
+        {
+            if (Interlocked.Increment(ref Instance._referenceCount) == 1)
+            {
+                Instance.Update();
+            }
+
+            return Instance;
+        }
+
+        public static IReadOnlyCollection<IStylingRule> GetAllRules()
+        {
+            using (GetOrCreate())
+            {
+                return Instance.Rules;
+            }
+        }
+
+        public void Dispose()
+        {
+            Interlocked.Decrement(ref _referenceCount);
+        }
+    }
+
     public class CompositeUsageData : IUsageDataSource
     {
         private readonly UnusedCssExtension _extension;
@@ -28,10 +69,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public IEnumerable<IStylingRule> GetAllRules()
         {
-            lock (_sync)
-            {
-                return RuleRegistry.GetAllRules(_extension);
-            }
+            return AmbientRuleContext.GetAllRules();
         }
 
         public IEnumerable<RuleUsage> GetRuleUsages()

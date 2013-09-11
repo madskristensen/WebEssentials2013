@@ -13,7 +13,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private FileSystemEventHandler _fileDeletedCallback;
         private readonly FileSystemWatcher _watcher;
         private readonly string _localFileName;
-        private static readonly Dictionary<string, DocumentBase> FileLookup = new Dictionary<string, DocumentBase>();
         private static readonly object Sync = new object();
 
         protected DocumentBase(string file, FileSystemEventHandler fileDeletedCallback)
@@ -110,20 +109,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             lock (Sync)
             {
-                DocumentBase existing;
-                if (FileLookup.TryGetValue(fileName, out existing))
-                {
-                    if (fileDeletedCallback != null)
-                    {
-                        existing._fileDeletedCallback += fileDeletedCallback;
-                    }
-
-                    return existing;
-                }
-
                 if (fileDeletedCallback != null)
                 {
-                    return FileLookup[fileName] = documentFactory(fileName, fileDeletedCallback);
+                    return documentFactory(fileName, fileDeletedCallback);
                 }
 
                 return null;
@@ -139,7 +127,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             var parser = GetParser();
             var parseResult = parser.Parse(text, false);
-            Rules = ExpandRuleSets(parseResult.RuleSets).Select(x => new CssRule(_file, text, x, this)).ToList();
+            Rules = ExpandRuleSets(parseResult.RuleSets).Select(x => CssRule.From(_file, text, x, this)).Where(x => x != null).ToList();
         }
  
         protected abstract ICssParser GetParser();
@@ -148,9 +136,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             return ruleSet.Text.Substring(0, ruleSet.Block.Start - ruleSet.Start);
         }
+
         public void Import(StyleSheet styleSheet)
         {
-            Rules = ExpandRuleSets(styleSheet.RuleSets).Select(x => new CssRule(_file, styleSheet.Text, x, this)).ToList();
+            Rules = ExpandRuleSets(styleSheet.RuleSets).Select(x => CssRule.From(_file, styleSheet.Text, x, this)).Where(x => x != null).ToList();
         }
     }
 }

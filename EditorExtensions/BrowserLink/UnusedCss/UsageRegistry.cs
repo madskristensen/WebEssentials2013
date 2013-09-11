@@ -138,7 +138,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         internal static IEnumerable<IStylingRule> GetAllUnusedRules(HashSet<IStylingRule> sheetRules)
         {
-            return sheetRules.Intersect(UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()));
+            using (AmbientRuleContext.GetOrCreate())
+            {
+                return sheetRules.Intersect(UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()));
+            }
         }
         
         public static bool IsAProtectedClass(IStylingRule rule)

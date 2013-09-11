@@ -41,7 +41,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return result;
         }
 
-        public override string GetSelectorName(RuleSet ruleSet)
+        private string GetSelectorNameInternal(RuleSet ruleSet)
         {
             var currentSelectorName = base.GetSelectorName(ruleSet);
             var currentSet = ruleSet;
@@ -58,7 +58,19 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 }
             }
 
-            return currentSelectorName.Replace(" &:", ":");
+            return currentSelectorName.Replace(" &:", ":").Replace(" &", "");
+        }
+
+        public override string GetSelectorName(RuleSet ruleSet)
+        {
+            var block = ruleSet.Block as LessRuleBlock;
+            if (ruleSet.Block.Declarations.Count == 0 && ruleSet.Block.Directives.Count == 0 && (block == null || block.RuleSets.Any()))
+            {
+                //If we got here, the element won't be included in the output but has children that might be
+                return null;
+            }
+
+            return GetSelectorNameInternal(ruleSet);
         }
     }
 }
