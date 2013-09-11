@@ -28,11 +28,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        public IEnumerable<CssRule> GetAllRules()
+        public IEnumerable<IStylingRule> GetAllRules()
         {
             lock (_sync)
             {
-                return CssRuleRegistry.GetAllRules(_extension);
+                return RuleRegistry.GetAllRules(_extension);
             }
         }
 
@@ -44,15 +44,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        public IEnumerable<CssRule> GetUnusedRules()
+        public IEnumerable<IStylingRule> GetUnusedRules()
         {
             lock (_sync)
             {
-                var unusedRules = new HashSet<CssRule>(GetAllRules());
+                var unusedRules = new HashSet<IStylingRule>(GetAllRules());
 
                 foreach (var src in _sources)
                 {
-                    unusedRules.IntersectWith(src.GetUnusedRules());
+                    unusedRules.IntersectWith(src.GetUnusedRules().Where(x => !UsageRegistry.IsAProtectedClass(x)));
                 }
 
                 return unusedRules;

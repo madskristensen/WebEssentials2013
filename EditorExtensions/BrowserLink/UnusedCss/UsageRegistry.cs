@@ -1,4 +1,5 @@
 ﻿using EnvDTE;
+using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Web.BrowserLink;
 using System;
@@ -31,6 +32,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             projectBucket.AddUsageSource(source);
 
             OnUsageDataUpdated();
+        }
+
+        public static bool IsAnyUsageDataCaptured
+        {
+            get { return UsageDataByLocation.Count > 0; }
         }
 
         public static void Reset()
@@ -67,7 +73,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return data.GetWarnings(uri);
         }
 
-        public static IEnumerable<CssRule> GetAllUnusedRules()
+        public static IEnumerable<IStylingRule> GetAllUnusedRules()
         {
             return UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()).Distinct();
         }
@@ -130,9 +136,21 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             MessageDisplayManager.Refresh();
         }
 
-        internal static IEnumerable<CssRule> GetAllUnusedRules(HashSet<CssRule> sheetRules)
+        internal static IEnumerable<IStylingRule> GetAllUnusedRules(HashSet<IStylingRule> sheetRules)
         {
             return sheetRules.Intersect(UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()));
+        }
+        
+        public static bool IsAProtectedClass(IStylingRule rule)
+        {
+            var selectorName = rule.DisplaySelectorName;
+            var cleansedName = RuleRegistry.StandardizeSelector(selectorName);
+            return cleansedName.IndexOf(":visited", StringComparison.Ordinal) > -1 || cleansedName.IndexOf(":hover", StringComparison.Ordinal) > -1 || cleansedName.IndexOf(":active", StringComparison.Ordinal) > -1;
+        }
+
+        internal static bool IsRuleUsed(RuleSet rule)
+        {
+            return GetAllUnusedRules().All(x => !x.Is(rule));
         }
     }
 }

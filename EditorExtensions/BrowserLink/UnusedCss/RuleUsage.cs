@@ -8,7 +8,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     {
         public HashSet<SourceLocation> SourceLocations { get; set; }
 
-        public CssRule Rule { get; set; }
+        public IStylingRule Rule { get; set; }
         public bool Equals(RuleUsage other)
         {
             return !ReferenceEquals(other, null) && other.Rule.Equals(Rule) && other.SourceLocations.SetEquals(SourceLocations);
