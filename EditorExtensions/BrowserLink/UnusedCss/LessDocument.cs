@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         internal static IDocument For(string fullPath, FileSystemEventHandler fileDeletedCallback = null)
         {
-            return DocumentBase.For(fullPath, fileDeletedCallback, (f, c) => new LessDocument(f, c));
+            return For(fullPath, fileDeletedCallback, (f, c) => new LessDocument(f, c));
         }
 
         protected override IEnumerable<RuleSet> ExpandRuleSets(IEnumerable<RuleSet> ruleSets)

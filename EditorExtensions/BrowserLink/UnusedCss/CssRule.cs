@@ -103,7 +103,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public bool Is(RuleSet rule)
         {
-            return rule.Text == _ruleSet.Text && rule.StyleSheet.Text == rule.StyleSheet.Text;
+            return rule.Text == _ruleSet.Text && rule.StyleSheet.Text == _ruleSet.StyleSheet.Text;
         }
     }
 }

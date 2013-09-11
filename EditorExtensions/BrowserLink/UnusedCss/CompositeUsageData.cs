@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using System.Collections.Concurrent;
 
@@ -49,13 +48,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             lock (_sync)
             {
                 var unusedRules = new HashSet<IStylingRule>(GetAllRules());
-
-                foreach (var src in _sources)
-                {
-                    unusedRules.IntersectWith(src.GetUnusedRules().Where(x => !UsageRegistry.IsAProtectedClass(x)));
-                }
-
-                return unusedRules;
+                unusedRules.ExceptWith(_ruleUsages.Select(x => x.Rule).Distinct());
+                return unusedRules;//.Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
             }
         }
 

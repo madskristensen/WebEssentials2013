@@ -3,9 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -16,22 +14,22 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private readonly FileSystemWatcher _watcher;
         private readonly string _localFileName;
         private static readonly Dictionary<string, DocumentBase> FileLookup = new Dictionary<string, DocumentBase>();
-        private static readonly object _sync = new object();
+        private static readonly object Sync = new object();
 
         protected DocumentBase(string file, FileSystemEventHandler fileDeletedCallback)
         {
             _fileDeletedCallback = fileDeletedCallback;
             _file = file;
             var path = Path.GetDirectoryName(file);
-            _localFileName = Path.GetFileName(file).ToLowerInvariant();
+            _localFileName = (Path.GetFileName(file) ?? "").ToLowerInvariant();
 
             _watcher = new FileSystemWatcher
             {
                 Path = path,
-                Filter = _localFileName //"*.css"
+                Filter = _localFileName,
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.LastAccess |NotifyFilters.DirectoryName
             };
-            
-            _watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.DirectoryName;
+
             _watcher.Changed += Reparse;
             _watcher.Deleted += ProxyDeletion;
             _watcher.Renamed += ProxyRename;
@@ -109,10 +107,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         protected static IDocument For(string fullPath, FileSystemEventHandler fileDeletedCallback, Func<string, FileSystemEventHandler, DocumentBase> documentFactory)
         {
             var fileName = fullPath.ToLowerInvariant();
-            DocumentBase existing;
 
-            lock (_sync)
+            lock (Sync)
             {
+                DocumentBase existing;
                 if (FileLookup.TryGetValue(fileName, out existing))
                 {
                     if (fileDeletedCallback != null)

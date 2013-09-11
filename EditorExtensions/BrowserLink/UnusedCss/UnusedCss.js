@@ -1,4 +1,4 @@
-﻿/// <reference path="../intellisense/browserlink.intellisense.js" />
+﻿/// <reference path="~/BrowserLink/_intellisense/browserlink.intellisense.js" />
 
 (function (browserLink, $) {
     /// <param name="browserLink" value="bl" />
@@ -23,6 +23,30 @@
             }
         }
         return sheets;
+    }
+
+    var currentPatterns = [];
+
+    function getLinkedStyleSheets()
+    {
+        var rxs = [];
+        for (var p = 0; p < currentPatterns.length; ++p) {
+            rxs.push(new RegExp(currentPatterns[p], "i"));
+        }
+
+        var sheets = getReferencedStyleSheets();
+        var parseSheets = [];
+        for (var i = 0; i < sheets.length; ++i) {
+            var match = false;
+            for (var j = 0; !match && j < currentPatterns.length; ++j) {
+                match = !sheets[i] || rxs[j].test(sheets[i]);
+            }
+            if (!match) {
+                validSheetIndexes.push(i);
+                parseSheets.push(sheets[i]);
+            }
+        }
+        return parseSheets;
     }
 
     function chunk(obj) {
@@ -105,7 +129,8 @@
                 }
             }
         }
-        return { "RawUsageData": catalog };
+        var sheets = getLinkedStyleSheets();
+        return { "RawUsageData": catalog, "Sheets": sheets };
     }
 
     function captureCssUsageFrameFast() {
@@ -166,7 +191,7 @@
 
             setTimeout(function() {
                 record(operationId);
-            }, 100);
+            }, 50);
         }
         else {
             currentRecordingOperationId = false;
@@ -222,7 +247,8 @@
 
         startRecording: function (operationId) {
             finishRecording = function (doContinue) {
-                var result = { "RawUsageData": recordingState, "Continue": !!doContinue };
+                var sheets = getLinkedStyleSheets();
+                var result = { "RawUsageData": recordingState, "Continue": !!doContinue, "Sheets": sheets };
                 submitChunkedData("FinishedRecording", result, operationId);
             };
 
@@ -249,24 +275,8 @@
         },
 
         getLinkedStyleSheetUrls: function (patterns, operationId) {
-            var rxs = [];
-            for(var p = 0; p < patterns.length; ++p) {
-                rxs.push(new RegExp(patterns[p], "i"));
-            }
-
-            var sheets = getReferencedStyleSheets();
-            var parseSheets = [];
-            for (var i = 0; i < sheets.length; ++i) {
-                var match = false;
-                for (var j = 0; !match && j < patterns.length; ++j) {
-                    match = !sheets[i] || rxs[j].test(sheets[i]);
-                }
-                if (!match) {
-                    validSheetIndexes.push(i);
-                    parseSheets.push(sheets[i]);
-                }
-            }
-
+            currentPatterns = patterns;
+            var parseSheets = getLinkedStyleSheets();
             submitChunkedData("ParseSheets", parseSheets, operationId);
         },
 
