@@ -218,6 +218,8 @@
             else if (e.keyCode === 83) { //83 = s
                 snapshotCssUsage();
             }
+            
+            return false;
         }
     });
 
@@ -225,7 +227,7 @@
     var recordingNotificationWidth = 157;
     var tailOffset = 28;
     var hiddenLeftPosition = "-" + (recordingNotificationWidth - tailOffset) + "px";
-    var recordingNotification = $('<div style="border:black solid 1px;font-weight:demi-bold;display:inline-block;padding:0;font-family:verdana,arial;height:' + recordingNotificationHeight + 'px;width:' + recordingNotificationWidth + 'px;position:absolute;top:0;left:' + hiddenLeftPosition + ';z-index:9999;background:none;font-size:16px;cursor:pointer">\
+    var recordingNotification = $('<div style="border:black solid 1px;font-weight:500;display:inline-block;padding:0;font-family:verdana,arial;height:' + recordingNotificationHeight + 'px;width:' + recordingNotificationWidth + 'px;position:fixed;top:0;left:' + hiddenLeftPosition + ';z-index:9999;background:none;font-size:16px;cursor:pointer">\
         <div style="opacity:.6;background:white;width:' + recordingNotificationWidth + 'px;height:' + recordingNotificationHeight + 'px;position:absolute"></div>\
 		    <div style="position:relative">\
 			    <span style="display:inline-block;position:absolute;top:5px;margin-left:5px;text-decoration:none;color:black" title="CTRL+ALT+R">Stop Recording</span>\
@@ -261,6 +263,7 @@
 
         stopRecording: function () {
             recordingStopRequested = true;
+            recordingNotification.css("left", hiddenLeftPosition);
             recordingNotification.remove();
         },
 
