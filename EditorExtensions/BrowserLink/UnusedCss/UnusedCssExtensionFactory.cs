@@ -8,10 +8,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     [BrowserLinkFactoryName("UnusedCss")]
     public class UnusedCssExtensionFactory : BrowserLinkExtensionFactory
     {
-        public UnusedCssExtensionFactory()
-        {
-        }
-
         public override BrowserLinkExtension CreateInstance(BrowserLinkConnection connection)
         {
             return new UnusedCssExtension(connection);

@@ -91,7 +91,7 @@ namespace MadsKristensen.EditorExtensions
                 MarkdownStylesheetMenu markdownMenu = new MarkdownStylesheetMenu(DTE, mcs);
                 markdownMenu.SetupCommands();
 
-                UnusedCssMenu unusedCssMenu = new UnusedCssMenu(DTE, mcs);
+                UnusedCssMenu unusedCssMenu = new UnusedCssMenu(mcs);
                 unusedCssMenu.SetupCommands();
             }
 

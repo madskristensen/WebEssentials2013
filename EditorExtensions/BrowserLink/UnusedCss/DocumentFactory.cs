@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public static class DocumentFactory
     {
+        private static readonly ConcurrentDictionary<string, IDocument> DocumentLookup = new ConcurrentDictionary<string, IDocument>();
+
         private static Func<string, FileSystemEventHandler, IDocument> GetFactory(string fullPath)
         {
-            var extension = Path.GetExtension(fullPath).ToUpperInvariant();
+            var extension = (Path.GetExtension(fullPath) ?? "").ToUpperInvariant();
 
             switch (extension)
             {
@@ -33,6 +34,13 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             var fileName = fullPath.ToLowerInvariant();
+
+            IDocument currentDocument;
+            if (DocumentLookup.TryGetValue(fileName, out currentDocument))
+            {
+                return currentDocument;
+            }
+
             var factory = GetFactory(fileName);
 
             if (factory == null)
@@ -40,7 +48,36 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 return null;
             }
 
-            return factory(fullPath, fileDeletedCallback);
+            currentDocument = factory(fullPath, fileDeletedCallback);
+
+            if (currentDocument == null)
+            {
+                return null;
+            }
+
+            return DocumentLookup.AddOrUpdate(fileName, x => currentDocument, (x, e) => currentDocument);
+        }
+
+        public static IEnumerable<IDocument> AllDocuments
+        {
+            get { return DocumentLookup.Values; }
+        }
+
+        public static void Clear()
+        {
+            var currentValues = DocumentLookup.Values.ToList();
+            DocumentLookup.Clear();
+
+            foreach (var value in currentValues)
+            {
+                try
+                {
+                    value.Dispose();
+                }
+                catch(ObjectDisposedException)
+                {
+                }
+            }
         }
     }
 }

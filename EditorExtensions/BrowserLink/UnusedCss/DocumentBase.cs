@@ -3,35 +3,31 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public abstract class DocumentBase : IDocument
     {
         private readonly string _file;
-        private FileSystemEventHandler _fileDeletedCallback;
+        private readonly FileSystemEventHandler _fileDeletedCallback;
         private readonly FileSystemWatcher _watcher;
         private readonly string _localFileName;
-        private static readonly Dictionary<string, DocumentBase> FileLookup = new Dictionary<string, DocumentBase>();
-        private static readonly object _sync = new object();
 
         protected DocumentBase(string file, FileSystemEventHandler fileDeletedCallback)
         {
             _fileDeletedCallback = fileDeletedCallback;
             _file = file;
             var path = Path.GetDirectoryName(file);
-            _localFileName = Path.GetFileName(file).ToLowerInvariant();
+            _localFileName = (Path.GetFileName(file) ?? "").ToLowerInvariant();
 
             _watcher = new FileSystemWatcher
             {
                 Path = path,
-                Filter = _localFileName //"*.css"
+                Filter = _localFileName,
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.LastAccess |NotifyFilters.DirectoryName
             };
-            
-            _watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.DirectoryName;
+
             _watcher.Changed += Reparse;
             _watcher.Deleted += ProxyDeletion;
             _watcher.Renamed += ProxyRename;
@@ -109,27 +105,13 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         protected static IDocument For(string fullPath, FileSystemEventHandler fileDeletedCallback, Func<string, FileSystemEventHandler, DocumentBase> documentFactory)
         {
             var fileName = fullPath.ToLowerInvariant();
-            DocumentBase existing;
 
-            lock (_sync)
+            if (fileDeletedCallback != null)
             {
-                if (FileLookup.TryGetValue(fileName, out existing))
-                {
-                    if (fileDeletedCallback != null)
-                    {
-                        existing._fileDeletedCallback += fileDeletedCallback;
-                    }
-
-                    return existing;
-                }
-
-                if (fileDeletedCallback != null)
-                {
-                    return FileLookup[fileName] = documentFactory(fileName, fileDeletedCallback);
-                }
-
-                return null;
+                return documentFactory(fileName, fileDeletedCallback);
             }
+
+            return null;
         }
 
         protected virtual IEnumerable<RuleSet> ExpandRuleSets(IEnumerable<RuleSet> ruleSets)
@@ -141,7 +123,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             var parser = GetParser();
             var parseResult = parser.Parse(text, false);
-            Rules = ExpandRuleSets(parseResult.RuleSets).Select(x => new CssRule(_file, text, x, this)).ToList();
+            Rules = ExpandRuleSets(parseResult.RuleSets).Select(x => CssRule.From(_file, text, x, this)).Where(x => x != null).ToList();
         }
  
         protected abstract ICssParser GetParser();
@@ -149,10 +131,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public virtual string GetSelectorName(RuleSet ruleSet)
         {
             return ruleSet.Text.Substring(0, ruleSet.Block.Start - ruleSet.Start);
-        }
-        public void Import(StyleSheet styleSheet)
-        {
-            Rules = ExpandRuleSets(styleSheet.RuleSets).Select(x => new CssRule(_file, styleSheet.Text, x, this)).ToList();
         }
     }
 }

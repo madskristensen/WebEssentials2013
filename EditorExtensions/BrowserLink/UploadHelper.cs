@@ -55,6 +55,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink
             return false;
         }
 
+        public void CancelOperation(Guid operationId)
+        {
+            Operation current;
+            _operationSet.TryRemove(operationId, out current);
+        }
+
         public void Reset()
         {
             _operationSet.Clear();

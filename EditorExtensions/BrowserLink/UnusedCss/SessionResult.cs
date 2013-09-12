@@ -15,6 +15,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         [JsonProperty]
         public bool Continue { get; set; }
 
+        [JsonProperty]
+        public List<string> Sheets { get; set; } 
+
         private HashSet<RuleUsage> _ruleUsages;
 
         private int _isResolved;
@@ -37,23 +40,29 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             _extension = extension;
-            _ruleUsages = await RuleRegistry.ResolveAsync(extension, RawUsageData);
+            _ruleUsages = await RuleRegistry.ResolveAsync(RawUsageData);
         }
 
         public IEnumerable<IStylingRule> GetAllRules()
         {
             ThrowIfNotResolved();
-            return RuleRegistry.GetAllRules(_extension);
+            return AmbientRuleContext.GetAllRules();
         }
 
         public IEnumerable<IStylingRule> GetUnusedRules()
         {
             return GetAllRules().Except(_ruleUsages.Select(x => x.Rule)).Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
         }
+        
+        private IEnumerable<Task> GetWarnings(string formatString)
+        {
+            var orderedRules = GetUnusedRules().OrderBy(x => x.File).ThenBy(x => x.Line).ThenBy(x => x.Column);
+            return orderedRules.Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _extension.Connection.Project, formatString));
+        }
 
         public IEnumerable<Task> GetWarnings()
         {
-            return GetUnusedRules().Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _extension.Connection.Project, "Unused CSS rule \"{1}\" in " + _extension.Connection.AppName));
+            return GetWarnings("Unused CSS rule \"{1}\" in " + _extension.Connection.AppName);
         }
 
         public IEnumerable<RuleUsage> GetRuleUsages()
@@ -63,18 +72,17 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     
         public IEnumerable<Task> GetWarnings(Uri uri)
         {
-            return GetUnusedRules().Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _extension.Connection.Project, "Unused CSS rule \"{1}\" in " + _extension.Connection.AppName + " on page " + (uri ?? _extension.Connection.Url)));
+            return GetWarnings("Unused CSS rule \"{1}\" in " + _extension.Connection.AppName + " on page " + (uri ?? _extension.Connection.Url));
         }
         
         public async System.Threading.Tasks.Task ResyncAsync()
         {
-            _ruleUsages = await RuleRegistry.ResolveAsync(_extension, RawUsageData);
+            _ruleUsages = await RuleRegistry.ResolveAsync(RawUsageData);
         }
-
 
         public void Resync()
         {
-            _ruleUsages = RuleRegistry.Resolve(_extension, RawUsageData);
+            _ruleUsages = RuleRegistry.Resolve(RawUsageData);
         }
     }
 }

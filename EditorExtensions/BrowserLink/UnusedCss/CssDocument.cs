@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using Microsoft.CSS.Core;
-using System.Threading;
-using System.Collections.Concurrent;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -22,7 +17,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         internal static IDocument For(string fullPath, FileSystemEventHandler fileDeletedCallback = null)
         {
-            return DocumentBase.For(fullPath, fileDeletedCallback, (f, c) => new CssDocument(f, c));
+            return For(fullPath, fileDeletedCallback, (f, c) => new CssDocument(f, c));
         }
     }
 }

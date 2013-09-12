@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.IO;
+using System.Threading;
 using Microsoft.VisualStudio.Shell;
 using System;
 
@@ -7,6 +8,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     public static class ErrorList
     {
         private static readonly ErrorListProvider ErrorListProvider;
+        private static readonly ReaderWriterLockSlim Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
         static ErrorList()
         {
@@ -38,6 +40,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             private static int _activeSuspensionRequestCount;
             public ErrorListUpdateSuspensionContext()
             {
+                Lock.EnterWriteLock();
+
                 lock (Sync)
                 {
                     if (Interlocked.Increment(ref _activeSuspensionRequestCount) < 0)
@@ -51,6 +55,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             public void Dispose()
             {
+                Lock.ExitWriteLock();
+
                 lock (Sync)
                 {
                     if (Interlocked.Decrement(ref _activeSuspensionRequestCount) > 0)

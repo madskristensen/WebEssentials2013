@@ -1,4 +1,4 @@
-﻿/// <reference path="../intellisense/browserlink.intellisense.js" />
+﻿/// <reference path="~/BrowserLink/_intellisense/browserlink.intellisense.js" />
 
 (function (browserLink, $) {
     /// <param name="browserLink" value="bl" />
@@ -23,6 +23,30 @@
             }
         }
         return sheets;
+    }
+
+    var currentPatterns = [];
+
+    function getLinkedStyleSheets()
+    {
+        var rxs = [];
+        for (var p = 0; p < currentPatterns.length; ++p) {
+            rxs.push(new RegExp(currentPatterns[p], "i"));
+        }
+
+        var sheets = getReferencedStyleSheets();
+        var parseSheets = [];
+        for (var i = 0; i < sheets.length; ++i) {
+            var match = false;
+            for (var j = 0; !match && j < currentPatterns.length; ++j) {
+                match = !sheets[i] || rxs[j].test(sheets[i]);
+            }
+            if (!match) {
+                validSheetIndexes.push(i);
+                parseSheets.push(sheets[i]);
+            }
+        }
+        return parseSheets;
     }
 
     function chunk(obj) {
@@ -105,7 +129,8 @@
                 }
             }
         }
-        return { "RawUsageData": catalog };
+        var sheets = getLinkedStyleSheets();
+        return { "RawUsageData": catalog, "Sheets": sheets };
     }
 
     function captureCssUsageFrameFast() {
@@ -147,15 +172,6 @@
                 recordingState.push(rawFrameData[i]);
                 recordingSelectorLookup[selector] = recordingState.length - 1;
             }
-            //<!------- NOTE: Since we're using the "Fast" variation for record, there is no real usage data, uncomment if switching back from "Fast" variation and wanting full data ----------->
-            //else {
-            //    var index = recordingSelectorLookup[selector];
-            //    for(var j = 0; j < rawFrameData[i].SourceLocations.length; ++j){
-            //        if(!recordingState[index].SourceLocations.contains(rawFrameData[i].SourceLocations[j])){
-            //            recordingState[index].SourceLocations.push(rawFrameData[i].SourceLocations[j]);
-            //        }
-            //    }
-            //}
         }
         //End Merge
 
@@ -166,7 +182,7 @@
 
             setTimeout(function() {
                 record(operationId);
-            }, 100);
+            }, 50);
         }
         else {
             currentRecordingOperationId = false;
@@ -183,11 +199,13 @@
     }
 
     window.__weToggleRecordingMode = function () {
+        getLinkedStyleSheets();
         toggleRecordingMode();
         return false;
     };
 
     window.__weSnapshotCssUsage = function () {
+        getLinkedStyleSheets();
         snapshotCssUsage();
         return false;
     };
@@ -200,6 +218,8 @@
             else if (e.keyCode === 83) { //83 = s
                 snapshotCssUsage();
             }
+            
+            return false;
         }
     });
 
@@ -207,7 +227,7 @@
     var recordingNotificationWidth = 157;
     var tailOffset = 28;
     var hiddenLeftPosition = "-" + (recordingNotificationWidth - tailOffset) + "px";
-    var recordingNotification = $('<div style="border:black solid 1px;font-weight:demi-bold;display:inline-block;padding:0;font-family:verdana,arial;height:' + recordingNotificationHeight + 'px;width:' + recordingNotificationWidth + 'px;position:absolute;top:0;left:' + hiddenLeftPosition + ';z-index:9999;background:none;font-size:16px;cursor:pointer">\
+    var recordingNotification = $('<div style="border:black solid 1px;font-weight:500;display:inline-block;padding:0;font-family:verdana,arial;height:' + recordingNotificationHeight + 'px;width:' + recordingNotificationWidth + 'px;position:fixed;top:0;left:' + hiddenLeftPosition + ';z-index:9999;background:none;font-size:16px;cursor:pointer">\
         <div style="opacity:.6;background:white;width:' + recordingNotificationWidth + 'px;height:' + recordingNotificationHeight + 'px;position:absolute"></div>\
 		    <div style="position:relative">\
 			    <span style="display:inline-block;position:absolute;top:5px;margin-left:5px;text-decoration:none;color:black" title="CTRL+ALT+R">Stop Recording</span>\
@@ -221,8 +241,11 @@
         name: "UnusedCss",
 
         startRecording: function (operationId) {
+            getLinkedStyleSheets();
+            
             finishRecording = function (doContinue) {
-                var result = { "RawUsageData": recordingState, "Continue": !!doContinue };
+                var sheets = getLinkedStyleSheets();
+                var result = { "RawUsageData": recordingState, "Continue": !!doContinue, "Sheets": sheets };
                 submitChunkedData("FinishedRecording", result, operationId);
             };
 
@@ -240,34 +263,25 @@
 
         stopRecording: function () {
             recordingStopRequested = true;
+            recordingNotification.css("left", hiddenLeftPosition);
             recordingNotification.remove();
         },
 
         snapshotPage: function (operationId) {
+            getLinkedStyleSheets();
             var frame = captureCssUsageFrame();
             submitChunkedData("FinishedSnapshot", frame, operationId);
         },
 
-        getLinkedStyleSheetUrls: function (patterns, operationId) {
-            var rxs = [];
-            for(var p = 0; p < patterns.length; ++p) {
-                rxs.push(new RegExp(patterns[p], "i"));
-            }
-
-            var sheets = getReferencedStyleSheets();
-            var parseSheets = [];
-            for (var i = 0; i < sheets.length; ++i) {
-                var match = false;
-                for (var j = 0; !match && j < patterns.length; ++j) {
-                    match = !sheets[i] || rxs[j].test(sheets[i]);
-                }
-                if (!match) {
-                    validSheetIndexes.push(i);
-                    parseSheets.push(sheets[i]);
-                }
-            }
-
-            submitChunkedData("ParseSheets", parseSheets, operationId);
+        installIgnorePatterns: function (patterns) {
+            currentPatterns = patterns;
+            //var parseSheets = getLinkedStyleSheets();
+            //submitChunkedData("ParseSheets", parseSheets, operationId);
+        },
+        
+        blipRecording: function() {
+            recordingState = [];
+            recordingSelectorLookup = {};
         },
 
         onInit: function () { // Optional. Is called when a connection is established
