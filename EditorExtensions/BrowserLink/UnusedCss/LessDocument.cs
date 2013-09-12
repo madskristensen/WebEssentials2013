@@ -78,6 +78,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 return null;
             }
 
+            if (base.GetSelectorName(ruleSet).Contains("("))
+            {
+                //Don't flag mixins
+                return null;
+            }
+
             return GetSelectorNameInternal(ruleSet);
         }
     }
