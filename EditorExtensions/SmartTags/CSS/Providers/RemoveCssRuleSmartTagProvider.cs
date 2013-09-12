@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Providers
             if (rule == null || !rule.Block.IsValid || UsageRegistry.IsRuleUsed(rule))
                 yield break;
 
-            yield return new RemoveCssRuleSmartTagAction(itemTrackingSpan, position, rule);
+            yield return new RemoveCssRuleSmartTagAction(itemTrackingSpan, rule);
         }
     }
 }

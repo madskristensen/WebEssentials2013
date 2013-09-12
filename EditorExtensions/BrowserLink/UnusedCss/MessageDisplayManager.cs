@@ -20,7 +20,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             using (ErrorList.GetUpdateSuspensionContext())
             {
-
                 if (_currentDisplayData != null)
                 {
                     foreach (var item in _currentDisplayData)

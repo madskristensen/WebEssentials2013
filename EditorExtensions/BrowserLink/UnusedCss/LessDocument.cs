@@ -43,7 +43,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         private string GetSelectorNameInternal(RuleSet ruleSet)
         {
-            var currentSelectorName = base.GetSelectorName(ruleSet);
+            var currentSelectorName = base.GetSelectorName(ruleSet).Trim();
             var currentSet = ruleSet;
             var currentBlock = ruleSet.Parent as LessRuleBlock;
 
@@ -53,12 +53,20 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
                 if (currentSet != null)
                 {
-                    currentSelectorName = base.GetSelectorName(currentSet) + " " + currentSelectorName;
+                    currentSelectorName = base.GetSelectorName(currentSet).Trim() + " " + currentSelectorName;
                     currentBlock = currentSet.Parent as LessRuleBlock;
                 }
             }
 
-            return currentSelectorName.Replace(" &:", ":").Replace(" &", "");
+            var name = currentSelectorName.Replace(" &", "");
+            var oldName = name;
+
+            while (oldName != (name = name.Replace(" >", ">").Replace("> ", ">")))
+            {
+                oldName = name;
+            }
+
+            return oldName.Replace(">", " > ");
         }
 
         public override string GetSelectorName(RuleSet ruleSet)

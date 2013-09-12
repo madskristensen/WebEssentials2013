@@ -10,10 +10,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     public abstract class DocumentBase : IDocument
     {
         private readonly string _file;
-        private FileSystemEventHandler _fileDeletedCallback;
+        private readonly FileSystemEventHandler _fileDeletedCallback;
         private readonly FileSystemWatcher _watcher;
         private readonly string _localFileName;
-        private static readonly object Sync = new object();
 
         protected DocumentBase(string file, FileSystemEventHandler fileDeletedCallback)
         {
@@ -107,15 +106,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             var fileName = fullPath.ToLowerInvariant();
 
-            lock (Sync)
+            if (fileDeletedCallback != null)
             {
-                if (fileDeletedCallback != null)
-                {
-                    return documentFactory(fileName, fileDeletedCallback);
-                }
-
-                return null;
+                return documentFactory(fileName, fileDeletedCallback);
             }
+
+            return null;
         }
 
         protected virtual IEnumerable<RuleSet> ExpandRuleSets(IEnumerable<RuleSet> ruleSets)
@@ -135,11 +131,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public virtual string GetSelectorName(RuleSet ruleSet)
         {
             return ruleSet.Text.Substring(0, ruleSet.Block.Start - ruleSet.Start);
-        }
-
-        public void Import(StyleSheet styleSheet)
-        {
-            Rules = ExpandRuleSets(styleSheet.RuleSets).Select(x => CssRule.From(_file, styleSheet.Text, x, this)).Where(x => x != null).ToList();
         }
     }
 }
