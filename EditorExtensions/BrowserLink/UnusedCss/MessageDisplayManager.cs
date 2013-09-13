@@ -1,5 +1,6 @@
-﻿using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Web.BrowserLink;
+﻿using EnvDTE;
+using Microsoft.VisualStudio.Shell;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,14 +12,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         private static IUsageDataSource _lastSource;
 
-        private static BrowserLinkConnection _lastConnection;
+        private static Project _lastProject;
+        private static Uri _lastUri;
 
         public static MessageDisplaySource DisplaySource { get; set; }
-        public static void ShowWarningsFor(BrowserLinkConnection connection, IUsageDataSource browserSource)
+        public static void ShowWarningsFor(Uri uri, Project project, IUsageDataSource browserSource)
         {
             using (ErrorList.GetUpdateSuspensionContext())
             {
-
                 if (_currentDisplayData != null)
                 {
                     foreach (var item in _currentDisplayData)
@@ -28,9 +29,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 }
 
                 _lastSource = browserSource ?? _lastSource;
-                _lastConnection = connection ?? _lastConnection;
+                _lastProject = project ?? _lastProject;
+                _lastUri = uri ?? _lastUri;
 
-                if (_lastSource == null || _lastConnection == null)
+                if (_lastSource == null || _lastProject == null)
                 {
                     _currentDisplayData = null;
                     return;
@@ -43,10 +45,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                     switch (DisplaySource)
                     {
                         case MessageDisplaySource.Project:
-                            _currentDisplayData = UsageRegistry.GetWarnings(_lastConnection.Project).ToList();
+                            _currentDisplayData = UsageRegistry.GetWarnings(_lastProject).ToList();
                             break;
                         case MessageDisplaySource.Url:
-                            _currentDisplayData = UsageRegistry.GetWarnings(_lastConnection.Url).ToList();
+                            _currentDisplayData = UsageRegistry.GetWarnings(_lastUri).ToList();
                             break;
                         case MessageDisplaySource.Browser:
                             _currentDisplayData = _lastSource.GetWarnings().ToList();
@@ -74,7 +76,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             if (!_dontRefresh)
             {
-                ShowWarningsFor(null, null);
+                ShowWarningsFor(null, null, null);
             }
         }
     }

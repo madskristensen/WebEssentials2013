@@ -10,6 +10,5 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         void Reparse(string text);
         IEnumerable<IStylingRule> Rules { get; }
         string GetSelectorName(RuleSet ruleSet);
-        void Import(StyleSheet styleSheet);
     }
 }

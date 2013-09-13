@@ -9,10 +9,6 @@ using Microsoft.Web.Editor;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -21,9 +17,9 @@ namespace MadsKristensen.EditorExtensions.Classifications
 {
     internal static class UnusedCssClassificationTypes
     {
-        internal const string _declaration = "unusedcss.rule";
+        internal const string Declaration = "unusedcss.rule";
         
-        [Export, Name(UnusedCssClassificationTypes._declaration), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        [Export, Name(Declaration), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
         internal static ClassificationTypeDefinition UnusedCssClassificationType = null;
     }
 
@@ -36,29 +32,32 @@ namespace MadsKristensen.EditorExtensions.Classifications
 
         public IClassifier GetClassifier(ITextBuffer buffer)
         {
-            return buffer.Properties.GetOrCreateSingletonProperty<UnusedCssClassifier>(() => { return new UnusedCssClassifier(Registry, buffer); });
+            return buffer.Properties.GetOrCreateSingletonProperty(() => new UnusedCssClassifier(Registry, buffer));
         }
     }
 
-    internal sealed class UnusedCssClassifier : IClassifier
+    internal sealed class UnusedCssClassifier : IClassifier, IDisposable
     {
-        private IClassificationTypeRegistryService _registry;
-        private ITextBuffer _buffer;
+        private readonly ITextBuffer _buffer;
         private CssTree _tree;
         internal SortedRangeList<Declaration> Cache = new SortedRangeList<Declaration>();
-        private IClassificationType _decClassification;
+        private readonly IClassificationType _decClassification;
 
         internal UnusedCssClassifier(IClassificationTypeRegistryService registry, ITextBuffer buffer)
         {
-            _registry = registry;
+            var currentFile = buffer.GetFileName().ToLowerInvariant();
             _buffer = buffer;
-            _decClassification = _registry.GetClassificationType(UnusedCssClassificationTypes._declaration);
-            UsageRegistry.UsageDataUpdated += UsageRegistry_UsageDataUpdated;
+            _decClassification = registry.GetClassificationType(UnusedCssClassificationTypes.Declaration);
+
+            if (!string.IsNullOrEmpty(currentFile))
+            {
+                UsageRegistry.UsageDataUpdated += ResyncClassificationSpans;
+            }
         }
 
         private bool _isInManualUpdate;
 
-        void UsageRegistry_UsageDataUpdated(object sender, EventArgs e)
+        void ResyncClassificationSpans(object sender, EventArgs e)
         {
             if (_isInManualUpdate)
             {
@@ -80,6 +79,12 @@ namespace MadsKristensen.EditorExtensions.Classifications
 
 
             var currentFile = _buffer.GetFileName().ToLowerInvariant();
+
+            if (string.IsNullOrEmpty(currentFile))
+            {
+                return new ClassificationSpan[0];
+            }
+
             var document = DocumentFactory.GetDocument(currentFile);
 
             if (document == null)
@@ -87,20 +92,22 @@ namespace MadsKristensen.EditorExtensions.Classifications
                 return new ClassificationSpan[0];
             }
 
-            List<ClassificationSpan> spans = new List<ClassificationSpan>();
-            var fileName = _buffer.GetFileName().ToLowerInvariant();
+            var spans = new List<ClassificationSpan>();
             var sheetRules = new HashSet<IStylingRule>(document.Rules);
 
-            foreach(var unusedRule in UsageRegistry.GetAllUnusedRules(sheetRules))
+            using (AmbientRuleContext.GetOrCreate())
             {
-                if (unusedRule.Offset + unusedRule.Length > span.Snapshot.Length)
+                foreach (var unusedRule in UsageRegistry.GetAllUnusedRules(sheetRules))
                 {
-                    continue;
-                }
+                    if (unusedRule.Offset + unusedRule.Length > span.Snapshot.Length)
+                    {
+                        continue;
+                    }
 
-                var ss = new SnapshotSpan(span.Snapshot, unusedRule.Offset, unusedRule.SelectorLength);
-                var s = new ClassificationSpan(ss, _decClassification);
-                spans.Add(s);
+                    var ss = new SnapshotSpan(span.Snapshot, unusedRule.Offset, unusedRule.SelectorLength);
+                    var s = new ClassificationSpan(ss, _decClassification);
+                    spans.Add(s);
+                }
             }
 
             return spans;
@@ -116,8 +123,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
                 {
                     _document = CssEditorDocument.FromTextBuffer(_buffer);
                     _tree = _document.Tree;
-                    _tree.TreeUpdated += _tree_TreeUpdated;
-                    _tree.ItemsChanged += _tree_ItemsChanged;
+                    _buffer.PostChanged += _buffer_PostChanged;
                 }
                 catch (ArgumentNullException)
                 {
@@ -127,7 +133,12 @@ namespace MadsKristensen.EditorExtensions.Classifications
             return _tree != null;
         }
 
-        private static readonly object _sync = new object();
+        private void _buffer_PostChanged(object sender, EventArgs e)
+        {
+            ReparseSheet();
+        }
+
+        private static readonly object Sync = new object();
 
         private void ReparseSheet()
         {
@@ -138,8 +149,6 @@ namespace MadsKristensen.EditorExtensions.Classifications
 
             try
             {
-                _isInManualUpdate = true;
-
                 if (!EnsureInitialized())
                 {
                     return;
@@ -151,9 +160,9 @@ namespace MadsKristensen.EditorExtensions.Classifications
 
                 if (document != null && documentText != null)
                 {
-                    lock (_sync)
+                    lock (Sync)
                     {
-                        document.Import(_document.StyleSheet);
+                        document.Reparse(documentText);
                     }
 
                     UsageRegistry.Resync();
@@ -164,47 +173,41 @@ namespace MadsKristensen.EditorExtensions.Classifications
                 Logger.Log(ex);
                 //Swallow exceptions...
             }
-            finally
-            {
-                _isInManualUpdate = false;
-            }
-        }
-
-        private void _tree_ItemsChanged(object sender, CssItemsChangedEventArgs e)
-        {
-            ReparseSheet();
-        }
-
-        private void _tree_TreeUpdated(object sender, CssTreeUpdateEventArgs e)
-        {
-            ReparseSheet();
         }
 
         public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;
 
         public void RaiseClassificationChanged(SnapshotSpan span)
         {
-            var handler = this.ClassificationChanged;
+            var handler = ClassificationChanged;
             if (handler != null)
             {
-                Dispatcher.CurrentDispatcher.BeginInvoke(
-                    new Action(() => handler(this, new ClassificationChangedEventArgs(span))), DispatcherPriority.ApplicationIdle);
+                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => handler(this, new ClassificationChangedEventArgs(span))), DispatcherPriority.ApplicationIdle);
             }
+        }
+
+        public void Dispose()
+        {
+            UsageRegistry.UsageDataUpdated -= ResyncClassificationSpans;
+        }
+
+        ~UnusedCssClassifier()
+        {
+            Dispose();
         }
     }
 
     [Export(typeof(EditorFormatDefinition))]
     [UserVisible(true)]
-    [ClassificationType(ClassificationTypeNames = UnusedCssClassificationTypes._declaration)]
-    [Name(UnusedCssClassificationTypes._declaration)]
+    [ClassificationType(ClassificationTypeNames = UnusedCssClassificationTypes.Declaration)]
+    [Name(UnusedCssClassificationTypes.Declaration)]
     [Order(After = Priority.Default)]
     internal sealed class UnusedCssFormatDefinition : ClassificationFormatDefinition
     {
         public UnusedCssFormatDefinition()
         {
             DisplayName = "Unused CSS";
-            TextDecorations = new TextDecorationCollection();
-            TextDecorations.Add(SquigglyHelper.Squiggly(Colors.SteelBlue));
+            TextDecorations = new TextDecorationCollection {SquigglyHelper.Squiggly(Colors.SteelBlue)};
         }
     }
 }

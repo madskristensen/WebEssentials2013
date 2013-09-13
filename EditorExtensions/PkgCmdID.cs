@@ -60,8 +60,8 @@ namespace MadsKristensen.EditorExtensions
 
         //Unused CSS
         public const uint cmdUnusedCssSnapshotCommandId = 0x2100;
-        public const int cmdUnusedCssResetCommandId = 0x2101;
-        public const int cmdUnusedCssRecordAllCommandId = 0x2102;
-        public const int cmdUnusedCssStopRecordAllCommandId = 0x2103;
+        public const uint cmdUnusedCssResetCommandId = 0x2101;
+        public const uint cmdUnusedCssRecordAllCommandId = 0x2102;
+        public const uint cmdUnusedCssStopRecordAllCommandId = 0x2103;
     };
 }

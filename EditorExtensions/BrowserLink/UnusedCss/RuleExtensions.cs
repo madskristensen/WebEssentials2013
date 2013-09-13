@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             var task = new ErrorTask
             {
                 Document = rule.File,
-                Line = rule.Line,
+                Line = rule.Line - 1,
                 Column = rule.Column,
                 ErrorCategory = category,
                 Category = TaskCategory.Html,
@@ -31,7 +31,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             var task = (ErrorTask)sender;
             var doc = task.Document;
             var window = EditorExtensionsPackage.DTE.ItemOperations.OpenFile(doc);
-            ((TextSelection)window.Selection).GotoLine(task.Line);
+            var selection = (TextSelection)window.Selection;
+            selection.MoveTo(task.Line + 1, task.Column + 1);
         }
 
         private static IVsHierarchy ResolveVsHierarchyItem(string projectName)

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO;
+using System.Linq;
 using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
@@ -8,9 +8,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     {
         private readonly RuleSet _ruleSet;
 
-        public CssRule(string sourceFile, string fileText, RuleSet ruleSet, IDocument document)
+        private CssRule(string sourceFile, string fileText, RuleSet ruleSet, string selectorName)
         {
-            SelectorName = document.GetSelectorName(ruleSet);
+            SelectorName = selectorName;
             CleansedSelectorName = RuleRegistry.StandardizeSelector(SelectorName);
             DisplaySelectorName = SelectorName.Replace('\r', '\n').Replace("\n", "").Trim();
             string oldDisplaySelectorName = null;
@@ -31,6 +31,18 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             var lastSelector = ruleSet.Selectors[ruleSet.Selectors.Count - 1];
             SelectorLength = lastSelector.Length + lastSelector.Start - ruleSet.Selectors[0].Start;
             _ruleSet = ruleSet;
+        }
+
+        public static IStylingRule From(string sourceFile, string fileText, RuleSet ruleSet, IDocument document)
+        {
+            var selectorName = document.GetSelectorName(ruleSet);
+
+            if (selectorName == null)
+            {
+                return null;
+            }
+
+            return new CssRule(sourceFile, fileText, ruleSet, selectorName);
         }
 
         public string DisplaySelectorName { get; private set; }
@@ -71,24 +83,21 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         private static void CalculateLineAndColumn(string fileText, RuleSet ruleSet, out int lineNumber, out int columnNumber)
         {
-            var offset = ruleSet.Start;
-            var textSoFar = fileText.Substring(0, offset);
+            var leadingContent = fileText.Substring(0, ruleSet.Start)
+                .Split(new[] {"\r\n"}, StringSplitOptions.None)
+                .Select(x => x.Split(new[]{'\r', '\n'}, StringSplitOptions.None))
+                .SelectMany(x => x)
+                .ToArray();
 
-            using (var reader = new StringReader(textSoFar))
+            if (leadingContent.Length == 0)
             {
-                var lineCount = 0;
-                var lastLine = "";
-                string currentLine;
-
-                while ((currentLine = reader.ReadLine()) != null)
-                {
-                    lastLine = currentLine;
-                    ++lineCount;
-                }
-
-                lineNumber = lineCount + 1;
-                columnNumber = lastLine.Length;
+                lineNumber = 1;
+                columnNumber = 1;
+                return;
             }
+
+            lineNumber = leadingContent.Length;
+            columnNumber = leadingContent[leadingContent.Length - 1].Length;
         }
 
 
@@ -103,7 +112,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public bool Is(RuleSet rule)
         {
-            return rule.Text == _ruleSet.Text && rule.StyleSheet.Text == rule.StyleSheet.Text;
+            return rule.Text == _ruleSet.Text;
         }
     }
 }
