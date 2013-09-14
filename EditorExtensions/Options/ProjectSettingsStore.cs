@@ -293,7 +293,8 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.GenerateJavaScriptSourceMaps, true);
 
             // Unused CSS
-            dic.Add(Keys.UnusedCss_IgnorePatterns, "bootstrap*; reset.css; normalize.css; jquery*; toastr*");
+            //Bootstrap, Reset, Normalize, JQuery (UI), Toastr, Foundation, Animate, Inuit, LESS Elements, Ratchet, Hint.css, Flat UI, 960.gs, Skeleton
+            dic.Add(Keys.UnusedCss_IgnorePatterns, "bootstrap*; reset.css; normalize.css; jquery*; toastr*; foundation*; animate*; inuit*; elements*; ratchet*; hint*; flat-ui*; 960*; skeleton*");
 
             return dic;
         }
