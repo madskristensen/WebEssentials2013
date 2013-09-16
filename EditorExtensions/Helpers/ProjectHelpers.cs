@@ -106,6 +106,19 @@ namespace MadsKristensen.EditorExtensions
         public static string ToAbsoluteFilePath(string relativeUrl, string rootFolder = null)
         {
             string imageUrl = relativeUrl.Trim(new[]{'\'', '"'});
+            var relUri = new Uri(imageUrl, UriKind.RelativeOrAbsolute);
+
+            if (relUri.IsAbsoluteUri)
+            {
+                return relUri.LocalPath;
+            }
+
+            if (relUri.OriginalString.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar).StartsWith(new string(Path.DirectorySeparatorChar, 1)))
+            {
+                rootFolder = null;
+                relUri = new Uri(relUri.OriginalString.Substring(1), UriKind.Relative);
+            }
+
             var root = (rootFolder ?? GetRootFolder()).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
             if (!root.EndsWith(new string(Path.DirectorySeparatorChar, 1)))
@@ -114,7 +127,6 @@ namespace MadsKristensen.EditorExtensions
             }
 
             var rootUri = new Uri(root, UriKind.Absolute);
-            var relUri = new Uri(imageUrl, UriKind.RelativeOrAbsolute);
 
             return FixAbsolutePath(new Uri(rootUri, relUri).LocalPath);
         }
