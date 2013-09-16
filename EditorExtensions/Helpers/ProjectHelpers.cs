@@ -32,7 +32,19 @@ namespace MadsKristensen.EditorExtensions
                     activeProject = activeSolutionProjects.GetValue(0) as Project;
                 }
 
-                return activeProject.Properties.Item("FullPath").Value.ToString();
+                if (activeProject == null)
+                {
+                    return string.Empty;
+                }
+
+                var fullPath = activeProject.Properties.Item("FullPath").Value;
+
+                if (fullPath == null)
+                {
+                    return string.Empty;
+                }
+
+                return fullPath.ToString();
             }
             catch (Exception ex)
             {
@@ -60,7 +72,9 @@ namespace MadsKristensen.EditorExtensions
                         {
                             item.Properties.Item("ItemType").Value = itemType;
                         }
-                        catch { }
+                        catch
+                        {
+                        }
                     }
                 }
             }
@@ -91,44 +105,18 @@ namespace MadsKristensen.EditorExtensions
 
         public static string ToAbsoluteFilePath(string relativeUrl, string rootFolder = null)
         {
-            string imageUrl = relativeUrl.Trim(new[] { '\'', '"' });
-            string filePath = string.Empty;
+            string imageUrl = relativeUrl.Trim(new[]{'\'', '"'});
+            var root = (rootFolder ?? GetRootFolder()).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
-            if (imageUrl.StartsWith("/", StringComparison.Ordinal))
+            if (!root.EndsWith(new string(Path.DirectorySeparatorChar, 1)))
             {
-                string root = rootFolder ?? ProjectHelpers.GetRootFolder();
-
-                if (root.Contains("://"))
-                {
-                    filePath = root + imageUrl;
-                }
-                else if (!string.IsNullOrEmpty(root))
-                {
-                    if (!Directory.Exists(root))
-                    {
-                        filePath = new FileInfo(root).Directory + imageUrl;
-                    }
-                    else
-                    {
-                        return root + imageUrl.Replace("/", "\\");
-                    }
-                }
-            }
-            else
-            {
-                FileInfo fi = new FileInfo(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
-                DirectoryInfo dir = fi.Directory;
-
-                while (imageUrl.Contains("../"))
-                {
-                    imageUrl = imageUrl.Remove(imageUrl.IndexOf("../", StringComparison.Ordinal), 3);
-                    dir = dir.Parent;
-                }
-
-                filePath = Path.Combine(dir.FullName, imageUrl.Replace("/", "\\"));
+                root += Path.DirectorySeparatorChar;
             }
 
-            return filePath;
+            var rootUri = new Uri(root, UriKind.Absolute);
+            var relUri = new Uri(imageUrl, UriKind.RelativeOrAbsolute);
+
+            return FixAbsolutePath(new Uri(rootUri, relUri).LocalPath);
         }
 
         public static ITextBuffer GetCurentTextBuffer()
@@ -142,7 +130,7 @@ namespace MadsKristensen.EditorExtensions
             if (componentModel != null)
             {
                 var editorAdapter = componentModel.GetService<IVsEditorAdaptersFactoryService>();
-                var textManager = (IVsTextManager)ServiceProvider.GlobalProvider.GetService(typeof(SVsTextManager));
+                var textManager = (IVsTextManager) ServiceProvider.GlobalProvider.GetService(typeof (SVsTextManager));
 
                 IVsTextView activeView = null;
                 textManager.GetActiveView(1, null, out activeView);
@@ -155,12 +143,12 @@ namespace MadsKristensen.EditorExtensions
 
         public static IComponentModel GetComponentModel()
         {
-            return (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
+            return (IComponentModel) ServiceProvider.GlobalProvider.GetService(typeof (SComponentModel));
         }
 
         public static IEnumerable<string> GetSelectedItemPaths()
         {
-            var items = (Array)EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
+            var items = (Array) EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
             foreach (UIHierarchyItem selItem in items)
             {
                 var item = selItem.Object as ProjectItem;
@@ -215,12 +203,24 @@ namespace MadsKristensen.EditorExtensions
             if (item == null || item.ContainingProject == null || string.IsNullOrEmpty(item.ContainingProject.FullName)) // Solution items
                 return null;
 
-            return item.ContainingProject.Properties.Item("FullPath").Value.ToString();
+            var fullPath = item.Properties.Item("FullPath").Value.ToString();
+
+            if (Directory.Exists(fullPath))
+            {
+                return fullPath;
+            }
+
+            if (File.Exists(fullPath))
+            {
+                return Path.GetDirectoryName(fullPath);
+            }
+
+            return string.Empty;
         }
 
         public static IEnumerable<ProjectItem> GetSelectedItems()
         {
-            var items = (Array)EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
+            var items = (Array) EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
             foreach (UIHierarchyItem selItem in items)
             {
                 var item = selItem.Object as ProjectItem;
@@ -229,6 +229,26 @@ namespace MadsKristensen.EditorExtensions
                     yield return item;
                 }
             }
+        }
+
+        public static string FixAbsolutePath(string absolutePath)
+        {
+            if (string.IsNullOrWhiteSpace(absolutePath))
+            {
+                return absolutePath;
+            }
+
+            var uniformlySeparated = absolutePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            var doubleSlash = new string(Path.DirectorySeparatorChar, 2);
+            var prependSeparator = uniformlySeparated.StartsWith(doubleSlash);
+            uniformlySeparated = uniformlySeparated.Replace(doubleSlash, new string(Path.DirectorySeparatorChar, 1));
+
+            if (prependSeparator)
+            {
+                uniformlySeparated = Path.DirectorySeparatorChar + uniformlySeparated;
+            }
+
+            return uniformlySeparated;
         }
     }
 }

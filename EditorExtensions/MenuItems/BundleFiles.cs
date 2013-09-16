@@ -1,4 +1,5 @@
-﻿using EnvDTE;
+﻿using System.Runtime.InteropServices;
+using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
@@ -92,13 +93,23 @@ namespace MadsKristensen.EditorExtensions
             {
                 foreach (Project p in EditorExtensionsPackage.DTE.Solution.Projects)
                 {
-                    if (string.IsNullOrEmpty(p.FullName))
+                    try
                     {
-                        GetAllProjects(p, list);
+                        if (string.IsNullOrEmpty(p.FullName))
+                        {
+                            GetAllProjects(p, list);
+                        }
+                        else
+                        {
+                            list.Add(p);
+                        }
                     }
-                    else
+                    catch (COMException ex)
                     {
-                        list.Add(p);
+                        if ((uint)ex.ErrorCode != IVsExtensions.DISP_E_MEMBERNOTFOUND)
+                        {
+                            throw;
+                        }
                     }
                 }
             }
@@ -137,6 +148,7 @@ namespace MadsKristensen.EditorExtensions
                     continue;
 
                 XmlDocument doc = GetXmlDocument(file);
+                var bundleFileDir = Path.GetDirectoryName(file);
                 bool enabled = false;
 
                 if (doc != null)
@@ -149,9 +161,9 @@ namespace MadsKristensen.EditorExtensions
                     foreach (XmlNode node in nodes)
                     {
                         string relative = node.InnerText;
-                        string absolute = ProjectHelpers.ToAbsoluteFilePath(relative, dir).Replace("/", "\\").Replace("\\\\", "\\");
+                        string absolute = ProjectHelpers.ToAbsoluteFilePath(relative, bundleFileDir);
 
-                        if (changedFile != null && absolute.Equals(changedFile.Replace("\\\\", "\\"), StringComparison.OrdinalIgnoreCase))
+                        if (changedFile != null && absolute.Equals(ProjectHelpers.FixAbsolutePath(changedFile), StringComparison.OrdinalIgnoreCase))
                         {
                             enabled = true;
                             break;
@@ -342,7 +354,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    absolute = ProjectHelpers.ToAbsoluteFilePath(node.InnerText, ProjectHelpers.GetProjectFolder(filePath)).Replace("\\\\", "\\");
+                    absolute = ProjectHelpers.ToAbsoluteFilePath(node.InnerText, ProjectHelpers.GetProjectFolder(filePath));
                 }
 
                 if (File.Exists(absolute))
