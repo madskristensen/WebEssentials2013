@@ -48,7 +48,8 @@ namespace MadsKristensen.EditorExtensions
         private static string GetRelativeFolder(string url)
         {
             int end = Math.Max(0, url.LastIndexOf('/'));
-            return ProjectHelpers.ToAbsoluteFilePath(url.Substring(0, end));
+            var root = ProjectHelpers.GetProjectFolder(ProjectHelpers.GetActiveFilePath());
+            return ProjectHelpers.ToAbsoluteFilePath(url.Substring(0, end), root);
         }
 
         private static string GetRootFolder()

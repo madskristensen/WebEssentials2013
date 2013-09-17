@@ -18,19 +18,7 @@ namespace MadsKristensen.EditorExtensions
             try
             {
                 EnvDTE80.DTE2 dte = EditorExtensionsPackage.DTE;
-                Project activeProject = null;
-
-                if (dte.Solution.Projects.Count == 1 && !string.IsNullOrEmpty(dte.Solution.Projects.Item(1).FullName))
-                {
-                    return dte.Solution.Projects.Item(1).Properties.Item("FullPath").Value.ToString();
-                }
-
-                Array activeSolutionProjects = dte.ActiveSolutionProjects as Array;
-
-                if (activeSolutionProjects != null && activeSolutionProjects.Length > 0)
-                {
-                    activeProject = activeSolutionProjects.GetValue(0) as Project;
-                }
+                Project activeProject = GetActiveProject();
 
                 if (activeProject == null)
                 {
@@ -261,6 +249,18 @@ namespace MadsKristensen.EditorExtensions
             }
 
             return uniformlySeparated;
+        }
+
+        public static string GetActiveFilePath()
+        {
+            var doc = EditorExtensionsPackage.DTE.ActiveDocument;
+
+            if (doc != null)
+            {
+                return ToAbsoluteFilePath(doc.FullName);
+            }
+
+            return string.Empty;
         }
     }
 }
