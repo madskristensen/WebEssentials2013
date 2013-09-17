@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
 
         public override void Invoke()
         {
-            string filePath = ProjectHelpers.ToAbsoluteFilePath(_path);
+            string filePath = ProjectHelpers.ToAbsoluteFilePath(_path, ProjectHelpers.GetActiveFilePath());
             ApplyChanges(filePath);
         }
 
