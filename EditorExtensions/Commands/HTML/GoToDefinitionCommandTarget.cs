@@ -25,6 +25,11 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
+            if (!TryGetPath(out _path))
+            {
+                return false;
+            }
+
             _path = _path.TrimStart('~').Trim();
             string openFile = EditorExtensionsPackage.DTE.ActiveDocument.FullName;
             string projectFolder = ProjectHelpers.GetProjectFolder(openFile);
