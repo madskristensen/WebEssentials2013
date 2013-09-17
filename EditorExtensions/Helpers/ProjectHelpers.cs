@@ -109,6 +109,11 @@ namespace MadsKristensen.EditorExtensions
 
             var root = (rootFolder ?? GetRootFolder()).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
+            if (File.Exists(root))
+            {
+                root = Path.GetDirectoryName(root);
+            }
+
             if (!root.EndsWith(new string(Path.DirectorySeparatorChar, 1)))
             {
                 root += Path.DirectorySeparatorChar;
@@ -116,7 +121,14 @@ namespace MadsKristensen.EditorExtensions
 
             var rootUri = new Uri(root, UriKind.Absolute);
 
-            return FixAbsolutePath(new Uri(rootUri, relUri).LocalPath);
+            try
+            {
+                return FixAbsolutePath(new Uri(rootUri, relUri).LocalPath);
+            }
+            catch (UriFormatException)
+            {
+                return string.Empty;
+            }
         }
 
         public static ITextBuffer GetCurentTextBuffer()

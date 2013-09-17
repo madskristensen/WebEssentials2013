@@ -42,7 +42,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 return null;
             }
 
-            return new CssRule(sourceFile, fileText, ruleSet, selectorName);
+            try
+            {
+                return new CssRule(sourceFile, fileText, ruleSet, selectorName);
+            }
+            catch
+            {
+                //If anything went wrong in creating the rule reference, don't return it, it'll get cataloged at the next opportunity, presumably when the document is valid again
+                return null;
+            }
         }
 
         public string DisplaySelectorName { get; private set; }

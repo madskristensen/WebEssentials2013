@@ -35,7 +35,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (selection != null)
             {
-                string filePath = ProjectHelpers.ToAbsoluteFilePath(selection);
+                string filePath = ProjectHelpers.ToAbsoluteFilePath(selection, ProjectHelpers.GetActiveFilePath());
                 ApplyChanges(filePath);
             }
         }
