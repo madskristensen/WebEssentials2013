@@ -31,9 +31,7 @@ namespace MadsKristensen.EditorExtensions
             }
 
             _path = _path.TrimStart('~').Trim();
-            string openFile = EditorExtensionsPackage.DTE.ActiveDocument.FullName;
-            string projectFolder = ProjectHelpers.GetProjectFolder(openFile);
-            string absolute = ProjectHelpers.ToAbsoluteFilePath(_path, projectFolder);
+            string absolute = ProjectHelpers.ToAbsoluteFilePathFromActiveFile(_path);
 
             if (File.Exists(absolute))
             {

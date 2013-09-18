@@ -161,7 +161,7 @@ namespace MadsKristensen.EditorExtensions
                     foreach (XmlNode node in nodes)
                     {
                         string relative = node.InnerText;
-                        string absolute = ProjectHelpers.ToAbsoluteFilePath(relative, bundleFileDir);
+                        string absolute = ProjectHelpers.ToAbsoluteFilePath(relative, ProjectHelpers.GetProject(changedFile), bundleFileDir);
 
                         if (changedFile != null && absolute.Equals(ProjectHelpers.FixAbsolutePath(changedFile), StringComparison.OrdinalIgnoreCase))
                         {
@@ -354,7 +354,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    absolute = ProjectHelpers.ToAbsoluteFilePath(node.InnerText, ProjectHelpers.GetProjectFolder(filePath));
+                    absolute = ProjectHelpers.ToAbsoluteFilePath(node.InnerText, filePath);
                 }
 
                 if (File.Exists(absolute))
