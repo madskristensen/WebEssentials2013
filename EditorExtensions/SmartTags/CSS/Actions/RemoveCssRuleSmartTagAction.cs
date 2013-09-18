@@ -1,5 +1,7 @@
 ﻿using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
+using System;
+using System.Windows.Media.Imaging;
 
 namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Actions
 {
@@ -12,6 +14,11 @@ namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Actions
         {
             _span = span;
             _rule = rule;
+
+            if (Icon == null)
+            {
+                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/delete.png", UriKind.RelativeOrAbsolute));
+            }
         }
 
         public override string DisplayText
