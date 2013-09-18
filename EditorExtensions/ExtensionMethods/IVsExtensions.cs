@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using EnvDTE;
 using System;
 using Microsoft.VisualStudio.Shell;
@@ -8,19 +9,33 @@ namespace MadsKristensen.EditorExtensions
 {
     public static class IVsExtensions
     {
+        public const uint DISP_E_MEMBERNOTFOUND = 0x80020003;
+
         public static void AddHierarchyItem(this ErrorTask task)
         {
-            IVsHierarchy HierarchyItem;
+            IVsHierarchy hierarchyItem = null;
             IVsSolution solution = EditorExtensionsPackage.GetGlobalService<IVsSolution>(typeof(SVsSolution));
             Project project = ProjectHelpers.GetActiveProject();
 
             if (solution != null && project != null)
             {
-                int flag = solution.GetProjectOfUniqueName(project.FullName, out HierarchyItem);
+                int flag = -1;
+
+                try
+                {
+                    flag = solution.GetProjectOfUniqueName(project.FullName, out hierarchyItem);
+                }
+                catch (COMException ex)
+                {
+                    if ((uint)ex.ErrorCode != DISP_E_MEMBERNOTFOUND)
+                    {
+                        throw;
+                    }
+                }
 
                 if (0 == flag)
                 {
-                    task.HierarchyItem = HierarchyItem;
+                    task.HierarchyItem = hierarchyItem;
                 }
             }
         }

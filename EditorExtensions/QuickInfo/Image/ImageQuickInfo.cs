@@ -103,8 +103,9 @@ namespace MadsKristensen.EditorExtensions
                     string root = ProjectHelpers.GetProjectFolder(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
                     if (root.Contains("://"))
                         return root + imageUrl;
-                    else if (!string.IsNullOrEmpty(root))
-                        filePath = root + imageUrl;// new FileInfo(root).Directory + imageUrl;
+                    
+                    if (!string.IsNullOrEmpty(root))
+                        filePath = ProjectHelpers.ToAbsoluteFilePathFromActiveFile(imageUrl);// new FileInfo(root).Directory + imageUrl;
                 }
                 else if (EditorExtensionsPackage.DTE.ActiveDocument != null)
                 {
