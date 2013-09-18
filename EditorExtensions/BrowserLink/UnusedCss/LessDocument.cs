@@ -72,7 +72,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public override string GetSelectorName(RuleSet ruleSet)
         {
             var block = ruleSet.Block as LessRuleBlock;
-            if (ruleSet.Block.Declarations.Count == 0 && ruleSet.Block.Directives.Count == 0 && (block == null || block.RuleSets.Any()))
+            if (block == null || ruleSet.Block.Declarations.Count == 0 && ruleSet.Block.Directives.Count == 0 && (block == null || block.RuleSets.Any()))
             {
                 //If we got here, the element won't be included in the output but has children that might be
                 return null;

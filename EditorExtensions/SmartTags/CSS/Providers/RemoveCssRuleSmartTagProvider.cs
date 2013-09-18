@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Providers
         public IEnumerable<ISmartTagAction> GetSmartTagActions(ParseItem item, int position, ITrackingSpan itemTrackingSpan, ITextView view)
         {
             RuleSet rule = item.FindType<RuleSet>();
-            if (rule == null || !rule.Block.IsValid || UsageRegistry.IsRuleUsed(rule))
+            if (rule == null || rule.Block == null || !rule.Block.IsValid || UsageRegistry.IsRuleUsed(rule))
                 yield break;
 
             yield return new RemoveCssRuleSmartTagAction(itemTrackingSpan, rule);

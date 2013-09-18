@@ -13,26 +13,26 @@ namespace MadsKristensen.EditorExtensions
 {
     internal static class ProjectHelpers
     {
-        public static string GetRootFolder()
+        public static string GetRootFolder(Project project = null)
         {
             try
             {
                 EnvDTE80.DTE2 dte = EditorExtensionsPackage.DTE;
-                Project activeProject = null;
+                Project activeProject = project ?? GetActiveProject();
 
-                if (dte.Solution.Projects.Count == 1 && !string.IsNullOrEmpty(dte.Solution.Projects.Item(1).FullName))
+                if (activeProject == null)
                 {
-                    return dte.Solution.Projects.Item(1).Properties.Item("FullPath").Value.ToString();
+                    return string.Empty;
                 }
 
-                Array activeSolutionProjects = dte.ActiveSolutionProjects as Array;
+                var fullPath = activeProject.Properties.Item("FullPath").Value;
 
-                if (activeSolutionProjects != null && activeSolutionProjects.Length > 0)
+                if (fullPath == null)
                 {
-                    activeProject = activeSolutionProjects.GetValue(0) as Project;
+                    return string.Empty;
                 }
 
-                return activeProject.Properties.Item("FullPath").Value.ToString();
+                return fullPath.ToString();
             }
             catch (Exception ex)
             {
@@ -60,7 +60,9 @@ namespace MadsKristensen.EditorExtensions
                         {
                             item.Properties.Item("ItemType").Value = itemType;
                         }
-                        catch { }
+                        catch
+                        {
+                        }
                     }
                 }
             }
@@ -89,46 +91,62 @@ namespace MadsKristensen.EditorExtensions
             return activeProject;
         }
 
-        public static string ToAbsoluteFilePath(string relativeUrl, string rootFolder = null)
+        public static string ToAbsoluteFilePath(string relativeUrl, string relativeToFile)
         {
-            string imageUrl = relativeUrl.Trim(new[] { '\'', '"' });
-            string filePath = string.Empty;
+            var file = EditorExtensionsPackage.DTE.Solution.FindProjectItem(relativeToFile);
+            return ToAbsoluteFilePath(relativeUrl, file);
+        }
 
-            if (imageUrl.StartsWith("/", StringComparison.Ordinal))
+        public static string ToAbsoluteFilePathFromActiveFile(string relativeUrl)
+        {
+            return ToAbsoluteFilePath(relativeUrl, GetActiveFile());
+        }
+
+        public static string ToAbsoluteFilePath(string relativeUrl, ProjectItem file)
+        {
+            var projectFolder = GetProjectFolder(file);
+            var project = GetProject(file);
+            return ToAbsoluteFilePath(relativeUrl, project, projectFolder);
+        }
+
+        public static string ToAbsoluteFilePath(string relativeUrl, Project project, string rootFolder)
+        {
+            string imageUrl = relativeUrl.Trim(new[]{'\'', '"'});
+            var relUri = new Uri(imageUrl, UriKind.RelativeOrAbsolute);
+
+            if (relUri.IsAbsoluteUri)
             {
-                string root = rootFolder ?? ProjectHelpers.GetRootFolder();
-
-                if (root.Contains("://"))
-                {
-                    filePath = root + imageUrl;
-                }
-                else if (!string.IsNullOrEmpty(root))
-                {
-                    if (!Directory.Exists(root))
-                    {
-                        filePath = new FileInfo(root).Directory + imageUrl;
-                    }
-                    else
-                    {
-                        return root + imageUrl.Replace("/", "\\");
-                    }
-                }
-            }
-            else
-            {
-                FileInfo fi = new FileInfo(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
-                DirectoryInfo dir = fi.Directory;
-
-                while (imageUrl.Contains("../"))
-                {
-                    imageUrl = imageUrl.Remove(imageUrl.IndexOf("../", StringComparison.Ordinal), 3);
-                    dir = dir.Parent;
-                }
-
-                filePath = Path.Combine(dir.FullName, imageUrl.Replace("/", "\\"));
+                return relUri.LocalPath;
             }
 
-            return filePath;
+            if (relUri.OriginalString.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar).StartsWith(new string(Path.DirectorySeparatorChar, 1)))
+            {
+                rootFolder = null;
+                relUri = new Uri(relUri.OriginalString.Substring(1), UriKind.Relative);
+            }
+
+            var root = (rootFolder ?? GetRootFolder(project)).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+
+            if (File.Exists(root))
+            {
+                root = Path.GetDirectoryName(root);
+            }
+
+            if (!root.EndsWith(new string(Path.DirectorySeparatorChar, 1)))
+            {
+                root += Path.DirectorySeparatorChar;
+            }
+
+            var rootUri = new Uri(root, UriKind.Absolute);
+
+            try
+            {
+                return FixAbsolutePath(new Uri(rootUri, relUri).LocalPath);
+            }
+            catch (UriFormatException)
+            {
+                return string.Empty;
+            }
         }
 
         public static ITextBuffer GetCurentTextBuffer()
@@ -142,7 +160,7 @@ namespace MadsKristensen.EditorExtensions
             if (componentModel != null)
             {
                 var editorAdapter = componentModel.GetService<IVsEditorAdaptersFactoryService>();
-                var textManager = (IVsTextManager)ServiceProvider.GlobalProvider.GetService(typeof(SVsTextManager));
+                var textManager = (IVsTextManager) ServiceProvider.GlobalProvider.GetService(typeof (SVsTextManager));
 
                 IVsTextView activeView = null;
                 textManager.GetActiveView(1, null, out activeView);
@@ -155,12 +173,12 @@ namespace MadsKristensen.EditorExtensions
 
         public static IComponentModel GetComponentModel()
         {
-            return (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
+            return (IComponentModel) ServiceProvider.GlobalProvider.GetService(typeof (SComponentModel));
         }
 
         public static IEnumerable<string> GetSelectedItemPaths()
         {
-            var items = (Array)EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
+            var items = (Array) EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
             foreach (UIHierarchyItem selItem in items)
             {
                 var item = selItem.Object as ProjectItem;
@@ -205,6 +223,26 @@ namespace MadsKristensen.EditorExtensions
             return Path.GetDirectoryName(solution.FullName);
         }
 
+        private static string GetProjectFolder(ProjectItem item)
+        {
+            if (item == null || item.ContainingProject == null || string.IsNullOrEmpty(item.ContainingProject.FullName)) // Solution items
+                return null;
+
+            var fullPath = item.Properties.Item("FullPath").Value.ToString();
+
+            if (Directory.Exists(fullPath))
+            {
+                return fullPath;
+            }
+
+            if (File.Exists(fullPath))
+            {
+                return Path.GetDirectoryName(fullPath);
+            }
+
+            return string.Empty;
+        }
+
         public static string GetProjectFolder(string fileNameOrFolder)
         {
             if (string.IsNullOrEmpty(fileNameOrFolder))
@@ -212,15 +250,12 @@ namespace MadsKristensen.EditorExtensions
 
             ProjectItem item = EditorExtensionsPackage.DTE.Solution.FindProjectItem(fileNameOrFolder);
 
-            if (item == null || item.ContainingProject == null || string.IsNullOrEmpty(item.ContainingProject.FullName)) // Solution items
-                return null;
-
-            return item.ContainingProject.Properties.Item("FullPath").Value.ToString();
+            return GetProjectFolder(item);
         }
 
         public static IEnumerable<ProjectItem> GetSelectedItems()
         {
-            var items = (Array)EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
+            var items = (Array) EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
             foreach (UIHierarchyItem selItem in items)
             {
                 var item = selItem.Object as ProjectItem;
@@ -229,6 +264,78 @@ namespace MadsKristensen.EditorExtensions
                     yield return item;
                 }
             }
+        }
+
+        public static string FixAbsolutePath(string absolutePath)
+        {
+            if (string.IsNullOrWhiteSpace(absolutePath))
+            {
+                return absolutePath;
+            }
+
+            var uniformlySeparated = absolutePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            var doubleSlash = new string(Path.DirectorySeparatorChar, 2);
+            var prependSeparator = uniformlySeparated.StartsWith(doubleSlash);
+            uniformlySeparated = uniformlySeparated.Replace(doubleSlash, new string(Path.DirectorySeparatorChar, 1));
+
+            if (prependSeparator)
+            {
+                uniformlySeparated = Path.DirectorySeparatorChar + uniformlySeparated;
+            }
+
+            return uniformlySeparated;
+        }
+
+        public static string GetActiveFilePath()
+        {
+            var doc = EditorExtensionsPackage.DTE.ActiveDocument;
+
+            if (doc != null)
+            {
+                return ToAbsoluteFilePath(doc.FullName, doc.ProjectItem);
+            }
+
+            return string.Empty;
+        }
+
+        public static Project GetActiveFileProject()
+        {
+            var doc = EditorExtensionsPackage.DTE.ActiveDocument;
+
+            if (doc != null)
+            {
+                return doc.ProjectItem.ContainingProject;
+            }
+
+            return null;
+        }
+
+        private static Project GetProject(ProjectItem projectItem)
+        {
+            if (projectItem == null)
+            {
+                return null;
+            }
+
+            return projectItem.ContainingProject;
+        }
+
+        public static Project GetProject(string item)
+        {
+            var projectItem = EditorExtensionsPackage.DTE.Solution.FindProjectItem(item);
+            return GetProject(projectItem);
+        }
+
+        public static ProjectItem GetActiveFile()
+        {
+            var doc = EditorExtensionsPackage.DTE.ActiveDocument;
+
+            if (doc != null)
+            {
+                return doc.ProjectItem;
+            }
+
+            return null;
         }
     }
 }
