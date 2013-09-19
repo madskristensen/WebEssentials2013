@@ -45,6 +45,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             var menuCommand = (OleMenuCommand)sender;
             menuCommand.Enabled = UnusedCssExtension.IsAnyConnectionAlive;
+            menuCommand.Visible = menuCommand.Enabled && !UnusedCssExtension.Any(x => x.IsRecording);
         }
 
         private static void ResetUsageData(object sender, EventArgs e)
