@@ -691,6 +691,7 @@
     <EmbeddedResource Include="Resources\Scripts\jshint-2.1.4.js" />
     <EmbeddedResource Include="Resources\Scripts\AngularController.js" />
     <Resource Include="Resources\delete.png" />
+    <Resource Include="Resources\browserlink.png" />
     <Content Include="Resources\Scripts\es5-shim.min.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

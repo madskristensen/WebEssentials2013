@@ -545,6 +545,8 @@
 
       <Button guid="guidUnusedCssCmdSet" id="UnusedCssRecordAllCommandId" priority="0x2000" type="Button">
         <Parent guid="guidBrowserLinkCmdSet" id="IDG_BROWSERLINK_COMMANDS"/>
+        <Icon guid="guidBrowserLink" id="bmpRecord"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Start Recording (All Browsers)</ButtonText>
         </Strings>
@@ -552,6 +554,7 @@
 
       <Button guid="guidUnusedCssCmdSet" id="UnusedCssStopRecordAllCommandId" priority="0x2001" type="Button">
         <Parent guid="guidBrowserLinkCmdSet" id="IDG_BROWSERLINK_COMMANDS"/>
+        <Icon guid="guidBrowserLink" id="bmpPause"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
@@ -570,6 +573,7 @@
     <Bitmaps>
       <Bitmap guid="guidImages" href="Resources\Images.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpLogo, bmpMinify"/>
       <Bitmap guid="guidNumbers" href="Resources\numbers.png" usedList="pic1, pic2, pic3, pic4"/>
+      <Bitmap guid="guidBrowserLink" href="Resources\browserlink.png" usedList="bmpRecord, bmpPause"/>
     </Bitmaps>
   </Commands>
 
@@ -823,6 +827,11 @@
       <IDSymbol name="pic2" value="2" />
       <IDSymbol name="pic3" value="3" />
       <IDSymbol name="pic4" value="4" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidBrowserLink" value="{51f54cc4-4444-4ae5-a1a6-d44f9a6b7cbe}" >
+      <IDSymbol name="bmpRecord" value="1" />
+      <IDSymbol name="bmpPause" value="2" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>
