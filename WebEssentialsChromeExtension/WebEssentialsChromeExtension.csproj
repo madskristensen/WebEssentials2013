@@ -48,6 +48,7 @@
     <Content Include="app\popup\popup.js" />
     <Content Include="Properties\build\lib\Ionic.Zip.DLL" />
     <Content Include="Properties\build\lib\MSBuild.ExtensionPack.dll" />
+    <Content Include="screenshots\logo.png" />
     <Content Include="screenshots\screenshot.png" />
     <Content Include="index.htm" />
     <Content Include="Properties\build\ligershark.chrome.targets" />
