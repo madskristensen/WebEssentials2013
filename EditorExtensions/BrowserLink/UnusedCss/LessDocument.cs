@@ -41,9 +41,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return result;
         }
 
-        private string GetSelectorNameInternal(RuleSet ruleSet)
+        private static string GetSelectorNameInternal(RuleSet ruleSet)
         {
-            var currentSelectorName = base.GetSelectorName(ruleSet).Trim();
+            var currentSelectorName = ExtractSelectorName(ruleSet).Trim();
             var currentSet = ruleSet;
             var currentBlock = ruleSet.Parent as LessRuleBlock;
 
@@ -53,7 +53,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
                 if (currentSet != null)
                 {
-                    currentSelectorName = base.GetSelectorName(currentSet).Trim() + " " + currentSelectorName;
+                    currentSelectorName = ExtractSelectorName(currentSet).Trim() + " " + currentSelectorName;
                     currentBlock = currentSet.Parent as LessRuleBlock;
                 }
             }
@@ -71,17 +71,26 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public override string GetSelectorName(RuleSet ruleSet)
         {
-            var block = ruleSet.Block as LessRuleBlock;
-            if (block == null || ruleSet.Block.Declarations.Count == 0 && ruleSet.Block.Directives.Count == 0 && (block == null || block.RuleSets.Any()))
-            {
-                //If we got here, the element won't be included in the output but has children that might be
-                return null;
-            }
+            return GetLessSelectorName(ruleSet, false);
+        }
 
-            if (base.GetSelectorName(ruleSet).Contains("("))
+        internal static string GetLessSelectorName(RuleSet ruleSet, bool includeShellSelectors = true)
+        {
+            var block = ruleSet.Block as LessRuleBlock;
+
+            if (!includeShellSelectors)
             {
-                //Don't flag mixins
-                return null;
+                if (block == null || ruleSet.Block.Declarations.Count == 0 && ruleSet.Block.Directives.Count == 0 && block.RuleSets.Any())
+                {
+                    //If we got here, the element won't be included in the output but has children that might be
+                    return null;
+                }
+
+                if (ExtractSelectorName(ruleSet).Contains("("))
+                {
+                    //Don't flag mixins
+                    return null;
+                }
             }
 
             return GetSelectorNameInternal(ruleSet);
