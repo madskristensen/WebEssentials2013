@@ -1,4 +1,5 @@
-﻿using Microsoft.CSS.Core;
+﻿using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.CSS.Editor.Schemas;
@@ -119,6 +120,14 @@ namespace MadsKristensen.EditorExtensions
                     entry = schema.GetAtDirective("@" + atDirective.Keyword.Text);
                     theOne = atDirective.Keyword;
                 }
+            }
+
+            var ruleSet = item.FindType<RuleSet>();
+
+            //If the selector's full name would require computation (it's nested), compute it and add it to the output
+            if (ruleSet != null && ruleSet.Parent is RuleBlock)
+            {
+                qiContent.Add(LessDocument.GetLessSelectorName(ruleSet));
             }
 
             if (entry != null)
