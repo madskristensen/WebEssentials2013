@@ -130,6 +130,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public virtual string GetSelectorName(RuleSet ruleSet)
         {
+            return ExtractSelectorName(ruleSet);
+        }
+
+        internal static string ExtractSelectorName(RuleSet ruleSet)
+        {
             return ruleSet.Text.Substring(0, ruleSet.Block.Start - ruleSet.Start);
         }
     }
