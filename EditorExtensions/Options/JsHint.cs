@@ -67,6 +67,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.JsHint_browser, JsHint_browser);
             Settings.SetValue(WESettings.Keys.JsHint_couch, JsHint_couch);
             Settings.SetValue(WESettings.Keys.JsHint_devel, JsHint_devel);
+            Settings.SetValue(WESettings.Keys.JsHint_jquery, JsHint_jquery);
             Settings.SetValue(WESettings.Keys.JsHint_dojo, JsHint_dojo);
             Settings.SetValue(WESettings.Keys.JsHint_mootools, JsHint_mootools);
             Settings.SetValue(WESettings.Keys.JsHint_node, JsHint_node);
