@@ -36,7 +36,7 @@ namespace MadsKristensen.EditorExtensions
             }
             catch (Exception ex)
             {
-                Logger.Log(ex);
+                //Logger.Log(ex);
                 return string.Empty;
             }
         }
