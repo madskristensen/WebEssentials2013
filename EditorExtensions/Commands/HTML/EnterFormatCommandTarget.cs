@@ -5,10 +5,12 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
+using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.Web.Editor.Formatting;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
@@ -29,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if (_broker.IsCompletionActive(TextView))
+            if (_broker.IsCompletionActive(TextView) || !IsValidTextBuffer())
                 return false;
 
             int position = TextView.Caret.Position.BufferPosition.Position;
@@ -51,6 +53,39 @@ namespace MadsKristensen.EditorExtensions
             UpdateTextBuffer(element, position);
 
             return false;
+        }
+
+        private bool IsValidTextBuffer()
+        {
+            var projection = TextView.TextBuffer as IProjectionBuffer;
+
+            if (projection != null)
+            {
+                var snapshotPoint = TextView.Caret.Position.BufferPosition;
+
+                var buffers = projection.SourceBuffers.Where(
+                    s =>
+                        !s.ContentType.IsOfType("html")
+                        && !s.ContentType.IsOfType("htmlx")
+                        && !s.ContentType.IsOfType("inert")
+                        && !s.ContentType.IsOfType("CSharp")
+                        && !s.ContentType.IsOfType("VisualBasic")
+                        && !s.ContentType.IsOfType("RoslynCSharp")
+                        && !s.ContentType.IsOfType("RoslynVisualBasic"));
+
+
+                foreach (ITextBuffer buffer in buffers)
+                {
+                    SnapshotPoint? point = TextView.BufferGraph.MapDownToBuffer(snapshotPoint, PointTrackingMode.Negative, buffer, PositionAffinity.Predecessor);
+
+                    if (point.HasValue)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private void UpdateTextBuffer(ElementNode element, int position)
