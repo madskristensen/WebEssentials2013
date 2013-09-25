@@ -243,6 +243,10 @@ namespace MadsKristensen.EditorExtensions
         private static SortedDictionary<string, object> DefaultSettings()
         {
             var dic = new SortedDictionary<string, object>();
+
+            // Misc
+            dic.Add(Keys.EnableEnterFormat, true);
+
             
             // LESS
             dic.Add(Keys.GenerateCssFileFromLess, true);

@@ -31,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if (_broker.IsCompletionActive(TextView) || !IsValidTextBuffer())
+            if (_broker.IsCompletionActive(TextView) || !IsValidTextBuffer() || !WESettings.GetBoolean(WESettings.Keys.EnableEnterFormat))
                 return false;
 
             int position = TextView.Caret.Position.BufferPosition.Position;
@@ -57,6 +57,8 @@ namespace MadsKristensen.EditorExtensions
 
         private bool IsValidTextBuffer()
         {
+            if (TextView.TextBuffer.ContentType.IsOfType("markdown"))
+                return false;
             var projection = TextView.TextBuffer as IProjectionBuffer;
 
             if (projection != null)

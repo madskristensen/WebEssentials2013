@@ -7,7 +7,7 @@ namespace MadsKristensen.EditorExtensions
     class UnusedCssOptions : DialogPage
     {
         [LocDisplayName("File patterns to ignore")]
-        [Description("A semicolon separated list of file patterns to ignore")]
+        [Description("A semicolon-separated list of file patterns to ignore.")]
         [Category("CSS")]
         public string IgnorePatterns { get; set; }
 

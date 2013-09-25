@@ -13,6 +13,7 @@ namespace MadsKristensen.EditorExtensions
         public override void SaveSettingsToStorage()
         {
             Settings.SetValue(WESettings.Keys.KeepImportantComments, KeepImportantComments);
+            Settings.SetValue(WESettings.Keys.EnableEnterFormat, EnableEnterFormat);
 
             Settings.Save();
         }
@@ -20,6 +21,7 @@ namespace MadsKristensen.EditorExtensions
         public override void LoadSettingsFromStorage()
         {
             KeepImportantComments = WESettings.GetBoolean(WESettings.Keys.KeepImportantComments);
+            EnableEnterFormat = WESettings.GetBoolean(WESettings.Keys.EnableEnterFormat);
         }
 
         // MISC
@@ -27,5 +29,10 @@ namespace MadsKristensen.EditorExtensions
         [Description("Don't strip important comments when minifying JS and CSS. Important comments follows this pattern: /*! text */")]
         [Category("Minification")]
         public bool KeepImportantComments { get; set; }
+
+        [LocDisplayName("Auto-format HTML on Enter")]
+        [Description("Automatically format HTML documents when pressing Enter.")]
+        [Category("HTML")]
+        public bool EnableEnterFormat { get; set; }
     }
 }
