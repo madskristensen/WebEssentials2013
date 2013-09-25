@@ -64,27 +64,27 @@ namespace MadsKristensen.EditorExtensions
         public bool EnableGzipping { get; set; }
         
         [LocDisplayName("Enable Speed Typing")]
-        [Description("Speed Typing makes it easier to write CSS by eliminating the need for typing curlies, colons and semi-colons.")]
+        [Description("Speed Typing makes it easier to write CSS by eliminating the need to type curlies, colons and semi-colons.")]
         [Category("Misc")]
         public bool EnableSpeedTyping { get; set; }
 
         [LocDisplayName("Disallow universal selector")]
-        [Description("Disallow the universal, also known as the star selector")]
+        [Description("Disallows the universal selector (*).")]
         [Category("Performance")]
         public bool ValidateStarSelector { get; set; }
 
-        [LocDisplayName("Disallow over qualified ID selector")]
-        [Description("Disallow the use of over qualifed ID selectors.")]
+        [LocDisplayName("Disallow over-qualified ID selector")]
+        [Description("Disallows the use of overly qualified ID selectors.")]
         [Category("Performance")]
         public bool ValidateOverQualifiedSelector { get; set; }
 
         [LocDisplayName("Small images should be inlined")]
-        [Description("Small images should be base64 encoded and embedded directly into the stylesheet as dataURIs.")]
+        [Description("Warns when small images are not base64 encoded and embedded directly into the stylesheet as dataURIs.")]
         [Category("Performance")]
         public bool ValidateEmbedImages { get; set; }
 
         [LocDisplayName("Validation location")]
-        [Description("Controls where errors are located. To use the 'Errors' output window, select 'Warnings' and change the Visual Studio CSS settings to use 'Errors'")]
+        [Description("Controls where errors are located. To use the 'Errors' output window, select 'Warnings' and change the Visual Studio CSS settings to use 'Errors'.")]
         [Category("Validation")]
         public WESettings.Keys.ErrorLocation CssErrorLocation { get; set; }
 
@@ -94,7 +94,7 @@ namespace MadsKristensen.EditorExtensions
         public bool ValidateVendorSpecifics { get; set; }
 
         [LocDisplayName("Sync vendor specific values")]
-        [Description("Syncronizes vendor specific property values when the standard property is being modified")]
+        [Description("Synchronizes vendor specific property values when the standard property is being modified.")]
         [Category("Intellisense")]
         public bool SyncVendorValues { get; set; }
 
@@ -104,7 +104,7 @@ namespace MadsKristensen.EditorExtensions
         public bool ShowInitialInherit { get; set; }
 
         [LocDisplayName("Show unsupported")]
-        [Description("Shows the property names, values and pseudos that aren't supported by any browser yet.")]
+        [Description("Shows property names, values and pseudos that aren't supported by any browser yet.")]
         [Category("Intellisense")]
         public bool ShowUnsupported { get; set; }
 
@@ -114,7 +114,7 @@ namespace MadsKristensen.EditorExtensions
         public bool ShowBrowserTooltip { get; set; }
 
         [LocDisplayName("Disallow units for 0 values")]
-        [Description("The value of 0 works without specifying units in all situations where numbers with units or percentages are allowed")]
+        [Description("Warns when units are unnecessarily specified for the number 0 (which never needs a unit in CSS).")]
         [Category("Performance")]
         public bool ValidateZeroUnit { get; set; }
     }

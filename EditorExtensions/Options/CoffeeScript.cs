@@ -33,27 +33,27 @@ namespace MadsKristensen.EditorExtensions
         }
 
         [LocDisplayName("Generate JavaScript file on save")]
-        [Description("Generate JavaScript file when CoffeeScript file is saved")]
+        [Description("Generates JavaScript file when CoffeeScript file is saved.")]
         [Category("CoffeeScript")]
         public bool GenerateJsFileFromCoffeeScript { get; set; }
 
-        [LocDisplayName("Show preview window")]
-        [Description("Show the preview window when editing a CoffeeScript file.")]
+        [LocDisplayName("Show preview pane")]
+        [Description("Shows the preview pane when editing a CoffeeScript file.")]
         [Category("CoffeeScript")]
         public bool ShowCoffeeScriptPreviewWindow { get; set; }
 
-        [LocDisplayName("Wrap generated JavaScript")]
-        [Description("Wrap the generated JavaScript in an anonymous function.")]
+        [LocDisplayName("Wrap generated JavaScript files on save")]
+        [Description("Wraps the generated JavaScript in an anonymous function.")]
         [Category("CoffeeScript")]
         public bool WrapCoffeeScriptClosure { get; set; }
         
         [LocDisplayName("Minify generated JavaScript")]
-        [Description("Creates a minified version of the compiled JavaScript file (file.min.js)")]
+        [Description("Creates a minified version of the compiled JavaScript file (file.min.js).")]
         [Category("CoffeeScript")]
         public bool CoffeeScriptMinify { get; set; }
 
         [LocDisplayName("Compile to 'js' folder")]
-        [Description("Compiles all CoffeeScript files into a folder called 'js' in the same directory as the .coffee file")]
+        [Description("Compiles all CoffeeScript files into a folder called 'js' in the same directory as the .coffee file.")]
         [Category("CoffeeScript")]
         public bool CoffeeScriptCompileToFolder { get; set; }
 
