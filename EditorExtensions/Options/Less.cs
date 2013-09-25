@@ -35,23 +35,23 @@ namespace MadsKristensen.EditorExtensions
         [Category("LESS")]
         public bool GenerateCssFileFromLess { get; set; }
 
-        [LocDisplayName("Generate min file on save")]
-        [Description("Creates a minified version of the compiled CSS file (file.min.css)")]
+        [LocDisplayName("Minify generated CSS files on save")]
+        [Description("Creates a minified version of the compiled CSS file (file.min.css).")]
         [Category("LESS")]
         public bool LessMinify { get; set; }
 
         [LocDisplayName("Show preview window")]
-        [Description("Show the preview window when editing a LESS file.")]
+        [Description("Shows the preview window when editing a LESS file.")]
         [Category("LESS")]
         public bool ShowLessPreviewWindow { get; set; }
 
         [LocDisplayName("Compile on build")]
-        [Description("Compiles all LESS files in the project that has a corresponding .css file.")]
+        [Description("Compiles all LESS files in the project that have a corresponding .css file.")]
         [Category("LESS")]
         public bool LessCompileOnBuild { get; set; }
 
         [LocDisplayName("Compile to 'css' folder")]
-        [Description("Compiles all LESS files into a folder called 'css' in the same directory as the .less file")]
+        [Description("Compiles each LESS file into a folder called 'css' in the same directory as the .less file.")]
         [Category("LESS")]
         public bool LessCompileToFolder { get; set; }
     }
