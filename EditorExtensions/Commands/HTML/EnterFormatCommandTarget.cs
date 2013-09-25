@@ -57,6 +57,8 @@ namespace MadsKristensen.EditorExtensions
 
         private bool IsValidTextBuffer()
         {
+            if (TextView.TextBuffer.ContentType.IsOfType("markdown"))
+                return false;
             var projection = TextView.TextBuffer as IProjectionBuffer;
 
             if (projection != null)
