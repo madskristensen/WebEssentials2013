@@ -191,9 +191,9 @@ namespace MadsKristensen.EditorExtensions
                 doc.LoadXml(File.ReadAllText(filePath));
                 return doc;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Logger.Log(ex);
+                Logger.Log(Path.GetFileName(filePath) + " is not a valid Web Essentials bundle file. Ignoring file.");
                 return null;
             }
         }
