@@ -20,11 +20,13 @@ namespace MadsKristensen.EditorExtensions
     [ClassificationType(ClassificationTypeNames = RobotsTxtClassificationTypes.RobotsTxtKeyword)]
     [Name(RobotsTxtClassificationTypes.RobotsTxtKeyword)]
     [Order(After = Priority.Default)]
+    [UserVisible(true)]
     internal sealed class RobotsTxtBoldFormatDefinition : ClassificationFormatDefinition
     {
         public RobotsTxtBoldFormatDefinition()
         {
             IsBold = true;
+            DisplayName = "Robots.txt Keyword";
         }
     }
 
@@ -32,12 +34,14 @@ namespace MadsKristensen.EditorExtensions
     [ClassificationType(ClassificationTypeNames = RobotsTxtClassificationTypes.RobotsTxtComment)]
     [Name(RobotsTxtClassificationTypes.RobotsTxtComment)]
     [Order(After = Priority.Default)]
+    [UserVisible(true)]
     internal sealed class RobotsTxtHeaderFormatDefinition : ClassificationFormatDefinition
     {
         public RobotsTxtHeaderFormatDefinition()
         {
             ForegroundColor = System.Windows.Media.Colors.Green;
             IsItalic = true;
+            DisplayName = "Robots.txt Comment";
         }
     }
 }

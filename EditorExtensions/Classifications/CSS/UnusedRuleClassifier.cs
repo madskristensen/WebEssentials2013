@@ -206,7 +206,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
     {
         public UnusedCssFormatDefinition()
         {
-            DisplayName = "Unused CSS";
+            DisplayName = "CSS Unused Rules";
             TextDecorations = new TextDecorationCollection {SquigglyHelper.Squiggly(Colors.SteelBlue)};
         }
     }
