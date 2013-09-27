@@ -6,29 +6,25 @@ using System.IO;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [Export(typeof(BrowserLinkExtensionFactory))]
-    [BrowserLinkFactoryName("InspectMode")] // Not needed in final version of VS2013
-    public class InspectModeFactory : BrowserLinkExtensionFactory
+    [Export(typeof(IBrowserLinkExtensionFactory))]
+    public class InspectModeFactory : IBrowserLinkExtensionFactory
     {
-        public override BrowserLinkExtension CreateInstance(BrowserLinkConnection connection)
+        public BrowserLinkExtension CreateExtensionInstance(BrowserLinkConnection connection)
         {
             return new InspectMode();
         }
 
-        public override string Script
+        public string GetScript()
         {
-            get
+            using (Stream stream = GetType().Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.BrowserLink.InspectMode.InspectModeBrowserLink.js"))
+            using (StreamReader reader = new StreamReader(stream))
             {
-                using (Stream stream = GetType().Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.BrowserLink.InspectMode.InspectModeBrowserLink.js"))
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
+                return reader.ReadToEnd();
             }
         }
     }
 
-    public class InspectMode : BrowserLinkExtension, IBrowserLinkActionProvider
+    public class InspectMode : BrowserLinkExtension
     {
         private BrowserLinkConnection _connection;
         private static InspectMode _instance;
@@ -44,7 +40,7 @@ namespace MadsKristensen.EditorExtensions
             DisableInspectMode();
         }
 
-        public IEnumerable<BrowserLinkAction> Actions
+        public override IEnumerable<BrowserLinkAction> Actions
         {
             get
             {
@@ -52,9 +48,9 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private void InitiateInspectMode()
+        private void InitiateInspectMode(BrowserLinkAction ction)
         {
-            Clients.Call(_connection, "setInspectMode", true);
+            Browsers.Client(_connection).Invoke("setInspectMode", true);
             _instance = this;
         }
 
@@ -62,7 +58,7 @@ namespace MadsKristensen.EditorExtensions
         {
             if (IsInspectModeEnabled)
             {
-                _instance.Clients.Call(_instance._connection, "select", sourcePath, position);
+                _instance.Browsers.Client(_instance._connection).Invoke("select", sourcePath, position);
             }
         }
 

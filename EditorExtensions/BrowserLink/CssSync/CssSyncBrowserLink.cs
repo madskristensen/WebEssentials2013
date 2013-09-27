@@ -4,13 +4,12 @@ using System.IO;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [Export(typeof(BrowserLinkExtensionFactory))]
-    [BrowserLinkFactoryName("CssSync")] // Not needed in final version of VS2013
-    public class CssSyncFactory : BrowserLinkExtensionFactory
+    [Export(typeof(IBrowserLinkExtensionFactory))]
+    public class CssSyncFactory : IBrowserLinkExtensionFactory
     {
         private static CssSync _extension;
 
-        public override BrowserLinkExtension CreateInstance(BrowserLinkConnection connection)
+        public BrowserLinkExtension CreateExtensionInstance(BrowserLinkConnection connection)
         {
             // Instantiate the extension as a singleton
             if (_extension == null)
@@ -21,15 +20,12 @@ namespace MadsKristensen.EditorExtensions
             return _extension;
         }
 
-        public override string Script
+        public string GetScript()
         {
-            get
+            using (Stream stream = GetType().Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.BrowserLink.CssSync.CssSyncBrowserLink.js"))
+            using (StreamReader reader = new StreamReader(stream))
             {
-                using (Stream stream = GetType().Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.BrowserLink.CssSync.CssSyncBrowserLink.js"))
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
+                return reader.ReadToEnd();
             }
         }
     }
@@ -49,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     path = Path.GetDirectoryName(path);
                 }
-                
+
                 Watch(path);
             }
         }
@@ -67,7 +63,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
         private void Watch(string path)
-        {            
+        {
             _fsw = new FileSystemWatcher(path, "*.css");
             _fsw.Changed += RefreshStyles;
             _fsw.Created += RefreshStyles;
@@ -81,7 +77,7 @@ namespace MadsKristensen.EditorExtensions
         {
             if (e.FullPath.EndsWith(".css"))
             {
-                Clients.CallAll("refresh");
+                Browsers.All.Invoke("refresh");
             }
         }
     }

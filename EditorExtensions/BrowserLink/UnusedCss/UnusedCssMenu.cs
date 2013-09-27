@@ -64,7 +64,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         private static void SnapshotAll(object sender, EventArgs e)
         {
-            UnusedCssExtension.All(x => x.SnapshotPage());
+            UnusedCssExtension.All(x => x.SnapshotPage(null));
         }
 
         private static void SnapshotAllBeforeQueryStatus(object sender, EventArgs e)

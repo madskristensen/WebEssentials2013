@@ -44,10 +44,6 @@ namespace MadsKristensen.EditorExtensions
             uint cssFormatProperties;
             EditorExtensionsPackage.PriorityCommandTarget.RegisterPriorityCommandTarget(0, new CssFormatProperties(textView), out cssFormatProperties);
             textView.Closed += delegate { EditorExtensionsPackage.PriorityCommandTarget.UnregisterPriorityCommandTarget(cssFormatProperties); };
-
-            uint cssSpeedTyping;
-            EditorExtensionsPackage.PriorityCommandTarget.RegisterPriorityCommandTarget(0, new SpeedTypingTarget(this, textViewAdapter, textView), out cssSpeedTyping);
-            textView.Closed += delegate { EditorExtensionsPackage.PriorityCommandTarget.UnregisterPriorityCommandTarget(cssSpeedTyping); };
         }
     }
 }

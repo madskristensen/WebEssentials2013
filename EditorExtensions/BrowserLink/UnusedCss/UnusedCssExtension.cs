@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
-    public class UnusedCssExtension : BrowserLinkExtension, IBrowserLinkActionProvider
+    public class UnusedCssExtension : BrowserLinkExtension
     {
         private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>> BrowserLocationContinuationActions = new ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>>();
         private static readonly ConcurrentDictionary<BrowserLinkConnection, UnusedCssExtension> ExtensionByConnection = new ConcurrentDictionary<BrowserLinkConnection, UnusedCssExtension>();
@@ -37,7 +37,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public static bool IsAnyConnectionAlive { get { return ExtensionByConnection.Count > 0; } }
 
-        public IEnumerable<BrowserLinkAction> Actions
+        public override IEnumerable<BrowserLinkAction> Actions
         {
             get
             {
@@ -69,14 +69,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public void BlipRecording()
         {
-            Clients.Call(_connection, "blipRecording");
+            Browsers.Client(_connection).Invoke("blipRecording");
         }
 
         public void EnsureRecordingMode(bool targetRecordingStatus)
         {
             if (IsRecording ^ targetRecordingStatus)
             {
-                ToggleRecordingMode();
+                ToggleRecordingMode(null);
             }
         }
 
@@ -129,7 +129,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         [BrowserLinkCallback]
         public void GetIgnoreList()
         {
-            Clients.Call(_connection, "installIgnorePatterns", IgnorePatternList);
+            Browsers.Client(_connection).Invoke("installIgnorePatterns", IgnorePatternList);
             //Apply any deferred actions
             //NOTE: There should be some kind of check here to determine whether or not this is a new session for the browser (as the user may have closed the window during the recording session and opened a new browser)
             var appBag = BrowserLocationContinuationActions.GetOrAdd(_connection.AppName, n => new ConcurrentDictionary<string, Action<UnusedCssExtension>>());
@@ -161,7 +161,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
                 try
                 {
-                    appBag.AddOrUpdate(_connection.Project.UniqueName, n => c => c.ToggleRecordingMode(), (n, a) => c => c.ToggleRecordingMode());
+                    appBag.AddOrUpdate(_connection.Project.UniqueName, n => c => c.ToggleRecordingMode(null), (n, a) => c => c.ToggleRecordingMode(null));
                 }
                 catch (COMException)
                 {
@@ -175,7 +175,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         }
 
         [BrowserLinkCallback]
-        public void SnapshotPage()
+        public void SnapshotPage(BrowserLinkAction action)
         {
             var opId = Guid.NewGuid();
             
@@ -184,17 +184,17 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 _operationsInProgress.Add(opId);
             }
 
-            Clients.Call(_connection, "snapshotPage", opId);
+            Browsers.Client(_connection).Invoke("snapshotPage", opId);
         }
 
         [BrowserLinkCallback]
-        public void ToggleRecordingMode()
+        public void ToggleRecordingMode(BrowserLinkAction action)
         {
             IsRecording = !IsRecording;
 
             if (!IsRecording)
             {
-                Clients.Call(_connection, "stopRecording");
+                Browsers.Client(_connection).Invoke("stopRecording");
             }
             else
             {
@@ -205,7 +205,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                     _operationsInProgress.Add(opId);
                 }
 
-                Clients.Call(_connection, "startRecording", opId);
+                Browsers.Client(_connection).Invoke("startRecording", opId);
             }
         }
 

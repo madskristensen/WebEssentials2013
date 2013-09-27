@@ -95,12 +95,11 @@ namespace MadsKristensen.EditorExtensions
             {
                 string content = MinifyFileMenu.MinifyString(".css", source);
                 string minFile = MarginBase.GetCompiledFileName(lessFileName, ".min.css", WESettings.GetBoolean(WESettings.Keys.LessCompileToFolder)); //lessFileName.Replace(".less", ".min.css");
-                string old = File.ReadAllText(minFile);
+                bool fileExist = File.Exists(minFile);
+                string old = fileExist ? File.ReadAllText(minFile) : string.Empty;
 
                 if (old != content)
                 {
-                    bool fileExist = File.Exists(minFile);
-
                     ProjectHelpers.CheckOutFileFromSourceControl(minFile);
                     using (StreamWriter writer = new StreamWriter(minFile, false, new UTF8Encoding(true)))
                     {

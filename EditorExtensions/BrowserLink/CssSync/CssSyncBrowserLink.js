@@ -6,7 +6,6 @@
     /// <param name="$" value="jQuery" />
 
     return {
-        name: "CssSync", // Has to match the BrowserLinkFactoryName attribute. Not needed in final version of VS2013
 
         refresh: function () {
 
@@ -18,10 +17,7 @@
                     $(link).attr('href', parts[0] + '?rnd=' + Math.random());
                 }
             });
-        },
-
-        onInit: function () { // Renamed to 'onConnected' in final version of VS2013
-            // This function doesn't need to be implemented. It can be deleted.
         }
+
     };
 });

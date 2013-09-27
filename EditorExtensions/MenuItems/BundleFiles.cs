@@ -233,8 +233,11 @@ namespace MadsKristensen.EditorExtensions
                 if (string.IsNullOrEmpty(firstFile))
                     firstFile = item.FileNames[1];
 
-                string content = File.ReadAllText(item.FileNames[1]);
-                sb.AppendLine(content);
+                if (File.Exists(item.FileNames[1]))
+                {
+                    string content = File.ReadAllText(item.FileNames[1]);
+                    sb.AppendLine(content);
+                }
             }
 
             if (firstFile != null)
@@ -385,7 +388,8 @@ namespace MadsKristensen.EditorExtensions
                     sb.AppendLine("///#source 1 1 " + files[file]);
                 }
 
-                sb.AppendLine(File.ReadAllText(file));
+                if (File.Exists(file))
+                    sb.AppendLine(File.ReadAllText(file));
             }
 
             if (!File.Exists(bundlePath) || File.ReadAllText(bundlePath) != sb.ToString())

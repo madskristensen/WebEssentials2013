@@ -59,9 +59,12 @@
 
             inspectOverlay.click(function () {
                 inspectOverlay.hide();
-                current.contentEditable = true;
-                current.focus();
-                $(current).keydown(typing);
+
+                if (current) {
+                    current.contentEditable = true;
+                    current.focus();
+                    $(current).keydown(typing);
+                }
             });
         }
 
@@ -95,10 +98,12 @@
             }
             else {
                 getInspectOverlay().hide();
-                current.contentEditable = false;
-                current.blur();
-                $(current).removeClass(selectedClass);
-                browserLink.call("Save");
+                if (current) {
+                    current.contentEditable = false;
+                    current.blur();
+                    $(current).removeClass(selectedClass);
+                    browserLink.invoke("Save");
+                }
             }
         }
         else {
@@ -110,10 +115,10 @@
         if (inspectModeOn && map) {
 
             if (e.keyCode === 89 && e.ctrlKey) { // 89 = y
-                browserLink.call("Redo");
+                browserLink.invoke("Redo");
             }
             else if (e.keyCode === 90 && e.ctrlKey) { // 90 = z
-                browserLink.call("Undo");
+                browserLink.invoke("Undo");
             }
             else if (e.keyCode === 13 && !e.shiftKey) { // 13 = Enter
                 e.preventDefault();
@@ -122,7 +127,7 @@
                 hasChanged = true;
                 setTimeout(function () {
 
-                    browserLink.call("UpdateSource", current.innerHTML, map.sourcePath, map.startPosition);
+                    browserLink.invoke("UpdateSource", current.innerHTML, map.sourcePath, map.startPosition);
                 }, 50);
             }
         }
@@ -142,8 +147,6 @@
     };
 
     return {
-        name: "DesignMode", // Has to match the BrowserLinkFactoryName attribute. Not needed in final version of VS2013
-
         setDesignMode: function () {
             enableDesignMode(true);
         }

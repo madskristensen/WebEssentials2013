@@ -8,13 +8,12 @@ using System.IO;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [Export(typeof(BrowserLinkExtensionFactory))]
-    [BrowserLinkFactoryName("BestPractices")] // Not needed in final version of VS2013
-    public class BestPracticesFactory : BrowserLinkExtensionFactory
+    [Export(typeof(IBrowserLinkExtensionFactory))]
+    public class BestPracticesFactory : IBrowserLinkExtensionFactory
     {
         private static BestPractices _extension;
 
-        public override BrowserLinkExtension CreateInstance(BrowserLinkConnection connection)
+        public BrowserLinkExtension CreateExtensionInstance(BrowserLinkConnection connection)
         {
             // Instantiate the extension as a singleton
             if (_extension == null)
@@ -25,24 +24,21 @@ namespace MadsKristensen.EditorExtensions
             return _extension;
         }
 
-        public override string Script
+        public string GetScript()
         {
-            get
+            using (Stream stream = GetType().Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.BrowserLink.BestPractices.BestPracticesBrowserLink.js"))
+            using (StreamReader reader = new StreamReader(stream))
             {
-                using (Stream stream = GetType().Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.BrowserLink.BestPractices.BestPracticesBrowserLink.js"))
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
+                return reader.ReadToEnd();
             }
         }
     }
 
     public class BestPractices : BrowserLinkExtension
-    {   
+    {
         private Dictionary<string, ErrorTask> _tasks = new Dictionary<string, ErrorTask>();
         private RulesFactory _factory = new RulesFactory();
-        
+
         public ErrorListProvider _errorList;
         public BrowserLinkConnection _connection;
 
@@ -57,7 +53,7 @@ namespace MadsKristensen.EditorExtensions
         {
             _connection = connection;
         }
-        
+
         [BrowserLinkCallback]
         public void Error(string id, bool success, string data)
         {

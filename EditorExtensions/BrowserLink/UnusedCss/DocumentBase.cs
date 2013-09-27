@@ -94,7 +94,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             await UsageRegistry.ResyncAsync();
-            UnusedCssExtension.All(x => x.SnapshotPage());
+            UnusedCssExtension.All(x => x.SnapshotPage(null));
         }
 
         public void Reparse()

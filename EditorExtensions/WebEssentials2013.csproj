@@ -129,16 +129,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(DevEnvDir)\Microsoft.VisualStudio.Web.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.Web.BrowserLink">
-      <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Page Inspector\Microsoft.VisualStudio.Web.BrowserLink.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Web.BrowserLink.12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Web.Extensions">
       <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Languages\Microsoft.VisualStudio.Web.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Web.PageInspector.Package">
-      <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Page Inspector\Microsoft.VisualStudio.Web.PageInspector.Package.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -169,6 +162,7 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
@@ -325,7 +319,6 @@
     <Compile Include="Commands\Css\CssRemoveDuplicatesCommandTarget.cs" />
     <Compile Include="Commands\Css\CssAddVendorStandardCommandTarget.cs" />
     <Compile Include="Commands\Css\CssFindReferencesCommandTarget.cs" />
-    <Compile Include="Commands\Css\SpeedTyping.cs" />
     <Compile Include="Commands\HTML\ContractSelectionTarget.cs" />
     <Compile Include="Commands\HTML\GoToDefinitionCommandTarget.cs" />
     <Compile Include="Commands\HTML\HtmlCreationListener.cs" />

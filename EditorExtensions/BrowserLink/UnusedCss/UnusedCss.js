@@ -113,7 +113,7 @@
     function submitChunkedData(method, data, operationId) {
         var chunked = chunk(data);
         for(var i = 0; i < chunked.length; ++i){
-            browserLink.call(method, operationId, chunked[i], i, chunked.length);
+            browserLink.invoke(method, operationId, chunked[i], i, chunked.length);
         }
     }
 
@@ -191,11 +191,11 @@
     }
 
     function toggleRecordingMode() {
-        browserLink.call("ToggleRecordingMode");
+        browserLink.invoke("ToggleRecordingMode");
     }
 
     function snapshotCssUsage() {
-        browserLink.call("SnapshotPage");
+        browserLink.invoke("SnapshotPage");
     }
 
     window.__weToggleRecordingMode = function () {
@@ -237,8 +237,6 @@
 
     //Return the brower link interop packet
     return {
-
-        name: "UnusedCss",
 
         startRecording: function (operationId) {
             getLinkedStyleSheets();
@@ -284,8 +282,8 @@
             recordingSelectorLookup = {};
         },
 
-        onInit: function () { // Optional. Is called when a connection is established
-            browserLink.call("GetIgnoreList");
+        onConnected: function () { // Optional. Is called when a connection is established
+            browserLink.invoke("GetIgnoreList");
         }
     };
 });

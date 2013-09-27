@@ -12,13 +12,12 @@
     }
 
     window.__weReportError = function (key, success) {
-        browserLink.call("Error", key, success, file);
+        browserLink.invoke("Error", key, success, file);
     };
 
     return {
-        name: "BestPractices", // Has to match the BrowserLinkFactoryName attribute. Not needed in final version of VS2013
 
-        onInit: function () { // Renamed to 'onConnected' in final version of VS2013
+        onConnected: function () { // Renamed to 'onConnected' in final version of VS2013
 
             setTimeout(function () {
 

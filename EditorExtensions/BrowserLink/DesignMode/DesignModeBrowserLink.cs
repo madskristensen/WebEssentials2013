@@ -11,13 +11,12 @@ using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [Export(typeof(BrowserLinkExtensionFactory))]
-    [BrowserLinkFactoryName("DesignMode")] // Not needed in final version of VS2013
-    public class DesignModeFactory : BrowserLinkExtensionFactory
+    [Export(typeof(IBrowserLinkExtensionFactory))]
+    public class DesignModeFactory : IBrowserLinkExtensionFactory
     {
         private static DesignMode _extension;
 
-        public override BrowserLinkExtension CreateInstance(BrowserLinkConnection connection)
+        public BrowserLinkExtension CreateExtensionInstance(BrowserLinkConnection connection)
         {
             // Instantiate the extension as a singleton
             if (_extension == null)
@@ -28,20 +27,17 @@ namespace MadsKristensen.EditorExtensions
             return _extension;
         }
 
-        public override string Script
+        public  string GetScript()
         {
-            get
-            {
                 using (Stream stream = GetType().Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.BrowserLink.DesignMode.DesignModeBrowserLink.js"))
                 using (StreamReader reader = new StreamReader(stream))
                 {
                     return reader.ReadToEnd();
                 }
-            }
-        }
+         }
     }
 
-    public class DesignMode : BrowserLinkExtension, IBrowserLinkActionProvider
+    public class DesignMode : BrowserLinkExtension
     {
         BrowserLinkConnection _connection;
 
@@ -50,14 +46,14 @@ namespace MadsKristensen.EditorExtensions
             _connection = connection;
         }
 
-        public IEnumerable<BrowserLinkAction> Actions
+        public override IEnumerable<BrowserLinkAction> Actions
         {
             get { yield return new BrowserLinkAction("Design Mode", SetDesignMode); }
         }
 
-        private void SetDesignMode()
+        private void SetDesignMode(BrowserLinkAction action)
         {
-            Clients.Call(_connection, "setDesignMode");
+            Browsers.Client(_connection).Invoke("setDesignMode");
         }
 
         [BrowserLinkCallback]

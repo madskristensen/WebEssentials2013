@@ -48,7 +48,7 @@
             inspectOverlay.click(function () {
                 turnOffInspectMode();
 
-                browserLink.call("BringVisualStudioToFront");
+                browserLink.invoke("BringVisualStudioToFront");
             });
         }
 
@@ -59,7 +59,7 @@
         if (!inspectModeOn) {
             inspectModeOn = true;
 
-            browserLink.call("SetInspectMode");
+            browserLink.invoke("SetInspectMode");
             getInspectOverlay().show();
         }
     }
@@ -69,7 +69,7 @@
             inspectModeOn = false;
 
             getInspectOverlay().hide();
-            browserLink.call("DisableInspectMode");
+            browserLink.invoke("DisableInspectMode");
 
             if (current)
                 $(current).removeClass("__browserLink_selected");
@@ -88,8 +88,6 @@
     window.__weSetInspectMode = turnOnInspectMode;
 
     return {
-
-        name: "InspectMode", // Has to match the BrowserLinkFactoryName attribute. Not needed in final version of VS2013
         
         setInspectMode: function (inspectModeOn) {
             if (inspectModeOn) {
