@@ -33,11 +33,13 @@ namespace MadsKristensen.EditorExtensions
     [ClassificationType(ClassificationTypeNames = MarkdownClassificationTypes.MarkdownBold)]
     [Name(MarkdownClassificationTypes.MarkdownBold)]
     [Order(After = Priority.Default)]
+    [UserVisible(true)]
     internal sealed class MarkdownBoldFormatDefinition : ClassificationFormatDefinition
     {
         public MarkdownBoldFormatDefinition()
         {
             IsBold = true;
+            DisplayName = "Markdown Bold";
         }
     }
 
@@ -45,11 +47,13 @@ namespace MadsKristensen.EditorExtensions
     [ClassificationType(ClassificationTypeNames = MarkdownClassificationTypes.MarkdownItalic)]
     [Name(MarkdownClassificationTypes.MarkdownItalic)]
     [Order(After = Priority.Default)]
+    [UserVisible(true)]
     internal sealed class MarkdownItalicFormatDefinition : ClassificationFormatDefinition
     {
         public MarkdownItalicFormatDefinition()
         {
             IsItalic = true;
+            DisplayName = "Markdown Italic";
         }
     }
 
@@ -57,6 +61,7 @@ namespace MadsKristensen.EditorExtensions
     [ClassificationType(ClassificationTypeNames = MarkdownClassificationTypes.MarkdownHeader)]
     [Name(MarkdownClassificationTypes.MarkdownHeader)]
     [Order(After = Priority.Default)]
+    [UserVisible(true)]
     internal sealed class MarkdownHeaderFormatDefinition : ClassificationFormatDefinition
     {
         public MarkdownHeaderFormatDefinition()
@@ -64,6 +69,7 @@ namespace MadsKristensen.EditorExtensions
             IsBold = true;
             TextDecorations = new TextDecorationCollection();
             TextDecorations.Add(new TextDecoration());
+            DisplayName = "Markdown Headers";
         }
     }
 
@@ -71,17 +77,20 @@ namespace MadsKristensen.EditorExtensions
     [ClassificationType(ClassificationTypeNames = MarkdownClassificationTypes.MarkdownCode)]
     [Name(MarkdownClassificationTypes.MarkdownCode)]
     [Order(After = Priority.Default)]
+    [UserVisible(true)]
     internal sealed class MarkdownCodeFormatDefinition : ClassificationFormatDefinition
     {
         public MarkdownCodeFormatDefinition()
         {
             ForegroundColor = System.Windows.Media.Colors.Green;
+            DisplayName = "Markdown Code";
         }
     }
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = MarkdownClassificationTypes.MarkdownQuote)]
     [Name(MarkdownClassificationTypes.MarkdownQuote)]
     [Order(After = Priority.Default)]
+    [UserVisible(true)]
     internal sealed class MarkdownQuoteFormatDefinition : ClassificationFormatDefinition
     {
         public MarkdownQuoteFormatDefinition()
@@ -89,6 +98,7 @@ namespace MadsKristensen.EditorExtensions
             // I wish I could make the background apply block-level (to highlight the entire line)
             BackgroundColor = System.Windows.Media.Color.FromRgb(200, 200, 200);
             BackgroundOpacity = .2;
+            DisplayName = "Markdown Quote";
         }
     }
 }
