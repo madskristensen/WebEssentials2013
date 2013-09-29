@@ -41,32 +41,29 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return result;
         }
 
-        private static string GetSelectorNameInternal(RuleSet ruleSet)
+        public static IEnumerable<string> GetSelectorNames(RuleSet ruleSet)
         {
-            var currentSelectorName = ExtractSelectorName(ruleSet).Trim();
-            var currentSet = ruleSet;
-            var currentBlock = ruleSet.Parent as LessRuleBlock;
+            var parentBlock = ruleSet.Parent as LessRuleBlock;
 
-            while (currentSet != null && currentBlock != null)
-            {
-                currentSet = currentBlock.Parent as RuleSet;
+            if (parentBlock == null)
+                return Enumerable.Repeat(ExtractSelectorName(ruleSet).Trim(), 1);
 
-                if (currentSet != null)
-                {
-                    currentSelectorName = ExtractSelectorName(currentSet).Trim() + " " + currentSelectorName;
-                    currentBlock = currentSet.Parent as LessRuleBlock;
-                }
-            }
+            var parentSet = parentBlock.Parent as RuleSet;
 
-            var name = currentSelectorName.Replace(" &", "");
-            var oldName = name;
+            if (parentSet == null)
+                return Enumerable.Repeat(ExtractSelectorName(ruleSet).Trim(), 1);
 
-            while (oldName != (name = name.Replace(" >", ">").Replace("> ", ">")))
-            {
-                oldName = name;
-            }
+            return from childSelector in ruleSet.Selectors
+                   from parentSelector in GetSelectorNames(parentSet)
+                   select CombineSelectors(parentSelector, childSelector.Text);
+        }
 
-            return oldName.Replace(">", " > ");
+        private static string CombineSelectors(string parent, string child)
+        {
+            if (!child.Contains("&"))
+                return parent + " " + child;
+            else
+                return child.Replace("&", parent);
         }
 
         public override string GetSelectorName(RuleSet ruleSet)
@@ -93,7 +90,16 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 }
             }
 
-            return GetSelectorNameInternal(ruleSet);
+            string name = string.Join("\r\n,", GetSelectorNames(ruleSet));
+
+            var oldName = name;
+
+            while (oldName != (name = name.Replace(" >", ">").Replace("> ", ">")))
+            {
+                oldName = name;
+            }
+
+            return oldName.Replace(">", " > ");
         }
     }
 }
