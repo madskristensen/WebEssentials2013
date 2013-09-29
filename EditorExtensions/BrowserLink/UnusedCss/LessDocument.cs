@@ -53,8 +53,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             if (parentSet == null)
                 return Enumerable.Repeat(ExtractSelectorName(ruleSet).Trim(), 1);
 
-            return from childSelector in ruleSet.Selectors
-                   from parentSelector in GetSelectorNames(parentSet)
+            return from parentSelector in GetSelectorNames(parentSet)
+                   from childSelector in ruleSet.Selectors
                    select CombineSelectors(parentSelector, childSelector.Text);
         }
 
