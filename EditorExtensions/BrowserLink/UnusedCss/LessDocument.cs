@@ -86,7 +86,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                     return null;
                 }
 
-                if (ExtractSelectorName(ruleSet).Contains("("))
+                if (ruleSet.Selectors.Any(s => s.SimpleSelectors.Any(ss => ss.SubSelectors.Any(sss => sss is LessMixinDeclaration))))
                 {
                     //Don't flag mixins
                     return null;
