@@ -173,7 +173,7 @@ a {
                 var cssDoc = new CssParser().Parse(cssCode, false);
 
                 var cssSelectors = cssDoc.RuleSets.SelectMany(rs => rs.Selectors)
-                                                  .Select(s => s.Text)
+                                                  .Select(CssExtensions.SelectorText)
                                                   .ToList();
                 var lessSelectors = LessDocument.GetAllRuleSets(lessDoc.RuleSets)
                                                 .Where(rs => rs.Block.Declarations.Any())   // Skip selectors that don't have any rules; these won't end up in the CSS

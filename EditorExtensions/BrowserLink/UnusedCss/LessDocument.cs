@@ -45,21 +45,22 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return result;
         }
 
+
         public static IEnumerable<string> GetSelectorNames(RuleSet ruleSet)
         {
             var parentBlock = ruleSet.Parent as LessRuleBlock;
 
             if (parentBlock == null)
-                return Enumerable.Repeat(ExtractSelectorName(ruleSet).Trim(), 1);
+                return ruleSet.Selectors.Select(CssExtensions.SelectorText);
 
             var parentSet = parentBlock.Parent as RuleSet;
 
             if (parentSet == null)
-                return Enumerable.Repeat(ExtractSelectorName(ruleSet).Trim(), 1);
+                return ruleSet.Selectors.Select(CssExtensions.SelectorText);
 
             return from parentSelector in GetSelectorNames(parentSet)
                    from childSelector in ruleSet.Selectors
-                   select CombineSelectors(parentSelector, childSelector.Text);
+                   select CombineSelectors(parentSelector, childSelector.SelectorText());
         }
 
         private static string CombineSelectors(string parent, string child)
