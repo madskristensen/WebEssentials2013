@@ -491,7 +491,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Validation\CSS\SelectorErrorTag.cs" />
-    <Compile Include="Validation\CSS\Filters\Backslash9CssErrorFilter.cs" />
     <Compile Include="Validation\CSS\Filters\MsFilterCssErrorFilter.cs" />
     <Compile Include="Validation\CSS\Filters\MsKeyframesCssErrorFilter.cs" />
     <Compile Include="ExtensionMethods\AtDirectiveExtensions.cs" />
