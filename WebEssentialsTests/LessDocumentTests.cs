@@ -20,6 +20,37 @@ namespace WebEssentialsTests
         {
             #region LESS sources
             var testSources = new[]{
+@"  // Taken from http://blog.slaks.net/2013-09-29/less-css-secrets-of-the-ampersand/
+a {
+    color: blue;
+    &:hover {
+        color: green;
+    }
+}
+form a {
+    color: purple;
+    body.QuietMode & {
+        color: black;
+    }
+}
+.quoted-source {
+    background: #fcc;
+    blockquote& {
+        background: #fdc;
+    }
+}
+.btn.btn-primary.btn-lg[disabled] {
+    & + & + & {
+        margin-left: 10px;
+    }
+}
+p, blockquote, ul, li {
+    border-top: 1px solid gray;
+    & + & {
+        border-top: 0;
+    }
+}
+",
 @"  // Taken from https://github.com/less/less.js/blob/master/test/less/selectors.less
 h1, h2, h3 {
   a, p {
