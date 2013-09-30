@@ -20,6 +20,22 @@ namespace WebEssentialsTests
         {
             #region LESS sources
             var testSources = new[]{
+@"
+@media all {
+    a {
+        @media all {
+            @media all {
+                b {
+                    color: goldenrod;
+                    em {
+                        color: goldenrod;
+                    }
+                }
+            }
+        }
+    }
+}
+",
 @"  // Taken from http://blog.slaks.net/2013-09-29/less-css-secrets-of-the-ampersand/
 a {
     color: blue;
@@ -203,10 +219,9 @@ a {
                 var lessDoc = new LessParser().Parse(lessCode, false);
                 var cssDoc = new CssParser().Parse(cssCode, false);
 
-                var cssSelectors = cssDoc.RuleSets.SelectMany(rs => rs.Selectors)
-                                                  .Select(CssExtensions.SelectorText)
-                                                  .ToList();
-                var lessSelectors = LessDocument.GetAllRuleSets(lessDoc.RuleSets)
+                var cssSelectors = new CssItemAggregator<string>(false) { (Selector s) => CssExtensions.SelectorText(s) }.Crawl(cssDoc);
+
+                var lessSelectors = new CssItemAggregator<RuleSet>(true) { (RuleSet rs) => rs }.Crawl(lessDoc)
                                                 .Where(rs => rs.Block.Declarations.Any())   // Skip selectors that don't have any rules; these won't end up in the CSS
                                                 .SelectMany(rs => LessDocument.GetSelectorNames(rs, LessMixinAction.Literal))
                                                 .ToList();

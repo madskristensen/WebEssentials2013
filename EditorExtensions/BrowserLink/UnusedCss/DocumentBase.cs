@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             {
                 Path = path,
                 Filter = _localFileName,
-                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.LastAccess |NotifyFilters.DirectoryName
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.DirectoryName
             };
 
             _watcher.Changed += Reparse;
@@ -62,7 +62,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             {
                 Reparse();
             }
-            else if(e.OldName.ToLowerInvariant() == _localFileName)
+            else if (e.OldName.ToLowerInvariant() == _localFileName)
             {
                 _fileDeletedCallback(sender, e);
             }
@@ -78,7 +78,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             var success = false;
             var tryCount = 0;
             const int maxTries = 20;
-            
+
             while (!success && tryCount++ < maxTries)
             {
                 try
@@ -114,18 +114,16 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return null;
         }
 
-        protected virtual IEnumerable<RuleSet> ExpandRuleSets(IEnumerable<RuleSet> ruleSets)
-        {
-            return ruleSets;
-        }
-
         public void Reparse(string text)
         {
             var parser = GetParser();
             var parseResult = parser.Parse(text, false);
-            Rules = ExpandRuleSets(parseResult.RuleSets).Select(x => CssRule.From(_file, text, x, this)).Where(x => x != null).ToList();
+            Rules = new CssItemAggregator<IStylingRule>(true) { (RuleSet rs) => CssRule.From(_file, text, rs, this) }
+                        .Crawl(parseResult)
+                        .Where(x => x != null)
+                        .ToList();
         }
- 
+
         protected abstract ICssParser GetParser();
 
         public virtual string GetSelectorName(RuleSet ruleSet)

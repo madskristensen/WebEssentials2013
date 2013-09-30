@@ -23,28 +23,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return For(fullPath, fileDeletedCallback, (f, c) => new LessDocument(f, c));
         }
 
-        protected override IEnumerable<RuleSet> ExpandRuleSets(IEnumerable<RuleSet> ruleSets)
-        {
-            return GetAllRuleSets(ruleSets);
-        }
-        public static IEnumerable<RuleSet> GetAllRuleSets(IEnumerable<RuleSet> ruleSets)
-        {
-            var result = new HashSet<RuleSet>();
-
-            foreach (var set in ruleSets)
-            {
-                result.Add(set);
-                var block = set.Children.OfType<LessRuleBlock>().SingleOrDefault();
-
-                if (block != null)
-                {
-                    result.UnionWith(GetAllRuleSets(block.RuleSets));
-                }
-            }
-
-            return result;
-        }
-
 
         public static IEnumerable<string> GetSelectorNames(RuleSet ruleSet, LessMixinAction mixinAction)
         {
@@ -62,7 +40,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 }
             }
 
-            var parentBlock = ruleSet.Parent as LessRuleBlock;
+            var parentBlock = ruleSet.FindType<LessRuleBlock>();
 
             if (parentBlock == null)
                 return ruleSet.Selectors.Select(CssExtensions.SelectorText);
