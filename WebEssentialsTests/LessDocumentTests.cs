@@ -1,0 +1,207 @@
+﻿using System;
+using System.Linq;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using MadsKristensen.EditorExtensions;
+using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Less.Core;
+using Microsoft.CSS.Core;
+using System.Text;
+
+namespace WebEssentialsTests
+{
+    [TestClass]
+    public class LessDocumentTests
+    {
+        [TestMethod]
+        public async Task SelectorExpansionTest()
+        {
+            #region LESS sources
+            var testSources = new[]{
+@"  // Taken from https://github.com/less/less.js/blob/master/test/less/selectors.less
+h1, h2, h3 {
+  a, p {
+    &:hover {
+      color: red;
+    }
+  }
+}
+
+#all { color: blue; }
+#the { color: blue; }
+#same { color: blue; }
+
+ul, li, div, q, blockquote, textarea {
+  margin: 0;
+}
+
+td {
+  margin: 0;
+  padding: 0;
+}
+
+td, input {
+  line-height: 1em;
+}
+
+a {
+  color: red;
+
+  &:hover { color: blue; }
+
+  div & { color: green; }
+
+  p & span { color: yellow; }
+}
+
+.foo {
+  .bar, .baz {
+    & .qux {
+      display: block;
+    }
+    .qux & {
+      display: inline;
+    }
+	.qux& {
+	  display: inline-block;
+	}
+    .qux & .biz {
+      display: none;
+    }
+  }
+}
+
+.b {
+ &.c {
+  .a& {
+   color: red;
+  }
+ }
+}
+
+.b {
+ .c & {
+  &.a {
+   color: red;
+  }
+ }
+}
+
+.p {
+  .foo &.bar {
+    color: red;
+  }
+}
+
+.p {
+  .foo&.bar {
+    color: red;
+  }
+}
+
+.foo {
+  .foo + & {
+    background: amber;
+  }
+  & + & {
+    background: amber;
+  }
+}
+
+.foo, .bar {
+  & + & {
+    background: amber;
+  }
+}
+
+.foo, .bar {
+  a, b {
+    & > & {
+      background: amber;
+    }
+  }
+}
+
+.other ::fnord { color: red }
+.other::fnord { color: red }
+.other {
+  ::bnord {color: red }
+  &::bnord {color: red }
+}
+",
+            @"// Taken from https://github.com/less/less.js/blob/master/test/less/rulesets.less
+#first > .one {
+  > #second .two > #deux {
+    width: 50%;
+    #third {
+      &:focus {
+        color: black;
+        #fifth {
+          > #sixth {
+            .seventh #eighth {
+              + #ninth {
+                color: purple;
+              }
+            }
+          }
+        }
+      }
+      height: 100%;
+    }
+    #fourth, #five, #six {
+      color: #110000;
+      .seven, .eight > #nine {
+        border: 1px solid black;
+      }
+      #ten {
+        color: red;
+      }
+    }
+  }
+  font-size: 2em;
+}
+"};
+            #endregion
+
+            foreach (var lessCode in testSources)
+            {
+                var cssCode = await CompileLess(lessCode);
+
+                var lessDoc = new LessParser().Parse(lessCode, false);
+                var cssDoc = new CssParser().Parse(cssCode, false);
+
+                var cssSelectors = cssDoc.RuleSets.SelectMany(rs => rs.Selectors).Select(s => s.Text).ToList();
+                var lessSelectors = LessDocument.GetAllRuleSets(lessDoc.RuleSets).SelectMany(LessDocument.GetSelectorNames).ToList();
+
+                CollectionAssert.AreEqual(cssSelectors, lessSelectors);
+            }
+        }
+
+        static async Task<string> CompileLess(string source)
+        {
+            var tcs = new TaskCompletionSource<string>();
+
+            var fileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".less");
+            try
+            {
+                File.WriteAllText(fileName, source);
+
+                new LessCompiler(cr =>
+                {
+                    if (cr.IsSuccess)
+                        tcs.SetResult(cr.Result);
+                    else
+                        tcs.SetException(new ExternalException(cr.Error.Message));
+                }).Compile(fileName);
+
+                return await tcs.Task;
+            }
+            finally
+            {
+                File.Delete(fileName);
+            }
+        }
+    }
+}

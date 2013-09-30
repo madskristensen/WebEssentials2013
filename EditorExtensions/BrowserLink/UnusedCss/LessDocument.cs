@@ -25,6 +25,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         protected override IEnumerable<RuleSet> ExpandRuleSets(IEnumerable<RuleSet> ruleSets)
         {
+            return GetAllRuleSets(ruleSets);
+        }
+        public static IEnumerable<RuleSet> GetAllRuleSets(IEnumerable<RuleSet> ruleSets)
+        {
             var result = new HashSet<RuleSet>();
 
             foreach (var set in ruleSets)
@@ -34,7 +38,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
                 if (block != null)
                 {
-                    result.UnionWith(ExpandRuleSets(block.RuleSets));
+                    result.UnionWith(GetAllRuleSets(block.RuleSets));
                 }
             }
 
