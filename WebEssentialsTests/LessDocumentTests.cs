@@ -172,8 +172,13 @@ a {
                 var lessDoc = new LessParser().Parse(lessCode, false);
                 var cssDoc = new CssParser().Parse(cssCode, false);
 
-                var cssSelectors = cssDoc.RuleSets.SelectMany(rs => rs.Selectors).Select(s => s.Text).ToList();
-                var lessSelectors = LessDocument.GetAllRuleSets(lessDoc.RuleSets).SelectMany(LessDocument.GetSelectorNames).ToList();
+                var cssSelectors = cssDoc.RuleSets.SelectMany(rs => rs.Selectors)
+                                                  .Select(s => s.Text)
+                                                  .ToList();
+                var lessSelectors = LessDocument.GetAllRuleSets(lessDoc.RuleSets)
+                                                .Where(rs => rs.Block.Declarations.Any())   // Skip selectors that don't have any rules; these won't end up in the CSS
+                                                .SelectMany(LessDocument.GetSelectorNames)
+                                                .ToList();
 
                 CollectionAssert.AreEqual(cssSelectors, lessSelectors);
             }
