@@ -58,17 +58,47 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             if (parentSet == null)
                 return ruleSet.Selectors.Select(CssExtensions.SelectorText);
 
-            return from parentSelector in GetSelectorNames(parentSet)
-                   from childSelector in ruleSet.Selectors
-                   select CombineSelectors(parentSelector, childSelector.SelectorText());
+            // Cache the computed parents to avoid re-computing them
+            // for every child permutation.
+            var parentSelectors = GetSelectorNames(parentSet).ToList();
+            return ruleSet.Selectors.SelectMany(child =>
+                CombineSelectors(parentSelectors, child.SelectorText())
+            );
         }
 
-        private static string CombineSelectors(string parent, string child)
+        private static IEnumerable<string> CombineSelectors(ICollection<string> parents, string child)
         {
             if (!child.Contains("&"))
-                return parent + " " + child;
-            else
-                return child.Replace("&", parent);
+                return parents.Select(p => p + " " + child);
+
+            // Build a chained LINQ query that expands every ampersand
+            // into each parent to get every permutation of selectors.
+            var result = Enumerable.Repeat("", 1);
+
+            int lastIndex = 0;
+            while (true)
+            {
+                int nextIndex = child.IndexOf('&', lastIndex);
+                if (nextIndex < 0)
+                {
+                    // If the child selector does not end in an ampersand, append the last chunk directly
+                    var chunk = child.Substring(lastIndex);
+                    return result.Select(c => c + chunk);
+                }
+                else
+                {
+                    // If we got up to an ampersand, append the chunk followed by every parent selector.
+                    var chunk = child.Substring(lastIndex, nextIndex - lastIndex);
+                    result = result.SelectMany(c => parents.Select(p => c + chunk + p));
+                }
+
+                nextIndex++;    // Skip the ampersand
+                if (nextIndex == child.Length)
+                    break;
+                else
+                    lastIndex = nextIndex;
+            }
+            return result;
         }
 
         public override string GetSelectorName(RuleSet ruleSet)
