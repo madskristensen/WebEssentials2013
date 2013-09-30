@@ -46,8 +46,22 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         }
 
 
-        public static IEnumerable<string> GetSelectorNames(RuleSet ruleSet)
+        public static IEnumerable<string> GetSelectorNames(RuleSet ruleSet, LessMixinAction mixinAction)
         {
+            if (ruleSet.Selectors.Any(s => s.SimpleSelectors.Any(ss => ss.SubSelectors.Any(sss => sss is LessMixinDeclaration))))
+            {
+                switch (mixinAction)
+                {
+                    case LessMixinAction.Skip:
+                        return Enumerable.Empty<string>();
+                    case LessMixinAction.Literal:
+                        break;
+                    case LessMixinAction.NestedOnly:
+                        var mixinDecl = ruleSet.Selectors.SelectMany(s => s.SimpleSelectors.SelectMany(ss => ss.SubSelectors.OfType<LessMixinDeclaration>())).First();
+                        return Enumerable.Repeat("«mixin " + mixinDecl.MixinName.Name + "»", 1);
+                }
+            }
+
             var parentBlock = ruleSet.Parent as LessRuleBlock;
 
             if (parentBlock == null)
@@ -60,7 +74,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             // Cache the computed parents to avoid re-computing them
             // for every child permutation.
-            var parentSelectors = GetSelectorNames(parentSet).ToList();
+            var parentSelectors = GetSelectorNames(parentSet, mixinAction).ToList();
             return ruleSet.Selectors.SelectMany(child =>
                 CombineSelectors(parentSelectors, child.SelectorText())
             );
@@ -108,24 +122,19 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         internal static string GetLessSelectorName(RuleSet ruleSet, bool includeShellSelectors = true)
         {
-            var block = ruleSet.Block as LessRuleBlock;
-
             if (!includeShellSelectors)
             {
+                var block = ruleSet.Block as LessRuleBlock;
                 if (block == null || ruleSet.Block.Declarations.Count == 0 && ruleSet.Block.Directives.Count == 0 && block.RuleSets.Any())
                 {
                     //If we got here, the element won't be included in the output but has children that might be
                     return null;
                 }
-
-                if (ruleSet.Selectors.Any(s => s.SimpleSelectors.Any(ss => ss.SubSelectors.Any(sss => sss is LessMixinDeclaration))))
-                {
-                    //Don't flag mixins
-                    return null;
-                }
             }
 
-            string name = string.Join("\r\n,", GetSelectorNames(ruleSet));
+            string name = string.Join(",\r\n", GetSelectorNames(ruleSet, includeShellSelectors ? LessMixinAction.NestedOnly : LessMixinAction.Skip));
+            if (name.Length == 0)
+                return null;
 
             var oldName = name;
 
@@ -136,5 +145,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             return oldName.Replace(">", " > ");
         }
+    }
+    ///<summary>Specifies how to handle mixins (and selectors within mixins) when constructing generated CSS selectors from LESS rulesets.</summary>
+    public enum LessMixinAction
+    {
+        ///<summary>Return null for any selector in a mixin.</summary>
+        Skip,
+        ///<summary>Return the literal text of the mixin declaration.  (this is not very useful)</summary>
+        Literal,
+        ///<summary>Return the text of any selectors nested within a mixin (until the mixin itself), and return null for the mixin itself.</summary>
+        NestedOnly
     }
 }
