@@ -119,8 +119,11 @@ namespace MadsKristensen.EditorExtensions
 
                 var startIndex = text.TakeWhile(Char.IsWhiteSpace).Count();
                 var endIndex = linePosition;
+                
                 // Consume the auto-added close quote, if present.
-                if (text[endIndex] == quote)
+                // If range ends at the end of the line, we cannot
+                // check this.
+                if (endIndex < text.Length && text[endIndex] == quote)
                     endIndex++;
                 return Span.FromBounds(startIndex, endIndex);
             }
