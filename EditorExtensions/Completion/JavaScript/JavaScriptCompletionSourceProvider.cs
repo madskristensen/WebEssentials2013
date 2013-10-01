@@ -34,19 +34,23 @@ namespace MadsKristensen.EditorExtensions
     public class JavaScriptCompletionSource : ICompletionSource
     {
         private ITextBuffer _buffer;
-        private ICssNameCache _classNames;
         private ITextStructureNavigatorSelectorService _navigator;
         private static ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphXmlItem, StandardGlyphItem.GlyphItemPublic);
-        private static IEnumerable<Completion> _cache = AddHtmlTagNames();
 
         public JavaScriptCompletionSource(ITextBuffer buffer, ITextStructureNavigatorSelectorService navigator, ICssNameCache classNames)
         {
             _buffer = buffer;
             _navigator = navigator;
-            _classNames = classNames;
+
+            completionSources = new ReadOnlyCollection<StringCompletionSource>(new StringCompletionSource[] {
+                new UseDirectiveCompletionSource(), 
+                new ElementsByTagNameCompletionSource(), 
+                new ElementsByClassNameCompletionSource(classNames),
+                new ElementsByIdCompletionSource(classNames)
+            });
         }
 
-        static ImageSource _useDirectiveGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupIntrinsic, StandardGlyphItem.GlyphItemPublic);
+        readonly ReadOnlyCollection<StringCompletionSource> completionSources;
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
             int position = session.TextView.Caret.Position.BufferPosition.Position;
@@ -56,155 +60,144 @@ namespace MadsKristensen.EditorExtensions
                 return;
 
             string text = line.GetText();
+            var linePosition = position - line.Start;
 
-            var quote = text.SkipWhile(Char.IsWhiteSpace).FirstOrDefault();
-            if (quote == '"' || quote == '\'')
+            foreach (var source in completionSources)
             {
-                var lineTextStart = line.Start + text.TakeWhile(Char.IsWhiteSpace).Count();
-                ITrackingSpan span = _buffer.CurrentSnapshot.CreateTrackingSpan(lineTextStart, position - lineTextStart, SpanTrackingMode.EdgeInclusive);
-                completionSets.Clear();
+                var span = source.GetInvocationSpan(text, linePosition);
+                if (span == null) continue;
 
-                var completions = new[] { "use strict", "use asm" }.Select(s => new Completion(
-                    quote + s + quote + ";",
-                    quote + s + quote + ";",
+                var trackingSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(span.Value.Start + line.Start, span.Value.Length, SpanTrackingMode.EdgeInclusive);
+                completionSets.Add(new StringCompletionSet(
+                    source.GetType().Name,
+                    trackingSpan,
+                    source.GetEntries(quoteChar: text[span.Value.Start], caret: session.TextView.Caret.Position.BufferPosition)
+                ));
+            }
+            // TODO: Merge & resort all sets?  Will StringCompletionSource handle other entries?
+            //completionSets.SelectMany(s => s.Completions).OrderBy(c=>c.DisplayText.TrimStart('"','\''))
+        }
+        class StringCompletionSet : CompletionSet
+        {
+            public StringCompletionSet(string moniker, ITrackingSpan span, IEnumerable<Completion> completions) : base(moniker, "Web Essentials", span, completions, null) { }
+        }
+
+        abstract class StringCompletionSource
+        {
+            public abstract Span? GetInvocationSpan(string text, int linePosition);
+
+            public abstract IEnumerable<Completion> GetEntries(char quoteChar, SnapshotPoint caret);
+        }
+
+        class UseDirectiveCompletionSource : StringCompletionSource
+        {
+            public override Span? GetInvocationSpan(string text, int linePosition)
+            {
+                var quote = text.SkipWhile(Char.IsWhiteSpace).FirstOrDefault();
+                if (quote != '"' && quote != '\'')
+                    return null;
+
+                var startIndex = text.TakeWhile(Char.IsWhiteSpace).Count();
+                var endIndex = linePosition;
+                // Consume the auto-added close quote, if present.
+                if (text[endIndex] == quote)
+                    endIndex++;
+                return Span.FromBounds(startIndex, endIndex);
+            }
+
+            static ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupIntrinsic, StandardGlyphItem.GlyphItemPublic);
+            public override IEnumerable<Completion> GetEntries(char quoteChar, SnapshotPoint caret)
+            {
+                return new[] { "use strict", "use asm" }.Select(s => new Completion(
+                    quoteChar + s + quoteChar + ";",
+                    quoteChar + s + quoteChar + ";",
                     "Instructs that this block be processed in " + s.Substring(4) + " mode by supporting JS engines",
-                    _useDirectiveGlyph,
+                    _glyph,
                     null)
                 );
-                completionSets.Add(new CompletionSet("useDirectives", "Web Essentials", span, completions, null));
-                return;
-            }
-
-            int tagIndex = text.IndexOf("getElementsByTagName(");
-            int classIndex = text.IndexOf("getElementsByClassName(");
-            int idIndex = text.IndexOf("getElementById(");
-
-            CompletionSet set = null;
-
-            if (tagIndex > -1 && position > line.Start + tagIndex)
-                set = GetElementsByTagName(completionSets, position, line, text, tagIndex + 21);
-            if (classIndex > -1 && position > line.Start + classIndex)
-                set = GetElementsByClassName(completionSets, position, line, text, classIndex + 23);
-            if (idIndex > -1 && position > line.Start + idIndex)
-                set = GetElementById(completionSets, position, line, text, idIndex + 15);
-
-            if (set != null)
-            {
-                completionSets.Clear();
-                completionSets.Add(set);
-                return;
             }
         }
 
-        private CompletionSet GetElementsByTagName(IList<CompletionSet> completionSets, int position, ITextSnapshotLine line, string text, int index)
+        abstract class FunctionCompletionSource : StringCompletionSource
         {
-            int end = text.IndexOf(')', index);
+            protected abstract string FunctionName { get; }
 
-            if (position <= line.Start + end)
+            public override Span? GetInvocationSpan(string text, int linePosition)
             {
-                ITrackingSpan span = _buffer.CurrentSnapshot.CreateTrackingSpan(line.Start + index, end - index, SpanTrackingMode.EdgeInclusive);
+                // Find the quoted string inside function call
+                int startIndex = text.IndexOf(FunctionName + "(");
+                if (startIndex < 0)
+                    return null;
+                startIndex += FunctionName.Length + 1;
+                startIndex += text.Skip(startIndex).TakeWhile(Char.IsWhiteSpace).Count();
 
-                List<Completion> list = new List<Completion>();
-                if (!span.GetText(_buffer.CurrentSnapshot).Contains("\""))
+                if (linePosition <= startIndex || (text[startIndex] != '"' && text[startIndex] != '\''))
                     return null;
 
-                AddExistingCompletions(completionSets, list);
+                var endIndex = text.IndexOf(text[startIndex] + ")", startIndex);
+                if (endIndex < 0)
+                    endIndex = text.Take(startIndex + 1).TakeWhile(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c) || c == '-' || c == '_').Count();
 
-                list.AddRange(_cache);
-                var completions = list.OrderBy(x => x.DisplayText.TrimStart('\"'));
-
-                return new CompletionSet("tagnames", "Web Essentials", span, completions, null);
-            }
-
-            return null;
-        }
-
-        private CompletionSet GetElementsByClassName(IList<CompletionSet> completionSets, int position, ITextSnapshotLine line, string text, int index)
-        {
-            int end = text.IndexOf(')', index);
-
-            if (position <= line.Start + end)
-            {
-                ITrackingSpan span = _buffer.CurrentSnapshot.CreateTrackingSpan(line.Start + index, end - index, SpanTrackingMode.EdgeInclusive);
-
-                List<Completion> list = new List<Completion>();
-                if (!span.GetText(_buffer.CurrentSnapshot).Contains("\""))
+                // Consume the auto-added close quote, if present.
+                if (text[endIndex] == text[startIndex])
+                    endIndex++;
+                if (linePosition > endIndex)
                     return null;
-
-                AddExistingCompletions(completionSets, list);
-
-                var names = _classNames.GetNames(new System.Uri(EditorExtensionsPackage.DTE.ActiveDocument.FullName), line.Start.Add(index), CssNameType.Class);
-
-                foreach (string name in names.Select(n => n.Name).Distinct())
-                {
-                    list.Add(GenerateCompletion(name));
-                }
-
-                var completions = list.OrderBy(x => x.DisplayText.TrimStart('\"'));
-
-                return new CompletionSet("classnames", "Web Essentials", span, completions, null);
-            }
-
-            return null;
-        }
-
-        private CompletionSet GetElementById(IList<CompletionSet> completionSets, int position, ITextSnapshotLine line, string text, int index)
-        {
-            int end = text.IndexOf(')', index);
-
-            if (position <= line.Start + end)
-            {
-                ITrackingSpan span = _buffer.CurrentSnapshot.CreateTrackingSpan(line.Start + index, end - index, SpanTrackingMode.EdgeInclusive);
-
-                List<Completion> list = new List<Completion>();
-                if (!span.GetText(_buffer.CurrentSnapshot).Contains("\""))
-                    return null;
-
-                AddExistingCompletions(completionSets, list);
-
-                var names = _classNames.GetNames(new System.Uri(EditorExtensionsPackage.DTE.ActiveDocument.FullName), line.Start.Add(index), CssNameType.Id);
-
-                foreach (string name in names.Select(n => n.Name).Distinct())
-                {
-                    list.Add(GenerateCompletion(name));
-                }
-
-                var completions = list.OrderBy(x => x.DisplayText.TrimStart('\"'));
-
-                return new CompletionSet("ids", "Web Essentials", span, completions, null);
-            }
-
-            return null;
-        }
-
-        private static void AddExistingCompletions(IList<CompletionSet> completionSets, List<Completion> list)
-        {
-            if (completionSets.Count > 0)
-            {
-                for (int i = 0; i < completionSets[0].Completions.Count; i++)
-                {
-                    list.Add(completionSets[0].Completions[i]);
-                }
+                return Span.FromBounds(startIndex, endIndex);
             }
         }
 
-        private static IEnumerable<Completion> AddHtmlTagNames()
+        class ElementsByTagNameCompletionSource : FunctionCompletionSource
         {
-            return TagCompletionProvider.GetListEntriesCache()
+            protected override string FunctionName { get { return "getElementsByTagName"; } }
+
+            static ReadOnlyCollection<string> tagNames = TagCompletionProvider.GetListEntriesCache()
                                         .Select(c => c.DisplayText)
                                         .Distinct()
-                                        .Select(GenerateCompletion);
+                                        .OrderBy(s => s)
+                                        .ToList()
+                                        .AsReadOnly();
+
+            public override IEnumerable<Completion> GetEntries(char quoteChar, SnapshotPoint caret)
+            {
+                return tagNames.Select(s => GenerateCompletion(s, quoteChar));
+            }
+        }
+        class ElementsByClassNameCompletionSource : FunctionCompletionSource
+        {
+            ICssNameCache _classNames;
+            public ElementsByClassNameCompletionSource(ICssNameCache classNames) { _classNames = classNames; }
+            protected override string FunctionName { get { return "getElementsByClassName"; } }
+
+            public override IEnumerable<Completion> GetEntries(char quoteChar, SnapshotPoint caret)
+            {
+                return _classNames.GetNames(new Uri(caret.Snapshot.TextBuffer.GetFileName()), caret, CssNameType.Class)
+                    .Select(s => s.Name)
+                    .Distinct()
+                    .OrderBy(s => s)
+                    .Select(s => GenerateCompletion(s, quoteChar));
+            }
+        }
+        class ElementsByIdCompletionSource : FunctionCompletionSource
+        {
+            ICssNameCache _classNames;
+            public ElementsByIdCompletionSource(ICssNameCache classNames) { _classNames = classNames; }
+
+            protected override string FunctionName { get { return "getElementById"; } }
+
+            public override IEnumerable<Completion> GetEntries(char quoteChar, SnapshotPoint caret)
+            {
+                return _classNames.GetNames(new Uri(caret.Snapshot.TextBuffer.GetFileName()), caret, CssNameType.Id)
+                    .Select(s => s.Name)
+                    .Distinct()
+                    .OrderBy(s => s)
+                    .Select(s => GenerateCompletion(s, quoteChar));
+            }
         }
 
-        private static Completion GenerateCompletion(string name)
+        private static Completion GenerateCompletion(string name, char quote)
         {
-            Completion c = new Completion();
-            c.DisplayText = "\"" + name + "\"";
-            c.IconSource = _glyph;
-            c.InsertionText = "\"" + name + "\"";
-            c.IconAutomationText = name;
-
-            return c;
+            return new Completion(quote + name + quote, quote + name + quote, null, _glyph, null);
         }
 
         public void Dispose()
