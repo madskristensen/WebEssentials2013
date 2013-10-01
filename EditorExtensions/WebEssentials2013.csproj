@@ -429,9 +429,6 @@
     <Compile Include="SmartTags\HTML\HtmlAngularControllerSmartTag.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SmartTags\HTML\HtmlConvertToFigureSmartTag.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="SmartTags\HTML\HtmlMinifyLanguageSmartTag.cs">
       <SubType>Code</SubType>
     </Compile>
