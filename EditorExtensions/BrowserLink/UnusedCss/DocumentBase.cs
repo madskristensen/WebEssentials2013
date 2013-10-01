@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -75,22 +75,21 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 return;
             }
 
-            var success = false;
             var tryCount = 0;
             const int maxTries = 20;
 
-            while (!success && tryCount++ < maxTries)
+            while (tryCount++ < maxTries)
             {
                 try
                 {
                     var text = File.ReadAllText(_file);
                     Reparse(text);
-                    success = true;
+                    break;
                 }
                 catch (IOException)
                 {
-                    Thread.Sleep(100);
                 }
+                await Task.Delay(100);
             }
 
             await UsageRegistry.ResyncAsync();
