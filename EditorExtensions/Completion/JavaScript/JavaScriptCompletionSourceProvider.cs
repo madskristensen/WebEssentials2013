@@ -152,13 +152,17 @@ namespace MadsKristensen.EditorExtensions
 
                 var endIndex = text.IndexOf(text[startIndex] + ")", startIndex);
                 if (endIndex < 0)
-                    endIndex = startIndex + text.Skip(startIndex + 1).TakeWhile(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c) || c == '-' || c == '_').Count();
+                    endIndex = startIndex + text.Skip(startIndex + 1).TakeWhile(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c) || c == '-' || c == '_').Count() + 1;
+                else if (linePosition > endIndex)
+                    return null;
 
                 // Consume the auto-added close quote, if present.
-                if (text[endIndex] == text[startIndex])
+                // If range ends at the end of the line, we cannot
+                // check this.
+                if (endIndex < text.Length && text[endIndex] == text[startIndex])
                     endIndex++;
-                if (linePosition > endIndex)
-                    return null;
+
+
                 return Span.FromBounds(startIndex, endIndex);
             }
         }
