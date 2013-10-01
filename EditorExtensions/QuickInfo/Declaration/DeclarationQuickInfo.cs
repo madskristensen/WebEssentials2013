@@ -125,7 +125,7 @@ namespace MadsKristensen.EditorExtensions
             var ruleSet = item.FindType<RuleSet>();
 
             //If the selector's full name would require computation (it's nested), compute it and add it to the output
-            if (ruleSet != null && ruleSet.Parent is RuleBlock)
+            if (ruleSet != null && ruleSet.Parent.FindType<RuleSet>() != null)
             {
                 qiContent.Add(LessDocument.GetLessSelectorName(ruleSet));
             }
