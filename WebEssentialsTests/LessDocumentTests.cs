@@ -230,6 +230,33 @@ a {
             }
         }
 
+        [TestMethod]
+        public void TestMixinExpansion()
+        {
+            var lessCode = @"
+a {
+    .myMixin(@p) {
+        b, code {
+        }
+    }
+}";
+
+            var lessDoc = new LessParser().Parse(lessCode, false);
+            var lessBlocks = new CssItemAggregator<RuleSet>(true) { (RuleSet rs) => rs }.Crawl(lessDoc).ToList();
+            // Remove all but the deepest blocks
+            while (0 < lessBlocks.RemoveAll(c => lessBlocks.Any(c.IsParentOf)))
+                ;
+
+            var literalExpansions = lessBlocks.SelectMany(rs => LessDocument.GetSelectorNames(rs, LessMixinAction.Literal)).ToList();
+            CollectionAssert.AreEqual(new[] { "a .myMixin(@p) b", "a .myMixin(@p) code" }, literalExpansions);
+
+            var skipExpansions = lessBlocks.SelectMany(rs => LessDocument.GetSelectorNames(rs, LessMixinAction.Skip)).ToList();
+            CollectionAssert.AreEqual(new string[0], skipExpansions);
+
+            var nestedExpansions = lessBlocks.SelectMany(rs => LessDocument.GetSelectorNames(rs, LessMixinAction.NestedOnly)).ToList();
+            CollectionAssert.AreEqual(new[] { "«mixin .myMixin» b", "«mixin .myMixin» code" }, nestedExpansions);
+        }
+
         static async Task<string> CompileLess(string source)
         {
             var tcs = new TaskCompletionSource<string>();
