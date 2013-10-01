@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Windows.Media;
+using System.Collections.ObjectModel;
+using System;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -44,32 +46,53 @@ namespace MadsKristensen.EditorExtensions
             _classNames = classNames;
         }
 
+        static ImageSource _useDirectiveGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupIntrinsic, StandardGlyphItem.GlyphItemPublic);
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
             int position = session.TextView.Caret.Position.BufferPosition.Position;
-            var line = _buffer.CurrentSnapshot.Lines.SingleOrDefault(l => l.Start <= position && l.End > position);
+            var line = _buffer.CurrentSnapshot.Lines.SingleOrDefault(l => l.Start <= position && l.End >= position);
 
-            if (line != null)
+            if (line == null)
+                return;
+
+            string text = line.GetText();
+
+            var quote = text.SkipWhile(Char.IsWhiteSpace).FirstOrDefault();
+            if (quote == '"' || quote == '\'')
             {
-                string text = line.GetText();
-                int tagIndex = text.IndexOf("getElementsByTagName(");
-                int classIndex = text.IndexOf("getElementsByClassName(");
-                int idIndex = text.IndexOf("getElementById(");
+                var lineTextStart = line.Start + text.TakeWhile(Char.IsWhiteSpace).Count();
+                ITrackingSpan span = _buffer.CurrentSnapshot.CreateTrackingSpan(lineTextStart, position - lineTextStart, SpanTrackingMode.EdgeInclusive);
+                completionSets.Clear();
 
-                CompletionSet set = null;
+                var completions = new[] { "use strict", "use asm" }.Select(s => new Completion(
+                    quote + s + quote + ";",
+                    quote + s + quote + ";",
+                    "Instructs that this block be processed in " + s.Substring(4) + " mode by supporting JS engines",
+                    _useDirectiveGlyph,
+                    null)
+                );
+                completionSets.Add(new CompletionSet("useDirectives", "Web Essentials", span, completions, null));
+                return;
+            }
 
-                if (tagIndex > -1 && position > line.Start + tagIndex)
-                    set = GetElementsByTagName(completionSets, position, line, text, tagIndex + 21);
-                if (classIndex > -1 && position > line.Start + classIndex)
-                    set = GetElementsByClassName(completionSets, position, line, text, classIndex + 23);
-                if (idIndex > -1 && position > line.Start + idIndex)
-                    set = GetElementById(completionSets, position, line, text, idIndex + 15);
+            int tagIndex = text.IndexOf("getElementsByTagName(");
+            int classIndex = text.IndexOf("getElementsByClassName(");
+            int idIndex = text.IndexOf("getElementById(");
 
-                if (set != null)
-                {
-                    completionSets.Clear();
-                    completionSets.Add(set);
-                }
+            CompletionSet set = null;
+
+            if (tagIndex > -1 && position > line.Start + tagIndex)
+                set = GetElementsByTagName(completionSets, position, line, text, tagIndex + 21);
+            if (classIndex > -1 && position > line.Start + classIndex)
+                set = GetElementsByClassName(completionSets, position, line, text, classIndex + 23);
+            if (idIndex > -1 && position > line.Start + idIndex)
+                set = GetElementById(completionSets, position, line, text, idIndex + 15);
+
+            if (set != null)
+            {
+                completionSets.Clear();
+                completionSets.Add(set);
+                return;
             }
         }
 
@@ -167,18 +190,10 @@ namespace MadsKristensen.EditorExtensions
 
         private static IEnumerable<Completion> AddHtmlTagNames()
         {
-            List<string> list = new List<string>();
-            foreach (var entry in TagCompletionProvider.GetListEntriesCache())
-            {
-                if (!list.Contains(entry.DisplayText))
-                    list.Add(entry.DisplayText);
-            }
-
-
-            foreach (string name in list)
-            {
-                yield return GenerateCompletion(name);
-            }
+            return TagCompletionProvider.GetListEntriesCache()
+                                        .Select(c => c.DisplayText)
+                                        .Distinct()
+                                        .Select(GenerateCompletion);
         }
 
         private static Completion GenerateCompletion(string name)
