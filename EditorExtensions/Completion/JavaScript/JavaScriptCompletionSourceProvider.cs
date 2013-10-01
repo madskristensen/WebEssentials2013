@@ -119,7 +119,7 @@ namespace MadsKristensen.EditorExtensions
 
                 var startIndex = text.TakeWhile(Char.IsWhiteSpace).Count();
                 var endIndex = linePosition;
-                
+
                 // Consume the auto-added close quote, if present.
                 // If range ends at the end of the line, we cannot
                 // check this.
@@ -280,7 +280,8 @@ namespace MadsKristensen.EditorExtensions
                 try
                 {
                     var json = JObject.Parse(File.ReadAllText(packageFile));
-                    return json.Value<string>("description") ?? "This module's package.json does not have a description property.";
+                    return (json.Value<string>("description") ?? "This module's package.json does not have a description property.")
+                         + "\nv" + (json.Value<string>("version") ?? "?");
                 }
                 catch (Exception ex)
                 {
