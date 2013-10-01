@@ -9,6 +9,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Windows.Media;
 using System.Collections.ObjectModel;
+using System;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -189,18 +190,10 @@ namespace MadsKristensen.EditorExtensions
 
         private static IEnumerable<Completion> AddHtmlTagNames()
         {
-            List<string> list = new List<string>();
-            foreach (var entry in TagCompletionProvider.GetListEntriesCache())
-            {
-                if (!list.Contains(entry.DisplayText))
-                    list.Add(entry.DisplayText);
-            }
-
-
-            foreach (string name in list)
-            {
-                yield return GenerateCompletion(name);
-            }
+            return TagCompletionProvider.GetListEntriesCache()
+                                        .Select(c => c.DisplayText)
+                                        .Distinct()
+                                        .Select(GenerateCompletion);
         }
 
         private static Completion GenerateCompletion(string name)
