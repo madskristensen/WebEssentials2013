@@ -8,6 +8,11 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Windows.Media;
+using System.Collections.ObjectModel;
+using System;
+using System.IO;
+using System.Windows.Media.Imaging;
+using Newtonsoft.Json.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -18,178 +23,270 @@ namespace MadsKristensen.EditorExtensions
     public class JavaScriptCompletionSourceProvider : ICompletionSourceProvider
     {
         [Import]
-        internal ITextStructureNavigatorSelectorService TextNavigator { get; set; }
-
-        [Import]
         private ICssNameCache _classNames = null;
 
         public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer)
         {
-            return buffer.Properties.GetOrCreateSingletonProperty(() => new JavaScriptCompletionSource(buffer, TextNavigator, _classNames)) as ICompletionSource;
+            return buffer.Properties.GetOrCreateSingletonProperty(() => new JavaScriptCompletionSource(buffer, _classNames)) as ICompletionSource;
         }
     }
 
     public class JavaScriptCompletionSource : ICompletionSource
     {
         private ITextBuffer _buffer;
-        private ICssNameCache _classNames;
-        private ITextStructureNavigatorSelectorService _navigator;
         private static ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphXmlItem, StandardGlyphItem.GlyphItemPublic);
-        private static IEnumerable<Completion> _cache = AddHtmlTagNames();
 
-        public JavaScriptCompletionSource(ITextBuffer buffer, ITextStructureNavigatorSelectorService navigator, ICssNameCache classNames)
+        public JavaScriptCompletionSource(ITextBuffer buffer, ICssNameCache classNames)
         {
             _buffer = buffer;
-            _navigator = navigator;
-            _classNames = classNames;
+
+            completionSources = new ReadOnlyCollection<StringCompletionSource>(new StringCompletionSource[] {
+                new UseDirectiveCompletionSource(), 
+                new ElementsByTagNameCompletionSource(), 
+                new ElementsByClassNameCompletionSource(classNames),
+                new ElementsByIdCompletionSource(classNames),
+                new NodeModuleCompletionSource()
+            });
         }
 
+        readonly ReadOnlyCollection<StringCompletionSource> completionSources;
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
             int position = session.TextView.Caret.Position.BufferPosition.Position;
-            var line = _buffer.CurrentSnapshot.Lines.SingleOrDefault(l => l.Start <= position && l.End > position);
+            var line = _buffer.CurrentSnapshot.Lines.SingleOrDefault(l => l.Start <= position && l.End >= position);
 
-            if (line != null)
+            if (line == null)
+                return;
+
+            string text = line.GetText();
+            var linePosition = position - line.Start;
+
+            foreach (var source in completionSources)
             {
-                string text = line.GetText();
-                int tagIndex = text.IndexOf("getElementsByTagName(");
-                int classIndex = text.IndexOf("getElementsByClassName(");
-                int idIndex = text.IndexOf("getElementById(");
+                var span = source.GetInvocationSpan(text, linePosition);
+                if (span == null) continue;
 
-                CompletionSet set = null;
+                var trackingSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(span.Value.Start + line.Start, span.Value.Length, SpanTrackingMode.EdgeInclusive);
+                completionSets.Add(new StringCompletionSet(
+                    source.GetType().Name,
+                    trackingSpan,
+                    source.GetEntries(quoteChar: text[span.Value.Start], caret: session.TextView.Caret.Position.BufferPosition)
+                ));
+            }
+            // TODO: Merge & resort all sets?  Will StringCompletionSource handle other entries?
+            //completionSets.SelectMany(s => s.Completions).OrderBy(c=>c.DisplayText.TrimStart('"','\''))
+        }
+        class StringCompletionSet : CompletionSet
+        {
+            public StringCompletionSet(string moniker, ITrackingSpan span, IEnumerable<Completion> completions) : base(moniker, "Web Essentials", span, completions, null) { }
 
-                if (tagIndex > -1 && position > line.Start + tagIndex)
-                    set = GetElementsByTagName(completionSets, position, line, text, tagIndex + 21);
-                if (classIndex > -1 && position > line.Start + classIndex)
-                    set = GetElementsByClassName(completionSets, position, line, text, classIndex + 23);
-                if (idIndex > -1 && position > line.Start + idIndex)
-                    set = GetElementById(completionSets, position, line, text, idIndex + 15);
+            public override void SelectBestMatch()
+            {
+                base.SelectBestMatch();
 
-                if (set != null)
+                var snapshot = ApplicableTo.TextBuffer.CurrentSnapshot;
+                var userText = ApplicableTo.GetText(snapshot);
+
+                // If VS couldn't find an exact match, try again without closing quote.
+                if (SelectionStatus.IsSelected) return;
+                if (userText.Last() != userText[0]) return; // If there is no closing quote, do nothing.
+
+                var originalSpan = ApplicableTo;
+                try
                 {
-                    completionSets.Clear();
-                    completionSets.Add(set);
+                    var spanPoints = originalSpan.GetSpan(snapshot);
+                    ApplicableTo = snapshot.CreateTrackingSpan(spanPoints.Start, spanPoints.Length - 1, ApplicableTo.TrackingMode);
+                    base.SelectBestMatch();
                 }
+                finally { ApplicableTo = originalSpan; }
             }
         }
 
-        private CompletionSet GetElementsByTagName(IList<CompletionSet> completionSets, int position, ITextSnapshotLine line, string text, int index)
+        abstract class StringCompletionSource
         {
-            int end = text.IndexOf(')', index);
+            public abstract Span? GetInvocationSpan(string text, int linePosition);
 
-            if (position <= line.Start + end)
+            public abstract IEnumerable<Completion> GetEntries(char quoteChar, SnapshotPoint caret);
+        }
+
+        class UseDirectiveCompletionSource : StringCompletionSource
+        {
+            public override Span? GetInvocationSpan(string text, int linePosition)
             {
-                ITrackingSpan span = _buffer.CurrentSnapshot.CreateTrackingSpan(line.Start + index, end - index, SpanTrackingMode.EdgeInclusive);
-
-                List<Completion> list = new List<Completion>();
-                if (!span.GetText(_buffer.CurrentSnapshot).Contains("\""))
+                var quote = text.SkipWhile(Char.IsWhiteSpace).FirstOrDefault();
+                if (quote != '"' && quote != '\'')
                     return null;
 
-                AddExistingCompletions(completionSets, list);
-
-                list.AddRange(_cache);
-                var completions = list.OrderBy(x => x.DisplayText.TrimStart('\"'));
-
-                return new CompletionSet("tagnames", "Web Essentials", span, completions, null);
+                var startIndex = text.TakeWhile(Char.IsWhiteSpace).Count();
+                var endIndex = linePosition;
+                
+                // Consume the auto-added close quote, if present.
+                // If range ends at the end of the line, we cannot
+                // check this.
+                if (endIndex < text.Length && text[endIndex] == quote)
+                    endIndex++;
+                return Span.FromBounds(startIndex, endIndex);
             }
 
-            return null;
+            static ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupIntrinsic, StandardGlyphItem.GlyphItemPublic);
+            public override IEnumerable<Completion> GetEntries(char quoteChar, SnapshotPoint caret)
+            {
+                return new[] { "use strict", "use asm" }.Select(s => new Completion(
+                    quoteChar + s + quoteChar + ";",
+                    quoteChar + s + quoteChar + ";",
+                    "Instructs that this block be processed in " + s.Substring(4) + " mode by supporting JS engines",
+                    _glyph,
+                    null)
+                );
+            }
         }
 
-        private CompletionSet GetElementsByClassName(IList<CompletionSet> completionSets, int position, ITextSnapshotLine line, string text, int index)
+        abstract class FunctionCompletionSource : StringCompletionSource
         {
-            int end = text.IndexOf(')', index);
+            protected abstract string FunctionName { get; }
 
-            if (position <= line.Start + end)
+            public override Span? GetInvocationSpan(string text, int linePosition)
             {
-                ITrackingSpan span = _buffer.CurrentSnapshot.CreateTrackingSpan(line.Start + index, end - index, SpanTrackingMode.EdgeInclusive);
+                // Find the quoted string inside function call
+                int startIndex = text.LastIndexOf(FunctionName + "(", linePosition);
+                if (startIndex < 0)
+                    return null;
+                startIndex += FunctionName.Length + 1;
+                startIndex += text.Skip(startIndex).TakeWhile(Char.IsWhiteSpace).Count();
 
-                List<Completion> list = new List<Completion>();
-                if (!span.GetText(_buffer.CurrentSnapshot).Contains("\""))
+                if (linePosition <= startIndex || (text[startIndex] != '"' && text[startIndex] != '\''))
                     return null;
 
-                AddExistingCompletions(completionSets, list);
-
-                var names = _classNames.GetNames(new System.Uri(EditorExtensionsPackage.DTE.ActiveDocument.FullName), line.Start.Add(index), CssNameType.Class);
-
-                foreach (string name in names.Select(n => n.Name).Distinct())
-                {
-                    list.Add(GenerateCompletion(name));
-                }
-
-                var completions = list.OrderBy(x => x.DisplayText.TrimStart('\"'));
-
-                return new CompletionSet("classnames", "Web Essentials", span, completions, null);
-            }
-
-            return null;
-        }
-
-        private CompletionSet GetElementById(IList<CompletionSet> completionSets, int position, ITextSnapshotLine line, string text, int index)
-        {
-            int end = text.IndexOf(')', index);
-
-            if (position <= line.Start + end)
-            {
-                ITrackingSpan span = _buffer.CurrentSnapshot.CreateTrackingSpan(line.Start + index, end - index, SpanTrackingMode.EdgeInclusive);
-
-                List<Completion> list = new List<Completion>();
-                if (!span.GetText(_buffer.CurrentSnapshot).Contains("\""))
+                var endIndex = text.IndexOf(text[startIndex] + ")", startIndex);
+                if (endIndex < 0)
+                    endIndex = startIndex + text.Skip(startIndex + 1).TakeWhile(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c) || c == '-' || c == '_').Count() + 1;
+                else if (linePosition > endIndex)
                     return null;
 
-                AddExistingCompletions(completionSets, list);
+                // Consume the auto-added close quote, if present.
+                // If range ends at the end of the line, we cannot
+                // check this.
+                if (endIndex < text.Length && text[endIndex] == text[startIndex])
+                    endIndex++;
 
-                var names = _classNames.GetNames(new System.Uri(EditorExtensionsPackage.DTE.ActiveDocument.FullName), line.Start.Add(index), CssNameType.Id);
 
-                foreach (string name in names.Select(n => n.Name).Distinct())
+                return Span.FromBounds(startIndex, endIndex);
+            }
+        }
+
+        class ElementsByTagNameCompletionSource : FunctionCompletionSource
+        {
+            protected override string FunctionName { get { return "getElementsByTagName"; } }
+
+            static ReadOnlyCollection<string> tagNames = TagCompletionProvider.GetListEntriesCache()
+                                        .Select(c => c.DisplayText)
+                                        .Distinct()
+                                        .OrderBy(s => s)
+                                        .ToList()
+                                        .AsReadOnly();
+
+            public override IEnumerable<Completion> GetEntries(char quoteChar, SnapshotPoint caret)
+            {
+                return tagNames.Select(s => GenerateCompletion(s, quoteChar));
+            }
+        }
+        class ElementsByClassNameCompletionSource : FunctionCompletionSource
+        {
+            ICssNameCache _classNames;
+            public ElementsByClassNameCompletionSource(ICssNameCache classNames) { _classNames = classNames; }
+            protected override string FunctionName { get { return "getElementsByClassName"; } }
+
+            public override IEnumerable<Completion> GetEntries(char quoteChar, SnapshotPoint caret)
+            {
+                return _classNames.GetNames(new Uri(caret.Snapshot.TextBuffer.GetFileName()), caret, CssNameType.Class)
+                    .Select(s => s.Name)
+                    .Distinct()
+                    .OrderBy(s => s)
+                    .Select(s => GenerateCompletion(s, quoteChar));
+            }
+        }
+        class ElementsByIdCompletionSource : FunctionCompletionSource
+        {
+            ICssNameCache _classNames;
+            public ElementsByIdCompletionSource(ICssNameCache classNames) { _classNames = classNames; }
+
+            protected override string FunctionName { get { return "getElementById"; } }
+
+            public override IEnumerable<Completion> GetEntries(char quoteChar, SnapshotPoint caret)
+            {
+                return _classNames.GetNames(new Uri(caret.Snapshot.TextBuffer.GetFileName()), caret, CssNameType.Id)
+                    .Select(s => s.Name)
+                    .Distinct()
+                    .OrderBy(s => s)
+                    .Select(s => GenerateCompletion(s, quoteChar));
+            }
+        }
+
+        private static Completion GenerateCompletion(string name, char quote)
+        {
+            return new Completion(quote + name + quote, quote + name + quote, null, _glyph, null);
+        }
+
+        class NodeModuleCompletionSource : FunctionCompletionSource
+        {
+            // This won't conflict with RequireJS, since its require() function takes an array rather than a string.
+            protected override string FunctionName { get { return "require"; } }
+
+            static ImageSource moduleIcon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/node_module.png", UriKind.RelativeOrAbsolute));
+
+
+            public override IEnumerable<Completion> GetEntries(char quoteChar, SnapshotPoint caret)
+            {
+                var callingFilename = caret.Snapshot.TextBuffer.GetFileName();
+                var baseFolder = Path.GetDirectoryName(callingFilename);
+
+                //TODO: Find / and show filesystem entries
+
+                return GetAvailableModules(baseFolder)
+                        .Select(p => new Completion(
+                            quoteChar + Path.GetFileName(p) + quoteChar,
+                            quoteChar + Path.GetFileName(p) + quoteChar,
+                            GetDescription(p),
+                            moduleIcon,
+                            "Node module"
+                        ));
+            }
+
+            ///<summary>Returns all Node.js modules visible from a given directory, including those from node_modules in parent directories.</summary>
+            ///<remarks>The modules will be sorted by depth (innermost modules first), then alphabetically.</remarks>
+            static IEnumerable<string> GetAvailableModules(string directory)
+            {
+                var nmDir = Path.Combine(directory, "node_modules");
+                IEnumerable<string> ourModules;
+                if (Directory.Exists(nmDir))
+                    ourModules = Directory.EnumerateDirectories(nmDir)
+                        .Where(s => !Path.GetFileName(s).StartsWith("."))
+                        .OrderBy(s => s);
+                else
+                    ourModules = Enumerable.Empty<string>();
+
+                var parentDir = Path.GetDirectoryName(directory);
+                if (String.IsNullOrEmpty(parentDir))
+                    return ourModules;
+                else
+                    return ourModules.Concat(GetAvailableModules(parentDir));
+            }
+
+            static string GetDescription(string path)
+            {
+                var packageFile = Path.Combine(path, "package.json");
+                if (!File.Exists(packageFile))
+                    return "This module does not have a package.json file.";
+                try
                 {
-                    list.Add(GenerateCompletion(name));
+                    var json = JObject.Parse(File.ReadAllText(packageFile));
+                    return json.Value<string>("description") ?? "This module's package.json does not have a description property.";
                 }
-
-                var completions = list.OrderBy(x => x.DisplayText.TrimStart('\"'));
-
-                return new CompletionSet("ids", "Web Essentials", span, completions, null);
-            }
-
-            return null;
-        }
-
-        private static void AddExistingCompletions(IList<CompletionSet> completionSets, List<Completion> list)
-        {
-            if (completionSets.Count > 0)
-            {
-                for (int i = 0; i < completionSets[0].Completions.Count; i++)
+                catch (Exception ex)
                 {
-                    list.Add(completionSets[0].Completions[i]);
+                    return "An error occurred while reading this module's package.json: " + ex.Message;
                 }
             }
-        }
-
-        private static IEnumerable<Completion> AddHtmlTagNames()
-        {
-            List<string> list = new List<string>();
-            foreach (var entry in TagCompletionProvider.GetListEntriesCache())
-            {
-                if (!list.Contains(entry.DisplayText))
-                    list.Add(entry.DisplayText);
-            }
-
-
-            foreach (string name in list)
-            {
-                yield return GenerateCompletion(name);
-            }
-        }
-
-        private static Completion GenerateCompletion(string name)
-        {
-            Completion c = new Completion();
-            c.DisplayText = "\"" + name + "\"";
-            c.IconSource = _glyph;
-            c.InsertionText = "\"" + name + "\"";
-            c.IconAutomationText = name;
-
-            return c;
         }
 
         public void Dispose()

@@ -99,7 +99,7 @@ namespace MadsKristensen.EditorExtensions
                             char ch = GetTypeChar(pvaIn);
                             if (ch == ':')
                                 Cancel();
-                            else if (ch == '"' || (!char.IsPunctuation(ch) && !char.IsControl(ch)))
+                            else if (ch == '"' || ch == '\'' || (!char.IsPunctuation(ch) && !char.IsControl(ch)))
                                 StartSession();
                             else if (_currentSession != null)
                                 Filter();
