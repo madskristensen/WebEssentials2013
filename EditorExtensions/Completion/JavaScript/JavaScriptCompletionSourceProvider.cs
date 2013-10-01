@@ -80,6 +80,27 @@ namespace MadsKristensen.EditorExtensions
         class StringCompletionSet : CompletionSet
         {
             public StringCompletionSet(string moniker, ITrackingSpan span, IEnumerable<Completion> completions) : base(moniker, "Web Essentials", span, completions, null) { }
+
+            public override void SelectBestMatch()
+            {
+                base.SelectBestMatch();
+
+                var snapshot = ApplicableTo.TextBuffer.CurrentSnapshot;
+                var userText = ApplicableTo.GetText(snapshot);
+
+                // If VS couldn't find an exact match, try again without closing quote.
+                if (SelectionStatus.IsSelected) return;
+                if (userText.Last() != userText[0]) return; // If there is no closing quote, do nothing.
+
+                var originalSpan = ApplicableTo;
+                try
+                {
+                    var spanPoints = originalSpan.GetSpan(snapshot);
+                    ApplicableTo = snapshot.CreateTrackingSpan(spanPoints.Start, spanPoints.Length - 1, ApplicableTo.TrackingMode);
+                    base.SelectBestMatch();
+                }
+                finally { ApplicableTo = originalSpan; }
+            }
         }
 
         abstract class StringCompletionSource
@@ -125,7 +146,7 @@ namespace MadsKristensen.EditorExtensions
             public override Span? GetInvocationSpan(string text, int linePosition)
             {
                 // Find the quoted string inside function call
-                int startIndex = text.IndexOf(FunctionName + "(");
+                int startIndex = text.LastIndexOf(FunctionName + "(", linePosition);
                 if (startIndex < 0)
                     return null;
                 startIndex += FunctionName.Length + 1;
