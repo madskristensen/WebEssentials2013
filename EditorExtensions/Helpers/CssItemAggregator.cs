@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions
     /// tree for each type.
     /// To use this class, add a collection initializer with a list of typed lambdas.
     /// </summary>
-    internal class CssItemAggregator<TResult> : ICssSimpleTreeVisitor, System.Collections.IEnumerable   // For collection initializer syntax
+    public class CssItemAggregator<TResult> : ICssSimpleTreeVisitor, System.Collections.IEnumerable   // For collection initializer syntax
     {
         public ReadOnlyCollection<TResult> Items { get; private set; }
         private readonly bool _includeChildren;
