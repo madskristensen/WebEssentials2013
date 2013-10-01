@@ -50,6 +50,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
+        public bool SnapshotOnChange { get; set; }
+
         private async void Reparse(object sender, FileSystemEventArgs e)
         {
             if (e != null && e.Name.ToLowerInvariant() != _localFileName)
@@ -75,7 +77,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             await UsageRegistry.ResyncAsync();
-            UnusedCssExtension.All(x => x.SnapshotPage(null));
+
+            if (SnapshotOnChange)
+            {
+                UnusedCssExtension.All(x => x.SnapshotPage(null));
+            }
         }
 
         public void Reparse()

@@ -75,7 +75,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void RefreshStyles(object sender, FileSystemEventArgs e)
         {
-            if (e.FullPath.EndsWith(".css"))
+            if (!CssSyncSuppressionContext.IsSuppressed && e.FullPath.EndsWith(".css"))
             {
                 Browsers.All.Invoke("refresh");
             }

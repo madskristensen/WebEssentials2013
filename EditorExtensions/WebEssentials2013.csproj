@@ -270,7 +270,12 @@
     <Compile Include="BrowserLink\DesignMode\DesignModeBrowserLink.cs" />
     <Compile Include="BrowserLink\InspectMode\InspectModeBrowserLink.cs" />
     <Compile Include="BrowserLink\CssSync\CssSyncBrowserLink.cs" />
-    <Compile Include="BrowserLink\PixelPushing\PixelPushingModeBrowserLink.cs" />
+    <Compile Include="BrowserLink\PixelPushing\CssDeltaAction.cs" />
+    <Compile Include="BrowserLink\PixelPushing\CssRuleBlockSyncAction.cs" />
+    <Compile Include="BrowserLink\PixelPushing\CssRuleDefinitionSync.cs" />
+    <Compile Include="BrowserLink\PixelPushing\CssSelectorChangeData.cs" />
+    <Compile Include="BrowserLink\PixelPushing\PixelPushingMode.cs" />
+    <Compile Include="BrowserLink\PixelPushing\PixelPusingModeFactory.cs" />
     <Compile Include="BrowserLink\UnusedCss\AmbientRuleContext.cs" />
     <Compile Include="BrowserLink\UnusedCss\CompositeUsageData.cs" />
     <Compile Include="BrowserLink\UnusedCss\CssDocument.cs" />
