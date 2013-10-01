@@ -20,27 +20,22 @@ namespace MadsKristensen.EditorExtensions
     public class JavaScriptCompletionSourceProvider : ICompletionSourceProvider
     {
         [Import]
-        internal ITextStructureNavigatorSelectorService TextNavigator { get; set; }
-
-        [Import]
         private ICssNameCache _classNames = null;
 
         public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer)
         {
-            return buffer.Properties.GetOrCreateSingletonProperty(() => new JavaScriptCompletionSource(buffer, TextNavigator, _classNames)) as ICompletionSource;
+            return buffer.Properties.GetOrCreateSingletonProperty(() => new JavaScriptCompletionSource(buffer, _classNames)) as ICompletionSource;
         }
     }
 
     public class JavaScriptCompletionSource : ICompletionSource
     {
         private ITextBuffer _buffer;
-        private ITextStructureNavigatorSelectorService _navigator;
         private static ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphXmlItem, StandardGlyphItem.GlyphItemPublic);
 
-        public JavaScriptCompletionSource(ITextBuffer buffer, ITextStructureNavigatorSelectorService navigator, ICssNameCache classNames)
+        public JavaScriptCompletionSource(ITextBuffer buffer, ICssNameCache classNames)
         {
             _buffer = buffer;
-            _navigator = navigator;
 
             completionSources = new ReadOnlyCollection<StringCompletionSource>(new StringCompletionSource[] {
                 new UseDirectiveCompletionSource(), 
