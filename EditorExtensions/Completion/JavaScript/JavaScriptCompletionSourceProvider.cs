@@ -10,6 +10,9 @@ using System.Linq;
 using System.Windows.Media;
 using System.Collections.ObjectModel;
 using System;
+using System.IO;
+using System.Windows.Media.Imaging;
+using Newtonsoft.Json.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -41,7 +44,8 @@ namespace MadsKristensen.EditorExtensions
                 new UseDirectiveCompletionSource(), 
                 new ElementsByTagNameCompletionSource(), 
                 new ElementsByClassNameCompletionSource(classNames),
-                new ElementsByIdCompletionSource(classNames)
+                new ElementsByIdCompletionSource(classNames),
+                new NodeModuleCompletionSource()
             });
         }
 
@@ -218,6 +222,68 @@ namespace MadsKristensen.EditorExtensions
         private static Completion GenerateCompletion(string name, char quote)
         {
             return new Completion(quote + name + quote, quote + name + quote, null, _glyph, null);
+        }
+
+        class NodeModuleCompletionSource : FunctionCompletionSource
+        {
+            // This won't conflict with RequireJS, since its require() function takes an array rather than a string.
+            protected override string FunctionName { get { return "require"; } }
+
+            static ImageSource moduleIcon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/node_module.png", UriKind.RelativeOrAbsolute));
+
+
+            public override IEnumerable<Completion> GetEntries(char quoteChar, SnapshotPoint caret)
+            {
+                var callingFilename = caret.Snapshot.TextBuffer.GetFileName();
+                var baseFolder = Path.GetDirectoryName(callingFilename);
+
+                //TODO: Find / and show filesystem entries
+
+                return GetAvailableModules(baseFolder)
+                        .Select(p => new Completion(
+                            quoteChar + Path.GetFileName(p) + quoteChar,
+                            quoteChar + Path.GetFileName(p) + quoteChar,
+                            GetDescription(p),
+                            moduleIcon,
+                            "Node module"
+                        ));
+            }
+
+            ///<summary>Returns all Node.js modules visible from a given directory, including those from node_modules in parent directories.</summary>
+            ///<remarks>The modules will be sorted by depth (innermost modules first), then alphabetically.</remarks>
+            static IEnumerable<string> GetAvailableModules(string directory)
+            {
+                var nmDir = Path.Combine(directory, "node_modules");
+                IEnumerable<string> ourModules;
+                if (Directory.Exists(nmDir))
+                    ourModules = Directory.EnumerateDirectories(nmDir)
+                        .Where(s => !Path.GetFileName(s).StartsWith("."))
+                        .OrderBy(s => s);
+                else
+                    ourModules = Enumerable.Empty<string>();
+
+                var parentDir = Path.GetDirectoryName(directory);
+                if (String.IsNullOrEmpty(parentDir))
+                    return ourModules;
+                else
+                    return ourModules.Concat(GetAvailableModules(parentDir));
+            }
+
+            static string GetDescription(string path)
+            {
+                var packageFile = Path.Combine(path, "package.json");
+                if (!File.Exists(packageFile))
+                    return "This module does not have a package.json file.";
+                try
+                {
+                    var json = JObject.Parse(File.ReadAllText(packageFile));
+                    return json.Value<string>("description") ?? "This module's package.json does not have a description property.";
+                }
+                catch (Exception ex)
+                {
+                    return "An error occurred while reading this module's package.json: " + ex.Message;
+                }
+            }
         }
 
         public void Dispose()
