@@ -10,13 +10,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     public abstract class DocumentBase : IDocument
     {
         private readonly string _file;
-        private readonly FileSystemEventHandler _fileDeletedCallback;
         private readonly FileSystemWatcher _watcher;
         private readonly string _localFileName;
 
-        protected DocumentBase(string file, FileSystemEventHandler fileDeletedCallback)
+        protected DocumentBase(string file)
         {
-            _fileDeletedCallback = fileDeletedCallback;
             _file = file;
             var path = Path.GetDirectoryName(file);
             _localFileName = (Path.GetFileName(file) ?? "").ToLowerInvariant();
@@ -29,7 +27,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             };
 
             _watcher.Changed += Reparse;
-            _watcher.Deleted += ProxyDeletion;
             _watcher.Renamed += ProxyRename;
             _watcher.Created += Reparse;
             _watcher.EnableRaisingEvents = true;
@@ -41,19 +38,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public void Dispose()
         {
             _watcher.Changed -= Reparse;
-            _watcher.Deleted -= ProxyDeletion;
             _watcher.Renamed -= ProxyRename;
             _watcher.Dispose();
-        }
-
-        private void ProxyDeletion(object sender, FileSystemEventArgs e)
-        {
-            if (e.Name.ToLowerInvariant() != _localFileName)
-            {
-                return;
-            }
-
-            _fileDeletedCallback(sender, e);
         }
 
         private void ProxyRename(object sender, RenamedEventArgs e)
@@ -61,10 +47,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             if (e.Name.ToLowerInvariant() == _localFileName)
             {
                 Reparse();
-            }
-            else if (e.OldName.ToLowerInvariant() == _localFileName)
-            {
-                _fileDeletedCallback(sender, e);
             }
         }
 
@@ -101,13 +83,13 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             Reparse(null, null);
         }
 
-        protected static IDocument For(string fullPath, FileSystemEventHandler fileDeletedCallback, Func<string, FileSystemEventHandler, DocumentBase> documentFactory)
+        protected static IDocument For(string fullPath, bool createIfRequired, Func<string, DocumentBase> documentFactory)
         {
             var fileName = fullPath.ToLowerInvariant();
 
-            if (fileDeletedCallback != null)
+            if (createIfRequired)
             {
-                return documentFactory(fileName, fileDeletedCallback);
+                return documentFactory(fileName);
             }
 
             return null;
