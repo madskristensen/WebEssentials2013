@@ -80,7 +80,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             if (SnapshotOnChange)
             {
-                UnusedCssExtension.All(x => x.SnapshotPage(null));
+                UnusedCssExtension.All(x => x.SnapshotPage());
             }
         }
 
