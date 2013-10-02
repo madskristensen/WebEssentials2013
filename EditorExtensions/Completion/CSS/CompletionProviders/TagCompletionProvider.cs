@@ -9,8 +9,9 @@ namespace MadsKristensen.EditorExtensions
     [Name("TagCompletionProvider")]
     internal class TagCompletionProvider : ICssCompletionListProvider
     {
-        private static IEnumerable<ICssCompletionListEntry> _entryCache = GetListEntriesCache();
-        private static HashSet<string> _ignore = new HashSet<string>() { "script", "noscript", "meta", "link", "style", "head", "base", "br", "font", "___all___", "FlowContentElement" };
+        private static IEnumerable<ICssCompletionListEntry> _entryCache = GetListEntriesCache(includeUnstyled: false);
+        private static HashSet<string> _basicIgnore = new HashSet<string>() { "noscript", "br", "font", "___all___", "FlowContentElement" };
+        private static HashSet<string> _cssIgnore = new HashSet<string>(_basicIgnore) { "script", "meta", "link", "style", "head", };
 
         public CssCompletionContextType ContextType
         {
@@ -22,20 +23,21 @@ namespace MadsKristensen.EditorExtensions
             return _entryCache;
         }
 
-        public static IEnumerable<ICssCompletionListEntry> GetListEntriesCache()
+        public static IEnumerable<ICssCompletionListEntry> GetListEntriesCache(bool includeUnstyled)
         {
+            var ignoreList = includeUnstyled ? _cssIgnore : _basicIgnore;
             var schemas = AttributeNameCompletionProvider.GetSchemas();
 
             foreach (var schema in schemas)
                 foreach (var element in schema.GetTopLevelElements())
                 {
-                    if (!_ignore.Contains(element.Name))
-                        yield return new CompletionListEntry(element.Name);
+                    if (!ignoreList.Contains(element.Name))
+                        yield return new CompletionListEntry(element.Name) { Description = element.Description.Description };
 
                     foreach (var child in element.GetChildren())
                     {
-                        if (!_ignore.Contains(child.Name))
-                            yield return new CompletionListEntry(child.Name);
+                        if (!ignoreList.Contains(child.Name))
+                            yield return new CompletionListEntry(child.Name) { Description = child.Description.Description };
                     }
                 }
         }
