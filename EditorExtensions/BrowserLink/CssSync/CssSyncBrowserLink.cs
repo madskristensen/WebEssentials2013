@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Web.BrowserLink;
+﻿using System.Linq;
+using Microsoft.VisualStudio.Web.BrowserLink;
 using System.ComponentModel.Composition;
 using System.IO;
 
@@ -78,6 +79,10 @@ namespace MadsKristensen.EditorExtensions
             if (!CssSyncSuppressionContext.IsSuppressed && e.FullPath.EndsWith(".css"))
             {
                 Browsers.All.Invoke("refresh");
+            }
+            else if (e.FullPath.EndsWith(".css") && !CssSyncSuppressionContext.SuppressAllBrowsers)
+            {
+                Browsers.AllExcept(CssSyncSuppressionContext.ConnectionsToExclude.ToArray()).Invoke("refresh");
             }
         }
     }
