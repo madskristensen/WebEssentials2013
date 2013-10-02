@@ -8,8 +8,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public class LessDocument : DocumentBase
     {
-        private LessDocument(string file, FileSystemEventHandler fileDeletedCallback)
-            : base(file, fileDeletedCallback)
+        private LessDocument(string file)
+            : base(file)
         {
         }
 
@@ -18,9 +18,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return new LessParser();
         }
 
-        internal static IDocument For(string fullPath, FileSystemEventHandler fileDeletedCallback = null)
+        internal static IDocument For(string fullPath, bool createIfRequired)
         {
-            return For(fullPath, fileDeletedCallback, (f, c) => new LessDocument(f, c));
+            return For(fullPath, createIfRequired, f => new LessDocument(f));
         }
 
 

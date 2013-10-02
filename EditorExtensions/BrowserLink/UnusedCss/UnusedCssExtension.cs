@@ -41,9 +41,19 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             get
             {
-                yield return new BrowserLinkAction("Snapshot Page", SnapshotPage);
-                yield return new BrowserLinkAction("Start Recording", ToggleRecordingMode, SetRecordingButtonDisplayProperties);
+                yield return new BrowserLinkAction("Snapshot Page", SnapshotPageAction);
+                yield return new BrowserLinkAction("Start Recording", ToggleRecordingModeAction, SetRecordingButtonDisplayProperties);
             }
+        }
+
+        private void ToggleRecordingModeAction(BrowserLinkAction obj)
+        {
+            ToggleRecordingMode();
+        }
+
+        private void SnapshotPageAction(BrowserLinkAction obj)
+        {
+            SnapshotPage();
         }
 
         public BrowserLinkConnection Connection { get { return _connection; } }
@@ -76,7 +86,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             if (IsRecording ^ targetRecordingStatus)
             {
-                ToggleRecordingMode(null);
+                ToggleRecordingMode();
             }
         }
 
@@ -161,7 +171,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
                 try
                 {
-                    appBag.AddOrUpdate(_connection.Project.UniqueName, n => c => c.ToggleRecordingMode(null), (n, a) => c => c.ToggleRecordingMode(null));
+                    appBag.AddOrUpdate(_connection.Project.UniqueName, n => c => c.ToggleRecordingMode(), (n, a) => c => c.ToggleRecordingMode());
                 }
                 catch (COMException)
                 {
@@ -175,7 +185,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         }
 
         [BrowserLinkCallback]
-        public void SnapshotPage(BrowserLinkAction action)
+        public void SnapshotPage()
         {
             var opId = Guid.NewGuid();
             
@@ -188,7 +198,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         }
 
         [BrowserLinkCallback]
-        public void ToggleRecordingMode(BrowserLinkAction action)
+        public void ToggleRecordingMode()
         {
             IsRecording = !IsRecording;
 

@@ -5,8 +5,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public class CssDocument : DocumentBase
     {
-        private CssDocument(string file, FileSystemEventHandler fileDeletedCallback)
-            : base(file, fileDeletedCallback)
+        private CssDocument(string file)
+            : base(file)
         {
         }
 
@@ -15,9 +15,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return new CssParser();
         }
 
-        internal static IDocument For(string fullPath, FileSystemEventHandler fileDeletedCallback = null)
+        internal static IDocument For(string fullPath, bool createIfRequired = false)
         {
-            return For(fullPath, fileDeletedCallback, (f, c) => new CssDocument(f, c));
+            return For(fullPath, createIfRequired, f => new CssDocument(f));
         }
     }
 }
