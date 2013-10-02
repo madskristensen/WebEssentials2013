@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using EnvDTE;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 {
     public class PixelPushingMode : BrowserLinkExtension
     {
-        private readonly UploadHelper _uploadHelper;
-
+        private static readonly ReaderWriterLockSlim ProcessingGate = new ReaderWriterLockSlim();
         private readonly BrowserLinkConnection _connection;
+        private readonly UploadHelper _uploadHelper;
 
         public PixelPushingMode(BrowserLinkConnection connection)
         {
@@ -103,12 +105,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             return filePath;
         }
 
-        private static IStylingRule[] FlattenRules(IDocument document)
+        public override void OnConnected(BrowserLinkConnection connection)
         {
-            return document.Rules.OrderBy(x => x.Offset).ToArray();
+            Browsers.Client(connection).Invoke("setPixelPusingMode", true, Guid.NewGuid().ToString());
         }
-
-        private static readonly object DocumentUpdateSync = new object();
 
         [BrowserLinkCallback]
         public void SyncCssRules(string operationId, string chunkContents, int chunkNumber, int chunkCount)
@@ -133,8 +133,16 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             }
         }
 
+        private static IStylingRule[] FlattenRules(IDocument document)
+        {
+            return document.Rules.OrderBy(x => x.Offset).ToArray();
+        }
+
         private static async void UpdateSheetRulesAsync(string file, IEnumerable<CssSelectorChangeData> set)
         {
+            //Get off the UI thread
+            await System.Threading.Tasks.Task.Factory.StartNew(() => { });
+            ProcessingGate.EnterWriteLock();
             using (CssSyncSuppressionContext.Get(2000))
             {
                 var doc = DocumentFactory.GetDocument(file, true);
@@ -161,38 +169,31 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                     allEdits.AddRange(actions);
                 }
 
-                lock (DocumentUpdateSync)
+                var compositeEdit = buffer.CreateEdit();
+
+                try
                 {
-                    var compositeEdit = buffer.CreateEdit();
-
-                    try
+                    foreach (var action in allEdits)
                     {
-                        foreach (var action in allEdits)
-                        {
-                            action(window, compositeEdit);
-                        }
-                    }
-                    catch
-                    {
-                        compositeEdit.Cancel();
-                    }
-                    finally
-                    {
-
-                        if (!compositeEdit.Canceled)
-                        {
-                            compositeEdit.Apply();
-                            EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatDocument");
-                            window.Document.Save();
-                        }
+                        action(window, compositeEdit);
                     }
                 }
-            }
-        }
+                catch
+                {
+                    compositeEdit.Cancel();
+                }
+                finally
+                {
+                    if (!compositeEdit.Canceled)
+                    {
+                        compositeEdit.Apply();
+                        EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatDocument");
+                        window.Document.Save();
+                    }
 
-        public override void OnConnected(BrowserLinkConnection connection)
-        {
-            Browsers.Client(connection).Invoke("setPixelPusingMode", true, Guid.NewGuid().ToString());
+                    ProcessingGate.ExitWriteLock();
+                }
+            }
         }
     }
 }

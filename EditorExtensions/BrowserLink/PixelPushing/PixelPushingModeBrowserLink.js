@@ -94,7 +94,7 @@
         var tmp = [];
         
         for (var i = 0; i < sheets.length; ++i) {
-            tmp.push({});
+            tmp.push({ "href": getSheetHref(sheets[i]) });
             var sheet = sheets[i];
             var rules = sheet.cssRules;
             var nameEncounters = {};
@@ -124,6 +124,12 @@
             for (var sheetIndex = 0; sheetIndex < current.length; ++sheetIndex) {
                 var currentSheet = current[sheetIndex];
                 var previousSheet = lastRunSheets[sheetIndex];
+                var href = getSheetHref(document.styleSheets[sheetIndex]);
+                
+                if (href != previousSheet.href) {
+                    deltaRecords = [];
+                    break;
+                }
                 
                 for (var rule in currentSheet) {
                     if (!currentSheet.hasOwnProperty(rule) || !previousSheet.hasOwnProperty(rule)) {
@@ -140,7 +146,7 @@
                         
                         if (currentRule[ruleIndex] != previousRule[ruleIndex]) {
                             deltaRecords.push({
-                                "Url": getSheetHref(document.styleSheets[sheetIndex]),
+                                "Url": href,
                                 "RuleIndex": ruleIndex,
                                 "Rule": rule,
                                 "OldValue": previousRule[ruleIndex],
