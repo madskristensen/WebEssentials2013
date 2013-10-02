@@ -11,5 +11,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         IEnumerable<IStylingRule> Rules { get; }
         bool SnapshotOnChange { get; set; }
         string GetSelectorName(RuleSet ruleSet);
+        object ParseSync { get; }
     }
 }

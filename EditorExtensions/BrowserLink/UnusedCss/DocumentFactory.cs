@@ -55,7 +55,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 return null;
             }
 
-            return DocumentLookup.AddOrUpdate(fileName, x => currentDocument, (x, e) => currentDocument);
+            var doc = DocumentLookup.AddOrUpdate(fileName, x => currentDocument, (x, e) => currentDocument);
+            
+            lock (doc.ParseSync)
+            {
+                doc.Reparse();
+            }
+
+            return doc;
         }
 
         public static IEnumerable<IDocument> AllDocuments

@@ -160,12 +160,15 @@ namespace MadsKristensen.EditorExtensions.Classifications
 
                 if (document != null && documentText != null)
                 {
-                    lock (Sync)
+                    if (document.SnapshotOnChange)
                     {
-                        document.Reparse(documentText);
-                    }
+                        lock (Sync)
+                        {
+                            document.Reparse(documentText);
+                        }
 
-                    UsageRegistry.Resync();
+                        UsageRegistry.Resync();
+                    }
                 }
             }
             catch(Exception ex)
