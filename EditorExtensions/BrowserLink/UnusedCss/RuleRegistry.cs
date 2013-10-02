@@ -16,10 +16,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             foreach (var file in files)
             {
                 var store = DocumentFactory.GetDocument(file.ToLowerInvariant(), true);
-                store.SnapshotOnChange = true;
 
                 if (store != null)
                 {
+                    store.IsProcessingUnusedCssRules = true;
                     allRules.AddRange(store.Rules);
                 }
             }

@@ -9,7 +9,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         void Reparse();
         void Reparse(string text);
         IEnumerable<IStylingRule> Rules { get; }
-        bool SnapshotOnChange { get; set; }
+        bool IsProcessingUnusedCssRules { get; set; }
         string GetSelectorName(RuleSet ruleSet);
         object ParseSync { get; }
     }

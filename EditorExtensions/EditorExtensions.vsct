@@ -568,6 +568,13 @@
           <ButtonText>Clear CSS Usage Data</ButtonText>
         </Strings>
       </Button>
+
+      <Button guid="guidPixelPushingCmdSet" id="PixelPushingToggleCommandId" priority="0x2010" type="Button">
+        <Parent guid="guidBrowserLinkCmdSet" id="IDG_BROWSERLINK_COMMANDS"/>
+        <Strings>
+          <ButtonText>Enable Pixel Pushing Mode</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
     <Bitmaps>
@@ -805,6 +812,10 @@
       <IDSymbol name="UnusedCssResetCommandId" value="0x2101" />
       <IDSymbol name="UnusedCssRecordAllCommandId" value="0x2102" />
       <IDSymbol name="UnusedCssStopRecordAllCommandId" value="0x2103" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidPixelPushingCmdSet" value="{EE755B3C-F6ED-414B-86BA-1AADB7DAE216}">
+      <IDSymbol name="PixelPushingToggleCommandId" value="0x2200" />
     </GuidSymbol>
     
     <GuidSymbol name="guidBrowserLinkCmdSet" value="{30947ebe-9147-45f9-96cf-401bfc671a82}">

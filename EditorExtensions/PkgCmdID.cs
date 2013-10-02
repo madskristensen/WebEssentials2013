@@ -63,5 +63,8 @@ namespace MadsKristensen.EditorExtensions
         public const uint cmdUnusedCssResetCommandId = 0x2101;
         public const uint cmdUnusedCssRecordAllCommandId = 0x2102;
         public const uint cmdUnusedCssStopRecordAllCommandId = 0x2103;
+
+        //Pixel Pushing
+        public const uint cmdPixelPushingToggleCommandId = 0x2200;
     };
 }

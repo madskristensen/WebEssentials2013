@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,14 +13,24 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 {
     public class PixelPushingMode : BrowserLinkExtension
     {
-        private static readonly ReaderWriterLockSlim ProcessingGate = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        private static readonly ConcurrentDictionary<BrowserLinkConnection, PixelPushingMode> ExtensionByConnection = new ConcurrentDictionary<BrowserLinkConnection, PixelPushingMode>();
         private readonly BrowserLinkConnection _connection;
         private readonly UploadHelper _uploadHelper;
-
+        internal static bool IsPixelPushingModeEnabled = WESettings.GetBoolean(WESettings.Keys.PixelPushing_OnByDefault);
+    
         public PixelPushingMode(BrowserLinkConnection connection)
         {
+            ExtensionByConnection[connection] = this;
             _uploadHelper = new UploadHelper();
             _connection = connection;
+        }
+
+        internal static void All(Action<PixelPushingMode> method)
+        {
+            foreach (var extension in ExtensionByConnection.Values)
+            {
+                method(extension);
+            }
         }
 
         public static string GetStyleSheetFileForUrl(string location, Project project)
@@ -110,19 +121,26 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             Browsers.Client(connection).Invoke("setPixelPusingMode", true, Guid.NewGuid().ToString());
         }
 
+        private int _expectSequenceNumber;
+
         [BrowserLinkCallback]
         public async Task SyncCssRules(string operationId, string chunkContents, int chunkNumber, int chunkCount)
         {
             CssSelectorChangeData[] result;
-            var opId = Guid.Parse(operationId);
+            var autoOpId = int.Parse(operationId);
+            var opId = new Guid(autoOpId, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             if (_uploadHelper.TryFinishOperation(opId, chunkContents, chunkNumber, chunkCount, out result))
             {
+                while (Volatile.Read(ref _expectSequenceNumber) != autoOpId)
+                {
+                    await Task.Delay(1);
+                }
+
                 using (CssSyncSuppressionContext.Get())
                 {
                     var urlGrouped = result.GroupBy(x => x.Url).ToList();
                     var tasks = new Task[urlGrouped.Count];
                     var index = 0;
-                    ProcessingGate.EnterWriteLock();
 
                     foreach (var set in urlGrouped)
                     {
@@ -137,8 +155,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                     }
 
                     await Task.WhenAll(tasks);
-                    await Task.Delay(1000); //<-- Try to wait for the files to actually save
-                    ProcessingGate.ExitWriteLock();
+                    Interlocked.Increment(ref _expectSequenceNumber);
                 }
             }
         }
@@ -150,55 +167,65 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
         private static async Task UpdateSheetRulesAsync(string file, IEnumerable<CssSelectorChangeData> set)
         {
-            //Get off the UI thread
-            await Task.Factory.StartNew(() => { });
-                var doc = DocumentFactory.GetDocument(file, true);
-
-                if (doc == null)
-                {
-                    return;
-                }
-
-                doc.Reparse();
-                var window = EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
-                window.Activate();
-                window.Document.Save();
-                var flattenedRules = FlattenRules(doc);
-
-                var buffer = ProjectHelpers.GetCurentTextBuffer();
-                var allEdits = new List<CssRuleBlockSyncAction>();
-
-                foreach (var item in set)
-                {
-                    var selectorName = RuleRegistry.StandardizeSelector(item.Rule);
-                    var matchingRules = flattenedRules.Where(x => string.Equals(x.CleansedSelectorName, selectorName, StringComparison.Ordinal)).OrderBy(x => x.Offset).ToList();
-                    var rule = matchingRules[item.RuleIndex];
-                    var actions = await CssRuleDefinitionSync.ComputeSyncActionsAsync(rule.Source, item.NewValue, item.OldValue);
-                    allEdits.AddRange(actions);
-                }
-
-                var compositeEdit = buffer.CreateEdit();
-
-                try
-                {
-                    foreach (var action in allEdits)
-                    {
-                        action(window, compositeEdit);
-                    }
-                }
-                catch
-                {
-                    compositeEdit.Cancel();
-                }
-                finally
-                {
-                    if (!compositeEdit.Canceled)
-                    {
-                        compositeEdit.Apply();
-                        EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatDocument");
-                        window.Document.Save();
-                    }
+            ////Get off the UI thread
+            //await Task.Factory.StartNew(() => { });
+            var doc = DocumentFactory.GetDocument(file, true);
+            if (doc == null)
+            {
+                return;
             }
+
+            var oldSnapshotOnChange = doc.IsProcessingUnusedCssRules;
+            doc.IsProcessingUnusedCssRules = false;
+            var window = EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
+            window.Activate();
+            var buffer = ProjectHelpers.GetCurentTextBuffer();
+            doc.Reparse(buffer.CurrentSnapshot.GetText());
+            var flattenedRules = FlattenRules(doc);
+
+            var allEdits = new List<CssRuleBlockSyncAction>();
+
+            foreach (var item in set)
+            {
+                var selectorName = RuleRegistry.StandardizeSelector(item.Rule);
+                var matchingRules = flattenedRules.Where(x => string.Equals(x.CleansedSelectorName, selectorName, StringComparison.Ordinal)).OrderBy(x => x.Offset).ToList();
+                var rule = matchingRules[item.RuleIndex];
+                var actions = await CssRuleDefinitionSync.ComputeSyncActionsAsync(rule.Source, item.NewValue, item.OldValue);
+                allEdits.AddRange(actions);
+            }
+
+            var compositeEdit = buffer.CreateEdit();
+
+            try
+            {
+                foreach (var action in allEdits)
+                {
+                    action(window, compositeEdit);
+                }
+            }
+            catch
+            {
+                compositeEdit.Cancel();
+            }
+            finally
+            {
+
+                if (!compositeEdit.Canceled)
+                {
+                    compositeEdit.Apply();
+                    EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatDocument");
+                    window.Document.Save();
+                }
+
+            }
+
+            //await Task.Delay(2000); //<-- Try to wait for the files to actually save
+            doc.IsProcessingUnusedCssRules = oldSnapshotOnChange;
+        }
+
+        public void SetMode()
+        {
+            Browsers.Client(_connection).Invoke("setPixelPusingMode", IsPixelPushingModeEnabled, Guid.NewGuid().ToString());
         }
     }
 }
