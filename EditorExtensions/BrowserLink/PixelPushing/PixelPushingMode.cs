@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using EnvDTE;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 {
     public class PixelPushingMode : BrowserLinkExtension
     {
-        private static readonly ReaderWriterLockSlim ProcessingGate = new ReaderWriterLockSlim();
+        private static readonly ReaderWriterLockSlim ProcessingGate = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         private readonly BrowserLinkConnection _connection;
         private readonly UploadHelper _uploadHelper;
 
@@ -111,24 +111,34 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
         }
 
         [BrowserLinkCallback]
-        public void SyncCssRules(string operationId, string chunkContents, int chunkNumber, int chunkCount)
+        public async Task SyncCssRules(string operationId, string chunkContents, int chunkNumber, int chunkCount)
         {
             CssSelectorChangeData[] result;
             var opId = Guid.Parse(operationId);
             if (_uploadHelper.TryFinishOperation(opId, chunkContents, chunkNumber, chunkCount, out result))
             {
-                var urlGrouped = result.GroupBy(x => x.Url).ToList();
-
-                foreach (var set in urlGrouped)
+                using (CssSyncSuppressionContext.Get())
                 {
-                    var file = GetStyleSheetFileForUrl(set.Key, _connection.Project);
+                    var urlGrouped = result.GroupBy(x => x.Url).ToList();
+                    var tasks = new Task[urlGrouped.Count];
+                    var index = 0;
+                    ProcessingGate.EnterWriteLock();
 
-                    if (file == null)
+                    foreach (var set in urlGrouped)
                     {
-                        continue;
+                        var file = GetStyleSheetFileForUrl(set.Key, _connection.Project);
+
+                        if (file == null)
+                        {
+                            continue;
+                        }
+
+                        tasks[index++] = UpdateSheetRulesAsync(file, set);
                     }
 
-                    UpdateSheetRulesAsync(file, set);
+                    await Task.WhenAll(tasks);
+                    await Task.Delay(1000); //<-- Try to wait for the files to actually save
+                    ProcessingGate.ExitWriteLock();
                 }
             }
         }
@@ -138,13 +148,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             return document.Rules.OrderBy(x => x.Offset).ToArray();
         }
 
-        private static async void UpdateSheetRulesAsync(string file, IEnumerable<CssSelectorChangeData> set)
+        private static async Task UpdateSheetRulesAsync(string file, IEnumerable<CssSelectorChangeData> set)
         {
             //Get off the UI thread
-            await System.Threading.Tasks.Task.Factory.StartNew(() => { });
-            ProcessingGate.EnterWriteLock();
-            using (CssSyncSuppressionContext.Get(2000))
-            {
+            await Task.Factory.StartNew(() => { });
                 var doc = DocumentFactory.GetDocument(file, true);
 
                 if (doc == null)
@@ -152,6 +159,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                     return;
                 }
 
+                doc.Reparse();
                 var window = EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
                 window.Activate();
                 window.Document.Save();
@@ -190,9 +198,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                         EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatDocument");
                         window.Document.Save();
                     }
-
-                    ProcessingGate.ExitWriteLock();
-                }
             }
         }
     }
