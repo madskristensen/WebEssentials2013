@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions
 
         ///<summary>The default extensions used to resolve modules without extensions.</summary>
         ///<remarks>This must match require.extensions from Node.js; see https://github.com/joyent/node/blob/master/lib/module.js#L464-L484. </remarks>
-        private static readonly string[] moduleExtensions = { ".js", "json", ".node" };
+        private static readonly string[] moduleExtensions = { "", ".js", "json", ".node" };
 
         ///<summary>Resolves the full path to the JS file that will be loaded by a call to require().  This will always return an existing file (not directory) on disk, or null.</summary>
         ///<param name="callerPath">The path to the directory containing the file that is calling require().  This must be an absolute path.</param>
@@ -39,7 +39,10 @@ namespace MadsKristensen.EditorExtensions
             {
                 var mainEntry = GetPackageMain(rawPath);
                 if (mainEntry != null)
+                {
                     potentialPaths.Add(Path.Combine(rawPath, mainEntry));
+                    potentialPaths.Add(Path.Combine(rawPath, mainEntry, "index"));
+                }
                 potentialPaths.Add(Path.Combine(rawPath, "index"));
             }
             // Don't try to resolve a path with a trailing / as a file.
@@ -95,7 +98,7 @@ namespace MadsKristensen.EditorExtensions
                 return basePath;
 
             var subPath = modulePath.Substring(s + 1);
-            return Path.GetFullPath(Path.Combine(modulePath, subPath));
+            return Path.GetFullPath(Path.Combine(basePath, subPath));
             //TODO: Call http://msdn.microsoft.com/en-us/library/aa364962(VS.85).aspx to resolve symlinks, like Node does.
         }
 
@@ -108,6 +111,7 @@ namespace MadsKristensen.EditorExtensions
             if (Directory.Exists(nmDir) && Path.GetFileName(directory) != "node_modules")   // don't search in node_modules/node_modules
                 ourModules = Directory.EnumerateDirectories(nmDir)
                     .Where(s => !Path.GetFileName(s).StartsWith("."))
+                    .Concat(Directory.EnumerateFiles(nmDir, "*.js").Select(p => Path.ChangeExtension(p, null)))
                     .OrderBy(s => s);
             else
                 ourModules = Enumerable.Empty<string>();
