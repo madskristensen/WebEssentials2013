@@ -136,7 +136,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                     await Task.Delay(1);
                 }
 
-                using (CssSyncSuppressionContext.Get())
+                using (CssSyncSuppressionContext.Get(excludeSpecificConnections: _connection))
                 {
                     var urlGrouped = result.GroupBy(x => x.Url).ToList();
                     var tasks = new Task[urlGrouped.Count];
