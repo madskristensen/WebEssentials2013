@@ -300,6 +300,9 @@ namespace MadsKristensen.EditorExtensions
             //Bootstrap, Reset, Normalize, JQuery (UI), Toastr, Foundation, Animate, Inuit, LESS Elements, Ratchet, Hint.css, Flat UI, 960.gs, Skeleton
             dic.Add(Keys.UnusedCss_IgnorePatterns, "bootstrap*; reset.css; normalize.css; jquery*; toastr*; foundation*; animate*; inuit*; elements*; ratchet*; hint*; flat-ui*; 960*; skeleton*");
 
+            //Pixel Pushing mode
+            dic.Add(Keys.PixelPushing_OnByDefault, true);
+
             return dic;
         }
 

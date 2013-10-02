@@ -95,18 +95,21 @@ namespace MadsKristensen.EditorExtensions.Classifications
             var spans = new List<ClassificationSpan>();
             var sheetRules = new HashSet<IStylingRule>(document.Rules);
 
-            using (AmbientRuleContext.GetOrCreate())
+            if (document.IsProcessingUnusedCssRules)
             {
-                foreach (var unusedRule in UsageRegistry.GetAllUnusedRules(sheetRules))
+                using (AmbientRuleContext.GetOrCreate())
                 {
-                    if (unusedRule.Offset + unusedRule.Length > span.Snapshot.Length)
+                    foreach (var unusedRule in UsageRegistry.GetAllUnusedRules(sheetRules))
                     {
-                        continue;
-                    }
+                        if (unusedRule.Offset + unusedRule.Length > span.Snapshot.Length)
+                        {
+                            continue;
+                        }
 
-                    var ss = new SnapshotSpan(span.Snapshot, unusedRule.Offset, unusedRule.SelectorLength);
-                    var s = new ClassificationSpan(ss, _decClassification);
-                    spans.Add(s);
+                        var ss = new SnapshotSpan(span.Snapshot, unusedRule.Offset, unusedRule.SelectorLength);
+                        var s = new ClassificationSpan(ss, _decClassification);
+                        spans.Add(s);
+                    }
                 }
             }
 
@@ -160,7 +163,7 @@ namespace MadsKristensen.EditorExtensions.Classifications
 
                 if (document != null && documentText != null)
                 {
-                    if (document.SnapshotOnChange)
+                    if (document.IsProcessingUnusedCssRules)
                     {
                         lock (Sync)
                         {

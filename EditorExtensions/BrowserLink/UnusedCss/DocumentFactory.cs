@@ -55,13 +55,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 return null;
             }
 
-            var doc = DocumentLookup.AddOrUpdate(fileName, x => currentDocument, (x, e) => currentDocument);
-            
-            lock (doc.ParseSync)
-            {
-                doc.Reparse();
-            }
-
+            var doc = DocumentLookup.GetOrAdd(fileName, x => currentDocument);
+            doc.Reparse();
             return doc;
         }
 
