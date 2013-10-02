@@ -46,7 +46,7 @@ namespace MadsKristensen.EditorExtensions
             var endIndex = text.IndexOf(text[startIndex] + ")", startIndex);
             if (endIndex < 0)
                 endIndex = startIndex + text.Skip(startIndex + 1).TakeWhile(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c) || c == '-' || c == '_').Count() + 1;
-            else if (linePosition > endIndex)
+            else if (linePosition > endIndex + 1)
                 return null;
 
             // Consume the auto-added close quote, if present.
