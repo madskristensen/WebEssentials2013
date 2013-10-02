@@ -412,6 +412,10 @@
     <Compile Include="Completion\CSS\FontFamilyCompletionListEntry.cs" />
     <Compile Include="Completion\CSS\UrlPickerCompletionListEntry.cs" />
     <Compile Include="Completion\CSS\Filter\HideInheritInitialCompletionListFilter.cs" />
+    <Compile Include="Completion\JavaScript\HTML CompletionSources.cs" />
+    <Compile Include="Completion\JavaScript\UseDirectiveCompletionSource.cs" />
+    <Compile Include="Completion\JavaScript\NodeModuleCompletionSource.cs" />
+    <Compile Include="Completion\JavaScript\StringCompletionSource.cs" />
     <Compile Include="Completion\JavaScript\JavaScriptCompletionSourceProvider.cs" />
     <Compile Include="Completion\JavaScript\JavaScriptCompletionController.cs" />
     <Compile Include="Completion\RobotsTxt\RobotsCompletionController.cs" />
