@@ -52,7 +52,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
         {
             return (window, edit) =>
             {
-                var startPosition = rule.Block.Children.Last().Start; //Just before closing brace
+                var openingBrace = rule.Block.Children.First();
+                var startPosition = openingBrace.Start + openingBrace.Length; //Just after opening brace
                 var newDeclarationText = propertyName + ":" + newValue + ";";
                 edit.Insert(startPosition, newDeclarationText);
             };
@@ -60,7 +61,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
         public class SyncAction : IEquatable<SyncAction>
         {
-            public SyncAction(RuleSet rule, string propertyName)
+            private SyncAction(RuleSet rule, string propertyName)
             {
                 Rule = rule;
                 PropertyName = propertyName;
@@ -76,8 +77,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
             public CssRuleBlockSyncAction Action { get; set; }
 
+            public int ApproximatePosition { get; set; }
+
             public SyncAction ToDelete()
             {
+                ApproximatePosition = Rule.Block.Children.OfType<Declaration>().First(x => x.PropertyName.Text == PropertyName).Start;
                 ActionKind = CssDeltaAction.Delete;
                 Action = CreateDeleteAction(Rule, PropertyName);
                 return this;
@@ -85,6 +89,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
             public SyncAction ToUpdate(string newValue = null)
             {
+                ApproximatePosition = Rule.Block.Children.OfType<Declaration>().First(x => x.PropertyName.Text == PropertyName).Start;
                 ActionKind = CssDeltaAction.Update;
                 NewValue = newValue ?? NewValue;
                 Action = CreateUpdateAction(Rule, PropertyName, NewValue);
@@ -93,6 +98,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
             public SyncAction ToAdd(string newValue = null)
             {
+                ApproximatePosition = Rule.Block.Children.First().Start;
                 ActionKind = CssDeltaAction.Add;
                 NewValue = newValue ?? NewValue;
                 Action = CreateAddAction(Rule, PropertyName, NewValue);
@@ -279,7 +285,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 }
             }
 
-            return result.Where(x => x.ActionKind != CssDeltaAction.NoOp).Select(x => x.Action);
+            return result.Where(x => x.ActionKind != CssDeltaAction.NoOp).OrderByDescending(x => x.ApproximatePosition).Select(x => x.Action);
         }
 
         public static async Task<IEnumerable<CssRuleBlockSyncAction>> ComputeSyncActionsAsync(RuleSet existingRule, string newText, string oldText = null)

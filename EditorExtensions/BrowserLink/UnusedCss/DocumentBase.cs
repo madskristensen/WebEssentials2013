@@ -12,6 +12,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private readonly string _file;
         private readonly FileSystemWatcher _watcher;
         private readonly string _localFileName;
+        private string _lastParsedText;
+        private readonly object _parseSync = new object();
 
         protected DocumentBase(string file)
         {
@@ -31,6 +33,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             _watcher.Created += Reparse;
             _watcher.EnableRaisingEvents = true;
             Reparse();
+        }
+
+        public object ParseSync
+        {
+            get { return _parseSync; }
         }
 
         public IEnumerable<IStylingRule> Rules { get; private set; }
@@ -103,12 +110,22 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public void Reparse(string text)
         {
-            var parser = GetParser();
-            var parseResult = parser.Parse(text, false);
-            Rules = new CssItemAggregator<IStylingRule>(true) { (RuleSet rs) => CssRule.From(_file, text, rs, this) }
-                        .Crawl(parseResult)
-                        .Where(x => x != null)
-                        .ToList();
+            lock (ParseSync)
+            {
+                if (string.Equals(text, _lastParsedText, StringComparison.Ordinal))
+                {
+                    return;
+                }
+
+                var parser = GetParser();
+                var parseResult = parser.Parse(text, false);
+                Rules = new CssItemAggregator<IStylingRule>(true) { (RuleSet rs) => CssRule.From(_file, text, rs, this) }
+                    .Crawl(parseResult)
+                    .Where(x => x != null)
+                    .ToList();
+
+                _lastParsedText = text;
+            }
         }
 
         protected abstract ICssParser GetParser();
