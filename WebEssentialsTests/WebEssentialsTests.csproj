@@ -60,12 +60,87 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="NodeModuleImportedTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EditorExtensions\WebEssentials2013.csproj">
       <Project>{10d05bc1-cdee-4d14-b88f-f91c0bdc7861}</Project>
       <Name>WebEssentials2013</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="fixtures\a.js" />
+    <Content Include="fixtures\b\c.js" />
+    <Content Include="fixtures\b\d.js" />
+    <Content Include="fixtures\b\package\index.js" />
+    <Content Include="fixtures\cycles\folder\foo.js" />
+    <Content Include="fixtures\cycles\root.js" />
+    <Content Include="fixtures\global\plain.js" />
+    <Content Include="fixtures\module-load-order\file1.js" />
+    <Content Include="fixtures\module-load-order\file2.js" />
+    <Content Include="fixtures\module-load-order\file2\index.js" />
+    <Content Include="fixtures\module-load-order\file3\index.js" />
+    <Content Include="fixtures\module-load-order\file4\index.js" />
+    <Content Include="fixtures\module-load-order\file5\index.js" />
+    <Content Include="fixtures\module-load-order\file6\index.js" />
+    <Content Include="fixtures\module-require\child\index.js" />
+    <Content Include="fixtures\module-require\child\node_modules\target.js" />
+    <Content Include="fixtures\module-require\parent\index.js" />
+    <Content Include="fixtures\module-require\parent\node_modules\target.js" />
+    <Content Include="fixtures\nested-index\one\hello.js" />
+    <Content Include="fixtures\nested-index\one\index.js" />
+    <Content Include="fixtures\nested-index\three.js" />
+    <Content Include="fixtures\nested-index\three\index.js" />
+    <Content Include="fixtures\nested-index\two\hello.js" />
+    <Content Include="fixtures\nested-index\two\index.js" />
+    <Content Include="fixtures\node_modules\asdf.js" />
+    <Content Include="fixtures\node_modules\bar.js" />
+    <Content Include="fixtures\node_modules\baz\index.js" />
+    <Content Include="fixtures\node_modules\baz\node_modules\asdf.js" />
+    <Content Include="fixtures\node_modules\foo.js" />
+    <Content Include="fixtures\node_modules\node_modules\bar.js" />
+    <Content Include="fixtures\packages\main-index\package-main-module\index.js" />
+    <Content Include="fixtures\packages\main\package-main-module.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fixtures\empty\.gitkeep" />
+    <None Include="fixtures\foo" />
+    <None Include="fixtures\module-load-order\file1" />
+    <None Include="fixtures\module-load-order\file1.node" />
+    <None Include="fixtures\module-load-order\file1.reg" />
+    <None Include="fixtures\module-load-order\file1.reg2" />
+    <None Include="fixtures\module-load-order\file2.node" />
+    <None Include="fixtures\module-load-order\file2.reg" />
+    <None Include="fixtures\module-load-order\file2.reg2" />
+    <None Include="fixtures\module-load-order\file2\index.node" />
+    <None Include="fixtures\module-load-order\file2\index.reg" />
+    <None Include="fixtures\module-load-order\file2\index.reg2" />
+    <None Include="fixtures\module-load-order\file3.node" />
+    <None Include="fixtures\module-load-order\file3.reg" />
+    <None Include="fixtures\module-load-order\file3.reg2" />
+    <None Include="fixtures\module-load-order\file3\index.node" />
+    <None Include="fixtures\module-load-order\file3\index.reg" />
+    <None Include="fixtures\module-load-order\file3\index.reg2" />
+    <None Include="fixtures\module-load-order\file4.reg" />
+    <None Include="fixtures\module-load-order\file4.reg2" />
+    <None Include="fixtures\module-load-order\file4\index.node" />
+    <None Include="fixtures\module-load-order\file4\index.reg" />
+    <None Include="fixtures\module-load-order\file4\index.reg2" />
+    <None Include="fixtures\module-load-order\file5.reg2" />
+    <None Include="fixtures\module-load-order\file5\index.node" />
+    <None Include="fixtures\module-load-order\file5\index.reg" />
+    <None Include="fixtures\module-load-order\file5\index.reg2" />
+    <None Include="fixtures\module-load-order\file6\index.node" />
+    <None Include="fixtures\module-load-order\file6\index.reg" />
+    <None Include="fixtures\module-load-order\file6\index.reg2" />
+    <None Include="fixtures\module-load-order\file7\index.node" />
+    <None Include="fixtures\module-load-order\file7\index.reg" />
+    <None Include="fixtures\module-load-order\file7\index.reg2" />
+    <None Include="fixtures\module-load-order\file8\index.reg" />
+    <None Include="fixtures\module-load-order\file8\index.reg2" />
+    <None Include="fixtures\module-load-order\file9\index.reg2" />
+    <None Include="fixtures\packages\main-index\package.json" />
+    <None Include="fixtures\packages\main\package.json" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
@@ -93,7 +168,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>rem Needed to run LESS compiler JS
-xcopy /y /s "$(SolutionDir)EditorExtensions\Resources\Scripts\*" "$(TargetDir)Resources\Scripts\"</PostBuildEvent>
+xcopy /y /s "$(SolutionDir)EditorExtensions\Resources\Scripts\*" "$(TargetDir)Resources\Scripts\"
+
+xcopy /y /s "$(ProjectDir)fixtures\*" "$(TargetDir)fixtures\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
