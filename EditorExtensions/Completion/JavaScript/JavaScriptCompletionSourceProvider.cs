@@ -90,7 +90,7 @@ namespace MadsKristensen.EditorExtensions
 
                 // If VS couldn't find an exact match, try again without closing quote.
                 if (SelectionStatus.IsSelected) return;
-                if (userText.Last() != userText[0]) return; // If there is no closing quote, do nothing.
+                if (userText.Length == 0 || userText.Last() != userText[0]) return; // If there is no closing quote, do nothing.
 
                 var originalSpan = ApplicableTo;
                 try
