@@ -14,13 +14,13 @@ namespace MadsKristensen.EditorExtensions
     internal class UnknownTagErrorTagProvider : ICssItemChecker
     {
         private HashSet<string> _cache = new HashSet<string>(BuildCache());
-          
+
 
         private static IEnumerable<string> BuildCache()
         {
             yield return "*";
 
-            foreach (var element in TagCompletionProvider.GetListEntriesCache())
+            foreach (var element in TagCompletionProvider.GetListEntriesCache(includeUnstyled: true))
             {
                 yield return element.DisplayText;
             }

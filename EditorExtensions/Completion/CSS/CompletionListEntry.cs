@@ -16,10 +16,7 @@ namespace MadsKristensen.EditorExtensions
             SortingPriority = sortingPriority;
         }
 
-        public string Description
-        {
-            get { return string.Empty; }
-        }
+        public string Description { get; set; }
 
         public string DisplayText
         {
