@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EnvDTE;
 using Microsoft.CSS.Core;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 {
@@ -18,6 +20,26 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             return dict;
         }
 
+        private static void MoveCursorToEdit(Window window, IRange range, int offset = 0)
+        {
+            var selection = window.Document.Selection as TextSelection;
+            
+            if (selection != null)
+            {
+                try
+                {
+                    var buffer = ProjectHelpers.GetCurentTextBuffer();
+                    int line;
+                    int column;
+                    buffer.GetLineColumnFromPosition(range.Start, out line, out column);
+                    selection.GotoLine(line + 1 + offset);
+                }
+                catch
+                {
+                }
+            }
+        }
+
         private static CssRuleBlockSyncAction CreateDeleteAction(RuleSet rule, string item)
         {
             return (window, edit) =>
@@ -25,7 +47,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 var decl = rule.Block.Children.OfType<Declaration>().LastOrDefault(x => x.PropertyName.Text == item);
                 if (decl != null)
                 {
-                    edit.Delete(decl.Start, decl.Length); var pos = decl.Start;
+                    MoveCursorToEdit(window, decl);
+
+                    edit.Delete(decl.Start, decl.Length);
+                    var pos = decl.Start;
 
                     while (string.IsNullOrWhiteSpace(edit.Snapshot.GetText(--pos, 1)))
                     {
@@ -42,6 +67,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 var decl = rule.Block.Children.OfType<Declaration>().LastOrDefault(x => x.PropertyName.Text == propertyName);
                 if (decl != null)
                 {
+                    MoveCursorToEdit(window, decl);
+
                     edit.Delete(decl.Values.TextStart, decl.Values.TextLength);
                     edit.Insert(decl.Values.TextStart, newValue);
                 }
@@ -53,6 +80,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             return (window, edit) =>
             {
                 var openingBrace = rule.Block.Children.First();
+                MoveCursorToEdit(window, openingBrace, 1);
                 var startPosition = openingBrace.Start + openingBrace.Length; //Just after opening brace
                 var newDeclarationText = propertyName + ":" + newValue + ";";
                 edit.Insert(startPosition, newDeclarationText);

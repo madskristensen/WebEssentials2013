@@ -46,11 +46,13 @@
         return result;
     }
 
+    var updateNumber = 0;
 
     function submitChunkedData(method, data) {
+        var myUpdateNumber = updateNumber++;
         var chunked = chunk(data);
         for (var i = 0; i < chunked.length; ++i) {
-            browserLink.invoke(method, operationId, chunked[i], i, chunked.length);
+            browserLink.invoke(method, myUpdateNumber, chunked[i], i, chunked.length);
         }
     }
 
@@ -132,7 +134,7 @@
                 }
                 
                 for (var rule in currentSheet) {
-                    if (!currentSheet.hasOwnProperty(rule) || !previousSheet.hasOwnProperty(rule)) {
+                    if (!currentSheet.hasOwnProperty(rule) || !previousSheet.hasOwnProperty(rule) || rule === "href") {
                         continue;
                     }
 

@@ -115,6 +115,9 @@ namespace MadsKristensen.EditorExtensions
             public const string UnusedCss_IgnorePatterns = "UnusedCss_IgnorePatterns";
             public const string UnusedCss_IgnoreRemoteFiles = "UnusedCss_IgnoreRemoteFiles";
 
+            //Pixel Pushing mode
+            public const string PixelPushing_OnByDefault = "PixelPushing_OnByDefault";
+
             public enum ErrorLocation
             {
                 Warnings = 0,

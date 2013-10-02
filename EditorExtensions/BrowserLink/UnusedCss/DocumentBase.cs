@@ -57,7 +57,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        public bool SnapshotOnChange { get; set; }
+        public bool IsProcessingUnusedCssRules { get; set; }
 
         private async void Reparse(object sender, FileSystemEventArgs e)
         {
@@ -85,7 +85,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             await UsageRegistry.ResyncAsync();
 
-            if (SnapshotOnChange)
+            if (IsProcessingUnusedCssRules)
             {
                 UnusedCssExtension.All(x => x.SnapshotPage());
             }

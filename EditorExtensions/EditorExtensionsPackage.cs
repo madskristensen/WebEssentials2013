@@ -1,5 +1,6 @@
 ﻿using EnvDTE;
 using EnvDTE80;
+using MadsKristensen.EditorExtensions.BrowserLink.PixelPushing;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
@@ -25,6 +26,7 @@ namespace MadsKristensen.EditorExtensions
     [ProvideOptionPage(typeof(CoffeeScriptOptions), "Web Essentials", "CoffeeScript", 101, 106, true, new[] { "Iced", "JavaScript", "JS", "JScript" })]
     [ProvideOptionPage(typeof(JavaScriptOptions), "Web Essentials", "JavaScript", 101, 107, true, new[] { "JScript", "JS", "Minify", "Minification", "EcmaScript" })]
     [ProvideOptionPage(typeof(UnusedCssOptions), "Web Essentials", "Unused CSS", 101, 108, true, new[] { "Ignore", "Filter" })]
+    [ProvideOptionPage(typeof(PixelPushingOptions), "Web Essentials", "Pixel Pushing", 101, 109, true, new[]{"Pixel", "Sync", "CSS", "LESS", "Browser"})]
     public sealed class EditorExtensionsPackage : Package
     {
         private static DTE2 _dte;
@@ -93,6 +95,9 @@ namespace MadsKristensen.EditorExtensions
 
                 UnusedCssMenu unusedCssMenu = new UnusedCssMenu(mcs);
                 unusedCssMenu.SetupCommands();
+
+                PixelPushingMenu pixelPushingMenu = new PixelPushingMenu(mcs);
+                pixelPushingMenu.SetupCommands();
             }
 
             // Hook up event handlers

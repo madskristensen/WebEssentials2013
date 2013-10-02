@@ -274,6 +274,7 @@
     <Compile Include="BrowserLink\PixelPushing\CssRuleBlockSyncAction.cs" />
     <Compile Include="BrowserLink\PixelPushing\CssRuleDefinitionSync.cs" />
     <Compile Include="BrowserLink\PixelPushing\CssSelectorChangeData.cs" />
+    <Compile Include="BrowserLink\PixelPushing\PixelPushingMenu.cs" />
     <Compile Include="BrowserLink\PixelPushing\PixelPushingMode.cs" />
     <Compile Include="BrowserLink\PixelPushing\PixelPusingModeFactory.cs" />
     <Compile Include="BrowserLink\UnusedCss\AmbientRuleContext.cs" />
@@ -427,6 +428,9 @@
     <Compile Include="DropTargets\TypeScriptDrop.cs" />
     <Compile Include="Helpers\CssExtensions.cs" />
     <Compile Include="Helpers\SquigglyHelper.cs" />
+    <Compile Include="Options\PixelPushingOptions.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Options\UnusedCssOptions.cs">
       <SubType>Component</SubType>
     </Compile>
