@@ -28,9 +28,13 @@ namespace MadsKristensen.EditorExtensions
             if (rawPath == null || File.Exists(rawPath))
                 return rawPath;
 
+            // Build a list of file-like paths to try with various extensions.
+            // In order, try the original path, the 'package.json' main entry,
+            // and any index file.
+            // https://github.com/joyent/node/blob/master/lib/module.js#L155
             var potentialPaths = new List<string> { rawPath };
 
-            // If the non-existant file is a directory, look inside.
+            // If the non-existent file is a directory, look inside.
             if (Directory.Exists(rawPath))
             {
                 var mainEntry = GetPackageMain(rawPath);
@@ -38,6 +42,8 @@ namespace MadsKristensen.EditorExtensions
                     potentialPaths.Add(Path.Combine(rawPath, mainEntry));
                 potentialPaths.Add(Path.Combine(rawPath, "index"));
             }
+            // Don't try to resolve a path with a trailing / as a file.
+            potentialPaths.RemoveAll(p => p.EndsWith("/"));
 
             // Try adding the default extensions to each potential path we've found, then give up.
             return potentialPaths.SelectMany(path => moduleExtensions.Select(e => path + e))
@@ -99,7 +105,7 @@ namespace MadsKristensen.EditorExtensions
         {
             var nmDir = Path.Combine(directory, "node_modules");
             IEnumerable<string> ourModules;
-            if (Directory.Exists(nmDir))
+            if (Directory.Exists(nmDir) && Path.GetFileName(directory) != "node_modules")   // don't search in node_modules/node_modules
                 ourModules = Directory.EnumerateDirectories(nmDir)
                     .Where(s => !Path.GetFileName(s).StartsWith("."))
                     .OrderBy(s => s);
