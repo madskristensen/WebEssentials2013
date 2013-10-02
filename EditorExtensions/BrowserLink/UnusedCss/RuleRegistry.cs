@@ -15,7 +15,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             foreach (var file in files)
             {
-                var store = DocumentFactory.GetDocument(file.ToLowerInvariant(), DeleteFile);
+                var store = DocumentFactory.GetDocument(file.ToLowerInvariant(), true);
+                store.SnapshotOnChange = true;
 
                 if (store != null)
                 {
@@ -52,16 +53,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             return result;
-        }
-
-        private static void DeleteFile(object sender, FileSystemEventArgs e)
-        {
-            //NOTE: VS apparently deletes the file on save and creates a new one, disposing here makes things not work
-
-            //var path = e.FullPath.ToLowerInvariant();
-            //CssDocument result;
-            //DocumentLookup.TryRemove(path, out result);
-            //result.Dispose();
         }
 
         public static string StandardizeSelector(string selectorText)

@@ -122,5 +122,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             return rule.Text == _ruleSet.Text;
         }
+
+        public RuleSet Source { get { return _ruleSet; } }
     }
 }

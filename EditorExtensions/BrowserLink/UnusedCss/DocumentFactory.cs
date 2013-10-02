@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     {
         private static readonly ConcurrentDictionary<string, IDocument> DocumentLookup = new ConcurrentDictionary<string, IDocument>();
 
-        private static Func<string, FileSystemEventHandler, IDocument> GetFactory(string fullPath)
+        private static Func<string, bool, IDocument> GetFactory(string fullPath)
         {
             var extension = (Path.GetExtension(fullPath) ?? "").ToUpperInvariant();
 
@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        internal static IDocument GetDocument(string fullPath, FileSystemEventHandler fileDeletedCallback = null)
+        internal static IDocument GetDocument(string fullPath, bool createIfRequired = false)
         {
             if (string.IsNullOrWhiteSpace(fullPath))
             {
@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 return null;
             }
 
-            currentDocument = factory(fullPath, fileDeletedCallback);
+            currentDocument = factory(fullPath, createIfRequired);
 
             if (currentDocument == null)
             {
