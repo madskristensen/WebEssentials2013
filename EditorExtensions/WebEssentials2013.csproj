@@ -428,6 +428,7 @@
     <Compile Include="DropTargets\ImageDrop.cs" />
     <Compile Include="DropTargets\TypeScriptDrop.cs" />
     <Compile Include="Helpers\CssExtensions.cs" />
+    <Compile Include="Helpers\NodeModuleService.cs" />
     <Compile Include="Helpers\SquigglyHelper.cs" />
     <Compile Include="Options\PixelPushingOptions.cs">
       <SubType>Component</SubType>
