@@ -223,11 +223,11 @@
         if (!window.browserLink.menu)
             return;
 
-        takeChangesNowMenuItem = window.browserLink.menu.addButton("Sync CSS Changes", "Use CTRL+ALT+T to sync the current CSS changes into Visual Studio", function () {
+        takeChangesNowMenuItem = window.browserLink.menu.addButton("Save F12 Changes", "Use CTRL+ALT+T to sync the current CSS changes into Visual Studio", function () {
             shipUpdate();
         });
 
-        continuouslyTakeChangesMenuItem = window.browserLink.menu.addCheckbox("Always Sync CSS Changes", "Use CTRL+ALT+U to continuously sync CSS changes into Visual Studio", false, function () {
+        continuouslyTakeChangesMenuItem = window.browserLink.menu.addCheckbox("F12 Auto-sync", "Use CTRL+ALT+U to continuously sync CSS changes into Visual Studio", false, function () {
             continuousSyncMode = !continuousSyncMode;
             updateMenuItems();
         });
