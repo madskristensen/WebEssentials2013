@@ -109,15 +109,31 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
             public SyncAction ToDelete()
             {
-                ApproximatePosition = Rule.Block.Children.OfType<Declaration>().First(x => x.PropertyName.Text == PropertyName).Start;
                 ActionKind = CssDeltaAction.Delete;
+                var decl = Rule.Block.Children.OfType<Declaration>().FirstOrDefault(x => x.PropertyName.Text == PropertyName);
+
+                if (decl == null)
+                {
+                    ApproximatePosition = -1;
+                    Action = (window, edit) => { };
+                    return this;
+                }
+
+                ApproximatePosition = decl.Start;
                 Action = CreateDeleteAction(Rule, PropertyName);
                 return this;
             }
 
             public SyncAction ToUpdate(string newValue = null)
             {
-                ApproximatePosition = Rule.Block.Children.OfType<Declaration>().First(x => x.PropertyName.Text == PropertyName).Start;
+                var decl = Rule.Block.Children.OfType<Declaration>().FirstOrDefault(x => x.PropertyName.Text == PropertyName);
+
+                if (decl == null)
+                {
+                    return ToAdd(newValue);
+                }
+
+                ApproximatePosition = decl.Start;
                 ActionKind = CssDeltaAction.Update;
                 NewValue = newValue ?? NewValue;
                 Action = CreateUpdateAction(Rule, PropertyName, NewValue);
