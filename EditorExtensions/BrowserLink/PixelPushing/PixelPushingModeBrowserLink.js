@@ -70,8 +70,7 @@
                 shipUpdate();
             }
             else if (e.keyCode === 85) {// 85 = u
-                continuousSyncMode = !continuousSyncMode;
-                updateMenuItems();
+                setContinuousSyncMode(!continuousSyncMode);
             }
 
             return false;
@@ -99,15 +98,27 @@
         return tmp.replace(/,\s/g, ",");
     }
 
-    function setPixelPushingModeInternal(pixelPushingModeOn) {
+    function setPixelPushingModeInternal(pixelPushingModeOn, continuousSync) {
         if (isInPixelPusingMode = pixelPushingModeOn) {
+            setContinuousSyncMode(continuousSync);
             performAudit();
+        } else {
+            setContinuousSyncMode(false);
         }
 
         updateMenuItems();
     }
 
     var lastRunSheets = [];
+
+    function setContinuousSyncMode(value) {
+        if (value != continuousSyncMode) {
+            browserLink.invoke("EnterContinuousSyncMode", !!value);
+        }
+        
+        continuousSyncMode = value;
+        updateMenuItems();
+    }
 
     function getCurrentRuleDefinitions() {
         var sheets = document.styleSheets;
@@ -228,9 +239,10 @@
         });
 
         continuouslyTakeChangesMenuItem = window.browserLink.menu.addCheckbox("F12 Auto-sync", "Use CTRL+ALT+U to continuously sync CSS changes into Visual Studio", false, function () {
-            continuousSyncMode = !continuousSyncMode;
-            updateMenuItems();
+            setContinuousSyncMode(!continuousSyncMode);
         });
+
+        updateMenuItems();
     }
 
     return {
