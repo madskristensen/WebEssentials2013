@@ -31,6 +31,10 @@ namespace WebEssentialsTests
         [TestMethod]
         public void BasicResolveTest()
         {
+            // Custom Tests:
+            AssertRequire("../fixtures/packages/main/package", "packages/main/package.json");
+
+            // Imported from Node.js:
             AssertRequire("../fixtures/a.js", "a.js");
 
             // require a file without any extensions
