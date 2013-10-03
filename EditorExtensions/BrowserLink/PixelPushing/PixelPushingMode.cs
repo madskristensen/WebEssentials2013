@@ -33,6 +33,21 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             }
         }
 
+        public override IEnumerable<BrowserLinkAction> Actions
+        {
+            get { yield return new BrowserLinkAction("Pull Style Updates Now", PullStyleUpdates, PullStyleUpdatesBeforeQueryStatus);}
+        }
+
+        private static void PullStyleUpdatesBeforeQueryStatus(BrowserLinkAction browserLinkAction)
+        {
+            browserLinkAction.Enabled = IsPixelPushingModeEnabled;
+        }
+
+        private void PullStyleUpdates(BrowserLinkAction browserLinkAction)
+        {
+            Browsers.Client(_connection).Invoke("pullStyleData");
+        }
+
         public static string GetStyleSheetFileForUrl(string location, Project project)
         {
             //TODO: This needs to expand bundles, convert urls to local file names, and move from .min.css files to .css files where applicable
@@ -118,7 +133,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
         public override void OnConnected(BrowserLinkConnection connection)
         {
-            Browsers.Client(connection).Invoke("setPixelPusingMode", true, Guid.NewGuid().ToString());
+            Browsers.Client(connection).Invoke("setPixelPusingMode", true);
+        }
+
+        private bool _isDisconnecting;
+
+        public override void OnDisconnecting(BrowserLinkConnection connection)
+        {
+            _isDisconnecting = true;
+            base.OnDisconnecting(connection);
         }
 
         private int _expectSequenceNumber;
@@ -126,36 +149,54 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
         [BrowserLinkCallback]
         public async Task SyncCssRules(string operationId, string chunkContents, int chunkNumber, int chunkCount)
         {
-            CssSelectorChangeData[] result;
+            CssSelectorChangeData[][] result;
             var autoOpId = int.Parse(operationId);
             var opId = new Guid(autoOpId, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             if (_uploadHelper.TryFinishOperation(opId, chunkContents, chunkNumber, chunkCount, out result))
             {
-                while (Volatile.Read(ref _expectSequenceNumber) != autoOpId)
+                while (Volatile.Read(ref _expectSequenceNumber) != autoOpId && !_isDisconnecting)
                 {
                     await Task.Delay(1);
                 }
 
+                if (_isDisconnecting)
+                {
+                    return;
+                }
+
                 using (CssSyncSuppressionContext.Get(excludeSpecificConnections: _connection))
                 {
-                    var urlGrouped = result.GroupBy(x => x.Url).ToList();
-                    var tasks = new Task[urlGrouped.Count];
-                    var index = 0;
-
-                    foreach (var set in urlGrouped)
+                    try
                     {
-                        var file = GetStyleSheetFileForUrl(set.Key, _connection.Project);
-
-                        if (file == null)
+                        foreach (var logEntry in result)
                         {
-                            continue;
+                            var urlGrouped = logEntry.GroupBy(x => x.Url).ToList();
+                            var tasks = new Task[urlGrouped.Count];
+                            var index = 0;
+
+                            foreach (var set in urlGrouped)
+                            {
+                                var file = GetStyleSheetFileForUrl(set.Key, _connection.Project);
+
+                                if (file == null)
+                                {
+                                    continue;
+                                }
+
+                                tasks[index++] = UpdateSheetRulesAsync(file, set);
+                            }
+
+                            await Task.WhenAll(tasks);
                         }
-
-                        tasks[index++] = UpdateSheetRulesAsync(file, set);
                     }
-
-                    await Task.WhenAll(tasks);
-                    Interlocked.Increment(ref _expectSequenceNumber);
+                    catch (Exception ex)
+                    {
+                        Logger.Log(ex);
+                    }
+                    finally
+                    {
+                        Interlocked.Increment(ref _expectSequenceNumber);
+                    }
                 }
             }
         }

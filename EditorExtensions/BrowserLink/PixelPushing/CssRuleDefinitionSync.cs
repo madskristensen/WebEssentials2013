@@ -176,111 +176,39 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             }
         }
 
-        public static IEnumerable<CssRuleBlockSyncAction> ComputeSyncActions(RuleSet existingRule, string newText, string oldText = null)
+        private static bool IsValueAnyRepetitionOfInitial(string value)
         {
-            var realOldText = oldText ?? existingRule.Text;
-            var parser = new CssParser();
-            var oldDoc = parser.Parse(realOldText, false);
-            var oldDict = ProduceKeyValuePairsFromRuleSet(oldDoc.Children.OfType<RuleSet>().Single());
-            var oldToNewDiff = new HashSet<SyncAction>();
+            const string initialPattern = "initial ";
+            var trimmedValue = value.Trim() + " ";
 
-            if (newText == null && oldText != null)
+            if (trimmedValue.Length % initialPattern.Length != 0)
             {
-                foreach (var key in oldDict.Keys)
-                {
-                    oldToNewDiff.Add(SyncAction.Delete(existingRule, key));
-                }
-                return oldToNewDiff.Select(x => x.Action);
+                return false;
             }
 
-            var newDoc = parser.Parse(newText, false);
-            var newDict = ProduceKeyValuePairsFromRuleSet(newDoc.Children.OfType<RuleSet>().Single());
-            var processedElements = new HashSet<string>();
-
-            foreach (var entry in newDict)
+            for (var i = 0; i < trimmedValue.Length; i += initialPattern.Length)
             {
-                string oldValue;
-                
-                if (oldDict.TryGetValue(entry.Key, out oldValue))
+                for (var j = 0; j < initialPattern.Length; ++j)
                 {
-                    //Possible Update
-                    if (!string.Equals(oldValue, entry.Value))
+                    if (trimmedValue[i + j] != initialPattern[j])
                     {
-                        //Update
-                        oldToNewDiff.Add(SyncAction.Update(existingRule, entry.Key, entry.Value));
-                    }
-                    else
-                    {
-                        //This is not the property you're looking for, move along
-                        oldToNewDiff.Add(SyncAction.NoOp(existingRule, entry.Key));
-                    }
-                }
-                else
-                {
-                    //Add
-                    oldToNewDiff.Add(SyncAction.Add(existingRule, entry.Key, entry.Value));
-                }
-
-                processedElements.Add(entry.Key);
-            }
-
-            foreach (var item in oldDict.Keys.Except(processedElements))
-            {
-                //Delete
-                oldToNewDiff.Add(SyncAction.Delete(existingRule, item));
-                processedElements.Add(item);
-            }
-
-            if (oldText == null)
-            {
-                return oldToNewDiff.Select(x => x.Action);
-            }
-
-            var existingDict = ProduceKeyValuePairsFromRuleSet(existingRule);
-            var priorityDiff = new HashSet<SyncAction>();
-
-            //This loop should look for:
-            //  actions marked "update" that don't exist
-            //  actions marked "delete" that don't exist
-            foreach (var element in oldToNewDiff.Where(x => x.ActionKind == CssDeltaAction.Update || x.ActionKind == CssDeltaAction.Delete))
-            {
-                var parts = element.PropertyName.Split('-');
-                
-                if (parts[0].Length == 0 || existingDict.ContainsKey(element.PropertyName))
-                {
-                    continue;
-                }
-
-                var prefix = "";
-
-                for (var i = 0; i < parts.Length - 1; ++i)
-                {
-                    if (prefix.Length > 0)
-                    {
-                        prefix += "-";
-                    }
-
-                    prefix += parts[i];
-
-                    var localPrefix = prefix;
-                    foreach (var conflictingValue in existingDict.Keys.Where(x => x.StartsWith(localPrefix, StringComparison.Ordinal)))
-                    {
-                        if (!oldToNewDiff.Contains(SyncAction.NoOp(existingRule, conflictingValue)))
-                        {
-                            priorityDiff.Add(SyncAction.Delete(existingRule, conflictingValue));
-                        }
+                        return false;
                     }
                 }
             }
 
-            var combined = priorityDiff.Union(oldToNewDiff);
-            var grouped = combined.GroupBy(x => x.PropertyName);
+            return true;
+        }
+
+        private static List<SyncAction> SimplifySyncActions(IEnumerable<SyncAction> actions)
+        {
+            var grouped = actions.GroupBy(x => x.PropertyName);
             var result = new List<SyncAction>();
 
-            foreach(var group in grouped)
+            foreach (var group in grouped)
             {
                 var contents = group.ToList();
-                if(contents.Count == 1)
+                if (contents.Count == 1)
                 {
                     result.Add(contents[0]);
                 }
@@ -313,7 +241,131 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 }
             }
 
-            return result.Where(x => x.ActionKind != CssDeltaAction.NoOp).OrderByDescending(x => x.ApproximatePosition).Select(x => x.Action);
+            return result;
+        }
+
+        private static IEnumerable<CssRuleBlockSyncAction> OrderAndExtractSyncActions(IEnumerable<SyncAction> actions)
+        {
+            return actions.Where(x => x.ActionKind != CssDeltaAction.NoOp).OrderByDescending(x => x.ApproximatePosition).Select(x => x.Action);
+        }
+
+        private static HashSet<SyncAction> CompareNewRuleAndOldRule(RuleSet comparisonRuleSet, IEnumerable<KeyValuePair<string, string>> newRule, IDictionary<string, string> oldRule)
+        {
+            var oldToNewDiff = new HashSet<SyncAction>();
+
+            foreach (var entry in newRule)
+            {
+                string oldValue;
+
+                if (oldRule.TryGetValue(entry.Key, out oldValue))
+                {
+                    //Possible Update
+                    if (!string.Equals(oldValue, entry.Value))
+                    {
+                        if (!IsValueAnyRepetitionOfInitial(entry.Value))
+                        {
+                            //Update
+                            oldToNewDiff.Add(SyncAction.Update(comparisonRuleSet, entry.Key, entry.Value));
+                        }
+                        else
+                        {
+                            //Delete
+                            oldToNewDiff.Add(SyncAction.Delete(comparisonRuleSet, entry.Key));
+                        }
+                    }
+                    else
+                    {
+                        //Same - don't do anything
+                        oldToNewDiff.Add(SyncAction.NoOp(comparisonRuleSet, entry.Key));
+                    }
+                }
+                else if (!IsValueAnyRepetitionOfInitial(entry.Value))
+                {
+                    //Add
+                    oldToNewDiff.Add(SyncAction.Add(comparisonRuleSet, entry.Key, entry.Value));
+                }
+            }
+
+            return oldToNewDiff;
+        }
+
+        private static IEnumerable<SyncAction> ReconcileExistingRuleWithDiff(RuleSet comparisonRuleSet, ICollection<SyncAction> oldToNewDiff)
+        {
+            var existingDict = ProduceKeyValuePairsFromRuleSet(comparisonRuleSet);
+            var priorityDiff = new HashSet<SyncAction>();
+
+            foreach (var element in oldToNewDiff.Where(x => x.ActionKind == CssDeltaAction.Update || x.ActionKind == CssDeltaAction.Delete))
+            {
+                var parts = element.PropertyName.Split('-');
+
+                //If the declaration we're looking at is for a property that we've processed in the old -> new rule diff, don't bother with it, it'll get cleaned up on its own
+                if (parts[0].Length == 0 || existingDict.ContainsKey(element.PropertyName))
+                {
+                    continue;
+                }
+
+                //Start looking for expansions on the base property that we're examining and delete the ones that aren't explicitly otherwise specified in our diff
+                //Ex. If we have a record "background", locate "background-color", "background-attachment", etc and delete them if we didn't get them back from the browser (they've been shorthanded)
+                var prefix = "";
+
+                for (var i = 0; i < parts.Length - 1; ++i)
+                {
+                    if (prefix.Length > 0)
+                    {
+                        prefix += "-";
+                    }
+
+                    prefix += parts[i];
+
+                    var localPrefix = prefix;
+
+                    foreach (var conflictingValue in existingDict.Keys.Where(x => x.StartsWith(localPrefix, StringComparison.Ordinal)))
+                    {
+                        //Leave manually specified long form declarations intact but remove ones that are now shorthand
+                        if (!oldToNewDiff.Contains(SyncAction.NoOp(comparisonRuleSet, conflictingValue)))
+                        {
+                            priorityDiff.Add(SyncAction.Delete(comparisonRuleSet, conflictingValue));
+                        }
+                    }
+                }
+            }
+
+            return priorityDiff;
+        }
+
+        public static IEnumerable<CssRuleBlockSyncAction> ComputeSyncActions(RuleSet existingRule, string newText, string oldText = null)
+        {
+            var realOldText = oldText ?? existingRule.Text;
+            var parser = new CssParser();
+            var oldDoc = parser.Parse(realOldText, false);
+            var oldDict = ProduceKeyValuePairsFromRuleSet(oldDoc.Children.OfType<RuleSet>().Single());
+
+            if (newText == null && oldText != null)
+            {
+                return OrderAndExtractSyncActions(oldDict.Keys.Select(x => SyncAction.Delete(existingRule, x)));
+            }
+
+            var newDoc = parser.Parse(newText, false);
+            var newDict = ProduceKeyValuePairsFromRuleSet(newDoc.Children.OfType<RuleSet>().Single());
+            var oldToNewDiff = CompareNewRuleAndOldRule(existingRule, newDict, oldDict);
+            var processedElements = new HashSet<string>(oldToNewDiff.Select(x => x.PropertyName));
+
+            foreach (var item in oldDict.Keys.Except(processedElements))
+            {
+                //Delete
+                oldToNewDiff.Add(SyncAction.Delete(existingRule, item));
+                processedElements.Add(item);
+            }
+
+            if (oldText == null)
+            {
+                return oldToNewDiff.Select(x => x.Action);
+            }
+
+            var priorityDiff = ReconcileExistingRuleWithDiff(existingRule, oldToNewDiff);
+            var combined = priorityDiff.Union(oldToNewDiff);
+            var simplified = SimplifySyncActions(combined);
+            return OrderAndExtractSyncActions(simplified);
         }
 
         public static async Task<IEnumerable<CssRuleBlockSyncAction>> ComputeSyncActionsAsync(RuleSet existingRule, string newText, string oldText = null)
