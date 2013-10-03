@@ -5,7 +5,7 @@
     /// <param name="browserLink" value="bl" />
     /// <param name="$" value="jQuery" />
 
-    var _menu, _bar, _fixed, _toggle = true;
+    var _menu, _bar, _fixed, _toggle;
 
     function CreateMenu() {
         _menu = document.createElement("bl");
@@ -111,7 +111,7 @@
     function AddStyles() {
         var style = document.createElement("style");
         style.innerHTML =
-            "bl {position: fixed; left: 10px; bottom: 10px; opacity: .3; height: 40px;}" +
+            "bl {position: fixed; left: 10px; bottom: 10px; opacity: .3; height: 40px; color:black;}" +
             "bl:hover {opacity: 1;}" +
             "bl:hover blbar {display:inline-block;}" +
             "bl .logo {width: 40px; margin-right: 8px; vertical-align:baseline; }" +
@@ -127,20 +127,19 @@
     }
 
     $(document).keyup(function (e) {
-        if (e.keyCode === 16 && _toggle) { // Shift
+        if (e.keyCode === 17 && _toggle) { // Ctrl
             if (_menu.style.display !== "block")
                 _menu.style.display = "block";
             else
                 _menu.style.display = "none";
         }
 
-        _toggle = true;
+        _toggle = false;
     });
 
     $(document).keydown(function (e) {
-        if (e.keyCode !== 16) { // Shift
-            _toggle = false;
-        }
+        console.log(e.keyCode);
+        _toggle = e.keyCode === 17;// Ctrl
     });
 
     window.browserLink.menu = CreateMenu();
