@@ -89,7 +89,7 @@ namespace MadsKristensen.EditorExtensions
                     basePath = Path.GetDirectoryName(callerDirectory);
                     break;
                 default:
-                    basePath = GetAvailableModules(callerDirectory).FirstOrDefault(m => Path.GetFileName(m) == modulePath);
+                    basePath = GetAvailableModules(callerDirectory).FirstOrDefault(m => Path.GetFileName(m) == moduleName);
                     break;
             }
 

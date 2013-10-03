@@ -86,6 +86,7 @@
     <Content Include="fixtures\node_modules\bar.js" />
     <Content Include="fixtures\node_modules\baz\index.js" />
     <Content Include="fixtures\node_modules\baz\node_modules\asdf.js" />
+    <Content Include="fixtures\node_modules\baz\otherFile.js" />
     <Content Include="fixtures\node_modules\foo.js" />
     <Content Include="fixtures\node_modules\node_modules\bar.js" />
     <Content Include="fixtures\packages\main-index\package-main-module\index.js" />
