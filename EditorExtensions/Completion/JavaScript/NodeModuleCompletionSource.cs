@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
 
             //TODO: Find / and show filesystem entries
 
-            return GetAvailableModules(baseFolder)
+            return NodeModuleService.GetAvailableModules(baseFolder)
                     .Select(p => new Completion(
                         quoteChar + Path.GetFileName(p) + quoteChar,
                         quoteChar + Path.GetFileName(p) + quoteChar,
@@ -40,25 +40,6 @@ namespace MadsKristensen.EditorExtensions
                     ));
         }
 
-        ///<summary>Returns all Node.js modules visible from a given directory, including those from node_modules in parent directories.</summary>
-        ///<remarks>The modules will be sorted by depth (innermost modules first), then alphabetically.</remarks>
-        public static IEnumerable<string> GetAvailableModules(string directory)
-        {
-            var nmDir = Path.Combine(directory, "node_modules");
-            IEnumerable<string> ourModules;
-            if (Directory.Exists(nmDir))
-                ourModules = Directory.EnumerateDirectories(nmDir)
-                    .Where(s => !Path.GetFileName(s).StartsWith("."))
-                    .OrderBy(s => s);
-            else
-                ourModules = Enumerable.Empty<string>();
-
-            var parentDir = Path.GetDirectoryName(directory);
-            if (String.IsNullOrEmpty(parentDir))
-                return ourModules;
-            else
-                return ourModules.Concat(GetAvailableModules(parentDir));
-        }
 
         static string GetDescription(string path)
         {
