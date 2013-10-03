@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
 
         ///<summary>The default extensions used to resolve modules without extensions.</summary>
         ///<remarks>This must match require.extensions from Node.js; see https://github.com/joyent/node/blob/master/lib/module.js#L464-L484. </remarks>
-        private static readonly string[] moduleExtensions = { "", ".js", ".json", ".node" };
+        public static readonly ReadOnlyCollection<string> ModuleExtensions = new ReadOnlyCollection<string>(new[] { "", ".js", ".json", ".node" });
 
         ///<summary>Resolves the full path to the JS file that will be loaded by a call to require().  This will always return an existing file (not directory) on disk, or null.</summary>
         ///<param name="callerPath">The path to the directory containing the file that is calling require().  This must be an absolute path.</param>
@@ -49,7 +50,7 @@ namespace MadsKristensen.EditorExtensions
             potentialPaths.RemoveAll(p => p.EndsWith("/"));
 
             // Try adding the default extensions to each potential path we've found, then give up.
-            return potentialPaths.SelectMany(path => moduleExtensions.Select(e => path + e))
+            return potentialPaths.SelectMany(path => ModuleExtensions.Select(e => path + e))
                                  .FirstOrDefault(File.Exists);
         }
 
