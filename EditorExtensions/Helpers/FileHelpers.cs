@@ -2,11 +2,34 @@
 using System.Globalization;
 using System.IO;
 using System.Text;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
     public static class FileHelpers
     {
+        public static void OpenFileInPreviewTab(string file)
+        {
+            IVsNewDocumentStateContext newDocumentStateContext = null;
+
+            try
+            {
+                IVsUIShellOpenDocument3 openDoc3 = EditorExtensionsPackage.GetGlobalService<SVsUIShellOpenDocument>() as IVsUIShellOpenDocument3;
+
+                Guid reason = VSConstants.NewDocumentStateReason.Navigation;
+                newDocumentStateContext = openDoc3.SetNewDocumentState((uint)__VSNEWDOCUMENTSTATE.NDS_Provisional, ref reason);
+
+                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
+            }
+            finally
+            {
+                if (newDocumentStateContext != null)
+                    newDocumentStateContext.Restore();
+            }
+        }
+
+
         public static string ConvertToBase64(string fileName)
         {
             string format = "data:{0};base64,{1}";
