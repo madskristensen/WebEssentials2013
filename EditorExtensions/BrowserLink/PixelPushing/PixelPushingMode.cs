@@ -14,6 +14,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
     public class PixelPushingMode : BrowserLinkExtension
     {
         private static readonly ConcurrentDictionary<BrowserLinkConnection, PixelPushingMode> ExtensionByConnection = new ConcurrentDictionary<BrowserLinkConnection, PixelPushingMode>();
+        private static readonly ConcurrentDictionary<string, bool> ContinuousSyncModeByProject = new ConcurrentDictionary<string, bool>();
         private readonly BrowserLinkConnection _connection;
         private readonly UploadHelper _uploadHelper;
         internal static bool IsPixelPushingModeEnabled = WESettings.GetBoolean(WESettings.Keys.PixelPushing_OnByDefault);
@@ -133,13 +134,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
         public override void OnConnected(BrowserLinkConnection connection)
         {
-            Browsers.Client(connection).Invoke("setPixelPusingMode", true);
+            SetMode();
         }
 
         private bool _isDisconnecting;
 
         public override void OnDisconnecting(BrowserLinkConnection connection)
         {
+            PixelPushingMode extension;
+            ExtensionByConnection.TryRemove(connection, out extension);
             _isDisconnecting = true;
             base.OnDisconnecting(connection);
         }
@@ -264,9 +267,26 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             doc.IsProcessingUnusedCssRules = oldSnapshotOnChange;
         }
 
+        [BrowserLinkCallback]
+        public void EnterContinuousSyncMode(bool value)
+        {
+            var changed = false;
+            ContinuousSyncModeByProject.AddOrUpdate(_connection.Project.UniqueName, p => value, (p, x) =>
+            {
+                changed = x ^ value;
+                return value;
+            });
+
+            if (changed)
+            {
+                All(x => x.SetMode());
+            }
+        }
+
         public void SetMode()
         {
-            Browsers.Client(_connection).Invoke("setPixelPusingMode", IsPixelPushingModeEnabled, Guid.NewGuid().ToString());
+            var continuousSyncMode = ContinuousSyncModeByProject.GetOrAdd(_connection.Project.UniqueName, p => false);
+            Browsers.Client(_connection).Invoke("setPixelPusingMode", IsPixelPushingModeEnabled, continuousSyncMode);
         }
     }
 }
