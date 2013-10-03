@@ -52,7 +52,7 @@
 
         button.disable = function () {
             this.disabled = true;
-            this.style.opacity = .6;
+            this.style.opacity = ".6";
         };
 
         return button;
@@ -102,7 +102,7 @@
         item.disable = function() {
             checkbox.disabled = "disabled";
             label.disabled = "disabled";
-            this.style.opacity = .6;
+            this.style.opacity = ".6";
         };
 
         return item;
@@ -112,15 +112,15 @@
         var style = document.createElement("style");
         style.innerHTML =
             "bl {position: fixed; left: 10px; bottom: 10px; opacity: .3; height: 40px; color:black;}" +
-            "bl:hover {opacity: 1;}" +
+            "bl:hover {opacity: .95;}" +
             "bl:hover blbar {display:inline-block;}" +
             "bl .logo {width: 40px; margin-right: 8px; vertical-align:baseline; }" +
-            "blbar {background: silver; display: none; line-height: 30px; font:13px arial; position: relative; top: -15px; border-radius: 3px;}" +
+            "blbar {background: #d8d8d8; display: none; font:13px arial; position: relative; top: -15px; border-radius: 3px;}" +
             "blbar label {display: inline;}" +
             "blbar blcheckbox {margin: 0 10px;}" +
             "blbar blcheckbox:last-child {border-left: 1px solid gray; padding-left: 7px}" +
             "blbar blcheckbox input {margin: -3px auto auto 3px!important; vertical-align: middle;}" +
-            "blbar blbutton {cursor: pointer; display: inline-block; margin: 0 10px; padding: 5px 0}" +
+            "blbar blbutton:not([disabled]) {cursor: pointer; display: inline-block; margin: 0 10px; padding: 8px 0}" +
             "blbar blbutton:hover {text-decoration: underline;}";
 
         document.body.appendChild(style);
@@ -138,7 +138,6 @@
     });
 
     $(document).keydown(function (e) {
-        console.log(e.keyCode);
         _toggle = e.keyCode === 17;// Ctrl
     });
 
@@ -148,7 +147,6 @@
 
         setVisibility: function (visible) { // Can be called from the server-side extension
             visible = (visible == "true");
-            console.log(visible);
             _menu.style.display = visible ? "block" : "none";
             _fixed.checked(!visible);
         },
