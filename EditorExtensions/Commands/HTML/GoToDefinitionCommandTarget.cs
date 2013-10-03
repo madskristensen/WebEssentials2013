@@ -1,7 +1,6 @@
 ﻿using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -35,7 +34,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (File.Exists(absolute))
             {
-                OpenFileInPreviewTab(absolute);
+                FileHelpers.OpenFileInPreviewTab(absolute);
                 return true;
             }
 
@@ -44,25 +43,6 @@ namespace MadsKristensen.EditorExtensions
             return false;
         }
 
-        private void OpenFileInPreviewTab(string file)
-        {
-            IVsNewDocumentStateContext newDocumentStateContext = null;
-            
-            try
-            {
-                IVsUIShellOpenDocument3 openDoc3 = EditorExtensionsPackage.GetGlobalService<SVsUIShellOpenDocument>() as IVsUIShellOpenDocument3;
-                
-                Guid reason = VSConstants.NewDocumentStateReason.Navigation;                
-                newDocumentStateContext = openDoc3.SetNewDocumentState((uint)__VSNEWDOCUMENTSTATE.NDS_Provisional, ref reason);
-
-                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
-            }
-            finally
-            {
-                if (newDocumentStateContext != null)
-                    newDocumentStateContext.Restore();
-            }
-        }
 
         private bool TryGetPath(out string path)
         {
