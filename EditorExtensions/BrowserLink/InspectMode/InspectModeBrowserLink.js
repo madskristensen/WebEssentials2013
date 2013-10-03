@@ -87,8 +87,20 @@
 
     window.__weSetInspectMode = turnOnInspectMode;
 
+    function AddToMenu() {
+        if (!window.browserLink.menu)
+            return;
+
+        window.browserLink.menu.addButton("Inspect", "Use CTRL+ALT+i to enable Inspect Mode", function () {
+            if (!inspectModeOn)
+                turnOnInspectMode();
+            else
+                turnOffInspectMode();
+        });
+    }
+
     return {
-        
+
         setInspectMode: function (inspectModeOn) {
             if (inspectModeOn) {
                 turnOnInspectMode();
@@ -100,7 +112,7 @@
 
         select: function (sourcePath, position) {
             var target = browserLink.sourceMapping.getElementAtPosition(sourcePath, position);
-            
+
             if (target) {
                 if (current && current !== target) {
                     $(current).removeClass("__browserLink_selected");
@@ -111,6 +123,10 @@
                 if (current.scrollIntoView)
                     current.scrollIntoView();
             }
+        },
+
+        onConnected: function () {
+            AddToMenu();
         }
     };
 });

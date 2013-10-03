@@ -146,9 +146,26 @@
         enableDesignMode(true);
     };
 
+
+    function AddToMenu() {
+        if (!window.browserLink.menu)
+            return;
+
+        window.browserLink.menu.addButton("Design", "Use CTRL+ALT+D to enable Design Mode", function () {
+            if (!inspectModeOn)
+                enableDesignMode(true);
+            else
+                enableDesignMode(false);
+        });
+    }
+
     return {
         setDesignMode: function () {
             enableDesignMode(true);
+        },
+
+        onConnected: function () {
+            AddToMenu();
         }
     };
 
