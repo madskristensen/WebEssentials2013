@@ -71,6 +71,7 @@
             }
             else if (e.keyCode === 85) {// 85 = u
                 continuousSyncMode = !continuousSyncMode;
+                updateMenuItems();
             }
 
             return false;
@@ -102,6 +103,8 @@
         if (isInPixelPusingMode = pixelPushingModeOn) {
             performAudit();
         }
+
+        updateMenuItems();
     }
 
     var lastRunSheets = [];
@@ -192,8 +195,49 @@
         }
     }
 
+    var takeChangesNowMenuItem;
+    var continuouslyTakeChangesMenuItem;
+    
+    function updateMenuItems() {
+        if (!window.browserLink.menu || !takeChangesNowMenuItem || !continuouslyTakeChangesMenuItem) {
+            return;
+        }
+
+        if (!isInPixelPusingMode) {
+            takeChangesNowMenuItem.disable();
+            continuouslyTakeChangesMenuItem.disable();
+            continuouslyTakeChangesMenuItem.checked(false);
+        } else {
+            continuouslyTakeChangesMenuItem.enable();
+            continuouslyTakeChangesMenuItem.checked(continuousSyncMode);
+
+            if (!continuousSyncMode) {
+                takeChangesNowMenuItem.enable();
+            } else {
+                takeChangesNowMenuItem.disable();
+            }
+        }
+    }
+
+    function AddToMenu() {
+        if (!window.browserLink.menu)
+            return;
+
+        takeChangesNowMenuItem = window.browserLink.menu.addButton("Sync CSS Changes", "Use CTRL+ALT+T to sync the current CSS changes into Visual Studio", function () {
+            shipUpdate();
+        });
+
+        continuouslyTakeChangesMenuItem = window.browserLink.menu.addCheckbox("Always Sync CSS Changes", "Use CTRL+ALT+U to continuously sync CSS changes into Visual Studio", false, function () {
+            continuousSyncMode = !continuousSyncMode;
+            updateMenuItems();
+        });
+    }
+
     return {
         setPixelPusingMode: setPixelPushingModeInternal,
-        pullStyleData : shipUpdate
+        pullStyleData : shipUpdate,
+        onConnected: function () {
+            AddToMenu();
+        }
     };
 });
