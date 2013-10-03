@@ -35,31 +35,56 @@
         var button = document.createElement("blbutton");
         button.innerHTML = text;
         button.title = tooltip;
-        button.onclick = callback;
+        button.disabled = false;
+        
+        button.onclick = function () {
+            if (!this.disabled) {
+                callback(arguments);
+            }
+        };
 
         _bar.insertBefore(button, _fixed);
+
+        button.enable = function () {
+            this.disabled = false;
+            this.style.opacity = 1;
+        };
+
+        button.disable = function () {
+            this.disabled = true;
+            this.style.opacity = .6;
+        };
 
         return button;
     }
 
     function AddCheckbox(text, tooltip, checked, callback) {
+        var item = document.createElement("blcheckbox");
+        
         var checkbox = document.createElement("input");
         checkbox.checked = checked;
         checkbox.type = "checkbox";
         checkbox.title = tooltip;
         checkbox.onclick = callback;
-        checkbox.id = "_" + Math.random();
+        var id = ("_" + Math.random()).replace('.', '_');
+        checkbox.id = id;
 
         var label = document.createElement("label");
-        label.for = checkbox.id;
         label.innerHTML = text;
         label.title = tooltip;
+        label.style.fontWeight = "normal";
+        label.for = id;
 
-        var item = document.createElement("blcheckbox");
-        item.checked = function (ischecked) { checkbox.checked = ischecked; };
+        item.checked = function(value) {
+            if (typeof(value) === typeof(undefined)) {
+                return checkbox.checked;
+            }
+
+            return checkbox.checked = value;
+        };
 
         item.appendChild(label);
-        item.appendChild(checkbox);
+        label.appendChild(checkbox);
 
         if (!_fixed) {
             _bar.appendChild(item);
@@ -67,6 +92,18 @@
         else {
             _bar.insertBefore(item, _fixed);
         }
+
+        item.enable = function() {
+            checkbox.removeAttribute("disabled");
+            checkbox.removeAttribute("disabled");
+            this.style.opacity = 1;
+        };
+
+        item.disable = function() {
+            checkbox.disabled = "disabled";
+            label.disabled = "disabled";
+            this.style.opacity = .6;
+        };
 
         return item;
     }
@@ -82,7 +119,7 @@
             "blbar label {display: inline;}" +
             "blbar blcheckbox {margin: 0 10px;}" +
             "blbar blcheckbox:last-child {border-left: 1px solid gray; padding-left: 7px}" +
-            "blbar blcheckbox input {margin: -3px auto auto 3px!important;}" +
+            "blbar blcheckbox input {margin: -3px auto auto 3px!important; vertical-align: middle;}" +
             "blbar blbutton {cursor: pointer; display: inline-block; margin: 0 10px; padding: 5px 0}" +
             "blbar blbutton:hover {text-decoration: underline;}";
 
