@@ -6,8 +6,8 @@ namespace MadsKristensen.EditorExtensions
 {
     class PixelPushingOptions : DialogPage
     {
-        [LocDisplayName("Enable Pixel Pushing mode by default")]
-        [Description("Whether or not Pixel Pushing mode is turned on by default")]
+        [LocDisplayName("Enable F12 change detection by default")]
+        [Description("Whether or not F12 change detection is turned on by default")]
         [Category("CSS")]
         public bool IsOnByDefault { get; set; }
 

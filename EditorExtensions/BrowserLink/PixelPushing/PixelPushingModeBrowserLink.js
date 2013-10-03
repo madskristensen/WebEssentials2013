@@ -8,8 +8,7 @@
     var chunkSize = 20 * 1024; //<-- 20k chunk size
     var lastSheet = false;
     var isInPixelPusingMode = false;
-    var operationId;
-
+    
     function getLastSheetHref() {
         if (!lastSheet) {
             for (var i = document.styleSheets.length - 1; i >= 0; --i) {
@@ -56,9 +55,28 @@
         }
     }
 
-    function shipUpdate(delta) {
-        submitChunkedData("SyncCssRules", delta);
+    var deltaLog = [];
+    var continuousSyncMode = false;
+
+    function shipUpdate() {
+        var localLog = deltaLog;
+        deltaLog = [];
+        submitChunkedData("SyncCssRules", localLog);
     }
+
+    $(document).keydown(function (e) {
+        if (e.ctrlKey && e.altKey) {
+            if (e.keyCode === 84) {// 84 = t
+                shipUpdate();
+            }
+            else if (e.keyCode === 85) {// 85 = u
+                continuousSyncMode = !continuousSyncMode;
+                updateMenuItems();
+            }
+
+            return false;
+        }
+    });
 
     function standardizeSelector(selector) {
         /*
@@ -81,12 +99,12 @@
         return tmp.replace(/,\s/g, ",");
     }
 
-    function setPixelPushingModeInternal(pixelPushingModeOn, newOperationId) {
-        operationId = newOperationId || operationId;
-
+    function setPixelPushingModeInternal(pixelPushingModeOn) {
         if (isInPixelPusingMode = pixelPushingModeOn) {
             performAudit();
         }
+
+        updateMenuItems();
     }
 
     var lastRunSheets = [];
@@ -120,7 +138,8 @@
 
     function performAudit() {
         var current = getCurrentRuleDefinitions();
-        var deltaRecords = [];
+        var logRecords = [];
+        var okToAdd = true;
 
         if (current.length == lastRunSheets.length) {
             for (var sheetIndex = 0; sheetIndex < current.length; ++sheetIndex) {
@@ -129,7 +148,8 @@
                 var href = getSheetHref(document.styleSheets[sheetIndex]);
                 
                 if (href != previousSheet.href) {
-                    deltaRecords = [];
+                    deltaLog = [];
+                    okToAdd = false;
                     break;
                 }
                 
@@ -147,7 +167,7 @@
                         }
                         
                         if (currentRule[ruleIndex] != previousRule[ruleIndex]) {
-                            deltaRecords.push({
+                            logRecords.push({
                                 "Url": href,
                                 "RuleIndex": ruleIndex,
                                 "Rule": rule,
@@ -158,10 +178,14 @@
                     }
                 }
             }
+
+            if (okToAdd && logRecords.length > 0) {
+                deltaLog.push(logRecords);
+            }
         }
 
-        if (deltaRecords.length > 0) {
-            shipUpdate(deltaRecords);
+        if (continuousSyncMode && deltaLog.length > 0) {
+            shipUpdate();
         }
 
         lastRunSheets = current;
@@ -171,7 +195,49 @@
         }
     }
 
+    var takeChangesNowMenuItem;
+    var continuouslyTakeChangesMenuItem;
+    
+    function updateMenuItems() {
+        if (!window.browserLink.menu || !takeChangesNowMenuItem || !continuouslyTakeChangesMenuItem) {
+            return;
+        }
+
+        if (!isInPixelPusingMode) {
+            takeChangesNowMenuItem.disable();
+            continuouslyTakeChangesMenuItem.disable();
+            continuouslyTakeChangesMenuItem.checked(false);
+        } else {
+            continuouslyTakeChangesMenuItem.enable();
+            continuouslyTakeChangesMenuItem.checked(continuousSyncMode);
+
+            if (!continuousSyncMode) {
+                takeChangesNowMenuItem.enable();
+            } else {
+                takeChangesNowMenuItem.disable();
+            }
+        }
+    }
+
+    function AddToMenu() {
+        if (!window.browserLink.menu)
+            return;
+
+        takeChangesNowMenuItem = window.browserLink.menu.addButton("Save F12 Changes", "Use CTRL+ALT+T to sync the current CSS changes into Visual Studio", function () {
+            shipUpdate();
+        });
+
+        continuouslyTakeChangesMenuItem = window.browserLink.menu.addCheckbox("F12 Auto-sync", "Use CTRL+ALT+U to continuously sync CSS changes into Visual Studio", false, function () {
+            continuousSyncMode = !continuousSyncMode;
+            updateMenuItems();
+        });
+    }
+
     return {
-        setPixelPusingMode: setPixelPushingModeInternal
+        setPixelPusingMode: setPixelPushingModeInternal,
+        pullStyleData : shipUpdate,
+        onConnected: function () {
+            AddToMenu();
+        }
     };
 });
