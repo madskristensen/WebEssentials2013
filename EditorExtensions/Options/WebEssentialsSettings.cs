@@ -118,6 +118,8 @@ namespace MadsKristensen.EditorExtensions
             //Pixel Pushing mode
             public const string PixelPushing_OnByDefault = "PixelPushing_OnByDefault";
 
+            public const string BrowserLink_ShowMenu = "BrowserLink_ShowMenu";
+
             public enum ErrorLocation
             {
                 Warnings = 0,

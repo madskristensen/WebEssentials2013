@@ -270,6 +270,7 @@
     <Compile Include="BrowserLink\DesignMode\DesignModeBrowserLink.cs" />
     <Compile Include="BrowserLink\InspectMode\InspectModeBrowserLink.cs" />
     <Compile Include="BrowserLink\CssSync\CssSyncBrowserLink.cs" />
+    <Compile Include="BrowserLink\Menu\MenuBrowserLink.cs" />
     <Compile Include="BrowserLink\PixelPushing\CssDeltaAction.cs" />
     <Compile Include="BrowserLink\PixelPushing\CssRuleBlockSyncAction.cs" />
     <Compile Include="BrowserLink\PixelPushing\CssRuleDefinitionSync.cs" />
@@ -658,6 +659,7 @@
     <None Include="app.config" />
     <EmbeddedResource Include="BrowserLink\UnusedCss\UnusedCss.js" />
     <EmbeddedResource Include="BrowserLink\PixelPushing\PixelPushingModeBrowserLink.js" />
+    <EmbeddedResource Include="BrowserLink\Menu\MenuBrowserLink.js" />
     <Content Include="Classifications\RobotsTxt\robots.txt" />
     <None Include="Classifications\Markdown\Sample.md" />
     <None Include="Key.snk" />
