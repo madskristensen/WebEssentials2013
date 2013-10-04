@@ -456,6 +456,7 @@
     <Compile Include="SmartTags\HTML\HtmlUnMinifySmartTag.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Validation\LESS\Filters\LessExtendCssErrorFilter.cs" />
     <Compile Include="Validation\CSS\Providers\ColorValuesInRangeErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
