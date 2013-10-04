@@ -44,8 +44,7 @@ namespace MadsKristensen.EditorExtensions
                 new UseDirectiveCompletionSource(), 
                 new ElementsByTagNameCompletionSource(), 
                 new ElementsByClassNameCompletionSource(classNames),
-                new ElementsByIdCompletionSource(classNames),
-                new NodeModuleCompletionSource()
+                new ElementsByIdCompletionSource(classNames)
             });
         }
 
