@@ -9,7 +9,13 @@ using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Language.StandardClassification;
+using System.Collections.Generic;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -24,29 +30,58 @@ namespace MadsKristensen.EditorExtensions
         [Import]
         ICompletionBroker CompletionBroker = null;
 
-        public void VsTextViewCreated(IVsTextView textViewAdapter)
+        [Import]
+        IStandardClassificationService _standardClassifications;
+
+        public async void VsTextViewCreated(IVsTextView textViewAdapter)
         {
             IWpfTextView view = AdaptersFactory.GetWpfTextView(textViewAdapter);
             Debug.Assert(view != null);
 
-            JsCommandFilter filter = new JsCommandFilter(view, CompletionBroker);
+            int tries = 0;
 
-            IOleCommandTarget next;
-            textViewAdapter.AddCommandFilter(filter, out next);
-            filter.Next = next;
+            // Ugly ugly hack
+            // Keep trying to register our filter until after the JSLS CommandFilter
+            // is added so we can catch completion before JSLS swallows all of them.
+            // To confirm this, click Debug, New Breakpoint, Break at Function, type
+            // Microsoft.VisualStudio.JSLS.TextView.TextView.CreateCommandFilter,
+            // then make sure that our last filter is added after that runs.
+            JsCommandFilter filter = new JsCommandFilter(view, CompletionBroker, _standardClassifications);
+            while (true)
+            {
+                IOleCommandTarget next;
+                textViewAdapter.AddCommandFilter(filter, out next);
+                filter.Next = next;
+
+                if (IsJSLSInstalled(next) || ++tries > 10)
+                    return;
+                await Task.Delay(500);
+                textViewAdapter.RemoveCommandFilter(filter);    // Remove the too-early filter and try again.
+            }
+        }
+
+        ///<summary>Attempts to figure out whether the JSLS language service has been installed yet.</summary>
+        static bool IsJSLSInstalled(IOleCommandTarget next)
+        {
+            Guid cmdGroup = VSConstants.VSStd2K;
+            var cmds = new[] { new OLECMD { cmdID = (uint)VSConstants.VSStd2KCmdID.AUTOCOMPLETE } };
+            next.QueryStatus(ref cmdGroup, 1, cmds, IntPtr.Zero);
+            return cmds[0].cmdf == 3;
         }
     }
 
     internal sealed class JsCommandFilter : IOleCommandTarget
     {
+        private readonly IStandardClassificationService _standardClassifications;
         private ICompletionSession _currentSession;
 
-        public JsCommandFilter(IWpfTextView textView, ICompletionBroker broker)
+        public JsCommandFilter(IWpfTextView textView, ICompletionBroker broker, IStandardClassificationService standardClassifications)
         {
             _currentSession = null;
 
             TextView = textView;
             Broker = broker;
+            _standardClassifications = standardClassifications;
         }
 
         public IWpfTextView TextView { get; private set; }
@@ -58,16 +93,39 @@ namespace MadsKristensen.EditorExtensions
             return (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
         }
 
+        static readonly Type jsTaggerType = typeof(Microsoft.VisualStudio.JSLS.JavaScriptLanguageService).Assembly.GetType("Microsoft.VisualStudio.JSLS.Classification.Tagger");
+
+        IEnumerable<IClassificationType> GetCaretClassifications()
+        {
+            var tagger = TextView.TextBuffer.Properties.GetProperty<ITagger<ClassificationTag>>(jsTaggerType);
+            return tagger.GetTags(new NormalizedSnapshotSpanCollection(new SnapshotSpan(TextView.Caret.Position.BufferPosition, 0)))
+                    .Select(s => s.Tag.ClassificationType);
+        }
+
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             if (pguidCmdGroup != VSConstants.VSStd2K)
                 return Next.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 
+            // This filter should only have do anything inside a string literal, or when opening a string literal.
+            bool isInString = GetCaretClassifications().Contains(_standardClassifications.StringLiteral);
+
+            var command = (VSConstants.VSStd2KCmdID)nCmdID;
+            if (!isInString)
+            {
+                if (command != VSConstants.VSStd2KCmdID.TYPECHAR)
+                    return Next.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+
+                char ch = GetTypeChar(pvaIn);
+                if (ch != '"' && ch != '\'')
+                    return Next.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+            }
+
             bool closedCompletion = false;
             bool handled = false;
 
             // 1. Pre-process
-            switch ((VSConstants.VSStd2KCmdID)nCmdID)
+            switch (command)
             {
                 case VSConstants.VSStd2KCmdID.TYPECHAR:
                     char ch = GetTypeChar(pvaIn);
@@ -91,7 +149,8 @@ namespace MadsKristensen.EditorExtensions
                     break;
                 case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
                 case VSConstants.VSStd2KCmdID.COMPLETEWORD:
-                    handled = StartSession();
+                    // Never handle this command; we always want JSLS to try too.
+                    StartSession();
                     break;
                 case VSConstants.VSStd2KCmdID.RETURN:
                     handled = Complete(false) != null;
@@ -111,7 +170,7 @@ namespace MadsKristensen.EditorExtensions
             if (!ErrorHandler.Succeeded(hresult))
                 return hresult;
 
-            switch ((VSConstants.VSStd2KCmdID)nCmdID)
+            switch (command)
             {
                 case VSConstants.VSStd2KCmdID.TYPECHAR:
                     char ch = GetTypeChar(pvaIn);
