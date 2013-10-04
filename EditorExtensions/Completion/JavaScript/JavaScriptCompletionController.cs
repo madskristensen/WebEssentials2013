@@ -10,6 +10,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -24,16 +25,40 @@ namespace MadsKristensen.EditorExtensions
         [Import]
         ICompletionBroker CompletionBroker = null;
 
-        public void VsTextViewCreated(IVsTextView textViewAdapter)
+        public async void VsTextViewCreated(IVsTextView textViewAdapter)
         {
             IWpfTextView view = AdaptersFactory.GetWpfTextView(textViewAdapter);
             Debug.Assert(view != null);
 
-            JsCommandFilter filter = new JsCommandFilter(view, CompletionBroker);
+            int tries = 0;
 
-            IOleCommandTarget next;
-            textViewAdapter.AddCommandFilter(filter, out next);
-            filter.Next = next;
+            // Ugly ugly hack
+            // Keep trying to register our filter until after the JSLS CommandFilter
+            // is added so we can catch completion before JSLS swallows all of them.
+            // To confirm this, click Debug, New Breakpoint, Break at Function, type
+            // Microsoft.VisualStudio.JSLS.TextView.TextView.CreateCommandFilter,
+            // then make sure that our last filter is added after that runs.
+            JsCommandFilter filter = new JsCommandFilter(view, CompletionBroker);
+            while (true)
+            {
+                IOleCommandTarget next;
+                textViewAdapter.AddCommandFilter(filter, out next);
+                filter.Next = next;
+
+                if (IsJSLSInstalled(next) || ++tries > 10)
+                    return;
+                await Task.Delay(500);
+                textViewAdapter.RemoveCommandFilter(filter);    // Remove the too-early filter and try again.
+            }
+        }
+
+        ///<summary>Attempts to figure out whether the JSLS language service has been installed yet.</summary>
+        static bool IsJSLSInstalled(IOleCommandTarget next)
+        {
+            Guid cmdGroup = VSConstants.VSStd2K;
+            var cmds = new[] { new OLECMD { cmdID = (uint)VSConstants.VSStd2KCmdID.AUTOCOMPLETE } };
+            next.QueryStatus(ref cmdGroup, 1, cmds, IntPtr.Zero);
+            return cmds[0].cmdf == 3;
         }
     }
 
@@ -91,7 +116,8 @@ namespace MadsKristensen.EditorExtensions
                     break;
                 case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
                 case VSConstants.VSStd2KCmdID.COMPLETEWORD:
-                    handled = StartSession();
+                    // Never handle this command; we always want JSLS to try too.
+                    StartSession();
                     break;
                 case VSConstants.VSStd2KCmdID.RETURN:
                     handled = Complete(false) != null;
