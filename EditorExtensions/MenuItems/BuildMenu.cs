@@ -103,14 +103,12 @@ namespace MadsKristensen.EditorExtensions
 
         private IEnumerable<string> GetFiles()
         {
-            //Project project = ProjectHelpers.GetActiveProject();
-
             foreach (Project project in _dte.Solution.Projects)
             {
                 if (string.IsNullOrEmpty(project.FullName))
                     continue;
 
-                string dir = Path.GetDirectoryName(project.FullName);
+                string dir = Path.GetDirectoryName(project.Properties.Item("FullPath").Value.ToString());
 
                 List<string> list = new List<string>();
                 list.AddRange(Directory.GetFiles(dir, "*.css", SearchOption.AllDirectories));
