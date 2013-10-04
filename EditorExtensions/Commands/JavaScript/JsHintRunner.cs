@@ -43,6 +43,17 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        private void Clean()
+        {
+            var nonExisting = _providers.Keys.FirstOrDefault(k => !File.Exists(k));
+            if (!string.IsNullOrEmpty(nonExisting))
+            {
+                _providers[nonExisting].Tasks.Clear();
+                _providers[nonExisting] = null;
+                _providers.Remove(nonExisting);
+            }
+        }
+
         public void RunCompiler()
         {
             if (!_isDisposed && !ShouldIgnore(_fileName))
@@ -78,7 +89,7 @@ namespace MadsKristensen.EditorExtensions
         {
             if (!Path.GetExtension(file).Equals(".js", StringComparison.OrdinalIgnoreCase) ||
                 file.EndsWith(".min.js") ||
-                file.EndsWith(".debug.js") ||                
+                file.EndsWith(".debug.js") ||
                 file.EndsWith(".intellisense.js") ||
                 file.Contains("-vsdoc.js") ||
                 !File.Exists(file) ||
@@ -106,7 +117,7 @@ namespace MadsKristensen.EditorExtensions
             return custom.Any(c => Regex.IsMatch(name, c.Trim(), RegexOptions.IgnoreCase));
         }
 
-        private static Regex _ignoreRegex = new Regex("(" + String.Join(")|(", new [] {
+        private static Regex _ignoreRegex = new Regex("(" + String.Join(")|(", new[] {
             @"_references\.js",
             @"amplify\.js",
             @"angular\.js",
@@ -179,6 +190,10 @@ namespace MadsKristensen.EditorExtensions
             catch
             {
                 Logger.Log("Error reading JSHint result");
+            }
+            finally
+            {
+                Clean();
             }
         }
 
