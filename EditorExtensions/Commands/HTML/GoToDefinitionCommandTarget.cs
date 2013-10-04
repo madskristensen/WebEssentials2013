@@ -77,6 +77,7 @@ namespace MadsKristensen.EditorExtensions
             LessParser parser = new LessParser();
             string root = ProjectHelpers.GetProjectFolder(TextView.TextBuffer.GetFileName());
             position = -1;
+            string result = null;
 
             foreach (string ext in extensions)
             {
@@ -108,7 +109,8 @@ namespace MadsKristensen.EditorExtensions
                         if (medium != null)
                         {
                             position = medium.Start;
-                            return file;
+                            result = file;
+                            continue;
                         }
 
                         var low = selectors.FirstOrDefault();
@@ -116,13 +118,14 @@ namespace MadsKristensen.EditorExtensions
                         if (low != null)
                         {
                             position = low.Start;
-                            return file;
+                            result = file;
+                            continue;
                         }
                     }
                 }
             }
 
-            return null;
+            return result;
         }
 
         private bool TryGetPath(out string path)
@@ -169,7 +172,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (length < 0)
                 length = attr.ValueRangeUnquoted.Length - start;
-            //281, 269, 10
+
             className = attr.Value.Substring(start, length);
 
             return true;
