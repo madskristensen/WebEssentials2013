@@ -1,5 +1,6 @@
 ﻿using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
+using Microsoft.CSS.Editor.SyntaxCheck;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -9,7 +10,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
@@ -17,20 +17,31 @@ namespace MadsKristensen.EditorExtensions
     [Export(typeof(IWpfTextViewConnectionListener))]
     [ContentType(Microsoft.Web.Editor.CssContentTypeDefinition.CssContentType)]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    class DisplayInlineTextViewCreationListener : IWpfTextViewConnectionListener
+    public class DisplayInlineTextViewCreationListener : IWpfTextViewConnectionListener
     {
+        private HashSet<Declaration> _cache = new HashSet<Declaration>();
+
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
             foreach (ITextBuffer buffer in subjectBuffers)
             {
                 CssEditorDocument doc = CssEditorDocument.FromTextBuffer(buffer);
-                doc.Tree.ItemsChanged += Tree_ItemsChanged;
+                doc.Tree.ItemsChanged += (sender, e) => { ItemsChanged(doc.Tree, buffer, e); };
                 doc.Tree.TreeUpdated += Tree_TreeUpdated;
                 InitializeCache(doc.Tree.StyleSheet);
             }
         }
 
-        void Tree_TreeUpdated(object sender, CssTreeUpdateEventArgs e)
+        public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
+        {
+            foreach (ITextBuffer buffer in subjectBuffers)
+            {
+                CssEditorDocument doc = CssEditorDocument.FromTextBuffer(buffer);
+                doc.Tree.TreeUpdated -= Tree_TreeUpdated;
+            }
+        }
+
+        private void Tree_TreeUpdated(object sender, CssTreeUpdateEventArgs e)
         {
             InitializeCache(e.Tree.StyleSheet);
         }
@@ -49,21 +60,8 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
+        private void ItemsChanged(CssTree tree, ITextBuffer buffer, CssItemsChangedEventArgs e)
         {
-            foreach (ITextBuffer buffer in subjectBuffers)
-            {
-                CssEditorDocument doc = CssEditorDocument.FromTextBuffer(buffer);
-                doc.Tree.ItemsChanged -= Tree_ItemsChanged;
-            }
-        }
-
-        private HashSet<Declaration> _cache = new HashSet<Declaration>();
-
-        void Tree_ItemsChanged(object sender, CssItemsChangedEventArgs e)
-        {
-            CssTree tree = (CssTree)sender;
-
             foreach (ParseItem item in e.InsertedItems)
             {
                 var visitor = new CssItemCollector<Declaration>(true);
@@ -76,7 +74,7 @@ namespace MadsKristensen.EditorExtensions
                         _cache.Add(dec);
                                                 
                         ParseItem rule = dec.Parent;
-                        Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => Update(rule, tree)), DispatcherPriority.Normal);
+                        Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => Update(rule, tree, buffer)), DispatcherPriority.Normal);
                     }
                 }
             }
@@ -93,21 +91,17 @@ namespace MadsKristensen.EditorExtensions
                         _cache.Remove(deleted);
 
                         ParseItem rule = deleted.Parent;
-                        Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => Update(rule, tree)), DispatcherPriority.Normal);
+                        Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => Update(rule, tree, buffer)), DispatcherPriority.Normal);
                     }
                 }
             }
         }
 
-        private static void Update(ParseItem rule, CssTree tree)
+        private static void Update(ParseItem rule, CssTree tree, ITextBuffer buffer)
         {
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod;
-            object[] parameters = new object[3];
-            parameters[0] = new ParseItemList();
-            parameters[1] = new ParseItemList();
-            parameters[2] = new ParseItemList() { rule };
-
-            typeof(CssTree).InvokeMember("FireOnItemsChanged", flags, null, tree, parameters);
+            CssErrorTagger tagger = CssErrorTagger.FromTextBuffer(buffer);
+            ParseItemList list = new ParseItemList() {rule};
+            tagger.RecheckItems(list);
         }
     }
 
