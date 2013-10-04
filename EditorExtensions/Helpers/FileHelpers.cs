@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
+using EnvDTE80;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -110,6 +111,32 @@ namespace MadsKristensen.EditorExtensions
             relativePath.Append(relDirs[relDirs.Length - 1]);
 
             return relativePath.ToString().Replace("\\", "/");
+        }
+
+        public static void SearchFiles(string term, string fileTypes)
+        {
+            Find2 find = (Find2)EditorExtensionsPackage.DTE.Find;
+            string types = find.FilesOfType;
+            bool matchCase = find.MatchCase;
+            bool matchWord = find.MatchWholeWord;
+
+            find.WaitForFindToComplete = false;
+            find.Action = EnvDTE.vsFindAction.vsFindActionFindAll;
+            find.Backwards = false;
+            find.MatchInHiddenText = true;
+            find.MatchWholeWord = true;
+            find.MatchCase = true;
+            find.PatternSyntax = EnvDTE.vsFindPatternSyntax.vsFindPatternSyntaxLiteral;
+            find.ResultsLocation = EnvDTE.vsFindResultsLocation.vsFindResults1;
+            find.SearchSubfolders = true;
+            find.FilesOfType = fileTypes;
+            find.Target = EnvDTE.vsFindTarget.vsFindTargetSolution;
+            find.FindWhat = term;
+            find.Execute();
+
+            find.FilesOfType = types;
+            find.MatchCase = matchCase;
+            find.MatchWholeWord = matchWord;
         }
     }
 }

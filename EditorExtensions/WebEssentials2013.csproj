@@ -331,6 +331,7 @@
     <Compile Include="Commands\Css\CssAddVendorStandardCommandTarget.cs" />
     <Compile Include="Commands\Css\CssFindReferencesCommandTarget.cs" />
     <Compile Include="Commands\HTML\ContractSelectionTarget.cs" />
+    <Compile Include="Commands\HTML\FindAllReferencesCommandTarget.cs" />
     <Compile Include="Commands\HTML\GoToDefinitionCommandTarget.cs" />
     <Compile Include="Commands\HTML\HtmlCreationListener.cs" />
     <Compile Include="Commands\HTML\ExpandSelectionTarget.cs" />

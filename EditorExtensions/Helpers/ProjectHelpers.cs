@@ -22,17 +22,19 @@ namespace MadsKristensen.EditorExtensions
 
                 if (activeProject == null)
                 {
+                    var doc = dte.ActiveDocument;
+                    if (doc != null && !string.IsNullOrEmpty(doc.FullName))
+                        return GetProjectFolder(doc.FullName);
+                }
+
+                if (activeProject == null)
+                {
                     return string.Empty;
                 }
 
                 var fullPath = activeProject.Properties.Item("FullPath").Value;
 
-                if (fullPath == null)
-                {
-                    return string.Empty;
-                }
-
-                return fullPath.ToString();
+                return fullPath == null ? string.Empty : fullPath.ToString();
             }
             catch (Exception)
             {

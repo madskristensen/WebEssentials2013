@@ -98,7 +98,22 @@ namespace MadsKristensen.EditorExtensions
 
         private IEnumerable<string> GetFiles()
         {
-            string[] files = Directory.GetFiles(ProjectHelpers.GetRootFolder(), "*.css", SearchOption.AllDirectories);
+            string folder = ProjectHelpers.GetRootFolder();
+
+            if (string.IsNullOrEmpty(folder))
+            {
+                var doc = EditorExtensionsPackage.DTE.ActiveDocument;
+                if (doc != null)
+                    folder = ProjectHelpers.GetProjectFolder(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+            }
+
+            if (string.IsNullOrEmpty(folder))
+                yield break;
+
+            List<string> files = new List<string>();
+
+            files.AddRange(Directory.GetFiles(folder, "*.less", SearchOption.AllDirectories));
+            files.AddRange(Directory.GetFiles(folder, "*.css", SearchOption.AllDirectories));
 
             foreach (string file in files)
             {
