@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions
     [Export(typeof(ICompletionSourceProvider))]
     [Order(Before = "High")]
     [ContentType("JavaScript"),
-    Name("EnhancedJavaScriptCompletion")]
+    Name("NodeJsCompletion")]
     public class NodeModuleCompletionSourceProvider : ICompletionSourceProvider
     {
         public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer)
@@ -39,7 +39,6 @@ namespace MadsKristensen.EditorExtensions
             _buffer = buffer;
         }
 
-
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
             int position = session.TextView.Caret.Position.BufferPosition.Position;
@@ -48,7 +47,7 @@ namespace MadsKristensen.EditorExtensions
 
             int linePos = position - line.Start.Position;
 
-            var info = FindCompletionInfo(line.GetText(), linePos);
+            var info = NodeModuleCompletionUtils.FindCompletionInfo(line.GetText(), linePos);
             if (info == null) return;
 
             var callingFilename = _buffer.GetFileName();
@@ -116,14 +115,17 @@ namespace MadsKristensen.EditorExtensions
         }
         #endregion
 
+        #region Directory-level completions
         static readonly IReadOnlyDictionary<string, ImageSource> fileIcons = new Dictionary<string, ImageSource>(StringComparer.OrdinalIgnoreCase)
         {
-            //{ ".js" }
+            { ".js",    BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/jsfile.png", UriKind.RelativeOrAbsolute)) },
+            { ".json",  GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupJSharpNamespace, StandardGlyphItem.GlyphItemPublic) },
+            { ".node",  GlyphService.GetGlyph(StandardGlyphGroup.GlyphLibrary, StandardGlyphItem.GlyphItemPublic) }
         };
 
         static IEnumerable<Completion> GetRelativeCompletions(string folder)
         {
-            if (folder == null)
+            if (folder == null || !Directory.Exists(folder))
                 return null;
 
             return Directory.EnumerateDirectories(folder)
@@ -138,6 +140,7 @@ namespace MadsKristensen.EditorExtensions
                 .Concat(
                     Directory.EnumerateFiles(folder)
                              .Where(p => fileIcons.ContainsKey(Path.GetExtension(p).ToLowerInvariant()))
+                             .OrderBy(s => s)
                              .Select(p => new Completion(
                                  Path.GetFileName(p),
                                  Path.GetFileName(p),
@@ -148,20 +151,51 @@ namespace MadsKristensen.EditorExtensions
 
                 );
         }
+        #endregion
 
-
-        static readonly Regex regex = new Regex(@"(?<\brequire\((['""]))(?<path>[^""]*)\1?\)?");
+        public void Dispose() { }
+    }
+    ///<summary>Contains host-agnostic methods used to provide Node.js module completions.</summary>
+    ///<remarks>This is a separate class so that it can be unit-tested without running any
+    ///field initializers that require the VS hosting environment.</remarks>
+    public static class NodeModuleCompletionUtils
+    {
+        static readonly Regex regex = new Regex(@"(?<=\brequire\s*\(\s*(['""]))[a-z0-9_./+=-]*(?=\s*\1\s*\)?)?", RegexOptions.IgnoreCase);
         public static Tuple<string, Span> FindCompletionInfo(string line, int cursorPosition)
         {
-            var match = regex.Matches(line).Cast<Match>().FirstOrDefault(m => m.Index <= cursorPosition && m.Index + m.Length >= cursorPosition);
-            //if (match == null)
+            var match = regex.Matches(line)
+                             .Cast<Match>()
+                             .FirstOrDefault(m => m.Index <= cursorPosition && cursorPosition <= m.Index + m.Length);
+            if (match == null)
                 return null;
 
-        }
+            string prefix = null;
 
-        public void Dispose()
-        {
+            int precedingSlash;
+            if (cursorPosition == match.Index + match.Length)
+                precedingSlash = match.Value.LastIndexOf('/');
+            else if (cursorPosition == match.Index)
+                precedingSlash = -1;
+            else
+                precedingSlash = match.Value.LastIndexOf('/', cursorPosition - match.Index - 1);
 
+            if (precedingSlash >= 0)
+            {
+                precedingSlash++;       // Skip the slash character
+                prefix = match.Value.Substring(0, precedingSlash);  // Remove(precedingSlash) fails if the / is at the end
+            }
+            else
+                precedingSlash = 0;
+
+
+            var followingSlash = match.Value.IndexOf('/', cursorPosition - match.Index);
+            if (followingSlash < 0)
+                followingSlash = match.Length;
+
+            return Tuple.Create(
+                prefix,
+                Span.FromBounds(precedingSlash + match.Index, followingSlash + match.Index)
+            );
         }
     }
 }
