@@ -2,8 +2,6 @@
 using Microsoft.VisualStudio.Language.NavigateTo.Interfaces;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Operations;
-using Microsoft.VisualStudio.Text.Outlining;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -68,7 +66,7 @@ namespace MadsKristensen.EditorExtensions
 
                     foreach (ParseItem sel in items)
                     {
-                        callback.AddItem(new NavigateToItem(searchValue, NavigateToItemKind.Field, null, searchValue, new GoToLineTag(sel, file), MatchKind.Exact, _owner));
+                        callback.AddItem(new NavigateToItem(searchValue, NavigateToItemKind.Field, "CSS", searchValue, new GoToLineTag(sel, file), MatchKind.Exact, _owner));
                     }
 
                     callback.ReportProgress(i, files.Count);
