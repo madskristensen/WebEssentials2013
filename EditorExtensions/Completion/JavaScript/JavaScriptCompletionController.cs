@@ -13,8 +13,6 @@ using System.Runtime.InteropServices;
 
 namespace MadsKristensen.EditorExtensions
 {
-    #region Command Filter
-
     [Export(typeof(IVsTextViewCreationListener))]
     [ContentType("javascript")]
     [TextViewRole(PredefinedTextViewRoles.Interactive)]
@@ -62,56 +60,80 @@ namespace MadsKristensen.EditorExtensions
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
+            if (pguidCmdGroup != VSConstants.VSStd2K)
+                return Next.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+
+            bool closedCompletion = false;
             bool handled = false;
-            int hresult = VSConstants.S_OK;
 
             // 1. Pre-process
-            if (pguidCmdGroup == VSConstants.VSStd2K)
+            switch ((VSConstants.VSStd2KCmdID)nCmdID)
             {
-                switch ((VSConstants.VSStd2KCmdID)nCmdID)
-                {
-                    case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
-                    case VSConstants.VSStd2KCmdID.COMPLETEWORD:
-                        handled = StartSession();
-                        break;
-                    case VSConstants.VSStd2KCmdID.RETURN:
-                        handled = Complete(false);
-                        break;
-                    case VSConstants.VSStd2KCmdID.TAB:
-                        handled = Complete(true);
-                        break;
-                    case VSConstants.VSStd2KCmdID.CANCEL:
-                        handled = Cancel();
-                        break;
-                }
+                case VSConstants.VSStd2KCmdID.TYPECHAR:
+                    char ch = GetTypeChar(pvaIn);
+                    if (ch == '"' || ch == '\'' && _currentSession != null)
+                    {
+                        // If the user commits a completion from a closing quote, do
+                        // not immediately re-open the completion window below.
+                        closedCompletion = _currentSession != null;
+                        var c = Complete(force: false, dontAdvance: true);
+                        // If the completion inserted a quote, don't add another one
+                        handled = c != null && c.InsertionText.EndsWith(ch.ToString());
+                    }
+                    else if (ch == '/')
+                    {
+                        var c = Complete(force: false, dontAdvance: true);
+                        // If the completion inserted a slash, don't add another one.
+                        handled = c != null && c.InsertionText.EndsWith("/");
+                        // We will re-open completion after handling the keypress, to
+                        // show completions for this folder.
+                    }
+                    break;
+                case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
+                case VSConstants.VSStd2KCmdID.COMPLETEWORD:
+                    handled = StartSession();
+                    break;
+                case VSConstants.VSStd2KCmdID.RETURN:
+                    handled = Complete(false) != null;
+                    break;
+                case VSConstants.VSStd2KCmdID.TAB:
+                    handled = Complete(true) != null;
+                    break;
+                case VSConstants.VSStd2KCmdID.CANCEL:
+                    handled = Cancel();
+                    break;
             }
 
+            int hresult = VSConstants.S_OK;
             if (!handled)
                 hresult = Next.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 
-            if (ErrorHandler.Succeeded(hresult))
-            {
-                if (pguidCmdGroup == VSConstants.VSStd2K)
-                {
-                    switch ((VSConstants.VSStd2KCmdID)nCmdID)
-                    {
-                        case VSConstants.VSStd2KCmdID.TYPECHAR:
-                            char ch = GetTypeChar(pvaIn);
-                            if (ch == ':')
-                                Cancel();
-                            else if (ch == '"' || ch == '\'' || (!char.IsPunctuation(ch) && !char.IsControl(ch)))
-                                StartSession();
-                            else if (_currentSession != null)
-                                Filter();
-                            break;
-                        case VSConstants.VSStd2KCmdID.BACKSPACE:
-                            if (_currentSession == null)
-                                StartSession();
+            if (!ErrorHandler.Succeeded(hresult))
+                return hresult;
 
-                            Filter();
-                            break;
+            switch ((VSConstants.VSStd2KCmdID)nCmdID)
+            {
+                case VSConstants.VSStd2KCmdID.TYPECHAR:
+                    char ch = GetTypeChar(pvaIn);
+                    if (ch == ':')
+                        Cancel();
+                    else if (ch == '"' || ch == '\'' || ch == '/' || ch == '.' || (!char.IsPunctuation(ch) && !char.IsControl(ch)))
+                    {
+                        if (!closedCompletion)
+                            StartSession();
                     }
-                }
+                    else if (_currentSession != null)
+                        Filter();
+                    break;
+                case VSConstants.VSStd2KCmdID.DELETE:
+                case VSConstants.VSStd2KCmdID.DELETEWORDLEFT:
+                case VSConstants.VSStd2KCmdID.DELETEWORDRIGHT:
+                case VSConstants.VSStd2KCmdID.BACKSPACE:
+                    if (_currentSession == null)
+                        StartSession();
+
+                    Filter();
+                    break;
             }
 
             return hresult;
@@ -136,21 +158,43 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-        bool Complete(bool force)
+        Completion Complete(bool force, bool dontAdvance = false)
         {
             if (_currentSession == null)
-                return false;
+                return null;
 
             if (!_currentSession.SelectedCompletionSet.SelectionStatus.IsSelected && !force)
             {
                 _currentSession.Dismiss();
-                return false;
+                return null;
             }
             else
             {
+                var completion = _currentSession.SelectedCompletionSet.SelectionStatus.Completion;
                 _currentSession.Commit();
-                TextView.Caret.MoveToNextCaretPosition();
-                return true;
+
+                if (TextView.Caret.Position.BufferPosition.Position == TextView.TextBuffer.CurrentSnapshot.Length)
+                    return completion;  // If the cursor is at the end of the document, don't choke
+
+                // If applicable, move the cursor to the end of the function call.
+                // Unless the user is in completing a deeper Node.js require path,
+                // in which case we should stay inside the string.
+                if (dontAdvance || completion.InsertionText.EndsWith("/"))
+                    return completion;
+
+                // If the user completed a Node require path (which won't have any
+                // quotes in the completion, move past any existing closing quote.
+                // Other completions will include the closing quote themselves, so
+                // we don't need to move 
+                if (!completion.InsertionText.EndsWith("'") && !completion.InsertionText.EndsWith("\"")
+                    && (TextView.Caret.Position.BufferPosition.GetChar() == '"' || TextView.Caret.Position.BufferPosition.GetChar() == '\''))
+                    TextView.Caret.MoveToNextCaretPosition();
+                // In either case, if there is a closing parenthesis, move past it
+                var prevChar = (TextView.Caret.Position.BufferPosition - 1).GetChar();
+                if ((prevChar == '"' || prevChar == '\'')
+                 && TextView.Caret.Position.BufferPosition.GetChar() == ')')
+                    TextView.Caret.MoveToNextCaretPosition();
+                return completion;
             }
         }
 
@@ -174,7 +218,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (!_currentSession.IsStarted)
                 _currentSession.Start();
-            
+
             return true;
         }
 
@@ -193,6 +237,4 @@ namespace MadsKristensen.EditorExtensions
             return Next.QueryStatus(pguidCmdGroup, cCmds, prgCmds, pCmdText);
         }
     }
-
-    #endregion
 }

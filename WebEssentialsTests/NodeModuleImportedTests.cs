@@ -90,8 +90,14 @@ namespace WebEssentialsTests
         [TestMethod]
         public void NodeModulesTest()
         {
-            // Adapted from test node_modules folders
             var basePath = Path.Combine(TargetFixturesDir, "node_modules");
+
+            // Custom Tests:
+            Assert.AreEqual(Require("../fixtures/node_modules/baz/otherFile.js"), NodeModuleService.ResolveModule(basePath, "baz/otherFile"));
+
+            // Imported from Node.js:
+
+            // Adapted from test node_modules folders
 
             Assert.AreEqual(Require("../fixtures/node_modules/baz/index.js"), NodeModuleService.ResolveModule(basePath, "baz"));
             Assert.AreEqual(NodeModuleService.ResolveModule(basePath, "./baz/index.js"), NodeModuleService.ResolveModule(basePath, "baz"));
