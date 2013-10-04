@@ -431,9 +431,6 @@
     <Compile Include="Helpers\CssExtensions.cs" />
     <Compile Include="Helpers\NodeModuleService.cs" />
     <Compile Include="Helpers\SquigglyHelper.cs" />
-    <Compile Include="Options\PixelPushingOptions.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Options\UnusedCssOptions.cs">
       <SubType>Component</SubType>
     </Compile>
