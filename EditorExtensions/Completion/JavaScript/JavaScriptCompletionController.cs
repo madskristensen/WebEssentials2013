@@ -31,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
         ICompletionBroker CompletionBroker = null;
 
         [Import]
-        IStandardClassificationService _standardClassifications;
+        IStandardClassificationService _standardClassifications = null;
 
         public async void VsTextViewCreated(IVsTextView textViewAdapter)
         {
