@@ -247,10 +247,10 @@
         recordImage.title = (isRecording ? "Stop Recording" : "Start Recording") + " CSS Usage (CTRL+ALT+R)";
         
         if (isRecording) {
-            recordImage.opacity = 1;
+            recordImage.style.opacity = 1;
             snapshotButton.disable();
         } else {
-            recordImage.opacity = .8;
+            recordImage.style.opacity = .7;
             snapshotButton.enable();
         }
     }

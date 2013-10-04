@@ -54,13 +54,13 @@
         _bar.insertBefore(button, _fixed);
 
         button.enable = function () {
+            $(this).removeClass("bldisabled");
             this.disabled = false;
-            this.style.opacity = 1;
         };
 
         button.disable = function () {
+            $(this).addClass("bldisabled");
             this.disabled = true;
-            this.style.opacity = ".6";
         };
 
         return button;
@@ -102,14 +102,14 @@
         }
 
         item.enable = function () {
-            checkbox.removeAttribute("disabled");
-            checkbox.removeAttribute("disabled");
+            $(checkbox).removeClass("bldisabled");
+            $(label).removeClass("bldisabled");
             this.style.opacity = 1;
         };
 
         item.disable = function () {
-            checkbox.disabled = "disabled";
-            label.disabled = "disabled";
+            $(checkbox).addClass("bldisabled");
+            $(label).addClass("bldisabled");
             this.style.opacity = ".6";
         };
 
@@ -124,12 +124,14 @@
             "bl:hover blbar {display:inline-block;}" +
             "bl .logo {width: 40px; margin-right: 8px; vertical-align:baseline; }" +
             "blbar {background: #d8d8d8; display: none; font:13px arial; position: relative; top: -15px; border-radius: 3px;}" +
-            "blbar label {display: inline;}" +
+            "blbar label {display: inline; cursor: pointer;}" +
             "blbar blcheckbox {margin: 0 10px;}" +
             "blbar blcheckbox:last-child {border-left: 1px solid gray; padding-left: 7px}" +
             "blbar blcheckbox input {margin: -3px auto auto 3px!important; vertical-align: middle;}" +
             "blbar blbutton:not([disabled]) {cursor: pointer; display: inline-block; margin: 0 10px; padding: 8px 0}" +
-            "blbar blbutton:hover {text-decoration: underline;}";
+            "blbar blbutton:hover {text-decoration: underline;}" +
+            ".bldisabled {cursor:default !important; opacity:.5}" +
+            ".bldisabled:hover {text-decoration:none;}";
 
         document.body.appendChild(style);
     }
