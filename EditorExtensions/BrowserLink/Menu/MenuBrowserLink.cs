@@ -27,7 +27,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.Menu
     {
         public override void OnConnected(BrowserLinkConnection connection)
         {
-            Browsers.Client(connection).Invoke("setVisibility", Settings.GetValue(WESettings.Keys.BrowserLink_ShowMenu) ?? true);
+            Browsers.Client(connection).Invoke("setVisibility", WESettings.GetBoolean(WESettings.Keys.BrowserLink_ShowMenu));
         }
 
         [BrowserLinkCallback] // This method can be called from JavaScript
