@@ -243,13 +243,13 @@ namespace MadsKristensen.EditorExtensions
             if (firstFile != null)
             {
                 string dir = Path.GetDirectoryName(firstFile);
-
-
-                dir = GetProjectRelativeFolder(items.ElementAt(0));
-
+                
                 if (Directory.Exists(dir))
                 {
                     string bundleFile = Microsoft.VisualBasic.Interaction.InputBox("Specify the name of the bundle", "Web Essentials", "bundle1");
+
+                    if (string.IsNullOrEmpty(bundleFile))
+                        return;
 
                     if (!bundleFile.EndsWith(_ext, StringComparison.OrdinalIgnoreCase))
                         bundleFile += extension + _ext;
@@ -268,24 +268,6 @@ namespace MadsKristensen.EditorExtensions
                     }
                 }
             }
-        }
-
-        private static string GetProjectRelativeFolder(ProjectItem item)
-        {
-            object parent = item.Collection.Parent;
-            ProjectItem folder = parent as ProjectItem;
-            Project project = parent as Project;
-
-            if (folder != null)
-            {
-                return folder.FileNames[1];
-            }
-            else if (project != null)
-            {
-                return project.FullName;
-            }
-
-            return null;
         }
 
         private static void WriteFile(string filePath, IEnumerable<ProjectItem> files, string extension, string output)
