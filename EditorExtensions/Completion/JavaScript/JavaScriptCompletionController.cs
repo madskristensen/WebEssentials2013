@@ -173,6 +173,9 @@ namespace MadsKristensen.EditorExtensions
                 var completion = _currentSession.SelectedCompletionSet.SelectionStatus.Completion;
                 _currentSession.Commit();
 
+                if (TextView.Caret.Position.BufferPosition.Position == TextView.TextBuffer.CurrentSnapshot.Length)
+                    return completion;  // If the cursor is at the end of the document, don't choke
+
                 // If applicable, move the cursor to the end of the function call.
                 // Unless the user is in completing a deeper Node.js require path,
                 // in which case we should stay inside the string.
