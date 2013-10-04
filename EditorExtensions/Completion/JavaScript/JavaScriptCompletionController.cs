@@ -13,8 +13,6 @@ using System.Runtime.InteropServices;
 
 namespace MadsKristensen.EditorExtensions
 {
-    #region Command Filter
-
     [Export(typeof(IVsTextViewCreationListener))]
     [ContentType("javascript")]
     [TextViewRole(PredefinedTextViewRoles.Interactive)]
@@ -62,83 +60,80 @@ namespace MadsKristensen.EditorExtensions
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
+            if (pguidCmdGroup != VSConstants.VSStd2K)
+                return Next.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+
             bool closedCompletion = false;
             bool handled = false;
-            int hresult = VSConstants.S_OK;
 
             // 1. Pre-process
-            if (pguidCmdGroup == VSConstants.VSStd2K)
+            switch ((VSConstants.VSStd2KCmdID)nCmdID)
             {
-                switch ((VSConstants.VSStd2KCmdID)nCmdID)
-                {
-                    case VSConstants.VSStd2KCmdID.TYPECHAR:
-                        char ch = GetTypeChar(pvaIn);
-                        if (ch == '"' || ch == '\'' && _currentSession != null)
-                        {
-                            // If the user commits a completion from a closing quote, do
-                            // not immediately re-open the completion window below.
-                            closedCompletion = _currentSession != null;
-                            var c = Complete(force: false, dontAdvance: true);
-                            // If the completion inserted a quote, don't add another one
-                            handled = c != null && c.InsertionText.EndsWith(ch.ToString());
-                        }
-                        else if (ch == '/')
-                        {
-                            var c = Complete(force: false, dontAdvance: true);
-                            // If the completion inserted a slash, don't add another one.
-                            handled = c != null && c.InsertionText.EndsWith("/");
-                            // We will re-open completion after handling the keypress, to
-                            // show completions for this folder.
-                        }
-                        break;
-                    case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
-                    case VSConstants.VSStd2KCmdID.COMPLETEWORD:
-                        handled = StartSession();
-                        break;
-                    case VSConstants.VSStd2KCmdID.RETURN:
-                        handled = Complete(false) != null;
-                        break;
-                    case VSConstants.VSStd2KCmdID.TAB:
-                        handled = Complete(true) != null;
-                        break;
-                    case VSConstants.VSStd2KCmdID.CANCEL:
-                        handled = Cancel();
-                        break;
-                }
+                case VSConstants.VSStd2KCmdID.TYPECHAR:
+                    char ch = GetTypeChar(pvaIn);
+                    if (ch == '"' || ch == '\'' && _currentSession != null)
+                    {
+                        // If the user commits a completion from a closing quote, do
+                        // not immediately re-open the completion window below.
+                        closedCompletion = _currentSession != null;
+                        var c = Complete(force: false, dontAdvance: true);
+                        // If the completion inserted a quote, don't add another one
+                        handled = c != null && c.InsertionText.EndsWith(ch.ToString());
+                    }
+                    else if (ch == '/')
+                    {
+                        var c = Complete(force: false, dontAdvance: true);
+                        // If the completion inserted a slash, don't add another one.
+                        handled = c != null && c.InsertionText.EndsWith("/");
+                        // We will re-open completion after handling the keypress, to
+                        // show completions for this folder.
+                    }
+                    break;
+                case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
+                case VSConstants.VSStd2KCmdID.COMPLETEWORD:
+                    handled = StartSession();
+                    break;
+                case VSConstants.VSStd2KCmdID.RETURN:
+                    handled = Complete(false) != null;
+                    break;
+                case VSConstants.VSStd2KCmdID.TAB:
+                    handled = Complete(true) != null;
+                    break;
+                case VSConstants.VSStd2KCmdID.CANCEL:
+                    handled = Cancel();
+                    break;
             }
 
+            int hresult = VSConstants.S_OK;
             if (!handled)
                 hresult = Next.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 
-            if (ErrorHandler.Succeeded(hresult))
-            {
-                if (pguidCmdGroup == VSConstants.VSStd2K)
-                {
-                    switch ((VSConstants.VSStd2KCmdID)nCmdID)
-                    {
-                        case VSConstants.VSStd2KCmdID.TYPECHAR:
-                            char ch = GetTypeChar(pvaIn);
-                            if (ch == ':')
-                                Cancel();
-                            else if (ch == '"' || ch == '\'' || ch == '/' || ch == '.' || (!char.IsPunctuation(ch) && !char.IsControl(ch)))
-                            {
-                                if (!closedCompletion)
-                                    StartSession();
-                            }
-                            else if (_currentSession != null)
-                                Filter();
-                            break;
-                        case VSConstants.VSStd2KCmdID.DELETE:
-                        case VSConstants.VSStd2KCmdID.DELETEWORDLEFT:
-                        case VSConstants.VSStd2KCmdID.DELETEWORDRIGHT:
-                        case VSConstants.VSStd2KCmdID.BACKSPACE:
-                            if (_currentSession == null)
-                                StartSession();
+            if (!ErrorHandler.Succeeded(hresult))
+                return hresult;
 
-                            Filter();
-                            break;
+            switch ((VSConstants.VSStd2KCmdID)nCmdID)
+            {
+                case VSConstants.VSStd2KCmdID.TYPECHAR:
+                    char ch = GetTypeChar(pvaIn);
+                    if (ch == ':')
+                        Cancel();
+                    else if (ch == '"' || ch == '\'' || ch == '/' || ch == '.' || (!char.IsPunctuation(ch) && !char.IsControl(ch)))
+                    {
+                        if (!closedCompletion)
+                            StartSession();
                     }
-                }
+                    else if (_currentSession != null)
+                        Filter();
+                    break;
+                case VSConstants.VSStd2KCmdID.DELETE:
+                case VSConstants.VSStd2KCmdID.DELETEWORDLEFT:
+                case VSConstants.VSStd2KCmdID.DELETEWORDRIGHT:
+                case VSConstants.VSStd2KCmdID.BACKSPACE:
+                    if (_currentSession == null)
+                        StartSession();
+
+                    Filter();
+                    break;
             }
 
             return hresult;
@@ -239,6 +234,4 @@ namespace MadsKristensen.EditorExtensions
             return Next.QueryStatus(pguidCmdGroup, cCmds, prgCmds, pCmdText);
         }
     }
-
-    #endregion
 }
