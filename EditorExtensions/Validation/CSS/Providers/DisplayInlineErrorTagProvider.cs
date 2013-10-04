@@ -72,7 +72,7 @@ namespace MadsKristensen.EditorExtensions
                     if (dec.PropertyName != null && dec.PropertyName.Text == "display" && dec.Values.Any(v => v.Text == "inline"))
                     {
                         _cache.Add(dec);
-                                                
+
                         ParseItem rule = dec.Parent;
                         Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => Update(rule, tree, buffer)), DispatcherPriority.Normal);
                     }
@@ -100,7 +100,7 @@ namespace MadsKristensen.EditorExtensions
         private static void Update(ParseItem rule, CssTree tree, ITextBuffer buffer)
         {
             CssErrorTagger tagger = CssErrorTagger.FromTextBuffer(buffer);
-            ParseItemList list = new ParseItemList() {rule};
+            ParseItemList list = new ParseItemList() { rule };
             tagger.RecheckItems(list);
         }
     }
