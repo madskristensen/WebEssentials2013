@@ -99,7 +99,7 @@ namespace MadsKristensen.EditorExtensions
                             char ch = GetTypeChar(pvaIn);
                             if (ch == ':')
                                 Cancel();
-                            else if (ch == '"' || ch == '\'' || (!char.IsPunctuation(ch) && !char.IsControl(ch)))
+                            else if (ch == '"' || ch == '\'' || ch == '/' || ch == '.' || (!char.IsPunctuation(ch) && !char.IsControl(ch)))
                                 StartSession();
                             else if (_currentSession != null)
                                 Filter();
@@ -174,7 +174,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (!_currentSession.IsStarted)
                 _currentSession.Start();
-            
+
             return true;
         }
 
