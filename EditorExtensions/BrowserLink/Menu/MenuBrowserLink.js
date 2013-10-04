@@ -28,8 +28,14 @@
 
         AddStyles();
 
-        _fixed = _menu.addCheckbox("Auto-hide", "This will auto-hide this menu. Click the SHIFT key to make it visible", true, function () { browserLink.invoke("ToggleVisibility", !this.checked); });
-        
+        _fixed = _menu.addCheckbox("Auto-hide", "This will auto-hide this menu. Click the CTRL key to make it visible", true, function ()
+        {
+            browserLink.invoke("ToggleVisibility", !this.checked);
+            if (this.checked) {
+                _menu.style.display = "none";
+            }
+        });
+
         return _menu;
     }
 
@@ -38,7 +44,7 @@
         button.innerHTML = text;
         button.title = tooltip;
         button.disabled = false;
-        
+
         button.onclick = function () {
             if (!this.disabled) {
                 callback(arguments);
@@ -62,7 +68,7 @@
 
     function AddCheckbox(text, tooltip, checked, callback) {
         var item = document.createElement("blcheckbox");
-        
+
         var checkbox = document.createElement("input");
         checkbox.checked = checked;
         checkbox.type = "checkbox";
@@ -77,8 +83,8 @@
         label.style.fontWeight = "normal";
         label.for = id;
 
-        item.checked = function(value) {
-            if (typeof(value) === typeof(undefined)) {
+        item.checked = function (value) {
+            if (typeof (value) === typeof (undefined)) {
                 return checkbox.checked;
             }
 
@@ -95,13 +101,13 @@
             _bar.insertBefore(item, _fixed);
         }
 
-        item.enable = function() {
+        item.enable = function () {
             checkbox.removeAttribute("disabled");
             checkbox.removeAttribute("disabled");
             this.style.opacity = 1;
         };
 
-        item.disable = function() {
+        item.disable = function () {
             checkbox.disabled = "disabled";
             label.disabled = "disabled";
             this.style.opacity = ".6";
@@ -148,13 +154,8 @@
     return {
 
         setVisibility: function (visible) { // Can be called from the server-side extension
-            visible = (visible === "true");
             _menu.style.display = visible ? "block" : "none";
             _fixed.checked(!visible);
         },
-
-        onConnected: function () { // Optional. Is called when a connection is established
-
-        }
     };
 });
