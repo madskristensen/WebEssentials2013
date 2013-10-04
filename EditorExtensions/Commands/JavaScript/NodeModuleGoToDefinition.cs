@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.Web.Editor;
-using VSConstants = Microsoft.VisualStudio.VSConstants;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -36,7 +35,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
 
-        static readonly Regex regex = new Regex(@"\brequire\((['""])(?<path>[^""]+)\1\)?");
+        static readonly Regex regex = new Regex(@"\brequire\s*\(\s*(['""])(?<path>[^""]+)\1\)?");
         private string FindRequirePath()
         {
             int position = TextView.Caret.Position.BufferPosition.Position;
