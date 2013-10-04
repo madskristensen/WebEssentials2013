@@ -29,33 +29,13 @@ namespace MadsKristensen.EditorExtensions
 
             if (item != null && item.Parent != null)
             {
-                Find2 find = (Find2)EditorExtensionsPackage.DTE.Find;
-                string types = find.FilesOfType;
-                bool matchCase = find.MatchCase;
-                bool matchWord = find.MatchWholeWord;
-
-                find.WaitForFindToComplete = false;
-                find.Action = EnvDTE.vsFindAction.vsFindActionFindAll;
-                find.Backwards = false;
-                find.MatchInHiddenText = true;
-                find.MatchWholeWord = true;
-                find.MatchCase = true;
-                find.PatternSyntax = EnvDTE.vsFindPatternSyntax.vsFindPatternSyntaxLiteral;
-                find.ResultsLocation = EnvDTE.vsFindResultsLocation.vsFindResults1;
-                find.SearchSubfolders = true;
-                find.FilesOfType = "*.css;*.less;*.scss;*.sass";
-                find.Target = EnvDTE.vsFindTarget.vsFindTargetSolution;
-                find.FindWhat = SearchText(item);
-                find.Execute();
-
-                find.FilesOfType = types;
-                find.MatchCase = matchCase;
-                find.MatchWholeWord = matchWord;
+                string term = SearchText(item);
+                FileHelpers.SearchFiles(term, "*.css;*.less;*.scss;*.sass");
             }
 
             return true;
         }
-
+        
         private string SearchText(ParseItem item)
         {
             if (item.Parent is Declaration)
