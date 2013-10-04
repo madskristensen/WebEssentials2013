@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions
 
                 return fullPath.ToString();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //Logger.Log(ex);
                 return string.Empty;
@@ -106,10 +106,10 @@ namespace MadsKristensen.EditorExtensions
         {
             var projectFolder = GetProjectFolder(file);
             var project = GetProject(file);
-            return ToAbsoluteFilePath(relativeUrl, project, projectFolder);
+            return ToAbsoluteFilePath(relativeUrl, project.Properties.Item("FullPath").Value.ToString(), projectFolder);
         }
 
-        public static string ToAbsoluteFilePath(string relativeUrl, Project project, string rootFolder)
+        public static string ToAbsoluteFilePath(string relativeUrl, string projectRoot, string rootFolder)
         {
             string imageUrl = relativeUrl.Trim(new[]{'\'', '"'});
             var relUri = new Uri(imageUrl, UriKind.RelativeOrAbsolute);
@@ -125,7 +125,7 @@ namespace MadsKristensen.EditorExtensions
                 relUri = new Uri(relUri.OriginalString.Substring(1), UriKind.Relative);
             }
 
-            var root = (rootFolder ?? GetRootFolder(project)).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            var root = (rootFolder ?? projectRoot).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
             if (File.Exists(root))
             {
@@ -228,7 +228,7 @@ namespace MadsKristensen.EditorExtensions
             if (item == null || item.ContainingProject == null || string.IsNullOrEmpty(item.ContainingProject.FullName)) // Solution items
                 return null;
 
-            var fullPath = item.Properties.Item("FullPath").Value.ToString();
+            var fullPath = item.ContainingProject.Properties.Item("FullPath").Value.ToString();
 
             if (Directory.Exists(fullPath))
             {

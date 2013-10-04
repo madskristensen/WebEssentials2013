@@ -53,7 +53,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static string GetRootFolder()
         {
-            string root = ProjectHelpers.GetRootFolder();
+            string root = ProjectHelpers.GetProjectFolder(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
             if (File.Exists(root))
                 return Path.GetDirectoryName(root);
 
