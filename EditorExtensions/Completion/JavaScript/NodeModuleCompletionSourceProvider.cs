@@ -133,7 +133,7 @@ namespace MadsKristensen.EditorExtensions
                             .Select(p => new Completion(
                                 Path.GetFileName(p) + "/",
                                 Path.GetFileName(p) + "/",
-                                GetDescription(p),
+                                null,
                                 folderIcon,
                                 "Directory"
                             ))
