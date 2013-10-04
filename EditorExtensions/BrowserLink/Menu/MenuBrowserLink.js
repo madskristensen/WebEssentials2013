@@ -61,7 +61,6 @@
         button.disable = function () {
             $(this).addClass("bldisabled");
             this.disabled = true;
-            this.style.opacity = ".6";
         };
 
         return button;
