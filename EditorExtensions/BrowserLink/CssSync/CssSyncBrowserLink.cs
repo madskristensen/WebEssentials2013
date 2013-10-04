@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.Web.BrowserLink;
 using System.ComponentModel.Composition;
 using System.IO;
+using System;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -74,15 +75,22 @@ namespace MadsKristensen.EditorExtensions
             _fsw.EnableRaisingEvents = true;
         }
 
+        private DateTime _lastPushed = DateTime.Now;
+
         private void RefreshStyles(object sender, FileSystemEventArgs e)
         {
+            if (DateTime.Now - _lastPushed < TimeSpan.FromMilliseconds(500))
+                return;
+
             if (!CssSyncSuppressionContext.IsSuppressed && e.FullPath.EndsWith(".css"))
             {
-                Browsers.All.Invoke("refresh");
+                Browsers.All.Invoke("refresh", Path.GetFileName(e.FullPath));
+                _lastPushed = DateTime.Now;
             }
             else if (e.FullPath.EndsWith(".css") && !CssSyncSuppressionContext.SuppressAllBrowsers)
             {
-                Browsers.AllExcept(CssSyncSuppressionContext.ConnectionsToExclude.ToArray()).Invoke("refresh");
+                Browsers.AllExcept(CssSyncSuppressionContext.ConnectionsToExclude.ToArray()).Invoke("refresh", Path.GetFileName(e.FullPath));
+                _lastPushed = DateTime.Now;
             }
         }
     }
