@@ -70,11 +70,14 @@ namespace MadsKristensen.EditorExtensions
                 EditorExtensionsPackage.DTE.UndoContext.Open("Adding <meta> description");
 
                 buffer.Insert(index, "<meta name=\"description\" content=\"The description of my page\" />" + Environment.NewLine);
-                view.Caret.MoveTo(new SnapshotPoint(buffer.CurrentSnapshot, index));
+                view.Caret.MoveTo(new SnapshotPoint(buffer.CurrentSnapshot, index + 34 + 26));
+                view.Selection.Select(new SnapshotSpan(buffer.CurrentSnapshot, 34 + index, 26), false);
                 EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatSelection");
 
                 EditorExtensionsPackage.DTE.UndoContext.Close();
                 EditorExtensionsPackage.DTE.ActiveDocument.Save();
+
+                view.ViewScroller.EnsureSpanVisible(new SnapshotSpan(buffer.CurrentSnapshot, index, 1), EnsureSpanVisibleOptions.AlwaysCenter);
 
             }), DispatcherPriority.ApplicationIdle, null);
         }
