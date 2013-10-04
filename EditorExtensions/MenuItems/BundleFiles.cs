@@ -397,15 +397,15 @@ namespace MadsKristensen.EditorExtensions
                 ProjectHelpers.CheckOutFileFromSourceControl(bundlePath);
                 using (StreamWriter writer = new StreamWriter(bundlePath, false, new UTF8Encoding(true)))
                 {
-                    writer.Write(sb.ToString());
+                    writer.Write(sb.ToString().Trim());
                     Logger.Log("Updating bundle: " + Path.GetFileName(bundlePath));
                 }
                 MarginBase.AddFileToProject(filePath, bundlePath);
+            }
 
-                if (bundleNode.Attributes["minify"] != null || bundleNode.Attributes["minify"].InnerText == "true")
-                {
-                    WriteMinFile(filePath, bundlePath, sb.ToString(), extension);
-                }
+            if (bundleNode.Attributes["minify"] != null || bundleNode.Attributes["minify"].InnerText == "true")
+            {
+                WriteMinFile(filePath, bundlePath, sb.ToString(), extension);
             }
         }
 

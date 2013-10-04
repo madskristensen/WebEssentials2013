@@ -39,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
                 string minFile = e.FilePath.Insert(e.FilePath.Length - 2, "min.");
                 string bundleFile = e.FilePath + ".bundle";
 
-                if (!File.Exists(bundleFile) && File.Exists(minFile) && EditorExtensionsPackage.DTE.Solution.FindProjectItem(minFile) != null)
+                if (!File.Exists(bundleFile))
                 {
                     Task.Run(() =>
                     {
@@ -112,6 +112,9 @@ namespace MadsKristensen.EditorExtensions
             }
 
             string content = minifier.MinifyJavaScript(File.ReadAllText(file), settings);
+
+            if (File.Exists(minFile) && content == File.ReadAllText(minFile))
+                return;
 
             if (WESettings.GetBoolean(WESettings.Keys.GenerateJavaScriptSourceMaps))
             {
