@@ -17,8 +17,22 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
         private static readonly ConcurrentDictionary<string, bool> ContinuousSyncModeByProject = new ConcurrentDictionary<string, bool>();
         private readonly BrowserLinkConnection _connection;
         private readonly UploadHelper _uploadHelper;
-        internal static bool IsPixelPushingModeEnabled = WESettings.GetBoolean(WESettings.Keys.PixelPushing_OnByDefault);
-    
+        private static bool _isPixelPushingModeEnabled = WESettings.GetBoolean(WESettings.Keys.PixelPushing_OnByDefault);
+
+        public static bool IsPixelPushingModeEnabled
+        {
+            get { return _isPixelPushingModeEnabled; }
+            set
+            {
+                if (value ^ _isPixelPushingModeEnabled)
+                {
+                    Settings.SetValue(WESettings.Keys.PixelPushing_OnByDefault, value);
+                    Settings.Save();
+                    _isPixelPushingModeEnabled = value;
+                }
+            }
+        }
+
         public PixelPushingMode(BrowserLinkConnection connection)
         {
             ExtensionByConnection[connection] = this;
