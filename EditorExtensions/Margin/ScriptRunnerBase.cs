@@ -52,7 +52,10 @@ namespace MadsKristensen.EditorExtensions
             if (Completed != null)
             {
                 Completed(this, new CompilerEventArgs() { Result = message, State = data });
-                _browser.DocumentText = string.Empty;
+                if (_browser != null)
+                {
+                    _browser.DocumentText = string.Empty;
+                }
             }
         }
 

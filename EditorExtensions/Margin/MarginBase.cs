@@ -438,9 +438,14 @@ namespace MadsKristensen.EditorExtensions
                     _viewHost.Close();
                 }
 
-                Document.FileActionOccurred -= Document_FileActionOccurred;
-                _provider.Tasks.Clear();
-                _provider.Dispose();
+                if (Document != null)
+                    Document.FileActionOccurred -= Document_FileActionOccurred;
+
+                if (_provider != null)
+                {
+                    _provider.Tasks.Clear();
+                    _provider.Dispose();
+                }
             }
         }
         #endregion
