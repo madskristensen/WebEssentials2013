@@ -9,8 +9,13 @@ using Microsoft.VisualStudio.Utilities;
 using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Language.StandardClassification;
+using System.Collections.Generic;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -25,6 +30,9 @@ namespace MadsKristensen.EditorExtensions
         [Import]
         ICompletionBroker CompletionBroker = null;
 
+        [Import]
+        IStandardClassificationService _standardClassifications;
+
         public async void VsTextViewCreated(IVsTextView textViewAdapter)
         {
             IWpfTextView view = AdaptersFactory.GetWpfTextView(textViewAdapter);
@@ -38,7 +46,7 @@ namespace MadsKristensen.EditorExtensions
             // To confirm this, click Debug, New Breakpoint, Break at Function, type
             // Microsoft.VisualStudio.JSLS.TextView.TextView.CreateCommandFilter,
             // then make sure that our last filter is added after that runs.
-            JsCommandFilter filter = new JsCommandFilter(view, CompletionBroker);
+            JsCommandFilter filter = new JsCommandFilter(view, CompletionBroker, _standardClassifications);
             while (true)
             {
                 IOleCommandTarget next;
@@ -64,14 +72,16 @@ namespace MadsKristensen.EditorExtensions
 
     internal sealed class JsCommandFilter : IOleCommandTarget
     {
+        private readonly IStandardClassificationService _standardClassifications;
         private ICompletionSession _currentSession;
 
-        public JsCommandFilter(IWpfTextView textView, ICompletionBroker broker)
+        public JsCommandFilter(IWpfTextView textView, ICompletionBroker broker, IStandardClassificationService standardClassifications)
         {
             _currentSession = null;
 
             TextView = textView;
             Broker = broker;
+            _standardClassifications = standardClassifications;
         }
 
         public IWpfTextView TextView { get; private set; }
@@ -83,16 +93,39 @@ namespace MadsKristensen.EditorExtensions
             return (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
         }
 
+        static readonly Type jsTaggerType = typeof(Microsoft.VisualStudio.JSLS.JavaScriptLanguageService).Assembly.GetType("Microsoft.VisualStudio.JSLS.Classification.Tagger");
+
+        IEnumerable<IClassificationType> GetCaretClassifications()
+        {
+            var tagger = TextView.TextBuffer.Properties.GetProperty<ITagger<ClassificationTag>>(jsTaggerType);
+            return tagger.GetTags(new NormalizedSnapshotSpanCollection(new SnapshotSpan(TextView.Caret.Position.BufferPosition, 0)))
+                    .Select(s => s.Tag.ClassificationType);
+        }
+
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             if (pguidCmdGroup != VSConstants.VSStd2K)
                 return Next.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 
+            // This filter should only have do anything inside a string literal, or when opening a string literal.
+            bool isInString = GetCaretClassifications().Contains(_standardClassifications.StringLiteral);
+
+            var command = (VSConstants.VSStd2KCmdID)nCmdID;
+            if (!isInString)
+            {
+                if (command != VSConstants.VSStd2KCmdID.TYPECHAR)
+                    return Next.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+
+                char ch = GetTypeChar(pvaIn);
+                if (ch != '"' && ch != '\'')
+                    return Next.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+            }
+
             bool closedCompletion = false;
             bool handled = false;
 
             // 1. Pre-process
-            switch ((VSConstants.VSStd2KCmdID)nCmdID)
+            switch (command)
             {
                 case VSConstants.VSStd2KCmdID.TYPECHAR:
                     char ch = GetTypeChar(pvaIn);
@@ -137,7 +170,7 @@ namespace MadsKristensen.EditorExtensions
             if (!ErrorHandler.Succeeded(hresult))
                 return hresult;
 
-            switch ((VSConstants.VSStd2KCmdID)nCmdID)
+            switch (command)
             {
                 case VSConstants.VSStd2KCmdID.TYPECHAR:
                     char ch = GetTypeChar(pvaIn);
