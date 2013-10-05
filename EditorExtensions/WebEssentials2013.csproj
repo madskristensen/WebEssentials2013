@@ -434,6 +434,8 @@
     <Compile Include="Helpers\NodeModuleService.cs" />
     <Compile Include="Helpers\StyleSheetHelpers.cs" />
     <Compile Include="Helpers\WindowHelpers.cs" />
+    <Compile Include="NavigateTo\GoToLineTag.cs" />
+    <Compile Include="NavigateTo\GoToLineProvider.cs" />
     <Compile Include="Options\UnusedCssOptions.cs">
       <SubType>Component</SubType>
     </Compile>
