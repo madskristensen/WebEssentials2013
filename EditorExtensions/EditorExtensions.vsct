@@ -536,13 +536,6 @@
         </Strings>
       </Button>
 
-      <Button guid="guidUnusedCssCmdSet" id="UnusedCssSnapshotCommandId" priority="0x2002" type="Button">
-        <Parent guid="guidBrowserLinkCmdSet" id="IDG_BROWSERLINK_COMMANDS"/>
-        <Strings>
-          <ButtonText>Snapshot CSS Usage (All Browsers)</ButtonText>
-        </Strings>
-      </Button>
-
       <Button guid="guidUnusedCssCmdSet" id="UnusedCssRecordAllCommandId" priority="0x2000" type="Button">
         <Parent guid="guidBrowserLinkCmdSet" id="IDG_BROWSERLINK_COMMANDS"/>
         <Icon guid="guidBrowserLink" id="bmpRecord"/>
