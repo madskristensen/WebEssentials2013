@@ -1,4 +1,4 @@
-[Web Essentials](http://vswebessentials.com) for Visual Studio 2013 Preview
+[Web Essentials](http://vswebessentials.com) for Visual Studio 2013
 =================
 
 Web Essentials extends Visual Studio with lots of new features that web developers have been missing for many years. 
