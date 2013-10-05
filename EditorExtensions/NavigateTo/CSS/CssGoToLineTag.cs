@@ -7,12 +7,12 @@ using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class GoToLineTag : INavigateToItemDisplay
+    internal class CssGoToLineTag : INavigateToItemDisplay
     {
         private ParseItem _selector;
         private string _file;
 
-        public GoToLineTag(ParseItem selector, string file)
+        public CssGoToLineTag(ParseItem selector, string file)
         {
             _selector = selector;
             _file = file;

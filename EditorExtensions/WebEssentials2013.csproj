@@ -434,8 +434,8 @@
     <Compile Include="Helpers\NodeModuleService.cs" />
     <Compile Include="Helpers\StyleSheetHelpers.cs" />
     <Compile Include="Helpers\WindowHelpers.cs" />
-    <Compile Include="NavigateTo\GoToLineTag.cs" />
-    <Compile Include="NavigateTo\GoToLineProvider.cs" />
+    <Compile Include="NavigateTo\CSS\CssGoToLineTag.cs" />
+    <Compile Include="NavigateTo\CSS\CssGoToLineProvider.cs" />
     <Compile Include="Options\UnusedCssOptions.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -539,7 +539,7 @@
     <Compile Include="MenuItems\MinifyFile.cs" />
     <Compile Include="MenuItems\Diff.cs" />
     <Compile Include="MenuItems\Transform.cs" />
-    <Compile Include="NavigateTo\GoToLineProviderFactory.cs" />
+    <Compile Include="NavigateTo\CSS\CssGoToLineProviderFactory.cs" />
     <Compile Include="Options\CoffeeScript.cs">
       <SubType>Component</SubType>
     </Compile>
