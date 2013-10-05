@@ -34,6 +34,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.Menu
         public void ToggleVisibility(bool visible)
         {
             Settings.SetValue(WESettings.Keys.BrowserLink_ShowMenu, visible);
+            Settings.Save();
         }
     }
 }

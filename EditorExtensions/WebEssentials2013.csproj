@@ -706,6 +706,8 @@
     <Resource Include="Resources\node_module.png" />
     <Resource Include="Resources\jsfile.png" />
     <Resource Include="Resources\jsonfile.png" />
+    <None Include="Resources\Browser Pause Button.png" />
+    <None Include="Resources\Browser Record Button.png" />
     <Content Include="Resources\Scripts\es5-shim.min.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
