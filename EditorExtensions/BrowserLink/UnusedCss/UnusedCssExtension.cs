@@ -41,7 +41,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             get
             {
-                yield return new BrowserLinkAction("Snapshot Page", SnapshotPageAction);
                 yield return new BrowserLinkAction("Start Recording", ToggleRecordingModeAction, SetRecordingButtonDisplayProperties);
             }
         }
@@ -49,11 +48,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private void ToggleRecordingModeAction(BrowserLinkAction obj)
         {
             ToggleRecordingMode();
-        }
-
-        private void SnapshotPageAction(BrowserLinkAction obj)
-        {
-            SnapshotPage();
         }
 
         public BrowserLinkConnection Connection { get { return _connection; } }
