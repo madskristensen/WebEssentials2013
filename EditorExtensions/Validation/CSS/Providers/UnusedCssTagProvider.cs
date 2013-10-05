@@ -24,7 +24,6 @@ namespace MadsKristensen.EditorExtensions
         }
 
         private static readonly ConcurrentDictionary<string, ConcurrentQueue<TaskCompletionSource<bool>>> PendingUpdates = new ConcurrentDictionary<string, ConcurrentQueue<TaskCompletionSource<bool>>>();
-        private static readonly ConcurrentDictionary<string, bool> IsUpdateRunning = new ConcurrentDictionary<string, bool>();
 
         private static Task QueueUpdateTagsOperation()
         {
@@ -44,9 +43,8 @@ namespace MadsKristensen.EditorExtensions
             return tcs.Task;
         }
 
-        private static void UpdateTags(string filePath)
+        private static async void UpdateTags(string filePath)
         {
-            UsageRegistry.UsageDataUpdated -= UsageRegistryOnUsageDataUpdated;
             var queue = PendingUpdates.GetOrAdd(filePath, x => new ConcurrentQueue<TaskCompletionSource<bool>>());
             TaskCompletionSource<bool> last = null;
             TaskCompletionSource<bool> previous = null;
@@ -55,6 +53,8 @@ namespace MadsKristensen.EditorExtensions
             {
                 do
                 {
+                    await Task.Delay(1);
+
                     if (previous != null)
                     {
                         previous.SetResult(true);
@@ -84,14 +84,19 @@ namespace MadsKristensen.EditorExtensions
             }
 
             filePath = StyleSheetHelpers.GetStyleSheetFileForUrl(filePath, project);
-            var activeFile = ProjectHelpers.GetActiveFilePath();
 
-            if (filePath == null || !string.Equals(filePath, activeFile, StringComparison.InvariantCultureIgnoreCase))
+            if (filePath == null)
             {
                 return;
             }
 
-            var view = WindowHelpers.GetTextViewForActiveFile();
+            var view = WindowHelpers.GetTextViewForFile(filePath);
+
+            if (view == null)
+            {
+                return;
+            }
+
             var buffer = view.TextBuffer;
             buffer.PostChanged -= BufferOnPostChanged;
             var editorDocument = CssEditorDocument.FromTextBuffer(buffer);
@@ -99,8 +104,6 @@ namespace MadsKristensen.EditorExtensions
 
             if (document == null)
             {
-                buffer.PostChanged += BufferOnPostChanged;
-                UsageRegistry.UsageDataUpdated += UsageRegistryOnUsageDataUpdated;
                 return;
             }
 
@@ -112,12 +115,17 @@ namespace MadsKristensen.EditorExtensions
             }
 
             buffer.PostChanged += BufferOnPostChanged;
-            UsageRegistry.UsageDataUpdated += UsageRegistryOnUsageDataUpdated;
         }
+
+        private static DateTime _lastUsageRegistryUpdate;
 
         private static async void UsageRegistryOnUsageDataUpdated(object sender, EventArgs eventArgs)
         {
-            await QueueUpdateTagsOperation();
+            if (DateTime.Now - _lastUsageRegistryUpdate > TimeSpan.FromSeconds(.5))
+            {
+                _lastUsageRegistryUpdate = DateTime.Now;
+                await QueueUpdateTagsOperation();
+            }
         }
 
         private static async void BufferOnPostChanged(object sender, EventArgs eventArgs)
