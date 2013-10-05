@@ -137,7 +137,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         internal static string ExtractSelectorName(RuleSet ruleSet)
         {
-            return ruleSet.Text.Substring(0, ruleSet.Block.Start - ruleSet.Start);
+            if (ruleSet.IsValid)
+                return ruleSet.Text.Substring(0, ruleSet.Block.Start - ruleSet.Start);
+
+            return null;
         }
     }
 }
