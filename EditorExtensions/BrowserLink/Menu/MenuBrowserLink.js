@@ -122,16 +122,16 @@
     function AddStyles() {
         var style = document.createElement("style");
         style.innerHTML =
-            "bl {position: fixed; left: 10px; bottom: 10px; opacity: .3; height: 40px; color:black; z-index:2147483638; }" +
+            "bl {position: fixed; left: 10px; bottom: 5px; opacity: .3; color:black; z-index:2147483638; }" +
             "bl:hover {opacity: .95;}" +
-            "bl:hover blbar {display:inline-block;}" +
-            "bl .logo {width: 40px; margin-right: 8px; vertical-align:baseline; }" +
-            "blbar {background: #d8d8d8; display: none; font:13px arial; position: relative; top: -15px; border-radius: 3px;}" +
-            "blbar label {display: inline; cursor: pointer;}" +
-            "blbar blcheckbox {margin: 0 10px;}" +
-            "blbar blcheckbox:last-child {border-left: 1px solid gray; padding-left: 7px}" +
-            "blbar blcheckbox input {margin: -3px auto auto 3px!important; vertical-align: middle;}" +
-            "blbar blbutton:not([disabled]) {cursor: pointer; display: inline-block; margin: 0 10px; padding: 8px 0}" +
+            "bl .logo {width: 40px; margin-right: 8px; vertical-align:baseline; background:white; }" +
+            "blbar {background: #d8d8d8; display: inline-block; font:13px arial; position: relative; top: -15px; border-radius: 5px; padding: 4px 3px}" +
+            "blbar img { margin: -2px 0 0 2px; }" +
+            "blbar label {display: inline; cursor: pointer; font: 13px arial; }" +
+            "blbar blcheckbox {margin: 0 4px;}" +
+            "blbar blbutton, blbar blcheckbox:not(:last-child) {border-right: 1px solid #b8b6b6; padding-right: 7px}" +
+            "blbar input {margin: -3px auto auto 3px!important; vertical-align: middle;}" +
+            "blbar blbutton:not([disabled]) {cursor: pointer; display: inline-block; margin: 0 4px; }" +
             "blbar blbutton:hover {text-decoration: underline;}" +
             ".bldisabled {cursor:default !important; opacity:.5}" +
             ".bldisabled:hover {text-decoration:none;}";
