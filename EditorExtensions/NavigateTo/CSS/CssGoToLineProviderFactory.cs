@@ -5,11 +5,11 @@ using System.ComponentModel.Composition;
 namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(INavigateToItemProviderFactory))]
-    internal sealed class GoToLineProviderFactory : INavigateToItemProviderFactory, INavigateToItemDisplayFactory
+    internal sealed class CssGoToLineProviderFactory : INavigateToItemProviderFactory, INavigateToItemDisplayFactory
     {
         public bool TryCreateNavigateToItemProvider(IServiceProvider serviceProvider, out INavigateToItemProvider provider)
         {
-            provider = new GoToLineProvider(this);
+            provider = new CssGoToLineProvider(this);
             return true;
         }
 

@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal sealed class GoToLineProvider : DisposableObject, INavigateToItemProvider
+    internal sealed class CssGoToLineProvider : DisposableObject, INavigateToItemProvider
     {
-        private readonly GoToLineProviderFactory _owner;
+        private readonly CssGoToLineProviderFactory _owner;
 
-        public GoToLineProvider(GoToLineProviderFactory owner)
+        public CssGoToLineProvider(CssGoToLineProviderFactory owner)
         {
             _owner = owner;
         }
@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
 
                     foreach (ParseItem sel in items)
                     {
-                        callback.AddItem(new NavigateToItem(searchValue, NavigateToItemKind.Field, "CSS", searchValue, new GoToLineTag(sel, file), MatchKind.Exact, _owner));
+                        callback.AddItem(new NavigateToItem(searchValue, NavigateToItemKind.Field, "CSS", searchValue, new CssGoToLineTag(sel, file), MatchKind.Exact, _owner));
                     }
 
                     callback.ReportProgress(i, files.Count);
