@@ -1,164 +1,165 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.CSS.Editor.SyntaxCheck;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [Export(typeof(ICssItemChecker))]
-    [Name("UnusedCssTagProvider")]
-    [Order(After = "Default Declration")]
-    internal class UnusedCssTagProvider : ICssItemChecker
+    internal class UnusedCssTag : IErrorTag, IRange, ITagSpan<IErrorTag>
     {
-        static UnusedCssTagProvider()
+        public int AfterEnd { get { return Span.Span.Start + Span.Span.Length; } }
+
+        public string ErrorType { get; private set; }
+
+        public int Length { get { return Span.Span.Length; } }
+
+        public SnapshotSpan Span { get; private set; }
+
+        public int Start { get { return Span.Span.Start; } }
+
+        public IErrorTag Tag { get { return this; } }
+
+        public object ToolTipContent { get; private set; }
+
+        public static SnapshotSpan SnapshotSpanFromRule(ITextBuffer buffer, IStylingRule rule)
         {
+            var snapshot = buffer.CurrentSnapshot;
+            var span = new Span(rule.Offset, rule.SelectorLength);
+            return new SnapshotSpan(snapshot, span);
+        }
+
+        public static UnusedCssTag FromRuleSet(ITextBuffer buffer, IStylingRule rule)
+        {
+            var ss = SnapshotSpanFromRule(buffer, rule);
+
+            return new UnusedCssTag
+            {
+                ToolTipContent = string.Format("No usages of the CSS selector '{0}' have been found.", rule.DisplaySelectorName),
+                ErrorType = "compiler warning",
+                Span = ss,
+            };
+        }
+    }
+
+    internal class UnusedCssTagger : ITagger<IErrorTag>
+    {
+        private readonly ITextBuffer _buffer;
+
+        private UnusedCssTagger(ITextBuffer buffer)
+        {
+            _buffer = buffer;
+            _buffer.PostChanged += BufferOnPostChanged;
             UsageRegistry.UsageDataUpdated += UsageRegistryOnUsageDataUpdated;
         }
 
-        private static readonly ConcurrentDictionary<string, ConcurrentQueue<TaskCompletionSource<bool>>> PendingUpdates = new ConcurrentDictionary<string, ConcurrentQueue<TaskCompletionSource<bool>>>();
-
-        private static Task QueueUpdateTagsOperation()
+        private void BufferOnPostChanged(object sender, EventArgs eventArgs)
         {
-            var tcs = new TaskCompletionSource<bool>();
-            var filePath = ProjectHelpers.GetActiveFilePath();
+            var fileName = _buffer.GetFileName();
 
-            if (filePath == null || !File.Exists(filePath))
+            if (fileName == null)
             {
-                return Task.FromResult(false);
+                return;
             }
 
-            filePath = filePath.ToLowerInvariant();
+            var doc = DocumentFactory.GetDocument(fileName);
 
-            var queue = PendingUpdates.GetOrAdd(filePath, x => new ConcurrentQueue<TaskCompletionSource<bool>>());
-            queue.Enqueue(tcs);
-            UpdateTags(filePath);
-            return tcs.Task;
+            if (doc == null)
+            {
+                return;
+            }
+
+            doc.Reparse(_buffer.CurrentSnapshot.GetText());
+            OnTagsChanged();
         }
 
-        private static async void UpdateTags(string filePath)
+        private void OnTagsChanged()
         {
-            var queue = PendingUpdates.GetOrAdd(filePath, x => new ConcurrentQueue<TaskCompletionSource<bool>>());
-            TaskCompletionSource<bool> last = null;
-            TaskCompletionSource<bool> previous = null;
-
-            while (!queue.IsEmpty)
+            if (TagsChanged != null)
             {
-                do
-                {
-                    await Task.Delay(1);
+                var fileName = _buffer.GetFileName();
 
-                    if (previous != null)
-                    {
-                        previous.SetResult(true);
-                    }
-
-                    previous = last;
-                }
-                while (queue.TryDequeue(out last));
-
-                if (previous == null)
+                if (fileName == null)
                 {
                     return;
                 }
 
-                UpdateTagsInternal(filePath);
-                previous.SetResult(true);
-            }
-        }
+                var doc = DocumentFactory.GetDocument(fileName);
 
-        private static void UpdateTagsInternal(string filePath)
-        {
-            var project = ProjectHelpers.GetProject(filePath);
-
-            if (project == null)
-            {
-                return;
-            }
-
-            filePath = StyleSheetHelpers.GetStyleSheetFileForUrl(filePath, project);
-
-            if (filePath == null)
-            {
-                return;
-            }
-
-            var view = WindowHelpers.GetTextViewForFile(filePath);
-
-            if (view == null)
-            {
-                return;
-            }
-
-            var buffer = view.TextBuffer;
-            buffer.PostChanged -= BufferOnPostChanged;
-            var editorDocument = CssEditorDocument.FromTextBuffer(buffer);
-            var document = DocumentFactory.GetDocument(filePath);
-
-            if (document == null)
-            {
-                return;
-            }
-
-            document.Reparse(editorDocument.Tree.TextProvider.Text);
-
-            using (AmbientRuleContext.GetOrCreate())
-            {
-                CssErrorTagger.FromTextBuffer(buffer).InvalidateErrors();
-            }
-
-            buffer.PostChanged += BufferOnPostChanged;
-        }
-
-        private static DateTime _lastUsageRegistryUpdate;
-
-        private static async void UsageRegistryOnUsageDataUpdated(object sender, EventArgs eventArgs)
-        {
-            if (DateTime.Now - _lastUsageRegistryUpdate > TimeSpan.FromSeconds(.5))
-            {
-                _lastUsageRegistryUpdate = DateTime.Now;
-                await QueueUpdateTagsOperation();
-            }
-        }
-
-        private static async void BufferOnPostChanged(object sender, EventArgs eventArgs)
-        {
-            await QueueUpdateTagsOperation();
-        }
-
-        public ItemCheckResult CheckItem(ParseItem item, ICssCheckerContext context)
-        {
-            var ruleSet = item as RuleSet;
-
-            if (ruleSet == null)
-            {
-                return ItemCheckResult.Continue;
-            }
-
-            using (AmbientRuleContext.GetOrCreate())
-            {
-                var allUnusedRules = UsageRegistry.GetAllUnusedRules();
-                var matchingRules = allUnusedRules.Where(x => x.Is(ruleSet));
-
-                foreach(var matchingRule in matchingRules)
+                if (doc == null)
                 {
-                    context.AddError(new SelectorErrorTag(matchingRule.Source.Selectors, string.Format("No usages of the CSS rule \"{0}\" have been found.", matchingRule.DisplaySelectorName)));
+                    return;
+                }
+
+                try
+                {
+                    foreach (var span in doc.Rules.Select(x => UnusedCssTag.SnapshotSpanFromRule(_buffer, x)))
+                    {
+                        TagsChanged(this, new SnapshotSpanEventArgs(span));
+                    }
+                }
+                catch
+                {
                 }
             }
-
-            return ItemCheckResult.Continue;
         }
 
-        public IEnumerable<Type> ItemTypes
+        private void UsageRegistryOnUsageDataUpdated(object sender, EventArgs eventArgs)
         {
-            get { return new[]  { typeof (RuleSet) }; }
+            OnTagsChanged();
+        }
+
+        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
+
+        public static ITagger<T> Attach<T>(ITextBuffer buffer)
+            where T : ITag
+        {
+            return new UnusedCssTagger(buffer) as ITagger<T>;
+        }
+
+        public IEnumerable<ITagSpan<IErrorTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+        {
+            var fileName = _buffer.GetFileName();
+
+            if (fileName == null)
+            {
+                return new ITagSpan<UnusedCssTag>[0];
+            }
+
+            var doc = DocumentFactory.GetDocument(fileName);
+
+            if (doc == null)
+            {
+                return new ITagSpan<UnusedCssTag>[0];
+            }
+
+            var result = new List<ITagSpan<IErrorTag>>(); 
+
+            using (AmbientRuleContext.GetOrCreate())
+            {
+                var applicableRules = UsageRegistry.GetAllUnusedRules(new HashSet<IStylingRule>(doc.Rules));
+
+                result.AddRange(applicableRules.Select(rule => UnusedCssTag.FromRuleSet(_buffer, rule)));
+            }
+
+            return result;
+        }
+    }
+
+    [Export(typeof(ITaggerProvider))]
+    [ContentType("css")]
+    [TagType(typeof(ErrorTag))]
+    [Order(After = "Default Declaration")]
+    internal class UnusedCssTaggerProvider : ITaggerProvider
+    {
+        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
+        {
+            return UnusedCssTagger.Attach<T>(buffer);
         }
     }
 }
