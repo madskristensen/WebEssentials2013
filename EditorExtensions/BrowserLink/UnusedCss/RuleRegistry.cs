@@ -57,7 +57,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public static string StandardizeSelector(string selectorText)
         {
-            var tmp = selectorText.Replace('\r', ' ').Replace('\n', ' ').Trim().ToLowerInvariant();
+            var tmp = selectorText.Replace('\r', ' ').Replace('\n', ' ').Replace("\'", "").Replace("\"", "").Trim().ToLowerInvariant();
 
             while (tmp.Contains("  "))
             {
