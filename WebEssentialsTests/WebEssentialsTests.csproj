@@ -95,6 +95,7 @@
     <Content Include="fixtures\packages\main\package-main-module.js" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="fixtures\empty\.gitkeep" />
     <None Include="fixtures\foo" />
     <None Include="fixtures\packages\main-index\package.json" />
