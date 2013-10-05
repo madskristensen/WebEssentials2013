@@ -15,11 +15,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public void SetupCommands()
         {
-            var commandId = new CommandID(GuidList.guidUnusedCssCmdSet, (int)PkgCmdIDList.cmdUnusedCssSnapshotCommandId);
-            var menuCommand = new OleMenuCommand(SnapshotAll, EmptyChangeHandler, SnapshotAllBeforeQueryStatus, commandId);
-            _mcs.AddCommand(menuCommand);
-
-            commandId = new CommandID(GuidList.guidUnusedCssCmdSet, (int)PkgCmdIDList.cmdUnusedCssResetCommandId);
+            var commandId = new CommandID(GuidList.guidUnusedCssCmdSet, (int)PkgCmdIDList.cmdUnusedCssResetCommandId);
             var resetCommand = new OleMenuCommand(ResetUsageData, EmptyChangeHandler, ResetUsageDataBeforeQueryStatus, commandId);
             _mcs.AddCommand(resetCommand);
 
@@ -60,18 +56,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             var menu = (OleMenuCommand)sender;
             menu.Enabled = UsageRegistry.IsAnyUsageDataCaptured;
-        }
-
-        private static void SnapshotAll(object sender, EventArgs e)
-        {
-            UnusedCssExtension.All(x => x.SnapshotPage());
-        }
-
-        private static void SnapshotAllBeforeQueryStatus(object sender, EventArgs e)
-        {
-            var menuCommand = (OleMenuCommand)sender;
-
-            menuCommand.Enabled = UnusedCssExtension.IsAnyConnectionAlive;
         }
 
         private static void StopRecordAll(object sender, EventArgs e)

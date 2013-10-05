@@ -305,7 +305,6 @@
     <Compile Include="BrowserLink\UnusedCss\UnusedCssMenu.cs" />
     <Compile Include="BrowserLink\UnusedCss\UsageRegistry.cs" />
     <Compile Include="BrowserLink\UploadHelper.cs" />
-    <Compile Include="Classifications\CSS\UnusedRuleClassifier.cs" />
     <Compile Include="Classifications\HTML\HtmlRegionTagger.cs" />
     <Compile Include="Classifications\JavaScript\JavaScriptArrayOutlining.cs">
       <SubType>Code</SubType>
@@ -433,12 +432,11 @@
     <Compile Include="DropTargets\TypeScriptDrop.cs" />
     <Compile Include="Helpers\CssExtensions.cs" />
     <Compile Include="Helpers\NodeModuleService.cs" />
-    <Compile Include="Helpers\SquigglyHelper.cs" />
+    <Compile Include="Helpers\StyleSheetHelpers.cs" />
+    <Compile Include="Helpers\WindowHelpers.cs" />
     <Compile Include="Options\UnusedCssOptions.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="QuickInfo\Selector\UnusedSelectorQuickInfo.cs" />
-    <Compile Include="QuickInfo\Selector\UnusedSelectorQuickInfoSourceProvider.cs" />
     <Compile Include="SmartTags\CSS\Actions\RemoveCssRuleSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Providers\RemoveCssRuleSmartTagProvider.cs" />
     <Compile Include="SmartTags\HTML\ExtractToFileSmartTag.cs">
@@ -456,6 +454,8 @@
     <Compile Include="SmartTags\HTML\HtmlUnMinifySmartTag.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Validation\CSS\Filters\UnusedCssErrorFilter.cs" />
+    <Compile Include="Validation\CSS\Providers\UnusedCssTagProvider.cs" />
     <Compile Include="Validation\LESS\Filters\LessAmpersandCssErrorFilter.cs" />
     <Compile Include="Validation\LESS\Filters\LessExtendCssErrorFilter.cs" />
     <Compile Include="Validation\CSS\Providers\ColorValuesInRangeErrorTagProvider.cs">
