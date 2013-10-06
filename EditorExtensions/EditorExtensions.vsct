@@ -643,13 +643,13 @@
     <CommandPlacement guid="guidSolutionExplorerCmdSet" id="MyMenuGroup" priority="0x0010">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidSolutionExplorerCmdSet" id="MyMenuGroup" priority="0x0010">
+    <CommandPlacement guid="guidSolutionExplorerCmdSet" id="MyMenuGroup" priority="0x0100">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_WEBPROJECT"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidSolutionExplorerCmdSet" id="MyMenuGroup" priority="0x0010">
+    <CommandPlacement guid="guidSolutionExplorerCmdSet" id="MyMenuGroup" priority="0x0100">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidSolutionExplorerCmdSet" id="MyMenuGroup" priority="0x0010">
+    <CommandPlacement guid="guidSolutionExplorerCmdSet" id="MyMenuGroup" priority="0x0100">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_SOLNNODE"/>
     </CommandPlacement>
   </CommandPlacements>
