@@ -36,6 +36,10 @@ namespace MadsKristensen.EditorExtensions
             if (files.Count == 1 && !Path.HasExtension(files[0]))
             {
                 string folder = files[0];
+                
+                if (!Directory.Exists(folder))
+                    return;
+
                 DirectoryInfo dir = new DirectoryInfo(folder);
                 bool isScripts = dir.Name.Equals("scripts", StringComparison.OrdinalIgnoreCase);
                 
