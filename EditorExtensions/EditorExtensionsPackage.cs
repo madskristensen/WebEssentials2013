@@ -97,6 +97,9 @@ namespace MadsKristensen.EditorExtensions
 
                 PixelPushingMenu pixelPushingMenu = new PixelPushingMenu(mcs);
                 pixelPushingMenu.SetupCommands();
+
+                ReferenceJsMenu referenceJsMenu = new ReferenceJsMenu(DTE, mcs);
+                referenceJsMenu.SetupCommands();
             }
 
             // Hook up event handlers
