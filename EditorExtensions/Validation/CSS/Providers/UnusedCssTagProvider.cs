@@ -90,13 +90,6 @@ namespace MadsKristensen.EditorExtensions
                     return;
                 }
 
-                var doc = DocumentFactory.GetDocument(fileName);
-
-                if (doc == null)
-                {
-                    return;
-                }
-
                 var s = new Span(0, _buffer.CurrentSnapshot.Length);
                 var ss = new SnapshotSpan(_buffer.CurrentSnapshot, s);
                 TagsChanged(this, new SnapshotSpanEventArgs(ss));
