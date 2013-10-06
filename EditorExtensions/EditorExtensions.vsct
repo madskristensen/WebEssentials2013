@@ -568,6 +568,15 @@
           <ButtonText>Enable F12 Change Detection</ButtonText>
         </Strings>
       </Button>
+
+      <Button guid="guidEditorExtensionsCmdSet" id="ReferenceJs" priority="0x2010" type="Button">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_ADD_ITEMS"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>_references.js Intellisense file</ButtonText>
+        </Strings>
+      </Button>
     </Buttons>
 
     <Bitmaps>
@@ -680,7 +689,7 @@
       <IDSymbol name="cmdidSha256Transform" value="0x0122" />
       <IDSymbol name="cmdidSha384Transform" value="0x0123" />
       <IDSymbol name="cmdidSha512Transform" value="0x0124" />
-      <IDSymbol name="AddNewFileGroup" value="0x333" />
+      <IDSymbol name="ReferenceJs" value="0x333" />
     </GuidSymbol>
 
     <GuidSymbol name="guidEditorLinesCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e67}">

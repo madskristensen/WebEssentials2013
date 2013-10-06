@@ -44,6 +44,7 @@ namespace MadsKristensen.EditorExtensions
         public const uint ExtractMixin = 0x1057;
         public const uint BundleCss = 0x1071;
         public const uint BundleJs = 0x1072;
+        public const uint ReferenceJs = 0x333;
 
         // Lines
         public const uint SortAsc = 0x0003;

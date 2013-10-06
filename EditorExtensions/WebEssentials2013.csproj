@@ -434,6 +434,7 @@
     <Compile Include="Helpers\NodeModuleService.cs" />
     <Compile Include="Helpers\StyleSheetHelpers.cs" />
     <Compile Include="Helpers\WindowHelpers.cs" />
+    <Compile Include="MenuItems\ReferenceJs.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineTag.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineProvider.cs" />
     <Compile Include="Options\UnusedCssOptions.cs">
