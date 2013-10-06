@@ -176,14 +176,12 @@ Licensed under the Apache 2.0 License.
                 data = util.readText(input);
             }
 
-            // SLaks: Make sure LESS can resolve relative import URLs.
-            // LESS.js tries to normalize \ to /, but they forgot that
-            // replace() with a non-regex only replaces the 1st match.
-            // It also tries to detect drive letters but only supports
-            // lowercase.
-            var safeFilename = input.replace(/\\/g, '/').replace(/^[A-Z]+:/, function (m) { return m.toLowerCase(); });
+            // Only pass the filename so that LESS builds correct
+            // relative paths from imported files.  Our fake AJAX
+            // function will resolve URLs relative correctly.
             var parser = new less.Parser({
-                filename: safeFilename
+                filename: fso.getFileName(input),   
+                relativeUrls: true
             });
 
             try {
