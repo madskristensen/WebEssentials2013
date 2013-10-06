@@ -15,6 +15,17 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private static Project _lastProject;
         private static Uri _lastUri;
 
+        static MessageDisplayManager()
+        {
+            EditorExtensionsPackage.DTE.Events.SolutionEvents.AfterClosing += SolutionEventsOnAfterClosing;
+        }
+
+        private static void SolutionEventsOnAfterClosing()
+        {
+            UsageRegistry.Reset();
+            Refresh();
+        }
+
         public static MessageDisplaySource DisplaySource { get; set; }
         public static void ShowWarningsFor(Uri uri, Project project, IUsageDataSource browserSource)
         {

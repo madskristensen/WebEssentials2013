@@ -75,7 +75,7 @@ namespace MadsKristensen.EditorExtensions
             }
 
             doc.Reparse(_buffer.CurrentSnapshot.GetText());
-            OnTagsChanged();
+            UsageRegistry.Resync();
         }
 
         private void OnTagsChanged()
@@ -144,7 +144,18 @@ namespace MadsKristensen.EditorExtensions
             {
                 var applicableRules = UsageRegistry.GetAllUnusedRules(new HashSet<IStylingRule>(doc.Rules));
 
-                result.AddRange(applicableRules.Select(rule => UnusedCssTag.FromRuleSet(_buffer, rule)));
+                foreach (var rule in applicableRules)
+                {
+                    try
+                    {
+                        result.Add(UnusedCssTag.FromRuleSet(_buffer, rule));
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        //Sometimes while the document is being modified and retagging is happening, a rule's boundary will momentarily be out of sync with the document and possibly past the end
+                        //  this is a condition that may be safely ignored
+                    }
+                }
             }
 
             return result;
