@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using EnvDTE100;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
@@ -96,16 +97,9 @@ namespace MadsKristensen.EditorExtensions
                     return;
                 }
 
-                try
-                {
-                    foreach (var span in doc.Rules.Select(x => UnusedCssTag.SnapshotSpanFromRule(_buffer, x)))
-                    {
-                        TagsChanged(this, new SnapshotSpanEventArgs(span));
-                    }
-                }
-                catch
-                {
-                }
+                var s = new Span(0, _buffer.CurrentSnapshot.Length);
+                var ss = new SnapshotSpan(_buffer.CurrentSnapshot, s);
+                TagsChanged(this, new SnapshotSpanEventArgs(ss));
             }
         }
 
