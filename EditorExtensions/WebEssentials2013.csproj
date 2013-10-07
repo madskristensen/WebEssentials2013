@@ -53,8 +53,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MadsKristensen.EditorExtensions</RootNamespace>
     <AssemblyName>WebEssentials2013</AssemblyName>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -669,7 +670,6 @@
     <EmbeddedResource Include="BrowserLink\Menu\MenuBrowserLink.js" />
     <Content Include="Classifications\RobotsTxt\robots.txt" />
     <None Include="Classifications\Markdown\Sample.md" />
-    <None Include="Key.snk" />
     <None Include="Properties\vsix-compress.props" />
     <None Include="WebMarkupMin.Configuration.xsd">
       <SubType>Designer</SubType>
