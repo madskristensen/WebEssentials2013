@@ -31,12 +31,7 @@ namespace MadsKristensen.EditorExtensions
         {
             if (ex != null)
             {
-                string message = ex.Message + Environment.NewLine + ex.StackTrace;
-
-                if (!string.IsNullOrEmpty(ex.StackTrace))
-                    message += Environment.NewLine + ex.StackTrace;
-
-                Log(message);
+                Log(ex.ToString());
             }
         }
 
