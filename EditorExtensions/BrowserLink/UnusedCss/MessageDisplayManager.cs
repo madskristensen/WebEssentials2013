@@ -18,6 +18,21 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         static MessageDisplayManager()
         {
             EditorExtensionsPackage.DTE.Events.SolutionEvents.AfterClosing += SolutionEventsOnAfterClosing;
+            EditorExtensionsPackage.DTE.Events.SolutionEvents.ProjectRemoved += SolutionEventsOnProjectRemoved;
+        }
+
+        private static void SolutionEventsOnProjectRemoved(Project project)
+        {
+            if (_lastProject == null || project == null)
+            {
+                return;
+            }
+
+            if (project.UniqueName == _lastProject.UniqueName)
+            {
+                UsageRegistry.Reset();
+                Refresh();
+            }
         }
 
         private static void SolutionEventsOnAfterClosing()

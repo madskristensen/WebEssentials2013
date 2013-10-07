@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,7 +19,16 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 if (store != null)
                 {
                     store.IsProcessingUnusedCssRules = true;
-                    allRules.AddRange(store.Rules);
+                    var rules = store.Rules;
+
+                    if (rules != null)
+                    {
+                        allRules.AddRange(rules);
+                    }
+                    else
+                    {
+                        DocumentFactory.UnregisterDocument(store);
+                    }
                 }
             }
 

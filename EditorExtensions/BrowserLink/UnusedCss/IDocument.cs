@@ -12,5 +12,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         bool IsProcessingUnusedCssRules { get; set; }
         string GetSelectorName(RuleSet ruleSet);
         object ParseSync { get; }
+        string FileName { get; }
     }
 }
