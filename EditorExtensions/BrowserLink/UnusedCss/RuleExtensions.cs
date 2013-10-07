@@ -30,7 +30,18 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             var task = (ErrorTask)sender;
             var doc = task.Document;
-            var window = EditorExtensionsPackage.DTE.ItemOperations.OpenFile(doc);
+            Window window;
+
+            try
+            {
+                window = EditorExtensionsPackage.DTE.ItemOperations.OpenFile(doc);
+            }
+            catch (ArgumentException)
+            {
+                //If the file has been deleted and the error is still there, swallow the exception (as OpenFile will fail) and return
+                return;
+            }
+
             var selection = (TextSelection)window.Selection;
             selection.MoveTo(task.Line + 1, task.Column + 1);
         }

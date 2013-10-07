@@ -31,8 +31,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             _watcher.Changed += Reparse;
             _watcher.Renamed += ProxyRename;
             _watcher.Created += Reparse;
+            _watcher.Deleted += CleanUpWarnings;
             _watcher.EnableRaisingEvents = true;
             Reparse();
+        }
+
+        private void CleanUpWarnings(object sender, FileSystemEventArgs e)
+        {
+            DocumentFactory.UnregisterDocument(this);
+            UsageRegistry.Resync();
         }
 
         public object ParseSync
@@ -58,6 +65,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         }
 
         public bool IsProcessingUnusedCssRules { get; set; }
+        
+        public string FileName { get { return _file; } }
 
         private async void Reparse(object sender, FileSystemEventArgs e)
         {
