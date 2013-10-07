@@ -14,6 +14,7 @@ namespace MadsKristensen.EditorExtensions
         {
             Settings.SetValue(WESettings.Keys.KeepImportantComments, KeepImportantComments);
             Settings.SetValue(WESettings.Keys.EnableEnterFormat, EnableEnterFormat);
+            Settings.SetValue(WESettings.Keys.EnableBrowserLinkMenu, EnableBrowserLinkMenu);
 
             Settings.Save();
         }
@@ -22,6 +23,7 @@ namespace MadsKristensen.EditorExtensions
         {
             KeepImportantComments = WESettings.GetBoolean(WESettings.Keys.KeepImportantComments);
             EnableEnterFormat = WESettings.GetBoolean(WESettings.Keys.EnableEnterFormat);
+            EnableBrowserLinkMenu = WESettings.GetBoolean(WESettings.Keys.EnableBrowserLinkMenu);
         }
 
         // MISC
@@ -34,5 +36,10 @@ namespace MadsKristensen.EditorExtensions
         [Description("Automatically format HTML documents when pressing Enter.")]
         [Category("HTML")]
         public bool EnableEnterFormat { get; set; }
+
+        [LocDisplayName("Enable Browser Link menu")]
+        [Description("Enable the menu that shows up in the browser. Requeres restart.")]
+        [Category("Browser Link")]
+        public bool EnableBrowserLinkMenu { get; set; }
     }
 }

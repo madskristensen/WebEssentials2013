@@ -10,11 +10,17 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.Menu
     {
         public BrowserLinkExtension CreateExtensionInstance(BrowserLinkConnection connection)
         {
+            if (!WESettings.GetBoolean(WESettings.Keys.EnableBrowserLinkMenu))
+                return null;
+
             return new MenuBrowserLink();
         }
 
         public string GetScript()
         {
+            if (!WESettings.GetBoolean(WESettings.Keys.EnableBrowserLinkMenu))
+                return null;
+
             using (Stream stream = GetType().Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.BrowserLink.Menu.MenuBrowserLink.js"))
             using (StreamReader reader = new StreamReader(stream))
             {
