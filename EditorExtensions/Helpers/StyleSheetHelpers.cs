@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using EnvDTE;
 
 namespace MadsKristensen.EditorExtensions
@@ -16,26 +17,12 @@ namespace MadsKristensen.EditorExtensions
             var projectDir = Path.GetDirectoryName(projectPath);
 
             if (projectDir == null)
-            {
-                return new string[0];
-            }
+                return Enumerable.Empty<string>();
 
-            foreach (var extension in allowedExtensions)
-            {
-                var matchingFiles = Directory.GetFiles(projectDir, "*" + extension, SearchOption.AllDirectories);
-
-                foreach (var file in matchingFiles)
-                {
-                    var mappedFile = GetStyleSheetFileForUrl(file, project, projectUri);
-
-                    if (mappedFile != null)
-                    {
-                        fileNames.Add(mappedFile);
-                    }
-                }
-            }
-
-            return fileNames;
+            return allowedExtensions
+                .SelectMany(e => Directory.EnumerateFiles(projectDir, "*" + e, SearchOption.AllDirectories))
+                .Select(f => GetStyleSheetFileForUrl(f, project, projectUri))
+                .Where(f => f != null);
         }
 
         public static string GetStyleSheetFileForUrl(string location, Project project, Uri projUri = null)

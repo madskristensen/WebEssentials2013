@@ -7,14 +7,16 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using System.Windows.Threading;
+using MadsKristensen.EditorExtensions.Commands.JavaScript;
+using MadsKristensen.EditorExtensions.Helpers;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class JsHintRunner : IDisposable
     {
-        private ErrorListProvider _provider;
-        private static Dictionary<string, ErrorListProvider> _providers = new Dictionary<string, ErrorListProvider>();
-        private string _fileName;
+        private readonly ErrorListProvider _provider;
+        private readonly static Dictionary<string, ErrorListProvider> _providers = new Dictionary<string, ErrorListProvider>();
+        private readonly string _fileName;
         private bool _isDisposed;
 
         static JsHintRunner()
@@ -32,11 +34,7 @@ namespace MadsKristensen.EditorExtensions
         {
             _fileName = fileName;
 
-            if (_providers.ContainsKey(fileName))
-            {
-                _provider = _providers[fileName];
-            }
-            else
+            if (!_providers.TryGetValue(fileName, out _provider))
             {
                 _provider = new ErrorListProvider(EditorExtensionsPackage.Instance);
                 _providers.Add(fileName, _provider);
@@ -56,22 +54,27 @@ namespace MadsKristensen.EditorExtensions
 
         public void RunCompiler()
         {
-            if (!_isDisposed && !ShouldIgnore(_fileName))
+            if (_isDisposed)
+                return;
+            if (ShouldIgnore(_fileName))
             {
-                EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: Running JSHint...";
-                JsHintCompiler lint = new JsHintCompiler(Dispatcher.CurrentDispatcher);
-
-                System.Threading.Tasks.Task.Run(() =>
-                {
-                    using (StreamReader reader = new StreamReader(_fileName))
-                    {
-                        string content = reader.ReadToEnd();
-
-                        lint.Completed += LintCompletedHandler;
-                        lint.Compile(content, _fileName);
-                    }
-                });
+                // In case this file was added to JSHintIgnore after it was opened, clear the existing errors.
+                _provider.Tasks.Clear();
+                return;
             }
+            EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: Running JSHint...";
+            JsHintCompiler lint = new JsHintCompiler(Dispatcher.CurrentDispatcher);
+
+            System.Threading.Tasks.Task.Run(() =>
+            {
+                using (StreamReader reader = new StreamReader(_fileName))
+                {
+                    string content = reader.ReadToEnd();
+
+                    lint.Completed += LintCompletedHandler;
+                    lint.Compile(content, _fileName);
+                }
+            });
         }
 
         public static void Reset()
@@ -84,6 +87,8 @@ namespace MadsKristensen.EditorExtensions
 
             _providers.Clear();
         }
+
+        private static FileCache<JsHintIgnoreList> ignoreListCache = new FileCache<JsHintIgnoreList>(JsHintIgnoreList.Load);
 
         public static bool ShouldIgnore(string file)
         {
@@ -98,9 +103,26 @@ namespace MadsKristensen.EditorExtensions
                 return true;
             }
 
+            var ignoreFile = FindLocalIgnore(file);
+            if (ignoreFile != null && ignoreListCache.Get(ignoreFile).IsIgnored(file))
+                return true;
+
             string name = Path.GetFileName(file);
             return MustIgnore(name);
         }
+
+        private static string FindLocalIgnore(string sourcePath)
+        {
+            string dir = Path.GetDirectoryName(sourcePath);
+            while (!File.Exists(Path.Combine(dir, ".jshintignore")))
+            {
+                dir = Path.GetDirectoryName(dir);
+                if (String.IsNullOrEmpty(dir))
+                    return null;
+            }
+            return Path.Combine(dir, ".jshintignore");
+        }
+
 
         private static bool MustIgnore(string name)
         {
