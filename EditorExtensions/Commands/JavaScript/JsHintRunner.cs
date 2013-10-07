@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using System.Windows.Threading;
+using MadsKristensen.EditorExtensions.Commands.JavaScript;
+using MadsKristensen.EditorExtensions.Helpers;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -85,6 +87,8 @@ namespace MadsKristensen.EditorExtensions
             _providers.Clear();
         }
 
+        private static FileCache<JsHintIgnoreList> ignoreListCache = new FileCache<JsHintIgnoreList>(JsHintIgnoreList.Load);
+
         public static bool ShouldIgnore(string file)
         {
             if (!Path.GetExtension(file).Equals(".js", StringComparison.OrdinalIgnoreCase) ||
@@ -98,9 +102,26 @@ namespace MadsKristensen.EditorExtensions
                 return true;
             }
 
+            var ignoreFile = FindLocalIgnore(file);
+            if (ignoreFile != null && ignoreListCache.Get(ignoreFile).IsIgnored(file))
+                return true;
+
             string name = Path.GetFileName(file);
             return MustIgnore(name);
         }
+
+        private static string FindLocalIgnore(string sourcePath)
+        {
+            string dir = Path.GetDirectoryName(sourcePath);
+            while (!File.Exists(Path.Combine(dir, ".jshintignore")))
+            {
+                dir = Path.GetDirectoryName(dir);
+                if (String.IsNullOrEmpty(dir))
+                    return null;
+            }
+            return Path.Combine(dir, ".jshintignore");
+        }
+
 
         private static bool MustIgnore(string name)
         {

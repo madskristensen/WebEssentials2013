@@ -29,12 +29,12 @@ namespace MadsKristensen.EditorExtensions.Commands.JavaScript
 
         public static JsHintIgnoreList Load(string path)
         {
-            string parentPath = Path.GetDirectoryName(path);
+            string parentPath = Path.GetFullPath(Path.GetDirectoryName(path));
             return new JsHintIgnoreList(
                 File.ReadLines(path)
                     .Where(p => !String.IsNullOrWhiteSpace(p))
                     .Select(p => new Minimatcher(
-                        PrefixedResolve(parentPath, path.Trim()),
+                        PrefixedResolve(parentPath, p.Trim()),
                         new Minimatch.Options { AllowWindowsPaths = true, IgnoreCase = true })
                 )
             );
@@ -43,8 +43,15 @@ namespace MadsKristensen.EditorExtensions.Commands.JavaScript
         static string PrefixedResolve(string parentPath, string str)
         {
             if (str[0] == '!')
-                return "!" + Path.GetFullPath(Path.Combine(parentPath, str.Substring(1)));
-            return Path.GetFullPath(Path.Combine(parentPath, str));
+            {
+                parentPath = "!" + parentPath;
+                str = str.Substring(1);
+            }
+            // Return absolute paths as-is
+            if (str[0] == '/' || str[0] == '\\' || (str.Length > 1 && str[1] == ':'))
+                return str;
+            // Concatenate the base path to other strings
+            return parentPath + "/" + str;
         }
     }
 }

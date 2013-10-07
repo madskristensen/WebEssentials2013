@@ -436,6 +436,7 @@
     <Compile Include="DropTargets\ImageDrop.cs" />
     <Compile Include="DropTargets\TypeScriptDrop.cs" />
     <Compile Include="Helpers\CssExtensions.cs" />
+    <Compile Include="Helpers\FileCache.cs" />
     <Compile Include="Helpers\NodeModuleService.cs" />
     <Compile Include="Helpers\StyleSheetHelpers.cs" />
     <Compile Include="Helpers\WindowHelpers.cs" />
