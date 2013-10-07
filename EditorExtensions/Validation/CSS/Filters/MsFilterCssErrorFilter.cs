@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions
 
         private SimpleErrorTag CreateNewError(ICssError error)
         {
-            string message = error.Text + " " + " The value must be wrapped in single or double qoutation marks.";
+            string message = error.Text + " " + " The value must be wrapped in single or double quotation marks.";
             return new SimpleErrorTag(error.Item, message, CssErrorFlags.TaskListError | CssErrorFlags.UnderlineRed);
         }
     }
