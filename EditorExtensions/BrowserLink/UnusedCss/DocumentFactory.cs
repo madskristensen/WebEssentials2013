@@ -35,6 +35,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             var fileName = fullPath.ToLowerInvariant();
 
+            if (!File.Exists(fileName))
+            {
+                return null;
+            }
+
             IDocument currentDocument;
             if (DocumentLookup.TryGetValue(fileName, out currentDocument))
             {
@@ -80,6 +85,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 {
                 }
             }
+        }
+
+        public static void UnregisterDocument(IDocument document)
+        {
+            DocumentLookup.TryRemove(document.FileName, out document);
         }
     }
 }
