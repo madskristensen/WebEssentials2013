@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions
     [Order(After = "Default")]
     internal class MsKeyframesCssErrorFilter : ICssErrorFilter
     {
-        private static readonly string _message = " IE only supportes the standard @keyframes implementation.";
+        private static readonly string _message = " IE only supports the standard @keyframes implementation.";
 
         public void FilterErrorList(IList<ICssError> errors, ICssCheckerContext context)
         {
