@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 case ".LESS":
                     return LessDocument.For;
                 default:
-                    Logger.Log("No document factory could be found for file type: " + extension);
+                    //Logger.Log("No document factory could be found for file type: " + extension);
                     return null;
             }
         }
