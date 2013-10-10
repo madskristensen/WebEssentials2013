@@ -321,6 +321,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Classifications\Markdown\MarkdownContentTypeHandlerProvider.cs" />
+    <Compile Include="Classifications\Markdown\MarkdownParser.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassificationTypes.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifier.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifierProvider.cs" />
@@ -442,6 +443,7 @@
     <Compile Include="Helpers\CssExtensions.cs" />
     <Compile Include="Helpers\CssUrlNormalizer.cs" />
     <Compile Include="Helpers\FileCache.cs" />
+    <Compile Include="Helpers\HtmlExtensions.cs" />
     <Compile Include="Helpers\NodeModuleService.cs" />
     <Compile Include="Helpers\StyleSheetHelpers.cs" />
     <Compile Include="Helpers\WindowHelpers.cs" />

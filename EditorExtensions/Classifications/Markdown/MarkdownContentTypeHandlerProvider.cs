@@ -88,7 +88,8 @@ namespace MadsKristensen.EditorExtensions
 
         public void GetArtifacts(ITextProvider text, ArtifactCollection artifactCollection)
         {
-            //TODO: Comment- or tag- based language prefixes
+            var stream = new CharacterStream(text);
+
         }
 
         public bool IsReady { get { return true; } }
@@ -97,11 +98,6 @@ namespace MadsKristensen.EditorExtensions
         public string RightSeparator { get { return "`"; } }
         public string LeftCommentSeparator { get { return "<!--"; } }
         public string RightCommentSeparator { get { return "<!--"; } }
-    }
-    public class MarkdownCodeArtifact : Artifact
-    {
-        public MarkdownCodeArtifact(string language, ITextRange range, int leftLength, int rightLength)
-            : base(ArtifactTreatAs.Code, range, leftLength, rightLength, language, true) { }
     }
 
 
