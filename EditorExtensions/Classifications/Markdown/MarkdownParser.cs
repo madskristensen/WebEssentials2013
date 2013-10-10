@@ -140,7 +140,11 @@ After!
             {
                 var quoteDepth = ReadBlockQuotePrefix();
                 SkipSpaces(3);
-                if (!TryConsume("```"))
+                if (stream.CurrentChar != '`'&&stream.CurrentChar!='~')
+                    return false;
+                string fence = new string(stream.CurrentChar, 3);
+
+                if (!TryConsume(fence))
                     return false;
                 //TODO: Look for comment- or tag- based language prefixes in line before StartPosition
 
@@ -160,7 +164,7 @@ After!
                     {
                         SkipSpaces(3);
 
-                        if (TryConsume("```") && SkipEmptyLine())
+                        if (TryConsume(fence) && SkipEmptyLine())
                         {
                             endFencePeek.Consume();
                             break;
