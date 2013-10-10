@@ -168,6 +168,9 @@
   <data name="IE8AboveSelectorHackSmartTagActionName" xml:space="preserve">
     <value>Make visible to IE8 and above</value>
   </data>
+  <data name="LessImportOnceDeprecated" xml:space="preserve">
+    <value>The "@import-once" directive was removed in LESS 1.4.  Use "@import"instead.</value>
+  </data>
   <data name="OverQualifiedSmartTagActionName" xml:space="preserve">
     <value>Trim over qualified selectors</value>
   </data>
