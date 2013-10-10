@@ -20,8 +20,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (entry.DisplayText == "initial" || entry.DisplayText == "inherit")
                 {
-                    // TODO: enable for next update after Preview
-                    //entry.FilterType = CompletionEntryFilterTypes.NeverVisible;
+                    entry.FilterType = CompletionEntryFilterTypes.NeverVisible;
                 }
             }
         }

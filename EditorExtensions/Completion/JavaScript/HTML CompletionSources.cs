@@ -1,18 +1,13 @@
 ﻿using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Operations;
-using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 using Microsoft.Web.Editor.Intellisense;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Media;
-using System.Collections.ObjectModel;
-using System;
-using System.IO;
-using System.Windows.Media.Imaging;
-using Newtonsoft.Json.Linq;
+using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -28,9 +23,9 @@ namespace MadsKristensen.EditorExtensions
                                     .ToList()
                                     .AsReadOnly();
 
-        public override IEnumerable<Completion> GetEntries(char quoteChar, SnapshotPoint caret)
+        public override IEnumerable<Intel.Completion> GetEntries(char quoteChar, SnapshotPoint caret)
         {
-            return tagNames.Select(t => new Completion(
+            return tagNames.Select(t => new Intel.Completion(
                 quoteChar + t.Item1 + quoteChar,
                 quoteChar + t.Item1 + quoteChar,
                 t.Item2,
@@ -48,13 +43,13 @@ namespace MadsKristensen.EditorExtensions
         protected override string FunctionName { get { return "getElementsByClassName"; } }
         protected abstract CssNameType NameType { get; }
 
-        public override IEnumerable<Completion> GetEntries(char quoteChar, SnapshotPoint caret)
+        public override IEnumerable<Intel.Completion> GetEntries(char quoteChar, SnapshotPoint caret)
         {
             return _classNames.GetNames(new Uri(caret.Snapshot.TextBuffer.GetFileName()), caret, CssNameType.Class)
                 .Select(s => s.Name)
                 .Distinct()
                 .OrderBy(s => s)
-                .Select(s => new Completion(quoteChar + s + quoteChar, quoteChar + s + quoteChar, null, _glyph, null));
+                .Select(s => new Intel.Completion(quoteChar + s + quoteChar, quoteChar + s + quoteChar, null, _glyph, null));
         }
     }
 

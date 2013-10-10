@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Windows.Media;
+using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -36,10 +37,10 @@ namespace MadsKristensen.EditorExtensions
             if (_disposed)
                 return;
 
-            List<Completion> completions = new List<Completion>();
+            List<Intel.Completion> completions = new List<Intel.Completion>();
             foreach (string item in RobotsTxtClassifier._valid)
             {
-                completions.Add(new Completion(item, item, null, _glyph, item));
+                completions.Add(new Intel.Completion(item, item, null, _glyph, item));
             }
             
             ITextSnapshot snapshot = _buffer.CurrentSnapshot;
@@ -64,7 +65,7 @@ namespace MadsKristensen.EditorExtensions
 
             var applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
 
-            completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>()));
+            completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Intel.Completion>()));
         }
 
         public void Dispose()

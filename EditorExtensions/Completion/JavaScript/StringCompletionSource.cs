@@ -1,18 +1,8 @@
-﻿using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Operations;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
-using Microsoft.Web.Editor.Intellisense;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
-using System.Windows.Media;
-using System.Collections.ObjectModel;
+﻿using Microsoft.VisualStudio.Text;
 using System;
-using System.IO;
-using System.Windows.Media.Imaging;
-using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Linq;
+using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -22,7 +12,7 @@ namespace MadsKristensen.EditorExtensions
         public abstract Span? GetInvocationSpan(string text, int linePosition);
 
         ///<summary>Gets the completion entries for the specified quoted string.</summary>
-        public abstract IEnumerable<Completion> GetEntries(char quoteChar, SnapshotPoint caret);
+        public abstract IEnumerable<Intel.Completion> GetEntries(char quoteChar, SnapshotPoint caret);
     }
 
     ///<summary>A StringCompletionSource that provides completions for the parameter to a specific function call.</summary>

@@ -1,18 +1,14 @@
 ﻿using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 using Microsoft.Web.Editor.Intellisense;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Windows.Media;
-using System.Collections.ObjectModel;
-using System;
-using System.IO;
-using System.Windows.Media.Imaging;
-using Newtonsoft.Json.Linq;
+using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -78,7 +74,7 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>A CompletionSet that selects matching completions even if the user text has an early closing quote.</summary>
         class StringCompletionSet : CompletionSet
         {
-            public StringCompletionSet(string moniker, ITrackingSpan span, IEnumerable<Completion> completions) : base(moniker, "Web Essentials", span, completions, null) { }
+            public StringCompletionSet(string moniker, ITrackingSpan span, IEnumerable<Intel.Completion> completions) : base(moniker, "Web Essentials", span, completions, null) { }
 
             public override void SelectBestMatch()
             {

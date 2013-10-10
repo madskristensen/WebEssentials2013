@@ -1,19 +1,18 @@
 ﻿using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using Microsoft.Web.Editor.Intellisense;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
-using System.Windows.Media;
-using System.Collections.ObjectModel;
-using System;
-using System.IO;
-using System.Windows.Media.Imaging;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel.Composition;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -53,7 +52,7 @@ namespace MadsKristensen.EditorExtensions
             var callingFilename = _buffer.GetFileName();
             var baseFolder = Path.GetDirectoryName(callingFilename);
 
-            IEnumerable<Completion> results;
+            IEnumerable<Intel.Completion> results;
             if (String.IsNullOrWhiteSpace(info.Item1))
                 results = GetRootCompletions(baseFolder);
             else
@@ -73,22 +72,22 @@ namespace MadsKristensen.EditorExtensions
         static readonly ImageSource folderIcon = GlyphService.GetGlyph(StandardGlyphGroup.GlyphOpenFolder, StandardGlyphItem.GlyphItemPublic);
         #region Root-level completions
         static ImageSource moduleIcon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/node_module.png", UriKind.RelativeOrAbsolute));
-        static readonly ReadOnlyCollection<Completion> dotCompletions = new ReadOnlyCollection<Completion>(new[]{
-            new Completion("./", "./", "Prefix to access files in the current directory", folderIcon, "Folder"),
-            new Completion("../", "../", "Prefix to access files in the parent directory", folderIcon, "Folder")
+        static readonly ReadOnlyCollection<Intel.Completion> dotCompletions = new ReadOnlyCollection<Intel.Completion>(new[]{
+            new Intel.Completion("./", "./", "Prefix to access files in the current directory", folderIcon, "Folder"),
+            new Intel.Completion("../", "../", "Prefix to access files in the parent directory", folderIcon, "Folder")
         });
 
         // Gathered from `require('<tab><tab>` on Node v0.10.15.
-        static readonly ReadOnlyCollection<Completion> builtInModuleCompletions = new ReadOnlyCollection<Completion>(Array.ConvertAll(new[]{
+        static readonly ReadOnlyCollection<Intel.Completion> builtInModuleCompletions = new ReadOnlyCollection<Intel.Completion>(Array.ConvertAll(new[]{
                 "assert", "buffer", "child_process", "cluster", "crypto", "dgram", "dns", "domain", "events", 
                 "fs", "http", "https", "net", "os",  "path", "punycode", "querystring", "readline", "stream", 
                 "string_decoder", "tls", "tty", "url", "util", "vm", "zlib"
-        }, m => new Completion(m, m, null, moduleIcon, "Node module")));
-        static IEnumerable<Completion> GetRootCompletions(string baseFolder)
+        }, m => new Intel.Completion(m, m, null, moduleIcon, "Node module")));
+        static IEnumerable<Intel.Completion> GetRootCompletions(string baseFolder)
         {
             return dotCompletions
                     .Concat(NodeModuleService.GetAvailableModules(baseFolder)
-                        .Select(p => new Completion(
+                        .Select(p => new Intel.Completion(
                             Path.GetFileName(p),
                             Path.GetFileName(p),
                             GetDescription(p),
@@ -123,14 +122,14 @@ namespace MadsKristensen.EditorExtensions
             { ".node",  GlyphService.GetGlyph(StandardGlyphGroup.GlyphLibrary, StandardGlyphItem.GlyphItemPublic) }
         };
 
-        static IEnumerable<Completion> GetRelativeCompletions(string folder)
+        static IEnumerable<Intel.Completion> GetRelativeCompletions(string folder)
         {
             if (folder == null || !Directory.Exists(folder))
                 return null;
 
             return Directory.EnumerateDirectories(folder)
                             .OrderBy(s => s)
-                            .Select(p => new Completion(
+                            .Select(p => new Intel.Completion(
                                 Path.GetFileName(p) + "/",
                                 Path.GetFileName(p) + "/",
                                 null,
@@ -141,7 +140,7 @@ namespace MadsKristensen.EditorExtensions
                     Directory.EnumerateFiles(folder)
                              .Where(p => fileIcons.ContainsKey(Path.GetExtension(p).ToLowerInvariant()))
                              .OrderBy(s => s)
-                             .Select(p => new Completion(
+                             .Select(p => new Intel.Completion(
                                  Path.GetFileName(p),
                                  Path.GetFileName(p),
                                  null,
