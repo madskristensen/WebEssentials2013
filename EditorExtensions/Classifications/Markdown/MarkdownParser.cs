@@ -124,13 +124,13 @@ After!
                 stream.MoveToNextChar();
                 if (stream.CurrentChar == '`')  // `` is not a code block
                     return;
-                while (stream.NextChar != '`')
+                while (stream.CurrentChar != '`')
                 {
-                    if (stream.IsAtNewLine()) return;
+                    if (stream.IsAtNewLine() || stream.IsEndOfStream()) return;
                     stream.MoveToNextChar();
                 }
 
-                OnArtifactFound(new MarkdownArtifactEventArgs(new MarkdownCodeArtifact(null, TextRange.FromBounds(peek.StartPosition, stream.Position), 1, 1)));
+                OnArtifactFound(new MarkdownArtifactEventArgs(new MarkdownCodeArtifact(null, TextRange.FromBounds(peek.StartPosition, stream.Position + 1), 1, 1)));
                 peek.Consume();
             }
         }
@@ -140,7 +140,7 @@ After!
             {
                 var quoteDepth = ReadBlockQuotePrefix();
                 SkipSpaces(3);
-                if (stream.CurrentChar != '`'&&stream.CurrentChar!='~')
+                if (stream.CurrentChar != '`' && stream.CurrentChar != '~')
                     return false;
                 string fence = new string(stream.CurrentChar, 3);
 
@@ -229,7 +229,6 @@ After!
         {
             while (!stream.IsEndOfStream())
             {
-                stream.MoveToNextChar();
                 switch (stream.CurrentChar)
                 {
                     case '`':
@@ -241,6 +240,7 @@ After!
                             stream.MoveToNextChar();
                         break;
                 }
+                stream.MoveToNextChar();
             }
         }
     }
