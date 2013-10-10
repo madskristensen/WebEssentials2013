@@ -27,5 +27,50 @@ namespace WebEssentialsTests
             CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"`abc`"));
             CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks("\n`abc`\n"));
         }
+
+        [TestMethod]
+        public void TestIndentedCodeBlocks()
+        {
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"Hi there!
+
+    abc
+Bye!"));
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks("Hi there!\n\tabc\nBye!"));
+            CollectionAssert.AreEquivalent(new string[0], ParseCodeBlocks(@"Hi there!
+    abc
+Bye!"));
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"
+    abc
+"));
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"
+    abc"));
+        }
+
+        [TestMethod]
+        public void TestQuotedIndentedCodeBlocks()
+        {
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"Hi there!
+
+>     abc
+Bye!"));
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"Hi there!
+>>>> I'm in a quote!
+>     abc
+Bye!"));
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"Hi there!
+>>>> I'm in a quote!
+
+>>>>     abc
+Bye!")); CollectionAssert.AreEquivalent(new[] { "> abc" }, ParseCodeBlocks(@"Hi there!
+>>>> I'm in a quote!
+>>>>     > abc
+Bye!"));
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"Hi there!
+>>>>
+>     abc
+Bye!"));
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"
+>     abc"));
+        }
     }
 }
