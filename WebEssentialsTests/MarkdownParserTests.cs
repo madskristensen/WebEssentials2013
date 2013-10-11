@@ -19,6 +19,7 @@ namespace WebEssentialsTests
             return retVal;
         }
 
+
         [TestMethod]
         public void TestInlineCodeBlocks()
         {
@@ -26,6 +27,7 @@ namespace WebEssentialsTests
             CollectionAssert.AreEquivalent(new[] { " b " }, ParseCodeBlocks(@"a` b `c"));
             CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"`abc`"));
             CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks("\n`abc`\n"));
+            CollectionAssert.AreEquivalent(new string[0], ParseCodeBlocks(@"a `` v")); 
         }
 
         [TestMethod]
@@ -34,6 +36,17 @@ namespace WebEssentialsTests
             CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"Hi there!
 
     abc
+Bye!"));
+            CollectionAssert.AreEquivalent(new[] { "abc", "def" }, ParseCodeBlocks(@"Hi there!
+ 1. List!
+
+        abc
+ * List!
+
+        def
+
+ - More
+    Not code!
 Bye!"));
             CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks("Hi there!\n\tabc\nBye!"));
             CollectionAssert.AreEquivalent(new string[0], ParseCodeBlocks(@"Hi there!
@@ -71,6 +84,10 @@ Bye!"));
 Bye!"));
             CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"
 >     abc"));
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@">     abc"));
+
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(" >\t> \tabc"));
+
         }
     }
 }

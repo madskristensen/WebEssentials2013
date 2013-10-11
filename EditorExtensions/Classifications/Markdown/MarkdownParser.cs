@@ -32,29 +32,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         // The parsing logic is based on GitHub experiments.
         private StreamPeeker Peek() { return new StreamPeeker(stream); }
 
-        /*
-         * Useful testcase (for GitHub)
-a ` b `
-2 `` 3
-
- 1. abc  
-def
-        code!
- 2. ghi
-
->>>>>>>>
-> >     a
->     a
->    >    a```
->     iiii
->    aaa
-
- ```
-vbbbb
-```               a
-
-After!
-         */
         void SkipSpaces(int max)
         {
             for (int i = 0; i < max; i++)
