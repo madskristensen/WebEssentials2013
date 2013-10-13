@@ -26,198 +26,373 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             if (ArtifactFound != null)
                 ArtifactFound(this, e);
         }
-
         // CharacterStream cannot overflow; setting Position
         // past the end will move the the end and return \0.
         // The parsing logic is based on GitHub experiments.
-        private StreamPeeker Peek() { return new StreamPeeker(stream); }
 
-        void SkipSpaces(int max)
+        private abstract class ParserBase
         {
-            for (int i = 0; i < max; i++)
+
+            protected readonly CharacterStream stream;
+            protected readonly Action<MarkdownCodeArtifact> ReportArtifact;
+            protected ParserBase(CharacterStream stream, Action<MarkdownCodeArtifact> reporter)
             {
-                if (stream.CurrentChar != ' ')
-                    break;
-                stream.MoveToNextChar();
+                this.stream = stream;
+                this.ReportArtifact = reporter;
             }
-        }
-        void SkipToEndOfLine()
-        {
-            while (!stream.IsEndOfStream() && !stream.IsAtNewLine())
-                stream.MoveToNextChar();
-        }
-        void SkipToNextLine()
-        {
-            SkipToEndOfLine();
-            while (!stream.IsEndOfStream() && stream.IsAtNewLine())
-                stream.MoveToNextChar();    // Consume the newline (Windows or Linux)
-        }
-        bool SkipEmptyLine()
-        {
-            bool retVal = false;
-            using (var peek = Peek())
+            protected StreamPeeker Peek() { return new StreamPeeker(stream); }
+
+            protected void SkipSpaces(int max)
             {
-                while (stream.IsWhiteSpace())
-                    stream.MoveToNextChar();
-                while (!stream.IsEndOfStream() && stream.IsAtNewLine())
+                for (int i = 0; i < max; i++)
                 {
-                    stream.MoveToNextChar();    // Consume the newline (Windows or Linux)
-                    peek.Consume();
-                    retVal = true;
+                    if (!TryReadSpaces(1))
+                        break;
                 }
             }
-            return retVal;
-        }
 
-        bool TryConsume(string expected)
-        {
-            if (!stream.CompareCurrent(expected))
-                return false;
-            stream.Advance(expected.Length);
-            return true;
-        }
-
-        int ReadBlockQuotePrefix(int? maxDepth = null)
-        {
-            if (maxDepth == 0) return 0;
-            using (var peek = Peek())
+            ///<summary>Consumes exactly the requested number of characters of whitespace, potentially including partial tabs.</summary>
+            ///<returns>True if enough whitespace was consumed; false if the stream was not moved.</returns>
+            protected bool TryReadSpaces(int count)
             {
-                SkipSpaces(3);
-                // If we didn't find a > at the beginning, don't consume anything.
-                if (stream.CurrentChar != '>')
-                    return 0;
-
-                SkipSpaces(1);  // A single space following the > is consumed as part of the prefix, and doesn't count for anything else.
-                peek.Consume();
-                // If we did consume a quote, look for another one.
-                return 1 + ReadBlockQuotePrefix(maxDepth - 1);
-            }
-        }
-
-        void ReadInlineCodeBlock()
-        {
-            using (var peek = Peek())
-            {
-                stream.MoveToNextChar();
-                if (stream.CurrentChar == '`')  // `` is not a code block
-                    return;
-                while (stream.CurrentChar != '`')
+                using (var peek = Peek())
                 {
-                    if (stream.IsAtNewLine() || stream.IsEndOfStream()) return;
-                    stream.MoveToNextChar();
-                }
-
-                OnArtifactFound(new MarkdownArtifactEventArgs(new MarkdownCodeArtifact(null, TextRange.FromBounds(peek.StartPosition, stream.Position + 1), 1, 1)));
-                peek.Consume();
-            }
-        }
-        bool TryReadFencedCodeBlock()
-        {
-            using (var peek = Peek())
-            {
-                var quoteDepth = ReadBlockQuotePrefix();
-                SkipSpaces(3);
-                if (stream.CurrentChar != '`' && stream.CurrentChar != '~')
-                    return false;
-                string fence = new string(stream.CurrentChar, 3);
-
-                if (!TryConsume(fence))
-                    return false;
-                //TODO: Look for comment- or tag- based language prefixes in line before StartPosition
-
-                StringBuilder language = new StringBuilder();
-                while (!stream.IsEndOfStream() && !stream.IsAtNewLine())
-                {
-                    language.Append(stream.CurrentChar);
-                    stream.MoveToNextChar();
-                }
-                while (stream.IsAtNewLine()) stream.MoveToNextChar();    // Consume the newline
-
-                // Keep reading entire lines until we find a closing fence.
-                while (!stream.IsEndOfStream())
-                {
-                    ReadBlockQuotePrefix(maxDepth: quoteDepth);
-                    using (var endFencePeek = Peek())
+                    for (int i = 0; i < count; i++)
                     {
-                        SkipSpaces(3);
-
-                        if (TryConsume(fence) && SkipEmptyLine())
+                        if (stream.CurrentChar == '\t')
                         {
-                            endFencePeek.Consume();
-                            break;
+                            // TODO: Tab equivalence in TabAwareCharacterStream class
                         }
+                        else if (stream.CurrentChar != ' ')
+                            return false;
+                        stream.MoveToNextChar();
                     }
-
-                    var lineStart = stream.Position;
-                    SkipToEndOfLine();
-                    OnArtifactFound(new MarkdownArtifactEventArgs(new MarkdownCodeArtifact(
-                        language.ToString().Trim(),
-                        TextRange.FromBounds(lineStart, stream.Position),
-                        0, 0
-                    )));
-                    while (stream.IsAtNewLine()) stream.MoveToNextChar();    // Consume the newline
+                    peek.Consume();
+                    return true;
                 }
+            }
+            protected void SkipToEndOfLine()
+            {
+                while (!stream.IsEndOfStream() && !stream.IsAtNewLine())
+                    stream.MoveToNextChar();
+            }
+            protected bool TryConsumeNewLine()
+            {
+                var start = stream.Position;
+                if (stream.CurrentChar == '\r')
+                    stream.MoveToNextChar();
+                if (stream.CurrentChar == '\n')
+                    stream.MoveToNextChar();
+                return stream.Position != start;
+            }
+            protected void SkipToNextLine()
+            {
+                SkipToEndOfLine();
+                TryConsumeNewLine();
+            }
+            protected bool TrySkipBlankLine()
+            {
+                using (var peek = Peek())
+                {
+                    while (stream.CurrentChar == ' ' || stream.CurrentChar == '\t' || stream.CurrentChar == '\f' || stream.CurrentChar == '\u200B')
+                        stream.MoveToNextChar();
+                    if (!TryConsumeNewLine())
+                        return false;
 
-                peek.Consume();
+                    peek.Consume();
+                    return true;
+                }
+            }
+
+            protected bool TryConsume(string expected)
+            {
+                if (!stream.CompareCurrent(expected))
+                    return false;
+                stream.Advance(expected.Length);
                 return true;
             }
         }
-        void ReadIndentedCodeBlock()
+        private abstract class BlockParser : ParserBase
         {
-            // This method will always exit when the stream is at a newline
-            using (var peek = Peek())
+            private int quoteDepth;
+
+            protected BlockParser(CharacterStream stream, Action<MarkdownCodeArtifact> reporter) : base(stream, reporter) { }
+
+            private int ReadBlockQuotePrefix(int? maxDepth = null)
             {
-
-                var quoteDepth = ReadBlockQuotePrefix();
-                if (!SkipEmptyLine())
-                    return;    // Indented code block must be preceded by blank line.
-
-                // TODO: Detect numbered list and require 8 spaces
-                string prefix = new string(' ', 4);
-
-
-                // Keep reading entire lines until we find a closing fence.
-                while (!stream.IsEndOfStream())
+                if (maxDepth == 0) return 0;
+                using (var peek = Peek())
                 {
-                    // If we don't find indentation, don't consume the newline or quote block
-                    using (var prefixPeek = Peek())
-                    {
-                        while (stream.IsAtNewLine())
-                            stream.MoveToNextChar();    // Consume the newline from the previous line
-                        ReadBlockQuotePrefix(maxDepth: quoteDepth);
-                        if (!TryConsume(prefix))
-                            break;
-                        prefixPeek.Consume();   // Consume the indentation and read the content.
-                    }
-                    var lineStart = stream.Position;
-                    SkipToEndOfLine();
-                    OnArtifactFound(new MarkdownArtifactEventArgs(new MarkdownCodeArtifact(
-                        null,
-                        TextRange.FromBounds(lineStart, stream.Position),
-                        0, 0
-                    )));
+                    // TODO: Add more accurate logic for pathological mixes of tabs and spaces in nested quotes & code blocks
+                    if (!TryConsume("\t")) SkipSpaces(3);
+                    // If we didn't find a > at the beginning, don't consume anything.
+                    if (stream.CurrentChar != '>')
+                        return 0;
+                    stream.MoveToNextChar();
+                    SkipSpaces(1);  // A single space following the > is consumed as part of the prefix, and doesn't count for anything else.
+                    peek.Consume();
+                    // If we did consume a quote, look for another one.
+                    return 1 + ReadBlockQuotePrefix(maxDepth - 1);
                 }
+            }
 
-                peek.Consume();
+            ///<summary>Consumes lines matching this block type.</summary>
+            ///<returns>True if anything was consumed.</returns>
+            ///<remarks>
+            /// If the stream is not up to a block of this type, the stream
+            /// will not be advanced.  Otherwise, it will be advanced until
+            /// the first character following the newline after the block.
+            ///</remarks>
+            public bool Parse()
+            {
+                if (stream.IsAtLastCharacter()) return false;
+
+                if (stream.Position != 0 && stream.PrevChar != '\n')
+                    throw new InvalidOperationException("BlockParser must be called at the first character in a block.");
+                using (var peek = Peek())
+                {
+                    quoteDepth = ReadBlockQuotePrefix();
+
+                    // Skip any empty lines before the content.
+                    while (TrySkipBlankLine())
+                    {
+                        // If the quotes got deeper, consume an empty block, so
+                        // we can start the next one at the right nesting level
+                        if (CheckDeeperQuote())
+                        {
+                            // Consume the leading blank lines, but not the beginning of the deeper quote.
+                            peek.Consume();
+                            return true;
+                        }
+                        ReadBlockQuotePrefix(quoteDepth);
+                    }
+                    if (!ReadContent())
+                        return false;
+                    if (stream.Position != 0 && !stream.IsAtLastCharacter() && stream.PrevChar != '\n')
+                        throw new InvalidOperationException("ReadContent() must end at the first character in the next block.");
+                    peek.Consume();
+                    return true;
+                }
+            }
+
+            protected abstract bool ReadContent();
+
+            private bool blockEnded;
+            ///<summary>Moves to the next content character inside the block (after quote prefixes).</summary>
+            ///<returns>False if the block had ended (the stream will be up to the next block).</returns>
+            protected bool MoveToNextContentChar()
+            {
+                // CharacterStream can go past the end of the stream,
+                // setting CurrentChar equal to '\0', and Position ==
+                // Length.  This state is not a content character; we
+                // stop at the last valid CurrentChar.
+                if (stream.IsAtLastCharacter() || blockEnded)
+                    return false;
+                stream.MoveToNextChar();
+                // If we're still in the middle of a line, return the character
+                if (!TryConsumeNewLine())
+                    return true;
+
+                // If we find a blank line, we've reached a block boundary.
+                if (TryConsumeEnd())
+                {
+                    blockEnded = true;
+                    return false;
+                }
+                using (var peek = Peek())
+                {
+                    if (TryConsumeLinePrefix())
+                        peek.Consume();
+                    else
+                    {
+                        // If we reached a line that doesn't have the right
+                        // prefix, the block has ended.
+                        blockEnded = true;
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            ///<summary>Tries to consume the prefix (if any) expected before the content of each subsequent line in this block.</summary>
+            ///<returns>
+            /// True if the prefix has been consumed; false if this line is lacking the prefix
+            /// If this function returns false, MoveToNextContentChar() will rewind the stream
+            /// and terminate the block.
+            /// This is not called for the beginning of the block.
+            ///</returns>
+            protected virtual bool TryConsumeLinePrefix()
+            {
+                ReadBlockQuotePrefix(quoteDepth);
+                return true;
+            }
+
+            ///<summary>Tries to consume characters that indicate the end of this block.</summary>
+            ///<returns>True if the block has ended (the stream will be up to the next block); false if it has not (the stream will not have moved).</returns>
+            protected virtual bool TryConsumeEnd()
+            {
+                // If the quotes got deeper, we've started a new block
+                if (CheckDeeperQuote()) return true;
+                using (var peek = Peek())
+                {
+                    ReadBlockQuotePrefix(quoteDepth);
+                    if (!TrySkipBlankLine())
+                        return false;
+                    peek.Consume();
+                    return true;
+                }
+            }
+            ///<summary>Checks whether this line begins with a quote prefix deeper than the rest of the block.</summary>
+            ///<returns>True if this line should begin a new block.</returns>
+            ///<remarks>This method will not advance the stream.</remarks>
+            private bool CheckDeeperQuote()
+            {
+                if (stream.PrevChar != '\n')
+                    throw new InvalidOperationException("CheckDeeperQuote() must be called at the first character in a line.");
+
+                using (Peek())
+                {
+                    ReadBlockQuotePrefix(quoteDepth);
+                    if (ReadBlockQuotePrefix() > 0)
+                        return true;
+                }
+                return false;
+            }
+
+            ///<summary>Reads all content characters until the end of the current line or block.</summary>
+            ///<returns>The range of content read, or null if the stream is at the end of the block.</returns>
+            protected TextRange TryConsumeContentLine()
+            {
+                int contentStart = stream.Position;
+                int contentEnd;
+                while (true)
+                {
+                    contentEnd = stream.Position;
+                    if (stream.NextChar == '\r' || stream.NextChar == '\n')
+                    {
+                        // If we've hit the end of the line, consume the current character and stop.
+                        MoveToNextContentChar();
+                        break;
+                    }
+                    // If we hit the end of the block, stop.
+                    if (!MoveToNextContentChar())
+                        break;
+                }
+                if (contentStart == contentEnd)
+                    return null;
+                return TextRange.FromBounds(contentStart, contentEnd + 1);
+
+            }
+        }
+
+        class ContentBlockParser : BlockParser
+        {
+            public ContentBlockParser(CharacterStream stream, Action<MarkdownCodeArtifact> reporter) : base(stream, reporter) { }
+
+            void ReadInlineCodeBlock()
+            {
+                using (var peek = Peek())
+                {
+                    stream.MoveToNextChar();
+                    if (stream.CurrentChar == '`')
+                        return;
+                    while (stream.CurrentChar != '`')
+                    {
+                        if (stream.IsAtNewLine() || stream.IsEndOfStream()) return;
+                        stream.MoveToNextChar();
+                    }
+
+                    ReportArtifact(new MarkdownCodeArtifact(null, TextRange.FromBounds(peek.StartPosition, stream.Position + 1), 1, 1));
+                    peek.Consume();
+                }
+            }
+
+            protected override bool ReadContent()
+            {
+                do
+                    if (stream.CurrentChar == '`' && stream.PrevChar != '\\')
+                        ReadInlineCodeBlock();
+                while (MoveToNextContentChar());
+                return true;
+            }
+        }
+
+        class IndentedCodeBlockParser : BlockParser
+        {
+            public IndentedCodeBlockParser(CharacterStream stream, Action<MarkdownCodeArtifact> reporter) : base(stream, reporter) { }
+
+            // TODO: Detect numbered list and require 8 spaces
+            int spaceCount = 4;
+
+            protected override bool ReadContent()
+            {
+                if (!TryReadSpaces(spaceCount))
+                    return false;
+                while (true)
+                {
+                    var range = TryConsumeContentLine();
+                    if (range == null)
+                        break;
+                    ReportArtifact(new MarkdownCodeArtifact(null, range, 0, 0));
+                }
+                return true;
+            }
+            protected override bool TryConsumeLinePrefix()
+            {
+                return base.TryConsumeLinePrefix() && TryReadSpaces(spaceCount);
+            }
+        }
+        class FencedCodeBlockParser : BlockParser
+        {
+            public FencedCodeBlockParser(CharacterStream stream, Action<MarkdownCodeArtifact> reporter) : base(stream, reporter) { }
+
+            string fence;
+
+            protected override bool ReadContent()
+            {
+                if (TryConsume("```"))
+                    fence = "```";
+                else if (TryConsume("~~~"))
+                    fence = "~~~";
+                else
+                    return false;
+                while (true)
+                {
+                    var range = TryConsumeContentLine();
+                    if (range == null)
+                        break;
+                    ReportArtifact(new MarkdownCodeArtifact(null, range, 0, 0));
+                }
+                return true;
+            }
+            protected override bool TryConsumeEnd()
+            {
+                using (var peek = Peek())
+                {
+                    TryConsumeLinePrefix();
+                    if (!TryConsume(fence))
+                        return false;
+                    if (!TrySkipBlankLine())    // If there is any content after the fence, the block did not end.
+                        return false;
+                    peek.Consume();
+                    return true;
+                }
             }
         }
 
         public void Parse()
         {
-            while (!stream.IsEndOfStream())
+            Action<MarkdownCodeArtifact> reporter = a => OnArtifactFound(new MarkdownArtifactEventArgs(a));
+            while (!stream.IsAtLastCharacter())
             {
-                switch (stream.CurrentChar)
-                {
-                    case '`':
-                        ReadInlineCodeBlock();
-                        break;
-                    case '\n':
-                        ReadIndentedCodeBlock();    // Always leaves stream at newline
-                        if (TryReadFencedCodeBlock())
-                            stream.MoveToNextChar();
-                        break;
-                }
-                stream.MoveToNextChar();
+                // As soon as a parse succeeds, try all parsers again, so that
+                // that the next block is parsed with the correct priorities.
+                if (new IndentedCodeBlockParser(stream, reporter).Parse())
+                    continue;
+                if (new FencedCodeBlockParser(stream, reporter).Parse())
+                    continue;
+                if (new ContentBlockParser(stream, reporter).Parse())
+                    continue;
             }
         }
     }
