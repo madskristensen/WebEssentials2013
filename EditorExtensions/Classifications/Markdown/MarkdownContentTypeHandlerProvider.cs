@@ -12,6 +12,7 @@ using Microsoft.Html.Editor.ContainedLanguage;
 using System.Reflection;
 using Microsoft.Html.Core;
 using Microsoft.Web.Core;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
@@ -79,7 +80,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     {
         readonly IContentTypeRegistryService contentTypeRegistry;
         public CodeBlockBlockHandler(HtmlEditorTree tree, IContentTypeRegistryService contentTypeRegistry)
-            : base(tree, null)
+            : base(tree, contentTypeRegistry.GetContentType("htmlx"))
         {
             this.contentTypeRegistry = contentTypeRegistry;
         }
@@ -92,16 +93,33 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             LanguageBlock block = this.GetLanguageBlockOfLocation(position);
             if (block == null) return null;
             var alb = block as ArtifactLanguageBlock;
-            if (alb != null)
-                return contentTypeRegistry.GetContentType(alb.Language);
-            else
+            if (alb == null)
                 return contentTypeRegistry.GetContentType("text");
+            if (string.IsNullOrWhiteSpace(alb.Language))
+                return contentTypeRegistry.GetContentType("code");
+
+            return contentTypeRegistry.GetContentType(alb.Language);
         }
+
+        protected override void BuildLanguageBlockCollection()
+        {
+            ArtifactCollection artifactCollection = base.EditorTree.RootNode.Tree.ArtifactCollection;
+            base.LanguageBlocks.Clear();
+            foreach (MarkdownCodeArtifact current in artifactCollection)
+            {
+                if (current.TreatAs == ArtifactTreatAs.Code)
+                {
+                    base.LanguageBlocks.AddBlock(new ArtifactLanguageBlock(current));
+                }
+            }
+            base.LanguageBlocks.SortByPosition();
+        }
+
     }
 
     class ArtifactLanguageBlock : LanguageBlock
     {
-        public ArtifactLanguageBlock(Artifact a) : base(a) { Language = a.ClassificationType; }
+        public ArtifactLanguageBlock(MarkdownCodeArtifact a) : base(a) { Language = a.Language; }
         public string Language { get; private set; }
     }
 

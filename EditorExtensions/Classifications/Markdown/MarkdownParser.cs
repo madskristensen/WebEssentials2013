@@ -448,7 +448,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     public class MarkdownCodeArtifact : Artifact
     {
         public MarkdownCodeArtifact(string language, ITextRange range, int leftLength, int rightLength)
-            : base(ArtifactTreatAs.Code, range, leftLength, rightLength, language, true) { }
+            : base(ArtifactTreatAs.Code, range, leftLength, rightLength, MarkdownClassificationTypes.MarkdownCode, true) { Language = language; }
+        public string Language { get; private set; }
     }
 
     ///<summary>Provides data for Artifact events.</summary>
