@@ -281,11 +281,19 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     }
                     // If we hit the end of the block, stop.
                     if (!MoveToNextContentChar())
+                    {
+                        // If we started at the end of the block, we didn't read anything.
+                        if (contentStart == contentEnd)
+                            return null;
                         break;
+                    }
                 }
-                if (contentStart == contentEnd)
-                    return null;
-                return TextRange.FromBounds(contentStart, contentEnd + 1);
+                // If we rested on a final character before ending the block / line,
+                // include that character in the range.  If the line was empty, stay
+                // with a zero-length range.
+                if (contentStart != contentEnd)
+                    contentEnd++;
+                return TextRange.FromBounds(contentStart, contentEnd);
             }
         }
 
