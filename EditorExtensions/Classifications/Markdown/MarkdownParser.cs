@@ -227,7 +227,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 return true;
             }
 
-            ///<summary>Tries to consume characters that indicate the end of this block.</summary>
+            ///<summary>Tries to consume characters (immediately following a newline) that indicate the end of this block.</summary>
             ///<returns>True if the block has ended (the stream will be up to the next block); false if it has not (the stream will not have moved).</returns>
             protected virtual bool TryConsumeEnd()
             {
@@ -241,6 +241,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     peek.Consume();
                     return true;
                 }
+            }
+            ///<summary>Tries to consume content characters (after line prefixes) that indicate the end of this block.</summary>
+            protected virtual bool TryConsumeEndContent()
+            {
+                return TrySkipBlankLine();
             }
             ///<summary>Checks whether this line begins with a quote prefix deeper than the rest of the block.</summary>
             ///<returns>True if this line should begin a new block.</returns>
@@ -313,6 +318,18 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         ReadInlineCodeBlock();
                 while (MoveToNextContentChar());
                 return true;
+            }
+
+            protected override bool TryConsumeEnd()
+            {
+                using (Peek())
+                {
+                    TryConsumeLinePrefix();
+                    SkipSpaces(3);
+                    if (TryConsume("~~~") || TryConsume("```"))
+                        return true;
+                }
+                return base.TryConsumeEnd();
             }
         }
 

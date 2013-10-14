@@ -81,6 +81,13 @@ Bye!"), "Unquoted blank line counts as block boundary");
 >>>>
 >     abc
 Bye!"), "Quoted blank line counts as block boundary");
+            CollectionAssert.AreEquivalent(new[] { "abc", " def", "ghi" }, ParseCodeBlocks(@"Hi there!
+>>>> I'm in a quote!
+>>>>
+>>>     abc
+     def
+>     ghi
+Bye!"), "Quoted blank line counts as block boundary");
             CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"Hi there!
 >>>> I'm in a quote!
 
@@ -126,7 +133,7 @@ abc
 def
 ~~~
 Bye!"));
-            CollectionAssert.AreEquivalent(new string[0], ParseCodeBlocks(@"Hi there!
+            CollectionAssert.AreEquivalent(new[] { "    abc" }, ParseCodeBlocks(@"Hi there!
 ```
     abc
 ```
@@ -146,21 +153,24 @@ abc"));
 > abc
 ```
 Bye!"), "Unquoted fence counts as block boundary");
-            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"Hi there!
+            CollectionAssert.AreEquivalent(new[] { "    abc" }, ParseCodeBlocks(@"Hi there!
 >>>> I'm in a quote!
 >>>>```
 >     abc
 >>>>```
 Bye!"), "Quoted fence counts as block boundary");
-            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"Hi there!
+
+            // TODO: GitHub counts this as a quote; not sure why.
+            // Apparently, they treat it as wrapping instead of a terminator.
+            CollectionAssert.AreEquivalent(new[] { ">>>>abc" }, ParseCodeBlocks(@"Hi there!
 >>>> I'm in a quote!
 ```
->>>>     abc
+>>>>abc
 ```
 Bye!"));
             CollectionAssert.AreEquivalent(new[] { ">     > abc" }, ParseCodeBlocks(@"Hi there!
->>>>```
 >>>> I'm in a quote!
+>>>>```
 >>>>>     > abc
 >>>>```
 Bye!"), "Deeper indent doesn't count as block boundary");
@@ -170,12 +180,11 @@ Bye!"), "Deeper indent doesn't count as block boundary");
 ```
 Bye!"), "Less-deep indent still counts");
 
-            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"```
->     abc
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@">```
+>abc
 ```"));
-            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"```
->     abc"));
-            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@">     abc"));
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@">```
+>abc"));
         }
     }
 }
