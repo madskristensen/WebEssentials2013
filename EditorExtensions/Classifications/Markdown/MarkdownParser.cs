@@ -281,7 +281,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 if (contentStart == contentEnd)
                     return null;
                 return TextRange.FromBounds(contentStart, contentEnd + 1);
-
             }
         }
 
@@ -350,18 +349,25 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             protected override bool ReadContent()
             {
+                string language = null;
+
                 if (TryConsume("```"))
                     fence = "```";
                 else if (TryConsume("~~~"))
                     fence = "~~~";
                 else
                     return false;
+
+                var langRange = TryConsumeContentLine();
+                if (langRange != null)
+                    language = stream.GetSubstringAt(langRange.Start, langRange.Length);
+
                 while (true)
                 {
                     var range = TryConsumeContentLine();
                     if (range == null)
                         break;
-                    ReportArtifact(new MarkdownCodeArtifact(null, range, 0, 0));
+                    ReportArtifact(new MarkdownCodeArtifact(language, range, 0, 0));
                 }
                 return true;
             }
@@ -372,7 +378,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     TryConsumeLinePrefix();
                     if (!TryConsume(fence))
                         return false;
-                    if (!TrySkipBlankLine())    // If there is any content after the fence, the block did not end.
+                    if (!stream.IsAtLastCharacter() && !TrySkipBlankLine())    // If there is any content after the fence, the block did not end.
                         return false;
                     peek.Consume();
                     return true;

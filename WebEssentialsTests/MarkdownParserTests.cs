@@ -109,5 +109,73 @@ Bye!"), "Less-deep indent still counts");
 //            CollectionAssert.AreEquivalent(new[] { "> abc" }, ParseCodeBlocks(" >  \t  > abc"));
 //            CollectionAssert.AreEquivalent(new[] { "> abc" }, ParseCodeBlocks(" >\t  > abc"));
         }
+
+        [TestMethod]
+        public void TestFencedCodeBlocks()
+        {
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"Hi there!
+
+```
+abc
+```
+Bye!"));
+            CollectionAssert.AreEquivalent(new[] { "abc", "def" }, ParseCodeBlocks(@"Hi there!
+
+~~~
+abc
+def
+~~~
+Bye!"));
+            CollectionAssert.AreEquivalent(new string[0], ParseCodeBlocks(@"Hi there!
+```
+    abc
+```
+Bye!"));
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"```
+abc
+```"));
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"```
+abc"));
+        }
+
+        [TestMethod]
+        public void TestQuotedFencedCodeBlocks()
+        {
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"Hi there!
+> ```
+> abc
+```
+Bye!"), "Unquoted fence counts as block boundary");
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"Hi there!
+>>>> I'm in a quote!
+>>>>```
+>     abc
+>>>>```
+Bye!"), "Quoted fence counts as block boundary");
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"Hi there!
+>>>> I'm in a quote!
+```
+>>>>     abc
+```
+Bye!"));
+            CollectionAssert.AreEquivalent(new[] { ">     > abc" }, ParseCodeBlocks(@"Hi there!
+>>>>```
+>>>> I'm in a quote!
+>>>>>     > abc
+>>>>```
+Bye!"), "Deeper indent doesn't count as block boundary");
+            CollectionAssert.AreEquivalent(new[] { "    abc" }, ParseCodeBlocks(@"Hi there!
+>>>>```
+>     abc
+```
+Bye!"), "Less-deep indent still counts");
+
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"```
+>     abc
+```"));
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"```
+>     abc"));
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@">     abc"));
+        }
     }
 }
