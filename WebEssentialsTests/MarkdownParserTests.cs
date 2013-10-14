@@ -132,11 +132,13 @@ Bye!"));
 abc
 def
 ~~~
+
 Bye!"));
-            CollectionAssert.AreEquivalent(new[] { "abc", "",  "~~~" }, ParseCodeBlocks(@"Hi there!
+            CollectionAssert.AreEquivalent(new[] { "abc", "", "", "~~~" }, ParseCodeBlocks(@"Hi there!
 
 ```
 abc
+
 
 ~~~
 ```
@@ -149,6 +151,9 @@ Bye!"));
             CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"```
 abc
 ```"));
+            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"```
+abc
+"));
             CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"```
 abc"));
         }

@@ -269,17 +269,18 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             protected TextRange TryConsumeContentLine()
             {
                 int contentStart = stream.Position;
-                int contentEnd;
-                while (true)
+                int contentEnd = -1;
+                bool hitLineEnd = false;
+                while (!hitLineEnd)
                 {
                     contentEnd = stream.Position;
+
+                    // If we've hit the end of the line, consume the current character and stop.
+                    // (with the same logic in case we hit the end of the block too)
                     if (stream.NextChar == '\r' || stream.NextChar == '\n')
-                    {
-                        // If we've hit the end of the line, consume the current character and stop.
-                        MoveToNextContentChar();
-                        break;
-                    }
+                        hitLineEnd = true;
                     // If we hit the end of the block, stop.
+
                     if (!MoveToNextContentChar())
                     {
                         // If we started at the end of the block, we didn't read anything.
