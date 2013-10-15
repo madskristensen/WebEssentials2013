@@ -47,7 +47,7 @@ Bye!"));
     
 Bye!"), "Empty lines become empty artifacts");
             CollectionAssert.AreEquivalent(new[] { "" }, ParseCodeBlocks(@"
-Two lines of four spaces each (boundary, then code):
+Three lines of four spaces each (boundary, then code):
     
     
 Bye!"), "Unlimited whitespace is allowed in the block boundary line");

@@ -260,11 +260,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     return true;
                 }
             }
-            ///<summary>Tries to consume content characters (after line prefixes) that indicate the end of this block.</summary>
-            protected virtual bool TryConsumeEndContent()
-            {
-                return TrySkipBlankLine(consumeCodeBlock: true);
-            }
             ///<summary>Checks whether this line begins with a quote prefix deeper than the rest of the block.</summary>
             ///<returns>True if this line should begin a new block.</returns>
             ///<remarks>This method will not advance the stream.</remarks>
@@ -403,6 +398,17 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     return false;
                 lineStart = stream.Position;
                 return TryReadSpaces(spaceCount);
+            }
+            protected override bool TryConsumeEnd()
+            {
+                // If the next line is still a code block, we haven't ended
+                // (even if it is otherwise a blank line, which would end a
+                // content block).  In other words, a line with four spaces
+                // ends a content block, but not a code block.
+                using (var peek = Peek())
+                    if (TryConsumeLinePrefix())
+                        return false;
+                return base.TryConsumeEnd();
             }
         }
         class FencedCodeBlockParser : BlockParser
