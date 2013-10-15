@@ -217,35 +217,28 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         /// replaced with different text (if both lengths are >0).  
         ///</remarks>
         private delegate bool CheckTextDelegate(int surroundingLength, Func<string, bool> predicate);
+        private static bool CheckRange(int surroundingLength, Func<string, bool> predicate, int rangeStart, int rangeLength, ITextProvider rangeText)
+        {
+            if (rangeLength == 0)
+                return false;
+            var surroundingText = rangeText.GetText(new TextRange(
+                rangeStart,
+                Math.Min(rangeText.Length - rangeStart, rangeLength + surroundingLength)
+            ));
+            return predicate(surroundingText);
+        }
+
+
         public override bool IsDestructiveChange(int start, int oldLength, int newLength, ITextProvider oldText, ITextProvider newText)
         {
             if (base.IsDestructiveChange(start, oldLength, newLength, oldText, newText))
-            {
                 return true;
-            }
 
             CheckTextDelegate CheckText = (surroundingLength, predicate) =>
             {
                 int rangeStart = Math.Max(0, start - surroundingLength);
-                if (newLength > 0)
-                {
-                    var surroundingText = newText.GetText(new TextRange(
-                        rangeStart,
-                        Math.Min(newText.Length - rangeStart, newLength + surroundingLength)
-                    ));
-                    if (predicate(surroundingText))
-                        return true;
-                }
-                if (oldLength > 0)
-                {
-                    var surroundingText = oldText.GetText(new TextRange(
-                        rangeStart,
-                        Math.Min(oldText.Length - rangeStart, oldLength + surroundingLength)
-                    ));
-                    if (predicate(surroundingText))
-                        return true;
-                }
-                return false;
+                return CheckRange(surroundingLength, predicate, rangeStart, newLength, newText)
+                    || CheckRange(surroundingLength, predicate, rangeStart, oldLength, oldText);
             };
 
 
