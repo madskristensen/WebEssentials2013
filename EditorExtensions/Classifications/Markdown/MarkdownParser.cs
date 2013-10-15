@@ -8,6 +8,8 @@ using Microsoft.Web.Core;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
+    // To work properly with the HTML editor, we must return an Artifact as soon as the user types the start character, and the artifact should include that character.
+
     public class MarkdownParser
     {
         readonly CharacterStream stream;
@@ -307,8 +309,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 using (var peek = Peek())
                 {
                     stream.MoveToNextChar();
-                    if (stream.CurrentChar == '`')
-                        return;
+                    // Report `` as an empty code block; otherwise, the artifact isn't detected properly.
+                    //if (stream.CurrentChar == '`')
+                    //    return;
                     while (stream.CurrentChar != '`')
                     {
                         if (stream.IsAtNewLine() || stream.IsEndOfStream()) return;
@@ -349,22 +352,33 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             // TODO: Detect numbered list and require 8 spaces
             int spaceCount = 4;
 
+            // Holds the position of the beginning of the line's indent.
+            // This is set when we consume a line prefix, then read when
+            // reporting a code line.
+            int lineStart;
             protected override bool ReadContent()
             {
                 if (!TryReadSpaces(spaceCount))
                     return false;
                 while (true)
                 {
+                    var thisLineStart = lineStart;
                     var range = TryConsumeContentLine();
                     if (range == null)
                         break;
-                    ReportArtifact(new MarkdownCodeArtifact(null, range, 0, 0));
+                    // Get the character count of the indent, which may be different if tabs are involved.
+                    var indentSize = range.Start - thisLineStart;
+                    range.Expand(-indentSize, 0);
+                    ReportArtifact(new MarkdownCodeArtifact(null, range, indentSize, 0));
                 }
                 return true;
             }
             protected override bool TryConsumeLinePrefix()
             {
-                return base.TryConsumeLinePrefix() && TryReadSpaces(spaceCount);
+                if (!base.TryConsumeLinePrefix())
+                    return false;
+                lineStart = stream.Position;
+                return TryReadSpaces(spaceCount);
             }
         }
         class FencedCodeBlockParser : BlockParser
