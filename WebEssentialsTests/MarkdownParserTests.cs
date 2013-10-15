@@ -144,7 +144,7 @@ abc
 def
 ~~~
 
-Bye!"));
+Bye!"), "Trailing blank lines don't break anything");
             CollectionAssert.AreEquivalent(new[] { "abc", "", "", "~~~" }, ParseCodeBlocks(@"Hi there!
 
 ```
@@ -153,7 +153,7 @@ abc
 
 ~~~
 ```
-Bye!"));
+Bye!"), "Alternate fences & blank lines are handled correctly");
             CollectionAssert.AreEquivalent(new[] { "    abc" }, ParseCodeBlocks(@"Hi there!
 ```
     abc
@@ -164,9 +164,12 @@ abc
 ```"));
             CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"```
 abc
-"));
+```"), "Lack of surrounding characters doesn't break anything");
             CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"```
-abc"));
+abc"), "Ending fence is optional");
+            CollectionAssert.AreEquivalent(new[] { "abc", "" }, ParseCodeBlocks(@"```
+abc
+"), "Trailing blank line without fence is reported");
         }
 
         [TestMethod]

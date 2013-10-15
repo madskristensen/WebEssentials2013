@@ -413,7 +413,16 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 {
                     var range = TryConsumeContentLine();
                     if (range == null)
+                    {
+                        // If the fenced code block ends in an empty line at
+                        // the end of the document, report an empty Artifact
+                        // so that it can expand as the user types.  We need
+                        // this ugly hack because MoveToNextContentChar will
+                        // consume the newline and hit the end immediately.
+                        if (stream.IsEndOfStream() && stream.PrevChar == '\n')
+                            ReportArtifact(new MarkdownCodeArtifact(null, new TextRange(stream.Position - 1, 0), 0, 0));
                         break;
+                    }
                     ReportArtifact(new MarkdownCodeArtifact(language, range, 0, 0));
                 }
                 return true;
