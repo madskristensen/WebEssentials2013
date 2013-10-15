@@ -202,7 +202,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 // setting CurrentChar equal to '\0', and Position ==
                 // Length.  This state is not a content character; we
                 // stop at the last valid CurrentChar.
-                if (stream.IsAtLastCharacter() || BlockEnded)
+                if (stream.IsAtLastCharacter())
+                    BlockEnded = true;
+                if (BlockEnded)
                     return false;
                 stream.MoveToNextChar();
                 // If we're still in the middle of a line, return the character
@@ -284,32 +286,39 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             ///<returns>The range of content read, or null if the stream is at the end of the block.</returns>
             protected TextRange TryConsumeContentLine()
             {
+                // If we already consumed the end of the block
+                // (from the end of the last line), I will not
+                // have anything more to read.
+                if (BlockEnded) return null;
+
                 int contentStart = stream.Position;
                 int contentEnd = -1;
                 bool hitLineEnd = false;
                 while (!hitLineEnd)
                 {
                     contentEnd = stream.Position;
+                    // Unless we're already at the end of the line (unless the line
+                    // is completely empty), the end is after this character.
+                    if (!stream.IsAtNewLine() && !stream.IsEndOfStream())
+                        contentEnd++;
 
                     // If we've hit the end of the line, consume the current character and stop.
                     // (with the same logic in case we hit the end of the block too)
-                    if (stream.NextChar == '\r' || stream.NextChar == '\n')
+                    if (stream.NextChar == '\r' || stream.NextChar == '\n' || stream.IsEndOfStream())
                         hitLineEnd = !BlockEnded;
                     // If we hit the end of the block, stop.
 
                     if (!MoveToNextContentChar())
                     {
-                        // If we started at the end of the block, we didn't read anything.
+                        // If we have not consumed any characters, and
+                        // we hit the end up the block without hitting
+                        // a preceding newline first, do not return an
+                        // empty block.
                         if (contentStart == contentEnd && !hitLineEnd)
                             return null;
                         break;
                     }
                 }
-                // If we rested on a final character before ending the block / line,
-                // include that character in the range.  If the line was empty, stay
-                // with a zero-length range.
-                if (contentStart != contentEnd)
-                    contentEnd++;
                 return TextRange.FromBounds(contentStart, contentEnd);
             }
         }
@@ -372,6 +381,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             int lineStart;
             protected override bool ReadContent()
             {
+                lineStart = stream.Position;
                 if (!TryReadSpaces(spaceCount))
                     return false;
                 while (true)
@@ -420,16 +430,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 {
                     var range = TryConsumeContentLine();
                     if (range == null)
-                    {
-                        // If the fenced code block ends in an empty line at
-                        // the end of the document, report an empty Artifact
-                        // so that it can expand as the user types.  We need
-                        // this ugly hack because MoveToNextContentChar will
-                        // consume the newline and hit the end immediately.
-                        if (stream.IsEndOfStream() && stream.PrevChar == '\n')
-                            ReportArtifact(new MarkdownCodeArtifact(null, new TextRange(stream.Position - 1, 0), 0, 0));
                         break;
-                    }
                     ReportArtifact(new MarkdownCodeArtifact(language, range, 0, 0));
                 }
                 return true;
