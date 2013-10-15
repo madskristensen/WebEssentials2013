@@ -99,12 +99,19 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 SkipToEndOfLine();
                 TryConsumeNewLine();
             }
-            protected bool TrySkipBlankLine()
+            ///<summary>Tries to consume a line of whitespace characters.</summary>
+            ///<param name="consumeCodeBlock">If false, this will not consume four or more spaces, to allow them to be parsed as an empty code block</param>
+            ///<remarks>dontConsumeCodeBlock should only be false at the beginning of a line that may start a new block.</remarks>
+            protected bool TrySkipBlankLine(bool consumeCodeBlock)
             {
                 using (var peek = Peek())
                 {
-                    while (stream.CurrentChar == ' ' || stream.CurrentChar == '\t' || stream.CurrentChar == '\f' || stream.CurrentChar == '\u200B')
-                        stream.MoveToNextChar();
+                    if (!consumeCodeBlock)
+                        SkipSpaces(3);
+                    else
+                        while (stream.CurrentChar == ' ' || stream.CurrentChar == '\t' || stream.CurrentChar == '\f' || stream.CurrentChar == '\u200B')
+                            stream.MoveToNextChar();
+
                     if (!TryConsumeNewLine())
                         return false;
 
@@ -162,8 +169,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 {
                     quoteDepth = ReadBlockQuotePrefix();
 
-                    // Skip any empty lines before the content.
-                    while (TrySkipBlankLine())
+                    // Skip any empty lines before the content. (other than empty indented code lines)
+                    while (TrySkipBlankLine(consumeCodeBlock: false))
                     {
                         // If the quotes got deeper, consume an empty block, so
                         // we can start the next one at the right nesting level
@@ -245,7 +252,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 using (var peek = Peek())
                 {
                     ReadBlockQuotePrefix(quoteDepth);
-                    if (!TrySkipBlankLine())
+                    if (!TrySkipBlankLine(consumeCodeBlock: true))
                         return false;
                     peek.Consume();
                     return true;
@@ -254,7 +261,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             ///<summary>Tries to consume content characters (after line prefixes) that indicate the end of this block.</summary>
             protected virtual bool TryConsumeEndContent()
             {
-                return TrySkipBlankLine();
+                return TrySkipBlankLine(consumeCodeBlock: true);
             }
             ///<summary>Checks whether this line begins with a quote prefix deeper than the rest of the block.</summary>
             ///<returns>True if this line should begin a new block.</returns>
@@ -434,7 +441,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     TryConsumeLinePrefix();
                     if (!TryConsume(fence))
                         return false;
-                    if (!stream.IsAtLastCharacter() && !TrySkipBlankLine())    // If there is any content after the fence, the block did not end.
+                    if (!stream.IsAtLastCharacter() && !TrySkipBlankLine(consumeCodeBlock: true))    // If there is any content after the fence, the block did not end.
                         return false;
                     peek.Consume();
                     return true;

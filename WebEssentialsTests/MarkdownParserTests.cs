@@ -41,6 +41,27 @@ namespace WebEssentialsTests
 
     abc
 Bye!"));
+
+            CollectionAssert.AreEquivalent(new[] { "" }, ParseCodeBlocks(@"Hi there!
+
+    
+Bye!"), "Empty lines become empty artifacts");
+            CollectionAssert.AreEquivalent(new[] { "" }, ParseCodeBlocks(@"
+Two lines of four spaces each (boundary, then code):
+    
+    
+Bye!"), "Unlimited whitespace is allowed in the block boundary line");
+            CollectionAssert.AreEquivalent(new[] { " ", "a", " ", "b" }, ParseCodeBlocks(@"
+Five spaces, no other content:
+
+     
+Five spaces, surrounded by content:
+
+    a
+     
+    b
+Bye!"), "Whitespace-only code is reported");
+
             CollectionAssert.AreEquivalent(new[] { "abc", "def" }, ParseCodeBlocks(@"Hi there!
 
     abc
@@ -158,10 +179,21 @@ Bye!"), "Alternate fences & blank lines are handled correctly");
 ```
     abc
 ```
-Bye!"));
-            CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"```
+Bye!"), "Leading whitespace is preserved");
+
+            CollectionAssert.AreEquivalent(new[] { "abc", "```   123" }, ParseCodeBlocks(@"Hi there!
+```
 abc
-```"));
+```   123
+```
+Bye!"), "Closing fence cannot have content following");
+            CollectionAssert.AreEquivalent(new[] { "abc", "Bye!" }, ParseCodeBlocks(@"Hi there!
+```
+abc
+```        
+```
+Bye!"), "Closing fence can have unlimited whitespace following");
+
             CollectionAssert.AreEquivalent(new[] { "abc" }, ParseCodeBlocks(@"```
 abc
 ```"), "Lack of surrounding characters doesn't break anything");
