@@ -13,6 +13,7 @@ using System.Reflection;
 using Microsoft.Html.Core;
 using Microsoft.Web.Core;
 using Microsoft.Web.Editor;
+using Microsoft.Html.Editor.Projection;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
@@ -86,7 +87,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         }
         protected override BufferGenerator CreateBufferGenerator()
         {
-            return new MarkdownBufferGenerator(EditorTree, LanguageBlocks);
+            return new MarkdownBufferGenerator(EditorTree, LanguageBlocks, contentTypeRegistry);
         }
         public override IContentType GetContentTypeOfLocation(int position)
         {
@@ -125,7 +126,57 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
     class MarkdownBufferGenerator : ArtifactBasedBufferGenerator
     {
-        public MarkdownBufferGenerator(HtmlEditorTree editorTree, LanguageBlockCollection languageBlocks) : base(editorTree, languageBlocks) { }
+        readonly IContentTypeRegistryService contentTypeRegistry;
+        public MarkdownBufferGenerator(HtmlEditorTree editorTree, LanguageBlockCollection languageBlocks, IContentTypeRegistryService contentTypeRegistry)
+            : base(editorTree, languageBlocks)
+        {
+            this.contentTypeRegistry = contentTypeRegistry;
+        }
+
+
+        protected override void RegenerateBuffer()
+        {
+            if (!this.EnsureProjectionBuffer())
+            {
+                return;
+            }
+            base.RegenerateBuffer();
+
+            foreach (var g in EditorTree.RootNode.Tree.ArtifactCollection.OfType<MarkdownCodeArtifact>()
+                                        .GroupBy(a => a.Language))
+            {
+                var contentType = contentTypeRegistry.GetContentType(String.IsNullOrWhiteSpace(g.Key) ? "code" : g.Key);
+                var pBuffer = ProjectionBufferManager.GetProjectionBuffer(contentType);
+
+                StringBuilder fullSource = new StringBuilder();
+
+                List<ProjectionMapping> list = new List<ProjectionMapping>();
+
+                ITextSnapshot textSnapshot = base.EditorTree.TextSnapshot;
+
+                this.AppendHeader(fullSource);
+                foreach (var artifact in g)
+                {
+
+                    if (artifact.Start >= textSnapshot.Length || artifact.End > textSnapshot.Length || artifact.TreatAs != ArtifactTreatAs.Code)
+                        continue;
+
+                    fullSource.Append(this.BeginExternalSource);
+                    int artifactStart = fullSource.Length;
+
+                    ITextRange innerRange = artifact.InnerRange;
+                    fullSource.Append(textSnapshot.GetText(innerRange.Start, innerRange.Length));
+                    fullSource.Append(this.EndExternalSource);
+
+                    ProjectionMapping item = new ProjectionMapping(innerRange.Start, artifactStart, innerRange.Length, AdditionalContentInclusion.All);
+                    list.Add(item);
+                }
+
+                this.AppendFooter(fullSource);
+                pBuffer.SetTextAndMappings(fullSource.ToString(), list.ToArray());
+            }
+        }
+
     }
 
 
