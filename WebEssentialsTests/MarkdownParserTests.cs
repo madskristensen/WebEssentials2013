@@ -127,6 +127,16 @@ Bye!"), "Less-deep indent still counts");
 abc
 ```
 Bye!"));
+            CollectionAssert.AreEquivalent(new[] { "" }, ParseCodeBlocks(@"Hi there!
+~~~
+
+~~~
+Bye!"), "Empty lines become empty artifacts");
+            CollectionAssert.AreEquivalent(new string[0], ParseCodeBlocks(@"Hi there!
+
+~~~
+~~~
+Bye!"), "No artifacts are created if there are no blocks");
             CollectionAssert.AreEquivalent(new[] { "abc", "def" }, ParseCodeBlocks(@"Hi there!
 
 ~~~

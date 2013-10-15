@@ -8,7 +8,14 @@ using Microsoft.Web.Core;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
-    // To work properly with the HTML editor, we must return an Artifact as soon as the user types the start character, and the artifact should include that character.
+    // To work properly with the HTML editor, we must return an
+    // Artifact as soon as the user types the start characters.
+    // This means that we must always report empty code blocks,
+    // including empty lines inside code blocks, as zero-length
+    // artifacts.
+    // See MarkdownCodeArtifactCollection.IsDestructiveChange()
+    // which checks for "typing the start characters".  It will
+    // only look for new Artifacts when that returns true.
 
     public class MarkdownParser
     {
@@ -179,7 +186,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             protected abstract bool ReadContent();
 
-            private bool blockEnded;
+            protected bool BlockEnded { get; private set; }
             ///<summary>Moves to the next content character inside the block (after quote prefixes).</summary>
             ///<returns>False if the block had ended (the stream will be up to the next block).</returns>
             protected bool MoveToNextContentChar()
@@ -188,7 +195,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 // setting CurrentChar equal to '\0', and Position ==
                 // Length.  This state is not a content character; we
                 // stop at the last valid CurrentChar.
-                if (stream.IsAtLastCharacter() || blockEnded)
+                if (stream.IsAtLastCharacter() || BlockEnded)
                     return false;
                 stream.MoveToNextChar();
                 // If we're still in the middle of a line, return the character
@@ -198,7 +205,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 // If we find a blank line, we've reached a block boundary.
                 if (TryConsumeEnd())
                 {
-                    blockEnded = true;
+                    BlockEnded = true;
                     return false;
                 }
                 using (var peek = Peek())
@@ -209,7 +216,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     {
                         // If we reached a line that doesn't have the right
                         // prefix, the block has ended.
-                        blockEnded = true;
+                        BlockEnded = true;
                         return false;
                     }
                 }
@@ -280,13 +287,13 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     // If we've hit the end of the line, consume the current character and stop.
                     // (with the same logic in case we hit the end of the block too)
                     if (stream.NextChar == '\r' || stream.NextChar == '\n')
-                        hitLineEnd = true;
+                        hitLineEnd = !BlockEnded;
                     // If we hit the end of the block, stop.
 
                     if (!MoveToNextContentChar())
                     {
                         // If we started at the end of the block, we didn't read anything.
-                        if (contentStart == contentEnd)
+                        if (contentStart == contentEnd && !hitLineEnd)
                             return null;
                         break;
                     }
