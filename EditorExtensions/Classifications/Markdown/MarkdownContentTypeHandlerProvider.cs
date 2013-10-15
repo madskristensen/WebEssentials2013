@@ -73,7 +73,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         }
         public override ArtifactCollection CreateArtifactCollection()
         {
-            return new ArtifactCollection(new MarkdownCodeArtifactProcessor());
+            return new MarkdownCodeArtifactCollection(new MarkdownCodeArtifactProcessor());
         }
     }
 
@@ -184,7 +184,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     {
         public ArtifactCollection CreateArtifactCollection()
         {
-            return new ArtifactCollection(this);
+            return new MarkdownCodeArtifactCollection(this);
         }
 
         public void GetArtifacts(ITextProvider text, ArtifactCollection artifactCollection)
@@ -200,5 +200,73 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public string RightSeparator { get { return "`"; } }
         public string LeftCommentSeparator { get { return "<!--"; } }
         public string RightCommentSeparator { get { return "<!--"; } }
+    }
+
+    public class MarkdownCodeArtifactCollection : ArtifactCollection
+    {
+        public MarkdownCodeArtifactCollection(IArtifactProcessor p) : base(p) { }
+
+        ///<summary>Checks the old and new text to see whether either text matches a condition.</summary>
+        ///<param name="surroundingLength">The number of characters around the modified portion (in each direction) to include in the check.  Pass zero to only check the modified range.</param>
+        ///<param name="predicate">The check to run against each version.</param>
+        ///<returns>True if either version matched.</returns>
+        ///<remarks>
+        /// This will not check empty versions; if text is deleted 
+        /// or inserted, it will only run on the wider version. It
+        /// will only check both versions if the range of text was 
+        /// replaced with different text (if both lengths are >0).  
+        ///</remarks>
+        private delegate bool CheckTextDelegate(int surroundingLength, Func<string, bool> predicate);
+        public override bool IsDestructiveChange(int start, int oldLength, int newLength, ITextProvider oldText, ITextProvider newText)
+        {
+            if (base.IsDestructiveChange(start, oldLength, newLength, oldText, newText))
+            {
+                return true;
+            }
+
+            CheckTextDelegate CheckText = (surroundingLength, predicate) =>
+            {
+                int rangeStart = Math.Max(0, start - surroundingLength);
+                if (newLength > 0)
+                {
+                    var surroundingText = newText.GetText(new TextRange(
+                        rangeStart,
+                        Math.Min(newText.Length - rangeStart, newLength + surroundingLength)
+                    ));
+                    if (predicate(surroundingText))
+                        return true;
+                }
+                if (oldLength > 0)
+                {
+                    var surroundingText = oldText.GetText(new TextRange(
+                        rangeStart,
+                        Math.Min(oldText.Length - rangeStart, oldLength + surroundingLength)
+                    ));
+                    if (predicate(surroundingText))
+                        return true;
+                }
+                return false;
+            };
+
+
+            // If the user typed characters involved in code blocks, rebuild.
+            if (CheckText(0, delta => delta.IndexOfAny(new[] { '`', '~', '\r', '\n', '\t' }) >= 0))
+                return true;
+
+            if (CheckText(0, delta => delta.Contains(' ')))
+            {
+                // If the user typed a space, and it looks like we're in indent for an indented code block, rebuild.
+                if (CheckText(4, s => s.Contains('\t') || s.Contains("    ")))
+                    return true;
+            }
+
+            return false;
+        }
+
+
+        public override ICollection<IArtifact> ReflectTextChange(int start, int oldLength, int newLength)
+        {
+            return base.ReflectTextChange(start, oldLength, newLength);
+        }
     }
 }
