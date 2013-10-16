@@ -27,7 +27,7 @@ namespace MadsKristensen.EditorExtensions
             _textView = textView;
             _textBuffer = textBuffer;
             _pendingUpdate = true;
-                        
+
             _textView.Caret.PositionChanged += OnCaretPositionChanged;
             // [Mads] I've added this so the smart tags refreshes when buffer is manipulated
             _textBuffer.ChangedLowPriority += BufferChanged;
@@ -204,7 +204,11 @@ namespace MadsKristensen.EditorExtensions
         public void Dispose()
         {
             _tree = null;
-            _textBuffer = null;
+            if (_textBuffer != null)
+            {
+                _textBuffer.ChangedLowPriority -= BufferChanged;
+                _textBuffer = null;
+            }
 
             if (_textView != null)
             {
