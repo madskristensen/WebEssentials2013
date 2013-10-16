@@ -189,29 +189,34 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
                 ITextSnapshot textSnapshot = base.EditorTree.TextSnapshot;
 
-                //this.AppendHeader(fullSource);
                 foreach (var artifact in g)
                 {
-
                     if (artifact.Start >= textSnapshot.Length || artifact.End > textSnapshot.Length || artifact.TreatAs != ArtifactTreatAs.Code)
                         continue;
 
-                    fullSource.Append(this.BeginExternalSource);
+                    // Add a newline between the texts of each buffer.
+                    // This newline will become part of the underlying
+                    // text seen by the "foreign" language service; it
+                    // will never be displayed in the editor.
+                    // In the future, I may want to add boilerplate to
+                    // make the code valid for some languages.  (eg, a
+                    // C# method declaration if the code only consists
+                    // of statements)
+                    if (fullSource.Length > 0)
+                        fullSource.AppendLine();
+
                     int artifactStart = fullSource.Length;
 
                     ITextRange innerRange = artifact.InnerRange;
                     fullSource.Append(textSnapshot.GetText(innerRange.Start, innerRange.Length));
-                    fullSource.Append(this.EndExternalSource);
 
                     ProjectionMapping item = new ProjectionMapping(innerRange.Start, artifactStart, innerRange.Length, AdditionalContentInclusion.All);
                     list.Add(item);
                 }
 
-                //this.AppendFooter(fullSource);
                 pBuffer.SetTextAndMappings(fullSource.ToString(), list.ToArray());
             }
         }
-
     }
 
 
