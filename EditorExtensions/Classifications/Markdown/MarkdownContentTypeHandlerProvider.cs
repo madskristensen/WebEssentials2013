@@ -102,11 +102,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             var alb = block as ArtifactLanguageBlock;
             if (alb == null)
                 return contentTypeRegistry.GetContentType("text");
-            if (string.IsNullOrWhiteSpace(alb.Language))
-                return contentTypeRegistry.GetContentType("code");
 
-            BufferGenerator.ToString();     // Force creation
-            return contentTypeRegistry.GetContentType(alb.Language);
+            return alb.ContentType ?? contentTypeRegistry.GetContentType("code");
         }
 
         protected override void BuildLanguageBlockCollection()
@@ -117,7 +114,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             {
                 if (current.TreatAs == ArtifactTreatAs.Code)
                 {
-                    base.LanguageBlocks.AddBlock(new ArtifactLanguageBlock(current));
+                    base.LanguageBlocks.AddBlock(new ArtifactLanguageBlock(current, contentTypeRegistry.FromFriendlyName(current.Language)));
                 }
             }
             base.LanguageBlocks.SortByPosition();
@@ -127,8 +124,14 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
     class ArtifactLanguageBlock : LanguageBlock
     {
-        public ArtifactLanguageBlock(MarkdownCodeArtifact a) : base(a) { Language = a.Language; }
+        public ArtifactLanguageBlock(MarkdownCodeArtifact a, IContentType contentType)
+            : base(a)
+        {
+            Language = a.Language;
+            ContentType = contentType;
+        }
         public string Language { get; private set; }
+        public IContentType ContentType { get; private set; }
     }
 
     class MarkdownBufferGenerator : ArtifactBasedBufferGenerator
@@ -157,9 +160,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             foreach (var g in EditorTree.RootNode.Tree.ArtifactCollection.OfType<MarkdownCodeArtifact>()
                                         .GroupBy(a => a.Language))
             {
-                if (string.IsNullOrWhiteSpace(g.Key))
-                    continue;
-                var contentType = contentTypeRegistry.GetContentType(g.Key);
+                var contentType = contentTypeRegistry.FromFriendlyName(g.Key);
                 if (contentType == null)
                     continue;
                 var pBuffer = ProjectionBufferManager.GetProjectionBuffer(contentType);
@@ -200,6 +201,52 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         }
     }
 
+    static class ContentTypeExtensions
+    {
+        public static IContentType FromFriendlyName(this IContentTypeRegistryService registry, string friendlyName)
+        {
+            if (string.IsNullOrWhiteSpace(friendlyName))
+                return null;
+            if (friendlyName.Equals("html", StringComparison.OrdinalIgnoreCase) || friendlyName.Equals("htmlx", StringComparison.OrdinalIgnoreCase))
+                return new NonHtmlContentType(registry.GetContentType("htmlx"));
+
+            return registry.GetContentType(friendlyName);
+        }
+
+        ///<summary>A wrapper around the HTMLX content type that lies in IsOfType().</summary>
+        ///<remarks>ProjectionBufferManager.GetProjectionBuffer() refuses to get a buffer for HTMLX, so I pass this ContentType to lie to it.</remarks>
+        class NonHtmlContentType : IContentType
+        {
+            readonly IContentType actual;
+            public NonHtmlContentType(IContentType actual) { this.actual = actual; }
+            public IEnumerable<IContentType> BaseTypes { get { return actual.BaseTypes; } }
+            public string DisplayName { get { return actual.DisplayName; } }
+            public string TypeName { get { return actual.TypeName; } }
+
+            public bool IsOfType(string type)
+            {
+                if (type == "htmlx")
+                    return false;
+                return actual.IsOfType(type);
+            }
+
+            public override string ToString() { return actual.ToString() + " - Fake"; }
+
+            public override bool Equals(object obj)
+            {
+                if (obj == null) return false;
+                var fakeout = obj as NonHtmlContentType;
+                if (fakeout != null)
+                    return this.actual == fakeout.actual;
+
+                return actual.Equals(obj);
+            }
+            public override int GetHashCode()
+            {
+                return actual.GetHashCode();
+            }
+        }
+    }
 
     public class MarkdownCodeArtifactProcessor : IArtifactProcessor
     {
