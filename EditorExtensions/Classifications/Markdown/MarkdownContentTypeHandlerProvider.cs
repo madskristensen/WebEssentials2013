@@ -40,15 +40,20 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             );
 
         readonly IContentTypeRegistryService contentTypeRegistry;
+        private CodeBlockBlockHandler codeBlockHandler;
         public MarkdownContentTypeHandler(IContentTypeRegistryService contentTypeRegistry)
         {
             this.contentTypeRegistry = contentTypeRegistry;
+        }
+        public override ArtifactCollection CreateArtifactCollection()
+        {
+            return new MarkdownCodeArtifactCollection(new MarkdownCodeArtifactProcessor());
         }
 
         protected override void CreateBlockHandlers()
         {
             base.CreateBlockHandlers();
-            GetLanguageBlockHandlerList(this).Add(new CodeBlockBlockHandler(EditorTree, contentTypeRegistry));
+            GetLanguageBlockHandlerList(this).Add(codeBlockHandler = new CodeBlockBlockHandler(EditorTree, contentTypeRegistry));
         }
 
         public override void Init(HtmlEditorTree editorTree)
@@ -71,9 +76,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             }
             return base.GetContentTypeOfLocation(position);
         }
-        public override ArtifactCollection CreateArtifactCollection()
+        public override void UpdateContainedLanguageBuffers()
         {
-            return new MarkdownCodeArtifactCollection(new MarkdownCodeArtifactProcessor());
+            // TODO: Call RemoveSpans() on each created LanguageProjectionBuffer iff IsRegenerationNeeded()
+            base.UpdateContainedLanguageBuffers();
         }
     }
 
@@ -99,6 +105,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             if (string.IsNullOrWhiteSpace(alb.Language))
                 return contentTypeRegistry.GetContentType("code");
 
+            BufferGenerator.ToString();     // Force creation
             return contentTypeRegistry.GetContentType(alb.Language);
         }
 
@@ -137,10 +144,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         protected override void RegenerateBuffer()
         {
             if (!this.EnsureProjectionBuffer())
-            {
                 return;
-            }
-            base.RegenerateBuffer();
+
+            //base.RegenerateBuffer();
 
             foreach (var g in EditorTree.RootNode.Tree.ArtifactCollection.OfType<MarkdownCodeArtifact>()
                                         .GroupBy(a => a.Language))
