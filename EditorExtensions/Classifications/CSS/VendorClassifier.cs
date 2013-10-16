@@ -60,9 +60,7 @@ namespace MadsKristensen.EditorExtensions
             if (!WESettings.GetBoolean(WESettings.Keys.SyncVendorValues) || !EnsureInitialized())
                 return spans;
 
-            // HACK: What's this variable for?
-            var declarations = Cache.Where(d => span.End <= d.AfterEnd && d.Start >= span.Start);
-            foreach (Declaration dec in Cache.Where(d => d.PropertyName.Text.Length > 0 && span.Snapshot.Length >= d.AfterEnd))
+            foreach (Declaration dec in Cache.Where(d => d.PropertyName.Text.Length > 0 && span.Start <= d.Start && span.End >= d.AfterEnd))
             {
                 if (dec.IsVendorSpecific())
                 {
@@ -70,6 +68,9 @@ namespace MadsKristensen.EditorExtensions
                     var s = new ClassificationSpan(ss, _decClassification);
                     spans.Add(s);
                 }
+
+                if (dec.Semicolon == null)
+                    continue;
 
                 int start = dec.Colon.AfterEnd;
                 int length = dec.AfterEnd - start;

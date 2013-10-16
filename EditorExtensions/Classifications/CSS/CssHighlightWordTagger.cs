@@ -102,7 +102,9 @@ namespace MadsKristensen.EditorExtensions
                      ?? (ParseItem)item.FindType<LessMixinName>();
 
             if (validItem == null)
-            {   // There is no separate token type for a property name,
+            {
+                return;
+                // There is no separate token type for a property name,
                 // so I need to ensure that we are in the name portion.
                 var decl = item.FindType<Declaration>();
                 if (decl != null && item.Parent != decl.PropertyName)
