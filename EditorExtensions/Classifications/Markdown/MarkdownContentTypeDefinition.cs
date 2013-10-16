@@ -18,9 +18,9 @@ namespace MadsKristensen.EditorExtensions
         [BaseDefinition("htmlx")]
         public ContentTypeDefinition IMarkdownContentType { get; set; }
 
-        /// <summary>
-        /// Exports the markdown file extension
-        /// </summary>
+        // All of these extensions must also be registered in registry.pkgdef.
+        // See https://twitter.com/Schabse/status/390280700043472896 and http://blogs.msdn.com/b/noahric/archive/2010/03/01/new-extension-css-is-less.aspx
+
         [Export(typeof(FileExtensionToContentTypeDefinition))]
         [ContentType(MarkdownContentType)]
         [FileExtension(".md")]
