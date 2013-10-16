@@ -106,7 +106,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     {
         readonly IContentTypeRegistryService contentTypeRegistry;
         public CodeBlockBlockHandler(HtmlEditorTree tree, IContentTypeRegistryService contentTypeRegistry)
-            : base(tree, contentTypeRegistry.GetContentType("htmlx"))
+            : base(tree, contentTypeRegistry.GetContentType("code"))
         {
             this.contentTypeRegistry = contentTypeRegistry;
         }
@@ -159,18 +159,28 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             this.contentTypeRegistry = contentTypeRegistry;
         }
 
+        protected override bool EnsureProjectionBuffer()
+        {
+            if (ProjectionBufferManager == null)
+                return false;
+            // We don't have any single ProjectionBuffer.
+            return true;
+        }
 
         protected override void RegenerateBuffer()
         {
-            if (!this.EnsureProjectionBuffer())
+            if (ProjectionBufferManager == null)
                 return;
-
             //base.RegenerateBuffer();
 
             foreach (var g in EditorTree.RootNode.Tree.ArtifactCollection.OfType<MarkdownCodeArtifact>()
                                         .GroupBy(a => a.Language))
             {
-                var contentType = contentTypeRegistry.GetContentType(String.IsNullOrWhiteSpace(g.Key) ? "code" : g.Key);
+                if (string.IsNullOrWhiteSpace(g.Key))
+                    continue;
+                var contentType = contentTypeRegistry.GetContentType(g.Key);
+                if (contentType == null)
+                    continue;
                 var pBuffer = ProjectionBufferManager.GetProjectionBuffer(contentType);
 
                 StringBuilder fullSource = new StringBuilder();
@@ -179,7 +189,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
                 ITextSnapshot textSnapshot = base.EditorTree.TextSnapshot;
 
-                this.AppendHeader(fullSource);
+                //this.AppendHeader(fullSource);
                 foreach (var artifact in g)
                 {
 
@@ -197,7 +207,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     list.Add(item);
                 }
 
-                this.AppendFooter(fullSource);
+                //this.AppendFooter(fullSource);
                 pBuffer.SetTextAndMappings(fullSource.ToString(), list.ToArray());
             }
         }
