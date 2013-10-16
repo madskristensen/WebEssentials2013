@@ -14,28 +14,9 @@ using Microsoft.Html.Core;
 using Microsoft.Web.Core;
 using Microsoft.Web.Editor;
 using Microsoft.Html.Editor.Projection;
-using Microsoft.Web.Editor.Workspace;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
-    [Export(typeof(IWebEditorFactory))]
-    [ContentType(MarkdownContentTypeDefinition.MarkdownContentType)]
-    internal sealed class MarkdownEditorFactory : IWebEditorFactory
-    {
-        // Steal an instance of the internal HtmlEditorFactory class.
-        [ImportMany]
-        public IEnumerable<IWebEditorFactory> HtmlFactories { get; set; }
-
-        private IWebEditorFactory htmlFactory;
-
-        public IWebEditorInstance CreateEditorInstance(IWebWorkspaceItem workspaceItem, object textBuffer, IWebEditorDocumentFactory documentFactory)
-        {
-            htmlFactory = htmlFactory ?? HtmlFactories.First(f => f.GetType().FullName == "Microsoft.Html.Editor.HtmlEditorFactory");
-
-            return htmlFactory.CreateEditorInstance(workspaceItem, textBuffer, documentFactory);
-        }
-    }
-
     [Export(typeof(IContentTypeHandlerProvider))]
     [ContentType(MarkdownContentTypeDefinition.MarkdownContentType)]
     public class MarkdownContentTypeHandlerProvider : IContentTypeHandlerProvider
