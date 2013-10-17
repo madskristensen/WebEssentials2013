@@ -210,7 +210,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             if (friendlyName.Equals("html", StringComparison.OrdinalIgnoreCase) || friendlyName.Equals("htmlx", StringComparison.OrdinalIgnoreCase))
                 return new NonHtmlContentType(registry.GetContentType("htmlx"));
 
-            return registry.GetContentType(friendlyName);
+            var ctype = registry.GetContentType(friendlyName);
+            if (ctype == null) return null;
+            if (ctype.IsOfType("htmlx"))
+                return new NonHtmlContentType(ctype);
+            return ctype;
         }
 
         ///<summary>A wrapper around the HTMLX content type that lies in IsOfType().</summary>
