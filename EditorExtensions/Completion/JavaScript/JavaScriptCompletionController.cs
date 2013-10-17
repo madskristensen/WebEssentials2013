@@ -233,7 +233,12 @@ namespace MadsKristensen.EditorExtensions
                 var completion = _currentSession.SelectedCompletionSet.SelectionStatus.Completion;
                 _currentSession.Commit();
 
-                if (TextView.Caret.Position.BufferPosition.Position == TextView.TextBuffer.CurrentSnapshot.Length)
+                var positionNullable = _currentSession.GetTriggerPoint(TextView.TextBuffer.CurrentSnapshot);
+                if (positionNullable == null)
+                    return null;
+                var position = positionNullable.Value;
+                
+                if (position.Position == TextView.TextBuffer.CurrentSnapshot.Length)
                     return completion;  // If the cursor is at the end of the document, don't choke
 
                 // If applicable, move the cursor to the end of the function call.
@@ -247,12 +252,12 @@ namespace MadsKristensen.EditorExtensions
                 // Other completions will include the closing quote themselves, so
                 // we don't need to move 
                 if (!completion.InsertionText.EndsWith("'") && !completion.InsertionText.EndsWith("\"")
-                    && (TextView.Caret.Position.BufferPosition.GetChar() == '"' || TextView.Caret.Position.BufferPosition.GetChar() == '\''))
+                    && (position.GetChar() == '"' || position.GetChar() == '\''))
                     TextView.Caret.MoveToNextCaretPosition();
                 // In either case, if there is a closing parenthesis, move past it
-                var prevChar = (TextView.Caret.Position.BufferPosition - 1).GetChar();
+                var prevChar = (position - 1).GetChar();
                 if ((prevChar == '"' || prevChar == '\'')
-                 && TextView.Caret.Position.BufferPosition.GetChar() == ')')
+                 && position.GetChar() == ')')
                     TextView.Caret.MoveToNextCaretPosition();
                 return completion;
             }
