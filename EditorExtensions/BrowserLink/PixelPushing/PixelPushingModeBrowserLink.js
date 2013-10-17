@@ -128,6 +128,12 @@
             tmp.push({ "href": getSheetHref(sheets[i]) });
             var sheet = sheets[i];
             var rules = sheet.cssRules;
+
+            // Some Chrome Extension add style sheets to the page and the rules can't be access or return null.
+            if (rules === null) {
+                continue;
+            }
+
             var nameEncounters = {};
             
             for (var j = 0; j < rules.length; ++j) {
