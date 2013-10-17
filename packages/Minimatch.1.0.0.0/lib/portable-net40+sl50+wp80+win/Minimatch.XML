@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Minimatch</name>
+    </assembly>
+    <members>
+        <member name="T:Minimatch.Options">
+            <summary>Contains options that control how Minimatch matches strings.</summary>
+        </member>
+        <member name="P:Minimatch.Options.NoComment">
+            <summary>Suppresses the behavior of treating # at the start of a pattern as a comment.</summary>
+        </member>
+        <member name="P:Minimatch.Options.NoNegate">
+            <summary>Suppresses the behavior of treating a leading ! character as negation.</summary>
+        </member>
+        <member name="P:Minimatch.Options.NoBrace">
+            <summary>Do not expand {a,b} and {1.3} brace sets.</summary>
+        </member>
+        <member name="P:Minimatch.Options.NoGlobStar">
+            <summary>Disable ** matching against multiple folder names.</summary>
+        </member>
+        <member name="P:Minimatch.Options.NoCase">
+            <summary>Ignores case differences when matching.</summary>
+        </member>
+        <member name="P:Minimatch.Options.NoExt">
+            <summary>Disable "extglob" style patterns like <c>+(a|b)</c>.</summary>
+        </member>
+        <member name="P:Minimatch.Options.Dot">
+            <summary>Allow patterns to match filenames starting with a period, even if the pattern does not explicitly have a period in that spot.
+            Note that by default, <c>a/**/b</c>  will not match <c>a/.d/b</c>, unless dot is set.</summary>
+        </member>
+        <member name="P:Minimatch.Options.NoNull">
+            <summary>When a match is not found by Match(), return a list containing the pattern itself. If not set, an empty list is returned if there are no matches.</summary>
+        </member>
+        <member name="P:Minimatch.Options.FlipNegate">
+            <summary>Returns from negate expressions the same as if they were not negated. (ie, true on a hit, false on a miss).</summary>
+        </member>
+        <member name="P:Minimatch.Options.MatchBase">
+            <summary>If set, then patterns without slashes will be matched against the basename of the path if it contains slashes. For example, <c>a?b</c> would match the path <c>/xyz/123/acb</c>, but not <c>/xyz/acb/123</c>.</summary>
+        </member>
+        <member name="P:Minimatch.Options.AllowWindowsPaths">
+            <summary>If true, backslahes in patterns and paths will be treated as forward slashes.  This disables escape characters.</summary>
+        </member>
+        <member name="P:Minimatch.Options.IgnoreCase">
+            <summary>Ignores case differences when matching.  This is the same as NoCase.</summary>
+        </member>
+        <member name="T:Minimatch.Minimatcher">
+            <summary>Parses a single glob pattern and tests strings against it.</summary>
+        </member>
+        <member name="M:Minimatch.Minimatcher.CreateFilter(System.String,Minimatch.Options)">
+            <summary>Creates a filter function that tests input against a pattern.</summary>
+        </member>
+        <member name="M:Minimatch.Minimatcher.Check(System.String,System.String,Minimatch.Options)">
+            <summary>Tests a single input against a pattern.</summary>
+            <remarks>This function reparses this input on each invocation.  For performance, avoid this function and reuse a Minimatcher instance instead.</remarks>
+        </member>
+        <member name="M:Minimatch.Minimatcher.Filter(System.Collections.Generic.IEnumerable{System.String},System.String,Minimatch.Options)">
+            <summary>Filters a list of inputs against a single pattern.</summary>
+            <remarks>This function reparses this input on each invocation.  For performance, avoid this function and reuse a Minimatcher instance instead.</remarks>
+        </member>
+        <member name="M:Minimatch.Minimatcher.CreateRegex(System.String,Minimatch.Options)">
+            <summary>Compiles a pattern into a single regular expression.</summary>
+        </member>
+        <member name="M:Minimatch.Minimatcher.#ctor(System.String,Minimatch.Options)">
+            <summary>Creates a new Minimatcher instance, parsing the pattern into a regex.</summary>
+        </member>
+        <member name="M:Minimatch.Minimatcher.IsMatch(System.String)">
+            <summary>Checks whether a given string matches this pattern.</summary>
+        </member>
+        <member name="M:Minimatch.Minimatcher.Filter(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>Filters a list of inputs against this pattern.</summary>
+        </member>
+        <member name="M:Minimatch.Minimatcher.BraceExpand(System.String,Minimatch.Options)">
+            <summary>Expands all brace ranges in a pattern, returning a sequence containing every possible combination.</summary>
+        </member>
+    </members>
+</doc>

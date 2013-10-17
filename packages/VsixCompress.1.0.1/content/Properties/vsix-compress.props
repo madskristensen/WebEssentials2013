@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--  
+        This file was added by the VsixCompress NuGet Package http://nuget.org/packages/VsixCompress.
+        You can specify VsixCompress settings in this file.
+        
+        After editing this file you may need to restart Visual Studio for the changes take effect.
+  -->
+
+  <PropertyGroup>
+    <!-- 
+          Set the property below to true if you'd like the created .vsix file
+          to have the version in the file name.
+          
+          Default = false
+    -->
+    <!-- <VC_IncludeVersionInOutput>true</VC_IncludeVersionInOutput> -->
+  </PropertyGroup>
+</Project>

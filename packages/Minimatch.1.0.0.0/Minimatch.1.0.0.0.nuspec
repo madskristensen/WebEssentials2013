@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Minimatch</id>
+    <version>1.0.0.0</version>
+    <title>Minimatch</title>
+    <authors>SLaks</authors>
+    <owners>SLaks</owners>
+    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>https://github.com/SLaks/Minimatch/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A C# glob matcher</description>
+    <releaseNotes>Initial Release.</releaseNotes>
+    <copyright>Copyright 2013</copyright>
+    <tags>strings glob search files wildcards patterns</tags>
+  </metadata>
+</package>
