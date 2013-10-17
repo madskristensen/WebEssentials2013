@@ -203,6 +203,17 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
     static class ContentTypeExtensions
     {
+        static readonly IReadOnlyDictionary<string, string> ContentTypeAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "C#",             "CSharp" },
+            { "CS",             "CSharp" },
+            { "VB",             "Basic" },
+            { "VB.Net",         "Basic" },
+            { "VisualBasic",    "Basic" },
+            { "JS",             "Javascript" },
+            { "JScript",        "Javascript" }
+        };
+
         public static IContentType FromFriendlyName(this IContentTypeRegistryService registry, string friendlyName)
         {
             if (string.IsNullOrWhiteSpace(friendlyName))
@@ -210,7 +221,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             if (friendlyName.Equals("html", StringComparison.OrdinalIgnoreCase) || friendlyName.Equals("htmlx", StringComparison.OrdinalIgnoreCase))
                 return new NonHtmlContentType(registry.GetContentType("htmlx"));
 
-            var ctype = registry.GetContentType(friendlyName);
+            string realName;
+            if (!ContentTypeAliases.TryGetValue(friendlyName, out realName))
+                realName = friendlyName;
+
+            var ctype = registry.GetContentType(realName);
             if (ctype == null) return null;
             if (ctype.IsOfType("htmlx"))
                 return new NonHtmlContentType(ctype);
