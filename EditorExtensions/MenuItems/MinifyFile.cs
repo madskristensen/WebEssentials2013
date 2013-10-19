@@ -8,7 +8,9 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using WebMarkupMin.Core;
 using WebMarkupMin.Core.Minifiers;
+using WebMarkupMin.Core.Settings;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -141,8 +143,14 @@ namespace MadsKristensen.EditorExtensions
                 return minifier.MinifyJavaScript(content, settings);
             }
             else if (_htmlExt.Contains(extension.ToLowerInvariant())){
-                var minifyer = new XhtmlMinifier();
-                MarkupMinificationResult result = minifyer.Minify(content, generateStatistics: true);
+                var settings = new HtmlMinificationSettings
+                {
+                    RemoveOptionalEndTags = false,
+                    AttributeQuotesRemovalMode = HtmlAttributeQuotesRemovalMode.KeepQuotes
+                };
+
+                var minifier = new HtmlMinifier(settings);
+                MarkupMinificationResult result = minifier.Minify(content, generateStatistics: true);
                 
                 if (result.Errors.Count == 0)
                 {
