@@ -21,7 +21,12 @@ namespace MadsKristensen.EditorExtensions
             if (path == null)
                 return false;
 
-            var referencedPath = Path.Combine(Path.GetDirectoryName(TextView.TextBuffer.GetFileName()), path);
+            string referencedPath;
+
+            if (path.StartsWith("~/"))
+                referencedPath = Path.Combine(ProjectHelpers.GetProjectFolder(TextView.TextBuffer.GetFileName()), path.Substring(2));
+            else
+                referencedPath = Path.Combine(Path.GetDirectoryName(TextView.TextBuffer.GetFileName()), path);
 
             if (referencedPath != null)
             {
