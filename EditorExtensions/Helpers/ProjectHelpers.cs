@@ -180,13 +180,25 @@ namespace MadsKristensen.EditorExtensions
 
         public static IEnumerable<string> GetSelectedItemPaths()
         {
-            var items = (Array) EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
+            var items = (Array)EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
             foreach (UIHierarchyItem selItem in items)
             {
                 var item = selItem.Object as ProjectItem;
                 if (item != null)
                 {
                     yield return item.Properties.Item("FullPath").Value.ToString();
+                }
+            }
+        }
+        public static IEnumerable<Project> GetSelectedProjects()
+        {
+            var items = (Array)EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
+            foreach (UIHierarchyItem selItem in items)
+            {
+                var item = selItem.Object as Project;
+                if (item != null)
+                {
+                    yield return item;
                 }
             }
         }

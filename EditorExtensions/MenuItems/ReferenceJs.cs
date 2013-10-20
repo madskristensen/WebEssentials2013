@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace MadsKristensen.EditorExtensions
@@ -31,31 +32,39 @@ namespace MadsKristensen.EditorExtensions
         void menuCommand_BeforeQueryStatus(object sender, System.EventArgs e)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
-            var files = new List<string>(ProjectHelpers.GetSelectedItemPaths());
+            menuCommand.Visible = false;
 
-            if (files.Count == 1 && !Path.HasExtension(files[0]))
+            var projects = ProjectHelpers.GetSelectedProjects().ToList();
+            if (projects.Count == 1)
             {
-                string folder = files[0];
-                
-                if (!Directory.Exists(folder))
+                _referencesJsPath = Path.Combine(ProjectHelpers.GetRootFolder(projects[0]), @"Scripts\_references.js");
+            }
+            else
+            {
+                var files = ProjectHelpers.GetSelectedItemPaths().ToList();
+
+                if (files.Count != 1 || Path.HasExtension(files[0]))
                     return;
+                string folder = files[0];
 
                 DirectoryInfo dir = new DirectoryInfo(folder);
                 bool isScripts = dir.Name.Equals("scripts", StringComparison.OrdinalIgnoreCase);
-                
+
                 if (!isScripts)
                     return;
 
                 _referencesJsPath = Path.Combine(folder, "_references.js");
-                bool exist = File.Exists(_referencesJsPath);
-                menuCommand.Visible = !exist;
             }
+            if (File.Exists(_referencesJsPath))
+                return;
+            menuCommand.Visible = true;
         }
 
         private void Execute()
         {
             try
             {
+                Directory.CreateDirectory(Path.GetDirectoryName(_referencesJsPath));
                 File.WriteAllText(_referencesJsPath, "/// <autosync enabled=\"true\" />", Encoding.UTF8);
                 ProjectHelpers.AddFileToActiveProject(_referencesJsPath);
                 EditorExtensionsPackage.DTE.ItemOperations.OpenFile(_referencesJsPath);

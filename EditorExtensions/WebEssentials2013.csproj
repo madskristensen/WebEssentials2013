@@ -342,6 +342,7 @@
     <Compile Include="Commands\HTML\EnterFormatCommandTarget.cs" />
     <Compile Include="Commands\HTML\ZenCodingCommandTarget.cs" />
     <Compile Include="Commands\JavaScript\JsHintIgnoreList.cs" />
+    <Compile Include="Commands\JavaScript\ReferenceTagGoToDefinition.cs" />
     <Compile Include="Commands\JavaScript\NodeModuleGoToDefinition.cs" />
     <Compile Include="Commands\JavaScript\JavaScriptCreationListener.cs">
       <SubType>Code</SubType>
