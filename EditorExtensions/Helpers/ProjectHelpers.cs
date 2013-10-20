@@ -13,6 +13,16 @@ namespace MadsKristensen.EditorExtensions
 {
     internal static class ProjectHelpers
     {
+        public static bool IsWebProject(this Project project)
+        {
+            // Web site project
+            if (project.Kind.Equals("{E24C65DC-7377-472B-9ABA-BC803B73C61A}", StringComparison.OrdinalIgnoreCase))
+                return true;
+
+            // Check for Web Application projects.  See https://github.com/madskristensen/WebEssentials2013/pull/140#issuecomment-26679862
+            return project.Properties.Item("WebApplication.UseIISExpress") != null;
+        }
+
         public static string GetRootFolder(Project project = null)
         {
             try
@@ -113,7 +123,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static string ToAbsoluteFilePath(string relativeUrl, string projectRoot, string rootFolder)
         {
-            string imageUrl = relativeUrl.Trim(new[]{'\'', '"'});
+            string imageUrl = relativeUrl.Trim(new[] { '\'', '"' });
             var relUri = new Uri(imageUrl, UriKind.RelativeOrAbsolute);
 
             if (relUri.IsAbsoluteUri)
@@ -162,7 +172,7 @@ namespace MadsKristensen.EditorExtensions
             if (componentModel != null)
             {
                 var editorAdapter = componentModel.GetService<IVsEditorAdaptersFactoryService>();
-                var textManager = (IVsTextManager) ServiceProvider.GlobalProvider.GetService(typeof (SVsTextManager));
+                var textManager = (IVsTextManager)ServiceProvider.GlobalProvider.GetService(typeof(SVsTextManager));
 
                 IVsTextView activeView = null;
                 textManager.GetActiveView(1, null, out activeView);
@@ -175,7 +185,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static IComponentModel GetComponentModel()
         {
-            return (IComponentModel) ServiceProvider.GlobalProvider.GetService(typeof (SComponentModel));
+            return (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
         }
 
         public static IEnumerable<string> GetSelectedItemPaths()
@@ -269,7 +279,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static IEnumerable<ProjectItem> GetSelectedItems()
         {
-            var items = (Array) EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
+            var items = (Array)EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
             foreach (UIHierarchyItem selItem in items)
             {
                 var item = selItem.Object as ProjectItem;
