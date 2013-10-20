@@ -37,6 +37,8 @@ namespace MadsKristensen.EditorExtensions
             var projects = ProjectHelpers.GetSelectedProjects().ToList();
             if (projects.Count == 1)
             {
+                if (!projects[0].IsWebProject()) 
+                    return;
                 _referencesJsPath = Path.Combine(ProjectHelpers.GetRootFolder(projects[0]), @"Scripts\_references.js");
             }
             else
@@ -44,6 +46,8 @@ namespace MadsKristensen.EditorExtensions
                 var files = ProjectHelpers.GetSelectedItemPaths().ToList();
 
                 if (files.Count != 1 || Path.HasExtension(files[0]))
+                    return;
+                if (!ProjectHelpers.GetSelectedItems().First().ContainingProject.IsWebProject())
                     return;
                 string folder = files[0];
 
