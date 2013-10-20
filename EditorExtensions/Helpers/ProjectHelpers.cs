@@ -116,12 +116,11 @@ namespace MadsKristensen.EditorExtensions
 
         public static string ToAbsoluteFilePath(string relativeUrl, ProjectItem file)
         {
-            var projectFolder = GetProjectFolder(file);
-            var project = GetProject(file);
-            return ToAbsoluteFilePath(relativeUrl, project.Properties.Item("FullPath").Value.ToString(), projectFolder);
+            var baseFolder = Path.GetDirectoryName(file.Properties.Item("FullPath").Value.ToString());
+            return ToAbsoluteFilePath(relativeUrl, GetProjectFolder(file), baseFolder);
         }
 
-        public static string ToAbsoluteFilePath(string relativeUrl, string projectRoot, string rootFolder)
+        public static string ToAbsoluteFilePath(string relativeUrl, string projectRoot, string baseFolder)
         {
             string imageUrl = relativeUrl.Trim(new[] { '\'', '"' });
             var relUri = new Uri(imageUrl, UriKind.RelativeOrAbsolute);
@@ -133,11 +132,11 @@ namespace MadsKristensen.EditorExtensions
 
             if (relUri.OriginalString.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar).StartsWith(new string(Path.DirectorySeparatorChar, 1)))
             {
-                rootFolder = null;
+                baseFolder = null;
                 relUri = new Uri(relUri.OriginalString.Substring(1), UriKind.Relative);
             }
 
-            var root = (rootFolder ?? projectRoot).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            var root = (baseFolder ?? projectRoot).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
             if (File.Exists(root))
             {
