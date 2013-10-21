@@ -13,6 +13,7 @@ namespace MadsKristensen.EditorExtensions
 {
     internal static class ProjectHelpers
     {
+        ///<summary>Indicates whether a Project is a Web Application or Web Site project.</summary>
         public static bool IsWebProject(this Project project)
         {
             // Web site project
@@ -23,32 +24,37 @@ namespace MadsKristensen.EditorExtensions
             return project.Properties.Item("WebApplication.UseIISExpress") != null;
         }
 
+        ///<summary>Gets the base directory of a specific Project, or of the active project if no parameter is passed.</summary>
         public static string GetRootFolder(Project project = null)
         {
             try
             {
-                EnvDTE80.DTE2 dte = EditorExtensionsPackage.DTE;
-                Project activeProject = project ?? GetActiveProject();
+                project = project ?? GetActiveProject();
 
-                if (activeProject == null)
+                if (project == null)
                 {
-                    var doc = dte.ActiveDocument;
+                    var doc = EditorExtensionsPackage.DTE.ActiveDocument;
                     if (doc != null && !string.IsNullOrEmpty(doc.FullName))
                         return GetProjectFolder(doc.FullName);
-                }
-
-                if (activeProject == null)
-                {
                     return string.Empty;
                 }
+                if (string.IsNullOrEmpty(project.FullName))
+                    return null;
+                var fullPath = project.Properties.Item("FullPath").Value as string;
 
-                var fullPath = activeProject.Properties.Item("FullPath").Value;
+                if (String.IsNullOrEmpty(fullPath))
+                    return "";
 
-                return fullPath == null ? string.Empty : fullPath.ToString();
+                if (Directory.Exists(fullPath))
+                    return fullPath;
+                if (File.Exists(fullPath))
+                    return Path.GetDirectoryName(fullPath);
+
+                return "";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //Logger.Log(ex);
+                Logger.Log(ex);
                 return string.Empty;
             }
         }
@@ -82,46 +88,50 @@ namespace MadsKristensen.EditorExtensions
             return false;
         }
 
+        ///<summary>Gets the currently active project (as reported by the Solution Explorer), if any.</summary>
         public static Project GetActiveProject()
         {
-            Project activeProject = null;
-
             try
             {
                 Array activeSolutionProjects = EditorExtensionsPackage.DTE.ActiveSolutionProjects as Array;
 
                 if (activeSolutionProjects != null && activeSolutionProjects.Length > 0)
-                {
-                    activeProject = activeSolutionProjects.GetValue(0) as Project;
-                }
+                    return activeSolutionProjects.GetValue(0) as Project;
             }
-            catch
+            catch (Exception ex)
             {
-                Logger.Log("Error getting the active project");
+                Logger.Log("Error getting the active project" + ex);
             }
 
-            return activeProject;
+            return null;
         }
 
+        #region ToAbsoluteFilePath()
+        ///<summary>Converts a relative URL to an absolute path on disk, as resolved from the specified file.</summary>
         public static string ToAbsoluteFilePath(string relativeUrl, string relativeToFile)
         {
             var file = EditorExtensionsPackage.DTE.Solution.FindProjectItem(relativeToFile);
             return ToAbsoluteFilePath(relativeUrl, file);
         }
 
+        ///<summary>Converts a relative URL to an absolute path on disk, as resolved from the active file.</summary>
         public static string ToAbsoluteFilePathFromActiveFile(string relativeUrl)
         {
             return ToAbsoluteFilePath(relativeUrl, GetActiveFile());
         }
 
+        ///<summary>Converts a relative URL to an absolute path on disk, as resolved from the specified file.</summary>
         public static string ToAbsoluteFilePath(string relativeUrl, ProjectItem file)
         {
-            var projectFolder = GetProjectFolder(file);
-            var project = GetProject(file);
-            return ToAbsoluteFilePath(relativeUrl, project.Properties.Item("FullPath").Value.ToString(), projectFolder);
+            var baseFolder = file.Properties == null ? null : Path.GetDirectoryName(file.Properties.Item("FullPath").Value.ToString());
+            return ToAbsoluteFilePath(relativeUrl, GetProjectFolder(file), baseFolder);
         }
 
-        public static string ToAbsoluteFilePath(string relativeUrl, string projectRoot, string rootFolder)
+        ///<summary>Converts a relative URL to an absolute path on disk, as resolved from the specified relative or base directory.</summary>
+        ///<param name="relativeUrl">The URL to resolve.</param>
+        ///<param name="projectRoot">The root directory to resolve absolute URLs from.</param>
+        ///<param name="baseFolder">The source directory to resolve relative URLs from.</param>
+        public static string ToAbsoluteFilePath(string relativeUrl, string projectRoot, string baseFolder)
         {
             string imageUrl = relativeUrl.Trim(new[] { '\'', '"' });
             var relUri = new Uri(imageUrl, UriKind.RelativeOrAbsolute);
@@ -131,13 +141,16 @@ namespace MadsKristensen.EditorExtensions
                 return relUri.LocalPath;
             }
 
+            if (projectRoot == null && baseFolder == null)
+                return "";
+
             if (relUri.OriginalString.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar).StartsWith(new string(Path.DirectorySeparatorChar, 1)))
             {
-                rootFolder = null;
+                baseFolder = null;
                 relUri = new Uri(relUri.OriginalString.Substring(1), UriKind.Relative);
             }
 
-            var root = (rootFolder ?? projectRoot).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            var root = (baseFolder ?? projectRoot).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
             if (File.Exists(root))
             {
@@ -160,12 +173,16 @@ namespace MadsKristensen.EditorExtensions
                 return string.Empty;
             }
         }
+        #endregion
 
+        ///<summary>Gets the primary TextBuffer for the active document.</summary>
         public static ITextBuffer GetCurentTextBuffer()
         {
+            //TODO: Get active ProjectionBuffer
             return GetCurentTextView().TextBuffer;
         }
 
+        ///<summary>Gets the TextView for the active document.</summary>
         public static IWpfTextView GetCurentTextView()
         {
             var componentModel = GetComponentModel();
@@ -188,6 +205,7 @@ namespace MadsKristensen.EditorExtensions
             return (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
         }
 
+        ///<summary>Gets the full paths to the currently selected item(s) in the Solution Explorer.</summary>
         public static IEnumerable<string> GetSelectedItemPaths()
         {
             var items = (Array)EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
@@ -200,6 +218,7 @@ namespace MadsKristensen.EditorExtensions
                 }
             }
         }
+        ///<summary>Gets the the currently selected project(s) in the Solution Explorer.</summary>
         public static IEnumerable<Project> GetSelectedProjects()
         {
             var items = (Array)EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
@@ -237,6 +256,7 @@ namespace MadsKristensen.EditorExtensions
             return false;
         }
 
+        ///<summary>Gets the directory containing the active solution file.</summary>
         public static string GetSolutionFolderPath()
         {
             EnvDTE.Solution solution = EditorExtensionsPackage.DTE.Solution;
@@ -247,26 +267,16 @@ namespace MadsKristensen.EditorExtensions
             return Path.GetDirectoryName(solution.FullName);
         }
 
+        ///<summary>Gets the directory containing the project for the specified file.</summary>
         private static string GetProjectFolder(ProjectItem item)
         {
             if (item == null || item.ContainingProject == null || string.IsNullOrEmpty(item.ContainingProject.FullName)) // Solution items
                 return null;
 
-            var fullPath = item.ContainingProject.Properties.Item("FullPath").Value.ToString();
-
-            if (Directory.Exists(fullPath))
-            {
-                return fullPath;
-            }
-
-            if (File.Exists(fullPath))
-            {
-                return Path.GetDirectoryName(fullPath);
-            }
-
-            return string.Empty;
+            return GetRootFolder(item.ContainingProject);
         }
 
+        ///<summary>Gets the directory containing the project for the specified file.</summary>
         public static string GetProjectFolder(string fileNameOrFolder)
         {
             if (string.IsNullOrEmpty(fileNameOrFolder))
@@ -277,6 +287,7 @@ namespace MadsKristensen.EditorExtensions
             return GetProjectFolder(item);
         }
 
+        ///<summary>Gets the the currently selected file(s) in the Solution Explorer.</summary>
         public static IEnumerable<ProjectItem> GetSelectedItems()
         {
             var items = (Array)EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
@@ -310,44 +321,16 @@ namespace MadsKristensen.EditorExtensions
             return uniformlySeparated;
         }
 
-        public static string GetActiveFilePath()
+        ///<summary>Gets the Project containing the specified file.</summary>
+        public static Project GetProject(string item)
         {
-            var doc = EditorExtensionsPackage.DTE.ActiveDocument;
-
-            if (doc != null)
-            {
-                return ToAbsoluteFilePath(doc.FullName, doc.ProjectItem);
-            }
-
-            return string.Empty;
-        }
-
-        public static Project GetActiveFileProject()
-        {
-            var doc = EditorExtensionsPackage.DTE.ActiveDocument;
-
-            if (doc != null)
-            {
-                return doc.ProjectItem.ContainingProject;
-            }
-
-            return null;
-        }
-
-        private static Project GetProject(ProjectItem projectItem)
-        {
+            var projectItem = EditorExtensionsPackage.DTE.Solution.FindProjectItem(item);
             if (projectItem == null)
             {
                 return null;
             }
 
             return projectItem.ContainingProject;
-        }
-
-        public static Project GetProject(string item)
-        {
-            var projectItem = EditorExtensionsPackage.DTE.Solution.FindProjectItem(item);
-            return GetProject(projectItem);
         }
 
         public static ProjectItem GetActiveFile()

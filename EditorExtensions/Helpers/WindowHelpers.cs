@@ -55,15 +55,5 @@ namespace MadsKristensen.EditorExtensions
 
             return view;
         }
-
-        public static IWpfTextView GetTextViewForFile(string path)
-        {
-            return GetWpfTextView(GetIVsTextView(path));
-        }
-
-        public static IWpfTextView GetTextViewForActiveFile()
-        {
-            return GetTextViewForFile(ProjectHelpers.GetActiveFilePath());
-        }
     }
 }
