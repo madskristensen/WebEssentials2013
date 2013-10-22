@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Web;
+using System;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -26,9 +27,10 @@ namespace MadsKristensen.EditorExtensions
     internal class StylesheetDropHandler : IDropHandler
     {
         IWpfTextView _view;
-        private readonly HashSet<string> _imageExtensions = new HashSet<string> { ".css", ".less", ".sass", ".scss" };
-        private string _imageFilename;
-        string _import = "@import url('{0}');";
+        private readonly HashSet<string> _imageExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".css", ".less", ".sass", ".scss" };
+        private string _filename;
+        const string _cssImport = "@import url('{0}');";
+        const string _lessImport = "@import '{0}';";
 
         public StylesheetDropHandler(IWpfTextView view)
         {
@@ -37,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
 
         public DragDropPointerEffects HandleDataDropped(DragDropInfo dragDropInfo)
         {
-            string reference = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, _imageFilename);
+            string reference = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, _filename);
 
             if (reference.StartsWith("http://localhost:"))
             {
@@ -47,7 +49,8 @@ namespace MadsKristensen.EditorExtensions
             }
             reference = HttpUtility.UrlPathEncode(reference);
 
-            _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(_import, reference));
+            string import = Path.GetExtension(_filename).Equals(".less", StringComparison.OrdinalIgnoreCase) ? _lessImport : _cssImport;
+            _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(import, reference));
 
             return DragDropPointerEffects.Copy;
         }
@@ -69,18 +72,12 @@ namespace MadsKristensen.EditorExtensions
 
         public bool IsDropEnabled(DragDropInfo dragDropInfo)
         {
-            _imageFilename = FontDropHandler.GetImageFilename(dragDropInfo);
+            _filename = FontDropHandler.GetImageFilename(dragDropInfo);
 
-            if (!string.IsNullOrEmpty(_imageFilename))
-            {
-                string fileExtension = Path.GetExtension(_imageFilename).ToLowerInvariant();
-                if (this._imageExtensions.Contains(fileExtension))
-                {
-                    return true;
-                }
-            }
+            if (string.IsNullOrEmpty(_filename))
+                return false;
 
-            return false;
+            return this._imageExtensions.Contains(Path.GetExtension(_filename));
         }
     }
 }
