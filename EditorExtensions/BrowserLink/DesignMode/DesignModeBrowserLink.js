@@ -42,7 +42,7 @@
 
                         map = browserLink.sourceMapping.getCompleteRange(target);
 
-                        if (map) {
+                        if (map && map.sourcePath) {
                             if (isValidFile(map.sourcePath.toLowerCase())) {
                                 current = target;
                                 $(target).addClass(selectedClass);
@@ -123,10 +123,9 @@
             else if (e.keyCode === 13 && !e.shiftKey) { // 13 = Enter
                 e.preventDefault();
             }
-            else {
+            else if (map && map.sourcePath) {
                 hasChanged = true;
                 setTimeout(function () {
-
                     browserLink.invoke("UpdateSource", current.innerHTML, map.sourcePath, map.startPosition);
                 }, 50);
             }
