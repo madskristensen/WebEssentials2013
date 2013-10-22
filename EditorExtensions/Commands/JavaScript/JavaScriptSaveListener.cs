@@ -39,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
                 string minFile = e.FilePath.Insert(e.FilePath.Length - 2, "min.");
                 string bundleFile = e.FilePath + ".bundle";
 
-                if (!File.Exists(bundleFile))
+                if (!File.Exists(bundleFile) && File.Exists(minFile))
                 {
                     Task.Run(() =>
                     {
