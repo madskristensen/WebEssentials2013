@@ -8,7 +8,10 @@
     var file;
 
     function getFile(element) {
-        file = browserLink.sourceMapping.getCompleteRange(element).sourcePath;
+        var range = browserLink.sourceMapping.getCompleteRange(element);
+
+        if (range)
+            file = range.sourcePath;
     }
 
     window.__weReportError = function (key, success) {
