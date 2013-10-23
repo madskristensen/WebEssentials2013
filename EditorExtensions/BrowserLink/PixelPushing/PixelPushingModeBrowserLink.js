@@ -1,14 +1,14 @@
 ﻿/// <reference path="../_intellisense/browserlink.intellisense.js" />
 /// <reference path="../_intellisense/jquery-1.8.2.js" />
 
-(function(browserLink, $) {
+(function (browserLink, $) {
     /// <param name="browserLink" value="bl" />
     /// <param name="$" value="jQuery" />
 
     var chunkSize = 20 * 1024; //<-- 20k chunk size
     var lastSheet = false;
     var isInPixelPusingMode = false;
-    
+
     function getLastSheetHref() {
         if (!lastSheet) {
             for (var i = document.styleSheets.length - 1; i >= 0; --i) {
@@ -65,15 +65,11 @@
     }
 
     $(document).keydown(function (e) {
-        if (e.ctrlKey && e.altKey) {
-            if (e.keyCode === 84) {// 84 = t
-                shipUpdate();
-            }
-            else if (e.keyCode === 85) {// 85 = u
-                setContinuousSyncMode(!continuousSyncMode);
-            }
-
-            return false;
+        if (e.ctrlKey && e.altKey && e.keyCode === 84) { // 84 = t
+            shipUpdate();
+        }
+        else if (e.ctrlKey && e.altKey && e.keyCode === 85) { // 84 = t {// 85 = u
+            setContinuousSyncMode(!continuousSyncMode);
         }
     });
 
@@ -115,7 +111,7 @@
         if (value != continuousSyncMode) {
             browserLink.invoke("EnterContinuousSyncMode", !!value);
         }
-        
+
         continuousSyncMode = value;
         updateMenuItems();
     }
@@ -123,7 +119,7 @@
     function getCurrentRuleDefinitions() {
         var sheets = document.styleSheets;
         var tmp = [];
-        
+
         for (var i = 0; i < sheets.length; ++i) {
             tmp.push({ "href": getSheetHref(sheets[i]) });
             var sheet = sheets[i];
@@ -135,10 +131,10 @@
             }
 
             var nameEncounters = {};
-            
+
             for (var j = 0; j < rules.length; ++j) {
                 var selector = rules[j].selectorText;
-                
+
                 if (!selector) {
                     continue;
                 }
@@ -163,13 +159,13 @@
                 var currentSheet = current[sheetIndex];
                 var previousSheet = lastRunSheets[sheetIndex];
                 var href = getSheetHref(document.styleSheets[sheetIndex]);
-                
+
                 if (href != previousSheet.href) {
                     deltaLog = [];
                     okToAdd = false;
                     break;
                 }
-                
+
                 for (var rule in currentSheet) {
                     if (!currentSheet.hasOwnProperty(rule) || !previousSheet.hasOwnProperty(rule) || rule === "href") {
                         continue;
@@ -177,12 +173,12 @@
 
                     var currentRule = currentSheet[rule];
                     var previousRule = previousSheet[rule];
-                    
+
                     for (var ruleIndex in currentRule) {
                         if (!currentRule.hasOwnProperty(ruleIndex) || !previousRule.hasOwnProperty(ruleIndex)) {
                             continue;
                         }
-                        
+
                         if (currentRule[ruleIndex] != previousRule[ruleIndex]) {
                             logRecords.push({
                                 "Url": href,
@@ -214,7 +210,7 @@
 
     var takeChangesNowMenuItem;
     var continuouslyTakeChangesMenuItem;
-    
+
     function updateMenuItems() {
         if (!window.browserLink.menu || !takeChangesNowMenuItem || !continuouslyTakeChangesMenuItem) {
             return;
@@ -253,7 +249,7 @@
 
     return {
         setPixelPusingMode: setPixelPushingModeInternal,
-        pullStyleData : shipUpdate,
+        pullStyleData: shipUpdate,
         onConnected: function () {
             AddToMenu();
         }

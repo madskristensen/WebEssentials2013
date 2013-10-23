@@ -213,11 +213,9 @@
     };
 
     $(document).keydown(function (e) {
-        if (e.ctrlKey && e.altKey) {
-            if (e.keyCode === 82) {// 82 = r
+        if (e.ctrlKey && e.altKey && e.keyCode === 82) { // 82 = r
                 toggleRecordingMode();
                 return false;
-            }
         }
 
         return true;
