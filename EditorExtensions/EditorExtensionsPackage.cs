@@ -115,21 +115,22 @@ namespace MadsKristensen.EditorExtensions
         private void BuildEvents_OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
         {
             if (Action != vsBuildAction.vsBuildActionClean)
-            {
-                if (WESettings.GetBoolean(WESettings.Keys.LessCompileOnBuild))
-                    _dte.Commands.Raise(GuidList.guidBuildCmdSetString, (int)PkgCmdIDList.cmdBuildLess, null, null);
-
-                if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptCompileOnBuild))
-                    _dte.Commands.Raise(GuidList.guidBuildCmdSetString, (int)PkgCmdIDList.cmdBuildCoffeeScript, null, null);
-
-                _dte.Commands.Raise(GuidList.guidBuildCmdSetString, (int)PkgCmdIDList.cmdBuildBundles, null, null);
-
-                if (WESettings.GetBoolean(WESettings.Keys.RunJsHintOnBuild))
+                System.Threading.Tasks.Task.Run(() =>
                 {
-                    Dispatcher.CurrentDispatcher.BeginInvoke(
-                        new Action(() => JsHintProjectRunner.RunOnAllFilesInProject()), DispatcherPriority.ApplicationIdle, null);
-                }
-            }
+                    if (WESettings.GetBoolean(WESettings.Keys.LessCompileOnBuild))
+                        BuildMenu.BuildLess();
+
+                    if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptCompileOnBuild))
+                        BuildMenu.BuildCoffeeScript();
+
+                    BuildMenu.UpdateBundleFiles();
+
+                    if (WESettings.GetBoolean(WESettings.Keys.RunJsHintOnBuild))
+                    {
+                        Dispatcher.CurrentDispatcher.BeginInvoke(
+                            new Action(() => JsHintProjectRunner.RunOnAllFilesInProject()), DispatcherPriority.ApplicationIdle, null);
+                    }
+                });
             else if (Action == vsBuildAction.vsBuildActionClean)
             {
                 System.Threading.Tasks.Task.Run(() => JsHintRunner.Reset());

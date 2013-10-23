@@ -43,7 +43,7 @@ namespace MadsKristensen.EditorExtensions
             _mcs.AddCommand(menuCoffee);
         }
 
-        private static void BuildCoffeeScript()
+        public static void BuildCoffeeScript()
         {
             foreach (Project project in _dte.Solution.Projects)
             {
@@ -52,14 +52,14 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static void UpdateBundleFiles()
+        public static void UpdateBundleFiles()
         {
             //Logger.Log("Updating bundles...");
             BundleFilesMenu.UpdateBundles(null, true);
             //Logger.Log("Bundles updated");
         }
 
-        private static void BuildLess()
+        public static void BuildLess()
         {
             foreach (Project project in _dte.Solution.Projects)
             {
