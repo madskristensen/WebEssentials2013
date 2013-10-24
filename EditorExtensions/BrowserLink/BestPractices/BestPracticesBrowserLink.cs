@@ -74,7 +74,6 @@ namespace MadsKristensen.EditorExtensions
                     }
 
                     _errorList.ResumeRefresh();
-                    _errorList.Show();
                 }
             }
         }
