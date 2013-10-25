@@ -39,7 +39,7 @@
                         if (current && current !== target) {
                             $(current).removeClass(selectedClass);
                         }
-
+                        
                         map = browserLink.sourceMapping.getCompleteRange(target);
 
                         if (map && map.sourcePath) {
@@ -58,6 +58,10 @@
             });
 
             inspectOverlay.click(function () {
+                if (!current || current.tagName.toUpperCase() === "BODY" || current.tagName.toUpperCase() === document.documentElement.tagName.toUpperCase()) {
+                    return;
+                }
+
                 inspectOverlay.hide();
 
                 if (current) {
@@ -84,14 +88,18 @@
         return true;
     }
 
+    var originalSelectionContent;
+
     function enableDesignMode(enabled) {
         if (window.getSelection) {
             inspectModeOn = enabled;
+            hasChanged = false;
 
             if (enabled && hasChanged) {
                 current.contentEditable = true;
                 current.focus();
                 $(current).addClass(selectedClass);
+                originalSelectionContent = current.innerHTML;
             }
             else if (enabled) {
                 getInspectOverlay().show();
@@ -126,7 +134,9 @@
             else if (map && map.sourcePath) {
                 hasChanged = true;
                 setTimeout(function () {
-                    browserLink.invoke("UpdateSource", current.innerHTML, map.sourcePath, map.startPosition);
+                    if (!current || current.innerHTML != originalSelectionContent) {
+                        browserLink.invoke("UpdateSource", current.innerHTML, map.sourcePath, map.startPosition);
+                    }
                 }, 50);
             }
         }
