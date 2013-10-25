@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using EnvDTE;
@@ -30,6 +31,16 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                     Settings.Save();
                     _isPixelPushingModeEnabled = value;
                 }
+            }
+        }
+
+        public static List<Regex> IgnoreList
+        {
+            get
+            {
+                var ignorePatterns = WESettings.GetString(WESettings.Keys.UnusedCss_IgnorePatterns) ?? "";
+
+                return ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => new Regex(UnusedCssExtension.FilePatternToRegex(x.Trim()))).ToList();
             }
         }
 
@@ -210,7 +221,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                             {
                                 var file = GetStyleSheetFileForUrl(set.Key, _connection.Project);
 
-                                if (file == null)
+                                if (file == null || IgnoreList.Any(x => x.IsMatch(file)))
                                 {
                                     continue;
                                 }
