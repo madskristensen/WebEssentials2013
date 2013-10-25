@@ -14,17 +14,9 @@ namespace MadsKristensen.EditorExtensions
     [Export(typeof(IBrowserLinkExtensionFactory))]
     public class DesignModeFactory : IBrowserLinkExtensionFactory
     {
-        private static DesignMode _extension;
-
         public BrowserLinkExtension CreateExtensionInstance(BrowserLinkConnection connection)
         {
-            // Instantiate the extension as a singleton
-            if (_extension == null)
-            {
-                _extension = new DesignMode();
-            }
-
-            return _extension;
+            return new DesignMode();
         }
 
         public  string GetScript()
