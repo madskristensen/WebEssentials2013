@@ -34,13 +34,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             }
         }
 
+        private static List<Regex> _ignoreList;
+
         public static List<Regex> IgnoreList
         {
             get
             {
                 var ignorePatterns = WESettings.GetString(WESettings.Keys.UnusedCss_IgnorePatterns) ?? "";
 
-                return ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => new Regex(UnusedCssExtension.FilePatternToRegex(x.Trim()))).ToList();
+                return _ignoreList ?? (_ignoreList = ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => new Regex(UnusedCssExtension.FilePatternToRegex(x.Trim()))).ToList());
             }
         }
 
@@ -49,6 +51,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             ExtensionByConnection[connection] = this;
             _uploadHelper = new UploadHelper();
             _connection = connection;
+            Settings.Updated += (sender, args) => _ignoreList = null;
+
         }
 
         internal static void All(Action<PixelPushingMode> method)
@@ -211,6 +215,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 {
                     try
                     {
+                        var ignoreList = IgnoreList;
+
                         foreach (var logEntry in result)
                         {
                             var urlGrouped = logEntry.GroupBy(x => x.Url).ToList();
@@ -221,7 +227,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                             {
                                 var file = GetStyleSheetFileForUrl(set.Key, _connection.Project);
 
-                                if (file == null || IgnoreList.Any(x => x.IsMatch(file)))
+                                if (file == null || ignoreList.Any(x => x.IsMatch(file)))
                                 {
                                     continue;
                                 }
