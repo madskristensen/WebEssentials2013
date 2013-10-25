@@ -39,6 +39,7 @@ namespace MadsKristensen.EditorExtensions
 
                 if (model.Format == ColorFormat.RgbHex6)
                 {
+                    model.Format = ColorFormat.RgbHex3;
                     string hex3 = ColorFormatter.FormatColor(model, ColorFormat.RgbHex3);
 
                     if (hex3.Length == 4)

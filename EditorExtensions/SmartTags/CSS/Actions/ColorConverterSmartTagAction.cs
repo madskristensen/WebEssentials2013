@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -21,16 +22,42 @@ namespace MadsKristensen.EditorExtensions
         {
             _span = span;
             _item = item;
+
+            if (format == ColorFormat.RgbHex6)
+                format = ColorFormat.RgbHex3;
+
             _format = format;
-            _colorModel = colorModel;
+            _colorModel = colorModel.Clone();
+            _colorModel.Format = format;
 
             if (Icon == null)
             {
                 Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/palette.png", UriKind.RelativeOrAbsolute));
             }
 
-            SetDisplayText();
+            _displayText = "Convert to " + GetColorString();
         }
+
+        private string GetColorString()
+        {
+            switch (_format)
+            {
+                case ColorFormat.Name:
+                    return GetNamedColor(_colorModel.Color);
+
+                case ColorFormat.Hsl:
+                    return FormatHslColor(_colorModel); //ColorFormatter.FormatColorAs(_colorModel, ColorFormat.Hsl);
+
+                case ColorFormat.Rgb:
+                case ColorFormat.RgbHex3:
+                case ColorFormat.RgbHex6:
+                    return ColorFormatter.FormatColor(_colorModel, _format);
+
+                default:
+                    throw new InvalidEnumArgumentException("format", (int)_format, typeof(ColorFormat));
+            }
+        }
+
 
         public override string DisplayText
         {
@@ -39,56 +66,7 @@ namespace MadsKristensen.EditorExtensions
 
         public override void Invoke()
         {
-            var value = _item.Text;
-
-            switch (_format)
-            {
-                case ColorFormat.Name:
-                    value = GetNamedColor(_colorModel.Color);
-                    break;
-
-                case ColorFormat.Hsl:
-                    value = FormatHslColor(_colorModel); //ColorFormatter.FormatColorAs(_colorModel, ColorFormat.Hsl);
-                    break;
-
-                case ColorFormat.Rgb:
-                    _colorModel.Format = ColorFormat.Rgb;
-                    value = ColorFormatter.FormatColor(_colorModel, ColorFormat.Rgb);
-                    break;
-
-                case ColorFormat.RgbHex3:
-                case ColorFormat.RgbHex6:
-                    _colorModel.Format = ColorFormat.RgbHex3;
-                    value = ColorFormatter.FormatColor(_colorModel, ColorFormat.RgbHex3);
-                    break;
-            }
-
-            _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), value);
-        }
-
-        private void SetDisplayText()
-        {
-            string format = "Convert to {0}";
-            switch (_format)
-            {
-                case ColorFormat.Rgb:
-                    _colorModel.Format = ColorFormat.Rgb;
-                    _displayText = string.Format(CultureInfo.InvariantCulture, format, ColorFormatter.FormatColor(_colorModel, ColorFormat.Rgb));
-                    break;
-
-                case ColorFormat.Hsl:
-                    _displayText = string.Format(CultureInfo.InvariantCulture, format, FormatHslColor(_colorModel)); //string.Format(CultureInfo.InvariantCulture, format, ColorFormatter.FormatColorAs(_colorModel, ColorFormat.Hsl));
-                    break;
-
-                case ColorFormat.Name:
-                    _displayText = string.Format(CultureInfo.InvariantCulture, format, GetNamedColor(_colorModel.Color));
-                    break;
-
-                case ColorFormat.RgbHex3:
-                case ColorFormat.RgbHex6:
-                    _displayText = string.Format(CultureInfo.InvariantCulture, format, ColorFormatter.FormatColor(_colorModel, ColorFormat.RgbHex3));
-                    break;
-            }
+            _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), GetColorString());
         }
 
         #region Fixed Hsl conversion
