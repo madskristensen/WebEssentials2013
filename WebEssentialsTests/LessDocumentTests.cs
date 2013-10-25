@@ -259,22 +259,16 @@ a {
 
         static async Task<string> CompileLess(string source)
         {
-            var tcs = new TaskCompletionSource<string>();
-
             var fileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".less");
             try
             {
                 File.WriteAllText(fileName, source);
 
-                new LessCompiler(cr =>
-                {
-                    if (cr.IsSuccess)
-                        tcs.SetResult(cr.Result);
-                    else
-                        tcs.SetException(new ExternalException(cr.Error.Message));
-                }).Compile(fileName);
-
-                return await tcs.Task;
+                var result = await LessCompiler.Compile(fileName);
+                if (result.IsSuccess)
+                    return result.Result;
+                else
+                    throw new ExternalException(result.Error.Message);
             }
             finally
             {

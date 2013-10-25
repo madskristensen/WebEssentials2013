@@ -13,28 +13,19 @@ namespace MadsKristensen.EditorExtensions
             : base(source, MarginName, contentType, showMargin, document)
         { }
 
-        protected override void StartCompiler(string source)
+        protected override async void StartCompiler(string source)
         {
-            string fileName = GetCompiledFileName(Document.FilePath, ".css", UseCompiledFolder);// Document.FilePath.Replace(".less", ".css");
+            string cssFilename = GetCompiledFileName(Document.FilePath, ".css", UseCompiledFolder);// Document.FilePath.Replace(".less", ".css");
 
-            if (_isFirstRun && File.Exists(fileName))
+            if (_isFirstRun && File.Exists(cssFilename))
             {
-                OnCompilationDone(File.ReadAllText(fileName), Document.FilePath);
+                OnCompilationDone(File.ReadAllText(cssFilename), Document.FilePath);
+                return;
             }
-            else
-            {
-                Logger.Log("LESS: Compiling " + Path.GetFileName(Document.FilePath));
 
-                System.Threading.Tasks.Task.Run(() =>
-                {
-                    LessCompiler compiler = new LessCompiler(Completed);
-                    compiler.Compile(Document.FilePath);
-                });
-            }
-        }
+            Logger.Log("LESS: Compiling " + Path.GetFileName(Document.FilePath));
 
-        private void Completed(CompilerResult result)
-        {
+            var result = await LessCompiler.Compile(Document.FilePath, cssFilename);
             if (result.IsSuccess)
             {
                 OnCompilationDone(result.Result, result.FileName);
