@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using EnvDTE;
@@ -33,6 +34,16 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             }
         }
 
+        public static List<Regex> IgnoreList
+        {
+            get
+            {
+                var ignorePatterns = WESettings.GetString(WESettings.Keys.UnusedCss_IgnorePatterns) ?? "";
+
+                return ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => new Regex(UnusedCssExtension.FilePatternToRegex(x.Trim()))).ToList();
+            }
+        }
+
         public PixelPushingMode(BrowserLinkConnection connection)
         {
             ExtensionByConnection[connection] = this;
@@ -50,7 +61,22 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
         public override IEnumerable<BrowserLinkAction> Actions
         {
-            get { yield return new BrowserLinkAction("Pull Style Updates Now", PullStyleUpdates, PullStyleUpdatesBeforeQueryStatus);}
+            get
+            {
+                yield return new BrowserLinkAction("Save F12 Changes", PullStyleUpdates, PullStyleUpdatesBeforeQueryStatus);
+                yield return new BrowserLinkAction("F12 Auto-Sync", AutoSyncStyleUpdates, AutoSyncStyleUpdatesBeforeQueryStatus);
+            }
+        }
+
+        private void AutoSyncStyleUpdatesBeforeQueryStatus(BrowserLinkAction browserLinkAction)
+        {
+            browserLinkAction.Enabled = IsPixelPushingModeEnabled;
+            browserLinkAction.Checked = ContinuousSyncModeByProject.GetOrAdd(_connection.Project.UniqueName, p => false);
+        }
+
+        private void AutoSyncStyleUpdates(BrowserLinkAction obj)
+        {
+            Browsers.Client(_connection).Invoke("setContinuousSync", !ContinuousSyncModeByProject.GetOrAdd(_connection.Project.UniqueName, p => false));
         }
 
         private static void PullStyleUpdatesBeforeQueryStatus(BrowserLinkAction browserLinkAction)
@@ -195,7 +221,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                             {
                                 var file = GetStyleSheetFileForUrl(set.Key, _connection.Project);
 
-                                if (file == null)
+                                if (file == null || IgnoreList.Any(x => x.IsMatch(file)))
                                 {
                                     continue;
                                 }

@@ -227,7 +227,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return ExtensionByConnection.Values.Any(predicate);
         }
 
-        private static string FilePatternToRegex(string filePattern)
+        public static string FilePatternToRegex(string filePattern)
         {
             return filePattern.Replace(@"\", @"[\\\\/]").Replace(".", @"\.").Replace("*", @"[^\\\\/]*").Replace("?", @"[^\\\\/]?");
         }
