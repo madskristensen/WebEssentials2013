@@ -68,14 +68,14 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        static char[] pathSplit = { '/', '\\' };
         public static string RelativePath(string absPath, string relTo)
         {
-            string[] absDirs = absPath.Split('\\');
-            string[] relDirs = relTo.Split('\\');
+            string[] absDirs = absPath.Split(pathSplit);
+            string[] relDirs = relTo.Split(pathSplit);
 
             // Get the shortest of the two paths
-            int len = absDirs.Length < relDirs.Length ? absDirs.Length :
-            relDirs.Length;
+            int len = Math.Min(absDirs.Length, relDirs.Length);
 
             // Use to determine where in the loop we exited
             int lastCommonRoot = -1;
@@ -110,7 +110,7 @@ namespace MadsKristensen.EditorExtensions
             }
             relativePath.Append(relDirs[relDirs.Length - 1]);
 
-            return relativePath.ToString().Replace("\\", "/");
+            return relativePath.Replace('\\', '/').ToString();
         }
 
         public static void SearchFiles(string term, string fileTypes)
