@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.CSS.Core;
@@ -11,30 +12,30 @@ namespace MadsKristensen.EditorExtensions.Helpers
 {
     class CssUrlNormalizer : ICssSimpleTreeVisitor
     {
-        readonly string baseDirectory, oldBasePath;
+        readonly string targetFile, oldBaseDirectory;
         readonly List<Tuple<TextRange, string>> replacements = new List<Tuple<TextRange, string>>();
-        private CssUrlNormalizer(string baseDirectory, string oldBasePath)
+        private CssUrlNormalizer(string targetFile, string oldBasePath)
         {
-            this.baseDirectory = baseDirectory;
-            this.oldBasePath = oldBasePath;
+            this.targetFile = Path.GetFullPath(targetFile);
+            this.oldBaseDirectory = Path.GetDirectoryName(oldBasePath);
         }
 
         ///<summary>Normalizes all URLs in a CSS parse tree to be relative to the specified directory.</summary>
         ///<param name="tree">The CSS parse tree to read.</param>
-        ///<param name="baseDirectory">The new base directory to make URLs relative to.</param>
-        ///<param name="oldBasePath">The previous base directory to resolve existing relative paths from.  If null, relative paths will be left unchanged.</param>
+        ///<param name="targetFile">The new filename to make URLs relative to.</param>
+        ///<param name="oldBasePath">The previous filename to resolve existing relative paths from.  If null, relative paths will be left unchanged.</param>
         ///<returns>The rewritten CSS source.</returns>
         ///<remarks>
         /// This is used to combine CSS files from different folders into a single
         /// bundle and to fix absolute URLs from the hacked browser LESS compiler.
         /// Fully absolute paths (starting with a drive letter) will be changed to
-        /// relative URLs using baseDirectory (fix for LESS compiler).
+        /// relative URLs using targetFile (fix for LESS compiler).
         /// Host-relative paths (starting with a /) will be unchanged.
         /// Normal relative paths (starting with . or a name) will be re-resolved.
         ///</remarks>
-        public static string NormalizeUrls(BlockItem tree, string baseDirectory, string oldBasePath)
+        public static string NormalizeUrls(BlockItem tree, string targetFile, string oldBasePath)
         {
-            var normalizer = new CssUrlNormalizer(baseDirectory, oldBasePath);
+            var normalizer = new CssUrlNormalizer(targetFile, oldBasePath);
             tree.Accept(normalizer);
 
             var retVal = new StringBuilder(tree.Text);
@@ -55,7 +56,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
             if (urlItem == null)
                 return VisitItemResult.Continue;
 
-            var newUrl = FixPath(urlItem.UrlString.Text);
+            var newUrl = FixPath(DecodeStringLiteral(urlItem.UrlString.Text));
             if (newUrl == null) // No change
                 return VisitItemResult.Continue;
 
@@ -64,17 +65,37 @@ namespace MadsKristensen.EditorExtensions.Helpers
             return VisitItemResult.Continue;
         }
 
+        private static string DecodeStringLiteral(string str)
+        {
+            if ((str.StartsWith("'") && str.EndsWith("'"))
+             || (str.StartsWith("\"") && str.EndsWith("\"")))
+                return str.Substring(1, str.Length - 2);
+            return Regex.Unescape(str);
+        }
+
         private string FixPath(string url)
         {
             if (url.StartsWith("/"))
                 return null;
-            if (Path.IsPathRooted(url))
-                return FileHelpers.RelativePath(url, baseDirectory);
 
-            if (string.IsNullOrEmpty(oldBasePath))
+            string suffix = "";
+            int breakIndex = url.IndexOfAny(new[] { '?', '#' });
+            if (breakIndex > 0)
+            {
+                suffix = url.Substring(breakIndex);
+                url = url.Remove(breakIndex);
+            }
+
+            if (Path.IsPathRooted(url))
+                return FileHelpers.RelativePath(targetFile, Path.GetFullPath(url)) + suffix;
+
+            if (string.IsNullOrEmpty(oldBaseDirectory))
                 return null;
 
-            return FileHelpers.RelativePath(Path.Combine(oldBasePath, url), baseDirectory);
+            return FileHelpers.RelativePath(
+                targetFile,
+                Path.GetFullPath(Path.Combine(oldBaseDirectory, url)) + suffix
+            );
         }
     }
 }
