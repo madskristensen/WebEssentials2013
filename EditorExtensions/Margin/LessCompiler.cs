@@ -2,87 +2,86 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
+using MadsKristensen.EditorExtensions.Helpers;
+using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions
 {
-    public class LessCompiler
+    public static class LessCompiler
     {
-        public LessCompiler(Action<CompilerResult> callback)
+        private static Task<Process> ExecuteAsync(ProcessStartInfo startInfo)
         {
-            Callback = callback;
+            var p = Process.Start(startInfo);
+
+            var tcs = new TaskCompletionSource<Process>();
+
+            p.EnableRaisingEvents = true;
+            p.Exited += (s, e) => tcs.TrySetResult(p);
+            if (p.HasExited)
+                tcs.TrySetResult(p);
+            return tcs.Task;
         }
 
-        public Action<CompilerResult> Callback { get; set; }
-
-        public void Compile(string fileName)
+        public static async Task<CompilerResult> Compile(string filename, string targetFilename = null)
         {
             string output = Path.GetTempFileName();
 
-            ProcessStartInfo start = new ProcessStartInfo(@"cscript");
-            start.WindowStyle = ProcessWindowStyle.Hidden;
-            start.CreateNoWindow = true;
-            start.Arguments = "//nologo //s \"" + GetExecutablePath() + "\" \"" + fileName + "\" \"" + output + "\"";
-            start.EnvironmentVariables["output"] = output;
-            start.EnvironmentVariables["fileName"] = fileName;
-            start.UseShellExecute = false;
-            start.RedirectStandardError = true;
-
-            Process p = new Process();
-            p.StartInfo = start;
-            p.EnableRaisingEvents = true;
-            p.Exited += ProcessExited;
-            p.Start();
-        }
-
-        private void ProcessExited(object sender, EventArgs e)
-        {
-            using (Process process = (Process)sender)
+            ProcessStartInfo start = new ProcessStartInfo(@"cscript")
             {
-                string fileName = process.StartInfo.EnvironmentVariables["fileName"];
-                CompilerResult result = new CompilerResult(fileName);
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+                Arguments = "//nologo //s \"" + GetScriptPath() + "\" \"" + filename + "\" \"" + output + "\"",
+                UseShellExecute = false,
+                RedirectStandardError = true
+            };
 
-                try
-                {
-                    ProcessResult(process, result);
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log(ex);
-                    Callback(result);
-                }
-
-                process.Exited -= ProcessExited;
-
-                Logger.Log(Path.GetFileName(fileName) + " compiled");
-            }
-        }
-
-        private void ProcessResult(Process process, CompilerResult result)
-        {
-            string output = process.StartInfo.EnvironmentVariables["output"];
-
-            if (File.Exists(output))
+            using (var process = await ExecuteAsync(start))
             {
-                if (process.ExitCode == 0)
+                CompilerResult result = new CompilerResult(filename);
+
+                ProcessResult(output, process, result);
+
+                if (result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
                 {
-                    result.IsSuccess = true;
-                    result.Result = File.ReadAllText(output);
-                }
-                else
-                {
-                    using (StreamReader reader = process.StandardError)
+                    try
                     {
-                        result.Error = ParseError(reader.ReadToEnd());
+                        result.Result = CssUrlNormalizer.NormalizeUrls(
+                            tree: new CssParser().Parse(result.Result, true),
+                            targetFile: targetFilename ?? filename,
+                            oldBasePath: filename
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Log("An error occurred while normalizing generated paths in " + filename + "\r\n" + ex);
                     }
                 }
-
-                File.Delete(output);
+                Logger.Log(Path.GetFileName(filename) + " compiled");
+                return result;
             }
-
-            Callback(result);
         }
 
-        private CompilerError ParseError(string error)
+        private static void ProcessResult(string outputFile, Process process, CompilerResult result)
+        {
+            if (!File.Exists(outputFile))
+                throw new FileNotFoundException("LESS compiled output not found", outputFile);
+
+            if (process.ExitCode == 0)
+            {
+                result.Result = File.ReadAllText(outputFile);
+                result.IsSuccess = true;
+            }
+            else
+            {
+                using (StreamReader reader = process.StandardError)
+                    result.Error = ParseError(reader.ReadToEnd());
+            }
+
+            File.Delete(outputFile);
+        }
+
+        private static CompilerError ParseError(string error)
         {
             CompilerError result = new CompilerError();
             string[] lines = error.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
@@ -135,11 +134,11 @@ namespace MadsKristensen.EditorExtensions
             return result;
         }
 
-        private static string GetExecutablePath()
+        private static string GetScriptPath()
         {
             string assembly = Assembly.GetExecutingAssembly().Location;
-            string folder = Path.GetDirectoryName(assembly).ToLowerInvariant();
-            string file = Path.Combine(folder, "resources\\scripts\\lessc.wsf");
+            string folder = Path.GetDirectoryName(assembly);
+            string file = Path.Combine(folder, @"resources\scripts\lessc.wsf");
 
             return file;
         }

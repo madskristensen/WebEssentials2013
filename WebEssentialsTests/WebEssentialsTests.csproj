@@ -57,6 +57,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="LessCompilationTests.cs" />
     <Compile Include="LessDocumentTests.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -71,36 +72,47 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="fixtures\a.js" />
-    <Content Include="fixtures\b\c.js" />
-    <Content Include="fixtures\b\d.js" />
-    <Content Include="fixtures\b\package\index.js" />
-    <Content Include="fixtures\cycles\folder\foo.js" />
-    <Content Include="fixtures\cycles\root.js" />
-    <Content Include="fixtures\global\plain.js" />
-    <Content Include="fixtures\nested-index\one\hello.js" />
-    <Content Include="fixtures\nested-index\one\index.js" />
-    <Content Include="fixtures\nested-index\three.js" />
-    <Content Include="fixtures\nested-index\three\index.js" />
-    <Content Include="fixtures\nested-index\two\hello.js" />
-    <Content Include="fixtures\nested-index\two\index.js" />
-    <Content Include="fixtures\node_modules\asdf.js" />
-    <Content Include="fixtures\node_modules\bar.js" />
-    <Content Include="fixtures\node_modules\baz\index.js" />
-    <Content Include="fixtures\node_modules\baz\node_modules\asdf.js" />
-    <Content Include="fixtures\node_modules\baz\otherFile.js" />
-    <Content Include="fixtures\node_modules\foo.js" />
-    <Content Include="fixtures\node_modules\node_modules\bar.js" />
-    <Content Include="fixtures\packages\main-index\package-main-module\index.js" />
-    <Content Include="fixtures\packages\main\package-main-module.js" />
+    <Content Include="fixtures\less\sub1\deeper\_lib.css" />
+    <Content Include="fixtures\less\sub1\deeper\_Entry3.css" />
+    <Content Include="fixtures\less\sub1\_Entry2.css" />
+    <Content Include="fixtures\less\_Deep Inclusion.css" />
+    <Content Include="fixtures\less\_Entry1.css" />
+    <Content Include="fixtures\module-resolution\a.js" />
+    <Content Include="fixtures\module-resolution\b\c.js" />
+    <Content Include="fixtures\module-resolution\b\d.js" />
+    <Content Include="fixtures\module-resolution\b\package\index.js" />
+    <Content Include="fixtures\module-resolution\cycles\folder\foo.js" />
+    <Content Include="fixtures\module-resolution\cycles\root.js" />
+    <Content Include="fixtures\module-resolution\global\plain.js" />
+    <Content Include="fixtures\module-resolution\nested-index\one\hello.js" />
+    <Content Include="fixtures\module-resolution\nested-index\one\index.js" />
+    <Content Include="fixtures\module-resolution\nested-index\three.js" />
+    <Content Include="fixtures\module-resolution\nested-index\three\index.js" />
+    <Content Include="fixtures\module-resolution\nested-index\two\hello.js" />
+    <Content Include="fixtures\module-resolution\nested-index\two\index.js" />
+    <Content Include="fixtures\module-resolution\node_modules\asdf.js" />
+    <Content Include="fixtures\module-resolution\node_modules\bar.js" />
+    <Content Include="fixtures\module-resolution\node_modules\baz\index.js" />
+    <Content Include="fixtures\module-resolution\node_modules\baz\node_modules\asdf.js" />
+    <Content Include="fixtures\module-resolution\node_modules\baz\otherFile.js" />
+    <Content Include="fixtures\module-resolution\node_modules\foo.js" />
+    <Content Include="fixtures\module-resolution\node_modules\node_modules\bar.js" />
+    <Content Include="fixtures\module-resolution\packages\main-index\package-main-module\index.js" />
+    <Content Include="fixtures\module-resolution\packages\main\package-main-module.js" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="fixtures\empty\.gitkeep" />
-    <None Include="fixtures\foo" />
-    <None Include="fixtures\packages\main-index\package.json" />
-    <None Include="fixtures\packages\main\package.json" />
+    <None Include="fixtures\less\sub1\deeper\_lib.less" />
+    <None Include="fixtures\less\sub1\deeper\_Entry3.less" />
+    <None Include="fixtures\less\sub1\_Entry2.less" />
+    <None Include="fixtures\less\_Deep Inclusion.less" />
+    <None Include="fixtures\less\_Entry1.less" />
+    <None Include="fixtures\module-resolution\empty\.gitkeep" />
+    <None Include="fixtures\module-resolution\foo" />
+    <None Include="fixtures\module-resolution\packages\main-index\package.json" />
+    <None Include="fixtures\module-resolution\packages\main\package.json" />
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

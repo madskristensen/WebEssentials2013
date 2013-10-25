@@ -176,11 +176,8 @@ Licensed under the Apache 2.0 License.
                 data = util.readText(input);
             }
 
-            // Only pass the filename so that LESS builds correct
-            // relative paths from imported files.  Our fake AJAX
-            // function will resolve URLs relative correctly.
             var parser = new less.Parser({
-                filename: fso.getFileName(input),   
+                filename: input,   
                 relativeUrls: true
             });
 

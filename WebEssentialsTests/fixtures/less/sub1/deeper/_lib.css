@@ -1,0 +1,4 @@
+﻿a {
+    background: url(deep-image.png);
+    background: url(/absolute/path/to/image.png);
+}

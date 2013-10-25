@@ -15,6 +15,8 @@ using System.Text;
 using System.Windows;
 using System.Windows.Threading;
 using System.Xml;
+using MadsKristensen.EditorExtensions.Helpers;
+using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -243,7 +245,7 @@ namespace MadsKristensen.EditorExtensions
             if (firstFile != null)
             {
                 string dir = Path.GetDirectoryName(firstFile);
-                
+
                 if (Directory.Exists(dir))
                 {
                     string bundleFile = Microsoft.VisualBasic.Interaction.InputBox("Specify the name of the bundle", "Web Essentials", "bundle1");
@@ -370,8 +372,23 @@ namespace MadsKristensen.EditorExtensions
                     sb.AppendLine("///#source 1 1 " + files[file]);
                 }
 
-                if (File.Exists(file))
-                    sb.AppendLine(File.ReadAllText(file));
+                if (!File.Exists(file))
+                    continue;
+
+                var source = File.ReadAllText(file);
+                if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase))
+                {
+                    // If the bundle is in the same folder as the CSS,
+                    // or if does not have URLs, no need to normalize.
+                    if (Path.GetDirectoryName(file) != Path.GetDirectoryName(bundlePath) 
+                     && source.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
+                        source = CssUrlNormalizer.NormalizeUrls(
+                            tree: new CssParser().Parse(source, true),
+                            targetFile: bundlePath,
+                            oldBasePath: file
+                        );
+                }
+                sb.AppendLine(source);
             }
 
             if (!File.Exists(bundlePath) || File.ReadAllText(bundlePath) != sb.ToString())

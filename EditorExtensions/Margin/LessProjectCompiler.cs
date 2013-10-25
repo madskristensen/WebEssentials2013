@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class LessProjectCompiler
+    internal static class LessProjectCompiler
     {
         public static void CompileProject(Project project)
         {
@@ -17,16 +17,20 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static void Compile(Project project)
+        private static async Task Compile(Project project)
         {
-            LessCompiler compiler = new LessCompiler(Completed);
-
-            string dir = Path.GetDirectoryName(project.Properties.Item("FullPath").Value.ToString());
-            var files = Directory.GetFiles(dir, "*.less", SearchOption.AllDirectories).Where(f => CanCompile(f));
+            string dir = ProjectHelpers.GetRootFolder(project);
+            var files = Directory.EnumerateFiles(dir, "*.less", SearchOption.AllDirectories).Where(CanCompile);
 
             foreach (string file in files)
             {
-                compiler.Compile(file);
+                string cssFileName = MarginBase.GetCompiledFileName(file, ".css", WESettings.GetBoolean(WESettings.Keys.LessCompileToFolder));
+                var result = await LessCompiler.Compile(file, cssFileName);
+
+                if (result.IsSuccess)
+                    WriteResult(result, cssFileName);
+                else
+                    Logger.Log(result.Error.Message ?? ("Error compiling LESS file: " + file));
             }
         }
 
@@ -46,46 +50,30 @@ namespace MadsKristensen.EditorExtensions
             if (!File.Exists(cssFile))
                 return false;
 
-
             return true;
         }
 
-        private static void Completed(CompilerResult result)
+        private static void WriteResult(CompilerResult result, string cssFileName)
         {
-            if (result.IsSuccess)
-            {
-                string cssFileName = MarginBase.GetCompiledFileName(result.FileName, ".css", WESettings.GetBoolean(WESettings.Keys.LessCompileToFolder));// result.FileName.Replace(".less", ".css");
+            MinifyFile(result.FileName, result.Result);
+            if (!File.Exists(cssFileName))
+                return;
 
-                if (File.Exists(cssFileName))
+            string old = File.ReadAllText(cssFileName);
+            if (old == result.Result)
+                return;
+
+            ProjectHelpers.CheckOutFileFromSourceControl(cssFileName);
+            try
+            {
+                using (StreamWriter writer = new StreamWriter(cssFileName, false, new UTF8Encoding(true)))
                 {
-                    string old = File.ReadAllText(cssFileName);
-
-                    if (old != result.Result)
-                    {
-                        ProjectHelpers.CheckOutFileFromSourceControl(cssFileName);
-                        try
-                        {
-                            using (StreamWriter writer = new StreamWriter(cssFileName, false, new UTF8Encoding(true)))
-                            {
-                                writer.Write(result.Result);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Log(ex);
-                        }
-                    }
+                    writer.Write(result.Result);
                 }
-
-                MinifyFile(result.FileName, result.Result);
             }
-            else if (result.Error != null && !string.IsNullOrEmpty(result.Error.Message))
+            catch (Exception ex)
             {
-                Logger.Log(result.Error.Message);
-            }
-            else
-            {
-                Logger.Log("Error compiling LESS file: " + result.FileName);
+                Logger.Log(ex);
             }
         }
 
