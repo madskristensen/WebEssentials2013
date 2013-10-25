@@ -50,7 +50,22 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
         public override IEnumerable<BrowserLinkAction> Actions
         {
-            get { yield return new BrowserLinkAction("Pull Style Updates Now", PullStyleUpdates, PullStyleUpdatesBeforeQueryStatus);}
+            get
+            {
+                yield return new BrowserLinkAction("Save F12 Changes", PullStyleUpdates, PullStyleUpdatesBeforeQueryStatus);
+                yield return new BrowserLinkAction("F12 Auto-Sync", AutoSyncStyleUpdates, AutoSyncStyleUpdatesBeforeQueryStatus);
+            }
+        }
+
+        private void AutoSyncStyleUpdatesBeforeQueryStatus(BrowserLinkAction browserLinkAction)
+        {
+            browserLinkAction.Enabled = IsPixelPushingModeEnabled;
+            browserLinkAction.Checked = ContinuousSyncModeByProject.GetOrAdd(_connection.Project.UniqueName, p => false);
+        }
+
+        private void AutoSyncStyleUpdates(BrowserLinkAction obj)
+        {
+            Browsers.Client(_connection).Invoke("setContinuousSync", !ContinuousSyncModeByProject.GetOrAdd(_connection.Project.UniqueName, p => false));
         }
 
         private static void PullStyleUpdatesBeforeQueryStatus(BrowserLinkAction browserLinkAction)

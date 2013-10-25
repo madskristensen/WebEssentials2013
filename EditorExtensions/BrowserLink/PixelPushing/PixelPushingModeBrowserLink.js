@@ -250,6 +250,7 @@
     return {
         setPixelPusingMode: setPixelPushingModeInternal,
         pullStyleData: shipUpdate,
+        setContinuousSync: setContinuousSyncMode,
         onConnected: function () {
             AddToMenu();
         }
