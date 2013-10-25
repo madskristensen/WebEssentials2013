@@ -57,6 +57,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="LessCompilationTests.cs" />
     <Compile Include="LessDocumentTests.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -71,6 +72,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="fixtures\less\sub1\deeper\_lib.css" />
+    <Content Include="fixtures\less\sub1\deeper\_Entry3.css" />
+    <Content Include="fixtures\less\sub1\_Entry2.css" />
+    <Content Include="fixtures\less\_Deep Inclusion.css" />
+    <Content Include="fixtures\less\_Entry1.css" />
     <Content Include="fixtures\module-resolution\a.js" />
     <Content Include="fixtures\module-resolution\b\c.js" />
     <Content Include="fixtures\module-resolution\b\d.js" />
@@ -96,11 +102,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="fixtures\less\sub1\deeper\_lib.less" />
+    <None Include="fixtures\less\sub1\deeper\_Entry3.less" />
+    <None Include="fixtures\less\sub1\_Entry2.less" />
+    <None Include="fixtures\less\_Deep Inclusion.less" />
+    <None Include="fixtures\less\_Entry1.less" />
     <None Include="fixtures\module-resolution\empty\.gitkeep" />
     <None Include="fixtures\module-resolution\foo" />
     <None Include="fixtures\module-resolution\packages\main-index\package.json" />
     <None Include="fixtures\module-resolution\packages\main\package.json" />
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
