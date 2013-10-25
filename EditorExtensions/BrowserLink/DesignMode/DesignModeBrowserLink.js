@@ -120,7 +120,7 @@
     }
 
     function typing(e) {
-        if (inspectModeOn && map) {
+        if (inspectModeOn && map && e.keyCode !== 27 && !e.altKey) {
 
             if (e.keyCode === 89 && e.ctrlKey) { // 89 = y
                 browserLink.invoke("Redo");
@@ -134,6 +134,7 @@
             else if (map && map.sourcePath) {
                 hasChanged = true;
                 setTimeout(function () {
+                    //Only fire the update if something has changed
                     if (!current || current.innerHTML != originalSelectionContent) {
                         browserLink.invoke("UpdateSource", current.innerHTML, map.sourcePath, map.startPosition);
                     }
