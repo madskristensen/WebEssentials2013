@@ -42,7 +42,7 @@ namespace MadsKristensen.EditorExtensions
 
                 ProcessResult(output, process, result);
 
-                if (result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
+                if (result.IsSuccess && result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
                 {
                     try
                     {
