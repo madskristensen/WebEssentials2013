@@ -11,25 +11,25 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public static class UsageRegistry
     {
-        private static readonly ConcurrentDictionary<string, CompositeUsageData> UsageDataByLocation = new ConcurrentDictionary<string, CompositeUsageData>();
+        private static readonly ConcurrentDictionary<string, SessionResult> UsageDataByLocation = new ConcurrentDictionary<string, SessionResult>();
 
-        private static readonly ConcurrentDictionary<BrowserLinkConnection, ConcurrentDictionary<string, CompositeUsageData>> UsageDataByConnectionAndLocation = new ConcurrentDictionary<BrowserLinkConnection, ConcurrentDictionary<string, CompositeUsageData>>();
+        private static readonly ConcurrentDictionary<BrowserLinkConnection, ConcurrentDictionary<string, SessionResult>> UsageDataByConnectionAndLocation = new ConcurrentDictionary<BrowserLinkConnection, ConcurrentDictionary<string, SessionResult>>();
 
-        private static readonly ConcurrentDictionary<string, CompositeUsageData> UsageDataByProject = new ConcurrentDictionary<string, CompositeUsageData>();
+        private static readonly ConcurrentDictionary<string, SessionResult> UsageDataByProject = new ConcurrentDictionary<string, SessionResult>();
 
-        public static void Merge(UnusedCssExtension extension, IUsageDataSource source)
+        public static void Merge(UnusedCssExtension extension, SessionResult source)
         {
             var url = extension.Connection.Url.ToString().ToLowerInvariant();
-            var crossBrowserPageBucket = UsageDataByLocation.GetOrAdd(url, location => new CompositeUsageData(extension));
+            var crossBrowserPageBucket = UsageDataByLocation.GetOrAdd(url, location => new SessionResult(extension));
 
-            var connectionSiteBucket = UsageDataByConnectionAndLocation.GetOrAdd(extension.Connection, conn => new ConcurrentDictionary<string, CompositeUsageData>());
-            var connectionPageBucket = connectionSiteBucket.GetOrAdd(url, location => new CompositeUsageData(extension));
+            var connectionSiteBucket = UsageDataByConnectionAndLocation.GetOrAdd(extension.Connection, conn => new ConcurrentDictionary<string, SessionResult>());
+            var connectionPageBucket = connectionSiteBucket.GetOrAdd(url, location => new SessionResult(extension));
 
-            var projectBucket = UsageDataByProject.GetOrAdd(extension.Connection.Project.UniqueName, proj => new CompositeUsageData(extension));
+            var projectBucket = UsageDataByProject.GetOrAdd(extension.Connection.Project.UniqueName, proj => new SessionResult(extension));
 
-            crossBrowserPageBucket.AddUsageSource(source);
-            connectionPageBucket.AddUsageSource(source);
-            projectBucket.AddUsageSource(source);
+            crossBrowserPageBucket.Merge(source);
+            connectionPageBucket.Merge(source);
+            projectBucket.Merge(source);
 
             OnUsageDataUpdated();
         }
@@ -50,7 +50,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public static IEnumerable<Task> GetWarnings(Project project)
         {
-            CompositeUsageData data;
+            SessionResult data;
 
             if (!UsageDataByProject.TryGetValue(project.UniqueName, out data))
             {
@@ -62,7 +62,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public static IEnumerable<Task> GetWarnings(Uri uri)
         {
-            CompositeUsageData data;
+            SessionResult data;
             var url = uri.ToString().ToLowerInvariant();
 
             if (!UsageDataByLocation.TryGetValue(url, out data))
