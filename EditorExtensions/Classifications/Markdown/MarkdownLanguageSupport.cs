@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Projection;
 using Microsoft.Html.Editor.WebForms;
@@ -22,11 +20,9 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Web.Editor;
 using Microsoft.VisualStudio.Web.Editor.Workspace;
 using Microsoft.Web.Editor;
-using Microsoft.VisualStudio;
 using Microsoft.Web.Editor.ContainedLanguage;
 using Microsoft.Web.Editor.Workspace;
 using VSConstants = Microsoft.VisualStudio.VSConstants;
-using System.Runtime.InteropServices;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
