@@ -113,6 +113,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Html.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.12.0" />
+    <Reference Include="Microsoft.VisualStudio.Html.Package" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -321,6 +323,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Classifications\Markdown\MarkdownContentTypeHandlerProvider.cs" />
+    <Compile Include="Classifications\Markdown\MarkdownLanguageSupport.cs" />
     <Compile Include="Classifications\Markdown\MarkdownParser.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassificationTypes.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifier.cs" />
