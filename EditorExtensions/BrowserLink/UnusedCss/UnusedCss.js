@@ -6,7 +6,6 @@
 
     var chunkSize = 20 * 1024; //<-- 20k chunk size
     var isRecording = false;
-    var validSheetIndexes = [];
 
     //List of vendor prefixes from http://stackoverflow.com/a/5411098/1203388
     //var prefixRequiringLeadingDash = ["ms-", "moz-", "o-", "xv-", "atsc-", "wap-", "webkit-", "khtml-", "apple-", "ah-", "hp-", "ro-", "rim-", "tc-"];
@@ -30,6 +29,7 @@
     function getLinkedStyleSheets()
     {
         var rxs = [];
+        var validSheetIndexes = [];
         for (var p = 0; p < currentPatterns.length; ++p) {
             rxs.push(new RegExp(currentPatterns[p], "i"));
         }
@@ -46,7 +46,7 @@
                 parseSheets.push(sheets[i]);
             }
         }
-        return parseSheets;
+        return { sheets: parseSheets, indexes: validSheetIndexes };
     }
 
     function chunk(obj) {
@@ -119,6 +119,10 @@
 
     function captureCssUsageFrame() {
         var catalog = [];
+        var sheets = getLinkedStyleSheets();
+        var validSheetIndexes = sheets.indexes;
+        sheets = sheets.sheets;
+
         for (var i = 0; i < validSheetIndexes.length; ++i) {
             var sheet = document.styleSheets[validSheetIndexes[i]];
             var rules = sheet.rules || sheet.cssRules;
@@ -129,12 +133,13 @@
                 }
             }
         }
-        var sheets = getLinkedStyleSheets();
         return { "RawUsageData": catalog, "Sheets": sheets };
     }
 
     function captureCssUsageFrameFast() {
         var catalog = [];
+        var validSheetIndexes = getLinkedStyleSheets().indexes;
+
         for (var i = 0; i < validSheetIndexes.length; ++i) {
             var sheet = document.styleSheets[validSheetIndexes[i]];
             var rules = sheet.rules || sheet.cssRules;
@@ -201,13 +206,11 @@
     }
 
     window.__weToggleRecordingMode = function () {
-        getLinkedStyleSheets();
         toggleRecordingMode();
         return false;
     };
 
     window.__weSnapshotCssUsage = function () {
-        getLinkedStyleSheets();
         snapshotCssUsage();
         return false;
     };
@@ -264,10 +267,9 @@
 
         startRecording: function (operationId) {
             isRecording = true;
-            getLinkedStyleSheets();
             
             finishRecording = function (doContinue) {
-                var sheets = getLinkedStyleSheets();
+                var sheets = getLinkedStyleSheets().sheets;
                 var result = { "RawUsageData": recordingState, "Continue": !!doContinue, "Sheets": sheets };
                 submitChunkedData("FinishedRecording", result, operationId);
             };
@@ -284,7 +286,6 @@
         },
 
         snapshotPage: function (operationId) {
-            getLinkedStyleSheets();
             var frame = captureCssUsageFrame();
             submitChunkedData("FinishedSnapshot", frame, operationId);
         },
