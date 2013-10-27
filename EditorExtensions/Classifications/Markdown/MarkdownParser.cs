@@ -336,7 +336,12 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         stream.MoveToNextChar();
                     }
 
-                    ReportArtifact(new MarkdownCodeArtifact(null, TextRange.FromBounds(peek.StartPosition, stream.Position + 1), 1, 1));
+                    ReportArtifact(new MarkdownCodeArtifact(
+                        null, 
+                        TextRange.FromBounds(peek.StartPosition, stream.Position + 1), 
+                        1, 1, 
+                        peek.StartPosition  // Inline code blocks aren't grouped.
+                    ));
                     peek.Consume();
                 }
             }
@@ -376,6 +381,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             int lineStart;
             protected override bool ReadContent()
             {
+                int blockStart = stream.Position;
                 lineStart = stream.Position;
                 if (!TryReadSpaces(spaceCount))
                     return false;
@@ -388,7 +394,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     // Get the character count of the indent, which may be different if tabs are involved.
                     var indentSize = range.Start - thisLineStart;
                     range.Expand(-indentSize, 0);
-                    ReportArtifact(new MarkdownCodeArtifact(null, range, indentSize, 0));
+                    ReportArtifact(new MarkdownCodeArtifact(null, range, indentSize, 0, blockStart));
                 }
                 return true;
             }
@@ -421,6 +427,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             {
                 string language = null;
 
+                int blockStart = stream.Position;
                 if (TryConsume("```"))
                     fence = "```";
                 else if (TryConsume("~~~"))
@@ -437,7 +444,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     var range = TryConsumeContentLine();
                     if (range == null)
                         break;
-                    ReportArtifact(new MarkdownCodeArtifact(language, range, 0, 0));
+                    ReportArtifact(new MarkdownCodeArtifact(language, range, 0, 0, blockStart));
                 }
                 return true;
             }
@@ -500,9 +507,16 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
     public class MarkdownCodeArtifact : Artifact
     {
-        public MarkdownCodeArtifact(string language, ITextRange range, int leftLength, int rightLength)
-            : base(ArtifactTreatAs.Code, range, leftLength, rightLength, MarkdownClassificationTypes.MarkdownCode, true) { Language = language; }
+        public MarkdownCodeArtifact(string language, ITextRange range, int leftLength, int rightLength, int blockStart)
+            : base(ArtifactTreatAs.Code, range, leftLength, rightLength, MarkdownClassificationTypes.MarkdownCode, true)
+        {
+            Language = language;
+            BlockStart = blockStart;
+        }
         public string Language { get; private set; }
+        ///<summary>Gets the character position in the stream that entire containing code block started.</summary>
+        ///<remarks>This is used to group code runs (lines) from the same block, for language prefixing.</remarks>
+        public int BlockStart { get; private set; }
     }
 
     ///<summary>Provides data for Artifact events.</summary>

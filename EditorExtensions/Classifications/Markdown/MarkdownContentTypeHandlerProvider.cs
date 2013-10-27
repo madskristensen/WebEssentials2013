@@ -14,6 +14,7 @@ using Microsoft.Html.Core;
 using Microsoft.Web.Core;
 using Microsoft.Web.Editor;
 using Microsoft.Html.Editor.Projection;
+using Microsoft.Web.Editor.Composition;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
@@ -121,44 +122,49 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             if (ProjectionBufferManager == null)
                 return;
 
-            foreach (var g in EditorTree.RootNode.Tree.ArtifactCollection.OfType<MarkdownCodeArtifact>()
-                                        .GroupBy(a => a.Language))
+
+            foreach (var language in EditorTree.RootNode.Tree.ArtifactCollection.OfType<MarkdownCodeArtifact>()
+                                               .GroupBy(a => a.Language))
             {
-                var contentType = contentTypeRegistry.FromFriendlyName(g.Key);
-                if (contentType == null)
-                    continue;
-                var pBuffer = ProjectionBufferManager.GetProjectionBuffer(contentType);
+                var contentType = contentTypeRegistry.FromFriendlyName(language.Key);
+                if (contentType == null) continue;  // If we can't identify the language, just use normal artifacts.
 
-                var fullSource = new StringBuilder();
-                var mappings = new List<ProjectionMapping>();
+                PopulateLanguageBuffer(contentType, language);
+            }
+        }
 
-                ITextSnapshot textSnapshot = base.EditorTree.TextSnapshot;
+        private void PopulateLanguageBuffer(IContentType contentType, IEnumerable<MarkdownCodeArtifact> artifacts)
+        {
+            var pBuffer = ProjectionBufferManager.GetProjectionBuffer(contentType);
 
-                foreach (var artifact in g)
+            var contentTypeImportComposer = new ContentTypeImportComposer<ICodeLanguageEmbedder>(WebEditor.CompositionService);
+            var embedder = contentTypeImportComposer.GetImport(contentType);
+
+            var fullSource = new StringBuilder();
+            var mappings = new List<ProjectionMapping>();
+
+            foreach (var block in artifacts.GroupBy(a => a.BlockStart))
+            {
+                IReadOnlyCollection<string> surround = null;
+                if (embedder != null)
+                    surround = embedder.GetBlockWrapper(block.Select(a => a.GetText(EditorTree.TextSnapshot)));
+
+                if (surround != null)
+                    fullSource.AppendLine(surround.FirstOrDefault());
+
+                foreach (var artifact in block)
                 {
-                    if (artifact.Start >= textSnapshot.Length || artifact.End > textSnapshot.Length || artifact.TreatAs != ArtifactTreatAs.Code)
+                    if (artifact.Start >= EditorTree.TextSnapshot.Length || artifact.End > EditorTree.TextSnapshot.Length || artifact.TreatAs != ArtifactTreatAs.Code)
                         continue;
 
-                    // Add a newline between the texts of each buffer.
-                    // This newline will become part of the underlying
-                    // text seen by the "foreign" language service; it
-                    // will never be displayed in the editor.
-                    // In the future, I may want to add boilerplate to
-                    // make the code valid for some languages.  (eg, a
-                    // C# method declaration if the code only consists
-                    // of statements)
-                    if (fullSource.Length > 0)
-                        fullSource.AppendLine();
-
-                    int projectionStart = fullSource.Length;
-
-                    fullSource.Append(textSnapshot.GetText(artifact.InnerRange.Start, artifact.InnerRange.Length));
-
-                    mappings.Add(new ProjectionMapping(artifact.InnerRange.Start, projectionStart, artifact.InnerRange.Length, AdditionalContentInclusion.All));
+                    mappings.Add(new ProjectionMapping(artifact.InnerRange.Start, fullSource.Length, artifact.InnerRange.Length, AdditionalContentInclusion.All));
+                    fullSource.AppendLine(artifact.GetText(EditorTree.TextSnapshot));
                 }
 
-                pBuffer.SetTextAndMappings(fullSource.ToString(), mappings.ToArray());
+                if (surround != null)
+                    fullSource.AppendLine(surround.LastOrDefault());
             }
+            pBuffer.SetTextAndMappings(fullSource.ToString(), mappings.ToArray());
         }
     }
 

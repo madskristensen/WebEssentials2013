@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Html.Core;
+using Microsoft.VisualStudio.Text;
 using Microsoft.Web.Core;
 
 namespace MadsKristensen.EditorExtensions
@@ -19,6 +21,11 @@ namespace MadsKristensen.EditorExtensions
         public static bool IsAtLastCharacter(this CharacterStream stream)
         {
             return stream.DistanceFromEnd <= 1;
+        }
+
+        public static string GetText(this IArtifact artifact, ITextSnapshot snapshot)
+        {
+            return snapshot.GetText(artifact.InnerRange.Start, artifact.InnerRange.Length);
         }
     }
 }
