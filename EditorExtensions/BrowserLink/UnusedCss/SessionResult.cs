@@ -9,6 +9,18 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public class SessionResult : IUsageDataSource, IResolutionRequiredDataSource
     {
+        public SessionResult()
+        {
+        }
+
+        public SessionResult(UnusedCssExtension extension)
+        {
+            RawUsageData = new List<RawRuleUsage>();
+            _extension = extension;
+            _ruleUsages = new HashSet<RuleUsage>();
+            _isResolved = 1;
+        }
+
         [JsonProperty]
         public List<RawRuleUsage> RawUsageData { get; set; }
 
@@ -83,6 +95,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public void Resync()
         {
             _ruleUsages = RuleRegistry.Resolve(RawUsageData);
+        }
+
+        public void Merge(SessionResult source)
+        {
+            RawUsageData = RawUsageData.Union(source.RawUsageData).ToList();
+            Resync();
         }
     }
 }
