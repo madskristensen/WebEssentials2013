@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
             var line = _buffer.CurrentSnapshot.Lines.SingleOrDefault(l => l.Start <= position && l.End >= position.Value.Position);
             if (line == null) return;
 
-            int linePos = position - line.Start.Position;
+            int linePos = position.Value - line.Start.Position;
 
             var info = NodeModuleCompletionUtils.FindCompletionInfo(line.GetText(), linePos);
             if (info == null) return;
