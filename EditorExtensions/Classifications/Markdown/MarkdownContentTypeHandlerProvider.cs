@@ -24,10 +24,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         [Import]
         public IContentTypeRegistryService ContentTypeRegistry { get; set; }
 
-        public IContentTypeHandler GetContentTypeHandler()
-        {
-            return new MarkdownContentTypeHandler(ContentTypeRegistry);
-        }
+        public IContentTypeHandler GetContentTypeHandler() { return new MarkdownContentTypeHandler(ContentTypeRegistry); }
     }
 
     public class MarkdownContentTypeHandler : HtmlContentTypeHandler
@@ -40,42 +37,19 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             );
 
         readonly IContentTypeRegistryService contentTypeRegistry;
-        private CodeBlockBlockHandler codeBlockHandler;
         public MarkdownContentTypeHandler(IContentTypeRegistryService contentTypeRegistry)
         {
             this.contentTypeRegistry = contentTypeRegistry;
         }
-        public override ArtifactCollection CreateArtifactCollection()
-        {
-            return new MarkdownCodeArtifactCollection(new MarkdownCodeArtifactProcessor());
-        }
+
+        public override ArtifactCollection CreateArtifactCollection() { return new MarkdownCodeArtifactCollection(new MarkdownCodeArtifactProcessor()); }
 
         protected override void CreateBlockHandlers()
         {
             base.CreateBlockHandlers();
-            GetLanguageBlockHandlerList(this).Add(codeBlockHandler = new CodeBlockBlockHandler(EditorTree, contentTypeRegistry));
+            GetLanguageBlockHandlerList(this).Add(new CodeBlockBlockHandler(EditorTree, contentTypeRegistry));
         }
 
-        public override void Init(HtmlEditorTree editorTree)
-        {
-            base.Init(editorTree);
-            ContainedLanguageSettings.FormatOnPaste = false;
-            ContainedLanguageSettings.EnableSyntaxCheck = false;
-        }
-
-        public override IContentType GetContentTypeOfLocation(int position)
-        {
-            int itemContaining = EditorTree.ArtifactCollection.GetItemContaining(position);
-            if (itemContaining >= 0)
-            {
-                IArtifact artifact = EditorTree.ArtifactCollection[itemContaining];
-                if (artifact.TreatAs == ArtifactTreatAs.Comment)
-                {
-                    return contentTypeRegistry.GetContentType("text");
-                }
-            }
-            return base.GetContentTypeOfLocation(position);
-        }
         public override void UpdateContainedLanguageBuffers()
         {
             // TODO: Call RemoveSpans() on each created LanguageProjectionBuffer iff IsRegenerationNeeded()
@@ -108,18 +82,14 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         protected override void BuildLanguageBlockCollection()
         {
-            ArtifactCollection artifactCollection = base.EditorTree.RootNode.Tree.ArtifactCollection;
-            base.LanguageBlocks.Clear();
-            foreach (MarkdownCodeArtifact current in artifactCollection)
+            LanguageBlocks.Clear();
+            foreach (MarkdownCodeArtifact current in EditorTree.RootNode.Tree.ArtifactCollection)
             {
                 if (current.TreatAs == ArtifactTreatAs.Code)
-                {
-                    base.LanguageBlocks.AddBlock(new ArtifactLanguageBlock(current, contentTypeRegistry.FromFriendlyName(current.Language)));
-                }
+                    LanguageBlocks.AddBlock(new ArtifactLanguageBlock(current, contentTypeRegistry.FromFriendlyName(current.Language)));
             }
-            base.LanguageBlocks.SortByPosition();
+            LanguageBlocks.SortByPosition();
         }
-
     }
 
     class ArtifactLanguageBlock : LanguageBlock
@@ -127,10 +97,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public ArtifactLanguageBlock(MarkdownCodeArtifact a, IContentType contentType)
             : base(a)
         {
-            Language = a.Language;
             ContentType = contentType;
         }
-        public string Language { get; private set; }
         public IContentType ContentType { get; private set; }
     }
 
@@ -145,17 +113,13 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         protected override bool EnsureProjectionBuffer()
         {
-            if (ProjectionBufferManager == null)
-                return false;
-            // We don't have any single ProjectionBuffer.
-            return true;
+            return true;   // We don't have any single ProjectionBuffer.  (also, this function should never be called)
         }
 
         protected override void RegenerateBuffer()
         {
             if (ProjectionBufferManager == null)
                 return;
-            //base.RegenerateBuffer();
 
             foreach (var g in EditorTree.RootNode.Tree.ArtifactCollection.OfType<MarkdownCodeArtifact>()
                                         .GroupBy(a => a.Language))
@@ -165,9 +129,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     continue;
                 var pBuffer = ProjectionBufferManager.GetProjectionBuffer(contentType);
 
-                StringBuilder fullSource = new StringBuilder();
-
-                List<ProjectionMapping> list = new List<ProjectionMapping>();
+                var fullSource = new StringBuilder();
+                var mappings = new List<ProjectionMapping>();
 
                 ITextSnapshot textSnapshot = base.EditorTree.TextSnapshot;
 
@@ -187,16 +150,14 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     if (fullSource.Length > 0)
                         fullSource.AppendLine();
 
-                    int artifactStart = fullSource.Length;
+                    int projectionStart = fullSource.Length;
 
-                    ITextRange innerRange = artifact.InnerRange;
-                    fullSource.Append(textSnapshot.GetText(innerRange.Start, innerRange.Length));
+                    fullSource.Append(textSnapshot.GetText(artifact.InnerRange.Start, artifact.InnerRange.Length));
 
-                    ProjectionMapping item = new ProjectionMapping(innerRange.Start, artifactStart, innerRange.Length, AdditionalContentInclusion.All);
-                    list.Add(item);
+                    mappings.Add(new ProjectionMapping(artifact.InnerRange.Start, projectionStart, artifact.InnerRange.Length, AdditionalContentInclusion.All));
                 }
 
-                pBuffer.SetTextAndMappings(fullSource.ToString(), list.ToArray());
+                pBuffer.SetTextAndMappings(fullSource.ToString(), mappings.ToArray());
             }
         }
     }
@@ -342,7 +303,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             return false;
         }
-
 
         public override ICollection<IArtifact> ReflectTextChange(int start, int oldLength, int newLength)
         {
