@@ -15,14 +15,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public SessionResult(UnusedCssExtension extension)
         {
-            RawUsageData = new List<RawRuleUsage>();
+            RawUsageData = new HashSet<RawRuleUsage>();
             _extension = extension;
             _ruleUsages = new HashSet<RuleUsage>();
             _isResolved = 1;
         }
 
         [JsonProperty]
-        public List<RawRuleUsage> RawUsageData { get; set; }
+        public HashSet<RawRuleUsage> RawUsageData { get; set; }
 
         [JsonProperty]
         public bool Continue { get; set; }
@@ -99,7 +99,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public void Merge(SessionResult source)
         {
-            RawUsageData = RawUsageData.Union(source.RawUsageData).ToList();
+            RawUsageData.UnionWith(source.RawUsageData);
             Resync();
         }
     }
