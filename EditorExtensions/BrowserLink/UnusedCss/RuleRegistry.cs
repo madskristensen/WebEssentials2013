@@ -40,7 +40,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return Task.Factory.StartNew(() => AmbientRuleContext.GetAllRules());
         }
 
-        public static async Task<HashSet<RuleUsage>> ResolveAsync(List<RawRuleUsage> rawUsageData)
+        public static async Task<HashSet<RuleUsage>> ResolveAsync(IEnumerable<RawRuleUsage> rawUsageData)
         {
             var allRules = await GetAllRulesAsync();
             var result = new HashSet<RuleUsage>();
@@ -75,7 +75,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return tmp.Replace(", ", ",");
         }
 
-        internal static HashSet<RuleUsage> Resolve(List<RawRuleUsage> rawUsageData)
+        internal static HashSet<RuleUsage> Resolve(IEnumerable<RawRuleUsage> rawUsageData)
         {
             var allRules = AmbientRuleContext.GetAllRules();
             var result = new HashSet<RuleUsage>();
