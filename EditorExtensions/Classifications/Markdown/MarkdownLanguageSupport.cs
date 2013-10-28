@@ -221,7 +221,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             ContainedLineIndentSettings lineIndent = this._modernContainedLanguageHost.GetLineIndent(lineNumber);
             indentString = lineIndent.IndentString;
             parentIndentLevel = lineIndent.ParentIndentLevel;
-            indentSize = lineIndent.IndentSize;
+            // TODO: Return block quote prefix?
+            indentSize = 0;// lineIndent.IndentSize;
             tabs = (lineIndent.Tabs ? 1 : 0);
             tabSize = lineIndent.TabSize;
             return 0;
