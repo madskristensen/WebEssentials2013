@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
 
         public override IEnumerable<Intel.Completion> GetEntries(char quoteChar, SnapshotPoint caret)
         {
-            return _classNames.GetNames(new Uri(caret.Snapshot.TextBuffer.GetFileName()), caret, CssNameType.Class)
+            return _classNames.GetNames(new Uri(caret.Snapshot.TextBuffer.GetFileName()), caret, NameType)
                 .Select(s => s.Name)
                 .Distinct()
                 .OrderBy(s => s)
