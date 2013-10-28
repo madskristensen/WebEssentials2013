@@ -105,8 +105,18 @@ partial class Entry { object SampleMethod" + Guid.NewGuid().ToString("n") + @"()
         public override string LanguageServiceName { get { return "VB"; } }
         public override IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
         {
-            return new[] { @"Partial Class Entry
-Function SampleMethod" + Guid.NewGuid().ToString("n") + @"()", @"
+            return new[] { @"
+Imports System
+Imports System.Collections.Generic
+Imports System.Data
+Imports System.Linq
+Imports System.Text
+Imports System.Threading
+Imports System.Threading.Tasks
+
+Partial Class Entry
+Function SampleMethod" + Guid.NewGuid().ToString("n") + @"() As Object", @"
+Return Nothing
 End Function
 End Class" };
         }
