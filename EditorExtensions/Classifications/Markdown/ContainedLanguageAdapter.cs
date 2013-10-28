@@ -149,16 +149,18 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 {
                     this._secondaryBuffer = (adapterFactory.CreateVsTextBufferAdapterForSecondaryBuffer(vsTextBuffer.GetServiceProvider(), ProjectionBuffer.IProjectionBuffer) as IVsTextLines);
                 }
-                // TODO: Move after CreateVsTextBufferCoordinatorAdapter()?
-                vsTextBuffer.SetTextBufferData(HtmlConstants.SID_SBufferCoordinatorServerLanguage, this._textBufferCoordinator);
-                vsTextBuffer.SetTextBufferData(typeof(VsTextBufferCoordinatorClass).GUID, this._textBufferCoordinator);
 
                 this._secondaryBuffer.SetTextBufferData(VSConstants.VsTextBufferUserDataGuid.VsBufferDetectLangSID_guid, false);
                 this._secondaryBuffer.SetTextBufferData(VSConstants.VsTextBufferUserDataGuid.VsBufferMoniker_guid, owner.WorkspaceItem.PhysicalPath);
+
                 IOleUndoManager oleUndoManager;
                 this._secondaryBuffer.GetUndoManager(out oleUndoManager);
                 oleUndoManager.Enable(0);
+
                 this._textBufferCoordinator = adapterFactory.CreateVsTextBufferCoordinatorAdapter();
+                vsTextBuffer.SetTextBufferData(HtmlConstants.SID_SBufferCoordinatorServerLanguage, this._textBufferCoordinator);
+                vsTextBuffer.SetTextBufferData(typeof(VsTextBufferCoordinatorClass).GUID, this._textBufferCoordinator);
+
                 this._textBufferCoordinator.SetBuffers(vsTextBuffer as IVsTextLines, this._secondaryBuffer);
 
                 return this._secondaryBuffer;
