@@ -382,10 +382,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             foreach (var b in languageBridges.Values)
                 b.ClearBufferCoordinator();
 
-            MarkdownLanguageSupport service = ServiceManager.GetService<MarkdownLanguageSupport>(this.Document.TextBuffer);
+            var service = ServiceManager.GetService<ContainedLanguageAdapter>(this.Document.TextBuffer);
             if (service != null)
             {
-                ServiceManager.RemoveService<MarkdownLanguageSupport>(this.Document.TextBuffer);
+                ServiceManager.RemoveService<ContainedLanguageAdapter>(this.Document.TextBuffer);
                 service.Dispose();
             }
             Document.OnDocumentClosing -= this.OnDocumentClosing;
