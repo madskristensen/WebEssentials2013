@@ -329,6 +329,7 @@
     <Compile Include="Classifications\Markdown\ContentTypeHandler.cs" />
     <Compile Include="Classifications\Markdown\MarkdownLanguageSupport.cs" />
     <Compile Include="Classifications\Markdown\MarkdownParser.cs" />
+    <Compile Include="Classifications\Markdown\TextViewListener.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassificationTypes.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifier.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifierProvider.cs" />

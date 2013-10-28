@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer);
 
         ///<summary>Called when the user enters a block of this type.</summary>
-        void OnBlockEntered();
+        void OnBlockEntered(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer);
     }
 
     [Export(typeof(ICodeLanguageEmbedder))]
@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         }
 
         public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
-        public void OnBlockEntered() { }
+        public void OnBlockEntered(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
     }
     [Export(typeof(ICodeLanguageEmbedder))]
     [ContentType("Javascript")]
@@ -60,7 +60,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         static readonly IReadOnlyCollection<string> wrapper = new[] { "function() {", "}" };
         public IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code) { return wrapper; }
         public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
-        public void OnBlockEntered() { }
+        public void OnBlockEntered(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
     }
 
     abstract class IntellisenseProjectEmbedder : ICodeLanguageEmbedder
@@ -73,8 +73,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             ContainedLanguageAdapter.ForBuffer(editorBuffer).AddIntellisenseProjectLanguage(projectionBuffer, LanguageServiceName, false);
         }
 
-        public void OnBlockEntered()
+        public void OnBlockEntered(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer)
         {
+            ContainedLanguageAdapter.ForBuffer(editorBuffer).AddIntellisenseProjectLanguage(projectionBuffer, LanguageServiceName, true);
         }
     }
 
