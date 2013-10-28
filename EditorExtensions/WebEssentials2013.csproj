@@ -325,7 +325,8 @@
     <Compile Include="Classifications\Markdown\BufferGenerator.cs" />
     <Compile Include="Classifications\Markdown\CodeArtifactProcessor.cs" />
     <Compile Include="Classifications\Markdown\CodeLanguageEmbedders.cs" />
-    <Compile Include="Classifications\Markdown\MarkdownContentTypeHandlerProvider.cs" />
+    <Compile Include="Classifications\Markdown\ContainedLanguageAdapter.cs" />
+    <Compile Include="Classifications\Markdown\ContentTypeHandler.cs" />
     <Compile Include="Classifications\Markdown\MarkdownLanguageSupport.cs" />
     <Compile Include="Classifications\Markdown\MarkdownParser.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassificationTypes.cs" />

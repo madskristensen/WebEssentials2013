@@ -15,6 +15,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
     class MarkdownBufferGenerator : ArtifactBasedBufferGenerator
     {
+        readonly ISet<IContentType> createdContentTypes = new HashSet<IContentType>();
         readonly IContentTypeRegistryService contentTypeRegistry;
         public MarkdownBufferGenerator(HtmlEditorTree editorTree, LanguageBlockCollection languageBlocks, IContentTypeRegistryService contentTypeRegistry)
             : base(editorTree, languageBlocks)
@@ -74,6 +75,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     fullSource.AppendLine(surround.LastOrDefault());
             }
             pBuffer.SetTextAndMappings(fullSource.ToString(), mappings.ToArray());
+
+            if (createdContentTypes.Add(contentType))
+                if (embedder != null)
+                    embedder.OnBlockCreated(EditorTree.TextBuffer, pBuffer);
         }
     }
 

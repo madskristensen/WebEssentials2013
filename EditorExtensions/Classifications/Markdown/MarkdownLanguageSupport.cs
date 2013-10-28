@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     // and modified to support both C# and VB.Net editors in the same file.
     // Hopefully, we can end these nightmares when the Roslyn editor ships.
     [ContentType(MarkdownContentTypeDefinition.MarkdownContentType)]
-    [Export(typeof(ITextViewCreationListener))]
+    //[Export(typeof(ITextViewCreationListener))]
     internal sealed class ServerContainedLanguageSupportViewTracker : ITextViewCreationListener
     {
         public void OnTextViewCreated(ITextView textView, ITextBuffer textBuffer)
@@ -441,7 +441,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         private Dictionary<uint, IVsContainedLanguageHostEvents> _sinks = new Dictionary<uint, IVsContainedLanguageHostEvents>();
         private uint _cookie = 1u;
         private IWebContainedLanguageHost _modernContainedLanguageHost;
-        private ITextBuffer _secondaryBuffer;
+        private LanguageProjectionBuffer _secondaryBuffer;
         private bool _canReformatCode = true;
         public event EventHandler<ContainedLanguageHostClosingEventArgs> Closing;
 
@@ -471,16 +471,26 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             get { return ((IContainedLanguageHostVs)this._modernContainedLanguageHost).ContainedLanguageContextProvider; }
             set { ((IContainedLanguageHostVs)this._modernContainedLanguageHost).ContainedLanguageContextProvider = value; }
         }
+        //TODO: Remove this ctor
         public VsLegacyContainedLanguageHost(HtmlEditorDocument vsDocument, ITextBuffer secondaryBuffer)
         {
             this._modernContainedLanguageHost = (ContainedLanguageHost.GetHost(vsDocument.PrimaryView, secondaryBuffer) as IWebContainedLanguageHost);
-            this._secondaryBuffer = secondaryBuffer;
             this._vsDocument = vsDocument;
             this._vsDocument.OnDocumentClosing += this.OnDocumentClosing;
             ProjectionBufferManager projectionBufferManager = ProjectionBufferManager.FromTextBuffer(this._vsDocument.TextBuffer);
-            LanguageProjectionBuffer projectionBuffer = projectionBufferManager.GetProjectionBuffer(this._secondaryBuffer.ContentType);
+            LanguageProjectionBuffer projectionBuffer = projectionBufferManager.GetProjectionBuffer(secondaryBuffer.ContentType);
+            this._secondaryBuffer = projectionBuffer;
             projectionBuffer.MappingsChanging += this.OnMappingsChanging;
             projectionBuffer.MappingsChanged += this.OnMappingsChanged;
+        }
+        public VsLegacyContainedLanguageHost(HtmlEditorDocument vsDocument, LanguageProjectionBuffer secondaryBuffer)
+        {
+            this._modernContainedLanguageHost = (ContainedLanguageHost.GetHost(vsDocument.PrimaryView, secondaryBuffer.IProjectionBuffer) as IWebContainedLanguageHost);
+            this._secondaryBuffer = secondaryBuffer;
+            this._vsDocument = vsDocument;
+            this._vsDocument.OnDocumentClosing += this.OnDocumentClosing;
+            secondaryBuffer.MappingsChanging += this.OnMappingsChanging;
+            secondaryBuffer.MappingsChanged += this.OnMappingsChanged;
         }
         private void OnMappingsChanging(object sender, EventArgs e)
         {
@@ -494,12 +504,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             if (this.Closing != null)
             {
-                this.Closing(this, new ContainedLanguageHostClosingEventArgs(this, this._secondaryBuffer));
+                this.Closing(this, new ContainedLanguageHostClosingEventArgs(this, this._secondaryBuffer.IProjectionBuffer));
             }
-            ProjectionBufferManager projectionBufferManager = ProjectionBufferManager.FromTextBuffer(this._vsDocument.TextBuffer);
-            LanguageProjectionBuffer projectionBuffer = projectionBufferManager.GetProjectionBuffer(this._secondaryBuffer.ContentType);
-            projectionBuffer.MappingsChanging -= this.OnMappingsChanging;
-            projectionBuffer.MappingsChanged -= this.OnMappingsChanged;
+            _secondaryBuffer.MappingsChanging -= this.OnMappingsChanging;
+            _secondaryBuffer.MappingsChanged -= this.OnMappingsChanged;
             this._vsDocument.OnDocumentClosing -= this.OnDocumentClosing;
             this._vsDocument = null;
         }

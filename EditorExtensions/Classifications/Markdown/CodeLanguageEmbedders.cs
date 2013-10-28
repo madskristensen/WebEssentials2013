@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Html.Editor.Projection;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code);
 
         ///<summary>Called when a block of this type is first created within a document.</summary>
-        void OnBlockCreated();
+        void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer);
 
         ///<summary>Called when the user enters a block of this type.</summary>
         void OnBlockEntered();
@@ -47,7 +47,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             return null;
         }
 
-        public void OnBlockCreated() { }
+        public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
         public void OnBlockEntered() { }
     }
     [Export(typeof(ICodeLanguageEmbedder))]
@@ -57,9 +57,58 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         // Statements like return or arguments can only appear inside a function.
         // There are no statements that cannot appear in a function.
         // TODO: IntelliSense for Node.js vs. HTML.
-        static readonly IReadOnlyCollection<string> wrapper = new[] { "function() {\r\n", "\r\n}" };
+        static readonly IReadOnlyCollection<string> wrapper = new[] { "function() {", "}" };
         public IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code) { return wrapper; }
-        public void OnBlockCreated() { }
+        public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
         public void OnBlockEntered() { }
+    }
+
+    abstract class IntellisenseProjectEmbedder : ICodeLanguageEmbedder
+    {
+        public abstract IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code);
+        public abstract string LanguageServiceName { get; }
+
+        public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer)
+        {
+            ContainedLanguageAdapter.ForBuffer(editorBuffer).AddIntellisenseProjectLanguage(projectionBuffer, LanguageServiceName, false);
+        }
+
+        public void OnBlockEntered()
+        {
+        }
+    }
+
+    [Export(typeof(ICodeLanguageEmbedder))]
+    [ContentType("CSharp")]
+    class CSharpEmbedder : IntellisenseProjectEmbedder
+    {
+        public override string LanguageServiceName { get { return "C#"; } }
+        public override IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
+        {
+            return new[] { @"
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+partial class Entry { object SampleMethod" + Guid.NewGuid().ToString("n") + @"() {", "}}" };
+        }
+    }
+
+    [Export(typeof(ICodeLanguageEmbedder))]
+    [ContentType("Basic")]
+    class VBEmbedder : IntellisenseProjectEmbedder
+    {
+        public override string LanguageServiceName { get { return "VB"; } }
+        public override IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
+        {
+            return new[] { @"Partial Class Entry
+Function SampleMethod" + Guid.NewGuid().ToString("n") + @"()", @"
+End Function
+End Class" };
+        }
     }
 }

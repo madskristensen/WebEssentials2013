@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Html.Core;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.Web.Core;
 
 namespace MadsKristensen.EditorExtensions
@@ -26,6 +29,24 @@ namespace MadsKristensen.EditorExtensions
         public static string GetText(this IArtifact artifact, ITextSnapshot snapshot)
         {
             return snapshot.GetText(artifact.InnerRange.Start, artifact.InnerRange.Length);
+        }
+
+        public static Microsoft.VisualStudio.OLE.Interop.IServiceProvider GetServiceProvider(this IVsTextBuffer buffer)
+        {
+            IntPtr pUnk = IntPtr.Zero;
+            try
+            {
+                IObjectWithSite objectWithSite = buffer as IObjectWithSite;
+
+                Guid gUID = typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider).GUID;
+                objectWithSite.GetSite(ref gUID, out pUnk);
+                return Marshal.GetObjectForIUnknown(pUnk) as Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+            }
+            finally
+            {
+                if (pUnk != IntPtr.Zero)
+                    Marshal.Release(pUnk);
+            }
         }
     }
 }
