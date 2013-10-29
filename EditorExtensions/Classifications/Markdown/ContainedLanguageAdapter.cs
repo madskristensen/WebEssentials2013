@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Runtime.InteropServices;
 using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Projection;
-
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Html.ContainedLanguage;
 using Microsoft.VisualStudio.Html.Editor;
@@ -14,12 +14,10 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-
 using Microsoft.VisualStudio.Web.Editor;
 using Microsoft.VisualStudio.Web.Editor.Workspace;
 using Microsoft.Web.Editor;
 using Microsoft.Web.Editor.ContainedLanguage;
-
 using VSConstants = Microsoft.VisualStudio.VSConstants;
 
 
@@ -345,37 +343,66 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         ///<summary>Creates a ContainedLanguage for the specified ProjectionBuffer, using an IVsIntellisenseProjectManager to intialize the language.</summary>
         ///<param name="projectionBuffer">The buffer to connect to the language service.</param>
-        ///<param name="serviceName">The name of the language service; passed to GetContainedLanguageFactory().</param>
-        ///<param name="force">True to replace any existing IVsIntellisenseProjectManager (and associated language bridge); false to do nothing if an IVsIntellisenseProjectManager exists.</param>
-        public void AddIntellisenseProjectLanguage(LanguageProjectionBuffer projectionBuffer, string serviceName, bool force)
+        ///<param name="intelliSenseGuid">The name of the language service; passed to GetContainedLanguageFactory().</param>
+        public void AddIntellisenseProjectLanguage(LanguageProjectionBuffer projectionBuffer, Guid intelliSenseGuid)
         {
-            if (intellisenseProject != null && !force)
-                return;
-
             var contentType = projectionBuffer.IProjectionBuffer.ContentType;
-            if ((intellisenseProject != null && intellisenseProject.ContentType == contentType)
-             || languageBridges.ContainsKey(contentType))
+            if (languageBridges.ContainsKey(contentType))
                 return;
 
-            if (intellisenseProject != null)
-                intellisenseProject.Dispose();
-            intellisenseProject = new IntellisenseProjectWrapper(this, contentType);
-            intellisenseProject.LoadComplete += delegate
+            var localRegistry = ServiceProvider.GlobalProvider.GetService(typeof(SLocalRegistry)) as ILocalRegistry;
+            IVsIntellisenseProject project;
+            Guid iid_vsip = typeof(IVsIntellisenseProject).GUID;
+            IntPtr pUnk;
+            ErrorHandler.ThrowOnFailure(localRegistry.CreateInstance(intelliSenseGuid, null, ref iid_vsip, (uint)CLSCTX.CLSCTX_INPROC_SERVER, out pUnk));
+            try
             {
+                project = (IVsIntellisenseProject)Marshal.GetObjectForIUnknown(pUnk);
+            }
+            finally { Marshal.Release(pUnk); }
 
-                IVsContainedLanguageFactory factory;
-                intellisenseProject.Manager.GetContainedLanguageFactory(serviceName, out factory);
-                if (factory == null)
-                {
-                    Logger.Log("Markdown: Couldn't create IVsContainedLanguageFactory for " + serviceName);
-                    intellisenseProject.Dispose();
-                    intellisenseProject = null;
-                    return;
-                }
-                languageBridges.Add(contentType, new LanguageBridge(this, projectionBuffer, factory));
-            };
+            project.AddAssemblyReference("System.Core");
+            project.Init(new ProjectHost());
+            project.StartIntellisenseEngine();
 
-            intellisenseProject.CreateWhenIdle();
+            IVsContainedLanguageFactory factory;
+            project.GetContainedLanguageFactory(out factory);
+            if (factory == null)
+            {
+                Logger.Log("Markdown: Couldn't create IVsContainedLanguageFactory for " + contentType);
+                project.Close();
+                return;
+            }
+            //project.AddFile(projectionBuffer.IProjectionBuffer.GetFileName());
+            // TODO: IVsIntellisenseProject.Close();
+            languageBridges.Add(contentType, new LanguageBridge(this, projectionBuffer, factory));
+        }
+
+        class ProjectHost : IVsIntellisenseProjectHost
+        {
+            public int CreateFileCodeModel(string pszFilename, out object ppCodeModel)
+            {
+                ppCodeModel = null;
+                return VSConstants.E_NOTIMPL;
+            }
+
+            public int GetCompilerOptions(out string pbstrOptions)
+            {
+                pbstrOptions = "";
+                return 0;
+            }
+
+            public int GetHostProperty(uint dwPropID, out object pvar)
+            {
+                pvar = null;
+                return VSConstants.E_NOTIMPL;
+            }
+
+            public int GetOutputAssembly(out string pbstrOutputAssembly)
+            {
+                pbstrOutputAssembly = "";
+                return 0;
+            }
         }
 
         #region Cleanup
