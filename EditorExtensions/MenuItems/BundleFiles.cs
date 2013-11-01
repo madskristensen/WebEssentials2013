@@ -69,65 +69,19 @@ namespace MadsKristensen.EditorExtensions
 
         public static void UpdateBundles(string changedFile, bool isBuild)
         {
-            if (string.IsNullOrEmpty(changedFile))
-            {
-                foreach (Project project in GetAllProjects())
-                {
-                    if (project.ProjectItems.Count > 0)
-                    {
-                        string folder = project.Properties.Item("FullPath").Value.ToString();
-                        UpdateBundle(folder, isBuild);
-                    }
-                }
-            }
-            else
+            if (!string.IsNullOrEmpty(changedFile))
             {
                 UpdateBundle(changedFile, isBuild);
+                return;
             }
-        }
-
-        private static IEnumerable<Project> GetAllProjects(Project project = null, List<Project> list = null)
-        {
-            if (list == null)
-                list = new List<Project>();
-
-            if (project == null)
+            foreach (Project project in ProjectHelpers.GetAllProjects())
             {
-                foreach (Project p in EditorExtensionsPackage.DTE.Solution.Projects)
+                if (project.ProjectItems.Count > 0)
                 {
-                    try
-                    {
-                        if (string.IsNullOrEmpty(p.FullName))
-                        {
-                            GetAllProjects(p, list);
-                        }
-                        else
-                        {
-                            list.Add(p);
-                        }
-                    }
-                    catch (COMException ex)
-                    {
-                        if ((uint)ex.ErrorCode != IVsExtensions.DISP_E_MEMBERNOTFOUND)
-                        {
-                            throw;
-                        }
-                    }
+                    string folder = ProjectHelpers.GetRootFolder(project);
+                    UpdateBundle(folder, isBuild);
                 }
             }
-            else if (string.IsNullOrEmpty(project.FullName))
-            {
-                foreach (ProjectItem p in project.ProjectItems)
-                {
-                    if (p.SubProject != null)
-                    {
-                        list.Add(p.SubProject);
-                        break;
-                    }
-                }
-            }
-
-            return list;
         }
 
         private static void UpdateBundle(string changedFile, bool isBuild)
@@ -138,11 +92,6 @@ namespace MadsKristensen.EditorExtensions
 
             if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
                 return;
-
-            //if (dir.Contains("."))
-            //{
-            //    dir = Path.GetDirectoryName(dir);
-            //}
 
             foreach (string file in Directory.GetFiles(dir, "*" + _ext, SearchOption.AllDirectories))
             {
@@ -380,7 +329,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     // If the bundle is in the same folder as the CSS,
                     // or if does not have URLs, no need to normalize.
-                    if (Path.GetDirectoryName(file) != Path.GetDirectoryName(bundlePath) 
+                    if (Path.GetDirectoryName(file) != Path.GetDirectoryName(bundlePath)
                      && source.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
                         source = CssUrlNormalizer.NormalizeUrls(
                             tree: new CssParser().Parse(source, true),

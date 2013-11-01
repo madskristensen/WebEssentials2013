@@ -45,9 +45,9 @@ namespace MadsKristensen.EditorExtensions
 
         public static void BuildCoffeeScript()
         {
-            foreach (Project project in _dte.Solution.Projects)
+            foreach (Project project in ProjectHelpers.GetAllProjects())
             {
-                using(CoffeeScriptMargin margin = new CoffeeScriptMargin())
+                using (CoffeeScriptMargin margin = new CoffeeScriptMargin())
                     margin.CompileProject(project);
             }
         }
@@ -61,7 +61,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static void BuildLess()
         {
-            foreach (Project project in _dte.Solution.Projects)
+            foreach (Project project in ProjectHelpers.GetAllProjects())
             {
                 LessProjectCompiler.CompileProject(project);
             }
@@ -103,12 +103,9 @@ namespace MadsKristensen.EditorExtensions
 
         private IEnumerable<string> GetFiles()
         {
-            foreach (Project project in _dte.Solution.Projects)
+            foreach (Project project in ProjectHelpers.GetAllProjects())
             {
-                if (string.IsNullOrEmpty(project.FullName))
-                    continue;
-
-                string dir = Path.GetDirectoryName(project.Properties.Item("FullPath").Value.ToString());
+                string dir = ProjectHelpers.GetRootFolder(project);
 
                 List<string> list = new List<string>();
                 list.AddRange(Directory.GetFiles(dir, "*.css", SearchOption.AllDirectories));

@@ -8,12 +8,29 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using EnvDTE80;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal static class ProjectHelpers
     {
+        public static IEnumerable<Project> GetAllProjects()
+        {
+            return EditorExtensionsPackage.DTE.Solution.Projects
+                .Cast<Project>()
+                .SelectMany(GetChildProjects);
+        }
+        private static IEnumerable<Project> GetChildProjects(Project parent)
+        {
+            if (!String.IsNullOrEmpty(parent.FullName))
+                return new[] { parent };
+            return parent.ProjectItems
+                    .Cast<ProjectItem>()
+                    .Where(p => p.SubProject != null)
+                    .SelectMany(p => GetChildProjects(p.SubProject));
+        }
+
         ///<summary>Indicates whether a Project is a Web Application or Web Site project.</summary>
         public static bool IsWebProject(this Project project)
         {
