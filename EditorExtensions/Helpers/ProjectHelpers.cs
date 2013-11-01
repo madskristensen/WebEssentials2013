@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using EnvDTE80;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -206,9 +207,9 @@ namespace MadsKristensen.EditorExtensions
         }
 
         ///<summary>Gets the full paths to the currently selected item(s) in the Solution Explorer.</summary>
-        public static IEnumerable<string> GetSelectedItemPaths()
+        public static IEnumerable<string> GetSelectedItemPaths(DTE2 dte = null)
         {
-            var items = (Array)EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
+            var items = (Array)(dte ?? EditorExtensionsPackage.DTE).ToolWindows.SolutionExplorer.SelectedItems;
             foreach (UIHierarchyItem selItem in items)
             {
                 var item = selItem.Object as ProjectItem;
