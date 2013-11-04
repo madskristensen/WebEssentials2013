@@ -27,7 +27,11 @@ namespace MadsKristensen.EditorExtensions
                         "window.external.Execute(result, '" + state.Replace("\\", "\\\\") + "');" +
                     "}" +
                     "catch (err){" +
-                        "window.external.Execute('ERROR:' + err, '" + state.Replace("\\", "\\\\") + "');" +
+                        "var locationMsg = '';" +
+                        "if (err && err.location) {" +
+                            "locationMsg = err.location.first_line + ':' + err.location.first_column + ':';" +
+                        "}" +
+                        "window.external.Execute('ERROR:'+locationMsg+err, '" + state.Replace("\\", "\\\\") + "');" +
                     "}";
 
             return "<html><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\" /><script>" + script + "</script></head><html/>";

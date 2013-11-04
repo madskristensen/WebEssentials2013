@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
@@ -108,18 +109,13 @@ namespace MadsKristensen.EditorExtensions
         private CompilerError ParseError(string error)
         {
             string message = error.Replace("ERROR:", string.Empty).Replace("Error:", string.Empty);
-            int index = message.IndexOf(':');
-            int line = 0;
+            int line = 0, column = 0;
 
-            if (index > -1)
+            Match match = Regex.Match(message, @"^(\d{1,})[:](\d{1,})");
+            if (match.Success)
             {
-                int start = message.LastIndexOf(' ', index);
-                if (start > -1)
-                {
-                    int length = index - start - 1;
-                    string part = message.Substring(start + 1, length);
-                    int.TryParse(part, out line);
-                }
+                int.TryParse(match.Groups[1].Value, out line);
+                int.TryParse(match.Groups[2].Value, out column);
             }
 
             CompilerError result = new CompilerError()
@@ -127,6 +123,7 @@ namespace MadsKristensen.EditorExtensions
                 Message = "CoffeeScript: " + message,
                 FileName = Document.FilePath,
                 Line = line,
+                Column = column
             };
 
             return result;
