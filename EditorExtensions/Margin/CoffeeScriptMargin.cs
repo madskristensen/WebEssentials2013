@@ -34,26 +34,24 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                string fullPath = project.Properties.Item("FullPath").Value.ToString();
+                string dir = ProjectHelpers.GetRootFolder(project);
+                if (string.IsNullOrEmpty(dir))
+                    return;
 
-                if (project != null && !string.IsNullOrEmpty(fullPath))
+                var files = Directory.GetFiles(dir, "*.coffee", SearchOption.AllDirectories);
+
+                foreach (string file in files)
                 {
-                    string dir = Path.GetDirectoryName(fullPath);
-                    var files = Directory.GetFiles(dir, "*.coffee", SearchOption.AllDirectories);
+                    string jsFile = GetCompiledFileName(file, ".js", UseCompiledFolder);
 
-                    foreach (string file in files)
+                    if (EditorExtensionsPackage.DTE.Solution.FindProjectItem(file) != null &&
+                        File.Exists(jsFile))
                     {
-                        string jsFile = GetCompiledFileName(file, ".js", UseCompiledFolder);
+                        _projectFileCount++;
 
-                        if (EditorExtensionsPackage.DTE.Solution.FindProjectItem(file) != null &&
-                            File.Exists(jsFile))
-                        {
-                            _projectFileCount++;
-
-                            CoffeeScriptCompiler compiler = new CoffeeScriptCompiler(Dispatcher.CurrentDispatcher);
-                            compiler.Completed += compiler_Completed;
-                            compiler.Compile(File.ReadAllText(file), file);
-                        }
+                        CoffeeScriptCompiler compiler = new CoffeeScriptCompiler(Dispatcher.CurrentDispatcher);
+                        compiler.Completed += compiler_Completed;
+                        compiler.Compile(File.ReadAllText(file), file);
                     }
                 }
             }

@@ -169,7 +169,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static IEnumerable<string> GetSelectedFilePaths(DTE2 dte)
         {
-            var selectedPaths = GetSelectedItemPaths(dte);
+            var selectedPaths = ProjectHelpers.GetSelectedItemPaths(dte);
             List<string> list = new List<string>();
 
             foreach (string path in selectedPaths)
@@ -192,19 +192,6 @@ namespace MadsKristensen.EditorExtensions
             }
 
             return list;
-        }
-
-        private static IEnumerable<string> GetSelectedItemPaths(DTE2 dte)
-        {
-            var items = (Array)dte.ToolWindows.SolutionExplorer.SelectedItems;
-            foreach (UIHierarchyItem selItem in items)
-            {
-                var item = selItem.Object as ProjectItem;
-                if (item != null)
-                {
-                    yield return item.Properties.Item("FullPath").Value.ToString();
-                }
-            }
         }
     }
 }

@@ -8,11 +8,29 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using EnvDTE80;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal static class ProjectHelpers
     {
+        public static IEnumerable<Project> GetAllProjects()
+        {
+            return EditorExtensionsPackage.DTE.Solution.Projects
+                .Cast<Project>()
+                .SelectMany(GetChildProjects);
+        }
+        private static IEnumerable<Project> GetChildProjects(Project parent)
+        {
+            if (!String.IsNullOrEmpty(parent.FullName))
+                return new[] { parent };
+            return parent.ProjectItems
+                    .Cast<ProjectItem>()
+                    .Where(p => p.SubProject != null)
+                    .SelectMany(p => GetChildProjects(p.SubProject));
+        }
+
         ///<summary>Indicates whether a Project is a Web Application or Web Site project.</summary>
         public static bool IsWebProject(this Project project)
         {
@@ -206,9 +224,9 @@ namespace MadsKristensen.EditorExtensions
         }
 
         ///<summary>Gets the full paths to the currently selected item(s) in the Solution Explorer.</summary>
-        public static IEnumerable<string> GetSelectedItemPaths()
+        public static IEnumerable<string> GetSelectedItemPaths(DTE2 dte = null)
         {
-            var items = (Array)EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
+            var items = (Array)(dte ?? EditorExtensionsPackage.DTE).ToolWindows.SolutionExplorer.SelectedItems;
             foreach (UIHierarchyItem selItem in items)
             {
                 var item = selItem.Object as ProjectItem;
