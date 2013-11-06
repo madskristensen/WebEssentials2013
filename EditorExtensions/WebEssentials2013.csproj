@@ -35,6 +35,7 @@
     <StartAction>Program</StartAction>
     <StartProgram>$(DevEnvDir)\devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Exp</StartArguments>
+    <ZipPackageCompressionLevel>Normal</ZipPackageCompressionLevel>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>Source.extension.vsixmanifest</ApplicationManifest>
@@ -676,7 +677,6 @@
     <EmbeddedResource Include="BrowserLink\Menu\MenuBrowserLink.js" />
     <Content Include="Classifications\RobotsTxt\robots.txt" />
     <None Include="Classifications\Markdown\Sample.md" />
-    <None Include="Properties\vsix-compress.props" />
     <None Include="WebMarkupMin.Configuration.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -810,10 +810,6 @@
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>
-  <PropertyGroup Label="VsixCompress">
-    <VsixCompressTargets Condition=" '$(VsixCompressTargets)'=='' ">$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\..\packages\VsixCompress.1.0.1\tools\vsix-compress.targets ))</VsixCompressTargets>
-  </PropertyGroup>
-  <Import Project="$(VsixCompressTargets)" Condition="Exists('$(VsixCompressTargets)')" Label="VsixCompress" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
