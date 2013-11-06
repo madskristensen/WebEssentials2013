@@ -27,16 +27,14 @@ namespace MadsKristensen.EditorExtensions
         {
             string output = Path.GetTempFileName();
 
-            string webEssentialsDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string nodeJsDir = Path.Combine(webEssentialsDir, @"Resources\nodejs");
-            string lessc = @"node_modules\.bin\lessc.cmd";
+            string webEssentialsDir = Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location);
+            string lessc = Path.Combine(webEssentialsDir, @"Resources\nodejs\node_modules\.bin\lessc.cmd");
 
-            ProcessStartInfo start = new ProcessStartInfo(@"cmd.exe")
+            ProcessStartInfo start = new ProcessStartInfo(lessc)
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
                 CreateNoWindow = true,
-                WorkingDirectory = nodeJsDir,
-                Arguments = "/c " + lessc + " \"" + filename + "\" \"" + output + "\"",
+                Arguments = "--relative-urls \"" + filename + "\" \"" + output + "\"",
                 UseShellExecute = false,
                 RedirectStandardError = true
             };
@@ -47,13 +45,14 @@ namespace MadsKristensen.EditorExtensions
 
                 ProcessResult(output, process, result);
 
-                if (result.IsSuccess && result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
+                // If the caller wants us to renormalize URLs to a different filename, do so.
+                if (targetFilename != null && result.IsSuccess && result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
                 {
                     try
                     {
                         result.Result = CssUrlNormalizer.NormalizeUrls(
                             tree: new CssParser().Parse(result.Result, true),
-                            targetFile: targetFilename ?? filename,
+                            targetFile: targetFilename,
                             oldBasePath: filename
                         );
                     }
