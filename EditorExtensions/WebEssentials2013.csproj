@@ -727,12 +727,6 @@
     <Resource Include="Resources\graph_class.png" />
     <Resource Include="Resources\graph_parent.png" />
     <EmbeddedResource Include="Resources\Scripts\IcedCoffeeScript-1.6.3-f.js" />
-    <Content Include="Resources\Scripts\less-1.4.2.min.js">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Resources\Scripts\lessc.wsf">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Resource Include="Resources\sort.png" />
     <None Include="Source.extension.vsixmanifest" />
     <Resource Include="Resources\vsgallery.png" />
