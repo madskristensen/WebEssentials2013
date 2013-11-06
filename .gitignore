@@ -212,3 +212,7 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+# nodejs resources
+EditorExtensions/Resources/nodejs/
+
