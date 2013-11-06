@@ -21,6 +21,7 @@ namespace MadsKristensen.EditorExtensions
         {
             var webclient = new WebClient();
 
+            Directory.CreateDirectory(@"resources\nodejs");
             if (!File.Exists(@"resources\nodejs\node.exe"))
             {
                 Log.LogMessage(MessageImportance.High, "Downloading nodejs ...");
@@ -31,7 +32,16 @@ namespace MadsKristensen.EditorExtensions
             {
                 Log.LogMessage(MessageImportance.High, "Downloading npm ...");
                 var npmZip = webclient.OpenRead("http://nodejs.org/dist/npm/npm-1.3.13.zip");
-                ExtractZipWithOverwrite(npmZip, @"resources\nodejs");
+                try
+                {
+                    ExtractZipWithOverwrite(npmZip, @"resources\nodejs");
+                }
+                catch
+                {
+                    // Make sure the next build doesn't see a half-installed npm
+                    Directory.Delete(@"resources\nodejs\node_modules\npm", true);
+                    throw;
+                }
             }
 
             if (!File.Exists(@"resources\nodejs\node_modules\.bin\lessc.cmd"))
@@ -118,18 +128,24 @@ namespace MadsKristensen.EditorExtensions
             {
                 foreach (var entry in source.Entries)
                 {
-                    var targetPath = Path.GetFullPath(Path.Combine(destinationDirectoryName, entry.FullName));
+                    const string prefix = "node_modules/npm/node_modules/";
 
-                    var isDirectory = (Path.GetFileName(targetPath).Length == 0);
-                    if (isDirectory)
+                    // Collapse nested node_modules folders to avoid MAX_PATH issues from Path.GetFullPath
+                    var targetSubPath = entry.FullName;
+                    if (targetSubPath.StartsWith(prefix) && targetSubPath.Length > prefix.Length)
                     {
-                        Directory.CreateDirectory(targetPath);
+                        // If there is another node_modules folder after the prefix, collapse them
+                        var lastModule = entry.FullName.LastIndexOf("node_modules/");
+                        if (lastModule > prefix.Length)
+                            targetSubPath = targetSubPath.Remove(prefix.Length, lastModule + "node_modules/".Length - prefix.Length);
+                        Log.LogMessage(MessageImportance.High, entry.FullName + "\t=> " + targetSubPath);
                     }
-                    else
-                    {
-                        Directory.CreateDirectory(Path.GetDirectoryName(targetPath));
+
+                    var targetPath = Path.GetFullPath(Path.Combine(destinationDirectoryName, targetSubPath));
+
+                    Directory.CreateDirectory(Path.GetDirectoryName(targetPath));
+                    if (!targetPath.EndsWith(@"\"))
                         entry.ExtractToFile(targetPath, overwrite: true);
-                    }
                 }
             }
         }
