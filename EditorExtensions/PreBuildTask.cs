@@ -24,27 +24,26 @@ namespace MadsKristensen.EditorExtensions
             if (!File.Exists(@"resources\nodejs\node.exe"))
             {
                 Log.LogMessage(MessageImportance.High, "Downloading nodejs ...");
-                webclient.DownloadFile("http://nodejs.org/dist/v0.10.21/node.exe", @"resources\nodejs\node.exe");
+                webclient.DownloadFile("http://nodejs.org/dist/latest/node.exe", @"resources\nodejs\node.exe");
             }
 
             if (!File.Exists(@"resources\nodejs\node_modules\npm\bin\npm.cmd"))
             {
                 Log.LogMessage(MessageImportance.High, "Downloading npm ...");
-                webclient.DownloadFile("http://nodejs.org/dist/npm/npm-1.3.13.zip", @"resources\nodejs\npm.zip");
-                extractZipWithOverwrite(@"resources\nodejs\npm.zip", @"resources\nodejs");
-                File.Delete(@"resources\nodejs\npm.zip");
+                var npmZip = webclient.OpenRead("http://nodejs.org/dist/npm/npm-1.3.13.zip");
+                ExtractZipWithOverwrite(npmZip, @"resources\nodejs");
             }
 
             if (!File.Exists(@"resources\nodejs\node_modules\.bin\lessc.cmd"))
             {
                 Log.LogMessage(MessageImportance.High, "npm install less ...");
                 var output = new StringWriter();
-                int result = exec("cmd.exe", @"/c npm.cmd install less", @"resources\nodejs", output, output);
+                int result = Exec("npm.cmd", @"install less", @"resources\nodejs", output, output);
                 if (result != 0)
                 {
                     Log.LogError("npm error " + result + ": " + output.ToString().Trim());
                 }
-                flattenNodeModules(@"resources\nodejs\node_modules\less\node_modules");
+                FlattenNodeModules(@"resources\nodejs\node_modules\less\node_modules");
             }
 
             return true;
@@ -55,32 +54,31 @@ namespace MadsKristensen.EditorExtensions
         /// Therefore grab all node_modues directories and move them up to baseNodeModuleDir. Node's require() will then 
         /// traverse up and find them at the higher level. Should be fine as long as there are no versioning conflicts.
         /// </summary>
-        static void flattenNodeModules(string baseNodeModuleDir)
+        static void FlattenNodeModules(string baseNodeModuleDir)
         {
             var baseDir = new DirectoryInfo(baseNodeModuleDir);
 
             var nodeModulesDirs = from dir in baseDir.EnumerateDirectories("*", SearchOption.AllDirectories)
                                   where dir.Name.Equals("node_modules", StringComparison.OrdinalIgnoreCase)
-                                  orderby dir.FullName.Split(Path.DirectorySeparatorChar).Length descending //get deepest first
+                                  orderby dir.FullName.Count(c => c == Path.DirectorySeparatorChar) descending // Get deepest first
                                   select dir;
 
             foreach (var nodeModules in nodeModulesDirs)
             {
-                foreach (var module in nodeModules.GetDirectories())
+                foreach (var module in nodeModules.EnumerateDirectories())
                 {
                     string targetDir = Path.Combine(baseDir.FullName, module.Name);
                     if (!Directory.Exists(targetDir))
                         module.MoveTo(targetDir);
                 }
 
-                if (nodeModules.GetFileSystemInfos().Length == 0)
+                if (!nodeModules.EnumerateFileSystemInfos().Any())
                     nodeModules.Delete();
             }
-
         }
 
         /// <summary>Invokes a command-line process.</summary>
-        static int exec(string filename, string args, string workingDirectory = null, TextWriter stdout = null, TextWriter stderr = null)
+        static int Exec(string filename, string args, string workingDirectory = null, TextWriter stdout = null, TextWriter stderr = null)
         {
             stdout = stdout ?? TextWriter.Null;
             stderr = stderr ?? TextWriter.Null;
@@ -114,9 +112,9 @@ namespace MadsKristensen.EditorExtensions
             return p.ExitCode;
         }
 
-        static void extractZipWithOverwrite(string sourceZip, string destinationDirectoryName)
+        void ExtractZipWithOverwrite(Stream sourceZip, string destinationDirectoryName)
         {
-            using (var source = ZipFile.Open(sourceZip, ZipArchiveMode.Read))
+            using (var source = new ZipArchive(sourceZip, ZipArchiveMode.Read))
             {
                 foreach (var entry in source.Entries)
                 {
@@ -135,7 +133,5 @@ namespace MadsKristensen.EditorExtensions
                 }
             }
         }
-
-
     }
 }
