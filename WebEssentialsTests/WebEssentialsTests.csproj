@@ -138,10 +138,12 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>rem Needed to run LESS compiler JS
-xcopy /y /s "$(SolutionDir)EditorExtensions\Resources\Scripts\*" "$(TargetDir)Resources\Scripts\"
-
-xcopy /y /s "$(ProjectDir)fixtures\*" "$(TargetDir)fixtures\"</PostBuildEvent>
+    <PostBuildEvent>
+      rem Needed to run LESS compiler JS
+      xcopy /y /s /d "$(SolutionDir)EditorExtensions\Resources\Scripts\*" "$(TargetDir)Resources\Scripts\" &gt;nul
+      xcopy /y /s /d "$(SolutionDir)EditorExtensions\Resources\nodejs\*" "$(TargetDir)Resources\nodejs\" &gt;nul
+      xcopy /y /s /d "$(ProjectDir)fixtures\*" "$(TargetDir)fixtures\" &gt;nul
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

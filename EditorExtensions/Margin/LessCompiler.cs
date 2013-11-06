@@ -27,11 +27,16 @@ namespace MadsKristensen.EditorExtensions
         {
             string output = Path.GetTempFileName();
 
-            ProcessStartInfo start = new ProcessStartInfo(@"cscript")
+            string webEssentialsDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string nodeJsDir = Path.Combine(webEssentialsDir, @"Resources\nodejs");
+            string lessc = @"node_modules\.bin\lessc.cmd";
+
+            ProcessStartInfo start = new ProcessStartInfo(@"cmd.exe")
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
                 CreateNoWindow = true,
-                Arguments = "//nologo //s \"" + GetScriptPath() + "\" \"" + filename + "\" \"" + output + "\"",
+                WorkingDirectory = nodeJsDir,
+                Arguments = "/c " + lessc + " \"" + filename + "\" \"" + output + "\"",
                 UseShellExecute = false,
                 RedirectStandardError = true
             };
@@ -75,7 +80,11 @@ namespace MadsKristensen.EditorExtensions
             else
             {
                 using (StreamReader reader = process.StandardError)
-                    result.Error = ParseError(reader.ReadToEnd());
+                {
+                    string error = reader.ReadToEnd();
+                    Debug.WriteLine("LessCompiler Error: " + error);
+                    result.Error = ParseError(error);
+                }
             }
 
             File.Delete(outputFile);
@@ -132,15 +141,6 @@ namespace MadsKristensen.EditorExtensions
             }
 
             return result;
-        }
-
-        private static string GetScriptPath()
-        {
-            string assembly = Assembly.GetExecutingAssembly().Location;
-            string folder = Path.GetDirectoryName(assembly);
-            string file = Path.Combine(folder, @"resources\scripts\lessc.wsf");
-
-            return file;
         }
     }
 }
