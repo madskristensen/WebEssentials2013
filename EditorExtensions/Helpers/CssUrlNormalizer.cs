@@ -73,9 +73,11 @@ namespace MadsKristensen.EditorExtensions.Helpers
             return Regex.Unescape(str);
         }
 
+        static readonly Regex urlRegex = new Regex(@"^[a-z]{2,}:");
         private string FixPath(string url)
         {
-            if (url.StartsWith("/"))
+            // Ignore absolute URLs, whether domain-relative, protocol-relative, or fully absolute.  (as opposed to Windows paths with drive letters)
+            if (url.StartsWith("/") || urlRegex.IsMatch(url))
                 return null;
 
             string suffix = "";

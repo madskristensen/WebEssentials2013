@@ -26,10 +26,29 @@ namespace WebEssentialsTests
             }
         }
 
-
-        static async Task<string> CompileLess(string fileName)
+        [TestMethod]
+        public async Task PathNormalizationTest()
         {
-            var result = await LessCompiler.Compile(fileName);
+            foreach (var lessFilename in Directory.EnumerateFiles(Path.Combine(BaseDirectory, "fixtures/less"), "*.less", SearchOption.AllDirectories))
+            {
+                var expectedPath = Path.Combine(Path.GetDirectoryName(lessFilename), "css", Path.GetFileNameWithoutExtension(lessFilename) + ".css");
+                if (!File.Exists(expectedPath))
+                    continue;
+
+                var compiled = await CompileLess(lessFilename, expectedPath);
+                var expected = File.ReadAllText(expectedPath);
+
+                compiled = new CssFormatter().Format(compiled).Replace("\r", "");
+                expected = new CssFormatter().Format(expected).Replace("\r", "");
+
+                Assert.AreEqual(expected, compiled);
+            }
+        }
+
+
+        static async Task<string> CompileLess(string fileName, string targetFilename = null)
+        {
+            var result = await LessCompiler.Compile(fileName, targetFilename);
             if (result.IsSuccess)
                 return result.Result;
             else
