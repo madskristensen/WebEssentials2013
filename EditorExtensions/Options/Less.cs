@@ -17,6 +17,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.LessMinify, LessMinify);
             Settings.SetValue(WESettings.Keys.LessCompileOnBuild, LessCompileOnBuild);
             Settings.SetValue(WESettings.Keys.LessCompileToFolder, LessCompileToFolder);
+            Settings.SetValue(WESettings.Keys.LessSourceMaps, LessSourceMaps);
 
             Settings.Save();
         }
@@ -28,6 +29,7 @@ namespace MadsKristensen.EditorExtensions
             LessMinify = WESettings.GetBoolean(WESettings.Keys.LessMinify);
             LessCompileOnBuild = WESettings.GetBoolean(WESettings.Keys.LessCompileOnBuild);
             LessCompileToFolder = WESettings.GetBoolean(WESettings.Keys.LessCompileToFolder);
+            LessSourceMaps = WESettings.GetBoolean(WESettings.Keys.LessSourceMaps);
         }
 
         [LocDisplayName("Generate CSS file on save")]
@@ -39,6 +41,11 @@ namespace MadsKristensen.EditorExtensions
         [Description("Creates a minified version of the compiled CSS file (file.min.css).")]
         [Category("LESS")]
         public bool LessMinify { get; set; }
+
+        [LocDisplayName("Generate source maps")]
+        [Description("Creates a source map when compiling the CSS file (file.css.map).")]
+        [Category("LESS")]
+        public bool LessSourceMaps { get; set; }
 
         [LocDisplayName("Show preview window")]
         [Description("Shows the preview window when editing a LESS file.")]
