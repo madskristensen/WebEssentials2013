@@ -31,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
             string lessc = Path.Combine(webEssentialsDir, @"Resources\nodejs\node_modules\.bin\lessc.cmd");
             string argumentFormat = "--relative-urls \"{0}\" \"{1}\"";
             if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
-              argumentFormat = "--relative-urls --line-numbers=all --source-map \"{0}\" \"{1}\"";
+              argumentFormat = "--relative-urls --source-map=\"{0}.map\" \"{0}\" \"{1}\"";
 
             ProcessStartInfo start = new ProcessStartInfo(lessc)
             {
