@@ -16,8 +16,8 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class HtmlFindAllReferences : CommandTargetBase
     {
-        private HtmlEditorTree _tree;
-        private string _path, _className;
+        private readonly HtmlEditorTree _tree;
+        private string _className;
 
         public HtmlFindAllReferences(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, typeof(Microsoft.VisualStudio.VSConstants.VSStd97CmdID).GUID, (uint)Microsoft.VisualStudio.VSConstants.VSStd97CmdID.FindReferences)

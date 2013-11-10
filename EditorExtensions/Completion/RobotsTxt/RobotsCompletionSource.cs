@@ -44,18 +44,18 @@ namespace MadsKristensen.EditorExtensions
             }
             
             ITextSnapshot snapshot = _buffer.CurrentSnapshot;
-            var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
+            var triggerPoint = session.GetTriggerPoint(snapshot);
 
             if (triggerPoint == null)
                 return;
 
-            var line = triggerPoint.GetContainingLine();
+            var line = triggerPoint.Value.GetContainingLine();
             string text = line.GetText();
             int index = text.IndexOf(':');
             int hash = text.IndexOf('#');
-            SnapshotPoint start = triggerPoint;
+            SnapshotPoint start = triggerPoint.Value;
 
-            if (hash > -1 && hash < triggerPoint.Position || (index > -1 && (start - line.Start.Position) > index))
+            if (hash > -1 && hash < triggerPoint.Value.Position || (index > -1 && (start - line.Start.Position) > index))
                 return;
 
             while (start > line.Start && !char.IsWhiteSpace((start - 1).GetChar()))
@@ -63,7 +63,7 @@ namespace MadsKristensen.EditorExtensions
                 start -= 1;
             }
 
-            var applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint), SpanTrackingMode.EdgeInclusive);
+            var applicableTo = snapshot.CreateTrackingSpan(new SnapshotSpan(start, triggerPoint.Value), SpanTrackingMode.EdgeInclusive);
 
             completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Intel.Completion>()));
         }
