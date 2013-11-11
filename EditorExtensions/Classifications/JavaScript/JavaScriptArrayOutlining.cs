@@ -193,7 +193,6 @@ namespace MadsKristensen.EditorExtensions
 
             if (changeStart <= changeEnd)
             {
-                ITextSnapshot snap = this.snapshot;
                 if (this.TagsChanged != null)
                     this.TagsChanged(this, new SnapshotSpanEventArgs(
                         new SnapshotSpan(this.snapshot, Span.FromBounds(changeStart, changeEnd))));

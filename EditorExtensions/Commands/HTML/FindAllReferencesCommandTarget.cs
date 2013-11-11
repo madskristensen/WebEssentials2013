@@ -48,7 +48,6 @@ namespace MadsKristensen.EditorExtensions
             if (attr == null || attr.Name != "class")
                 return false;
 
-            string value = attr.Value;
             int beginning = position - attr.ValueRangeUnquoted.Start;
             int start = attr.Value.LastIndexOf(' ', beginning) + 1;
             int length = attr.Value.IndexOf(' ', start) - start;

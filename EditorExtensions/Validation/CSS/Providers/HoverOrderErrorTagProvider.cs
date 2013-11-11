@@ -18,15 +18,6 @@ namespace MadsKristensen.EditorExtensions
                 return ItemCheckResult.Continue;
 
             ParseItem next = item.NextSibling;
-            //ParseItem prev = item.PreviousSibling;
-            SimpleSelector sel = item.FindType<SimpleSelector>();
-
-            //if (item.Text == ":hover" && prev != null && _invalids.Contains(prev.Text))
-            //{
-            //    string error = string.Format(Resources.ValidationHoverOrder, prev.Text);
-            //    context.AddError(new SimpleErrorTag(item, error, CssErrorFlags.TaskListError | CssErrorFlags.UnderlineRed));
-            //}
-
             if (next != null)
             {
                 if (next.Text.StartsWith(":") && item.IsPseudoElement() && !next.IsPseudoElement())

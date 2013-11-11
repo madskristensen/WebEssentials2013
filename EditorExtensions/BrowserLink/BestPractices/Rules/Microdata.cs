@@ -24,8 +24,6 @@ namespace MadsKristensen.EditorExtensions
 
         public void Navigate(object sender, EventArgs e)
         {
-            ErrorTask task = (ErrorTask)sender;
-
             if (MessageBox.Show(Question, "Web Essentials", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 var process = Process.Start("http://www.seomoves.org/blog/build/html5-microdata-2711/");
