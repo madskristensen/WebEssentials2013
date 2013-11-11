@@ -29,12 +29,19 @@ namespace MadsKristensen.EditorExtensions
 
             string webEssentialsDir = Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location);
             string lessc = Path.Combine(webEssentialsDir, @"Resources\nodejs\node_modules\.bin\lessc.cmd");
+            string arguments = String.Format("--relative-urls \"{0}\" \"{1}\"", filename, output);
+            if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
+              arguments = String.Format(
+                "--relative-urls --source-map=\"{0}.map\" \"{1}\" \"{2}\"",
+                targetFilename ?? filename,
+                filename,
+                output);
 
             ProcessStartInfo start = new ProcessStartInfo(lessc)
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
                 CreateNoWindow = true,
-                Arguments = "--relative-urls \"" + filename + "\" \"" + output + "\"",
+                Arguments = arguments,
                 UseShellExecute = false,
                 RedirectStandardError = true
             };

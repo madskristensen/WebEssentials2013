@@ -16,7 +16,7 @@ namespace MadsKristensen.EditorExtensions
             public const string LessMinify = "LessMinify";
             public const string LessCompileOnBuild = "LessCompileOnBuild";
             public const string LessCompileToFolder = "LessCompileToFolder";
-
+            public const string LessSourceMaps = "LessSourceMaps";
 
             // CoffeeScript
             public const string GenerateJsFileFromCoffeeScript = "CoffeeScriptGenerateJsFile";
