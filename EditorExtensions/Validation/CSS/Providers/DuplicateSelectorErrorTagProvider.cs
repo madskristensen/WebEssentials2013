@@ -45,7 +45,6 @@ namespace MadsKristensen.EditorExtensions
 
             if (dupe != null)
             {
-                int length = GetSelectorLength(rule);
                 int lineNo = FindLineNumber(dupe);
 
                 string errorMessage = string.Format(CultureInfo.InvariantCulture, Resources.BestPracticeDuplicateSelectors, lineNo);

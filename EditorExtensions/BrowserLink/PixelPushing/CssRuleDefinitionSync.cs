@@ -8,7 +8,7 @@ using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 {
-    public class CssRuleDefinitionSync
+    public static class CssRuleDefinitionSync
     {
         private static Dictionary<string, string> ProduceKeyValuePairsFromRuleSet(RuleSet ruleSet)
         {
@@ -87,7 +87,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             };
         }
 
-        public class SyncAction : IEquatable<SyncAction>
+        class SyncAction : IEquatable<SyncAction>
         {
             private SyncAction(RuleSet rule, string propertyName)
             {

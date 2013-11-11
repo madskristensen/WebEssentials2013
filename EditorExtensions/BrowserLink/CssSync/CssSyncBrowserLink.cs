@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.Web.BrowserLink;
 using System.ComponentModel.Composition;
 using System.IO;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -32,6 +33,7 @@ namespace MadsKristensen.EditorExtensions
         }
     }
 
+    [SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "Watcher is disposed in OnDisconnecting()")]
     public class CssSync : BrowserLinkExtension
     {
         private FileSystemWatcher _fsw;

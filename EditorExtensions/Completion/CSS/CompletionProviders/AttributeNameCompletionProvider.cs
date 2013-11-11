@@ -62,7 +62,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private IEnumerable<ICssCompletionListEntry> UnknownTagName(IEnumerable<IHtmlSchema> schemas)
+        private static IEnumerable<ICssCompletionListEntry> UnknownTagName(IEnumerable<IHtmlSchema> schemas)
         {
             if (_allAttributes == null)
             {

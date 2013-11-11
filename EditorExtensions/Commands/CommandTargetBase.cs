@@ -23,9 +23,9 @@ namespace MadsKristensen.EditorExtensions
             this.TextView = textView;
 
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
-            { 
+            {
                 // Add the target later to make sure it makes it in before other command handlers
-                adapter.AddCommandFilter(this, out _nextCommandTarget);
+                ErrorHandler.ThrowOnFailure(adapter.AddCommandFilter(this, out _nextCommandTarget));
 
             }), DispatcherPriority.ApplicationIdle, null);
         }

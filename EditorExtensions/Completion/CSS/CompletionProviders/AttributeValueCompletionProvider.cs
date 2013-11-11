@@ -57,7 +57,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private IEnumerable<ICssCompletionListEntry> UnknownTagName(IHtmlSchema schema, string attrName)
+        private static IEnumerable<ICssCompletionListEntry> UnknownTagName(IHtmlSchema schema, string attrName)
         {
             var cache = new HashSet<string>();
 
@@ -69,8 +69,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     foreach (var value in attr.GetValues())
                     {
-                        if (!cache.Contains(value.Value))
-                            cache.Add(value.Value);
+                        cache.Add(value.Value);
                     }
                 }
             }

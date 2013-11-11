@@ -7,17 +7,13 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public static class ErrorList
     {
-        private static readonly ErrorListProvider ErrorListProvider;
+        private static readonly ErrorListProvider ErrorListProvider = new ErrorListProvider(EditorExtensionsPackage.Instance)
+        {
+            ProviderName = "Unused CSS Browser Link Extension",
+            ProviderGuid = new Guid("5BA8BB0D-D518-45ae-966C-864C536454F2")
+        };
         private static readonly ReaderWriterLockSlim Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
-        static ErrorList()
-        {
-            ErrorListProvider = new ErrorListProvider(EditorExtensionsPackage.Instance)
-            {
-                ProviderName = "Unused CSS Browser Link Extension",
-                ProviderGuid = new Guid("5BA8BB0D-D518-45ae-966C-864C536454F2")
-            };
-        }
 
         public static void AddItem(Task task)
         {

@@ -39,19 +39,19 @@ namespace MadsKristensen.EditorExtensions
         private Dictionary<string, ErrorTask> _tasks = new Dictionary<string, ErrorTask>();
         private RulesFactory _factory = new RulesFactory();
 
-        public ErrorListProvider _errorList;
-        public BrowserLinkConnection _connection;
+        public ErrorListProvider ErrorList { get; private set; }
+        public BrowserLinkConnection Connection { get; private set; }
 
         public BestPractices()
         {
-            _errorList = new ErrorListProvider(EditorExtensionsPackage.Instance);
-            _errorList.ProviderName = "Browser Link Extension";
-            _errorList.ProviderGuid = new Guid("5BA8BB0D-D518-45ae-966C-864C536454F2");
+            ErrorList = new ErrorListProvider(EditorExtensionsPackage.Instance);
+            ErrorList.ProviderName = "Browser Link Extension";
+            ErrorList.ProviderGuid = new Guid("5BA8BB0D-D518-45ae-966C-864C536454F2");
         }
 
         public override void OnConnected(BrowserLinkConnection connection)
         {
-            _connection = connection;
+            Connection = connection;
         }
 
         [BrowserLinkCallback]
@@ -62,18 +62,18 @@ namespace MadsKristensen.EditorExtensions
             if (rule != null)
             {
                 CreateTask(id, rule, success);
-                _errorList.Tasks.Clear();
+                ErrorList.Tasks.Clear();
 
                 if (_tasks.Count > 0)
                 {
-                    _errorList.SuspendRefresh();
+                    ErrorList.SuspendRefresh();
 
                     foreach (string key in _tasks.Keys)
                     {
-                        _errorList.Tasks.Add(_tasks[key]);
+                        ErrorList.Tasks.Add(_tasks[key]);
                     }
 
-                    _errorList.ResumeRefresh();
+                    ErrorList.ResumeRefresh();
                 }
             }
         }
@@ -111,7 +111,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (solution != null)
             {
-                int flag = solution.GetProjectOfUniqueName(_connection.Project.FullName, out HierarchyItem);
+                int flag = solution.GetProjectOfUniqueName(Connection.Project.FullName, out HierarchyItem);
 
                 if (0 == flag)
                 {

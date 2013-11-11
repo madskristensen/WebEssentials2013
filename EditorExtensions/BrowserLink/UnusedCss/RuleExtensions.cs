@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
+using Microsoft.VisualStudio;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -53,7 +54,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             if (solution != null)
             {
-                solution.GetProjectOfUniqueName(projectName, out hierarchyItem);
+                ErrorHandler.ThrowOnFailure(solution.GetProjectOfUniqueName(projectName, out hierarchyItem));
             }
 
             return hierarchyItem;

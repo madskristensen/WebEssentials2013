@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions
         {
             string cssFilename = GetCompiledFileName(Document.FilePath, ".css", UseCompiledFolder);// Document.FilePath.Replace(".less", ".css");
 
-            if (_isFirstRun && File.Exists(cssFilename))
+            if (IsFirstRun && File.Exists(cssFilename))
             {
                 OnCompilationDone(File.ReadAllText(cssFilename), Document.FilePath);
                 return;

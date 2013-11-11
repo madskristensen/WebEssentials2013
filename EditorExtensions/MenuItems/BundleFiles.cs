@@ -162,7 +162,7 @@ namespace MadsKristensen.EditorExtensions
             _mcs.AddCommand(menuCommandJs);
         }
 
-        private void BeforeQueryStatus(object sender, string extension)
+        private static void BeforeQueryStatus(object sender, string extension)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
             menuCommand.Enabled = GetSelectedItems(extension).Count() > 1;
@@ -173,7 +173,7 @@ namespace MadsKristensen.EditorExtensions
             return ProjectHelpers.GetSelectedItems().Where(p => Path.GetExtension(p.FileNames[1]) == extension);
         }
 
-        private void CreateBundlefile(string extension)
+        private static void CreateBundlefile(string extension)
         {
             StringBuilder sb = new StringBuilder();
             string firstFile = null;
@@ -214,14 +214,14 @@ namespace MadsKristensen.EditorExtensions
                     else
                     {
                         Dispatcher.CurrentDispatcher.BeginInvoke(
-                            new Action(() => WriteFile(bundlePath, items, extension, bundleFile.Replace(_ext, string.Empty))),
+                            new Action(() => WriteFile(bundlePath, items, bundleFile.Replace(_ext, string.Empty))),
                         DispatcherPriority.ApplicationIdle, null);
                     }
                 }
             }
         }
 
-        private static void WriteFile(string filePath, IEnumerable<ProjectItem> files, string extension, string output)
+        private static void WriteFile(string filePath, IEnumerable<ProjectItem> files, string output)
         {
             string projectRoot = ProjectHelpers.GetProjectFolder(files.ElementAt(0).FileNames[1]);
             StringBuilder sb = new StringBuilder();
@@ -234,7 +234,7 @@ namespace MadsKristensen.EditorExtensions
                 writer.WriteAttributeString("minify", "true");
                 writer.WriteAttributeString("runOnBuild", "true");
                 writer.WriteAttributeString("output", output);
-                writer.WriteComment("The order of the <file> elements determines the order of them when bundled.");
+                writer.WriteComment("The order of the <file> elements determines the order of the file contents when bundled.");
 
                 foreach (ProjectItem item in files)
                 {
@@ -273,7 +273,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (outputAttr != null && (outputAttr.InnerText.Contains("/") || outputAttr.InnerText.Contains("\\")))
             {
-                MessageBox.Show("The 'output' attribute should contain a file name without a path", "Web Essentials");
+                MessageBox.Show("The 'output' attribute should contain a file name without a path; '" + outputAttr.InnerText + "' is not valid", "Web Essentials");
                 return;
             }
 

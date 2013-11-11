@@ -49,7 +49,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
         [BrowserLinkCallback]
-        public void UpdateSource(string innerHTML, string file, int position)
+        public void UpdateSource(string innerHtml, string file, int position)
         {
             EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
 
@@ -70,9 +70,9 @@ namespace MadsKristensen.EditorExtensions
                     Span span = new Span(element.InnerRange.Start, element.InnerRange.Length);
                     string text = html.TextBuffer.CurrentSnapshot.GetText(span);
 
-                    if (text != innerHTML)
+                    if (text != innerHtml)
                     {
-                        UpdateBuffer(innerHTML, html, span);
+                        UpdateBuffer(innerHtml, html, span);
                     }
                 }
                 // ActionLink
@@ -83,7 +83,7 @@ namespace MadsKristensen.EditorExtensions
                     if (position + 100 < html.TextBuffer.CurrentSnapshot.Length)
                     {
                         string text = html.TextBuffer.CurrentSnapshot.GetText(span);
-                        var result = Regex.Replace(text, @"^html.actionlink\(""([^""]+)""", "Html.ActionLink(\"" + innerHTML + "\"", RegexOptions.IgnoreCase);
+                        var result = Regex.Replace(text, @"^html.actionlink\(""([^""]+)""", "Html.ActionLink(\"" + innerHtml + "\"", RegexOptions.IgnoreCase);
                         UpdateBuffer(result, html, span);
                     }
                 }

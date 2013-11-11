@@ -13,7 +13,6 @@ namespace MadsKristensen.EditorExtensions
             var project = ProjectHelpers.GetProject(searchFrom);
             var projectPath = project.Properties.Item("FullPath").Value.ToString();
             var projectUri = new Uri(projectPath, UriKind.Absolute);
-            var fileNames = new HashSet<string>();
             var projectDir = Path.GetDirectoryName(projectPath);
 
             if (projectDir == null)

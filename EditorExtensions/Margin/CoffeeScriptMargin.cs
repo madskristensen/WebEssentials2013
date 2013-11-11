@@ -85,7 +85,7 @@ namespace MadsKristensen.EditorExtensions
         {
             string fileName = GetCompiledFileName(Document.FilePath, ".js", UseCompiledFolder);//Document.FilePath.Replace(".coffee", ".js");
 
-            if (_isFirstRun && File.Exists(fileName))
+            if (IsFirstRun && File.Exists(fileName))
             {
                 OnCompilationDone(File.ReadAllText(fileName), Document.FilePath);
                 return;

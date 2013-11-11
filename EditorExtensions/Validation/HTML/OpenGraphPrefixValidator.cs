@@ -8,14 +8,14 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 
-namespace MadsKristensen.EditorExtensions.Validation.HTML
+namespace MadsKristensen.EditorExtensions.Validation.Html
 {
     [Export(typeof(IHtmlElementValidatorProvider))]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
-    public class OpenGrapPrefixValidatorProvider : BaseHtmlElementValidatorProvider<OpenGrapPrefixValidator>
+    public class OpenGraphPrefixValidatorProvider : BaseHtmlElementValidatorProvider<OpenGraphPrefixValidator>
     { }
 
-    public class OpenGrapPrefixValidator : BaseValidator
+    public class OpenGraphPrefixValidator : BaseValidator
     {
         public override IList<IHtmlValidationError> ValidateElement(ElementNode element)
         {

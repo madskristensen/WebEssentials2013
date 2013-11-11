@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions
@@ -11,7 +12,8 @@ namespace MadsKristensen.EditorExtensions
     /// tree for each type.
     /// To use this class, add a collection initializer with a list of typed lambdas.
     /// </summary>
-    public class CssItemAggregator<TResult> : ICssSimpleTreeVisitor, System.Collections.IEnumerable   // For collection initializer syntax
+    [SuppressMessage("Microsoft.Design", "CA1010:CollectionsShouldImplementGenericInterface", Justification = "Not actually a collection; implements IEnumerable for initializer syntax")]
+    public sealed class CssItemAggregator<TResult> : ICssSimpleTreeVisitor, System.Collections.IEnumerable   // For collection initializer syntax
     {
         public ReadOnlyCollection<TResult> Items { get; private set; }
         private readonly bool _includeChildren;
@@ -79,7 +81,7 @@ namespace MadsKristensen.EditorExtensions
         }
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
- 	        throw new System.NotImplementedException("Not actually a collection");
+            throw new System.NotImplementedException("Not actually a collection");
         }
     }
 }

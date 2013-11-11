@@ -36,7 +36,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (MessageBox.Show(Question, "Web Essentials", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                Project project = _extension._connection.Project;
+                Project project = _extension.Connection.Project;
                 string folder = project.Properties.Item("FullPath").Value.ToString();
                 string path = Path.Combine(folder, "robots.txt");
 
@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
 
                 EditorExtensionsPackage.DTE.ItemOperations.OpenFile(path);
                 project.ProjectItems.AddFromFile(path);
-                _extension._errorList.Tasks.Remove(task);
+                _extension.ErrorList.Tasks.Remove(task);
             }
         }
     }

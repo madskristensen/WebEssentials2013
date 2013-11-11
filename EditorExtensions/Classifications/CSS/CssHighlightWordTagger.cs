@@ -106,9 +106,10 @@ namespace MadsKristensen.EditorExtensions
                 return;
                 // There is no separate token type for a property name,
                 // so I need to ensure that we are in the name portion.
-                var decl = item.FindType<Declaration>();
-                if (decl != null && item.Parent != decl.PropertyName)
-                    validItem = decl.PropertyName;
+                //var decl = item.FindType<Declaration>();
+                //if (decl != null && item.Parent != decl.PropertyName)
+                //    validItem = decl.PropertyName;
+                //TODO: What was this for?
             }
 
             // If the new caret position is still within the current word (and on the same snapshot), we don't need to check it

@@ -73,7 +73,6 @@ namespace MadsKristensen.EditorExtensions
             ICssCompletionListEntry entry = reference.Invoke(name);
             if (entry != null)
             {
-                string standardsReference = entry.GetAttribute("standard-reference");
                 string text = entry.DisplayText;
                 Uri url;
 

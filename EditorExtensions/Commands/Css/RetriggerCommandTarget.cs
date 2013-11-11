@@ -24,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
         {
             _textView = textView;
             _broker = broker;
-            adapter.AddCommandFilter(this, out _nextCommandTarget);
+            ErrorHandler.ThrowOnFailure(adapter.AddCommandFilter(this, out _nextCommandTarget));
         }
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)

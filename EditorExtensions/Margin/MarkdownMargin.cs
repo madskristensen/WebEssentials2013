@@ -91,7 +91,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override void CreateControls(IWpfTextViewHost host, string source)
         {
-            int width = WESettings.GetInt(_settingsKey);
+            int width = WESettings.GetInt(SettingsKey);
             width = width == -1 ? 400 : width;
 
             _browser = new WebBrowser();
@@ -123,7 +123,7 @@ namespace MadsKristensen.EditorExtensions
 
         void splitter_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            Settings.SetValue(_settingsKey, (int)this.ActualWidth);
+            Settings.SetValue(SettingsKey, (int)this.ActualWidth);
             Settings.Save();
         }
 
