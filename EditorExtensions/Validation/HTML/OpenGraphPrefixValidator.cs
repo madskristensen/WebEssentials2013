@@ -12,10 +12,10 @@ namespace MadsKristensen.EditorExtensions.Validation.HTML
 {
     [Export(typeof(IHtmlElementValidatorProvider))]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
-    public class OpenGrapPrefixValidatorProvider : BaseHtmlElementValidatorProvider<OpenGrapPrefixValidator>
+    public class OpenGraphPrefixValidatorProvider : BaseHtmlElementValidatorProvider<OpenGraphPrefixValidator>
     { }
 
-    public class OpenGrapPrefixValidator : BaseValidator
+    public class OpenGraphPrefixValidator : BaseValidator
     {
         public override IList<IHtmlValidationError> ValidateElement(ElementNode element)
         {

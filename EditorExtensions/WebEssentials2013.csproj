@@ -654,7 +654,7 @@
     <Compile Include="SmartTags\CSS\CssSmartTagger.cs" />
     <Compile Include="Helpers\CssItemCollector.cs" />
     <Compile Include="Options\WebEssentialsSettings.cs" />
-    <Compile Include="Validation\HTML\OpenGrapPrefixValidator.cs" />
+    <Compile Include="Validation\HTML\OpenGraphPrefixValidator.cs" />
     <Compile Include="Validation\HTML\ItemTypeValidator.cs" />
     <Compile Include="Validation\LESS\Providers\ImportOnceErrorTagProvider.cs" />
     <None Include="PreBuildTask.cs" />
