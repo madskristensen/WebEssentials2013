@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        protected virtual void Document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
+        void Document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
             if (e.FileActionType == FileActionTypes.ContentSavedToDisk)
             {
@@ -142,7 +142,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        protected void VisualElement_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        void VisualElement_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.C && Keyboard.Modifiers == ModifierKeys.Control)
                 Clipboard.SetText(_viewHost.TextView.TextBuffer.CurrentSnapshot.GetText(_viewHost.TextView.Selection.Start.Position.Position, _viewHost.TextView.Selection.End.Position.Position - _viewHost.TextView.Selection.Start.Position.Position));
