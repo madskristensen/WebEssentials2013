@@ -72,6 +72,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="fixtures\less\css\URLs.css" />
     <Content Include="fixtures\less\sub1\deeper\_lib.css" />
     <Content Include="fixtures\less\sub1\deeper\_Entry3.css" />
     <Content Include="fixtures\less\sub1\_Entry2.css" />
@@ -102,6 +103,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Content Include="fixtures\less\URLs.css" />
+    <None Include="fixtures\less\URLs.less" />
     <None Include="fixtures\less\sub1\deeper\_lib.less" />
     <None Include="fixtures\less\sub1\deeper\_Entry3.less" />
     <None Include="fixtures\less\sub1\_Entry2.less" />

@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 Log.LogMessage(MessageImportance.High, "npm install less ...");
                 var output = new StringWriter();
-                int result = Exec("npm.cmd", @"install less", @"resources\nodejs", output, output);
+                int result = Exec(@"cmd", @"/c .\npm.cmd install less", @"resources\nodejs", output, output);
                 if (result != 0)
                 {
                     Log.LogError("npm error " + result + ": " + output.ToString().Trim());
