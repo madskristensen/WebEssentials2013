@@ -52,7 +52,7 @@ namespace MadsKristensen.EditorExtensions
                 if (index > -1)
                 {
                     EditorExtensionsPackage.DTE.ItemOperations.OpenFile(_file);
-                    _extension._errorList.Tasks.Remove(task);
+                    _extension.ErrorList.Tasks.Remove(task);
 
                     AddMetaTag(index);
                     return;

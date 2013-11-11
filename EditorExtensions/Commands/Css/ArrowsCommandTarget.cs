@@ -39,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
         public NumberTarget(IVsTextView adapter, ITextView textView)
         {
             this._textView = textView;
-            adapter.AddCommandFilter(this, out _nextCommandTarget);
+            ErrorHandler.ThrowOnFailure(adapter.AddCommandFilter(this, out _nextCommandTarget));
         }
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
