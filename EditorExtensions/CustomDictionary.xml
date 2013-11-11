@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" ?>
+<Dictionary>
+    <Words>
+        <Recognized>
+            <Word>Mads</Word>
+            <Word>Kristensen</Word>
+        </Recognized>
+        <DiscreteExceptions>
+            <Term>CoffeeScript</Term>
+        </DiscreteExceptions>
+    </Words>
+    <Acronyms>
+        <CasingExceptions>
+            <Acronym>Js</Acronym>
+        </CasingExceptions>
+    </Acronyms>
+</Dictionary>

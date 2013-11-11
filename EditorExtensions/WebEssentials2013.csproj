@@ -67,7 +67,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>CodeAnalysis.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -699,6 +699,7 @@
     <None Include="BrowserLink\_intellisense\jquery-1.8.2.js" />
     <EmbeddedResource Include="BrowserLink\DesignMode\DesignModeBrowserLink.js" />
     <EmbeddedResource Include="BrowserLink\BestPractices\BestPracticesBrowserLink.js" />
+    <CodeAnalysisDictionary Include="CustomDictionary.xml" />
     <Content Include="preview.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
