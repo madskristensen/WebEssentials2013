@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using EnvDTE80;
+using Microsoft.VisualStudio;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -212,7 +213,7 @@ namespace MadsKristensen.EditorExtensions
                 var textManager = (IVsTextManager)ServiceProvider.GlobalProvider.GetService(typeof(SVsTextManager));
 
                 IVsTextView activeView = null;
-                textManager.GetActiveView(1, null, out activeView);
+                ErrorHandler.ThrowOnFailure(textManager.GetActiveView(1, null, out activeView));
 
                 return editorAdapter.GetWpfTextView(activeView);
             }

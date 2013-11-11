@@ -66,7 +66,7 @@ namespace MadsKristensen.EditorExtensions
         {
             Guid cmdGroup = VSConstants.VSStd2K;
             var cmds = new[] { new OLECMD { cmdID = (uint)VSConstants.VSStd2KCmdID.AUTOCOMPLETE } };
-            next.QueryStatus(ref cmdGroup, 1, cmds, IntPtr.Zero);
+            ErrorHandler.ThrowOnFailure(next.QueryStatus(ref cmdGroup, 1, cmds, IntPtr.Zero));
             return cmds[0].cmdf == 3;
         }
     }

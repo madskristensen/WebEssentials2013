@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -36,19 +37,19 @@ namespace MadsKristensen.EditorExtensions
         /// <summary>
         /// Gets the IWpfTextView associated with an IVsTextView
         /// </summary>
-        /// <param name="vTextView"></param>
+        /// <param name="textView"></param>
         /// <returns></returns>
         /// <remarks>Based on http://stackoverflow.com/questions/2413530/find-an-ivstextview-or-iwpftextview-for-a-given-projectitem-in-vs-2010-rc-exten</remarks>
-        public static IWpfTextView GetWpfTextView(IVsTextView vTextView)
+        public static IWpfTextView GetWpfTextView(IVsTextView textView)
         {
             IWpfTextView view = null;
-            var userData = vTextView as IVsUserData;
+            var userData = textView as IVsUserData;
 
             if (null != userData)
             {
                 object holder;
                 var guidViewHost = DefGuidList.guidIWpfTextViewHost;
-                userData.GetData(ref guidViewHost, out holder);
+                ErrorHandler.ThrowOnFailure(userData.GetData(ref guidViewHost, out holder));
                 var viewHost = (IWpfTextViewHost)holder;
                 view = viewHost.TextView;
             }

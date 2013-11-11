@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions
             ITextDocument document;
             view.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
 
-            if (document == null) 
+            if (document == null)
                 return;
             TextType type = RobotsTxtClassifierProvider.GetTextType(document.FilePath);
             if (type == TextType.Unsupported)
@@ -43,7 +43,7 @@ namespace MadsKristensen.EditorExtensions
             CommandFilter filter = new CommandFilter(view, CompletionBroker);
 
             IOleCommandTarget next;
-            textViewAdapter.AddCommandFilter(filter, out next);
+            ErrorHandler.ThrowOnFailure(textViewAdapter.AddCommandFilter(filter, out next));
             filter.Next = next;
         }
     }
