@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 
-namespace MadsKristensen.EditorExtensions.Validation.HTML
+namespace MadsKristensen.EditorExtensions.Validation.Html
 {
     [Export(typeof(IHtmlElementValidatorProvider))]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]

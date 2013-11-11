@@ -9,7 +9,7 @@ namespace MadsKristensen.EditorExtensions
 {
     public static class IVsExtensions
     {
-        public const uint DISP_E_MEMBERNOTFOUND = 0x80020003;
+        const uint DISP_E_MEMBERNOTFOUND = 0x80020003;
 
         public static void AddHierarchyItem(this ErrorTask task)
         {

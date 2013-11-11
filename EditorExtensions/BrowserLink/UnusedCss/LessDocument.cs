@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
         }
 
-        protected override ICssParser GetParser()
+        protected override ICssParser CreateParser()
         {
             return new LessParser();
         }

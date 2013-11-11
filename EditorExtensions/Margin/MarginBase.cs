@@ -18,24 +18,25 @@ namespace MadsKristensen.EditorExtensions
         private bool _isDisposed = false;
         private IWpfTextViewHost _viewHost;
         private string _marginName;
-        protected string _settingsKey;
+        protected string SettingsKey { get; private set; }
         private bool _showMargin;
-        protected bool _isFirstRun = true;
+        protected bool IsFirstRun { get; private set; }
         private Dispatcher _dispatcher;
         private ErrorListProvider _provider;
 
         protected MarginBase()
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
+            IsFirstRun = true;
         }
 
-        public MarginBase(string source, string name, string contentType, bool showMargin, ITextDocument document)
+        protected MarginBase(string source, string name, string contentType, bool showMargin, ITextDocument document)
+            : this()
         {
             Document = document;
             _marginName = name;
-            _settingsKey = _marginName + "_width";
+            SettingsKey = _marginName + "_width";
             _showMargin = showMargin;
-            _dispatcher = Dispatcher.CurrentDispatcher;
             _provider = new ErrorListProvider(EditorExtensionsPackage.Instance);
 
             Document.FileActionOccurred += Document_FileActionOccurred;
@@ -93,7 +94,7 @@ namespace MadsKristensen.EditorExtensions
 
             using (var key = EditorExtensionsPackage.Instance.UserRegistryRoot)
             {
-                var raw = key.GetValue("WE_" + _settingsKey);
+                var raw = key.GetValue("WE_" + SettingsKey);
                 width = raw != null ? (int)raw : -1;
             }
 
@@ -137,7 +138,7 @@ namespace MadsKristensen.EditorExtensions
             //Settings.Save();
             using (var key = EditorExtensionsPackage.Instance.UserRegistryRoot)
             {
-                key.SetValue("WE_" + _settingsKey, (int)_viewHost.HostControl.ActualWidth);
+                key.SetValue("WE_" + SettingsKey, (int)_viewHost.HostControl.ActualWidth);
             }
         }
 
@@ -202,7 +203,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     SetText(result);
 
-                    if (!_isFirstRun)
+                    if (!IsFirstRun)
                     {
                         if (IsSaveFileEnabled)
                             WriteCompiledFile(result, state);
@@ -216,7 +217,7 @@ namespace MadsKristensen.EditorExtensions
                     SetText("/*\r\n\r\nCompile Error. \r\nSee error list for details\r\n" + result + "\r\n\r\n*/");
                 }
 
-                _isFirstRun = false;
+                IsFirstRun = false;
             }), DispatcherPriority.Normal, null);
         }
 

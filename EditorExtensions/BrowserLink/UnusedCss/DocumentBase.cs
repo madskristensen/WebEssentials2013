@@ -126,7 +126,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                     return;
                 }
 
-                var parser = GetParser();
+                var parser = CreateParser();
                 var parseResult = parser.Parse(text, false);
                 Rules = new CssItemAggregator<IStylingRule>(true) { (RuleSet rs) => CssRule.From(_file, text, rs, this) }
                     .Crawl(parseResult)
@@ -137,7 +137,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        protected abstract ICssParser GetParser();
+        protected abstract ICssParser CreateParser();
 
         public virtual string GetSelectorName(RuleSet ruleSet)
         {
