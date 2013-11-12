@@ -38,7 +38,7 @@ namespace MadsKristensen.EditorExtensions
         public bool EnableEnterFormat { get; set; }
 
         [LocDisplayName("Enable Browser Link menu")]
-        [Description("Enable the menu that shows up in the browser. Requeres restart.")]
+        [Description("Enable the menu that shows up in the browser. Requires restart.")]
         [Category("Browser Link")]
         public bool EnableBrowserLinkMenu { get; set; }
     }
