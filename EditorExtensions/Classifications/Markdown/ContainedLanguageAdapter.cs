@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.Html.Editor;
@@ -105,7 +106,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 IVsTextLines vsTextLines = this.EnsureBufferCoordinator();
                 IVsContainedLanguage vsContainedLanguage;
 
-                languageFactory.GetLanguage(owner.WorkspaceItem.Hierarchy, (uint)owner.WorkspaceItem.ItemId, this._textBufferCoordinator, out vsContainedLanguage);
+                int hr = languageFactory.GetLanguage(owner.WorkspaceItem.Hierarchy, (uint)owner.WorkspaceItem.ItemId, this._textBufferCoordinator, out vsContainedLanguage);
                 if (vsContainedLanguage == null)
                 {
                     Logger.Log("Markdown: Couldn't get IVsContainedLanguage for " + ProjectionBuffer.IProjectionBuffer.ContentType);
@@ -343,28 +344,32 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         ///<summary>Creates a ContainedLanguage for the specified ProjectionBuffer, using an IVsIntellisenseProjectManager to intialize the language.</summary>
         ///<param name="projectionBuffer">The buffer to connect to the language service.</param>
-        ///<param name="intelliSenseGuid">The name of the language service; passed to GetContainedLanguageFactory().</param>
+        ///<param name="intelliSenseGuid">The GUID of the IntellisenseProvider; used to create IVsIntellisenseProject.</param>
         public void AddIntellisenseProjectLanguage(LanguageProjectionBuffer projectionBuffer, Guid intelliSenseGuid)
         {
             var contentType = projectionBuffer.IProjectionBuffer.ContentType;
             if (languageBridges.ContainsKey(contentType))
                 return;
 
-            var localRegistry = ServiceProvider.GlobalProvider.GetService(typeof(SLocalRegistry)) as ILocalRegistry;
-            IVsIntellisenseProject project;
             Guid iid_vsip = typeof(IVsIntellisenseProject).GUID;
-            IntPtr pUnk;
-            ErrorHandler.ThrowOnFailure(localRegistry.CreateInstance(intelliSenseGuid, null, ref iid_vsip, (uint)CLSCTX.CLSCTX_INPROC_SERVER, out pUnk));
-            try
-            {
-                project = (IVsIntellisenseProject)Marshal.GetObjectForIUnknown(pUnk);
-            }
-            finally { Marshal.Release(pUnk); }
 
-            project.AddAssemblyReference("System.Core");
-            project.Init(new ProjectHost());
+            var project = (IVsIntellisenseProject)EditorExtensionsPackage.Instance.CreateInstance(ref intelliSenseGuid, ref iid_vsip, typeof(IVsIntellisenseProject));
+
+            string projectPath;
+            WorkspaceItem.FileItemContext.GetWebRootPath(out projectPath);
+
+            project.Init(new ProjectHost(WorkspaceItem.Hierarchy, projectPath));
             project.StartIntellisenseEngine();
+            project.WaitForIntellisenseReady();
+            project.ResumePostedNotifications();
+            //project.AddAssemblyReference(typeof(Enumerable).Assembly.Location);
 
+            int needsFile;
+            project.IsWebFileRequiredByProject(out needsFile);
+            if (needsFile != 0)
+                project.AddFile(projectionBuffer.IProjectionBuffer.GetFileName(), (uint)WorkspaceItem.ItemId);
+
+            project.WaitForIntellisenseReady();
             IVsContainedLanguageFactory factory;
             project.GetContainedLanguageFactory(out factory);
             if (factory == null)
@@ -373,13 +378,20 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 project.Close();
                 return;
             }
-            //project.AddFile(projectionBuffer.IProjectionBuffer.GetFileName());
             // TODO: IVsIntellisenseProject.Close();
             languageBridges.Add(contentType, new LanguageBridge(this, projectionBuffer, factory));
         }
 
         class ProjectHost : IVsIntellisenseProjectHost
         {
+            readonly IVsHierarchy hierarchy;
+            readonly string projectPath;
+            public ProjectHost(IVsHierarchy hierarchy, string projectPath)
+            {
+                this.hierarchy = hierarchy;
+                this.projectPath = projectPath;
+            }
+
             public int CreateFileCodeModel(string pszFilename, out object ppCodeModel)
             {
                 ppCodeModel = null;
@@ -394,8 +406,31 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             public int GetHostProperty(uint dwPropID, out object pvar)
             {
-                pvar = null;
-                return VSConstants.E_NOTIMPL;
+                var prop = (HOSTPROPID)dwPropID;
+                // Based on decompiled Microsoft.VisualStudio.ProjectSystem.VS.Implementation.Designers.LanguageServiceBase
+                switch (prop)
+                {
+                    case HOSTPROPID.HOSTPROPID_PROJECTNAME:
+                    case HOSTPROPID.HOSTPROPID_RELURL:
+                        pvar = projectPath;
+                        return VSConstants.S_OK;
+                    case HOSTPROPID.HOSTPROPID_HIERARCHY:
+                        pvar = hierarchy;
+                        return VSConstants.S_OK;
+                    case HOSTPROPID.HOSTPROPID_INTELLISENSECACHE_FILENAME:
+                        pvar = Path.GetTempPath();
+                        return VSConstants.S_OK;
+                    case (HOSTPROPID)(-2):
+                        pvar = ".NET Framework, Version=4.5";   // configurationGeneral.TargetFrameworkMoniker.GetEvaluatedValueAtEndAsync
+                        return VSConstants.S_OK;
+                    case (HOSTPROPID)(-1):
+                        pvar = false;   // No clue...
+                        return VSConstants.S_OK;
+
+                    default:
+                        pvar = null;
+                        return VSConstants.E_INVALIDARG;
+                }
             }
 
             public int GetOutputAssembly(out string pbstrOutputAssembly)
