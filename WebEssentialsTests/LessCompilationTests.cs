@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions;
@@ -10,6 +11,19 @@ namespace WebEssentialsTests
     [TestClass]
     public class LessCompilationTests
     {
+        static string originalPath;
+        [ClassInitialize]
+        public static void ObscureNode(TestContext context)
+        {
+            originalPath = Environment.GetEnvironmentVariable("PATH");
+            Environment.SetEnvironmentVariable("PATH", originalPath.Replace(@";C:\Program Files\nodejs\", ""), EnvironmentVariableTarget.Process);
+        }
+        [ClassCleanup]
+        public static void RestoreNode()
+        {
+            Environment.SetEnvironmentVariable("PATH", originalPath);
+        }
+
         static readonly string BaseDirectory = Path.GetDirectoryName(typeof(NodeModuleImportedTests).Assembly.Location);
         [TestMethod]
         public async Task PathCompilationTest()
