@@ -3,12 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Html.Editor.Projection;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
-using Microsoft.Win32;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
@@ -70,31 +66,24 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     abstract class IntellisenseProjectEmbedder : ICodeLanguageEmbedder
     {
         public abstract IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code);
-        public abstract string ProviderName { get; }
-
-        Guid FindGuid()
-        {
-            using (var settings = VSRegistry.RegistryRoot(__VsLocalRegistryType.RegType_Configuration))
-            using (var languages = settings.OpenSubKey("Languages"))
-            using (var intellisenseProviders = languages.OpenSubKey("IntellisenseProviders"))
-            using (var provider = intellisenseProviders.OpenSubKey(ProviderName))
-                return new Guid(provider.GetValue("GUID").ToString());
-        }
-
+        public abstract string LanguageServiceName { get; }
 
         public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer)
         {
-            ContainedLanguageAdapter.ForBuffer(editorBuffer).AddIntellisenseProjectLanguage(projectionBuffer, FindGuid());
+            ContainedLanguageAdapter.ForBuffer(editorBuffer).AddIntellisenseProjectLanguage(projectionBuffer, LanguageServiceName, false);
         }
 
-        public void OnBlockEntered(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
+        public void OnBlockEntered(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer)
+        {
+            ContainedLanguageAdapter.ForBuffer(editorBuffer).AddIntellisenseProjectLanguage(projectionBuffer, LanguageServiceName, true);
+        }
     }
 
     [Export(typeof(ICodeLanguageEmbedder))]
     [ContentType("CSharp")]
     class CSharpEmbedder : IntellisenseProjectEmbedder
     {
-        public override string ProviderName { get { return "CSharpCodeProvider"; } }
+        public override string LanguageServiceName { get { return "C#"; } }
         public override IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
         {
             return new[] { @"
@@ -114,7 +103,7 @@ partial class Entry { object SampleMethod" + Guid.NewGuid().ToString("n") + @"()
     [ContentType("Basic")]
     class VBEmbedder : IntellisenseProjectEmbedder
     {
-        public override string ProviderName { get { return "VBCodeProvider"; } }
+        public override string LanguageServiceName { get { return "VB"; } }
         public override IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
         {
             return new[] { @"
