@@ -3,9 +3,9 @@ using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 using System.Windows;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
-    class MarkdownClassificationTypes
+    public static class MarkdownClassificationTypes
     {
         public const string MarkdownBold = "md_bold";
         public const string MarkdownItalic = "md_italic";
@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions
         internal static ClassificationTypeDefinition MarkdownClassificationCode = null;
 
         [Export, Name(MarkdownClassificationTypes.MarkdownQuote), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal static ClassificationTypeDefinition MarkdownClassificationQuote= null;
+        internal static ClassificationTypeDefinition MarkdownClassificationQuote = null;
     }
 
     [Export(typeof(EditorFormatDefinition))]

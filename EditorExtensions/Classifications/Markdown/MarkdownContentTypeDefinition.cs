@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
     /// <summary>
     /// Exports the Markdown content type and file extension

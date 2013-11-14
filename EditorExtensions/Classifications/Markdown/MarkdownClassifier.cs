@@ -1,18 +1,16 @@
-﻿using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Text;
-using Microsoft.Html.Editor;
-using MadsKristensen.EditorExtensions.Classifications.Markdown;
-using Microsoft.Web.Editor.Extensions.Text;
 using Microsoft.Html.Core;
+using Microsoft.Html.Editor;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor.Extensions.Text;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
     [Export(typeof(IClassifierProvider))]
     [ContentType(MarkdownContentTypeDefinition.MarkdownContentType)]
