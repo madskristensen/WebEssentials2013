@@ -21,7 +21,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         public IClassifier GetClassifier(ITextBuffer textBuffer)
         {
-            return textBuffer.Properties.GetOrCreateSingletonProperty<MarkdownClassifier>(() => new MarkdownClassifier(textBuffer, Registry));
+            var artifacts = HtmlEditorDocument.FromTextBuffer(textBuffer).HtmlEditorTree.ArtifactCollection;
+            return textBuffer.Properties.GetOrCreateSingletonProperty<MarkdownClassifier>(() => new MarkdownClassifier(artifacts, Registry));
         }
     }
 
@@ -39,13 +40,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         private readonly IClassificationType codeType;
         private readonly IReadOnlyCollection<Tuple<Regex, IClassificationType>> typeRegexes;
-        private readonly ITextBuffer textBuffer;
-        private readonly HtmlEditorTree editorTree;
+        private readonly ArtifactCollection artifacts;
 
-        public MarkdownClassifier(ITextBuffer textBuffer, IClassificationTypeRegistryService registry)
+        public MarkdownClassifier(ArtifactCollection artifacts, IClassificationTypeRegistryService registry)
         {
-            this.textBuffer = textBuffer;
-            editorTree = HtmlEditorDocument.FromTextBuffer(textBuffer).HtmlEditorTree;
+            this.artifacts = artifacts;
 
             codeType = registry.GetClassificationType(MarkdownClassificationTypes.MarkdownCode);
             typeRegexes = new[] {
@@ -64,7 +63,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             var results = new List<ClassificationSpan>();
 
-            var artifacts = editorTree.ArtifactCollection;
             int lastArtifact = artifacts.GetItemContainingUsingInclusion(span.Start, true);
 
             if (lastArtifact >= 0)
@@ -97,11 +95,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
                 results.AddRange(ClassifyPlainSpan(plainSpan.Value));
 
+                lastArtifact++;
                 // If we're at the last artifact, stop after processing whatever text came after it.
                 if (lastArtifact == artifacts.Count)
                     break;
                 results.AddRange(ClassifyArtifact(span.Snapshot, artifacts[lastArtifact]));
-                lastArtifact++;
             }
 
             return results;
