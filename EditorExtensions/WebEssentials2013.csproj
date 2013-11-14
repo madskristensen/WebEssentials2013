@@ -465,6 +465,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Validation\CSS\Providers\UnusedCssTagProvider.cs" />
+    <Compile Include="Validation\HTML\BootstrapClassValidator.cs" />
     <Compile Include="Validation\LESS\Filters\LessAmpersandCssErrorFilter.cs" />
     <Compile Include="Validation\LESS\Filters\LessExtendCssErrorFilter.cs" />
     <Compile Include="Validation\CSS\Providers\ColorValuesInRangeErrorTagProvider.cs">
