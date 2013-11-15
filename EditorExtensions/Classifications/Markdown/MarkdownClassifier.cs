@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         private static readonly Regex _reBold = new Regex(@"(?<Value>(\*\*|__)[^\s].+?[^\s]\1)");
         private static readonly Regex _reItalic = new Regex(@"(?<Value>((?<!\*)\*(?!\*)|(?<!_)_(?!_))[^\s].+?[^\s]\1\b)");
 
-        private static readonly Regex _reQuote = new Regex(lineBegin + @"( {0,3}>)+(?<Value> {0,3}.+$)", RegexOptions.Multiline);
+        private static readonly Regex _reQuote = new Regex(lineBegin + @"( {0,3}>)+(?<Value> {0,3}[^\r\n]+)\r?$", RegexOptions.Multiline);
 
         private static readonly Regex _reHeader = new Regex(lineBegin + @"(?<Value>([#]{1,6})[^#\r\n]+(\1(?!#))?)", RegexOptions.Multiline);
 
