@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 using System.Windows;
+using System.Windows.Media;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
@@ -82,7 +83,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     {
         public MarkdownCodeFormatDefinition()
         {
-            ForegroundColor = System.Windows.Media.Colors.Green;
+            BackgroundColor = Color.FromRgb(255, 255, 192);
+            BackgroundOpacity = .2;
             DisplayName = "Markdown Code";
         }
     }
@@ -96,7 +98,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public MarkdownQuoteFormatDefinition()
         {
             // I wish I could make the background apply block-level (to highlight the entire line)
-            BackgroundColor = System.Windows.Media.Color.FromRgb(200, 200, 200);
+            BackgroundColor = Color.FromRgb(200, 200, 200);
             BackgroundOpacity = .2;
             DisplayName = "Markdown Quote";
         }

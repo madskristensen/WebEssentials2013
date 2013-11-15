@@ -5,9 +5,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
+using Microsoft.Html.Editor.Classification;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
 using Microsoft.Web.Editor.Extensions.Text;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
@@ -21,8 +23,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         public IClassifier GetClassifier(ITextBuffer textBuffer)
         {
-            var artifacts = HtmlEditorDocument.FromTextBuffer(textBuffer).HtmlEditorTree.ArtifactCollection;
-            return textBuffer.Properties.GetOrCreateSingletonProperty<MarkdownClassifier>(() => new MarkdownClassifier(artifacts, Registry));
+            // The classifier periodically recreates its ArtifactsCollection, so I need to pass a getter.
+            var classifier = ServiceManager.GetService<HtmlClassifier>(textBuffer);
+            return textBuffer.Properties.GetOrCreateSingletonProperty<MarkdownClassifier>(() => new MarkdownClassifier(() => classifier.ArtifactCollection, Registry));
         }
     }
 
@@ -40,11 +43,12 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         private readonly IClassificationType codeType;
         private readonly IReadOnlyCollection<Tuple<Regex, IClassificationType>> typeRegexes;
-        private readonly ArtifactCollection artifacts;
+        private readonly Func<ArtifactCollection> artifactsGetter;
 
-        public MarkdownClassifier(ArtifactCollection artifacts, IClassificationTypeRegistryService registry)
+        public MarkdownClassifier(ArtifactCollection artifacts, IClassificationTypeRegistryService registry) : this(() => artifacts, registry) { }
+        public MarkdownClassifier(Func<ArtifactCollection> artifactsGetter, IClassificationTypeRegistryService registry)
         {
-            this.artifacts = artifacts;
+            this.artifactsGetter = artifactsGetter;
 
             codeType = registry.GetClassificationType(MarkdownClassificationTypes.MarkdownCode);
             typeRegexes = new[] {
@@ -63,6 +67,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             var results = new List<ClassificationSpan>();
 
+            var artifacts = artifactsGetter();
             int lastArtifact = artifacts.GetItemContainingUsingInclusion(span.Start, true);
 
             if (lastArtifact >= 0)
