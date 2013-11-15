@@ -85,7 +85,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     plainSpan = new SnapshotSpan(span.Snapshot, Span.FromBounds(artifacts[lastArtifact].End, span.Snapshot.Length));
                 // Otherwise, check between the two artifacts.
                 else
-                    plainSpan = new SnapshotSpan(span.Snapshot, Span.FromBounds(artifacts[lastArtifact].End, artifacts[lastArtifact + 1].End));
+                    plainSpan = new SnapshotSpan(span.Snapshot, Span.FromBounds(artifacts[lastArtifact].End, artifacts[lastArtifact + 1].Start));
 
                 // Chop off any part before or after the span being classified
                 plainSpan = plainSpan.Value.Intersection(span);
@@ -112,7 +112,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         }
         private IEnumerable<ClassificationSpan> ClassifyArtifact(ITextSnapshot snapshot, IArtifact artifact)
         {
-            yield return new ClassificationSpan(artifact.InnerRange.ToSnapshotSpan(snapshot), codeType);
+            yield return new ClassificationSpan(artifact.ToSnapshotSpan(snapshot), codeType);
         }
 
         private IEnumerable<ClassificationSpan> ClassifyMatches(SnapshotSpan span, string text, Regex regex, IClassificationType type)

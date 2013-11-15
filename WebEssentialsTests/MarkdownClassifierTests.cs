@@ -45,7 +45,28 @@ namespace WebEssentialsTests
                 Header("##Header2"),
                 Quote(" ##Header2")
             );
+
+            Classify("**bold**").Should().Equal(Bold("**bold**"));
+            Classify("#Header").Should().Equal(Header("#Header"));
+            Classify("  >  >  >Quote!").Should().Equal(Quote("Quote!"));
         }
+
+        [TestMethod]
+        public void TestCodeBlocks()
+        {
+            Classify(@"`code`").Should().Equal(Code("`code`"));
+            Classify(@"`code` _ab_").Should().Equal(Code("`code`"), Italic("_ab_"));
+            Classify(@"**a** `code`").Should().Equal(Bold("**a**"), Code("`code`"));
+
+            Classify(@"`code` ... `more _code_!`").Should().Equal(Code("`code`"), Code("`more _code_!`"));
+            Classify(@"`int *a;` ... `int* b = a;`").Should().Equal(Code("`int *a;`"), Code("`int* b = a;`"));
+            Classify(@"
+```cs
+var x = 2;
+var y = 3;").Should().Equal(Code("var x = 2;"), Code("var y = 3;"));
+            Classify(@"    font-weight: _bold_;").Should().Equal(Code("    font-weight: _bold_;"));
+        }
+        // TODO: Test quoted code blocks, test overlapping partial spans.
     }
 
     class MockClassificationTypeRegistry : IClassificationTypeRegistryService
