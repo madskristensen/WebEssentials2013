@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentAssertions">
+      <HintPath>..\packages\FluentAssertions.2.1.0.0\lib\net45\FluentAssertions.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSS.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Html.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>../../../../../../../Program%20Files%20(x86)/Microsoft%20Visual%20Studio%2012.0/Common7/IDE//CommonExtensions/Microsoft/Web/Editor/Microsoft.Html.Core.dll</HintPath>
@@ -123,6 +126,7 @@
     <None Include="fixtures\module-resolution\foo" />
     <None Include="fixtures\module-resolution\packages\main-index\package.json" />
     <None Include="fixtures\module-resolution\packages\main\package.json" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Choose>

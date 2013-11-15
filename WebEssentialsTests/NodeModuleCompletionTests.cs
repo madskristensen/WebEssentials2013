@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
 using MadsKristensen.EditorExtensions;
+using FluentAssertions;
 
 namespace WebEssentialsTests
 {
@@ -40,7 +41,7 @@ namespace WebEssentialsTests
 
                 expected = Tuple.Create(expectedBasePath, Span.FromBounds(spanStart, spanEnd));
             }
-            Assert.AreEqual(expected, NodeModuleCompletionUtils.FindCompletionInfo(input, cursorIndex));
+            NodeModuleCompletionUtils.FindCompletionInfo(input, cursorIndex).Should().Be(expected);
         }
 
         [TestMethod]
@@ -98,7 +99,6 @@ namespace WebEssentialsTests
             TestCase(@"require('../myFolder/<a|b>', ...", "../myFolder/");
 
             TestCase(@"require('myModule/subDir/<a|b>/deepr/file.js', ...", "myModule/subDir/");
-
         }
     }
 }

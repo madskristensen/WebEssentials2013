@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using System.Collections.Generic;
 using Microsoft.Html.Core;
 using Microsoft.VisualStudio.Text;
+using FluentAssertions;
 
 namespace WebEssentialsTests
 {
@@ -17,10 +18,10 @@ namespace WebEssentialsTests
             var artifacts = new ArtifactCollection(new MarkdownCodeArtifactProcessor());
             artifacts.Build(markdown);
             var classifier = new MarkdownClassifier(artifacts, new MockClassificationTypeRegistry());
-
-            return classifier.GetClassificationSpans(new SnapshotSpan(new MockSnapshot(markdown), subSpan ?? new Span(0, markdown.Length)))
+            var results = classifier.GetClassificationSpans(new SnapshotSpan(new MockSnapshot(markdown), subSpan ?? new Span(0, markdown.Length)))
                              .Select(cs => Tuple.Create(cs.ClassificationType.Classification, markdown.Substring(cs.Span.Start, cs.Span.Length)))
                              .ToList();
+            return results;
         }
 
         static Func<string, Tuple<string, string>> CreateCreator(string classificationType) { return source => Tuple.Create(classificationType, source); }
@@ -34,18 +35,16 @@ namespace WebEssentialsTests
         [TestMethod]
         public void TestBasicClassifications()
         {
-            CollectionAssert.AreEqual(
-                new[]{
-                    Bold("**bold**"),
-                    Italic("_italic_"),
-                    Header("#Header"),
-                    Header("##Header2"),
-                    Quote(" ##Header2"),
-                },
-                Classify(@"**bold**, _italic_
+            Classify(@"**bold**, _italic_
 #Header
 >> ##Header2
-"));
+").Should().Equal(
+                Bold("**bold**"),
+                Italic("_italic_"),
+                Header("#Header"),
+                Header("##Header2"),
+                Quote(" ##Header2")
+            );
         }
     }
 

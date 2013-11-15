@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluentAssertions;
 
 namespace WebEssentialsTests
 {
@@ -36,7 +37,7 @@ namespace WebEssentialsTests
                 compiled = new CssFormatter().Format(compiled).Replace("\r", "");
                 expected = new CssFormatter().Format(expected).Replace("\r", "");
 
-                Assert.AreEqual(expected, compiled);
+                compiled.Should().Be(expected);
             }
         }
 
@@ -55,7 +56,7 @@ namespace WebEssentialsTests
                 compiled = new CssFormatter().Format(compiled).Replace("\r", "");
                 expected = new CssFormatter().Format(expected).Replace("\r", "");
 
-                Assert.AreEqual(expected, compiled);
+                compiled.Should().Be(expected);
             }
         }
 
