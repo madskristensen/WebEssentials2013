@@ -31,8 +31,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         // The beginning of the content area of a line (after any quote blocks)
         const string lineBegin = @"^(?:(?: {0,3}>)+ {0,3})?";
 
-        private static readonly Regex _reBold = new Regex(@"(?<Value>(\*\*|__)[^\s].+?[^\s]\1)");
-        private static readonly Regex _reItalic = new Regex(@"(?<Value>((?<!\*)\*(?!\*)|(?<!_)_(?!_))[^\s].+?[^\s]\1\b)");
+        private static readonly Regex _reBold = new Regex(@"(?<Value>(\*\*|__)[^\s](?:.*?[^\s])?\1)");
+        private static readonly Regex _reItalic = new Regex(@"(?<Value>((?<!\*)\*(?!\*)|(?<!_)_(?!_))[^\s](?:.*?[^\s])?\1\b)");
 
         private static readonly Regex _reQuote = new Regex(lineBegin + @"( {0,3}>)+(?<Value> {0,3}[^\r\n]+)\r?$", RegexOptions.Multiline);
 
