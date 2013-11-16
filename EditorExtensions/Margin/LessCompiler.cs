@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.CSS.Core;
+using System.Text.RegularExpressions;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -52,6 +53,8 @@ namespace MadsKristensen.EditorExtensions
                 CompilerResult result = new CompilerResult(filename);
 
                 ProcessResult(output, process, result);
+
+                result.Result = Regex.Replace(result.Result.Trim(), @"(}\W*})|(})", "$&\n");
 
                 // If the caller wants us to renormalize URLs to a different filename, do so.
                 if (targetFilename != null && result.IsSuccess && result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
