@@ -25,7 +25,6 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.ShowBrowserTooltip, ShowBrowserTooltip);
             Settings.SetValue(WESettings.Keys.ValidateZeroUnit, ValidateZeroUnit);
             Settings.SetValue(WESettings.Keys.ValidateVendorSpecifics, ValidateVendorSpecifics);
-            Settings.SetValue(WESettings.Keys.EnableSpeedTyping, EnableSpeedTyping);
 
             OnChanged();
             Settings.Save();
@@ -45,7 +44,6 @@ namespace MadsKristensen.EditorExtensions
             ShowBrowserTooltip = WESettings.GetBoolean(WESettings.Keys.ShowBrowserTooltip);
             ValidateZeroUnit = WESettings.GetBoolean(WESettings.Keys.ValidateZeroUnit);
             ValidateVendorSpecifics = WESettings.GetBoolean(WESettings.Keys.ValidateVendorSpecifics);
-            EnableSpeedTyping = WESettings.GetBoolean(WESettings.Keys.EnableSpeedTyping);
         }
 
         protected void OnChanged()
@@ -62,11 +60,6 @@ namespace MadsKristensen.EditorExtensions
         [Description("When a .css file (foo.css) is saved and a minified version (foo.min.css) exist, a gzipped version of the file will be created.")]
         [Category("Misc")]
         public bool EnableGzipping { get; set; }
-        
-        [LocDisplayName("Enable Speed Typing")]
-        [Description("Speed Typing makes it easier to write CSS by eliminating the need to type curlies, colons and semi-colons.")]
-        [Category("Misc")]
-        public bool EnableSpeedTyping { get; set; }
 
         [LocDisplayName("Disallow universal selector")]
         [Description("Disallows the universal selector (*).")]
