@@ -8,13 +8,13 @@
 }
 
 @media screen {
-      body {
-          width: 75%;
-      }
+    body {
+        width: 75%;
+    }
 }
 
 @media print {
-  body {
-    width: 100%;
-  }
+    body {
+        width: 100%;
+    }
 }

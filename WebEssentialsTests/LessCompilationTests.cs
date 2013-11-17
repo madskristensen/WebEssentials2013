@@ -33,8 +33,8 @@ namespace WebEssentialsTests
                 var compiled = await CompileLess(lessFilename);
                 var expected = File.ReadAllText(Path.ChangeExtension(lessFilename, ".css"));
 
-                compiled = new CssFormatter().Format(compiled).Replace("\r", "");
-                expected = new CssFormatter().Format(expected).Replace("\r", "");
+                compiled = (compiled).Replace("\r", "");
+                expected = (expected).Replace("\r", "");
 
                 Assert.AreEqual(expected, compiled);
             }

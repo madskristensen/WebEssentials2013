@@ -2,6 +2,7 @@
     background: url(../../base-image.png);
     background: url(/absolute/path/to/image.png);
 }
+
 b {
     background: url(deep-image.png);
 }
