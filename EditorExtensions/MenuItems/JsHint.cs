@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.Shell;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
-using System.IO;
 using System.Linq;
 
 namespace MadsKristensen.EditorExtensions

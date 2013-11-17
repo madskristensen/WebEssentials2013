@@ -1,5 +1,5 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 {
@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
         [JsonProperty]
         public string NewValue { get; set; }
-        
+
         [JsonProperty]
         public string OldValue { get; set; }
 

@@ -1,5 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using Microsoft.VisualStudio.Language.Intellisense;
+﻿using Microsoft.VisualStudio.Language.Intellisense;
+using System.Collections.ObjectModel;
 
 namespace MadsKristensen.EditorExtensions
 {

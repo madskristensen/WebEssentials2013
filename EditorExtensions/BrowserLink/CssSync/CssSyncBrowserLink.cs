@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.Web.BrowserLink;
-using System.ComponentModel.Composition;
-using System.IO;
+﻿using Microsoft.VisualStudio.Web.BrowserLink;
 using System;
+using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {

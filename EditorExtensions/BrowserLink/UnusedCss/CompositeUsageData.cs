@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Shell;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -59,7 +59,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             return GetWarnings("Unused CSS rule \"{1}\"");
         }
-        
+
         public IEnumerable<Task> GetWarnings(Uri uri)
         {
             return GetWarnings("Unused CSS rule \"{1}\" on page " + uri);

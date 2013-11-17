@@ -1,11 +1,11 @@
 ﻿using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.DragDrop;
 using Microsoft.VisualStudio.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Web;
-using System;
 
 namespace MadsKristensen.EditorExtensions
 {

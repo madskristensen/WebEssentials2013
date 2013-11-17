@@ -1,11 +1,10 @@
-﻿using System;
+﻿using MadsKristensen.EditorExtensions.Helpers;
+using Microsoft.CSS.Core;
+using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
-using MadsKristensen.EditorExtensions.Helpers;
-using Microsoft.CSS.Core;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
 {

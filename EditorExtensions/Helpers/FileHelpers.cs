@@ -1,10 +1,10 @@
-﻿using System;
+﻿using EnvDTE80;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell.Interop;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
-using EnvDTE80;
 
 namespace MadsKristensen.EditorExtensions
 {

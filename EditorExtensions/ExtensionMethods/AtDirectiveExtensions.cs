@@ -1,5 +1,4 @@
 ﻿using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.CSS.Editor.Schemas;
 using System;
@@ -14,7 +13,7 @@ namespace MadsKristensen.EditorExtensions
         {
             return directive.Keyword.Text[0] == '-';
         }
-              
+
 
         public static bool TryGetStandardPropertyName(this AtDirective directive, out string standardName, ICssSchemaInstance schema)
         {

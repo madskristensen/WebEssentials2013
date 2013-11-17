@@ -16,10 +16,10 @@ namespace MadsKristensen.EditorExtensions
             for (int i = errors.Count - 1; i > -1; i--)
             {
                 ICssError error = errors[i];
-                
+
                 if (error.Item.StyleSheet is LessStyleSheet && error.Text.Contains(":extend("))
                 {
-                    errors.RemoveAt(i);                
+                    errors.RemoveAt(i);
                 }
             }
         }

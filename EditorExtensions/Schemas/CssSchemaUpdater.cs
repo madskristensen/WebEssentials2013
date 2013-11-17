@@ -1,5 +1,4 @@
-﻿using Microsoft.CSS.Editor;
-using Microsoft.CSS.Editor.Schemas;
+﻿using Microsoft.CSS.Editor.Schemas;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;

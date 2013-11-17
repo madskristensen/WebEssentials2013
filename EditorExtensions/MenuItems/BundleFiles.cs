@@ -1,6 +1,7 @@
-﻿using System.Runtime.InteropServices;
-using EnvDTE;
+﻿using EnvDTE;
 using EnvDTE80;
+using MadsKristensen.EditorExtensions.Helpers;
+using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -15,8 +16,6 @@ using System.Text;
 using System.Windows;
 using System.Windows.Threading;
 using System.Xml;
-using MadsKristensen.EditorExtensions.Helpers;
-using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions
 {

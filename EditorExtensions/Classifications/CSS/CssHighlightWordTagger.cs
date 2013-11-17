@@ -1,5 +1,6 @@
 ﻿using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
+using Microsoft.Less.Core;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
@@ -11,7 +12,6 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Threading;
-using Microsoft.Less.Core;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
                 return null;
 
             ITextStructureNavigator textStructureNavigator = TextStructureNavigatorSelector.GetTextStructureNavigator(buffer);
-            
+
             return buffer.Properties.GetOrCreateSingletonProperty(() => new CssHighlightWordTagger(textView, buffer, TextSearchService, textStructureNavigator)) as ITagger<T>;
         }
     }

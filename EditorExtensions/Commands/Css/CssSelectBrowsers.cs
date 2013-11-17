@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             BrowserSelector selector = new BrowserSelector();
-            selector.ShowDialog();            
+            selector.ShowDialog();
 
             return true;
         }
