@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions
 {
     public static class LessCompiler
     {
-        private static readonly Regex insertEmptyRowRegex = new Regex(@"}\W*}|}", RegexOptions.Compiled);
+        private static readonly Regex _insertEmptyRowRegex = new Regex(@"}\W*}|}", RegexOptions.Compiled);
 
         private static Task<Process> ExecuteAsync(ProcessStartInfo startInfo)
         {
@@ -56,7 +56,7 @@ namespace MadsKristensen.EditorExtensions
 
                 ProcessResult(output, process, result);
 
-                result.Result = insertEmptyRowRegex.Replace(result.Result.Trim(), "$&\n");
+                result.Result = _insertEmptyRowRegex.Replace(result.Result.Trim(), "$&\n");
 
                 // If the caller wants us to renormalize URLs to a different filename, do so.
                 if (targetFilename != null && result.IsSuccess && result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
