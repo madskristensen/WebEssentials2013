@@ -11,7 +11,8 @@ namespace MadsKristensen.EditorExtensions
 {
     public static class LessCompiler
     {
-        private static readonly Regex _insertEmptyRowRegex = new Regex(@"}\W*}|}", RegexOptions.Compiled);
+        private static readonly Regex _endingCurlyBraces = new Regex(@"}\W*}|}", RegexOptions.Compiled);
+        private static readonly Regex _lineStrartsWithTwoSpaces = new Regex("^  ", RegexOptions.Multiline | RegexOptions.Compiled);
 
         private static Task<Process> ExecuteAsync(ProcessStartInfo startInfo)
         {
@@ -56,22 +57,26 @@ namespace MadsKristensen.EditorExtensions
 
                 ProcessResult(output, process, result);
 
-                result.Result = _insertEmptyRowRegex.Replace(result.Result.Trim(), "$&\n");
-
-                // If the caller wants us to renormalize URLs to a different filename, do so.
-                if (targetFilename != null && result.IsSuccess && result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
+                if (result.IsSuccess)
                 {
-                    try
+                    // Inserts an empty row between each rule and replace two space indentation with 4 space indentation
+                    result.Result = _endingCurlyBraces.Replace(_lineStrartsWithTwoSpaces.Replace(result.Result.Trim(), "  $&"), "$&\n");
+
+                    // If the caller wants us to renormalize URLs to a different filename, do so.
+                    if (targetFilename != null && result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
                     {
-                        result.Result = CssUrlNormalizer.NormalizeUrls(
-                            tree: new CssParser().Parse(result.Result, true),
-                            targetFile: targetFilename,
-                            oldBasePath: filename
-                        );
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Log("An error occurred while normalizing generated paths in " + filename + "\r\n" + ex);
+                        try
+                        {
+                            result.Result = CssUrlNormalizer.NormalizeUrls(
+                                tree: new CssParser().Parse(result.Result, true),
+                                targetFile: targetFilename,
+                                oldBasePath: filename
+                            );
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Log("An error occurred while normalizing generated paths in " + filename + "\r\n" + ex);
+                        }
                     }
                 }
                 Logger.Log(Path.GetFileName(filename) + " compiled");
