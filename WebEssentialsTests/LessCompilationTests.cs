@@ -31,10 +31,8 @@ namespace WebEssentialsTests
             foreach (var lessFilename in Directory.EnumerateFiles(Path.Combine(BaseDirectory, "fixtures/less"), "*.less", SearchOption.AllDirectories))
             {
                 var compiled = await CompileLess(lessFilename);
-                var expected = File.ReadAllText(Path.ChangeExtension(lessFilename, ".css"));
-
-                compiled = (compiled).Replace("\r", "");
-                expected = (expected).Replace("\r", "");
+                var expected = File.ReadAllText(Path.ChangeExtension(lessFilename, ".css"))
+                               .Replace("\r", "");
 
                 Assert.AreEqual(expected, compiled);
             }
