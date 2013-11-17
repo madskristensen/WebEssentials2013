@@ -65,7 +65,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         }
 
         public bool IsProcessingUnusedCssRules { get; set; }
-        
+
         public string FileName { get { return _file; } }
 
         private async void Reparse(object sender, FileSystemEventArgs e)

@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Web.BrowserLink;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -14,13 +14,13 @@ namespace MadsKristensen.EditorExtensions
         private static readonly ConcurrentDictionary<BrowserLinkConnection, int> ConnectionsToExcludeLookup = new ConcurrentDictionary<BrowserLinkConnection, int>();
         private readonly IEnumerable<BrowserLinkConnection> _connectionsToExclude;
         private readonly bool _previousSuppressionState;
-        
+
         public static bool SuppressAllBrowsers { get; private set; }
 
         public static IEnumerable<BrowserLinkConnection> ConnectionsToExclude
         {
             get { return ConnectionsToExcludeLookup.Where(x => x.Value > 0).Select(x => x.Key); }
-        } 
+        }
 
         private CssSyncSuppressionContext(int msAfterDisposeToWaitToRelease, ICollection<BrowserLinkConnection> connectionsToExclude)
         {

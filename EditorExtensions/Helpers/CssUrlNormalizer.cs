@@ -1,12 +1,10 @@
-﻿using System;
+﻿using Microsoft.CSS.Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Web;
-using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions.Helpers
 {

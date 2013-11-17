@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Web.BrowserLink;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -182,7 +182,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public void SnapshotPage()
         {
             var opId = Guid.NewGuid();
-            
+
             lock (_operationsInProgress)
             {
                 _operationsInProgress.Add(opId);

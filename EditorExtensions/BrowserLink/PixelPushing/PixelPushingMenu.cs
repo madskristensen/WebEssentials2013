@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.Shell;
+using System;
 using System.ComponentModel.Design;
-using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 {
@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
         public void SetupCommands()
         {
-            var commandId = new CommandID(GuidList.guidPixelPushingCmdSet, (int) PkgCmdIDList.cmdPixelPushingToggleCommandId);
+            var commandId = new CommandID(GuidList.guidPixelPushingCmdSet, (int)PkgCmdIDList.cmdPixelPushingToggleCommandId);
             var toggleCommand = new OleMenuCommand(TogglePixelPushingMode, EmptyChangeHandler, TogglePixelPushingModeBeforeQueryStatus, commandId)
             {
                 Checked = true

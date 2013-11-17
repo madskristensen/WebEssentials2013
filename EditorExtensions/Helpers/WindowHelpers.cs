@@ -1,10 +1,10 @@
-﻿using System;
-using Microsoft.VisualStudio;
+﻿using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
+using System;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -24,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
             uint itemId;
             IVsUIHierarchy uiHierarchy;
             IVsWindowFrame windowFrame;
-            
+
             if (VsShellUtilities.IsDocumentOpen(serviceProvider, filePath, Guid.Empty, out uiHierarchy, out itemId, out windowFrame))
             {
                 // Get the IVsTextView from the windowFrame.

@@ -1,5 +1,4 @@
-﻿using Microsoft.CSS.Editor;
-using Microsoft.CSS.Editor.Schemas;
+﻿using Microsoft.CSS.Editor.Schemas;
 using Microsoft.VisualStudio.Shell;
 using System.ComponentModel;
 
@@ -50,7 +49,7 @@ namespace MadsKristensen.EditorExtensions
         {
             CssSchemaManager.SchemaManager.ReloadSchemas();
         }
-                
+
         [LocDisplayName("Minify CSS files on save")]
         [Description("When a .css file (foo.css) is saved and a minified version (foo.min.css) exist, the minified file will be updated. Right-click any .css file to generate .min.css file")]
         [Category("Misc")]

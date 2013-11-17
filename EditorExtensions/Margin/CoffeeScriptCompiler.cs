@@ -20,8 +20,8 @@ namespace MadsKristensen.EditorExtensions
 
             string bare = WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure) ? "false" : "true";
             string script = ReadResourceFile("MadsKristensen.EditorExtensions.Resources.Scripts.IcedCoffeeScript-1.6.3-f.js");
-            
-            script += 
+
+            script +=
                     "try{" +
                         "var result = CoffeeScript.compile('" + clean + "', { bare: " + bare + ", runtime:'inline' });" +
                         "window.external.Execute(result, '" + state.Replace("\\", "\\\\") + "');" +

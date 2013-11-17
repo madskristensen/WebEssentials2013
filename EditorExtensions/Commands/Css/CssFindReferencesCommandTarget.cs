@@ -35,7 +35,7 @@ namespace MadsKristensen.EditorExtensions
 
             return true;
         }
-        
+
         private string SearchText(ParseItem item)
         {
             if (item.Parent is Declaration)

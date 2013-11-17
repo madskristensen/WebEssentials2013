@@ -1,7 +1,6 @@
 ﻿using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
@@ -37,7 +36,7 @@ namespace MadsKristensen.EditorExtensions
             var projects = ProjectHelpers.GetSelectedProjects().ToList();
             if (projects.Count == 1)
             {
-                if (!projects[0].IsWebProject()) 
+                if (!projects[0].IsWebProject())
                     return;
                 _referencesJsPath = Path.Combine(ProjectHelpers.GetRootFolder(projects[0]), @"Scripts\_references.js");
             }

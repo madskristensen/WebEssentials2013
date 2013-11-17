@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Windows.Threading;
-using Microsoft.CSS.Core;
+﻿using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.Web.Editor;
+using System;
+using System.Collections.Generic;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -27,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
             _textView = textView;
             _textBuffer = textBuffer;
             _pendingUpdate = true;
-                        
+
             _textView.Caret.PositionChanged += OnCaretPositionChanged;
             // [Mads] I've added this so the smart tags refreshes when buffer is manipulated
             _textBuffer.ChangedLowPriority += BufferChanged;
