@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions
 {
     public static class LessCompiler
     {
-        private static readonly Regex insertEmptyRowRegex = new Regex(@"}\W*}|}");
+        private static readonly Regex insertEmptyRowRegex = new Regex(@"}\W*}|}", RegexOptions.Compiled);
 
         private static Task<Process> ExecuteAsync(ProcessStartInfo startInfo)
         {
