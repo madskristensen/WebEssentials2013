@@ -1,9 +1,9 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Language.NavigateTo.Interfaces;
-using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.IO;
 using System.Windows.Threading;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Language.NavigateTo.Interfaces;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {

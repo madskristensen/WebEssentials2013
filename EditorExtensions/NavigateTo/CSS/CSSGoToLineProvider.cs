@@ -1,11 +1,11 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Language.NavigateTo.Interfaces;
-using Microsoft.VisualStudio.PlatformUI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Language.NavigateTo.Interfaces;
+using Microsoft.VisualStudio.PlatformUI;
 
 namespace MadsKristensen.EditorExtensions
 {

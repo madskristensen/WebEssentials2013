@@ -1,9 +1,9 @@
-﻿using Microsoft.CSS.Core;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using System;
-using System.Collections.Generic;
 
 namespace MadsKristensen.EditorExtensions
 {

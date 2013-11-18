@@ -1,13 +1,13 @@
-﻿using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using MadsKristensen.EditorExtensions.SmartTags.CSS.Actions;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
 
 namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Providers
 {

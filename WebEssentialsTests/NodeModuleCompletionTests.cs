@@ -1,8 +1,8 @@
-﻿using MadsKristensen.EditorExtensions;
+﻿using System;
+using System.Linq;
+using MadsKristensen.EditorExtensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
-using System;
-using System.Linq;
 
 namespace WebEssentialsTests
 {

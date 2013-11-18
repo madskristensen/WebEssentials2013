@@ -1,6 +1,6 @@
-﻿using MadsKristensen.EditorExtensions;
+﻿using System.IO;
+using MadsKristensen.EditorExtensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IO;
 
 namespace WebEssentialsTests
 {

@@ -1,7 +1,7 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.Windows.Media.Imaging;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Actions
 {

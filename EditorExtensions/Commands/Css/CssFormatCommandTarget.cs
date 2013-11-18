@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio;
+﻿using System;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text.Editor;
-using System;
 
 namespace MadsKristensen.EditorExtensions
 {

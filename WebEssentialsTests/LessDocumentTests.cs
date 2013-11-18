@@ -1,13 +1,13 @@
-﻿using MadsKristensen.EditorExtensions;
-using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
-using Microsoft.CSS.Core;
-using Microsoft.Less.Core;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using MadsKristensen.EditorExtensions;
+using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+using Microsoft.CSS.Core;
+using Microsoft.Less.Core;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebEssentialsTests
 {
