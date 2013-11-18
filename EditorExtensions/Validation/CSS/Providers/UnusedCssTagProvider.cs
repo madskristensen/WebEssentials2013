@@ -1,12 +1,12 @@
-﻿using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
 
 namespace MadsKristensen.EditorExtensions
 {

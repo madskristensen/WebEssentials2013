@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.Language.NavigateTo.Interfaces;
-using System;
+﻿using System;
 using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Language.NavigateTo.Interfaces;
 
 namespace MadsKristensen.EditorExtensions
 {

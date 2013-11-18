@@ -1,11 +1,11 @@
-﻿using CssSorter;
+﻿using System;
+using System.IO;
+using System.Linq;
+using CssSorter;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.IO;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {

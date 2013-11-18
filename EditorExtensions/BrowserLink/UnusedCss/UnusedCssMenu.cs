@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.Shell;
-using System;
+﻿using System;
 using System.ComponentModel.Design;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
