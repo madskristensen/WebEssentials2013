@@ -18,6 +18,10 @@ namespace MadsKristensen.EditorExtensions
     {
         private static string[] _tokens = new[] { "btn", "glyphicon", "alert", "label", "fa" }; // fa is for FontAwesome
         private static string _error = "When using \"{0}\", you must also specify the class \"{1}\".";
+        private static Dictionary<string, string[]> _whitelist = new Dictionary<string, string[]>
+        {
+            { "btn", new [] { "btn-group", "btn-toolbar" } }
+        };
 
         public override IList<IHtmlValidationError> ValidateElement(ElementNode element)
         {
@@ -45,7 +49,7 @@ namespace MadsKristensen.EditorExtensions
         private static bool IsCorrect(string input, string token)
         {
             if (input.Contains(token + "-") &&
-                !(input.Contains(token + " ") || input.EndsWith(token)))
+                !(input.Contains(token + " ") || input.EndsWith(token) || IsWhitelisted(input, token)))
                 return false;
 
             return true;
@@ -55,6 +59,11 @@ namespace MadsKristensen.EditorExtensions
         {
             string[] classes = input.Split(' ');
             return classes.FirstOrDefault(c => c.StartsWith(token + "-"));
+        }
+
+        private static bool IsWhitelisted(string input, string token)
+        {
+            return _whitelist.ContainsKey(token) && _whitelist[token].Any(s => input.Contains(s));
         }
     }
 }
