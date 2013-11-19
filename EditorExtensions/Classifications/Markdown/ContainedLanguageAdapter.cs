@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.IO;
 using System.Linq;
 
 using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Projection;
-using Microsoft.VisualStudio.ComponentModelHost;
+
+
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Html.ContainedLanguage;
 using Microsoft.VisualStudio.Html.Editor;
@@ -16,12 +18,10 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-
 using Microsoft.VisualStudio.Web.Editor;
 using Microsoft.VisualStudio.Web.Editor.Workspace;
 using Microsoft.Web.Editor;
 using Microsoft.Web.Editor.ContainedLanguage;
-
 using VSConstants = Microsoft.VisualStudio.VSConstants;
 
 
@@ -75,7 +75,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             ServiceManager.AddService(this, textBuffer);
         }
 
-        class LanguageBridge
+        sealed class LanguageBridge : IDisposable
         {
             public LanguageProjectionBuffer ProjectionBuffer { get; private set; }
 
@@ -109,7 +109,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 IVsTextLines vsTextLines = this.EnsureBufferCoordinator();
                 IVsContainedLanguage vsContainedLanguage;
 
-                languageFactory.GetLanguage(owner.WorkspaceItem.Hierarchy, (uint)owner.WorkspaceItem.ItemId, this._textBufferCoordinator, out vsContainedLanguage);
+                int hr = languageFactory.GetLanguage(owner.WorkspaceItem.Hierarchy, (uint)owner.WorkspaceItem.ItemId, this._textBufferCoordinator, out vsContainedLanguage);
                 if (vsContainedLanguage == null)
                 {
                     Logger.Log("Markdown: Couldn't get IVsContainedLanguage for " + ProjectionBuffer.IProjectionBuffer.ContentType);
@@ -142,7 +142,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 if (this._secondaryBuffer != null)
                     return this._secondaryBuffer;
 
-
                 var vsTextBuffer = owner.Document.TextBuffer.QueryInterface<IVsTextBuffer>();
 
                 IVsEditorAdaptersFactoryService adapterFactory = WebEditor.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
@@ -174,8 +173,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 vsTextBuffer.SetTextBufferData(typeof(VsTextBufferCoordinatorClass).GUID, null);
             }
 
-
-            public void Terminate()
+            public void Dispose()
             {
                 if (this._legacyCommandTarget != null && this._legacyCommandTarget.TextView != null)
                     containedLanguage2.RemoveContainedCommandTarget(this._legacyCommandTarget.TextView);
@@ -196,7 +194,12 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     (this._secondaryBuffer as IVsPersistDocData).Close();
                     this._secondaryBuffer = null;
                 }
+
+                if (Disposing != null)
+                    Disposing(this, EventArgs.Empty);
             }
+
+            public event EventHandler Disposing;
         }
 
 
@@ -205,179 +208,115 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             get { return ServiceProvider.GlobalProvider.GetService(typeof(SWebApplicationCtxSvc)) as IWebApplicationCtxSvc; }
         }
 
-        #region IVsIntellisenseProjectManager management
-        private class IntellisenseProjectWrapper : IVsIntellisenseProjectEventSink
+        ///<summary>Creates a ContainedLanguage for the specified ProjectionBuffer, using an IVsIntellisenseProjectManager to initialize the language.</summary>
+        ///<param name="projectionBuffer">The buffer to connect to the language service.</param>
+        ///<param name="intelliSenseGuid">The GUID of the IntellisenseProvider; used to create IVsIntellisenseProject.</param>
+        public void AddIntellisenseProjectLanguage(LanguageProjectionBuffer projectionBuffer, Guid intelliSenseGuid)
         {
-            public IContentType ContentType { get; private set; }
-            public IVsIntellisenseProjectManager Manager { get; private set; }
-            readonly ContainedLanguageAdapter owner;
+            var contentType = projectionBuffer.IProjectionBuffer.ContentType;
+            if (languageBridges.ContainsKey(contentType))
+                return;
+            int hr;
 
-            uint cookie;
-            INTELLIPROJSTATUS status;
-            bool isReady;
+            Guid iid_vsip = typeof(IVsIntellisenseProject).GUID;
 
-            public IntellisenseProjectWrapper(ContainedLanguageAdapter owner, IContentType contentType)
+            var shell = (IVsShell)ServiceProvider.GlobalProvider.GetService(typeof(SVsShell));
+            Guid otherPackage = new Guid("{39c9c826-8ef8-4079-8c95-428f5b1c323f}");
+            IVsPackage package;
+            hr = shell.LoadPackage(ref otherPackage, out package);
+
+            var project = (IVsIntellisenseProject)EditorExtensionsPackage.Instance.CreateInstance(ref intelliSenseGuid, ref iid_vsip, typeof(IVsIntellisenseProject));
+
+            string projectPath;
+            WorkspaceItem.FileItemContext.GetWebRootPath(out projectPath);
+            hr = project.Init(new ProjectHost(WorkspaceItem.Hierarchy, projectPath));
+            hr = project.StartIntellisenseEngine();
+            hr = project.WaitForIntellisenseReady();
+            //hr = project.ResumePostedNotifications();
+            hr = project.AddAssemblyReference(typeof(object).Assembly.Location);
+            hr = project.AddAssemblyReference(typeof(Uri).Assembly.Location);
+            hr = project.AddAssemblyReference(typeof(Enumerable).Assembly.Location);
+            hr = project.AddAssemblyReference(typeof(System.Xml.Linq.XElement).Assembly.Location);
+            hr = project.AddAssemblyReference(typeof(System.Web.HttpContextBase).Assembly.Location);
+            hr = project.AddAssemblyReference(typeof(System.Windows.Forms.Form).Assembly.Location);
+            hr = project.AddAssemblyReference(typeof(System.Windows.Window).Assembly.Location);
+            hr = project.AddAssemblyReference(typeof(System.Data.DataSet).Assembly.Location);
+
+            int needsFile;
+            project.IsWebFileRequiredByProject(out needsFile);
+            if (needsFile != 0)
+                project.AddFile(projectionBuffer.IProjectionBuffer.GetFileName(), (uint)WorkspaceItem.ItemId);
+
+            hr = project.WaitForIntellisenseReady();
+            IVsContainedLanguageFactory factory;
+            hr = project.GetContainedLanguageFactory(out factory);
+            if (factory == null)
             {
-                this.owner = owner;
-                this.ContentType = contentType;
+                Logger.Log("Markdown: Couldn't create IVsContainedLanguageFactory for " + contentType);
+                project.Close();
+                return;
+            }
+            LanguageBridge bridge = new LanguageBridge(this, projectionBuffer, factory);
+            bridge.Disposing += delegate { project.Close(); };
+            languageBridges.Add(contentType, bridge);
+        }
+
+        class ProjectHost : IVsIntellisenseProjectHost
+        {
+            readonly IVsHierarchy hierarchy;
+            readonly string projectPath;
+            public ProjectHost(IVsHierarchy hierarchy, string projectPath)
+            {
+                this.hierarchy = hierarchy;
+                this.projectPath = projectPath + Guid.NewGuid();
             }
 
-            public void CreateWhenIdle()
+            public int CreateFileCodeModel(string pszFilename, out object ppCodeModel)
             {
-                EventHandler<EventArgs> idleHandler = null;
-                idleHandler = delegate
-                {
-                    WebEditor.OnIdle -= idleHandler;
-                    Create();
-                };
-                WebEditor.OnIdle += idleHandler;
+                ppCodeModel = null;
+                return VSConstants.E_NOTIMPL;
             }
 
-            public void Create()
+            public int GetCompilerOptions(out string pbstrOptions)
             {
-                if (owner.WorkspaceItem.Hierarchy == null || cookie != 0u)
-                {
-                    Logger.Log("Markdown: Not creating IVsIntellisenseProjectManager; no WorkspaceItem.Hierarchy");
-                    return;
-                }
-
-                Microsoft.VisualStudio.OLE.Interop.IServiceProvider sp;
-                owner.WebApplicationContextService.GetItemContext(owner.WorkspaceItem.Hierarchy, (uint)owner.WorkspaceItem.ItemId, out sp);
-                ServiceProvider serviceProvider = new ServiceProvider(sp);
-
-                object o;
-                serviceProvider.QueryService(typeof(SVsIntellisenseProjectManager).GUID, out o);
-                Manager = (o as IVsIntellisenseProjectManager);
-                if (Manager == null)
-                    throw new InvalidOperationException("ServiceProvider didn't return SVsIntellisenseProjectManager");
-                Manager.AdviseIntellisenseProjectEvents(this, out cookie);
-            }
-
-            public void Dispose()
-            {
-                if (Manager == null)
-                    return;
-                if (cookie != 0u)
-                {
-                    Manager.UnadviseIntellisenseProjectEvents(cookie);
-                    cookie = 0u;
-                }
-                LanguageBridge bridge;
-                if (owner.languageBridges.TryGetValue(ContentType, out bridge))
-                {
-                    bridge.Terminate();
-                    owner.languageBridges.Remove(ContentType);
-                }
-                Manager.CloseIntellisenseProject();
-                Manager = null;
-            }
-
-            ///<summary>Occurs when the IntelliSense project is ready to initialize contained languages.</summary>
-            public event EventHandler LoadComplete;
-            ///<summary>Raises the LoadComplete event.</summary>
-            protected virtual void OnLoadComplete() { OnLoadComplete(EventArgs.Empty); }
-            ///<summary>Raises the LoadComplete event.</summary>
-            ///<param name="e">An EventArgs object that provides the event data.</param>
-            protected virtual void OnLoadComplete(EventArgs e)
-            {
-                if (LoadComplete != null)
-                    LoadComplete(this, e);
-            }
-
-
-            int IVsIntellisenseProjectEventSink.OnCodeFileChange(string pszOldCodeFile, string pszNewCodeFile) { return 0; }
-            int IVsIntellisenseProjectEventSink.OnConfigChange() { return 0; }
-            int IVsIntellisenseProjectEventSink.OnReferenceChange(uint dwChangeType, string pszAssemblyPath) { return 0; }
-            int IVsIntellisenseProjectEventSink.OnStatusChange(uint dwStatus)
-            {
-                switch (dwStatus)
-                {
-                    case 1u:
-                        status = (INTELLIPROJSTATUS)dwStatus;
-                        if (!HtmlUtilities.IsSolutionLoading(ServiceProvider.GlobalProvider))
-                            this.EnsureIntellisenseProjectLoaded();
-                        break;
-                    case 2u:
-                        status = (INTELLIPROJSTATUS)dwStatus;
-                        OnLoadComplete();
-                        isReady = true;
-                        this.NotifyEditorReady();
-                        break;
-                    case 3u:
-                        this.Reset(false);
-                        status = (INTELLIPROJSTATUS)dwStatus;
-                        break;
-                    case 4u:
-                        this.EnsureIntellisenseProjectLoaded();
-                        this.NotifyEditorReady();
-                        break;
-                }
+                pbstrOptions = "";
                 return 0;
             }
-            internal void Reset(bool createIntellisenseProject)
+
+            public int GetHostProperty(uint dwPropID, out object pvar)
             {
-                this.Dispose();
-                if (createIntellisenseProject)
+                var prop = (HOSTPROPID)dwPropID;
+                // Based on decompiled Microsoft.VisualStudio.ProjectSystem.VS.Implementation.Designers.LanguageServiceBase
+                switch (prop)
                 {
-                    this.Create();
+                    case HOSTPROPID.HOSTPROPID_PROJECTNAME:
+                    case HOSTPROPID.HOSTPROPID_RELURL:
+                        pvar = projectPath;
+                        return VSConstants.S_OK;
+                    case HOSTPROPID.HOSTPROPID_HIERARCHY:
+                        pvar = hierarchy;
+                        return VSConstants.S_OK;
+                    case HOSTPROPID.HOSTPROPID_INTELLISENSECACHE_FILENAME:
+                        pvar = Path.GetTempPath();
+                        return VSConstants.S_OK;
+                    case (HOSTPROPID)(-2):
+                        pvar = ".NET Framework, Version=4.5";   // configurationGeneral.TargetFrameworkMoniker.GetEvaluatedValueAtEndAsync
+                        return VSConstants.S_OK;
+                    case (HOSTPROPID)(-1):
+                        pvar = false;   // No clue...
+                        return VSConstants.S_OK;
+
+                    default:
+                        pvar = null;
+                        return VSConstants.E_INVALIDARG;
                 }
             }
-            internal void NotifyEditorReady()
+
+            public int GetOutputAssembly(out string pbstrOutputAssembly)
             {
-                if (!isReady)
-                    return;
-
-                if (!HtmlUtilities.IsSolutionLoading(ServiceProvider.GlobalProvider))
-                    this.EnsureIntellisenseProjectLoaded();
-
-                Manager.OnEditorReady();
-                isReady = false;
+                pbstrOutputAssembly = "MarkdownHostAssembly";
+                return 0;
             }
-            private void EnsureIntellisenseProjectLoaded()
-            {
-                if (status == INTELLIPROJSTATUS.INTELLIPROJSTATUS_LOADING)
-                {
-                    Manager.CompleteIntellisenseProjectLoad();
-                }
-            }
-        }
-        #endregion
-
-        private IntellisenseProjectWrapper intellisenseProject;
-
-        ///<summary>Creates a ContainedLanguage for the specified ProjectionBuffer, using an IVsIntellisenseProjectManager to intialize the language.</summary>
-        ///<param name="projectionBuffer">The buffer to connect to the language service.</param>
-        ///<param name="serviceName">The name of the language service; passed to GetContainedLanguageFactory().</param>
-        ///<param name="force">True to replace any existing IVsIntellisenseProjectManager (and associated language bridge); false to do nothing if an IVsIntellisenseProjectManager exists.</param>
-        public void AddIntellisenseProjectLanguage(LanguageProjectionBuffer projectionBuffer, string serviceName, bool force)
-        {
-            if (intellisenseProject != null && !force)
-                return;
-
-            var contentType = projectionBuffer.IProjectionBuffer.ContentType;
-            if ((intellisenseProject != null && intellisenseProject.ContentType == contentType)
-             || languageBridges.ContainsKey(contentType))
-                return;
-
-            if (intellisenseProject != null)
-                intellisenseProject.Dispose();
-            intellisenseProject = new IntellisenseProjectWrapper(this, contentType);
-            intellisenseProject.LoadComplete += delegate
-            {
-
-                IVsContainedLanguageFactory factory;
-                intellisenseProject.Manager.GetContainedLanguageFactory(serviceName, out factory);
-                if (factory == null)
-                {
-                    Logger.Log("Markdown: Couldn't create IVsContainedLanguageFactory for " + serviceName);
-                    intellisenseProject.Dispose();
-                    intellisenseProject = null;
-                    return;
-                }
-                languageBridges.Add(contentType, new LanguageBridge(this, projectionBuffer, factory));
-            };
-
-            intellisenseProject.CreateWhenIdle();
         }
 
         #region Cleanup
@@ -397,11 +336,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         }
         public void Dispose()
         {
-            if (intellisenseProject != null)
-                intellisenseProject.Dispose();
-
             foreach (var b in languageBridges.Values)
-                b.Terminate();
+                b.Dispose();
         }
         #endregion
     }
