@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
 
             string webEssentialsDir = Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location);
             string lessc = Path.Combine(webEssentialsDir, @"Resources\nodejs\node_modules\.bin\lessc.cmd");
-            string arguments = String.Format("--relative-urls \"{0}\" \"{1}\"", filename, output);
+            string arguments = String.Format("--no-color --relative-urls \"{0}\" \"{1}\"", filename, output);
             if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
                 arguments = String.Format(
                   "--relative-urls --source-map=\"{0}.map\" \"{1}\" \"{2}\"",
@@ -106,57 +106,22 @@ namespace MadsKristensen.EditorExtensions
             File.Delete(outputFile);
         }
 
+        static readonly Regex errorParser = new Regex(@"^(.+) in (.+) on line (\d+), column (\d+):$", RegexOptions.Multiline);
         private static CompilerError ParseError(string error)
         {
-            CompilerError result = new CompilerError();
-            string[] lines = error.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
-
-            for (int i = 0; i < lines.Length; i++)
+            var m = errorParser.Match(error);
+            if (!m.Success)
             {
-                string line = lines[i];
-
-                if (error.Contains("message:"))
-                {
-                    string[] args = line.Split(new[] { ':' }, 2);
-
-                    if (args[0].Trim() == "message")
-                        result.Message = args[1].Trim();
-
-                    if (args[0].Trim() == "filename")
-                        result.FileName = args[1].Trim();
-
-                    int lineNo = 0;
-                    if (args[0].Trim() == "line" && int.TryParse(args[1], out lineNo))
-                        result.Line = lineNo;
-
-                    int columnNo = 0;
-                    if (args[0].Trim() == "column" && int.TryParse(args[1], out columnNo))
-                        result.Column = columnNo;
-                }
-                else
-                {
-                    if (i == 1 || i == 2)
-                        result.Message += " " + line;
-
-                    if (i == 3)
-                    {
-                        string[] lineCol = line.Split(',');
-
-                        int lineNo = 0;
-                        if (int.TryParse(lineCol[0].Replace("on line", string.Empty).Trim(), out lineNo))
-                            result.Line = lineNo;
-
-                        int columnNo = 0;
-                        if (int.TryParse(lineCol[0].Replace("column", string.Empty).Trim(':').Trim(), out columnNo))
-                            result.Column = columnNo;
-
-                        result.Message = result.Message.Trim();
-                    }
-
-                }
+                Logger.Log("Unparseable LESS error: " + error);
+                return new CompilerError { Message = error };
             }
-
-            return result;
+            return new CompilerError
+            {
+                Message = m.Groups[1].Value,
+                FileName = m.Groups[2].Value,
+                Line = int.Parse(m.Groups[3].Value),
+                Column = int.Parse(m.Groups[4].Value)
+            };
         }
     }
 }
