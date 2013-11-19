@@ -28,7 +28,7 @@ namespace MadsKristensen.EditorExtensions
             ShowLessPreviewWindow = WESettings.GetBoolean(WESettings.Keys.ShowLessPreviewWindow);
             LessMinify = WESettings.GetBoolean(WESettings.Keys.LessMinify);
             LessCompileOnBuild = WESettings.GetBoolean(WESettings.Keys.LessCompileOnBuild);
-            LessCompileToFolder = WESettings.GetBoolean(WESettings.Keys.LessCompileToFolder);
+            LessCompileToFolder = WESettings.GetString(WESettings.Keys.LessCompileToFolder);
             LessSourceMaps = WESettings.GetBoolean(WESettings.Keys.LessSourceMaps);
         }
 
@@ -57,9 +57,9 @@ namespace MadsKristensen.EditorExtensions
         [Category("LESS")]
         public bool LessCompileOnBuild { get; set; }
 
-        [LocDisplayName("Compile to 'css' folder")]
-        [Description("Compiles each LESS file into a folder called 'css' in the same directory as the .less file.")]
+        [LocDisplayName("Compile to a custom folder")]
+        [Description("Compiles each LESS file into a custom folder. Prefix your output directory with a `/` to indicate that it starts at the project's root directory. Otherwise a relative path is assumed. Leave empty to effectively disable this option.")]
         [Category("LESS")]
-        public bool LessCompileToFolder { get; set; }
+        public string LessCompileToFolder { get; set; }
     }
 }

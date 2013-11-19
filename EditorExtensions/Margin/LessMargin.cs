@@ -59,9 +59,9 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public override bool UseCompiledFolder
+        public override string UseCompiledFolder
         {
-            get { return WESettings.GetBoolean(WESettings.Keys.LessCompileToFolder); }
+            get { return WESettings.GetString(WESettings.Keys.LessCompileToFolder); }
         }
 
         public override bool IsSaveFileEnabled
