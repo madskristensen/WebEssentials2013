@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions
         private void Sort()
         {
             if (files.Count == 2)
-                EditorExtensionsPackage.DTE.ExecuteCommand("Tools.DiffFiles \"" + files[0] + "\" \"" + files[1] + "\"");
+                EditorExtensionsPackage.ExecuteCommand("Tools.DiffFiles \"" + files[0] + "\" \"" + files[1] + "\"");
         }
     }
 }

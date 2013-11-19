@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
             _dte.UndoContext.Open("Sort All Properties");
 
             edit.ReplaceText(doc.EndPoint, text, (int)vsFindOptions.vsFindOptionsNone);
-            EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatDocument");
+            EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
             doc.Selection.MoveToPoint(doc.StartPoint);
 
             _dte.UndoContext.Close();

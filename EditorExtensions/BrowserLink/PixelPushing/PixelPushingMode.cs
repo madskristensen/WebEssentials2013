@@ -303,7 +303,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 if (!compositeEdit.Canceled)
                 {
                     compositeEdit.Apply();
-                    EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatDocument");
+                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
                     window.Document.Save();
                 }
 

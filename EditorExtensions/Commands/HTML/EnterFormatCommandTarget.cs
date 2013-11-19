@@ -110,7 +110,11 @@ namespace MadsKristensen.EditorExtensions
             ITextBuffer buffer = HtmlEditorDocument.FromTextView(TextView).TextBuffer;
             SnapshotSpan span = new SnapshotSpan(buffer.CurrentSnapshot, element.Start, element.Length);
 
-            _formatter.FormatRange(TextView, buffer, span, true);
+            try
+            {
+                _formatter.FormatRange(TextView, buffer, span, true);
+            }
+            catch { }
         }
 
         private ElementNode GetFirstBlockParent(ElementNode current, List<IHtmlSchema> schemas)

@@ -42,7 +42,7 @@ namespace MadsKristensen.EditorExtensions
             var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
             selection.GotoLine(1);
 
-            EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatDocument");
+            EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
             EditorExtensionsPackage.DTE.UndoContext.Close();
 
             return true;
