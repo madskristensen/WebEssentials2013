@@ -40,7 +40,7 @@ namespace MadsKristensen.EditorExtensions
             _provider = new ErrorListProvider(EditorExtensionsPackage.Instance);
 
             Document.FileActionOccurred += Document_FileActionOccurred;
-
+			
             if (showMargin)
             {
                 _dispatcher.BeginInvoke(
@@ -61,7 +61,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
         public abstract bool IsSaveFileEnabled { get; }
-        public abstract bool UseCompiledFolder { get; }
+		public abstract string UseCompiledFolder { get; }
         protected ITextDocument Document { get; set; }
 
         private void Initialize(string contentType, string source)
@@ -255,15 +255,75 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public static string GetCompiledFileName(string sourceFileName, string compiledExtension, bool useFolder)
+        public static string GetCompiledFileName(string sourceFileName, string compiledExtension, string customFolder)
         {
             string sourceExtension = Path.GetExtension(sourceFileName);
             string compiledFileName = Path.GetFileName(sourceFileName).Replace(sourceExtension, compiledExtension);
             string sourceDir = Path.GetDirectoryName(sourceFileName);
+			string compiledDir;
 
-            if (useFolder)
+			if (customFolder != null && customFolder.Length > 0)
             {
-                string compiledDir = Path.Combine(sourceDir, compiledExtension.Replace(".min.", string.Empty).Replace(".", string.Empty));
+				// TODO set the new folder based on the 'web-based' path in customFolder..
+                //original code:string compiledDir = Path.Combine(sourceDir, compiledExtension.Replace(".min.", string.Empty).Replace(".", string.Empty));
+
+				if (customFolder.StartsWith("~/") || customFolder.StartsWith("/"))
+				{
+					customFolder = customFolder.Substring(customFolder.StartsWith("~/") ? 2 : 1);
+
+					// TODO Go up a folder until you find the 'bin' folder.. and use that as the base.. !?
+					//      YEAH, this is a total hack.. I know!!
+					string p = sourceDir;
+					string bin = "bin";
+					int i = -1;
+
+					while (!Directory.Exists(Path.Combine(p, bin)))
+					{
+						i = p.LastIndexOf('\\');
+						if (i > -1)
+						{
+							p = p.Substring(0, i);
+						}
+						else
+						{
+							break;
+						}
+					}
+
+					if (i > -1)
+					{
+						// found the bin folder at p + 'bin'..
+						DirectoryInfo pi = new DirectoryInfo(Path.Combine(p, customFolder));
+						//if (pi.Exists)
+						//{
+							compiledDir = pi.FullName;
+						//}
+						//else
+						//{
+						//	// didn't find it.. so, use the original method.
+						//	compiledDir = Path.Combine(sourceDir, compiledExtension.Replace(".min.", string.Empty).Replace(".", string.Empty));
+						//}
+					}
+					else
+					{
+						// didn't find it.. so, use the original method.
+						compiledDir = Path.Combine(sourceDir, compiledExtension.Replace(".min.", string.Empty).Replace(".", string.Empty));
+					}
+				}
+				else
+				{
+					// Assume it is a relative path..
+					DirectoryInfo pi = new DirectoryInfo(Path.Combine(sourceDir, customFolder));
+					if (pi.Exists)
+					{
+						compiledDir = pi.FullName;
+					}
+					else
+					{
+						// didn't find it.. so, use the original method.
+						compiledDir = Path.Combine(sourceDir, compiledExtension.Replace(".min.", string.Empty).Replace(".", string.Empty));
+					}
+				}
 
                 if (!Directory.Exists(compiledDir))
                 {

@@ -132,9 +132,9 @@ namespace MadsKristensen.EditorExtensions
             // Nothing to minify
         }
 
-        public override bool UseCompiledFolder
+		public override string UseCompiledFolder
         {
-            get { return false; }
+            get { return null; }
         }
 
         public override bool IsSaveFileEnabled

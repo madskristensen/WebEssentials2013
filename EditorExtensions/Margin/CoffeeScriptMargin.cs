@@ -148,9 +148,9 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public override bool UseCompiledFolder
+		public override string UseCompiledFolder
         {
-            get { return WESettings.GetBoolean(WESettings.Keys.CoffeeScriptCompileToFolder); }
+			get { return WESettings.GetString(WESettings.Keys.CoffeeScriptCompileToFolder); }
         }
 
         public override bool IsSaveFileEnabled
