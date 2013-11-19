@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions
     public static class LessCompiler
     {
         private static readonly Regex _endingCurlyBraces = new Regex(@"}\W*}|}", RegexOptions.Compiled);
-        private static readonly Regex _linesStrartingWithTwoSpaces = new Regex("(\n( *))", RegexOptions.Compiled);
+        private static readonly Regex _linesStartingWithTwoSpaces = new Regex("(\n( *))", RegexOptions.Compiled);
 
         private static Task<Process> ExecuteAsync(ProcessStartInfo startInfo)
         {
@@ -59,7 +59,7 @@ namespace MadsKristensen.EditorExtensions
                 if (result.IsSuccess)
                 {
                     // Inserts an empty row between each rule and replace two space indentation with 4 space indentation
-                    result.Result = _endingCurlyBraces.Replace(_linesStrartingWithTwoSpaces.Replace(result.Result.Trim(), "$1$2"), "$&\n");
+                    result.Result = _endingCurlyBraces.Replace(_linesStartingWithTwoSpaces.Replace(result.Result.Trim(), "$1$2"), "$&\n");
 
                     // If the caller wants us to renormalize URLs to a different filename, do so.
                     if (targetFilename != null && result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
