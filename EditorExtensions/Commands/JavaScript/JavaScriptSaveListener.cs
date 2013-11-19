@@ -118,7 +118,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (WESettings.GetBoolean(WESettings.Keys.GenerateJavaScriptSourceMaps))
             {
-                content += Environment.NewLine + "//# sourceMappingURL=" + Path.GetFileName(minFile) + ".map";
+                content += "\r\n/*\r\n//# sourceMappingURL=" + Path.GetFileName(minFile) + ".map\r\n*/";
             }
 
             ProjectHelpers.CheckOutFileFromSourceControl(minFile);
