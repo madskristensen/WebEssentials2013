@@ -7,13 +7,21 @@ So are #hashtags.
 Here is code with underscores: `abc + _something_ + def`, ending later with `_private`.  Operators are also a problem: `a * b` has a `*`, or `a **bold code** word`.
 
 However, single ` characters should not be affected, even if there is **bold** afterwards.  
+ 
+```js
 
+```
+    wegwrhw
+    wrgstwerwh
+    erhgwrherhehqh
+<a>wf</a>
 This is > not a quote
 
 `code`, then _italic_, or **bold**.
 Even  **_bold/italic_** or _**italic/bold**_
 
     No **code-bold** in _code blocks_
+    aaa
 ```CSharp
     
     var x = new System.AccessViolationException();
@@ -25,19 +33,18 @@ x.Data.Add(null, null);
 ```
 
 ```basic
-        Dim s As Boolean
-        If s Then
-            s.CompareTo(s).GetTypeCode()
-        End If
-        String.CompareOrdinal(2, 3)
-
-        Dim x As New List(Of Action)
-        x.AsReadOnly()
-        Dim z As Text.Encoding
-        z.IsSingleByte.ToString()
+Dim s As Boolean
+If s Then
+s.CompareTo(s).GetTypeCode()
+End If
+String.CompareOrdinal(2, 3)
+Dim x As New List(Of Action)
+x.AsReadOnly()
+Dim z As Text.Encoding
+z.IsSingleByte.ToString()
 Return 3
 
-        Return 4
+Return 4
 ```
 
 
@@ -53,7 +60,10 @@ a {
 
 ```less
 @media only screen and (max-width: 1024px) and (max-height: 768px) {
-
+    a {
+        align-content: flex-end;
+        align-items:center;
+    }
 }
 
 ```
