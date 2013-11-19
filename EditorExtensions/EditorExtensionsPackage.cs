@@ -142,7 +142,11 @@ namespace MadsKristensen.EditorExtensions
             var command = EditorExtensionsPackage.DTE.Commands.Item(commandName);
             if (command.IsAvailable)
             {
-                EditorExtensionsPackage.DTE.ExecuteCommand(commandName);
+                try
+                {
+                    EditorExtensionsPackage.DTE.ExecuteCommand(commandName);
+                }
+                catch { }
             }
         }
 

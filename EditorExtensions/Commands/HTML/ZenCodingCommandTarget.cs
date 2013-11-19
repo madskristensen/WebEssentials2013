@@ -55,15 +55,19 @@ namespace MadsKristensen.EditorExtensions
                 EditorExtensionsPackage.DTE.UndoContext.Open("ZenCoding");
 
                 ITextSelection selection = UpdateTextBuffer(zenSpan, result);
-                Span newSpan = new Span(zenSpan.Start, selection.SelectedSpans[0].Length);
 
-                selection.Clear();
+                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => {
 
-                EditorExtensionsPackage.DTE.UndoContext.Close();
+                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
 
-                Dispatcher.CurrentDispatcher.BeginInvoke(
-                    new Action(() => SetCaret(newSpan, false)), DispatcherPriority.Normal, null);
+                    Span newSpan = new Span(zenSpan.Start, selection.SelectedSpans[0].Length);
+                    selection.Clear();
 
+                    EditorExtensionsPackage.DTE.UndoContext.Close();
+                    SetCaret(newSpan, false);
+
+                }), DispatcherPriority.ApplicationIdle, null);
+                
                 return true;
             }
 
@@ -177,7 +181,7 @@ namespace MadsKristensen.EditorExtensions
             SnapshotSpan snapshot = new SnapshotSpan(point, result.Length);
             TextView.Selection.Select(snapshot, false);
 
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+            //EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
 
             return TextView.Selection;
         }
