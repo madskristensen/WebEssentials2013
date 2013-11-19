@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 
 using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Projection;
-
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Html.ContainedLanguage;
 using Microsoft.VisualStudio.Html.Editor;
@@ -12,6 +13,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
@@ -270,7 +272,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 Manager = null;
             }
 
-            ///<summary>Occurs when the IntelliSense project is ready to intialize contained languages.</summary>
+            ///<summary>Occurs when the IntelliSense project is ready to initialize contained languages.</summary>
             public event EventHandler LoadComplete;
             ///<summary>Raises the LoadComplete event.</summary>
             protected virtual void OnLoadComplete() { OnLoadComplete(EventArgs.Empty); }
@@ -402,5 +404,45 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 b.Terminate();
         }
         #endregion
+    }
+
+
+    // Don't ask
+    [ContentType(MarkdownContentTypeDefinition.MarkdownContentType)]
+    [Export(typeof(IWpfTextViewCreationListener))]
+    [Export(typeof(IVsTextViewCreationListener))]
+    [TextViewRole(PredefinedTextViewRoles.PrimaryDocument)]
+    public class VenusAdapterAdapterHack : IWpfTextViewCreationListener, IVsTextViewCreationListener
+    {
+        readonly IWpfTextViewCreationListener innerWpf;
+        readonly IVsTextViewCreationListener innerVs;
+
+        static readonly Type roslynType = Type.GetType("Roslyn.VisualStudio.Services.Implementation.Venus.VenusTextViewManager, Microsoft.VisualStudio.LanguageServices");
+
+        public VenusAdapterAdapterHack()
+        {
+            if (roslynType == null)
+                return;
+            var e = WebEditor.ExportProvider.GetExports(roslynType, typeof(object), null).SingleOrDefault();
+            if (e == null)
+            {
+                Logger.Log("Roslyn's Venus exports have changed.  Please email Schabse (Markdown@SLaks.net) and mention your installed Roslyn version");
+                return;
+            }
+            innerWpf = e.Value as IWpfTextViewCreationListener;
+            innerVs = e.Value as IVsTextViewCreationListener;
+
+            if (innerWpf == null || innerVs == null)
+                Logger.Log("Roslyn's Venus base types have changed.  Please email Schabse (Markdown@SLaks.net) and mention your installed Roslyn version");
+        }
+
+        public void TextViewCreated(IWpfTextView textView)
+        {
+            if (innerWpf != null) innerWpf.TextViewCreated(textView);
+        }
+        public void VsTextViewCreated(IVsTextView textViewAdapter)
+        {
+            if (innerVs != null) innerVs.VsTextViewCreated(textViewAdapter);
+        }
     }
 }
