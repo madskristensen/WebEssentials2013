@@ -15,7 +15,10 @@ namespace MadsKristensen.EditorExtensions
 
         protected override async void StartCompiler(string source)
         {
-            string cssFilename = GetCompiledFileName(Document.FilePath, ".css", UseCompiledFolder);// Document.FilePath.Replace(".less", ".css");
+            if (!CompileEnabled)
+                return;
+
+            string cssFilename = GetCompiledFileName(Document.FilePath, ".css", CompileEnabled ? CompileToLocation : null);// Document.FilePath.Replace(".less", ".css");
 
             if (IsFirstRun && File.Exists(cssFilename))
             {
@@ -42,10 +45,13 @@ namespace MadsKristensen.EditorExtensions
 
         public override void MinifyFile(string fileName, string source)
         {
+            if (!CompileEnabled)
+                return;
+
             if (WESettings.GetBoolean(WESettings.Keys.LessMinify) && !Path.GetFileName(fileName).StartsWith("_"))
             {
                 string content = MinifyFileMenu.MinifyString(".css", source);
-                string minFile = GetCompiledFileName(fileName, ".min.css", UseCompiledFolder);// fileName.Replace(".less", ".min.css");
+                string minFile = GetCompiledFileName(fileName, ".min.css", CompileToLocation);// fileName.Replace(".less", ".min.css");
                 bool fileExist = File.Exists(minFile);
 
                 ProjectHelpers.CheckOutFileFromSourceControl(minFile);
@@ -59,9 +65,14 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public override string UseCompiledFolder
+        public override bool CompileEnabled
         {
-            get { return WESettings.GetString(WESettings.Keys.LessCompileToFolder); }
+            get { return WESettings.GetBoolean(WESettings.Keys.LessEnableCompiler); }
+        }
+
+        public override string CompileToLocation
+        {
+            get { return WESettings.GetString(WESettings.Keys.LessCompileToLocation); }
         }
 
         public override bool IsSaveFileEnabled

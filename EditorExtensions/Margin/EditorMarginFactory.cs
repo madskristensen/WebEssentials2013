@@ -23,18 +23,19 @@ namespace MadsKristensen.EditorExtensions
 
             if (textViewHost.TextView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document))
             {
-                switch (textViewHost.TextView.TextBuffer.ContentType.DisplayName)
+                switch (textViewHost.TextView.TextBuffer.ContentType.DisplayName.ToLowerInvariant())
                 {
-                    case "LESS":
+                    case "less":
                         bool showLess = WESettings.GetBoolean(WESettings.Keys.ShowLessPreviewWindow);
                         return new LessMargin("CSS", source, showLess, document);
 
-                    case "CoffeeScript":
+                    case "coffeescript":
                         bool showCoffee = WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow);
                         return new CoffeeScriptMargin("JavaScript", source, showCoffee, document);
 
                     case "markdown":
-                        return new MarkdownMargin("text", source, true, document);
+                        bool showMarkdown = WESettings.GetBoolean(WESettings.Keys.MarkdownShowPreviewWindow);
+                        return new MarkdownMargin("text", source, showMarkdown, document);
                 }
             }
 
