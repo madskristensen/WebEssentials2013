@@ -22,9 +22,9 @@ namespace WebEssentialsTests
                         </span>";
 
             var tree = new HtmlTree(new TextStream(source));
-            
+
             tree.Build();
-            
+
             IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0]);
 
             int expected = 0;
