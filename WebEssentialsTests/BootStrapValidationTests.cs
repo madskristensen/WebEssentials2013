@@ -14,9 +14,9 @@ namespace WebEssentialsTests
     public class BootstrapValidationTests
     {
         [TestMethod]
-        public void PathCompilationTest()
+        public void BootstrapNestedFontAwesomeTest()
         {
-            BootstrapClassValidator validator = new BootstrapClassValidator();
+            //BootstrapClassValidator validator = new BootstrapClassValidator();
 
             /* Not sure how to create ElementNode from string */
 
