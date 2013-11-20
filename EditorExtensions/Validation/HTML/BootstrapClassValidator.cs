@@ -60,7 +60,7 @@ namespace MadsKristensen.EditorExtensions
 
                 foreach (var child in element.Children)
                 {
-                    childrenClassNames.Add(child.GetAttribute("class") == null ? child.GetAttribute("class").Value : "");
+                    childrenClassNames.Add(child.GetAttribute("class") == null ? "" : child.GetAttribute("class").Value);
                 }
             }
             return childrenClassNames;

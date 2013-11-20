@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using MadsKristensen.EditorExtensions;
-using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Html.Core;
+using Microsoft.Html.Validation;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Web.Core;
+
 
 namespace WebEssentialsTests
 {
@@ -16,16 +14,22 @@ namespace WebEssentialsTests
         [TestMethod]
         public void BootstrapNestedFontAwesomeTest()
         {
-            //BootstrapClassValidator validator = new BootstrapClassValidator();
+            BootstrapClassValidator validator = new BootstrapClassValidator();
 
-            /* Not sure how to create ElementNode from string */
+            var source = @"<span class='fa-stack fa-lg'>
+                            <i class='fa-circle fa-stack-2x fa'></i>
+                            <i class='fa fa-twitter fa-stack-1x fa-inverse'></i>
+                        </span>";
 
-           // ElementNode node = new ElementNode();
-          //  IList<IHtmlValidationError> compiled = validator.ValidateElement(); 
+            var tree = new HtmlTree(new TextStream(source));
             
-            //  int expected = 0;
+            tree.Build();
+            
+            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0]);
 
-          //  Assert.AreEqual(expected, compiled.Count);
+            int expected = 0;
+
+            Assert.AreEqual(expected, compiled.Count);
         }
 
     }
