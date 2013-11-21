@@ -4,9 +4,9 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+
 using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Projection;
-
 
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Html.ContainedLanguage;
@@ -70,7 +70,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public ContainedLanguageAdapter(ITextBuffer textBuffer)
         {
             Document = ServiceManager.GetService<HtmlEditorDocument>(textBuffer);
-            Document.OnDocumentClosing += this.OnDocumentClosing;
+            Document.OnDocumentClosing += OnDocumentClosing;
 
             ServiceManager.AddService(this, textBuffer);
         }
@@ -95,23 +95,23 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             {
                 this.owner = owner;
                 this.languageFactory = languageFactory;
-                this.ProjectionBuffer = projectionBuffer;
+                ProjectionBuffer = projectionBuffer;
                 this.hierarchy = hierarchy;
                 InitContainedLanguage();
             }
 
             public IVsContainedLanguageHost GetLegacyContainedLanguageHost()
             {
-                if (this._containedLanguageHost == null)
-                    this._containedLanguageHost = new VsLegacyContainedLanguageHost(owner.Document, ProjectionBuffer, hierarchy);
-                return this._containedLanguageHost;
+                if (_containedLanguageHost == null)
+                    _containedLanguageHost = new VsLegacyContainedLanguageHost(owner.Document, ProjectionBuffer, hierarchy);
+                return _containedLanguageHost;
             }
             private void InitContainedLanguage()
             {
-                IVsTextLines vsTextLines = this.EnsureBufferCoordinator();
+                IVsTextLines vsTextLines = EnsureBufferCoordinator();
                 IVsContainedLanguage vsContainedLanguage;
 
-                int hr = languageFactory.GetLanguage(hierarchy, MarkdownCodeProject.FileItemId, this._textBufferCoordinator, out vsContainedLanguage);
+                int hr = languageFactory.GetLanguage(hierarchy, MarkdownCodeProject.FileItemId, _textBufferCoordinator, out vsContainedLanguage);
                 if (vsContainedLanguage == null)
                 {
                     Logger.Log("Markdown: Couldn't get IVsContainedLanguage for " + ProjectionBuffer.IProjectionBuffer.ContentType);
@@ -123,14 +123,14 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 vsTextLines.SetLanguageServiceID(ref langService);
 
                 containedLanguage = vsContainedLanguage;
-                IVsContainedLanguageHost legacyContainedLanguageHost = this.GetLegacyContainedLanguageHost();
+                IVsContainedLanguageHost legacyContainedLanguageHost = GetLegacyContainedLanguageHost();
                 vsContainedLanguage.SetHost(legacyContainedLanguageHost);
-                this._legacyCommandTarget = new LegacyContainedLanguageCommandTarget();
+                _legacyCommandTarget = new LegacyContainedLanguageCommandTarget();
 
                 IVsTextViewFilter textViewFilter;
-                this._legacyCommandTarget.Create(owner.Document, vsContainedLanguage, this._textBufferCoordinator, ProjectionBuffer, out textViewFilter);
+                _legacyCommandTarget.Create(owner.Document, vsContainedLanguage, _textBufferCoordinator, ProjectionBuffer, out textViewFilter);
                 IWebContainedLanguageHost webContainedLanguageHost = legacyContainedLanguageHost as IWebContainedLanguageHost;
-                webContainedLanguageHost.SetContainedCommandTarget(this._legacyCommandTarget.TextView, this._legacyCommandTarget.ContainedLanguageTarget);
+                webContainedLanguageHost.SetContainedCommandTarget(_legacyCommandTarget.TextView, _legacyCommandTarget.ContainedLanguageTarget);
                 containedLanguage2 = (webContainedLanguageHost as IContainedLanguageHostVs);
                 containedLanguage2.TextViewFilter = textViewFilter;
 
@@ -141,32 +141,32 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             private IVsTextLines EnsureBufferCoordinator()
             {
-                if (this._secondaryBuffer != null)
-                    return this._secondaryBuffer;
+                if (_secondaryBuffer != null)
+                    return _secondaryBuffer;
 
                 var vsTextBuffer = owner.Document.TextBuffer.QueryInterface<IVsTextBuffer>();
 
                 IVsEditorAdaptersFactoryService adapterFactory = WebEditor.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
-                this._secondaryBuffer = (adapterFactory.GetBufferAdapter(ProjectionBuffer.IProjectionBuffer) as IVsTextLines);
-                if (this._secondaryBuffer == null)
+                _secondaryBuffer = (adapterFactory.GetBufferAdapter(ProjectionBuffer.IProjectionBuffer) as IVsTextLines);
+                if (_secondaryBuffer == null)
                 {
-                    this._secondaryBuffer = (adapterFactory.CreateVsTextBufferAdapterForSecondaryBuffer(vsTextBuffer.GetServiceProvider(), ProjectionBuffer.IProjectionBuffer) as IVsTextLines);
+                    _secondaryBuffer = (adapterFactory.CreateVsTextBufferAdapterForSecondaryBuffer(vsTextBuffer.GetServiceProvider(), ProjectionBuffer.IProjectionBuffer) as IVsTextLines);
                 }
 
-                this._secondaryBuffer.SetTextBufferData(VSConstants.VsTextBufferUserDataGuid.VsBufferDetectLangSID_guid, false);
-                this._secondaryBuffer.SetTextBufferData(VSConstants.VsTextBufferUserDataGuid.VsBufferMoniker_guid, owner.WorkspaceItem.PhysicalPath);
+                _secondaryBuffer.SetTextBufferData(VSConstants.VsTextBufferUserDataGuid.VsBufferDetectLangSID_guid, false);
+                _secondaryBuffer.SetTextBufferData(VSConstants.VsTextBufferUserDataGuid.VsBufferMoniker_guid, owner.WorkspaceItem.PhysicalPath);
 
                 IOleUndoManager oleUndoManager;
-                this._secondaryBuffer.GetUndoManager(out oleUndoManager);
+                _secondaryBuffer.GetUndoManager(out oleUndoManager);
                 oleUndoManager.Enable(0);
 
-                this._textBufferCoordinator = adapterFactory.CreateVsTextBufferCoordinatorAdapter();
-                vsTextBuffer.SetTextBufferData(HtmlConstants.SID_SBufferCoordinatorServerLanguage, this._textBufferCoordinator);
-                vsTextBuffer.SetTextBufferData(typeof(VsTextBufferCoordinatorClass).GUID, this._textBufferCoordinator);
+                _textBufferCoordinator = adapterFactory.CreateVsTextBufferCoordinatorAdapter();
+                vsTextBuffer.SetTextBufferData(HtmlConstants.SID_SBufferCoordinatorServerLanguage, _textBufferCoordinator);
+                vsTextBuffer.SetTextBufferData(typeof(VsTextBufferCoordinatorClass).GUID, _textBufferCoordinator);
 
-                this._textBufferCoordinator.SetBuffers(vsTextBuffer as IVsTextLines, this._secondaryBuffer);
+                _textBufferCoordinator.SetBuffers(vsTextBuffer as IVsTextLines, _secondaryBuffer);
 
-                return this._secondaryBuffer;
+                return _secondaryBuffer;
             }
             public void ClearBufferCoordinator()
             {
@@ -177,24 +177,24 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             public void Dispose()
             {
-                if (this._legacyCommandTarget != null && this._legacyCommandTarget.TextView != null)
-                    containedLanguage2.RemoveContainedCommandTarget(this._legacyCommandTarget.TextView);
+                if (_legacyCommandTarget != null && _legacyCommandTarget.TextView != null)
+                    containedLanguage2.RemoveContainedCommandTarget(_legacyCommandTarget.TextView);
                 containedLanguage2.ContainedLanguageDebugInfo = null;
                 containedLanguage2.TextViewFilter = null;
 
-                if (this._legacyCommandTarget != null)
+                if (_legacyCommandTarget != null)
                 {
-                    this._legacyCommandTarget.Dispose();
-                    this._legacyCommandTarget = null;
+                    _legacyCommandTarget.Dispose();
+                    _legacyCommandTarget = null;
                 }
                 containedLanguage.SetHost(null);
 
-                this._textBufferCoordinator = null;
-                this._containedLanguageHost = null;
-                if (this._secondaryBuffer != null)
+                _textBufferCoordinator = null;
+                _containedLanguageHost = null;
+                if (_secondaryBuffer != null)
                 {
-                    (this._secondaryBuffer as IVsPersistDocData).Close();
-                    this._secondaryBuffer = null;
+                    ((_secondaryBuffer as IVsPersistDocData)).Close();
+                    _secondaryBuffer = null;
                 }
 
                 if (Disposing != null)
@@ -487,13 +487,13 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             foreach (var b in languageBridges.Values)
                 b.ClearBufferCoordinator();
 
-            var service = ServiceManager.GetService<ContainedLanguageAdapter>(this.Document.TextBuffer);
+            var service = ServiceManager.GetService<ContainedLanguageAdapter>(Document.TextBuffer);
             if (service != null)
             {
-                ServiceManager.RemoveService<ContainedLanguageAdapter>(this.Document.TextBuffer);
+                ServiceManager.RemoveService<ContainedLanguageAdapter>(Document.TextBuffer);
                 service.Dispose();
             }
-            Document.OnDocumentClosing -= this.OnDocumentClosing;
+            Document.OnDocumentClosing -= OnDocumentClosing;
             Document = null;
         }
         public void Dispose()

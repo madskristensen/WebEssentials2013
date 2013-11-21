@@ -44,8 +44,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             TextViewData textViewDataForBuffer = TextViewConnectionListener.GetTextViewDataForBuffer(document.TextBuffer);
             if (textViewDataForBuffer == null || textViewDataForBuffer.LastActiveView == null)
                 return;
-            this.TextView = textViewDataForBuffer.LastActiveView;
-            IVsTextViewIntellisenseHostProvider vsTextViewIntellisenseHostProvider = this.TextView.QueryInterface<IVsTextViewIntellisenseHostProvider>();
+            TextView = textViewDataForBuffer.LastActiveView;
+            IVsTextViewIntellisenseHostProvider vsTextViewIntellisenseHostProvider = TextView.QueryInterface<IVsTextViewIntellisenseHostProvider>();
             if (vsTextViewIntellisenseHostProvider == null)
                 return;
 
@@ -60,7 +60,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             if (vsTextViewIntellisenseHost == null)
                 return;
 
-            HtmlMainController htmlMainController = HtmlMainController.FromTextView(this.TextView);
+            HtmlMainController htmlMainController = HtmlMainController.FromTextView(TextView);
             ICommandTarget chainedController = htmlMainController.ChainedController;
             if (chainedController == null)
                 return;
@@ -70,29 +70,29 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 return;
 
             IOleCommandTarget oleTarget = containedLanguageViewfilter as IOleCommandTarget;
-            OleToCommandTargetShim containedLanguageTarget = new OleToCommandTargetShim(this.TextView, oleTarget);
-            this.ContainedLanguageTarget = containedLanguageTarget;
+            OleToCommandTargetShim containedLanguageTarget = new OleToCommandTargetShim(TextView, oleTarget);
+            ContainedLanguageTarget = containedLanguageTarget;
 
-            this._languageBuffer = languageBuffer;
-            this._languageBuffer.MappingsChanged += this.OnMappingsChanged;
+            _languageBuffer = languageBuffer;
+            _languageBuffer.MappingsChanged += OnMappingsChanged;
         }
         private void OnMappingsChanged(object sender, MappingsChangedEventArgs e)
         {
             if (e.Mappings.Count > 0)
             {
-                this._languageBuffer.MappingsChanged -= this.OnMappingsChanged;
-                IContainedLanguageHost host = ContainedLanguageHost.GetHost(this.TextView, this._languageBuffer.IProjectionBuffer);
-                host.SetContainedCommandTarget(this.TextView, this.ContainedLanguageTarget);
-                this.ContainedLanguageTarget = null;
-                this.TextView = null;
-                this._languageBuffer = null;
+                _languageBuffer.MappingsChanged -= OnMappingsChanged;
+                IContainedLanguageHost host = ContainedLanguageHost.GetHost(TextView, _languageBuffer.IProjectionBuffer);
+                host.SetContainedCommandTarget(TextView, ContainedLanguageTarget);
+                ContainedLanguageTarget = null;
+                TextView = null;
+                _languageBuffer = null;
             }
         }
         public void Dispose()
         {
-            this._languageBuffer = null;
-            this.ContainedLanguageTarget = null;
-            this.TextView = null;
+            _languageBuffer = null;
+            ContainedLanguageTarget = null;
+            TextView = null;
         }
     }
 
@@ -116,73 +116,73 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public IVsWebWorkspaceItem WorkspaceItem { get { return (IVsWebWorkspaceItem)_vsDocument.WorkspaceItem; } }
 
 
-        public IWebWorkspaceItem WebWorkspaceItem { get { return this._modernContainedLanguageHost.WebWorkspaceItem; } }
-        public string DocumentPath { get { return this._modernContainedLanguageHost.DocumentPath; } }
-        public IBufferGraph BufferGraph { get { return this._modernContainedLanguageHost.BufferGraph; } }
+        public IWebWorkspaceItem WebWorkspaceItem { get { return _modernContainedLanguageHost.WebWorkspaceItem; } }
+        public string DocumentPath { get { return _modernContainedLanguageHost.DocumentPath; } }
+        public IBufferGraph BufferGraph { get { return _modernContainedLanguageHost.BufferGraph; } }
         public IContainedLanguageSettings ContainedLanguageSettings
         {
-            get { return this._modernContainedLanguageHost.ContainedLanguageSettings; }
-            set { this._modernContainedLanguageHost.ContainedLanguageSettings = value; }
+            get { return _modernContainedLanguageHost.ContainedLanguageSettings; }
+            set { _modernContainedLanguageHost.ContainedLanguageSettings = value; }
         }
         public IVsTextViewFilter TextViewFilter
         {
-            get { return ((IContainedLanguageHostVs)this._modernContainedLanguageHost).TextViewFilter; }
-            set { ((IContainedLanguageHostVs)this._modernContainedLanguageHost).TextViewFilter = value; }
+            get { return ((IContainedLanguageHostVs)_modernContainedLanguageHost).TextViewFilter; }
+            set { ((IContainedLanguageHostVs)_modernContainedLanguageHost).TextViewFilter = value; }
         }
         public IVsLanguageDebugInfo ContainedLanguageDebugInfo
         {
-            get { return ((IContainedLanguageHostVs)this._modernContainedLanguageHost).ContainedLanguageDebugInfo; }
-            set { ((IContainedLanguageHostVs)this._modernContainedLanguageHost).ContainedLanguageDebugInfo = value; }
+            get { return ((IContainedLanguageHostVs)_modernContainedLanguageHost).ContainedLanguageDebugInfo; }
+            set { ((IContainedLanguageHostVs)_modernContainedLanguageHost).ContainedLanguageDebugInfo = value; }
         }
         public IVsLanguageContextProvider ContainedLanguageContextProvider
         {
-            get { return ((IContainedLanguageHostVs)this._modernContainedLanguageHost).ContainedLanguageContextProvider; }
-            set { ((IContainedLanguageHostVs)this._modernContainedLanguageHost).ContainedLanguageContextProvider = value; }
+            get { return ((IContainedLanguageHostVs)_modernContainedLanguageHost).ContainedLanguageContextProvider; }
+            set { ((IContainedLanguageHostVs)_modernContainedLanguageHost).ContainedLanguageContextProvider = value; }
         }
 
         public VsLegacyContainedLanguageHost(HtmlEditorDocument vsDocument, LanguageProjectionBuffer secondaryBuffer, IVsHierarchy hierarchy)
         {
-            this._modernContainedLanguageHost = (ContainedLanguageHost.GetHost(vsDocument.PrimaryView, secondaryBuffer.IProjectionBuffer) as IWebContainedLanguageHost);
-            this._secondaryBuffer = secondaryBuffer;
+            _modernContainedLanguageHost = (ContainedLanguageHost.GetHost(vsDocument.PrimaryView, secondaryBuffer.IProjectionBuffer) as IWebContainedLanguageHost);
+            _secondaryBuffer = secondaryBuffer;
             this.hierarchy = hierarchy;
-            this._vsDocument = vsDocument;
-            this._vsDocument.OnDocumentClosing += this.OnDocumentClosing;
-            secondaryBuffer.MappingsChanging += this.OnMappingsChanging;
-            secondaryBuffer.MappingsChanged += this.OnMappingsChanged;
+            _vsDocument = vsDocument;
+            _vsDocument.OnDocumentClosing += OnDocumentClosing;
+            secondaryBuffer.MappingsChanging += OnMappingsChanging;
+            secondaryBuffer.MappingsChanged += OnMappingsChanged;
         }
         private void OnMappingsChanging(object sender, EventArgs e)
         {
-            this._canReformatCode = false;
+            _canReformatCode = false;
         }
         private void OnMappingsChanged(object sender, MappingsChangedEventArgs e)
         {
-            this._canReformatCode = true;
+            _canReformatCode = true;
         }
         private void OnDocumentClosing(object sender, EventArgs e)
         {
-            if (this.Closing != null)
+            if (Closing != null)
             {
-                this.Closing(this, new ContainedLanguageHostClosingEventArgs(this, this._secondaryBuffer.IProjectionBuffer));
+                Closing(this, new ContainedLanguageHostClosingEventArgs(this, _secondaryBuffer.IProjectionBuffer));
             }
-            _secondaryBuffer.MappingsChanging -= this.OnMappingsChanging;
-            _secondaryBuffer.MappingsChanged -= this.OnMappingsChanged;
-            this._vsDocument.OnDocumentClosing -= this.OnDocumentClosing;
-            this._vsDocument = null;
+            _secondaryBuffer.MappingsChanging -= OnMappingsChanging;
+            _secondaryBuffer.MappingsChanged -= OnMappingsChanged;
+            _vsDocument.OnDocumentClosing -= OnDocumentClosing;
+            _vsDocument = null;
         }
         public int Advise(IVsContainedLanguageHostEvents pHost, out uint pvsCookie)
         {
-            this._sinks[this._cookie] = pHost;
-            pvsCookie = this._cookie++;
+            _sinks[_cookie] = pHost;
+            pvsCookie = _cookie++;
             return 0;
         }
         public int CanReformatCode(out int pfCanReformat)
         {
-            pfCanReformat = (this._canReformatCode ? 1 : 0);
+            pfCanReformat = (_canReformatCode ? 1 : 0);
             return 0;
         }
         public int EnsureSecondaryBufferReady()
         {
-            IAspNetSecondaryBufferGenerator service = ServiceManager.GetService<IAspNetSecondaryBufferGenerator>(this._vsDocument.TextBuffer);
+            IAspNetSecondaryBufferGenerator service = ServiceManager.GetService<IAspNetSecondaryBufferGenerator>(_vsDocument.TextBuffer);
             if (service != null)
             {
                 service.WaitForCodeReady();
@@ -192,7 +192,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         }
         public int EnsureSpanVisible(TextSpan tsPrimary)
         {
-            ITextView primaryView = this._vsDocument.PrimaryView;
+            ITextView primaryView = _vsDocument.PrimaryView;
             if (primaryView != null)
             {
                 try
@@ -221,7 +221,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         }
         public int GetLineIndent(int lineNumber, out string indentString, out int parentIndentLevel, out int indentSize, out int tabs, out int tabSize)
         {
-            ContainedLineIndentSettings lineIndent = this._modernContainedLanguageHost.GetLineIndent(lineNumber);
+            ContainedLineIndentSettings lineIndent = _modernContainedLanguageHost.GetLineIndent(lineNumber);
             indentString = lineIndent.IndentString;
             parentIndentLevel = lineIndent.ParentIndentLevel;
             // TODO: Return block quote prefix?
@@ -260,28 +260,28 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public int Unadvise(uint vsCookie)
         {
             IVsContainedLanguageHostEvents vsContainedLanguageHostEvents;
-            if (this._sinks.TryGetValue(vsCookie, out vsContainedLanguageHostEvents))
+            if (_sinks.TryGetValue(vsCookie, out vsContainedLanguageHostEvents))
             {
-                this._sinks.Remove(vsCookie);
+                _sinks.Remove(vsCookie);
                 return 0;
             }
             return -2147467259;
         }
         public ICommandTarget GetContainedCommandTarget(ITextView textView)
         {
-            return this._modernContainedLanguageHost.GetContainedCommandTarget(textView);
+            return _modernContainedLanguageHost.GetContainedCommandTarget(textView);
         }
         public ContainedLineIndentSettings GetLineIndent(int lineNumber)
         {
-            return this._modernContainedLanguageHost.GetLineIndent(lineNumber);
+            return _modernContainedLanguageHost.GetLineIndent(lineNumber);
         }
         public object SetContainedCommandTarget(ITextView textView, object containedCommandTarget)
         {
-            return this._modernContainedLanguageHost.SetContainedCommandTarget(textView, containedCommandTarget);
+            return _modernContainedLanguageHost.SetContainedCommandTarget(textView, containedCommandTarget);
         }
         public void RemoveContainedCommandTarget(ITextView textView)
         {
-            this._modernContainedLanguageHost.RemoveContainedCommandTarget(textView);
+            _modernContainedLanguageHost.RemoveContainedCommandTarget(textView);
         }
         public void SetTextViewFilter(object textViewFilter) { throw new NotImplementedException(); }
         public void RemoveTextViewFilter() { throw new NotImplementedException(); }
@@ -293,19 +293,19 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public void RemoveContainedLanguageSettings() { throw new NotImplementedException(); }
         public void GetLineIndent(int lineNumber, out string indentString)
         {
-            ((IVsContainedLanguageHost3)this._modernContainedLanguageHost).GetLineIndent(lineNumber, out indentString);
+            ((IVsContainedLanguageHost3)_modernContainedLanguageHost).GetLineIndent(lineNumber, out indentString);
         }
         public void GetIndentSize(out int indentSize)
         {
-            ((IVsContainedLanguageHost3)this._modernContainedLanguageHost).GetIndentSize(out indentSize);
+            ((IVsContainedLanguageHost3)_modernContainedLanguageHost).GetIndentSize(out indentSize);
         }
         public void GetTabs(out int tabs)
         {
-            ((IVsContainedLanguageHost3)this._modernContainedLanguageHost).GetTabs(out tabs);
+            ((IVsContainedLanguageHost3)_modernContainedLanguageHost).GetTabs(out tabs);
         }
         public void GetTabSize(out int tabSize)
         {
-            ((IVsContainedLanguageHost3)this._modernContainedLanguageHost).GetTabSize(out tabSize);
+            ((IVsContainedLanguageHost3)_modernContainedLanguageHost).GetTabSize(out tabSize);
         }
     }
 }
