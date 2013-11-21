@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-
+using System.Runtime.InteropServices;
 using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Projection;
 
@@ -89,19 +89,21 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             private IVsTextBufferCoordinator _textBufferCoordinator;
             private IVsTextLines _secondaryBuffer;
             private LegacyContainedLanguageCommandTarget _legacyCommandTarget;
+            private readonly IVsHierarchy hierarchy;
 
-            public LanguageBridge(ContainedLanguageAdapter owner, LanguageProjectionBuffer projectionBuffer, IVsContainedLanguageFactory languageFactory)
+            public LanguageBridge(ContainedLanguageAdapter owner, LanguageProjectionBuffer projectionBuffer, IVsContainedLanguageFactory languageFactory, IVsHierarchy hierarchy)
             {
                 this.owner = owner;
                 this.languageFactory = languageFactory;
                 this.ProjectionBuffer = projectionBuffer;
+                this.hierarchy = hierarchy;
                 InitContainedLanguage();
             }
 
             public IVsContainedLanguageHost GetLegacyContainedLanguageHost()
             {
                 if (this._containedLanguageHost == null)
-                    this._containedLanguageHost = new VsLegacyContainedLanguageHost(owner.Document, ProjectionBuffer);
+                    this._containedLanguageHost = new VsLegacyContainedLanguageHost(owner.Document, ProjectionBuffer, hierarchy);
                 return this._containedLanguageHost;
             }
             private void InitContainedLanguage()
@@ -109,7 +111,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 IVsTextLines vsTextLines = this.EnsureBufferCoordinator();
                 IVsContainedLanguage vsContainedLanguage;
 
-                int hr = languageFactory.GetLanguage(owner.WorkspaceItem.Hierarchy, (uint)owner.WorkspaceItem.ItemId, this._textBufferCoordinator, out vsContainedLanguage);
+                int hr = languageFactory.GetLanguage(hierarchy, MarkdownCodeProject.FileItemId, this._textBufferCoordinator, out vsContainedLanguage);
                 if (vsContainedLanguage == null)
                 {
                     Logger.Log("Markdown: Couldn't get IVsContainedLanguage for " + ProjectionBuffer.IProjectionBuffer.ContentType);
@@ -202,7 +204,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             public event EventHandler Disposing;
         }
 
-
         IWebApplicationCtxSvc WebApplicationContextService
         {
             get { return ServiceProvider.GlobalProvider.GetService(typeof(SWebApplicationCtxSvc)) as IWebApplicationCtxSvc; }
@@ -220,6 +221,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             Guid iid_vsip = typeof(IVsIntellisenseProject).GUID;
 
+            // Needed so that webprj.dll can load
             var shell = (IVsShell)ServiceProvider.GlobalProvider.GetService(typeof(SVsShell));
             Guid otherPackage = new Guid("{39c9c826-8ef8-4079-8c95-428f5b1c323f}");
             IVsPackage package;
@@ -227,12 +229,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             var project = (IVsIntellisenseProject)EditorExtensionsPackage.Instance.CreateInstance(ref intelliSenseGuid, ref iid_vsip, typeof(IVsIntellisenseProject));
 
-            string projectPath;
-            WorkspaceItem.FileItemContext.GetWebRootPath(out projectPath);
-            hr = project.Init(new ProjectHost(WorkspaceItem.Hierarchy, projectPath));
+            string fileName = projectionBuffer.IProjectionBuffer.GetFileName();
+            var hierarchy = new MarkdownCodeProject(fileName, contentType + " code in " + Path.GetFileName(fileName), WorkspaceItem.Hierarchy);
+
+            hr = project.Init(new ProjectHost(hierarchy));
             hr = project.StartIntellisenseEngine();
-            hr = project.WaitForIntellisenseReady();
-            //hr = project.ResumePostedNotifications();
             hr = project.AddAssemblyReference(typeof(object).Assembly.Location);
             hr = project.AddAssemblyReference(typeof(Uri).Assembly.Location);
             hr = project.AddAssemblyReference(typeof(Enumerable).Assembly.Location);
@@ -245,7 +246,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             int needsFile;
             project.IsWebFileRequiredByProject(out needsFile);
             if (needsFile != 0)
-                project.AddFile(projectionBuffer.IProjectionBuffer.GetFileName(), (uint)WorkspaceItem.ItemId);
+                project.AddFile(fileName, MarkdownCodeProject.FileItemId);
 
             hr = project.WaitForIntellisenseReady();
             IVsContainedLanguageFactory factory;
@@ -256,19 +257,180 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 project.Close();
                 return;
             }
-            LanguageBridge bridge = new LanguageBridge(this, projectionBuffer, factory);
+            LanguageBridge bridge = new LanguageBridge(this, projectionBuffer, factory, hierarchy);
             bridge.Disposing += delegate { project.Close(); };
             languageBridges.Add(contentType, bridge);
         }
 
+        class MarkdownCodeProject : IVsContainedLanguageProjectNameProvider, IVsHierarchy, IVsProject3
+        {
+            public const int FileItemId = 42775;
+            readonly IVsHierarchy inner;
+            private readonly string filePath;
+            private readonly string caption;
+
+            public string ProjectName { get; private set; }
+
+            public MarkdownCodeProject(string filePath, string caption, IVsHierarchy inner)
+            {
+                this.caption = caption;
+                this.filePath = filePath;
+                this.inner = inner;
+                // Make sure each language gets a unique name.
+                // C# (but not VB) calls Path.GetFileName() on
+                // this value, so having a slash breaks things
+                ProjectName = Path.GetFileName(filePath) + Guid.NewGuid();  
+            }
+
+            public int GetProjectName([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, out string pbstrProjectName)
+            {
+                pbstrProjectName = ProjectName;
+                return 0;
+            }
+            public int GetMkDocument([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, out string pbstrMkDocument)
+            {
+                if (itemid == (uint)VSConstants.VSITEMID.Root)
+                    pbstrMkDocument = ProjectName;
+                else if (itemid == FileItemId)
+                    pbstrMkDocument = filePath;
+                else
+                    throw new NotImplementedException();
+                return 0;
+            }
+
+            public int IsDocumentInProject([ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string pszMkDocument, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.BOOL")]out int pfFound, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSDOCUMENTPRIORITY")]VSDOCUMENTPRIORITY[] pdwPriority, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]out uint pitemid)
+            {
+                if (pszMkDocument != filePath)
+                {
+                    pitemid = 0;
+                    pfFound = 0;
+                }
+                else
+                {
+                    pitemid = FileItemId;
+                    pfFound = 1;
+                }
+                return 0;
+            }
+
+            public int GetProperty([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSHPROPID")]int propid, out object pvar)
+            {
+                VSConstants.VSITEMID item = (VSConstants.VSITEMID)itemid;
+                var prop = (__VSHPROPID)propid;
+                switch (prop)
+                {
+                    case __VSHPROPID.VSHPROPID_Caption:
+                        pvar = caption; // Shown in error list
+                        return 0;
+                    case __VSHPROPID.VSHPROPID_ItemSubType:
+                        pvar = null;
+                        return 0;
+
+                    case __VSHPROPID.VSHPROPID_Name:
+                        switch (item)
+                        {
+                            case VSConstants.VSITEMID.Root:
+                                pvar = ProjectName;
+                                return 0;
+                            case (VSConstants.VSITEMID)FileItemId:
+                                pvar = Path.GetFileName(filePath);  // Shown in error list
+                                return 0;
+                        }
+                        break;
+                    case __VSHPROPID.VSHPROPID_ProjectDir:
+                        pvar = ProjectName;
+                        return 0;
+
+                    // Legacy:
+                    case __VSHPROPID.VSHPROPID_ExtObject:
+                    case __VSHPROPID.VSHPROPID_BrowseObject:
+                    case __VSHPROPID.VSHPROPID_StateIconIndex:
+                    case __VSHPROPID.VSHPROPID_LAST:
+                        return inner.GetProperty(itemid, propid, out pvar);
+                    case (__VSHPROPID)__VSHPROPID4.VSHPROPID_TargetFrameworkMoniker:
+                        pvar = ".NET Framework, Version=4.5";   // configurationGeneral.TargetFrameworkMoniker.GetEvaluatedValueAtEndAsync
+                        return 0;
+                    case (__VSHPROPID)__VSHPROPID2.VSHPROPID_IsLinkFile:
+                        pvar = true;
+                        return 0;
+                    case __VSHPROPID.VSHPROPID_ParentHierarchy:
+                        pvar = null;
+                        return 0;
+                }
+                var prop2 = (__VSHPROPID2)propid;
+                var prop3 = (__VSHPROPID3)propid;
+                var prop4 = (__VSHPROPID4)propid;
+                var prop5 = (__VSHPROPID5)propid;
+
+                throw new NotImplementedException();
+            }
+            public int ParseCanonicalName([ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string pszName, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]out uint pitemid)
+            {
+                // Gets the ItemID for a file?
+                pitemid = FileItemId;
+                return 0;
+            }
+
+            public int AdviseHierarchyEvents(IVsHierarchyEvents pEventSink, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSCOOKIE")]out uint pdwCookie)
+            {
+                // We never change.
+                pdwCookie = 42;
+                return 0;
+            }
+            public int UnadviseHierarchyEvents([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSCOOKIE")]uint dwCookie)
+            {
+                // We never change.
+                return 0;
+            }
+            public int GetItemContext([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, out Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP)
+            {
+                return ((IVsProject3)inner).GetItemContext(itemid, out ppSP); // TODO: Safe?
+            }
+
+            public int AddItem([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemidLoc, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSADDITEMOPERATION")]VSADDITEMOPERATION dwAddItemOperation, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string pszItemName, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.ULONG")]uint cFilesToOpen, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string[] rgpszFilesToOpen, IntPtr hwndDlgOwner, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSADDRESULT")]VSADDRESULT[] pResult)
+            { throw new NotImplementedException(); }
+            public int AddItemWithSpecific([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemidLoc, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSADDITEMOPERATION")]VSADDITEMOPERATION dwAddItemOperation, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string pszItemName, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.ULONG")]uint cFilesToOpen, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string[] rgpszFilesToOpen, IntPtr hwndDlgOwner, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSSPECIFICEDITORFLAGS")]uint grfEditorFlags, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.REFGUID")]ref Guid rguidEditorType, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string pszPhysicalView, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.REFGUID")]ref Guid rguidLogicalView, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSADDRESULT")]VSADDRESULT[] pResult)
+            { throw new NotImplementedException(); }
+            public int Close() { throw new NotImplementedException(); }
+            public int GenerateUniqueItemName([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemidLoc, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string pszExt, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string pszSuggestedRoot, out string pbstrItemName)
+            { throw new NotImplementedException(); }
+            public int GetCanonicalName([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, out string pbstrName)
+            { throw new NotImplementedException(); }
+            public int GetGuidProperty([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSHPROPID")]int propid, out Guid pguid)
+            { throw new NotImplementedException(); }
+            public int GetNestedHierarchy([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.REFIID")]ref Guid iidHierarchyNested, out IntPtr ppHierarchyNested, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]out uint pitemidNested)
+            { throw new NotImplementedException(); }
+            public int GetSite(out Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP) { throw new NotImplementedException(); }
+            public int OpenItem([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.REFGUID")]ref Guid rguidLogicalView, IntPtr punkDocDataExisting, out IVsWindowFrame ppWindowFrame)
+            { throw new NotImplementedException(); }
+            public int OpenItemWithSpecific([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSSPECIFICEDITORFLAGS")]uint grfEditorFlags, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.REFGUID")]ref Guid rguidEditorType, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string pszPhysicalView, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.REFGUID")]ref Guid rguidLogicalView, IntPtr punkDocDataExisting, out IVsWindowFrame ppWindowFrame)
+            { throw new NotImplementedException(); }
+            public int QueryClose([ComAliasName("Microsoft.VisualStudio.OLE.Interop.BOOL")]out int pfCanClose)
+            { throw new NotImplementedException(); }
+            public int RemoveItem([ComAliasName("Microsoft.VisualStudio.OLE.Interop.DWORD")]uint dwReserved, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.BOOL")]out int pfResult)
+            { throw new NotImplementedException(); }
+            public int ReopenItem([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.REFGUID")]ref Guid rguidEditorType, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string pszPhysicalView, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.REFGUID")]ref Guid rguidLogicalView, IntPtr punkDocDataExisting, out IVsWindowFrame ppWindowFrame)
+            { throw new NotImplementedException(); }
+            public int SetGuidProperty([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSHPROPID")]int propid, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.REFGUID")]ref Guid rguid)
+            { throw new NotImplementedException(); }
+            public int SetProperty([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSHPROPID")]int propid, object var)
+            { throw new NotImplementedException(); }
+            public int SetSite(Microsoft.VisualStudio.OLE.Interop.IServiceProvider psp) { throw new NotImplementedException(); }
+            public int TransferItem([ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string pszMkDocumentOld, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string pszMkDocumentNew, IVsWindowFrame punkWindowFrame)
+            { throw new NotImplementedException(); }
+            public int Unused0() { throw new NotImplementedException(); }
+            public int Unused1() { throw new NotImplementedException(); }
+            public int Unused2() { throw new NotImplementedException(); }
+            public int Unused3() { throw new NotImplementedException(); }
+            public int Unused4() { throw new NotImplementedException(); }
+        }
+
         class ProjectHost : IVsIntellisenseProjectHost
         {
-            readonly IVsHierarchy hierarchy;
-            readonly string projectPath;
-            public ProjectHost(IVsHierarchy hierarchy, string projectPath)
+            readonly MarkdownCodeProject hierarchy;
+            public ProjectHost(MarkdownCodeProject hierarchy)
             {
                 this.hierarchy = hierarchy;
-                this.projectPath = projectPath + Guid.NewGuid();
             }
 
             public int CreateFileCodeModel(string pszFilename, out object ppCodeModel)
@@ -291,7 +453,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 {
                     case HOSTPROPID.HOSTPROPID_PROJECTNAME:
                     case HOSTPROPID.HOSTPROPID_RELURL:
-                        pvar = projectPath;
+                        pvar = hierarchy.ProjectName;
                         return VSConstants.S_OK;
                     case HOSTPROPID.HOSTPROPID_HIERARCHY:
                         pvar = hierarchy;
@@ -303,7 +465,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         pvar = ".NET Framework, Version=4.5";   // configurationGeneral.TargetFrameworkMoniker.GetEvaluatedValueAtEndAsync
                         return VSConstants.S_OK;
                     case (HOSTPROPID)(-1):
-                        pvar = false;   // No clue...
+                        pvar = false;   // SuppressShadowWarnings; probably an ugly hack for ASPX
                         return VSConstants.S_OK;
 
                     default:

@@ -111,6 +111,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         private bool _canReformatCode = true;
         public event EventHandler<ContainedLanguageHostClosingEventArgs> Closing;
 
+        readonly IVsHierarchy hierarchy;
+
         public IVsWebWorkspaceItem WorkspaceItem { get { return (IVsWebWorkspaceItem)_vsDocument.WorkspaceItem; } }
 
 
@@ -138,10 +140,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             set { ((IContainedLanguageHostVs)this._modernContainedLanguageHost).ContainedLanguageContextProvider = value; }
         }
 
-        public VsLegacyContainedLanguageHost(HtmlEditorDocument vsDocument, LanguageProjectionBuffer secondaryBuffer)
+        public VsLegacyContainedLanguageHost(HtmlEditorDocument vsDocument, LanguageProjectionBuffer secondaryBuffer, IVsHierarchy hierarchy)
         {
             this._modernContainedLanguageHost = (ContainedLanguageHost.GetHost(vsDocument.PrimaryView, secondaryBuffer.IProjectionBuffer) as IWebContainedLanguageHost);
             this._secondaryBuffer = secondaryBuffer;
+            this.hierarchy = hierarchy;
             this._vsDocument = vsDocument;
             this._vsDocument.OnDocumentClosing += this.OnDocumentClosing;
             secondaryBuffer.MappingsChanging += this.OnMappingsChanging;
@@ -233,13 +236,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         }
         public int GetVSHierarchy(out IVsHierarchy ppVsHierarchy)
         {
-            ppVsHierarchy = null;
-            if (this._vsDocument != null)
-            {
-                ppVsHierarchy = WorkspaceItem.Hierarchy;
-                return 0;
-            }
-            return -2147467259;
+            ppVsHierarchy = hierarchy;
+            return 0;
         }
 
         public int InsertControl(string pwcFullType, string pwcID) { return 0; }
