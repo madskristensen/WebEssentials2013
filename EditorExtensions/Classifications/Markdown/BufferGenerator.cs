@@ -34,12 +34,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 return;
 
             foreach (var language in EditorTree.RootNode.Tree.ArtifactCollection.OfType<MarkdownCodeArtifact>()
-                                               .GroupBy(a => a.Language))
+                                               .GroupBy(a => contentTypeRegistry.FromFriendlyName(a.Language)))
             {
-                var contentType = contentTypeRegistry.FromFriendlyName(language.Key);
-                if (contentType == null) continue;  // If we can't identify the language, just use normal artifacts.
-
-                PopulateLanguageBuffer(contentType, language);
+                if (language.Key == null) continue;  // If we can't identify the language, just use normal artifacts.
+                PopulateLanguageBuffer(language.Key, language);
             }
         }
 
