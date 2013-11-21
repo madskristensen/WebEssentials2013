@@ -21,7 +21,14 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     ///</remarks>
     public interface ICodeLanguageEmbedder
     {
-        ///<summary>Gets text to insert around an embedded code block for this language.</summary>
+        ///<summary>Gets a string to insert at the top of the generated ProjectionBuffr for this language.</summary>
+        ///<remarks>Each Markdown file will have exactly one copy of this string in its code buffer.</remarks>
+        string GlobalPrefix { get; }
+        ///<summary>Gets a string to insert at the bottom of the generated ProjectionBuffr for this language.</summary>
+        ///<remarks>Each Markdown file will have exactly one copy of this string in its code buffer.</remarks>
+        string GlobalSuffix { get; }
+
+        ///<summary>Gets text to insert around each embedded code block for this language.</summary>
         ///<param name="code">The lines of code in the block.  Enumerating this may be expensive.</param>
         ///<returns>
         /// One of the following:
@@ -30,6 +37,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         ///  - Two strings; one for each end of the code block.
         /// The buffer generator will always add newlines.
         ///</returns>
+        ///<remarks>
+        /// These strings will be wrapped around every embedded
+        /// code block separately.
+        ///</remarks>
         IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code);
 
         ///<summary>Called when a block of this type is first created within a document.</summary>
@@ -43,6 +54,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     [ContentType("CSS")]
     class CssEmbedder : ICodeLanguageEmbedder
     {
+
         public IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
         {
             // If the code doesn't have any braces, surround it in a ruleset so that properties are valid.
@@ -53,6 +65,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
         public void OnBlockEntered(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
+        public string GlobalPrefix { get { return ""; } }
+        public string GlobalSuffix { get { return ""; } }
     }
     [Export(typeof(ICodeLanguageEmbedder))]
     [ContentType("Javascript")]
@@ -65,6 +79,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code) { return wrapper; }
         public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
         public void OnBlockEntered(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
+        public string GlobalPrefix { get { return ""; } }
+        public string GlobalSuffix { get { return ""; } }
     }
 
     abstract class IntellisenseProjectEmbedder : ICodeLanguageEmbedder
@@ -81,7 +97,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 return new Guid(provider.GetValue("GUID").ToString());
         }
 
-
         public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer)
         {
             EventHandler<EventArgs> h = null;
@@ -95,6 +110,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         }
 
         public void OnBlockEntered(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
+        public virtual string GlobalPrefix { get { return ""; } }
+        public virtual string GlobalSuffix { get { return ""; } }
     }
 
     [Export(typeof(ICodeLanguageEmbedder))]
@@ -102,9 +119,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     class CSharpEmbedder : IntellisenseProjectEmbedder
     {
         public override string ProviderName { get { return "CSharpCodeProvider"; } }
-        public override IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
+        public override string GlobalPrefix
         {
-            return new[] { @"
+            get
+            {
+                return @"
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -112,7 +131,12 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+";
+            }
+        }
+        public override IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
+        {
+            return new[] { @"
 partial class Entry { object SampleMethod" + Guid.NewGuid().ToString("n") + @"() {", "}}" };
         }
     }
@@ -122,9 +146,11 @@ partial class Entry { object SampleMethod" + Guid.NewGuid().ToString("n") + @"()
     class VBEmbedder : IntellisenseProjectEmbedder
     {
         public override string ProviderName { get { return "VBCodeProvider"; } }
-        public override IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
+        public override string GlobalPrefix
         {
-            return new[] { @"
+            get
+            {
+                return @"
 Imports System
 Imports System.Collections.Generic
 Imports System.Data
@@ -132,7 +158,12 @@ Imports System.Linq
 Imports System.Text
 Imports System.Threading
 Imports System.Threading.Tasks
-
+";
+            }
+        }
+        public override IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
+        {
+            return new[] { @"
 Partial Class Entry
 Function SampleMethod" + Guid.NewGuid().ToString("n") + @"() As Object", @"
 Return Nothing

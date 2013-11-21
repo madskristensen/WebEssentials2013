@@ -51,6 +51,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             var embedder = contentTypeImportComposer.GetImport(contentType);
 
             var fullSource = new StringBuilder();
+            if (embedder != null)
+                fullSource.AppendLine(embedder.GlobalPrefix);
             var mappings = new List<ProjectionMapping>();
 
             foreach (var block in artifacts.GroupBy(a => a.BlockStart))
@@ -74,6 +76,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 if (surround != null)
                     fullSource.AppendLine(surround.LastOrDefault());
             }
+            if (embedder != null)
+                fullSource.AppendLine(embedder.GlobalSuffix);
             pBuffer.SetTextAndMappings(fullSource.ToString(), mappings.ToArray());
 
             if (createdContentTypes.Add(contentType))
