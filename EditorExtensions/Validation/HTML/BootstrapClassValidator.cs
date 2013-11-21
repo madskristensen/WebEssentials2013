@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions
     public class BootstrapClassValidator : BaseValidator
     {
         private static string[] _tokens = new[] { "btn", "glyphicon", "alert", "label", "fa" }; // fa is for FontAwesome
-        private static string[] _childDependentTokes = new[] { "fa" };
+        private static string[] _childDependentTokens = new[] { "fa" };
         private static string _error = "When using \"{0}\", you must also specify the class \"{1}\".";
         private static Dictionary<string, string[]> _whitelist = new Dictionary<string, string[]>
         {
@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions
         {
             List<string> childrenClassNames = null;
 
-            if (_childDependentTokes.Any(tk => token.StartsWith(tk)))
+            if (_childDependentTokens.Any(tk => token.StartsWith(tk)))
             {
                 childrenClassNames = new List<string>();
                 // childrenClassNames = element.Children.Select<ElementNode, string>(child => child.GetAttribute("class") == null ? "" : child.GetAttribute("class").Value).ToList<string>();
