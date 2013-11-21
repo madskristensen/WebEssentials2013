@@ -45,9 +45,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         ///<summary>Called when a block of this type is first created within a document.</summary>
         void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer);
-
-        ///<summary>Called when the user enters a block of this type.</summary>
-        void OnBlockEntered(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer);
     }
 
     [Export(typeof(ICodeLanguageEmbedder))]
@@ -64,7 +61,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         }
 
         public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
-        public void OnBlockEntered(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
         public string GlobalPrefix { get { return ""; } }
         public string GlobalSuffix { get { return ""; } }
     }
@@ -78,7 +74,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         static readonly IReadOnlyCollection<string> wrapper = new[] { "function() {", "}" };
         public IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code) { return wrapper; }
         public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
-        public void OnBlockEntered(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
         public string GlobalPrefix { get { return ""; } }
         public string GlobalSuffix { get { return ""; } }
     }
@@ -109,7 +104,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             WebEditor.OnIdle += h;
         }
 
-        public void OnBlockEntered(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer) { }
         public virtual string GlobalPrefix { get { return ""; } }
         public virtual string GlobalSuffix { get { return ""; } }
     }
