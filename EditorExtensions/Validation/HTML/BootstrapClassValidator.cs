@@ -57,12 +57,10 @@ namespace MadsKristensen.EditorExtensions
             if (_childDependentTokes.Any(tk => token.StartsWith(tk)))
             {
                 childrenClassNames = new List<string>();
-
-                foreach (var child in element.Children)
-                {
-                    childrenClassNames.Add(child.GetAttribute("class") == null ? "" : child.GetAttribute("class").Value);
-                }
+                // childrenClassNames = element.Children.Select<ElementNode, string>(child => child.GetAttribute("class") == null ? "" : child.GetAttribute("class").Value).ToList<string>();
+                childrenClassNames = element.Children.Where(child => child.GetAttribute("class") != null).Select(child => child.GetAttribute("class").Value).ToList();
             }
+
             return childrenClassNames;
         }
 
