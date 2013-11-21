@@ -279,7 +279,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 // Make sure each language gets a unique name.
                 // C# (but not VB) calls Path.GetFileName() on
                 // this value, so having a slash breaks things
-                ProjectName = Path.GetFileName(filePath) + Guid.NewGuid();  
+                ProjectName = Path.GetFileName(filePath) + Guid.NewGuid();
             }
 
             public int GetProjectName([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, out string pbstrProjectName)
@@ -323,7 +323,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         pvar = caption; // Shown in error list
                         return 0;
                     case __VSHPROPID.VSHPROPID_ItemSubType:
-                        pvar = null;
+                        pvar = "";
                         return 0;
 
                     case __VSHPROPID.VSHPROPID_Name:
@@ -342,16 +342,23 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         return 0;
 
                     // Legacy:
-                    case __VSHPROPID.VSHPROPID_ExtObject:
-                    case __VSHPROPID.VSHPROPID_BrowseObject:
-                    case __VSHPROPID.VSHPROPID_StateIconIndex:
-                    case __VSHPROPID.VSHPROPID_LAST:
+                    case __VSHPROPID.VSHPROPID_Parent:
+                        pvar = VSConstants.VSITEMID_NIL;
+                        return 0;
+                    case __VSHPROPID.VSHPROPID_ExtObject:   
+                        // Not returning this makes the native language service throw an access violation
                         return inner.GetProperty(itemid, propid, out pvar);
+                    case __VSHPROPID.VSHPROPID_BrowseObject:
+                        pvar = null;
+                        return 0;
+                    case __VSHPROPID.VSHPROPID_StateIconIndex:
+                        pvar = VsStateIcon.STATEICON_EDITABLE;
+                        return 0;
                     case (__VSHPROPID)__VSHPROPID4.VSHPROPID_TargetFrameworkMoniker:
-                        pvar = ".NET Framework, Version=4.5";   // configurationGeneral.TargetFrameworkMoniker.GetEvaluatedValueAtEndAsync
+                        pvar = ".NET Framework, Version=4.5";
                         return 0;
                     case (__VSHPROPID)__VSHPROPID2.VSHPROPID_IsLinkFile:
-                        pvar = true;
+                        pvar = false;
                         return 0;
                     case __VSHPROPID.VSHPROPID_ParentHierarchy:
                         pvar = null;
@@ -375,16 +382,17 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             {
                 // We never change.
                 pdwCookie = 42;
-                return 0;
+                return VSConstants.E_NOTIMPL;
             }
             public int UnadviseHierarchyEvents([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSCOOKIE")]uint dwCookie)
             {
                 // We never change.
-                return 0;
+                return VSConstants.E_NOTIMPL;
             }
             public int GetItemContext([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, out Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP)
             {
-                return ((IVsProject3)inner).GetItemContext(itemid, out ppSP); // TODO: Safe?
+                ppSP = null;
+                return VSConstants.E_NOTIMPL;
             }
 
             public int AddItem([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemidLoc, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSADDITEMOPERATION")]VSADDITEMOPERATION dwAddItemOperation, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string pszItemName, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.ULONG")]uint cFilesToOpen, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string[] rgpszFilesToOpen, IntPtr hwndDlgOwner, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSADDRESULT")]VSADDRESULT[] pResult)
