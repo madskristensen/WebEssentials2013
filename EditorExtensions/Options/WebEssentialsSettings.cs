@@ -39,6 +39,7 @@ namespace MadsKristensen.EditorExtensions
             public const string ValidateZeroUnit = "CssValidateZeroUnit";
             public const string ValidateVendorSpecifics = "ValidateVendorSpecifics";
             public const string CssEnableGzipping = "CssEnableGzipping";
+            public const string CssPreserveRelativePathsOnMinify = "CssPreserveRelativePathsOnMinify";
 
             // JavaScript
             public const string EnableJsMinification = "JavaScriptEnableMinification";
