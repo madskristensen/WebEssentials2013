@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.CoffeeScriptMinify, CoffeeScriptMinify);
             Settings.SetValue(WESettings.Keys.CoffeeScriptCompileOnBuild, CoffeeScriptCompileOnBuild);
             Settings.SetValue(WESettings.Keys.CoffeeScriptEnableCompiler, CoffeeScriptEnableCompiler);
-            Settings.SetValue(WESettings.Keys.CoffeeScriptCompileToLocation, CoffeeScriptCompileToLocation);
+            Settings.SetValue(WESettings.Keys.CoffeeScriptCompileToLocation, CoffeeScriptCompileToLocation ?? string.Empty);
 
             Settings.Save();
         }

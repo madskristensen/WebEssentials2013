@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions
         {
             Settings.SetValue(WESettings.Keys.MarkdownShowPreviewWindow, ShowPreviewWindow);
             Settings.SetValue(WESettings.Keys.MarkdownEnableCompiler, MarkdownEnableCompiler);
-            Settings.SetValue(WESettings.Keys.MarkdownCompileToLocation, MarkdownCompileToLocation ?? "");
+            Settings.SetValue(WESettings.Keys.MarkdownCompileToLocation, MarkdownCompileToLocation ?? string.Empty);
 
             Settings.SetValue(WESettings.Keys.MarkdownAutoHyperlinks, MarkdownAutoHyperlinks);
             Settings.SetValue(WESettings.Keys.MarkdownLinkEmails, MarkdownLinkEmails);

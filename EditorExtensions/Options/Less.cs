@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.LessCompileOnBuild, LessCompileOnBuild);
             Settings.SetValue(WESettings.Keys.LessSourceMaps, LessSourceMaps);
             Settings.SetValue(WESettings.Keys.LessEnableCompiler, LessEnableCompiler);
-            Settings.SetValue(WESettings.Keys.LessCompileToLocation, LessCompileToLocation);
+            Settings.SetValue(WESettings.Keys.LessCompileToLocation, LessCompileToLocation ?? string.Empty);
 
             Settings.Save();
         }
