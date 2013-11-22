@@ -24,6 +24,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.ShowBrowserTooltip, ShowBrowserTooltip);
             Settings.SetValue(WESettings.Keys.ValidateZeroUnit, ValidateZeroUnit);
             Settings.SetValue(WESettings.Keys.ValidateVendorSpecifics, ValidateVendorSpecifics);
+            Settings.SetValue(WESettings.Keys.CssPreserveRelativePathsOnMinify, CssPreserveRelativePathsOnMinify);
 
             OnChanged();
             Settings.Save();
@@ -43,6 +44,7 @@ namespace MadsKristensen.EditorExtensions
             ShowBrowserTooltip = WESettings.GetBoolean(WESettings.Keys.ShowBrowserTooltip);
             ValidateZeroUnit = WESettings.GetBoolean(WESettings.Keys.ValidateZeroUnit);
             ValidateVendorSpecifics = WESettings.GetBoolean(WESettings.Keys.ValidateVendorSpecifics);
+            CssPreserveRelativePathsOnMinify = WESettings.GetBoolean(WESettings.Keys.CssPreserveRelativePathsOnMinify);
         }
 
         protected void OnChanged()
@@ -54,6 +56,11 @@ namespace MadsKristensen.EditorExtensions
         [Description("When a .css file (foo.css) is saved and a minified version (foo.min.css) exist, the minified file will be updated. Right-click any .css file to generate .min.css file")]
         [Category("Misc")]
         public bool EnableCssMinification { get; set; }
+
+        [LocDisplayName("Preserve original relative paths in CSS files on minify")]
+        [Description("Deal manually with '../' relative paths. Useful, when resources (e.g. images) are within 'deploy folder', but corresponding css in other developement folder.")]
+        [Category("Misc")]
+        public bool CssPreserveRelativePathsOnMinify { get; set; }
 
         [LocDisplayName("Gzip minified CSS files on save")]
         [Description("When a .css file (foo.css) is saved and a minified version (foo.min.css) exist, a gzipped version of the file will be created.")]

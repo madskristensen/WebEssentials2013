@@ -329,7 +329,8 @@ namespace MadsKristensen.EditorExtensions
                     // If the bundle is in the same folder as the CSS,
                     // or if does not have URLs, no need to normalize.
                     if (Path.GetDirectoryName(file) != Path.GetDirectoryName(bundlePath)
-                     && source.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
+                     && source.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0
+                        && !WESettings.GetBoolean(WESettings.Keys.CssPreserveRelativePathsOnMinify))
                         source = CssUrlNormalizer.NormalizeUrls(
                             tree: new CssParser().Parse(source, true),
                             targetFile: bundlePath,
