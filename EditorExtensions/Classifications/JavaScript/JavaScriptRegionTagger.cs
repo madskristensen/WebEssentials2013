@@ -31,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
         ITextBuffer buffer;
         ITextSnapshot snapshot;
         List<Region> regions;
-        private static Regex regex = new Regex(@"\/\/\#region(.*)?", RegexOptions.Compiled);
+        private static Regex regex = new Regex(@"\/\/\ ?\#region(.*)?", RegexOptions.Compiled);
 
         public RegionTagger(ITextBuffer buffer)
         {
