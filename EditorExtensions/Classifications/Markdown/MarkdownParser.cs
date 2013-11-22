@@ -337,9 +337,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     }
 
                     ReportArtifact(new MarkdownCodeArtifact(
-                        null, 
-                        TextRange.FromBounds(peek.StartPosition, stream.Position + 1), 
-                        1, 1, 
+                        null,
+                        TextRange.FromBounds(peek.StartPosition, stream.Position + 1),
+                        1, 1,
                         peek.StartPosition  // Inline code blocks aren't grouped.
                     ));
                     peek.Consume();
@@ -508,7 +508,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     public class MarkdownCodeArtifact : Artifact
     {
         public MarkdownCodeArtifact(string language, ITextRange range, int leftLength, int rightLength, int blockStart)
-            : base(ArtifactTreatAs.Code, range, leftLength, rightLength, MarkdownClassificationTypes.MarkdownCode, true)
+            : base(TreatAs(language), range, leftLength, rightLength, MarkdownClassificationTypes.MarkdownCode, true)
         {
             Language = language;
             BlockStart = blockStart;
@@ -517,6 +517,13 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         ///<summary>Gets the character position in the stream that entire containing code block started.</summary>
         ///<remarks>This is used to group code runs (lines) from the same block, for language prefixing.</remarks>
         public int BlockStart { get; private set; }
+
+        static ArtifactTreatAs TreatAs(string language)
+        {
+            if ((language ?? "").StartsWith("htm", StringComparison.OrdinalIgnoreCase))
+                return ArtifactTreatAs.Tag;
+            return ArtifactTreatAs.Code;
+        }
     }
 
     ///<summary>Provides data for Artifact events.</summary>
