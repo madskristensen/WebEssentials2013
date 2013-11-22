@@ -42,7 +42,7 @@ namespace MadsKristensen.EditorExtensions
         {
             var position = session.GetTriggerPoint(session.TextView.TextBuffer.CurrentSnapshot);
             if (position == null) return;
-            var line = _buffer.CurrentSnapshot.Lines.SingleOrDefault(l => l.Start <= position && l.End >= position.Value.Position);
+            var line = position.Value.GetContainingLine();
             if (line == null) return;
 
             int linePos = position.Value - line.Start.Position;

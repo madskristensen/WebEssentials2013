@@ -38,8 +38,8 @@ namespace MadsKristensen.EditorExtensions
         static readonly Regex regex = new Regex(@"\brequire\s*\(\s*(['""])(?<path>[^""]+)\1\)?");
         private string FindRequirePath()
         {
-            int position = TextView.Caret.Position.BufferPosition.Position;
-            var line = TextView.TextBuffer.CurrentSnapshot.Lines.SingleOrDefault(l => l.Start <= position && l.End >= position);
+            var position = TextView.Caret.Position.BufferPosition;
+            var line = position.GetContainingLine();
             int linePos = position - line.Start.Position;
 
             var match = regex.Matches(line.GetText()).Cast<Match>().FirstOrDefault(m => m.Index <= linePos && m.Index + m.Length >= linePos);
