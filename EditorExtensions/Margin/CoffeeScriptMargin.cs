@@ -30,6 +30,9 @@ namespace MadsKristensen.EditorExtensions
             if (string.IsNullOrEmpty(project.FullName))
                 return;
 
+            if (!CompileEnabled)
+                return;
+
             Logger.Log("Compiling CoffeeScript...");
             _projectFileCount = 0;
 
@@ -43,7 +46,7 @@ namespace MadsKristensen.EditorExtensions
 
                 foreach (string file in files)
                 {
-                    string jsFile = GetCompiledFileName(file, ".js", UseCompiledFolder);
+                    string jsFile = GetCompiledFileName(file, ".js", CompileToLocation);
 
                     if (EditorExtensionsPackage.DTE.Solution.FindProjectItem(file) != null &&
                         File.Exists(jsFile))
@@ -65,7 +68,7 @@ namespace MadsKristensen.EditorExtensions
         void compiler_Completed(object sender, CompilerEventArgs e)
         {
             _projectFileStep++;
-            string file = GetCompiledFileName(e.State, ".js", UseCompiledFolder);
+            string file = GetCompiledFileName(e.State, ".js", CompileToLocation);
 
             ProjectHelpers.CheckOutFileFromSourceControl(file);
 
@@ -83,7 +86,10 @@ namespace MadsKristensen.EditorExtensions
 
         protected override void StartCompiler(string source)
         {
-            string fileName = GetCompiledFileName(Document.FilePath, ".js", UseCompiledFolder);//Document.FilePath.Replace(".coffee", ".js");
+            if (!CompileEnabled)
+                return;
+
+            string fileName = GetCompiledFileName(Document.FilePath, ".js", CompileToLocation);//Document.FilePath.Replace(".coffee", ".js");
 
             if (IsFirstRun && File.Exists(fileName))
             {
@@ -131,10 +137,13 @@ namespace MadsKristensen.EditorExtensions
 
         public override void MinifyFile(string fileName, string source)
         {
+            if (!CompileEnabled)
+                return;
+
             if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptMinify))
             {
                 string content = MinifyFileMenu.MinifyString(".js", source);
-                string minFile = GetCompiledFileName(fileName, ".min.js", UseCompiledFolder);//fileName.Replace(".coffee", ".min.js");
+                string minFile = GetCompiledFileName(fileName, ".min.js", CompileToLocation);//fileName.Replace(".coffee", ".min.js");
                 bool fileExist = File.Exists(minFile);
 
                 ProjectHelpers.CheckOutFileFromSourceControl(minFile);
@@ -148,9 +157,14 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-		public override string UseCompiledFolder
+        public override bool CompileEnabled
         {
-			get { return WESettings.GetString(WESettings.Keys.CoffeeScriptCompileToFolder); }
+            get { return WESettings.GetBoolean(WESettings.Keys.CoffeeScriptEnableCompiler); }
+        }
+
+        public override string CompileToLocation
+        {
+            get { return WESettings.GetString(WESettings.Keys.CoffeeScriptCompileToLocation); }
         }
 
         public override bool IsSaveFileEnabled

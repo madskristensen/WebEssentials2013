@@ -40,7 +40,7 @@ namespace MadsKristensen.EditorExtensions
             _provider = new ErrorListProvider(EditorExtensionsPackage.Instance);
 
             Document.FileActionOccurred += Document_FileActionOccurred;
-			
+
             if (showMargin)
             {
                 _dispatcher.BeginInvoke(
@@ -61,7 +61,8 @@ namespace MadsKristensen.EditorExtensions
         }
 
         public abstract bool IsSaveFileEnabled { get; }
-		public abstract string UseCompiledFolder { get; }
+        public abstract bool CompileEnabled { get; }
+        public abstract string CompileToLocation { get; }
         protected ITextDocument Document { get; set; }
 
         private void Initialize(string contentType, string source)
@@ -231,12 +232,12 @@ namespace MadsKristensen.EditorExtensions
             switch (extension.ToLowerInvariant())
             {
                 case ".less":
-                    fileName = GetCompiledFileName(currentFileName, ".css", UseCompiledFolder);
+                    fileName = GetCompiledFileName(currentFileName, ".css", CompileToLocation);
                     break;
 
                 case ".coffee":
                 case ".ts":
-                    fileName = GetCompiledFileName(currentFileName, ".js", UseCompiledFolder);
+                    fileName = GetCompiledFileName(currentFileName, ".js", CompileToLocation);
                     break;
 
                 default: // For the Diff view
@@ -260,70 +261,28 @@ namespace MadsKristensen.EditorExtensions
             string sourceExtension = Path.GetExtension(sourceFileName);
             string compiledFileName = Path.GetFileName(sourceFileName).Replace(sourceExtension, compiledExtension);
             string sourceDir = Path.GetDirectoryName(sourceFileName);
-			string compiledDir;
+            string compiledDir;
+            string rootDir = ProjectHelpers.GetRootFolder();
 
-			if (customFolder != null && customFolder.Length > 0)
+            if (rootDir == null || rootDir.Length == 0)
             {
-				// TODO set the new folder based on the 'web-based' path in customFolder..
-                //original code:string compiledDir = Path.Combine(sourceDir, compiledExtension.Replace(".min.", string.Empty).Replace(".", string.Empty));
+                // Assuming a project is not loaded..
+                return Path.Combine(sourceDir, compiledFileName);
+            }
 
-				if (customFolder.StartsWith("~/") || customFolder.StartsWith("/"))
-				{
-					customFolder = customFolder.Substring(customFolder.StartsWith("~/") ? 2 : 1);
-
-					// TODO Go up a folder until you find the 'bin' folder.. and use that as the base.. !?
-					//      YEAH, this is a total hack.. I know!!
-					string p = sourceDir;
-					string bin = "bin";
-					int i = -1;
-
-					while (!Directory.Exists(Path.Combine(p, bin)))
-					{
-						i = p.LastIndexOf('\\');
-						if (i > -1)
-						{
-							p = p.Substring(0, i);
-						}
-						else
-						{
-							break;
-						}
-					}
-
-					if (i > -1)
-					{
-						// found the bin folder at p + 'bin'..
-						DirectoryInfo pi = new DirectoryInfo(Path.Combine(p, customFolder));
-						//if (pi.Exists)
-						//{
-							compiledDir = pi.FullName;
-						//}
-						//else
-						//{
-						//	// didn't find it.. so, use the original method.
-						//	compiledDir = Path.Combine(sourceDir, compiledExtension.Replace(".min.", string.Empty).Replace(".", string.Empty));
-						//}
-					}
-					else
-					{
-						// didn't find it.. so, use the original method.
-						compiledDir = Path.Combine(sourceDir, compiledExtension.Replace(".min.", string.Empty).Replace(".", string.Empty));
-					}
-				}
-				else
-				{
-					// Assume it is a relative path..
-					DirectoryInfo pi = new DirectoryInfo(Path.Combine(sourceDir, customFolder));
-					if (pi.Exists)
-					{
-						compiledDir = pi.FullName;
-					}
-					else
-					{
-						// didn't find it.. so, use the original method.
-						compiledDir = Path.Combine(sourceDir, compiledExtension.Replace(".min.", string.Empty).Replace(".", string.Empty));
-					}
-				}
+            if (customFolder != null && customFolder.Length > 0)
+            {
+                if (customFolder.StartsWith("~/") || customFolder.StartsWith("/"))
+                {
+                    // Output path starts at the project root..
+                    compiledDir = Path.Combine(rootDir, customFolder.Substring(customFolder.StartsWith("~/") ? 2 : 1));
+                }
+                else
+                {
+                    // Output path is a relative path..
+                    // NOTE: if the output path doesn't exist, it will be created below.
+                    compiledDir = new DirectoryInfo(Path.Combine(sourceDir, customFolder)).FullName;
+                }
 
                 if (!Directory.Exists(compiledDir))
                 {
