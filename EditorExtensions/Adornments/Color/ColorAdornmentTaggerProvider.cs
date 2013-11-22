@@ -37,13 +37,10 @@ namespace MadsKristensen.EditorExtensions
             if (buffer == null)
                 throw new ArgumentNullException("buffer");
 
-            if (buffer != textView.TextBuffer)
-                return null;
-
             return ColorAdornmentTagger.GetTagger(
-                (IWpfTextView)textView,
+                textView, buffer,
                 new Lazy<ITagAggregator<ColorTag>>(
-                    () => BufferTagAggregatorFactoryService.CreateTagAggregator<ColorTag>(textView.TextBuffer)))
+                    () => BufferTagAggregatorFactoryService.CreateTagAggregator<ColorTag>(buffer)))
                 as ITagger<T>;
         }
     }

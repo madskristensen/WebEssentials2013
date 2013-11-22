@@ -31,16 +31,16 @@ namespace MadsKristensen.EditorExtensions
     /// </remarks>
     internal sealed class ColorAdornmentTagger : IntraTextAdornmentTagger<ColorTag, ColorAdornment>
     {
-        internal static ITagger<IntraTextAdornmentTag> GetTagger(IWpfTextView view, Lazy<ITagAggregator<ColorTag>> colorTagger)
+        internal static ITagger<IntraTextAdornmentTag> GetTagger(ITextView view, ITextBuffer buffer, Lazy<ITagAggregator<ColorTag>> colorTagger)
         {
-            return view.Properties.GetOrCreateSingletonProperty<ColorAdornmentTagger>(
-                () => new ColorAdornmentTagger(view, colorTagger.Value));
+            return buffer.Properties.GetOrCreateSingletonProperty<ColorAdornmentTagger>(
+                () => new ColorAdornmentTagger(view, buffer, colorTagger.Value));
         }
 
         private ITagAggregator<ColorTag> colorTagger;
 
-        private ColorAdornmentTagger(IWpfTextView view, ITagAggregator<ColorTag> colorTagger)
-            : base(view)
+        private ColorAdornmentTagger(ITextView view, ITextBuffer buffer, ITagAggregator<ColorTag> colorTagger)
+            : base(view, buffer)
         {
             this.colorTagger = colorTagger;
         }
@@ -49,7 +49,7 @@ namespace MadsKristensen.EditorExtensions
         {
             this.colorTagger.Dispose();
 
-            base.view.Properties.RemoveProperty(typeof(ColorAdornmentTagger));
+            base.buffer.Properties.RemoveProperty(typeof(ColorAdornmentTagger));
         }
 
         // To produce adornments that don't obscure the text, the adornment tags

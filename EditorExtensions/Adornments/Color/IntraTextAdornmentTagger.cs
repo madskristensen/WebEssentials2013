@@ -33,19 +33,21 @@ namespace MadsKristensen.EditorExtensions
         : ITagger<IntraTextAdornmentTag>
         where TAdornment : UIElement
     {
-        protected readonly IWpfTextView view;
+        protected readonly ITextBuffer buffer;
         private Dictionary<SnapshotSpan, TAdornment> adornmentCache = new Dictionary<SnapshotSpan, TAdornment>();
         protected ITextSnapshot snapshot { get; private set; }
+        protected readonly ITextView view;
         private readonly List<SnapshotSpan> invalidatedSpans = new List<SnapshotSpan>();
         private bool _isProcessing;
 
-        protected IntraTextAdornmentTagger(IWpfTextView view)
+        protected IntraTextAdornmentTagger(ITextView view, ITextBuffer buffer)
         {
+            this.buffer = buffer;
             this.view = view;
-            this.snapshot = view.TextBuffer.CurrentSnapshot;
+            this.snapshot = buffer.CurrentSnapshot;
 
             //this.view.LayoutChanged += HandleLayoutChanged;
-            this.view.TextBuffer.Changed += HandleBufferChanged;
+            this.buffer.Changed += HandleBufferChanged;
         }
 
         /// <param name="span">The span of text that this adornment will elide.</param>
@@ -91,7 +93,7 @@ namespace MadsKristensen.EditorExtensions
                 this.invalidatedSpans.AddRange(spans);
 
                 if (wasEmpty && this.invalidatedSpans.Count > 0)
-                    this.view.VisualElement.Dispatcher.BeginInvoke(new Action(AsyncUpdate));
+                    ((IWpfTextView)this.view).VisualElement.Dispatcher.BeginInvoke(new Action(AsyncUpdate));
             }
         }
 
@@ -99,9 +101,9 @@ namespace MadsKristensen.EditorExtensions
         {
             // Store the snapshot that we're now current with and send an event
             // for the text that has changed.
-            if (this.snapshot != this.view.TextBuffer.CurrentSnapshot)
+            if (this.snapshot != this.buffer.CurrentSnapshot)
             {
-                this.snapshot = this.view.TextBuffer.CurrentSnapshot;
+                this.snapshot = this.buffer.CurrentSnapshot;
 
                 Dictionary<SnapshotSpan, TAdornment> translatedAdornmentCache = new Dictionary<SnapshotSpan, TAdornment>();
 

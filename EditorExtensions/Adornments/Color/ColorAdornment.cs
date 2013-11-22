@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions
 {
     internal sealed class ColorAdornment : Border
     {
-        internal ColorAdornment(ColorTag colorTag, IWpfTextView view)
+        internal ColorAdornment(ColorTag colorTag, ITextView view)
         {
             this.Padding = new Thickness(0);
             this.BorderThickness = new Thickness(1);
@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions
             Update(colorTag);
         }
 
-        private static void ColorAdornmentMouseUp(IWpfTextView view)
+        private static void ColorAdornmentMouseUp(ITextView view)
         {
             try
             {
