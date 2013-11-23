@@ -61,11 +61,8 @@ namespace MadsKristensen.EditorExtensions
                 string htmlFilename = GetCompiledFileName(Document.FilePath, ".html", CompileToLocation);
                 try
                 {
-                    if (File.Exists(htmlFilename))
-                    {
-                        File.SetAttributes(htmlFilename, FileAttributes.Normal);
-                        File.Delete(htmlFilename);
-                    }
+                    File.SetAttributes(htmlFilename, FileAttributes.Normal);
+                    File.Delete(htmlFilename);
                     File.WriteAllText(htmlFilename, html);
                 }
                 catch (Exception exception)
