@@ -1,14 +1,14 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using MarkdownSharp;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using EnvDTE;
+using EnvDTE80;
+using MarkdownSharp;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -68,9 +68,9 @@ namespace MadsKristensen.EditorExtensions
                     }
                     File.WriteAllText(htmlFilename, html);
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
-                    // TODO not sure what to do here..
+                    Logger.Log("An error occurred while compiling Document.FilePath:\n" + exception);
                 }
             }
         }
