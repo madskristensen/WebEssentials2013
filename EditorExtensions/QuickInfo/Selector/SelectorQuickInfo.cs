@@ -13,7 +13,6 @@ namespace MadsKristensen.EditorExtensions
     {
         private SelectorQuickInfoSourceProvider _provider;
         private ITextBuffer _buffer;
-        private CssTree _tree;
 
         public SelectorQuickInfo(SelectorQuickInfoSourceProvider provider, ITextBuffer subjectBuffer)
         {
@@ -25,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
         {
             applicableToSpan = null;
 
-            if (!EnsureTreeInitialized() || session == null || qiContent == null)
+            if (session == null || qiContent == null)
                 return;
 
             // Map the trigger point down to our buffer.
@@ -33,7 +32,8 @@ namespace MadsKristensen.EditorExtensions
             if (!point.HasValue)
                 return;
 
-            ParseItem item = _tree.StyleSheet.ItemBeforePosition(point.Value.Position);
+            var tree = CssEditorDocument.FromTextBuffer(_buffer);
+            ParseItem item = tree.StyleSheet.ItemBeforePosition(point.Value.Position);
             if (item == null || !item.IsValid)
                 return;
 
@@ -64,35 +64,6 @@ namespace MadsKristensen.EditorExtensions
             return sb.ToString().Trim();
         }
 
-        /// <summary>
-        /// This must be delayed so that the TextViewConnectionListener
-        /// has a chance to initialize the WebEditor host.
-        /// </summary>
-        public bool EnsureTreeInitialized()
-        {
-            if (_tree == null)
-            {
-                try
-                {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(_buffer);
-                    _tree = document.Tree;
-                }
-                catch (Exception)
-                {
-                }
-            }
-
-            return _tree != null;
-        }
-
-        private bool m_isDisposed;
-        public void Dispose()
-        {
-            if (!m_isDisposed)
-            {
-                GC.SuppressFinalize(this);
-                m_isDisposed = true;
-            }
-        }
+        public void Dispose() {  }
     }
 }

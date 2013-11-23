@@ -16,7 +16,6 @@ namespace MadsKristensen.EditorExtensions
     internal sealed class ColorTagger : ITagger<ColorTag>
     {
         private ITextBuffer _buffer;
-        private CssTree _tree;
 
         internal ColorTagger(ITextBuffer buffer)
         {
@@ -28,10 +27,11 @@ namespace MadsKristensen.EditorExtensions
 
         public IEnumerable<ITagSpan<ColorTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
-            if (spans.Count == 0 || spans[0].Length == 0 || spans[0].Length >= _buffer.CurrentSnapshot.Length || !EnsureInitialized())
+            if (WebEditor.Host == null || spans.Count == 0 || spans[0].Length == 0 || spans[0].Length >= _buffer.CurrentSnapshot.Length)
                 yield break;
 
-            IEnumerable<ParseItem> items = GetColors(spans[0]);
+            var tree = CssEditorDocument.FromTextBuffer(_buffer).Tree;
+            IEnumerable<ParseItem> items = GetColors(tree, spans[0]);
 
             foreach (var item in items.Where(i => (i.Start + i.Length) <= _buffer.CurrentSnapshot.Length))
             {
@@ -44,9 +44,9 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private IEnumerable<ParseItem> GetColors(SnapshotSpan span)
+        private IEnumerable<ParseItem> GetColors(CssTree tree, SnapshotSpan span)
         {
-            ParseItem complexItem = _tree.StyleSheet.ItemFromRange(span.Start, span.Length);
+            ParseItem complexItem = tree.StyleSheet.ItemFromRange(span.Start, span.Length);
             if (complexItem == null || (!(complexItem is AtDirective) && !(complexItem is RuleBlock) && !(complexItem is LessVariableDeclaration) && !(complexItem is FunctionArgument)))
                 return Enumerable.Empty<ParseItem>();
 
@@ -57,28 +57,11 @@ namespace MadsKristensen.EditorExtensions
                 (TokenItem i) => (i.PreviousSibling == null || (i.PreviousSibling.Text != "@" && i.PreviousSibling.Text != "$"))    // Ignore variable names that happen to be colors
                                && i.TokenType == CssTokenType.Identifier
                                && (i.FindType<Declaration>() != null || i.FindType<LessExpression>() != null)                       // Ignore classnames that happen to be colors
-                               && Color.FromName(i.Text).IsNamedColor 
+                               && Color.FromName(i.Text).IsNamedColor
                                ? i : null
             };
 
             return colorCrawler.Crawl(complexItem).Where(o => o != null);
-        }
-
-        public bool EnsureInitialized()
-        {
-            if (_tree == null && WebEditor.Host != null)
-            {
-                try
-                {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(_buffer);
-                    _tree = document.Tree;
-                }
-                catch (ArgumentNullException)
-                {
-                }
-            }
-
-            return _tree != null;
         }
 
         private void BufferChanged(object sender, TextContentChangedEventArgs e)

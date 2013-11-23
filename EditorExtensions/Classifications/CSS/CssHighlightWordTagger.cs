@@ -49,7 +49,6 @@ namespace MadsKristensen.EditorExtensions
         SnapshotSpan? _currentWord { get; set; }
         SnapshotPoint _requestedPoint { get; set; }
         object _syncLock = new object();
-        private CssTree _tree;
 
         public CssHighlightWordTagger(ITextView view, ITextBuffer sourceBuffer, ITextSearchService textSearchService, ITextStructureNavigator textStructureNavigator)
         {
@@ -84,10 +83,11 @@ namespace MadsKristensen.EditorExtensions
         {
             SnapshotPoint? point = caretPosition.Point.GetPoint(_buffer, caretPosition.Affinity);
 
-            if (!point.HasValue || !EnsureInitialized())
+            if (!point.HasValue)
                 return;
 
-            ParseItem item = _tree.StyleSheet.ItemBeforePosition(point.Value.Position);
+            var tree = CssEditorDocument.FromTextBuffer(_buffer);
+            ParseItem item = tree.StyleSheet.ItemBeforePosition(point.Value.Position);
             if (item == null)
                 return;
 
@@ -206,23 +206,6 @@ namespace MadsKristensen.EditorExtensions
             {
                 yield return new TagSpan<HighlightWordTag>(span, new HighlightWordTag());
             }
-        }
-
-        private bool EnsureInitialized()
-        {
-            if (_tree == null)
-            {
-                try
-                {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(_buffer);
-                    _tree = document.Tree;
-                }
-                catch (ArgumentNullException)
-                {
-                }
-            }
-
-            return _tree != null;
         }
     }
 }

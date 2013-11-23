@@ -24,7 +24,6 @@ namespace MadsKristensen.EditorExtensions
     internal sealed class Base64Tagger : ITagger<IOutliningRegionTag>
     {
         private ITextBuffer buffer;
-        private CssTree _tree;
 
         public Base64Tagger(ITextBuffer buffer)
         {
@@ -34,11 +33,12 @@ namespace MadsKristensen.EditorExtensions
 
         public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
-            if (spans.Count == 0 || !EnsureInitialized())
+            if (spans.Count == 0)
                 yield break;
 
             var visitor = new CssItemCollector<UrlItem>();
-            _tree.StyleSheet.Accept(visitor);
+            var tree = CssEditorDocument.FromTextBuffer(buffer);
+            tree.StyleSheet.Accept(visitor);
 
             foreach (UrlItem url in visitor.Items.Where(u => u.UrlString != null && u.Start >= spans[0].Start))
             {
@@ -50,23 +50,6 @@ namespace MadsKristensen.EditorExtensions
                     yield return new TagSpan<IOutliningRegionTag>(span, tag);
                 }
             }
-        }
-
-        public bool EnsureInitialized()
-        {
-            if (_tree == null)
-            {
-                try
-                {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(buffer);
-                    _tree = document.Tree;
-                }
-                catch (Exception)
-                {
-                }
-            }
-
-            return _tree != null;
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged 
