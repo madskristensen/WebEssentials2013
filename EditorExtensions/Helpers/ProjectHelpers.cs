@@ -130,7 +130,7 @@ namespace MadsKristensen.EditorExtensions
         public static string ToAbsoluteFilePath(string relativeUrl, string relativeToFile)
         {
             var file = EditorExtensionsPackage.DTE.Solution.FindProjectItem(relativeToFile);
-            if (file == null)
+            if (file == null || file.Properties == null)
                 return ToAbsoluteFilePath(relativeUrl, GetRootFolder(), Path.GetDirectoryName(relativeToFile));
             return ToAbsoluteFilePath(relativeUrl, file);
         }

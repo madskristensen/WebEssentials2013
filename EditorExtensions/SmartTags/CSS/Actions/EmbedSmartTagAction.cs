@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -31,11 +32,11 @@ namespace MadsKristensen.EditorExtensions
 
         public override void Invoke()
         {
-            string selection = _url.UrlString.Text;
+            string selection = Uri.UnescapeDataString(_url.UrlString.Text);
 
             if (selection != null)
             {
-                string filePath = ProjectHelpers.ToAbsoluteFilePath(selection, ProjectHelpers.GetActiveFile());
+                string filePath = ProjectHelpers.ToAbsoluteFilePath(selection, _span.TextBuffer.GetFileName());
                 ApplyChanges(filePath);
             }
         }
@@ -46,7 +47,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (File.Exists(filePath))
             {
-                string dataUri = "url('" + FileHelpers.ConvertToBase64(filePath) + "') /*" + _url.UrlString.Text.Trim('"', '\'') + "*/";
+                string dataUri = "url('" + FileHelpers.ConvertToBase64(filePath) + "') /*" + Uri.UnescapeDataString(_url.UrlString.Text.Trim('"', '\'')) + "*/";
                 InsertEmbedString(snapshot, dataUri);
             }
             else
@@ -70,7 +71,7 @@ namespace MadsKristensen.EditorExtensions
         {
             EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
             Declaration dec = _url.FindType<Declaration>();
-            
+
             if (dec != null && dec.Parent != null && !(dec.Parent.Parent is FontFaceDirective)) // No declartion in LESS variable definitions
             {
                 RuleBlock rule = _url.FindType<RuleBlock>();

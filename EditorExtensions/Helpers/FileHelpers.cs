@@ -43,12 +43,17 @@ namespace MadsKristensen.EditorExtensions
 
         private static string GetMimeType(string extension)
         {
+            extension = extension.ToLowerInvariant();
             switch (extension)
             {
-                case "png":
                 case "jpg":
                 case "jpeg":
+                    return "image/jpeg" + extension;
+                case "svg":
+                    return "image/svg+xml";
+                case "png":
                 case "gif":
+                case "tiff":
                     return "image/" + extension;
 
                 case "woff":
