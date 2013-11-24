@@ -43,19 +43,8 @@ namespace MadsKristensen.EditorExtensions
             EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
             _span.TextBuffer.Replace(new Span(_lastVendor.Start, _lastVendor.Length), insert);
             _span.TextBuffer.Delete(new Span(_standard.Start, _standard.Length));
-            FormatItem(_lastVendor.Start);
+            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
             EditorExtensionsPackage.DTE.UndoContext.Close();
-        }
-
-        private void FormatItem(int start)
-        {
-            IEnumerable<Lazy<IEditorFormatter>> providers = ComponentLocator<IEditorFormatter>.ImportMany();
-            foreach (var locator in providers)
-            {
-                Span span = new Span(start, 1);
-                locator.Value.Format(_view, _view.TextBuffer);
-                break;
-            }
         }
     }
 }

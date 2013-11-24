@@ -45,19 +45,8 @@ namespace MadsKristensen.EditorExtensions
             EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
             SnapshotSpan span = _span.GetSpan(_span.TextBuffer.CurrentSnapshot);
             _span.TextBuffer.Replace(span, _declaration.Text + separator + newDec);
-            FormatItem(_declaration.Start);
+            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
             EditorExtensionsPackage.DTE.UndoContext.Close();
-        }
-
-        private void FormatItem(int start)
-        {
-            IEnumerable<Lazy<IEditorFormatter>> providers = ComponentLocator<IEditorFormatter>.ImportMany();
-            foreach (var locator in providers)
-            {
-                Span span = new Span(start, 1);
-                locator.Value.Format(_view, _view.TextBuffer);
-                break;
-            }
         }
     }
 }
