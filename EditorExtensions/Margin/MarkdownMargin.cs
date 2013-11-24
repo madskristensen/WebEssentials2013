@@ -61,13 +61,11 @@ namespace MadsKristensen.EditorExtensions
                 string htmlFilename = GetCompiledFileName(Document.FilePath, ".html", CompileToLocation);
                 try
                 {
-                    File.SetAttributes(htmlFilename, FileAttributes.Normal);
-                    File.Delete(htmlFilename);
                     File.WriteAllText(htmlFilename, html);
                 }
                 catch (Exception exception)
                 {
-                    Logger.Log("An error occurred while compiling Document.FilePath:\n" + exception);
+                    Logger.Log("An error occurred while compiling " + Document.FilePath + ":\n" + exception);
                 }
             }
         }
