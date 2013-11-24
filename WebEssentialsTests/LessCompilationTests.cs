@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions;
 using Microsoft.CSS.Core;
@@ -62,9 +63,14 @@ namespace WebEssentialsTests
         {
             var result = await LessCompiler.Compile(fileName, targetFilename);
             if (result.IsSuccess)
-                return result.Result;
+            {
+                // remove the sourceMappingURL comment at the end of compiled file and return.
+                return Regex.Replace(result.Result, @"\n\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", ""); ;
+            }
             else
+            {
                 throw new ExternalException(result.Error.Message);
+            }
         }
     }
 }
