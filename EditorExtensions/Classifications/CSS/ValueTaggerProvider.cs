@@ -27,13 +27,7 @@ namespace MadsKristensen.EditorExtensions
                 return null;
             }
 
-            if (textView.TextBuffer != buffer)
-            {
-                return null;
-            }
-
-            Func<ITagger<T>> sc = delegate() { return new VendorTagger(textView, buffer, this) as ITagger<T>; };
-            return buffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(sc);
+            return buffer.Properties.GetOrCreateSingletonProperty(() => new VendorTagger(textView, buffer, this)) as ITagger<T>;
         }
     }
 

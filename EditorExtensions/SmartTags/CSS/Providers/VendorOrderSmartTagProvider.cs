@@ -26,14 +26,14 @@ namespace MadsKristensen.EditorExtensions
         {
             Declaration dec = (Declaration)item;
 
-            if (!item.IsValid || position > dec.Colon.Start || !view.TextBuffer.ContentType.IsOfType("css"))
+            if (!item.IsValid || position > dec.Colon.Start)
                 yield break;
 
             RuleBlock rule = dec.FindType<RuleBlock>();
             if (!rule.IsValid)
                 yield break;
 
-            ICssSchemaInstance schema = CssSchemaManager.SchemaManager.GetSchemaRootForBuffer(view.TextBuffer);
+            ICssSchemaInstance schema = CssSchemaManager.SchemaManager.GetSchemaRootForBuffer(itemTrackingSpan.TextBuffer);
 
             if (!dec.IsVendorSpecific())
             {

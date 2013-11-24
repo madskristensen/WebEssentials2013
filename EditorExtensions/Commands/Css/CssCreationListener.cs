@@ -7,29 +7,37 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio;
+using System.Collections.ObjectModel;
+using Microsoft.VisualStudio.Text;
+using System.Linq;
+using System;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [Export(typeof(IVsTextViewCreationListener))]
+    [Export(typeof(IWpfTextViewConnectionListener))]
     [ContentType(CssContentTypeDefinition.CssContentType)]
+    [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    class CssSortPropertiesViewCreationListener : IVsTextViewCreationListener
+    class CssConnectionListener : IWpfTextViewConnectionListener
     {
-        [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
+        [Import]
+        public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
 
         [Import]
-        internal IClassifierAggregatorService AggregatorService { get; set; }
+        public IClassifierAggregatorService AggregatorService { get; set; }
 
         [Import]
-        internal ICompletionBroker CompletionBroker { get; set; }
+        public ICompletionBroker CompletionBroker { get; set; }
 
         [Import]
-        internal IQuickInfoBroker QuickInfoBroker { get; set; }
+        public IQuickInfoBroker QuickInfoBroker { get; set; }
 
-        public void VsTextViewCreated(IVsTextView textViewAdapter)
+        public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
-            var textView = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
+            if (!subjectBuffers.Any(b => b.ContentType.IsOfType(CssContentTypeDefinition.CssContentType)))
+                return;
+
+            var textViewAdapter = EditorAdaptersFactoryService.GetViewAdapter(textView);
 
             textView.Properties.GetOrCreateSingletonProperty<CssSortProperties>(() => new CssSortProperties(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<CssExtractToFile>(() => new CssExtractToFile(textViewAdapter, textView));
@@ -45,6 +53,10 @@ namespace MadsKristensen.EditorExtensions
             uint cssFormatProperties;
             ErrorHandler.ThrowOnFailure(EditorExtensionsPackage.PriorityCommandTarget.RegisterPriorityCommandTarget(0, new CssFormatProperties(textView), out cssFormatProperties));
             textView.Closed += delegate { ErrorHandler.ThrowOnFailure(EditorExtensionsPackage.PriorityCommandTarget.UnregisterPriorityCommandTarget(cssFormatProperties)); };
+        }
+
+        public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
+        {
         }
     }
 }

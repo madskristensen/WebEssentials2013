@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -30,28 +31,7 @@ namespace MadsKristensen.EditorExtensions
 
         private bool IsValidTextBuffer(IWpfTextView view)
         {
-            var projection = view.TextBuffer as IProjectionBuffer;
-
-            if (projection != null)
-            {
-                var snapshotPoint = view.Caret.Position.BufferPosition;
-
-                var buffers = projection.SourceBuffers.Where(s => s.ContentType.IsOfType("css"));
-
-                foreach (ITextBuffer buffer in buffers)
-                {
-                    SnapshotPoint? point = view.BufferGraph.MapDownToBuffer(snapshotPoint, PointTrackingMode.Negative, buffer, PositionAffinity.Predecessor);
-
-                    if (point.HasValue)
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            return true;
+            return ProjectionBufferHelper.MapToBuffer(view, "css", view.Caret.Position.BufferPosition) != null;
         }
 
         protected override bool IsEnabled()
