@@ -1,10 +1,8 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MadsKristensen.EditorExtensions.Classifications.Markdown;
-using Microsoft.Web.Core;
+﻿using System.Collections.Generic;
 using FluentAssertions;
+using MadsKristensen.EditorExtensions.Classifications.Markdown;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Web.Core;
 
 namespace WebEssentialsTests
 {
@@ -68,18 +66,18 @@ Bye!").Should().Equal(new[] { " ", "a", " ", "b" }, "Whitespace-only code is rep
     abc
     def
 Bye!").Should().Equal(new[] { "abc", "def" });
-//            ParseCodeBlocks(@"Hi there!
-// 1. List!
-//
-//        abc
-// * List!
-//
-//        def
-//
-// - More
-//    Not code!
-//Bye!").Should().Equal(new[] { "abc", "def" });
-//ParseCodeBlocks(" 1. abc\n\n  \t  Code!").Should().Equal(new[] { "Code!" });
+            //            ParseCodeBlocks(@"Hi there!
+            // 1. List!
+            //
+            //        abc
+            // * List!
+            //
+            //        def
+            //
+            // - More
+            //    Not code!
+            //Bye!").Should().Equal(new[] { "abc", "def" });
+            //ParseCodeBlocks(" 1. abc\n\n  \t  Code!").Should().Equal(new[] { "Code!" });
 
             // ParseCodeBlocks("Hi there!\n\tabc\nBye!").Should().Equal(new[] { "abc" });
             ParseCodeBlocks(@"Hi there!
@@ -133,11 +131,11 @@ Bye!").Should().Equal(new[] { "abc" }, "Less-deep indent still counts");
 >     abc").Should().Equal(new[] { "abc" });
             ParseCodeBlocks(@">     abc").Should().Equal(new[] { "abc" });
 
-//            ParseCodeBlocks(" >\t> \tabc").Should().Equal(new[] { "abc" });
-//            ParseCodeBlocks(" >\t > \tabc").Should().Equal(new[] { "abc" });
-//            ParseCodeBlocks(" >  \t > \tabc").Should().Equal(new[] { "abc" });
-//            ParseCodeBlocks(" >  \t  > abc").Should().Equal(new[] { "> abc" });
-//            ParseCodeBlocks(" >\t  > abc").Should().Equal(new[] { "> abc" });
+            //            ParseCodeBlocks(" >\t> \tabc").Should().Equal(new[] { "abc" });
+            //            ParseCodeBlocks(" >\t > \tabc").Should().Equal(new[] { "abc" });
+            //            ParseCodeBlocks(" >  \t > \tabc").Should().Equal(new[] { "abc" });
+            //            ParseCodeBlocks(" >  \t  > abc").Should().Equal(new[] { "> abc" });
+            //            ParseCodeBlocks(" >\t  > abc").Should().Equal(new[] { "> abc" });
         }
 
         [TestMethod]

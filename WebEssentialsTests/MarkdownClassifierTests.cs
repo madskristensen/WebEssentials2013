@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MadsKristensen.EditorExtensions.Classifications.Markdown;
-using Microsoft.VisualStudio.Text.Classification;
 using System.Collections.Generic;
-using Microsoft.Html.Core;
-using Microsoft.VisualStudio.Text;
+using System.Linq;
 using FluentAssertions;
+using MadsKristensen.EditorExtensions.Classifications.Markdown;
+using Microsoft.Html.Core;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
 
 namespace WebEssentialsTests
 {

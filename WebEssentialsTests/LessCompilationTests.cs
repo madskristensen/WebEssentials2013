@@ -2,10 +2,10 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
 
 namespace WebEssentialsTests
 {

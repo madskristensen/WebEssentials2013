@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
+using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;
-using FluentAssertions;
 
 namespace WebEssentialsTests
 {
