@@ -26,18 +26,21 @@ namespace MadsKristensen.EditorExtensions
             return tcs.Task;
         }
 
-        public static async Task<CompilerResult> Compile(string filename, string targetFilename = null)
+        public static async Task<CompilerResult> Compile(string filename, string targetFilename = null, string sourceMapRootPath = null)
         {
             string output = Path.GetTempFileName();
 
             string webEssentialsDir = Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location);
             string lessc = Path.Combine(webEssentialsDir, @"Resources\nodejs\node_modules\.bin\lessc.cmd");
             string arguments = String.Format("--no-color --relative-urls \"{0}\" \"{1}\"", filename, output);
-            string fileNameWithoutPath = Path.GetFileName(targetFilename ?? filename);
+            string fileNameWithoutPath = Path.GetFileName(filename);
+            string sourceMapArguments = (sourceMapRootPath != null) ?
+                String.Format("--source-map-rootpath=\"{0}\" ", sourceMapRootPath.Replace("\\", "/")) : "";
 
             if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
                 arguments = String.Format(
-                  "--relative-urls --source-map-basepath=\"./\" --source-map=\"{0}.map\" \"{1}\" \"{2}\"",
+                  "--relative-urls {0}--source-map=\"{1}.map\" \"{2}\" \"{3}\"",
+                  sourceMapArguments,
                   fileNameWithoutPath,
                   filename,
                   output);

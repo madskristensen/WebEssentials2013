@@ -61,11 +61,12 @@ namespace WebEssentialsTests
 
         static async Task<string> CompileLess(string fileName, string targetFilename = null)
         {
-            var result = await LessCompiler.Compile(fileName, targetFilename);
+            string siteMapPath = fileName.Replace(BaseDirectory, "").Replace(Path.GetFileName(fileName), "");
+            var result = await LessCompiler.Compile(fileName, targetFilename, siteMapPath);
+
             if (result.IsSuccess)
             {
-                // remove the sourceMappingURL comment at the end of compiled file and return.
-                return Regex.Replace(result.Result, @"\n\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", ""); ;
+                return result.Result;
             }
             else
             {

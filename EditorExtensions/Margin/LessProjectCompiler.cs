@@ -22,10 +22,13 @@ namespace MadsKristensen.EditorExtensions
             string dir = ProjectHelpers.GetRootFolder(project);
             var files = Directory.EnumerateFiles(dir, "*.less", SearchOption.AllDirectories).Where(CanCompile);
 
+            string fileBasePath = files.Count() > 0 ?
+                files.First().Replace(dir, "").Replace(Path.GetFileName(files.First()), "") : "";
+
             foreach (string file in files)
             {
                 string cssFileName = MarginBase.GetCompiledFileName(file, ".css", WESettings.GetString(WESettings.Keys.LessCompileToLocation));
-                var result = await LessCompiler.Compile(file, cssFileName);
+                var result = await LessCompiler.Compile(file, cssFileName, dir + fileBasePath);
 
                 if (result.IsSuccess)
                     WriteResult(result, cssFileName);

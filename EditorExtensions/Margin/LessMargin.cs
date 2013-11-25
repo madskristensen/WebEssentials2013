@@ -15,20 +15,25 @@ namespace MadsKristensen.EditorExtensions
 
         protected override async void StartCompiler(string source)
         {
+            string lessFilePath = Document.FilePath;
+
             if (!CompileEnabled)
                 return;
 
-            string cssFilename = GetCompiledFileName(Document.FilePath, ".css", CompileEnabled ? CompileToLocation : null);// Document.FilePath.Replace(".less", ".css");
+            string cssFilename = GetCompiledFileName(lessFilePath, ".css", CompileEnabled ? CompileToLocation : null);// Document.FilePath.Replace(".less", ".css");
 
             if (IsFirstRun && File.Exists(cssFilename))
             {
-                OnCompilationDone(File.ReadAllText(cssFilename), Document.FilePath);
+                OnCompilationDone(File.ReadAllText(cssFilename), lessFilePath);
                 return;
             }
 
-            Logger.Log("LESS: Compiling " + Path.GetFileName(Document.FilePath));
+            Logger.Log("LESS: Compiling " + Path.GetFileName(lessFilePath));
 
-            var result = await LessCompiler.Compile(Document.FilePath, cssFilename);
+            string projectRoot = ProjectHelpers.GetRootFolder(ProjectHelpers.GetActiveProject());
+            string fileBasePath = lessFilePath.Replace(projectRoot, "").Replace(Path.GetFileName(lessFilePath), "");
+
+            var result = await LessCompiler.Compile(lessFilePath, cssFilename, projectRoot + fileBasePath);
             if (result.IsSuccess)
             {
                 OnCompilationDone(result.Result, result.FileName);
@@ -39,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
 
                 CreateTask(result.Error);
 
-                base.OnCompilationDone("ERROR:", Document.FilePath);
+                base.OnCompilationDone("ERROR:", lessFilePath);
             }
         }
 
