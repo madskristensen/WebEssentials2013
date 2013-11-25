@@ -1,14 +1,14 @@
-﻿using System;
-using System.Globalization;
-using System.IO;
-using System.Text;
+﻿using EnvDTE80;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
-using EnvDTE80;
+using System;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {

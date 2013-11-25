@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
         [JsonProperty]
         public string NewValue { get; set; }
-        
+
         [JsonProperty]
         public string OldValue { get; set; }
 

@@ -92,8 +92,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private static void CalculateLineAndColumn(string fileText, RuleSet ruleSet, out int lineNumber, out int columnNumber)
         {
             var leadingContent = fileText.Substring(0, ruleSet.Start)
-                .Split(new[] {"\r\n"}, StringSplitOptions.None)
-                .Select(x => x.Split(new[]{'\r', '\n'}, StringSplitOptions.None))
+                .Split(new[] { "\r\n" }, StringSplitOptions.None)
+                .Select(x => x.Split(new[] { '\r', '\n' }, StringSplitOptions.None))
                 .SelectMany(x => x)
                 .ToArray();
 

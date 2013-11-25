@@ -1,16 +1,14 @@
-﻿using Microsoft.VisualStudio.Editor;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel.Composition;
+using System.Linq;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System.ComponentModel.Composition;
-using Microsoft.VisualStudio;
-using System.Collections.ObjectModel;
-using Microsoft.VisualStudio.Text;
-using System.Linq;
-using System;
 
 namespace MadsKristensen.EditorExtensions
 {

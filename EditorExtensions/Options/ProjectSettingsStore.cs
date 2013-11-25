@@ -247,24 +247,39 @@ namespace MadsKristensen.EditorExtensions
             // Misc
             dic.Add(Keys.EnableEnterFormat, true);
             dic.Add(Keys.EnableBrowserLinkMenu, true);
+            dic.Add(Keys.BrowserLink_ShowMenu, true);
 
-            
             // LESS
             dic.Add(Keys.GenerateCssFileFromLess, true);
             dic.Add(Keys.ShowLessPreviewWindow, true);
             dic.Add(Keys.LessMinify, true);
-
+            dic.Add(Keys.LessEnableCompiler, true);
+            dic.Add(Keys.LessCompileToLocation, true);
 
             // CoffeeScript
             dic.Add(Keys.GenerateJsFileFromCoffeeScript, true);
             dic.Add(Keys.ShowCoffeeScriptPreviewWindow, true);
+            dic.Add(Keys.CoffeeScriptEnableCompiler, true);
+            dic.Add(Keys.CoffeeScriptCompileToLocation, true);
+
+            // Markdown
+            dic.Add(Keys.MarkdownShowPreviewWindow, true);
+            dic.Add(Keys.MarkdownEnableCompiler, true);
+            dic.Add(Keys.MarkdownCompileToLocation, true);
+
+            dic.Add(Keys.MarkdownAutoHyperlinks, true);
+            dic.Add(Keys.MarkdownLinkEmails, true);
+            dic.Add(Keys.MarkdownAutoNewLine, true);
+            dic.Add(Keys.MarkdownGenerateXHTML, true);
+            dic.Add(Keys.MarkdownEncodeProblemUrlCharacters, true);
+            dic.Add(Keys.MarkdownStrictBoldItalic, true);
 
             // CSS
             dic.Add(Keys.CssErrorLocation, (int)Keys.ErrorLocation.Messages);
             dic.Add(Keys.SyncVendorValues, true);
             dic.Add(Keys.ShowUnsupported, true);
 
-            //JSHint
+            // JSHint
             dic.Add(Keys.EnableJsHint, true);
             dic.Add(Keys.JsHintErrorLocation, (int)Keys.FullErrorLocation.Messages);
             dic.Add(Keys.JsHint_bitwise, true);
@@ -283,19 +298,18 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.JsHint_unused, true);
             dic.Add(Keys.JsHint_ignoreFiles, "kendo.*; globalize.*");
 
-            // MISC
+            // Misc
             dic.Add(Keys.ShowBrowserTooltip, true);
             dic.Add(Keys.WrapCoffeeScriptClosure, true);
 
             // Minification
             dic.Add(Keys.EnableCssMinification, true);
             dic.Add(Keys.EnableJsMinification, true);
-
-            // Minification
             dic.Add(Keys.CoffeeScriptMinify, true);
-           
 
+            // Source Maps
             dic.Add(Keys.GenerateJavaScriptSourceMaps, true);
+            dic.Add(Keys.LessSourceMaps, true);
 
             // Unused CSS
             //Bootstrap, Reset, Normalize, JQuery (UI), Toastr, Foundation, Animate, Inuit, LESS Elements, Ratchet, Hint.css, Flat UI, 960.gs, Skeleton

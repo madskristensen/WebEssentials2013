@@ -1,7 +1,7 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.Windows.Media.Imaging;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Actions
 {
@@ -61,7 +61,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Actions
                         --position;
                         continue;
                     }
-                    
+
                     ++position;
                 }
 
@@ -88,7 +88,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Actions
                             committedPosition = ++position;
                             continue;
                         }
-                        
+
                         if (string.IsNullOrWhiteSpace(text))
                         {
                             ++position;

@@ -1,15 +1,14 @@
-﻿using Microsoft.CSS.Editor;
-using Microsoft.CSS.Editor.Schemas;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
-using System;
+﻿using System;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Xml;
+using Microsoft.CSS.Editor.Schemas;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {

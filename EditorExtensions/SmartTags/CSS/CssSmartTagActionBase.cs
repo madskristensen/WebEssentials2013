@@ -16,7 +16,7 @@ namespace MadsKristensen.EditorExtensions
             get { return "NO DISPLAY TEXT SPECIFIED"; }
         }
 
-        public ImageSource Icon { get; protected set; }        
+        public ImageSource Icon { get; protected set; }
 
         public bool IsEnabled
         {
@@ -24,5 +24,5 @@ namespace MadsKristensen.EditorExtensions
         }
 
         public abstract void Invoke();
-}
+    }
 }

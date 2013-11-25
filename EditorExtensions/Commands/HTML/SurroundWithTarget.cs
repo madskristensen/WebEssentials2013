@@ -67,15 +67,15 @@ namespace MadsKristensen.EditorExtensions
 
             using (var edit = _buffer.CreateEdit())
             {
-                edit.Insert(end, "</p>");
-                edit.Insert(start, "<p>");
+                edit.Insert(end, "</div>");
+                edit.Insert(start, "<div>");
                 edit.Apply();
             }
 
             SnapshotPoint point = new SnapshotPoint(_buffer.CurrentSnapshot, start + 1);
 
             _view.Caret.MoveTo(point);
-            _view.Selection.Select(new SnapshotSpan(_buffer.CurrentSnapshot, point, 1), false);
+            _view.Selection.Select(new SnapshotSpan(_buffer.CurrentSnapshot, point, 3), false);
             EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
 
             EditorExtensionsPackage.DTE.UndoContext.Close();

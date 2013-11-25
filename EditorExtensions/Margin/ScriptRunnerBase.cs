@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions
         public void Compile(string source, string state)
         {
             _dispatcher.BeginInvoke(new Action(() =>
-            {                
+            {
                 _browser.ObjectForScripting = this;
                 _browser.ScriptErrorsSuppressed = true;
                 _browser.DocumentText = CreateHtml(source, state);

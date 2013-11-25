@@ -1,14 +1,13 @@
-﻿using CssSorter;
-using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text;
-using Microsoft.VisualStudio.Utilities;
+using CssSorter;
+using EnvDTE;
+using EnvDTE80;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -35,7 +34,7 @@ namespace MadsKristensen.EditorExtensions
             Span span = new Span(0, buffer.CurrentSnapshot.Length);
             buffer.Replace(span, result);
 
-            EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatDocument");
+            EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
             var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
             selection.GotoLine(1);
 

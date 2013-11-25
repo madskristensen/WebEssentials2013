@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
         private static void MoveCursorToEdit(Window window, IRange range, int offset = 0)
         {
             var selection = window.Document.Selection as TextSelection;
-            
+
             if (selection != null)
             {
                 try
@@ -186,9 +186,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 return ActionKind.GetHashCode() ^ PropertyName.GetHashCode();
             }
 
-            public static SyncAction NoOp(RuleSet rule,string propertyName)
+            public static SyncAction NoOp(RuleSet rule, string propertyName)
             {
-                return new SyncAction(rule,propertyName).ToNoOp();
+                return new SyncAction(rule, propertyName).ToNoOp();
             }
         }
 

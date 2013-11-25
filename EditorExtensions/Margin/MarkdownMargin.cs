@@ -1,14 +1,14 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using MarkdownSharp;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using EnvDTE;
+using EnvDTE80;
+using MarkdownSharp;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -28,8 +28,13 @@ namespace MadsKristensen.EditorExtensions
         {
             if (_compiler == null)
             {
-                MarkdownOptions options = new MarkdownOptions();
-                options.AutoHyperlink = true;
+                MarkdownSharp.MarkdownOptions options = new MarkdownSharp.MarkdownOptions();
+                options.AutoHyperlink = AutoHyperlinks;
+                options.LinkEmails = LinkEmails;
+                options.AutoNewLines = AutoNewLines;
+                options.EmptyElementSuffix = GenerateXHTML ? "/>" : ">";
+                options.EncodeProblemUrlCharacters = EncodeProblemUrlCharacters;
+                options.StrictBoldItalic = StrictBoldItalic;
 
                 _compiler = new Markdown(options);
             }
@@ -47,6 +52,22 @@ namespace MadsKristensen.EditorExtensions
                           "<body>" + result + "</body></html>";
 
             _browser.NavigateToString(html);
+
+            // NOTE: Markdown files are always compiled for the Preview window.
+            //       But, only saved to disk when the CompileEnabled flag is true.
+            //       That is why the following if statement is not wrapping this whole method.
+            if (CompileEnabled)
+            {
+                string htmlFilename = GetCompiledFileName(Document.FilePath, ".html", CompileToLocation);
+                try
+                {
+                    File.WriteAllText(htmlFilename, html);
+                }
+                catch (Exception exception)
+                {
+                    Logger.Log("An error occurred while compiling " + Document.FilePath + ":\n" + exception);
+                }
+            }
         }
 
         public static string GetStylesheet()
@@ -132,11 +153,6 @@ namespace MadsKristensen.EditorExtensions
             // Nothing to minify
         }
 
-        public override bool UseCompiledFolder
-        {
-            get { return false; }
-        }
-
         public override bool IsSaveFileEnabled
         {
             get { return false; }
@@ -145,6 +161,46 @@ namespace MadsKristensen.EditorExtensions
         protected override bool CanWriteToDisk(string source)
         {
             return false;
+        }
+
+        public override bool CompileEnabled
+        {
+            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownEnableCompiler); }
+        }
+
+        public override string CompileToLocation
+        {
+            get { return WESettings.GetString(WESettings.Keys.MarkdownCompileToLocation); }
+        }
+
+        public bool AutoHyperlinks
+        {
+            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownAutoHyperlinks); }
+        }
+
+        public bool LinkEmails
+        {
+            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownLinkEmails); }
+        }
+
+        public bool AutoNewLines
+        {
+            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownAutoNewLine); }
+        }
+
+        public bool GenerateXHTML
+        {
+            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownGenerateXHTML); }
+        }
+
+        public bool EncodeProblemUrlCharacters
+        {
+            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownEncodeProblemUrlCharacters); }
+        }
+
+        public bool StrictBoldItalic
+        {
+            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownStrictBoldItalic); }
         }
     }
 }

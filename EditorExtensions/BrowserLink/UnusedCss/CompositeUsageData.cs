@@ -59,7 +59,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             return GetWarnings("Unused CSS rule \"{1}\"");
         }
-        
+
         public IEnumerable<Task> GetWarnings(Uri uri)
         {
             return GetWarnings("Unused CSS rule \"{1}\" on page " + uri);

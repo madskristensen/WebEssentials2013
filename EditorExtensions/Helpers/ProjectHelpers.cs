@@ -1,4 +1,6 @@
 ﻿using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
@@ -9,8 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using EnvDTE80;
-using Microsoft.VisualStudio;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -59,7 +59,16 @@ namespace MadsKristensen.EditorExtensions
                 }
                 if (string.IsNullOrEmpty(project.FullName))
                     return null;
-                var fullPath = project.Properties.Item("FullPath").Value as string;
+                string fullPath;
+                try
+                {
+                    fullPath = project.Properties.Item("FullPath").Value as string;
+                }
+                catch (ArgumentException)
+                {
+                    // MFC projects don't have FullPath, and there seems to be no way to query existence
+                    fullPath = project.Properties.Item("ProjectDirectory").Value as string;
+                }
 
                 if (String.IsNullOrEmpty(fullPath))
                     return "";

@@ -24,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (string file in files)
             {
-                string cssFileName = MarginBase.GetCompiledFileName(file, ".css", WESettings.GetBoolean(WESettings.Keys.LessCompileToFolder));
+                string cssFileName = MarginBase.GetCompiledFileName(file, ".css", WESettings.GetString(WESettings.Keys.LessCompileToLocation));
                 var result = await LessCompiler.Compile(file, cssFileName);
 
                 if (result.IsSuccess)
@@ -42,11 +42,11 @@ namespace MadsKristensen.EditorExtensions
             if (Path.GetFileName(fileName).StartsWith("_"))
                 return false;
 
-            string minFile = MarginBase.GetCompiledFileName(fileName, ".min.css", WESettings.GetBoolean(WESettings.Keys.LessCompileToFolder));
+            string minFile = MarginBase.GetCompiledFileName(fileName, ".min.css", WESettings.GetString(WESettings.Keys.LessCompileToLocation));
             if (File.Exists(minFile) && WESettings.GetBoolean(WESettings.Keys.LessMinify))
                 return true;
 
-            string cssFile = MarginBase.GetCompiledFileName(fileName, ".css", WESettings.GetBoolean(WESettings.Keys.LessCompileToFolder));
+            string cssFile = MarginBase.GetCompiledFileName(fileName, ".css", WESettings.GetString(WESettings.Keys.LessCompileToLocation));
             if (!File.Exists(cssFile))
                 return false;
 
@@ -82,7 +82,7 @@ namespace MadsKristensen.EditorExtensions
             if (WESettings.GetBoolean(WESettings.Keys.LessMinify))
             {
                 string content = MinifyFileMenu.MinifyString(".css", source);
-                string minFile = MarginBase.GetCompiledFileName(lessFileName, ".min.css", WESettings.GetBoolean(WESettings.Keys.LessCompileToFolder)); //lessFileName.Replace(".less", ".min.css");
+                string minFile = MarginBase.GetCompiledFileName(lessFileName, ".min.css", WESettings.GetString(WESettings.Keys.LessCompileToLocation)); //lessFileName.Replace(".less", ".min.css");
                 bool fileExist = File.Exists(minFile);
                 string old = fileExist ? File.ReadAllText(minFile) : string.Empty;
 

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using EnvDTE100;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
@@ -125,7 +123,7 @@ namespace MadsKristensen.EditorExtensions
                 return new ITagSpan<UnusedCssTag>[0];
             }
 
-            var result = new List<ITagSpan<IErrorTag>>(); 
+            var result = new List<ITagSpan<IErrorTag>>();
 
             using (AmbientRuleContext.GetOrCreate())
             {

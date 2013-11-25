@@ -1,14 +1,14 @@
-﻿using EnvDTE;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using EnvDTE;
 using EnvDTE80;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -42,7 +42,7 @@ namespace MadsKristensen.EditorExtensions
             var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
             selection.GotoLine(1);
 
-            EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatDocument");
+            EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
             EditorExtensionsPackage.DTE.UndoContext.Close();
 
             return true;

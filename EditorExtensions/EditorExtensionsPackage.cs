@@ -26,6 +26,7 @@ namespace MadsKristensen.EditorExtensions
     [ProvideOptionPage(typeof(CoffeeScriptOptions), "Web Essentials", "CoffeeScript", 101, 106, true, new[] { "Iced", "JavaScript", "JS", "JScript" })]
     [ProvideOptionPage(typeof(JavaScriptOptions), "Web Essentials", "JavaScript", 101, 107, true, new[] { "JScript", "JS", "Minify", "Minification", "EcmaScript" })]
     [ProvideOptionPage(typeof(UnusedCssOptions), "Web Essentials", "Unused CSS", 101, 108, true, new[] { "Ignore", "Filter" })]
+    [ProvideOptionPage(typeof(MarkdownOptions), "Web Essentials", "Markdown", 101, 109, true, new[] { "markdown", "Markdown", "md" })]
     public sealed class EditorExtensionsPackage : Package
     {
         private static DTE2 _dte;
@@ -142,7 +143,11 @@ namespace MadsKristensen.EditorExtensions
             var command = EditorExtensionsPackage.DTE.Commands.Item(commandName);
             if (command.IsAvailable)
             {
-                EditorExtensionsPackage.DTE.ExecuteCommand(commandName);
+                try
+                {
+                    EditorExtensionsPackage.DTE.ExecuteCommand(commandName);
+                }
+                catch { }
             }
         }
 

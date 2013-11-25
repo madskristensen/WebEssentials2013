@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
         public void SetupCommands()
         {
-            var commandId = new CommandID(GuidList.guidPixelPushingCmdSet, (int) PkgCmdIDList.cmdPixelPushingToggleCommandId);
+            var commandId = new CommandID(GuidList.guidPixelPushingCmdSet, (int)PkgCmdIDList.cmdPixelPushingToggleCommandId);
             var toggleCommand = new OleMenuCommand(TogglePixelPushingMode, EmptyChangeHandler, TogglePixelPushingModeBeforeQueryStatus, commandId)
             {
                 Checked = true

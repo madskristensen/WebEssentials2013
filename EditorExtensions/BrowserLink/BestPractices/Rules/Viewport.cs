@@ -72,7 +72,7 @@ namespace MadsKristensen.EditorExtensions
                 buffer.Insert(index, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />" + Environment.NewLine);
                 view.Caret.MoveTo(new SnapshotPoint(buffer.CurrentSnapshot, index + 31 + 37));
                 view.Selection.Select(new SnapshotSpan(buffer.CurrentSnapshot, 31 + index, 37), false);
-                EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatSelection");
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
 
                 EditorExtensionsPackage.DTE.UndoContext.Close();
                 EditorExtensionsPackage.DTE.ActiveDocument.Save();

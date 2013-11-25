@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions;
 using Microsoft.CSS.Core;
@@ -32,10 +33,8 @@ namespace WebEssentialsTests
             foreach (var lessFilename in Directory.EnumerateFiles(Path.Combine(BaseDirectory, "fixtures/less"), "*.less", SearchOption.AllDirectories))
             {
                 var compiled = await CompileLess(lessFilename);
-                var expected = File.ReadAllText(Path.ChangeExtension(lessFilename, ".css"));
-
-                compiled = new CssFormatter().Format(compiled).Replace("\r", "");
-                expected = new CssFormatter().Format(expected).Replace("\r", "");
+                var expected = File.ReadAllText(Path.ChangeExtension(lessFilename, ".css"))
+                               .Replace("\r", "");
 
                 compiled.Should().Be(expected);
             }
@@ -65,9 +64,14 @@ namespace WebEssentialsTests
         {
             var result = await LessCompiler.Compile(fileName, targetFilename);
             if (result.IsSuccess)
-                return result.Result;
+            {
+                // remove the sourceMappingURL comment at the end of compiled file and return.
+                return Regex.Replace(result.Result, @"\n\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", ""); ;
+            }
             else
+            {
                 throw new ExternalException(result.Error.Message);
+            }
         }
     }
 }

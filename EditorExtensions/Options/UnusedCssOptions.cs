@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.Shell;
-using System;
+﻿using System;
 using System.ComponentModel;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions
         {
             Settings.SetValue(WESettings.Keys.UnusedCss_IgnorePatterns, IgnorePatterns);
             //Settings.SetValue(WESettings.Keys.UnusedCss_IgnoreRemoteFiles, IgnoreRemoteFiles);
-            
+
             Settings.Save();
         }
 

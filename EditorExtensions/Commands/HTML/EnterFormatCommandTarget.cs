@@ -46,6 +46,7 @@ namespace MadsKristensen.EditorExtensions
             if (element == null ||
                 _tree.IsDirty ||
                 element.Parent == null ||
+                element.StartTag.Contains(position) ||
                 line.End.Position == position || // caret at end of line (TODO: add ignore whitespace logic)
                 TextView.TextBuffer.CurrentSnapshot.GetText(element.InnerRange.Start, element.InnerRange.Length).Trim().Length == 0)
                 return false;
@@ -109,7 +110,11 @@ namespace MadsKristensen.EditorExtensions
             ITextBuffer buffer = HtmlEditorDocument.FromTextView(TextView).TextBuffer;
             SnapshotSpan span = new SnapshotSpan(buffer.CurrentSnapshot, element.Start, element.Length);
 
-            _formatter.FormatRange(TextView, buffer, span, true);
+            try
+            {
+                _formatter.FormatRange(TextView, buffer, span, true);
+            }
+            catch { }
         }
 
         private ElementNode GetFirstBlockParent(ElementNode current, List<IHtmlSchema> schemas)

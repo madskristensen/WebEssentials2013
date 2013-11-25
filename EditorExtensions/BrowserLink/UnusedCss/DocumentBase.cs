@@ -1,9 +1,9 @@
-﻿using Microsoft.CSS.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -65,7 +65,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         }
 
         public bool IsProcessingUnusedCssRules { get; set; }
-        
+
         public string FileName { get { return _file; } }
 
         private async void Reparse(object sender, FileSystemEventArgs e)

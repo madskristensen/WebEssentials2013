@@ -182,7 +182,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public void SnapshotPage()
         {
             var opId = Guid.NewGuid();
-            
+
             lock (_operationsInProgress)
             {
                 _operationsInProgress.Add(opId);

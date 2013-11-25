@@ -1,13 +1,7 @@
-﻿using System.ComponentModel.Design;
-using System.Linq;
-using System.Text;
-using EnvDTE;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Design;
 using EnvDTE80;
-using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Shell;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -60,7 +54,7 @@ namespace MadsKristensen.EditorExtensions
         private void Sort()
         {
             if (files.Count == 2)
-                EditorExtensionsPackage.DTE.ExecuteCommand("Tools.DiffFiles \"" + files[0] + "\" \"" + files[1] + "\"");
+                EditorExtensionsPackage.ExecuteCommand("Tools.DiffFiles \"" + files[0] + "\" \"" + files[1] + "\"");
         }
     }
 }

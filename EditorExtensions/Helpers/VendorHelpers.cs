@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Microsoft.CSS.Core;
+using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.CSS.Editor.Schemas;
+using Microsoft.CSS.Editor.SyntaxCheck;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.CSS.Editor.Schemas;
-using Microsoft.CSS.Editor.Intellisense;
-using Microsoft.CSS.Editor.SyntaxCheck;
 
 namespace MadsKristensen.EditorExtensions
 {

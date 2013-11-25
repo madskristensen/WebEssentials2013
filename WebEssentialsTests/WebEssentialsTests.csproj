@@ -41,6 +41,12 @@
     <Reference Include="Microsoft.CSS.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Html.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>../../../../../../../Program%20Files%20(x86)/Microsoft%20Visual%20Studio%2012.0/Common7/IDE//CommonExtensions/Microsoft/Web/Editor/Microsoft.Html.Core.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Html.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Html.Editor, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Html.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -51,6 +57,8 @@
     </Reference>
     <Reference Include="Microsoft.Web.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>../../../../../../../Program%20Files%20(x86)/Microsoft%20Visual%20Studio%2012.0/Common7/IDE//CommonExtensions/Microsoft/Web/Editor/Microsoft.Web.Core.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Web.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
@@ -67,6 +75,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="BootStrapValidationTests.cs" />
     <Compile Include="LessCompilationTests.cs" />
     <Compile Include="LessDocumentTests.cs">
       <SubType>Code</SubType>
@@ -158,7 +167,7 @@
       rem Needed to run LESS compiler JS
       xcopy /y /s /d "$(SolutionDir)EditorExtensions\Resources\Scripts\*" "$(TargetDir)Resources\Scripts\" &gt;nul
       xcopy /y /s /d "$(SolutionDir)EditorExtensions\Resources\nodejs\*" "$(TargetDir)Resources\nodejs\" &gt;nul
-      xcopy /y /s /d "$(ProjectDir)fixtures\*" "$(TargetDir)fixtures\" &gt;nul
+      (robocopy /mir /e /ns /nc /nfl /ndl /np /njh /njs "$(ProjectDir)fixtures" "$(TargetDir)fixtures") ^&amp; IF %ERRORLEVEL% LEQ 1 exit 0
     </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -167,5 +176,9 @@
   </Target>
   <Target Name="AfterBuild">
   </Target>
-  -->
+  
+  Finally found it, but we don't need it after robocopy
+  <Target Name="BeforeClean">
+    <RemoveDir Directories="$(TargetDir)fixtures\" />
+  </Target>-->
 </Project>

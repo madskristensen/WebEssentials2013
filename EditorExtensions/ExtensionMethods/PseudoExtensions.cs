@@ -1,5 +1,4 @@
 ﻿using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Schemas;
 
 namespace MadsKristensen.EditorExtensions

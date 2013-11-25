@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
             //SnapshotSpan span = _span.GetSpan(_span.TextBuffer.CurrentSnapshot);
             string text = _directive.Text.Replace("@" + _directive.Keyword.Text, _standardName);
             _span.TextBuffer.Insert(_directive.AfterEnd, Environment.NewLine + Environment.NewLine + text);
-            EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatSelection");
+            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
             EditorExtensionsPackage.DTE.UndoContext.Close();
         }
     }

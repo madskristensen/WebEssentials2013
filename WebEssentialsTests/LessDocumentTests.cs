@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Less.Core;
 using Microsoft.CSS.Core;
-using FluentAssertions;
+using Microsoft.Less.Core;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebEssentialsTests
 {

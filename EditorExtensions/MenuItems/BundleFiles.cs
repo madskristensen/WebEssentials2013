@@ -1,11 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
@@ -15,8 +8,14 @@ using System.Text;
 using System.Windows;
 using System.Windows.Threading;
 using System.Xml;
+using EnvDTE;
+using EnvDTE80;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -330,7 +329,8 @@ namespace MadsKristensen.EditorExtensions
                     // If the bundle is in the same folder as the CSS,
                     // or if does not have URLs, no need to normalize.
                     if (Path.GetDirectoryName(file) != Path.GetDirectoryName(bundlePath)
-                     && source.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
+                     && source.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0
+                        && !WESettings.GetBoolean(WESettings.Keys.CssPreserveRelativePathsOnMinify))
                         source = CssUrlNormalizer.NormalizeUrls(
                             tree: new CssParser().Parse(source, true),
                             targetFile: bundlePath,

@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.Shell;
-using System;
+﻿using System;
 using System.ComponentModel;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.EnableJsHint, EnableJsHint);
             Settings.SetValue(WESettings.Keys.JsHint_ignoreFiles, IgnoreFiles);
             Settings.SetValue(WESettings.Keys.JsHintErrorLocation, (int)ErrorLocation);
-            
+
             Settings.SetValue(WESettings.Keys.JsHint_bitwise, JsHint_bitwise);
             Settings.SetValue(WESettings.Keys.JsHint_camelcase, JsHint_camelcase);
             Settings.SetValue(WESettings.Keys.JsHint_curly, JsHint_curly);
@@ -38,7 +38,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.JsHint_unused, JsHint_unused);
             Settings.SetValue(WESettings.Keys.JsHint_strict, JsHint_strict);
             Settings.SetValue(WESettings.Keys.JsHint_trailing, JsHint_trailing);
-            
+
             Settings.SetValue(WESettings.Keys.JsHint_asi, JsHint_asi);
             Settings.SetValue(WESettings.Keys.JsHint_boss, JsHint_boss);
             Settings.SetValue(WESettings.Keys.JsHint_debug, JsHint_debug);
@@ -63,7 +63,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.JsHint_sub, JsHint_sub);
             Settings.SetValue(WESettings.Keys.JsHint_supernew, JsHint_supernew);
             Settings.SetValue(WESettings.Keys.JsHint_validthis, JsHint_validthis);
-            
+
             Settings.SetValue(WESettings.Keys.JsHint_browser, JsHint_browser);
             Settings.SetValue(WESettings.Keys.JsHint_couch, JsHint_couch);
             Settings.SetValue(WESettings.Keys.JsHint_devel, JsHint_devel);
