@@ -33,10 +33,12 @@ namespace MadsKristensen.EditorExtensions
             string webEssentialsDir = Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location);
             string lessc = Path.Combine(webEssentialsDir, @"Resources\nodejs\node_modules\.bin\lessc.cmd");
             string arguments = String.Format("--no-color --relative-urls \"{0}\" \"{1}\"", filename, output);
+            string fileNameWithoutPath = Path.GetFileName(targetFilename ?? filename);
+
             if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
                 arguments = String.Format(
-                  "--relative-urls --source-map=\"{0}.map\" \"{1}\" \"{2}\"",
-                  targetFilename ?? filename,
+                  "--relative-urls --source-map-basepath=\"./\" --source-map=\"{0}.map\" \"{1}\" \"{2}\"",
+                  fileNameWithoutPath,
                   filename,
                   output);
 
