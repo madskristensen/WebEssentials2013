@@ -6,14 +6,15 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class CssSortProperties : CommandTargetBase
     {
         private DTE2 _dte;
-        private readonly string[] _supported = new[] { "CSS", "LESS" };
-        //private static uint[] _commandIds = new uint[] { PkgCmdIDList.sortCssProperties };
 
         public CssSortProperties(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, GuidList.guidCssCmdSet, PkgCmdIDList.sortCssProperties)
@@ -23,47 +24,39 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            TextDocument doc = _dte.ActiveDocument.Object("TextDocument") as TextDocument;
-            EditPoint edit = doc.StartPoint.CreateEditPoint();
-            string text = SortProperties(edit.GetText(doc.EndPoint));
+            var point = TextView.GetSelection("css");
+            if (point == null) return false;
+
+            var buffer = point.Value.Snapshot.TextBuffer;
 
             _dte.UndoContext.Open("Sort All Properties");
 
-            edit.ReplaceText(doc.EndPoint, text, (int)vsFindOptions.vsFindOptionsNone);
+            string result = SortProperties(buffer.CurrentSnapshot.GetText(), buffer.ContentType);
+            Span span = new Span(0, buffer.CurrentSnapshot.Length);
+            buffer.Replace(span, result);
+
             EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatDocument");
-            doc.Selection.MoveToPoint(doc.StartPoint);
+            var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
+            selection.GotoLine(1);
 
             _dte.UndoContext.Close();
 
             return true;
         }
 
-        private string SortProperties(string text)
+        private string SortProperties(string text, IContentType contentType)
         {
             Sorter sorter = new Sorter();
 
-            if (Path.GetExtension(_dte.ActiveDocument.FullName) == ".css")
-            {
-                return sorter.SortStyleSheet(text);
-            }
-            else if (Path.GetExtension(_dte.ActiveDocument.FullName) == ".less")
-            {
+            if (contentType.IsOfType("LESS"))
                 return sorter.SortLess(text);
-            }
 
-            return text;
+            return sorter.SortStyleSheet(text);
         }
 
         protected override bool IsEnabled()
         {
-            var buffer = ProjectHelpers.GetCurentTextBuffer();
-
-            if (buffer != null && _supported.Contains(buffer.ContentType.DisplayName.ToUpperInvariant()))
-            {
-                return true;
-            }
-
-            return false;
+            return TextView.GetSelection("css").HasValue;
         }
     }
 }

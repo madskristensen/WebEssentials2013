@@ -25,17 +25,19 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            ITextBuffer buffer = ProjectHelpers.GetCurentTextBuffer();
-            CssEditorDocument doc = new CssEditorDocument(buffer);
+            var point = TextView.GetSelection("CSS");
+            if (point == null)
+                return false;
+            ITextSnapshot snapshot = point.Value.Snapshot;
+            var doc = CssEditorDocument.FromTextBuffer(snapshot.TextBuffer);
 
-            StringBuilder sb = new StringBuilder(buffer.CurrentSnapshot.Length);
-            sb.Append(buffer.CurrentSnapshot.GetText());
+            StringBuilder sb = new StringBuilder(snapshot.GetText());
 
             EditorExtensionsPackage.DTE.UndoContext.Open("Remove Duplicate Properties");
 
             string result = RemoveDuplicateProperties(sb, doc);
-            Span span = new Span(0, buffer.CurrentSnapshot.Length);
-            buffer.Replace(span, result);
+            Span span = new Span(0, snapshot.Length);
+            snapshot.TextBuffer.Replace(span, result);
 
             var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
             selection.GotoLine(1);
@@ -57,13 +59,8 @@ namespace MadsKristensen.EditorExtensions
 
                 foreach (Declaration dec in rule.Declarations.Reverse())
                 {
-                    if (list.Contains(dec.Text))
-                    {
+                    if (!list.Add(dec.Text))
                         sb.Remove(dec.Start, dec.Length);
-                        continue;
-                    }
-
-                    list.Add(dec.Text);
                 }
             }
 
@@ -85,14 +82,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool IsEnabled()
         {
-            var buffer = ProjectHelpers.GetCurentTextBuffer();
-
-            if (buffer != null && _supported.Contains(buffer.ContentType.DisplayName.ToUpperInvariant()))
-            {
-                return true;
-            }
-
-            return false;
+            return TextView.GetSelection("CSS") != null;
         }
     }
 }

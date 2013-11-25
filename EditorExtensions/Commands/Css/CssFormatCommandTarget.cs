@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     case (uint)VSConstants.VSStd2KCmdID.FORMATSELECTION:
                     case (uint)VSConstants.VSStd2KCmdID.FORMATDOCUMENT:
-                        if (_textView.TextBuffer.ContentType.IsOfType("SCSS"))
+                        if (_textView.GetSelection("SCSS").HasValue)
                         {
                             return VSConstants.S_OK;
                         }

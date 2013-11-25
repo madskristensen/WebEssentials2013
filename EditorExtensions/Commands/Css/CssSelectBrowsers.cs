@@ -24,27 +24,17 @@ namespace MadsKristensen.EditorExtensions
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             BrowserSelector selector = new BrowserSelector();
-            selector.ShowDialog();            
+            selector.ShowDialog();
 
             return true;
         }
 
-        private bool IsValidTextBuffer(IWpfTextView view)
-        {
-            return ProjectionBufferHelper.MapToBuffer(view, "css", view.Caret.Position.BufferPosition) != null;
-        }
-
         protected override bool IsEnabled()
         {
+            if (TextView.GetSelection("css") == null)
+                return false;
             var item = _dte.Solution.FindProjectItem(_dte.ActiveDocument.FullName);
-            bool hasProject = item != null && item.ContainingProject != null && !string.IsNullOrEmpty(item.ContainingProject.FullName);
-
-            if (hasProject && TextView != null && IsValidTextBuffer(TextView))
-            {
-                return true;
-            }
-
-            return false;
+            return item != null && item.ContainingProject != null && !string.IsNullOrEmpty(item.ContainingProject.FullName);
         }
     }
 }

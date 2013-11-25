@@ -15,23 +15,21 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class CssAddMissingVendor : CommandTargetBase
     {
-        private DTE2 _dte;
-        private readonly string[] _supported = new[] { "CSS", "LESS" };
-
         public CssAddMissingVendor(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, GuidList.guidCssCmdSet, PkgCmdIDList.addMissingVendor)
         {
-            _dte = EditorExtensionsPackage.DTE;
         }
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            ITextBuffer buffer = ProjectHelpers.GetCurentTextBuffer();
-            CssEditorDocument doc = new CssEditorDocument(buffer);
+            var point = TextView.GetSelection("css");
+            if (point == null) return false;
+
+            ITextBuffer buffer = point.Value.Snapshot.TextBuffer;
+            CssEditorDocument doc = CssEditorDocument.FromTextBuffer(buffer);
             ICssSchemaInstance rootSchema = CssSchemaManager.SchemaManager.GetSchemaRoot(null);
 
-            StringBuilder sb = new StringBuilder(buffer.CurrentSnapshot.Length);
-            sb.Append(buffer.CurrentSnapshot.GetText());
+            StringBuilder sb = new StringBuilder(buffer.CurrentSnapshot.GetText());
 
             EditorExtensionsPackage.DTE.UndoContext.Open("Add Missing Vendor Specifics");
 
@@ -87,14 +85,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool IsEnabled()
         {
-            var buffer = ProjectHelpers.GetCurentTextBuffer();
-
-            if (buffer != null && _supported.Contains(buffer.ContentType.DisplayName.ToUpperInvariant()))
-            {
-                return true;
-            }
-
-            return false;
+            return TextView.GetSelection("css").HasValue;
         }
     }
 }

@@ -7,39 +7,38 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using System;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class F1Help : CommandTargetBase
     {
-        private CssTree _tree;
-
         public F1Help(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, typeof(VSConstants.VSStd97CmdID).GUID, (uint)VSConstants.VSStd97CmdID.F1Help)
         { }
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if (!EnsureInitialized())
+            var selection = TextView.GetSelection("css");
+            if (selection == null)
                 return false;
-
-            int position = TextView.Caret.Position.BufferPosition.Position;
-            ParseItem item = _tree.StyleSheet.ItemBeforePosition(position);
+            var doc = CssEditorDocument.FromTextBuffer(selection.Value.Snapshot.TextBuffer);
+            ParseItem item = doc.StyleSheet.ItemBeforePosition(selection.Value);
 
             if (item == null)
                 return false;
 
-            return SchemaLookup(item);
+            return SchemaLookup(item, selection.Value.Snapshot.TextBuffer);
         }
 
         private delegate ICssCompletionListEntry Reference(string name);
 
-        private bool SchemaLookup(ParseItem item)
+        private bool SchemaLookup(ParseItem item, ITextBuffer buffer)
         {
             if (item is ClassSelector || item is IdSelector || item is ItemName || item.Parent is RuleBlock || item.Parent is StyleSheet)
                 return false;
 
-            ICssSchemaInstance schema = CssSchemaManager.SchemaManager.GetSchemaRootForBuffer(TextView.TextBuffer);
+            ICssSchemaInstance schema = CssSchemaManager.SchemaManager.GetSchemaRootForBuffer(buffer);
 
             Declaration dec = item.FindType<Declaration>();
             if (dec != null && dec.PropertyName != null)
@@ -86,25 +85,9 @@ namespace MadsKristensen.EditorExtensions
             return false;
         }
 
-        public bool EnsureInitialized()
-        {
-            if (_tree == null && Microsoft.Web.Editor.WebEditor.Host != null)
-            {
-                try
-                {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(TextView.TextBuffer);
-                    _tree = document.Tree;
-                }
-                catch (ArgumentNullException)
-                { }
-            }
-
-            return _tree != null;
-        }
-
         protected override bool IsEnabled()
         {
-            return true;
+            return TextView.GetSelection("css").HasValue;
         }
     }
 }

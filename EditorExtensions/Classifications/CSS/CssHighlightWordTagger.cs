@@ -86,8 +86,8 @@ namespace MadsKristensen.EditorExtensions
             if (!point.HasValue)
                 return;
 
-            var tree = CssEditorDocument.FromTextBuffer(_buffer);
-            ParseItem item = tree.StyleSheet.ItemBeforePosition(point.Value.Position);
+            var doc = CssEditorDocument.FromTextBuffer(_buffer);
+            ParseItem item = doc.StyleSheet.ItemBeforePosition(point.Value.Position);
             if (item == null)
                 return;
 

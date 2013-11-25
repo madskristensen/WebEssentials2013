@@ -21,15 +21,15 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if (TextView == null)
+            var point = TextView.GetSelection("LESS");
+            if (point == null)
                 return false;
 
-            CssEditorDocument document = CssEditorDocument.FromTextBuffer(TextView.TextBuffer);
-
-            int position = TextView.Caret.Position.BufferPosition.Position;
-            ParseItem item = document.Tree.StyleSheet.ItemBeforePosition(position);
-
+            ITextBuffer buffer = point.Value.Snapshot.TextBuffer;
+            var doc = CssEditorDocument.FromTextBuffer(buffer);
+            ParseItem item = doc.StyleSheet.ItemBeforePosition(point.Value);
             ParseItem rule = FindParent(item);
+
             string text = item.Text;
             string name = Microsoft.VisualBasic.Interaction.InputBox("Name of the variable", "Web Essentials");
 
@@ -37,9 +37,10 @@ namespace MadsKristensen.EditorExtensions
             {
                 EditorExtensionsPackage.DTE.UndoContext.Open("Extract to variable");
 
+                buffer.Insert(rule.Start, "@" + name + ": " + text + ";" + Environment.NewLine + Environment.NewLine);
+
                 Span span = TextView.Selection.SelectedSpans[0].Span;
                 TextView.TextBuffer.Replace(span, "@" + name);
-                TextView.TextBuffer.Insert(rule.Start, "@" + name + ": " + text + ";" + Environment.NewLine + Environment.NewLine);
 
                 EditorExtensionsPackage.DTE.UndoContext.Close();
 
@@ -67,7 +68,7 @@ namespace MadsKristensen.EditorExtensions
         protected override bool IsEnabled()
         {
             var span = TextView.Selection.SelectedSpans[0];
-            return span.Length > 0 && !span.GetText().Contains("\r");
+            return span.Length > 0 && !span.GetText().Contains("\n") && TextView.GetSelection("LESS") != null;
         }
     }
 }
