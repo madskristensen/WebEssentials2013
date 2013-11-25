@@ -1,5 +1,5 @@
 ﻿a {
-    background: url(base-image.png);
+    background: url(../base-image.png);
     background: url(/absolute/path/to/image.png);
 }
 

@@ -86,6 +86,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="fixtures\less\css\URLs.css" />
+    <Content Include="fixtures\less\css\_Deep Inclusion.css" />
+    <Content Include="fixtures\less\css\_Entry1.css" />
+    <Content Include="fixtures\less\sub1\css\_Entry2.css" />
+    <Content Include="fixtures\less\sub1\deeper\css\_Entry3.css" />
+    <Content Include="fixtures\less\sub1\deeper\css\_lib.css" />
     <Content Include="fixtures\less\sub1\deeper\_lib.css" />
     <Content Include="fixtures\less\sub1\deeper\_Entry3.css" />
     <Content Include="fixtures\less\sub1\_Entry2.css" />

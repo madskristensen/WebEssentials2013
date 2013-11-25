@@ -1,9 +1,9 @@
-﻿using EnvDTE;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EnvDTE;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -21,16 +21,22 @@ namespace MadsKristensen.EditorExtensions
         {
             string dir = ProjectHelpers.GetRootFolder(project);
             var files = Directory.EnumerateFiles(dir, "*.less", SearchOption.AllDirectories).Where(CanCompile);
+            string fileBasePath = string.Empty;
 
-            foreach (string file in files)
+            if (files.Count() > 0)
             {
-                string cssFileName = MarginBase.GetCompiledFileName(file, ".css", WESettings.GetString(WESettings.Keys.LessCompileToLocation));
-                var result = await LessCompiler.Compile(file, cssFileName);
+                fileBasePath = files.First().Replace(dir, "").Replace(Path.GetFileName(files.First()), "");
 
-                if (result.IsSuccess)
-                    WriteResult(result, cssFileName);
-                else
-                    Logger.Log(result.Error.Message ?? ("Error compiling LESS file: " + file));
+                foreach (string file in files)
+                {
+                    string cssFileName = MarginBase.GetCompiledFileName(file, ".css", WESettings.GetString(WESettings.Keys.LessCompileToLocation));
+                    var result = await LessCompiler.Compile(file, cssFileName, dir + fileBasePath);
+
+                    if (result.IsSuccess)
+                        WriteResult(result, cssFileName);
+                    else
+                        Logger.Log(result.Error.Message ?? ("Error compiling LESS file: " + file));
+                }
             }
         }
 
