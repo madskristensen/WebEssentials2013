@@ -23,20 +23,19 @@ namespace MadsKristensen.EditorExtensions
             var files = Directory.EnumerateFiles(dir, "*.less", SearchOption.AllDirectories).Where(CanCompile);
             string fileBasePath = string.Empty;
 
-            if (files.Count() > 0)
+            if (!files.Any()) return;
+         
+            fileBasePath = files.First().Replace(dir, "").Replace(Path.GetFileName(files.First()), "");
+
+            foreach (string file in files)
             {
-                fileBasePath = files.First().Replace(dir, "").Replace(Path.GetFileName(files.First()), "");
+                string cssFileName = MarginBase.GetCompiledFileName(file, ".css", WESettings.GetString(WESettings.Keys.LessCompileToLocation));
+                var result = await LessCompiler.Compile(file, cssFileName, dir + fileBasePath);
 
-                foreach (string file in files)
-                {
-                    string cssFileName = MarginBase.GetCompiledFileName(file, ".css", WESettings.GetString(WESettings.Keys.LessCompileToLocation));
-                    var result = await LessCompiler.Compile(file, cssFileName, dir + fileBasePath);
-
-                    if (result.IsSuccess)
-                        WriteResult(result, cssFileName);
-                    else
-                        Logger.Log(result.Error.Message ?? ("Error compiling LESS file: " + file));
-                }
+                if (result.IsSuccess)
+                    WriteResult(result, cssFileName);
+                else
+                    Logger.Log(result.Error.Message ?? ("Error compiling LESS file: " + file));
             }
         }
 
