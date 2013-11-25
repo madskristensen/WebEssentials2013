@@ -1,7 +1,7 @@
-﻿using EnvDTE;
-using Microsoft.VisualStudio.Text;
-using System.IO;
+﻿using System.IO;
 using System.Text;
+using EnvDTE;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -31,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
             Logger.Log("LESS: Compiling " + Path.GetFileName(lessFilePath));
 
             string projectRoot = ProjectHelpers.GetRootFolder(ProjectHelpers.GetActiveProject());
-            string fileBasePath = lessFilePath.Replace(projectRoot, "").Replace(Path.GetFileName(lessFilePath), "");
+            string fileBasePath = "/" + Path.GetDirectoryName(FileHelpers.RelativePath(projectRoot, lessFilePath)).Replace("\\", "/");
 
             var result = await LessCompiler.Compile(lessFilePath, cssFilename, projectRoot + fileBasePath);
             if (result.IsSuccess)
