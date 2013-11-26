@@ -57,7 +57,7 @@ namespace MadsKristensen.EditorExtensions
         private static void AddScript(string filePath, string extension, List<IntellisenseObject> list)
         {
             string resultPath = filePath + extension;
-            
+
             if (File.Exists(resultPath))
             {
                 IntellisenseWriter writer = new IntellisenseWriter();
@@ -67,7 +67,7 @@ namespace MadsKristensen.EditorExtensions
                 if (extension.Equals(".d.ts", StringComparison.OrdinalIgnoreCase))
                     item.Properties.Item("ItemType").Value = "TypeScriptCompile";
                 else
-                {                    
+                {
                     item.Properties.Item("ItemType").Value = "None";
                 }
             }
@@ -104,7 +104,6 @@ namespace MadsKristensen.EditorExtensions
 
         private static void ProcessClass(CodeClass cc, List<IntellisenseObject> list)
         {
-
             IntellisenseObject data = new IntellisenseObject();
             data.Name = cc.Name;
             data.FullName = cc.FullName;
@@ -112,14 +111,25 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (CodeProperty property in cc.Members)
             {
-                var prop = new IntellisenseProperty()
+                bool isAllowed = true;
+                
+                foreach (CodeAttribute attr in property.Attributes)
                 {
-                    Name = GetName(property),
-                    Type = property.Type.AsString,
-                    Summary = GetSummary(property)
-                };
+                    if (attr.Name == "IgnoreDataMember")
+                        isAllowed = false;
+                }
 
-                data.Properties.Add(prop);
+                if (isAllowed)
+                {
+                    var prop = new IntellisenseProperty()
+                    {
+                        Name = GetName(property),
+                        Type = property.Type.AsString,
+                        Summary = GetSummary(property)
+                    };
+
+                    data.Properties.Add(prop);
+                }
             }
 
             if (data.Properties.Count > 0)
