@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System;
 using Microsoft.VisualStudio;
+using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -19,7 +20,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 Column = rule.Column,
                 ErrorCategory = category,
                 Category = TaskCategory.Html,
-                Text = string.Format(format, project.Name, rule.DisplaySelectorName, rule.File, rule.Line, rule.Column),
+                Text = string.Format(CultureInfo.CurrentCulture,format, project.Name, rule.DisplaySelectorName, rule.File, rule.Line, rule.Column),
                 HierarchyItem = item
             };
 

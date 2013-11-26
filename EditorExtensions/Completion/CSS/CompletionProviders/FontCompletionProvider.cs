@@ -94,7 +94,7 @@ namespace MadsKristensen.EditorExtensions
             lock (_syncRoot)
             {
                 fontFamily = text;
-                OpenFileDialog dialog = new OpenFileDialog();
+                using(OpenFileDialog dialog = new OpenFileDialog()){
                 dialog.InitialDirectory = Path.GetDirectoryName(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
                 dialog.Filter = "Fonts (*.woff;*.eot;*.ttf;*.otf;*.svg)|*.woff;*.eot;*.ttf;*.otf;*.svg";
                 dialog.DefaultExt = ".woff";
@@ -104,6 +104,7 @@ namespace MadsKristensen.EditorExtensions
 
                 FontDropHandler fdh = new FontDropHandler(view);
                 return fdh.GetCodeFromFile(dialog.FileName, out fontFamily);
+            }
             }
         }
     }

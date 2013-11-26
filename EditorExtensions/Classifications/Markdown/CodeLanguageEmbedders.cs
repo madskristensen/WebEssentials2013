@@ -117,21 +117,23 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             get
             {
-                return @"
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-";
+                return @"using System;
+                         using System.Collections.Generic;
+                         using System.Data;
+                         using System.Linq;
+                         using System.Text;
+                         using System.Threading;
+                         using System.Threading.Tasks;";
             }
         }
         public override IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
         {
-            return new[] { @"
-partial class Entry { object SampleMethod" + Guid.NewGuid().ToString("n") + @"() {", "}}" };
+            return new[] { @"partial class Entry
+                            {
+                                  object SampleMethod" + Guid.NewGuid().ToString("n") + @"()
+                            {",
+                            @"}
+                            }" };
         }
     }
 
@@ -144,25 +146,23 @@ partial class Entry { object SampleMethod" + Guid.NewGuid().ToString("n") + @"()
         {
             get
             {
-                return @"
-Imports System
-Imports System.Collections.Generic
-Imports System.Data
-Imports System.Linq
-Imports System.Text
-Imports System.Threading
-Imports System.Threading.Tasks
-";
+                return @"Imports System
+                        Imports System.Collections.Generic
+                        Imports System.Data
+                        Imports System.Linq
+                        Imports System.Text
+                        Imports System.Threading
+                        Imports System.Threading.Tasks";
             }
         }
         public override IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
         {
             return new[] { @"
-Partial Class Entry
-Function SampleMethod" + Guid.NewGuid().ToString("n") + @"() As Object", @"
-Return Nothing
-End Function
-End Class" };
+                            Partial Class Entry
+                            Function SampleMethod" + Guid.NewGuid().ToString("n") + @"() As Object", @"
+                                Return Nothing
+                            End Function
+                            End Class"};
         }
     }
 }

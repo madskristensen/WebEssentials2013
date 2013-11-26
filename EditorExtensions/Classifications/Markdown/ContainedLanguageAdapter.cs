@@ -257,9 +257,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 project.Close();
                 return;
             }
-            LanguageBridge bridge = new LanguageBridge(this, projectionBuffer, factory, hierarchy);
+            using(LanguageBridge bridge = new LanguageBridge(this, projectionBuffer, factory, hierarchy))
+            {
             bridge.Disposing += delegate { project.Close(); };
             languageBridges.Add(contentType, bridge);
+        }
         }
 
         class MarkdownCodeProject : IVsContainedLanguageProjectNameProvider, IVsHierarchy, IVsProject3

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -81,7 +82,7 @@ namespace MadsKristensen.EditorExtensions
                 if (File.Exists(file))
                 {
                     string linkFormat = "<link rel=\"stylesheet\" href=\"{0}\" />";
-                    return string.Format(linkFormat, file);
+                    return string.Format(CultureInfo.CurrentCulture,linkFormat, file);
                 }
             }
 

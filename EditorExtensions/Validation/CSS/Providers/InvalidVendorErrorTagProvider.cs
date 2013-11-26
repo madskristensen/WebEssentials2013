@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.Utilities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -41,7 +42,7 @@ namespace MadsKristensen.EditorExtensions
             //}
              if (schema.GetProperty(dec.PropertyName.Text) == null)
             {
-                string message = string.Format(Resources.ValidationVendorDeclarations, dec.PropertyName.Text);
+                string message = string.Format(CultureInfo.CurrentCulture,Resources.ValidationVendorDeclarations, dec.PropertyName.Text);
                 context.AddError(new SimpleErrorTag(dec.PropertyName, message, CssErrorFlags.TaskListWarning | CssErrorFlags.UnderlineRed));
                 return ItemCheckResult.CancelCurrentItem;
             }
@@ -75,7 +76,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (normalized.Length > 0 && normalized[0] == '-' && schema.GetPseudo(item.Text) == null)
             {
-                string message = string.Format(Resources.ValidationVendorPseudo, item.Text);
+                string message = string.Format(CultureInfo.CurrentCulture,Resources.ValidationVendorPseudo, item.Text);
                 context.AddError(new SimpleErrorTag(item, message, CssErrorFlags.TaskListWarning | CssErrorFlags.UnderlineRed));
                 return ItemCheckResult.CancelCurrentItem;
             }
@@ -110,7 +111,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (schema.GetAtDirective("@" + dir.Keyword.Text) == null)
             {
-                string message = string.Format(Resources.ValidationVendorDirective, dir.Keyword.Text);
+                string message = string.Format(CultureInfo.CurrentCulture,Resources.ValidationVendorDirective, dir.Keyword.Text);
                 context.AddError(new SimpleErrorTag(dir.Keyword, message, CssErrorFlags.TaskListWarning | CssErrorFlags.UnderlineRed));
                 return ItemCheckResult.CancelCurrentItem;
             }

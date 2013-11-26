@@ -106,7 +106,7 @@ namespace MadsKristensen.EditorExtensions
             return false;
         }
 
-        private bool HandleUnits(Direction direction, NumericalValue item, ITextSnapshot snapshot)
+        private static bool HandleUnits(Direction direction, NumericalValue item, ITextSnapshot snapshot)
         {
             float value;
             if (!float.TryParse(item.Number.Text, out value))
@@ -131,7 +131,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static int NumberDecimalPlaces(string value)
         {
-            int s = value.IndexOf(".") + 1; // the first numbers plus decimal point
+            int s = value.IndexOf(".", StringComparison.CurrentCulture) + 1; // the first numbers plus decimal point
             if (s == 0)                     // No decimal point
                 return 0;
 
@@ -192,7 +192,7 @@ namespace MadsKristensen.EditorExtensions
             return (unitValue != null) ? unitValue.UnitType : UnitType.Unknown;
         }
 
-        private bool HandleHex(Direction direction, HexColorValue item, ITextSnapshot snapshot)
+        private static bool HandleHex(Direction direction, HexColorValue item, ITextSnapshot snapshot)
         {
             var model = ColorParser.TryParseColor(item.Text, ColorParser.Options.None);
 
@@ -231,7 +231,7 @@ namespace MadsKristensen.EditorExtensions
             return 1F;
         }
 
-        private void UpdateSpan(SnapshotSpan span, string result, string undoTitle)
+        private static void UpdateSpan(SnapshotSpan span, string result, string undoTitle)
         {
             if (result.Length > 1)
                 result = result.TrimStart('0');

@@ -15,7 +15,10 @@ namespace MadsKristensen.EditorExtensions
     {
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer textBuffer) where T : ITag
         {
-            return new CssSmartTagger(textView, textBuffer) as ITagger<T>;
+            using (CssSmartTagger tagger = new CssSmartTagger(textView, textBuffer))
+            {
+                return tagger as ITagger<T>;
+            }
         }
     }
 }

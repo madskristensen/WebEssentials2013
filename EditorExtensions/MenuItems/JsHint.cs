@@ -43,8 +43,10 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (string file in files)
             {
-                JsHintRunner runner = new JsHintRunner(file);
-                runner.RunCompiler();
+                using (JsHintRunner runner = new JsHintRunner(file))
+                {
+                    runner.RunCompiler();
+                }
             }
         }
     }

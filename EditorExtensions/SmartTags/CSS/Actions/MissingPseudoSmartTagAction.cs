@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Media.Imaging;
+using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -29,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
 
         public override string DisplayText
         {
-            get { return string.Format("Add missing pseudo ({0})", string.Join(", ", _missingPseudos)); }
+            get { return string.Format(CultureInfo.CurrentCulture,"Add missing pseudo ({0})", string.Join(", ", _missingPseudos)); }
         }
 
         public override void Invoke()

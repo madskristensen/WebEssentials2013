@@ -6,6 +6,8 @@ namespace MadsKristensen.EditorExtensions
     [ComVisible(true)]  // Required to expose this instance to WebBrowser for JS
     public class CoffeeScriptCompiler : ScriptRunnerBase
     {
+        public CoffeeScriptCompiler() { }
+
         public CoffeeScriptCompiler(Dispatcher dispatcher)
             : base(dispatcher)
         { }

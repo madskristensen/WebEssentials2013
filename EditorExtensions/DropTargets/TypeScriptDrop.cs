@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -45,7 +46,7 @@ namespace MadsKristensen.EditorExtensions
             }
 
             reference = reference.Trim('/');
-            string comment = string.Format(_background, reference);
+            string comment = string.Format(CultureInfo.CurrentCulture,_background, reference);
 
             _view.TextBuffer.Insert(0, comment + Environment.NewLine);
 

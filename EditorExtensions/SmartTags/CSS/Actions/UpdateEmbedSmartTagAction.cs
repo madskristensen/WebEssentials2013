@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 using Microsoft.Web.Editor;
+using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -28,7 +29,7 @@ namespace MadsKristensen.EditorExtensions
 
         public override string DisplayText
         {
-            get { return string.Format(Resources.UpdateEmbedSmartTagActionName, _path); }
+            get { return string.Format(CultureInfo.CurrentCulture,Resources.UpdateEmbedSmartTagActionName, _path); }
         }
 
         public override void Invoke()

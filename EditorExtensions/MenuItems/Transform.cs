@@ -26,11 +26,26 @@ namespace MadsKristensen.EditorExtensions
             SetupCommand(PkgCmdIDList.titleCaseTransform, new Replacement(x => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(x)));
             SetupCommand(PkgCmdIDList.reverseTransform, new Replacement(x => new string(x.Reverse().ToArray())));
             SetupCommand(PkgCmdIDList.normalizeTransform, new Replacement(x => RemoveDiacritics(x)));
-            SetupCommand(PkgCmdIDList.md5Transform, new Replacement(x => Hash(x, new MD5CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha1Transform, new Replacement(x => Hash(x, new SHA1CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha256Transform, new Replacement(x => Hash(x, new SHA256CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha384Transform, new Replacement(x => Hash(x, new SHA384CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha512Transform, new Replacement(x => Hash(x, new SHA512CryptoServiceProvider())));
+                using (var md5Hash = new MD5CryptoServiceProvider())
+                {
+                    SetupCommand(PkgCmdIDList.md5Transform, new Replacement(x => Hash(x, md5Hash)));
+                }
+                using (var sha1Hash = new MD5CryptoServiceProvider())
+                {
+                    SetupCommand(PkgCmdIDList.sha1Transform, new Replacement(x => Hash(x, sha1Hash)));
+                }
+                using (var sha256Hash = new MD5CryptoServiceProvider())
+                {
+                    SetupCommand(PkgCmdIDList.sha256Transform, new Replacement(x => Hash(x, sha256Hash)));
+                }
+                using (var sha384Hash = new MD5CryptoServiceProvider())
+                {
+                    SetupCommand(PkgCmdIDList.sha384Transform, new Replacement(x => Hash(x, sha384Hash)));
+                }
+                using (var sha512Hash = new MD5CryptoServiceProvider())
+                {
+                    SetupCommand(PkgCmdIDList.sha512Transform, new Replacement(x => Hash(x, sha512Hash)));
+                }
         }
 
         public static string RemoveDiacritics(string s)
@@ -59,7 +74,7 @@ namespace MadsKristensen.EditorExtensions
             
             foreach (byte b in hash)
             {
-                sb.Append(b.ToString("x2").ToLowerInvariant());
+                sb.Append(b.ToString("x2", CultureInfo.CurrentCulture).ToLowerInvariant());
             }
 
             return sb.ToString();

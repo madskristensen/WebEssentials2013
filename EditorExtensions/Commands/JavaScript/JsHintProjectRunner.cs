@@ -55,8 +55,10 @@ namespace MadsKristensen.EditorExtensions
             {
                 foreach (string file in Directory.GetFiles(dir, "*.js", SearchOption.AllDirectories))
                 {
-                    JsHintRunner runner = new JsHintRunner(file);
-                    runner.RunCompiler();
+                    using (JsHintRunner runner = new JsHintRunner(file))
+                    {
+                        runner.RunCompiler();
+                    }
                 }
             }
         }

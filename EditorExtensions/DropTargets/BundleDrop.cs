@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -44,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
                     reference = reference.Substring(index + 1).ToLowerInvariant();
             }
 
-            _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(_format, reference));
+            _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(CultureInfo.CurrentCulture, _format, reference));
 
             return DragDropPointerEffects.Copy;
         }

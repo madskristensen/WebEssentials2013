@@ -11,6 +11,7 @@ using System.Windows;
 using WebMarkupMin.Core;
 using WebMarkupMin.Core.Minifiers;
 using WebMarkupMin.Core.Settings;
+using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -89,7 +90,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void EnableSync(string extension)
         {
-            string message = string.Format("Do you also want to enable automatic minification when the source file changes?", extension);
+            string message = string.Format(CultureInfo.CurrentCulture,"Do you also want to enable automatic minification when the source file changes?", extension);
 
             if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase) && !WESettings.GetBoolean(WESettings.Keys.EnableCssMinification))
             {

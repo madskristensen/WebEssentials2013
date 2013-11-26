@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -43,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
                 if (_cache[shorthand].All(p => properties.Contains(p)))
                 {
                     Declaration dec = rule.Declarations.First(p => p.PropertyName != null && _cache[shorthand].Contains(p.PropertyName.Text));
-                    string message = string.Format(Resources.PerformanceUseShorthand, string.Join(", ", _cache[shorthand]), shorthand);
+                    string message = string.Format(CultureInfo.CurrentCulture,Resources.PerformanceUseShorthand, string.Join(", ", _cache[shorthand]), shorthand);
 
                     context.AddError(new SimpleErrorTag(dec, message));
                 }

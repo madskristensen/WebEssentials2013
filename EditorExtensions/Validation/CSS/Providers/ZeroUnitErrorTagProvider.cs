@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (number.Number.Text == "0" && unit.UnitType != UnitType.Unknown && unit.UnitType != UnitType.Time)
             {
-                string message = string.Format(Resources.BestPracticeZeroUnit, unit.UnitToken.Text);
+                string message = string.Format(System.Globalization.CultureInfo.CurrentCulture,Resources.BestPracticeZeroUnit, unit.UnitToken.Text);
                 context.AddError(new SimpleErrorTag(number, message));
             }
 

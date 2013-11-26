@@ -10,6 +10,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -87,7 +88,7 @@ namespace MadsKristensen.EditorExtensions
                 using (Stream stream = typeof(HtmlAngularControllerSmartTag).Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.Resources.Scripts.AngularController.js"))
                 using (StreamReader reader = new StreamReader(stream))
                 {
-                    return string.Format(reader.ReadToEnd(), value);
+                    return string.Format(CultureInfo.CurrentCulture,reader.ReadToEnd(), value);
                 }
             }
         }
