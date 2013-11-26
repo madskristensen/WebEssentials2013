@@ -93,6 +93,9 @@ namespace MadsKristensen.EditorExtensions
                 MarkdownStylesheetMenu markdownMenu = new MarkdownStylesheetMenu(DTE, mcs);
                 markdownMenu.SetupCommands();
 
+                AddIntellisenseFileMenu intellisenseFile = new AddIntellisenseFileMenu(DTE, mcs);
+                intellisenseFile.SetupCommands();
+
                 UnusedCssMenu unusedCssMenu = new UnusedCssMenu(mcs);
                 unusedCssMenu.SetupCommands();
 
