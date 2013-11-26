@@ -35,27 +35,29 @@ namespace MadsKristensen.EditorExtensions
 
     internal sealed class ModernizrClassifier : IClassifier
     {
-        private IClassificationTypeRegistryService _registry;
-        private ITextBuffer _buffer;
-        private CssTree _tree;
-        internal SortedRangeList<SimpleSelector> Cache = new SortedRangeList<SimpleSelector>();
-        private IClassificationType _modernizrClassification;
+        private readonly IClassificationTypeRegistryService _registry;
+        private readonly ITextBuffer _buffer;
+        private readonly CssTreeWatcher _tree;
+        private readonly SortedRangeList<SimpleSelector> _cache = new SortedRangeList<SimpleSelector>();
+        private readonly IClassificationType _modernizrClassification;
 
         internal ModernizrClassifier(IClassificationTypeRegistryService registry, ITextBuffer buffer)
         {
             _registry = registry;
             _buffer = buffer;
             _modernizrClassification = _registry.GetClassificationType(ModernizrClassificationTypes._modernizr);
+
+            _tree = CssTreeWatcher.ForBuffer(_buffer);
+            _tree.TreeUpdated += TreeUpdated;
+            _tree.ItemsChanged += TreeItemsChanged;
+            UpdateCache(_tree.StyleSheet);
         }
 
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
         {
             List<ClassificationSpan> spans = new List<ClassificationSpan>();
 
-            if (!EnsureInitialized())
-                return spans;
-
-            foreach (SimpleSelector selector in Cache)
+            foreach (SimpleSelector selector in _cache)
             {
                 int start = span.Start.Position;
                 int end = span.End.Position;
@@ -71,26 +73,6 @@ namespace MadsKristensen.EditorExtensions
             return spans;
         }
 
-        public bool EnsureInitialized()
-        {
-            if (_tree == null && WebEditor.Host != null)
-            {
-                try
-                {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(_buffer);
-                    _tree = document.Tree;
-                    _tree.TreeUpdated += TreeUpdated;
-                    _tree.ItemsChanged += TreeItemsChanged;
-                    UpdateCache(_tree.StyleSheet);
-                }
-                catch (ArgumentNullException)
-                {
-                }
-            }
-
-            return _tree != null;
-        }
-
         private void UpdateCache(ParseItem item)
         {
             var visitor = new CssItemCollector<SimpleSelector>(true);
@@ -102,15 +84,15 @@ namespace MadsKristensen.EditorExtensions
 
                 if (ModernizrProvider.IsModernizr(text))
                 {
-                    if (!Cache.Contains(ss))
-                        Cache.Add(ss);
+                    if (!_cache.Contains(ss))
+                        _cache.Add(ss);
                 }
             }
         }
 
         private void TreeUpdated(object sender, CssTreeUpdateEventArgs e)
         {
-            Cache.Clear();
+            _cache.Clear();
             UpdateCache(e.Tree.StyleSheet);
         }
 
@@ -118,10 +100,10 @@ namespace MadsKristensen.EditorExtensions
         {
             foreach (ParseItem item in e.DeletedItems)
             {
-                var matches = Cache.Where(s => s.Start >= item.Start && s.AfterEnd <= item.AfterEnd);
+                var matches = _cache.Where(s => s.Start >= item.Start && s.AfterEnd <= item.AfterEnd);
                 foreach (var match in matches.Reverse())
                 {
-                    Cache.Remove(match);
+                    _cache.Remove(match);
                 }
             }
 

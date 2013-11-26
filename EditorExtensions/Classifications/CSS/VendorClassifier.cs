@@ -39,12 +39,12 @@ namespace MadsKristensen.EditorExtensions
 
     internal sealed class VendorClassifier : IClassifier
     {
-        private IClassificationTypeRegistryService _registry;
-        private ITextBuffer _buffer;
-        private CssTree _tree;
-        internal SortedRangeList<Declaration> Cache = new SortedRangeList<Declaration>();
-        private IClassificationType _decClassification;
-        private IClassificationType _valClassification;
+        private readonly IClassificationTypeRegistryService _registry;
+        private readonly ITextBuffer _buffer;
+        private readonly CssTreeWatcher _tree;
+        internal readonly SortedRangeList<Declaration> Cache = new SortedRangeList<Declaration>();
+        private readonly IClassificationType _decClassification;
+        private readonly IClassificationType _valClassification;
 
         internal VendorClassifier(IClassificationTypeRegistryService registry, ITextBuffer buffer)
         {
@@ -52,12 +52,18 @@ namespace MadsKristensen.EditorExtensions
             _buffer = buffer;
             _decClassification = _registry.GetClassificationType(ClassificationTypes._declaration);
             _valClassification = _registry.GetClassificationType(ClassificationTypes._value);
+
+            _tree = CssTreeWatcher.ForBuffer(_buffer);
+            _tree.TreeUpdated += TreeUpdated;
+            _tree.ItemsChanged += TreeItemsChanged;
+            UpdateDeclarationCache(_tree.StyleSheet);
+
         }
 
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
         {
             List<ClassificationSpan> spans = new List<ClassificationSpan>();
-            if (!WESettings.GetBoolean(WESettings.Keys.SyncVendorValues) || !EnsureInitialized())
+            if (!WESettings.GetBoolean(WESettings.Keys.SyncVendorValues))
                 return spans;
 
             foreach (Declaration dec in Cache.Where(d => d.PropertyName.Text.Length > 0 && span.Start <= d.Start && span.End >= d.AfterEnd))
@@ -97,25 +103,6 @@ namespace MadsKristensen.EditorExtensions
             return name;
         }
 
-        public bool EnsureInitialized()
-        {
-            if (_tree == null && WebEditor.Host != null)
-            {
-                try
-                {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(_buffer);
-                    _tree = document.Tree;
-                    _tree.TreeUpdated += TreeUpdated;
-                    _tree.ItemsChanged += TreeItemsChanged;
-                    UpdateDeclarationCache(_tree.StyleSheet);
-                }
-                catch (ArgumentNullException)
-                {
-                }
-            }
-
-            return _tree != null;
-        }
 
         private void UpdateDeclarationCache(ParseItem item)
         {
