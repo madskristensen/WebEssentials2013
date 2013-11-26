@@ -122,7 +122,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 Guid langService;
                 vsContainedLanguage.GetLanguageServiceID(out langService).Equals(VSConstants.S_OK);
                 vsTextLines.SetLanguageServiceID(ref langService).Equals(VSConstants.S_OK);
-                
+
                 containedLanguage = vsContainedLanguage;
                 IVsContainedLanguageHost legacyContainedLanguageHost = GetLegacyContainedLanguageHost();
                 vsContainedLanguage.SetHost(legacyContainedLanguageHost).Equals(VSConstants.S_OK);
