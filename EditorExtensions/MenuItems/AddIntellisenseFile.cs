@@ -51,7 +51,7 @@ namespace MadsKristensen.EditorExtensions
 
             var items = ProjectHelpers.GetSelectedItemPaths(_dte);
 
-            if (items.Count() == 1 && (items.ElementAt(0).EndsWith(".cs") || items.ElementAt(0).EndsWith(".d.ts")))
+            if (items.Count() == 1 && (items.ElementAt(0).EndsWith(".cs") || items.ElementAt(0).EndsWith(".vb")))
             {
                 _file = items.ElementAt(0);
             }
