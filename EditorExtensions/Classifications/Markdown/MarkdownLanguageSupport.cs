@@ -51,7 +51,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             Guid gUID = typeof(IVsTextViewIntellisenseHost).GUID;
             IntPtr intPtr;
-            vsTextViewIntellisenseHostProvider.CreateIntellisenseHost(bufferCoordinator, ref gUID, out intPtr);
+            vsTextViewIntellisenseHostProvider.CreateIntellisenseHost(bufferCoordinator, ref gUID, out intPtr).Equals(VSConstants.S_OK);
             if (intPtr == IntPtr.Zero)
                 return;
 
