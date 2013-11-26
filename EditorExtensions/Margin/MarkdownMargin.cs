@@ -82,7 +82,7 @@ namespace MadsKristensen.EditorExtensions
                 if (File.Exists(file))
                 {
                     string linkFormat = "<link rel=\"stylesheet\" href=\"{0}\" />";
-                    return string.Format(CultureInfo.CurrentCulture,linkFormat, file);
+                    return string.Format(CultureInfo.CurrentCulture, linkFormat, file);
                 }
             }
 

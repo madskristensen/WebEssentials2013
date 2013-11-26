@@ -1,10 +1,10 @@
-﻿using Microsoft.CSS.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows.Threading;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using System;
-using System.Collections.Generic;
-using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -43,10 +43,11 @@ namespace MadsKristensen.EditorExtensions
                 method(session, signatures, dec, span);
 
                 Dispatcher.CurrentDispatcher.BeginInvoke(
-                    new Action(() => {
+                    new Action(() =>
+                    {
                         session.Properties.AddProperty("dec", dec);
                         session.Match();
-                    }), 
+                    }),
                     DispatcherPriority.Normal, null);
             }
         }

@@ -1,10 +1,10 @@
-﻿using Microsoft.Html.Core;
+﻿using System;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions
         private ICompletionBroker _broker;
         private IWpfTextView _view;
         private ITextBuffer _buffer;
-        
+
         public SurroundWith(IVsTextView adapter, IWpfTextView textView, ICompletionBroker broker)
             : base(adapter, textView, GuidList.guidFormattingCmdSet, PkgCmdIDList.SurroundWith)
         {

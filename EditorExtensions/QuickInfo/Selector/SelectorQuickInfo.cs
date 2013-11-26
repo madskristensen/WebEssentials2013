@@ -1,11 +1,10 @@
-﻿using Microsoft.CSS.Core;
+﻿using System.Collections.Generic;
+using System.Text;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
+using Microsoft.Less.Core;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Less.Core;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -64,6 +63,6 @@ namespace MadsKristensen.EditorExtensions
             return sb.ToString().Trim();
         }
 
-        public void Dispose() {  }
+        public void Dispose() { }
     }
 }

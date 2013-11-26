@@ -1,8 +1,8 @@
-﻿using EnvDTE;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using EnvDTE;
 
 namespace MadsKristensen.EditorExtensions
 {

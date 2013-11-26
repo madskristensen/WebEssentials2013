@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
             Flags = GetLocation();
         }
 
-        private static CssErrorFlags GetLocation() 
+        private static CssErrorFlags GetLocation()
         {
             switch ((WESettings.Keys.ErrorLocation)WESettings.GetInt(WESettings.Keys.CssErrorLocation))
             {
@@ -41,7 +41,7 @@ namespace MadsKristensen.EditorExtensions
 
                 default:
                     return CssErrorFlags.UnderlinePurple | CssErrorFlags.TaskListMessage;
-            }            
+            }
         }
 
         public bool IsExposedToUser
@@ -74,6 +74,6 @@ namespace MadsKristensen.EditorExtensions
             get { return _item.Start; }
         }
 
-        public CssErrorFlags Flags {get; set; }
+        public CssErrorFlags Flags { get; set; }
     }
 }

@@ -1,8 +1,7 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.Less.Core;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CSS.Core;
+using Microsoft.Less.Core;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {

@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
+using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.CSS.Editor.Schemas;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.CSS.Editor.Schemas;
-using Microsoft.CSS.Editor.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -46,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
             else
             {
                 ICssCompletionListEntry entry = VendorHelpers.GetMatchingStandardEntry(dec, schema);
-                if (entry != null &&!rule.Declarations.Any(d => d.PropertyName != null && d.PropertyName.Text == entry.DisplayText))
+                if (entry != null && !rule.Declarations.Any(d => d.PropertyName != null && d.PropertyName.Text == entry.DisplayText))
                 {
                     yield return new MissingStandardSmartTagAction(itemTrackingSpan, dec, entry.DisplayText, view);
                 }

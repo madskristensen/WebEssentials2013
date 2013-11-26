@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public override bool Equals(object obj)
         {
             return Equals(obj as SourceLocation);
-        }    
+        }
 
         public override int GetHashCode()
         {

@@ -1,11 +1,11 @@
-﻿using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Editor.DragDrop;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.IO;
 using System.Globalization;
+using System.IO;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Editor.DragDrop;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -46,7 +46,7 @@ namespace MadsKristensen.EditorExtensions
             }
 
             reference = reference.Trim('/');
-            string comment = string.Format(CultureInfo.CurrentCulture,_background, reference);
+            string comment = string.Format(CultureInfo.CurrentCulture, _background, reference);
 
             _view.TextBuffer.Insert(0, comment + Environment.NewLine);
 

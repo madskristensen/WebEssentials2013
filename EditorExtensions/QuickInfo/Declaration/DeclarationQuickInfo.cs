@@ -1,17 +1,17 @@
-﻿using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
-using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.CSS.Editor.Intellisense;
-using Microsoft.CSS.Editor.Schemas;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+using Microsoft.CSS.Core;
+using Microsoft.CSS.Editor;
+using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.CSS.Editor.Schemas;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
         {
             applicableToSpan = null;
 
-            if ( session == null || qiContent == null || qiContent.Count > 0 || !WESettings.GetBoolean(WESettings.Keys.ShowBrowserTooltip))
+            if (session == null || qiContent == null || qiContent.Count > 0 || !WESettings.GetBoolean(WESettings.Keys.ShowBrowserTooltip))
                 return;
 
             SnapshotPoint? point = session.GetTriggerPoint(_buffer.CurrentSnapshot);

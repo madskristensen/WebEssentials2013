@@ -1,5 +1,5 @@
-﻿using Microsoft.VisualStudio.Utilities;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {

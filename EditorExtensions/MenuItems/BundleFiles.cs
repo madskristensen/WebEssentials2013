@@ -300,7 +300,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    string error = string.Format(CultureInfo.CurrentCulture,"Bundle error: The file '{0}' doesn't exist", node.InnerText);
+                    string error = string.Format(CultureInfo.CurrentCulture, "Bundle error: The file '{0}' doesn't exist", node.InnerText);
                     _dte.ItemOperations.OpenFile(filePath);
                     MessageBox.Show(error, "Web Essentials");
                     return;

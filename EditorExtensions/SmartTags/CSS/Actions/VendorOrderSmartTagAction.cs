@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Media.Imaging;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.Web.Editor;
-using Microsoft.Web.Editor.Formatting;
 
 namespace MadsKristensen.EditorExtensions
 {

@@ -1,7 +1,7 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.Windows.Media.Imaging;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
 
         public override string DisplayText
         {
-            get { return Resources.OverQualifiedSmartTagActionName  ; }
+            get { return Resources.OverQualifiedSmartTagActionName; }
         }
 
         public override void Invoke()

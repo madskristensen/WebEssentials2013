@@ -1,11 +1,11 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Text;
 using Microsoft.Web.Editor;
-using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions
 
         public override string DisplayText
         {
-            get { return string.Format(CultureInfo.CurrentCulture,Resources.UpdateEmbedSmartTagActionName, _path); }
+            get { return string.Format(CultureInfo.CurrentCulture, Resources.UpdateEmbedSmartTagActionName, _path); }
         }
 
         public override void Invoke()

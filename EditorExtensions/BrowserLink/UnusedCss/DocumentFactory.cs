@@ -81,7 +81,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 {
                     value.Dispose();
                 }
-                catch(ObjectDisposedException)
+                catch (ObjectDisposedException)
                 {
                 }
             }

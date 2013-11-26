@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.IO;
 using System.Windows.Threading;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {

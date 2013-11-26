@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (text.StartsWith("-ms-transition", StringComparison.Ordinal) || text.StartsWith("-ms-animation", StringComparison.Ordinal))
             {
-                string error = string.Format(CultureInfo.CurrentCulture,_message, text);
+                string error = string.Format(CultureInfo.CurrentCulture, _message, text);
                 ICssError tag = new SimpleErrorTag(dec.PropertyName, error);
                 context.AddError(tag);
                 return ItemCheckResult.CancelCurrentItem;

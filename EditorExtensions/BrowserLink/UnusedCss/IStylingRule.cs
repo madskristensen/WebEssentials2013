@@ -1,5 +1,5 @@
-﻿using Microsoft.CSS.Core;
-using System;
+﻿using System;
+using Microsoft.CSS.Core;
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public interface IStylingRule : IEquatable<IStylingRule>

@@ -1,7 +1,7 @@
-﻿using Microsoft.Html.Editor.Intellisense;
+﻿using System.Windows.Media;
+using Microsoft.Html.Editor.Intellisense;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.Web.Editor;
-using System.Windows.Media;
 
 namespace MadsKristensen.EditorExtensions
 {

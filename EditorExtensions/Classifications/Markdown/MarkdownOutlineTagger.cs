@@ -2,16 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.Html.Core;
-using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Classification;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using Microsoft.Web.Editor.Extensions.Text;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {

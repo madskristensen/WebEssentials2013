@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.Shell;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -19,7 +19,7 @@ namespace MadsKristensen.EditorExtensions
 
         public TaskErrorCategory Category
         {
-            get { return TaskErrorCategory.Message;  }
+            get { return TaskErrorCategory.Message; }
         }
 
         public void Navigate(object sender, EventArgs e)

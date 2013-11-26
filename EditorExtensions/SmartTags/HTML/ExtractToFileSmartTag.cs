@@ -1,16 +1,16 @@
-﻿using Microsoft.Html.Core;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Globalization;
+using System.IO;
+using System.Web;
+using System.Windows.Forms;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor.SmartTags;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.IO;
-using System.Windows.Forms;
-using System.Web;
-using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions.SmartTags
 {
@@ -107,7 +107,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags
                 if (element.IsStyleBlock())
                     reference = "<link rel=\"stylesheet\" href=\"/{0}\" />";
 
-                return string.Format(CultureInfo.CurrentCulture,reference, HttpUtility.HtmlAttributeEncode(relative));
+                return string.Format(CultureInfo.CurrentCulture, reference, HttpUtility.HtmlAttributeEncode(relative));
             }
         }
     }

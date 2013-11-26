@@ -1,11 +1,11 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
-using System.ComponentModel.Design;
+﻿using System.ComponentModel.Design;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -26,26 +26,26 @@ namespace MadsKristensen.EditorExtensions
             SetupCommand(PkgCmdIDList.titleCaseTransform, new Replacement(x => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(x)));
             SetupCommand(PkgCmdIDList.reverseTransform, new Replacement(x => new string(x.Reverse().ToArray())));
             SetupCommand(PkgCmdIDList.normalizeTransform, new Replacement(x => RemoveDiacritics(x)));
-                using (var md5Hash = new MD5CryptoServiceProvider())
-                {
-                    SetupCommand(PkgCmdIDList.md5Transform, new Replacement(x => Hash(x, md5Hash)));
-                }
-                using (var sha1Hash = new MD5CryptoServiceProvider())
-                {
-                    SetupCommand(PkgCmdIDList.sha1Transform, new Replacement(x => Hash(x, sha1Hash)));
-                }
-                using (var sha256Hash = new MD5CryptoServiceProvider())
-                {
-                    SetupCommand(PkgCmdIDList.sha256Transform, new Replacement(x => Hash(x, sha256Hash)));
-                }
-                using (var sha384Hash = new MD5CryptoServiceProvider())
-                {
-                    SetupCommand(PkgCmdIDList.sha384Transform, new Replacement(x => Hash(x, sha384Hash)));
-                }
-                using (var sha512Hash = new MD5CryptoServiceProvider())
-                {
-                    SetupCommand(PkgCmdIDList.sha512Transform, new Replacement(x => Hash(x, sha512Hash)));
-                }
+            using (var md5Hash = new MD5CryptoServiceProvider())
+            {
+                SetupCommand(PkgCmdIDList.md5Transform, new Replacement(x => Hash(x, md5Hash)));
+            }
+            using (var sha1Hash = new MD5CryptoServiceProvider())
+            {
+                SetupCommand(PkgCmdIDList.sha1Transform, new Replacement(x => Hash(x, sha1Hash)));
+            }
+            using (var sha256Hash = new MD5CryptoServiceProvider())
+            {
+                SetupCommand(PkgCmdIDList.sha256Transform, new Replacement(x => Hash(x, sha256Hash)));
+            }
+            using (var sha384Hash = new MD5CryptoServiceProvider())
+            {
+                SetupCommand(PkgCmdIDList.sha384Transform, new Replacement(x => Hash(x, sha384Hash)));
+            }
+            using (var sha512Hash = new MD5CryptoServiceProvider())
+            {
+                SetupCommand(PkgCmdIDList.sha512Transform, new Replacement(x => Hash(x, sha512Hash)));
+            }
         }
 
         public static string RemoveDiacritics(string s)
@@ -67,11 +67,11 @@ namespace MadsKristensen.EditorExtensions
 
         private static string Hash(string original, HashAlgorithm algorithm)
         {
-            byte[] hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(original));            
+            byte[] hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(original));
             algorithm.Dispose();
 
             StringBuilder sb = new StringBuilder();
-            
+
             foreach (byte b in hash)
             {
                 sb.Append(b.ToString("x2", CultureInfo.CurrentCulture).ToLowerInvariant());

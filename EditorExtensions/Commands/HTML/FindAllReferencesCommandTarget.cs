@@ -1,16 +1,8 @@
-﻿using Microsoft.CSS.Core;
+﻿using System;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
-using Microsoft.Less.Core;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.Web.Editor;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -34,7 +26,7 @@ namespace MadsKristensen.EditorExtensions
 
             return true;
         }
-        
+
         private bool TryGetClassName(out string className)
         {
             int position = TextView.Caret.Position.BufferPosition.Position;

@@ -1,14 +1,14 @@
-﻿using Microsoft.CSS.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
+using System.Windows.Threading;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
-using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -62,10 +62,10 @@ namespace MadsKristensen.EditorExtensions
 
                 if (selector.Start >= start && selector.AfterEnd <= end)
                 {
-                   var snapShotSpan = new SnapshotSpan(span.Snapshot, selector.Start, selector.Length);
-                   var classSpan = new ClassificationSpan(snapShotSpan, _modernizrClassification);
-                   spans.Add(classSpan); 
-                }                 
+                    var snapShotSpan = new SnapshotSpan(span.Snapshot, selector.Start, selector.Length);
+                    var classSpan = new ClassificationSpan(snapShotSpan, _modernizrClassification);
+                    spans.Add(classSpan);
+                }
             }
 
             return spans;

@@ -10,8 +10,6 @@
 //***************************************************************************
 
 using System.Windows.Media;
-using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 
 namespace MadsKristensen.EditorExtensions

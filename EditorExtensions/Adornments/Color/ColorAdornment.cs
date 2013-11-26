@@ -2,9 +2,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Microsoft.CSS.Editor;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {

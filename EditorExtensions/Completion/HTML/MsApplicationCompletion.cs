@@ -1,9 +1,9 @@
-﻿using Microsoft.Html.Core;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System;
-using System.Collections.Generic;
 
 namespace MadsKristensen.EditorExtensions
 {

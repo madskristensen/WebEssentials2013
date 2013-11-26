@@ -257,11 +257,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 project.Close();
                 return;
             }
-            using(LanguageBridge bridge = new LanguageBridge(this, projectionBuffer, factory, hierarchy))
+            using (LanguageBridge bridge = new LanguageBridge(this, projectionBuffer, factory, hierarchy))
             {
-            bridge.Disposing += delegate { project.Close(); };
-            languageBridges.Add(contentType, bridge);
-        }
+                bridge.Disposing += delegate { project.Close(); };
+                languageBridges.Add(contentType, bridge);
+            }
         }
 
         class MarkdownCodeProject : IVsContainedLanguageProjectNameProvider, IVsHierarchy, IVsProject3
@@ -347,7 +347,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     case __VSHPROPID.VSHPROPID_Parent:
                         pvar = VSConstants.VSITEMID_NIL;
                         return 0;
-                    case __VSHPROPID.VSHPROPID_ExtObject:   
+                    case __VSHPROPID.VSHPROPID_ExtObject:
                         // Not returning this makes the native language service throw an access violation
                         return inner.GetProperty(itemid, propid, out pvar);
                     case __VSHPROPID.VSHPROPID_BrowseObject:

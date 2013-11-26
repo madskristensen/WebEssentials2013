@@ -1,14 +1,14 @@
-﻿using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Editor.DragDrop;
-using Microsoft.VisualStudio.Utilities;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel.Composition;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
 using System.Windows.Forms;
-using System.Globalization;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Editor.DragDrop;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -115,13 +115,13 @@ namespace MadsKristensen.EditorExtensions
                         reference = reference.Substring(index + 1).ToLowerInvariant();
                 }
 
-                sources[i] = string.Format(CultureInfo.CurrentCulture,fontUrls, reference, formats[extension]);
+                sources[i] = string.Format(CultureInfo.CurrentCulture, fontUrls, reference, formats[extension]);
             }
 
             string sourceUrls = string.Join(", ", sources);
             fontFamily = fontName;
             fontFamily = HttpUtility.UrlPathEncode(fontFamily);
-            return string.Format(CultureInfo.CurrentCulture,fontFace, fontName, sourceUrls);
+            return string.Format(CultureInfo.CurrentCulture, fontFace, fontName, sourceUrls);
         }
 
         private string GetCodeFromLocalhost(string fileName)
@@ -132,9 +132,9 @@ namespace MadsKristensen.EditorExtensions
 
             string extension = Path.GetExtension(draggedFilename).ToLowerInvariant();
             draggedFilename = HttpUtility.UrlPathEncode(draggedFilename);
-            string sourceUrl = string.Format(CultureInfo.CurrentCulture,fontUrls, draggedFilename, formats[extension]);
+            string sourceUrl = string.Format(CultureInfo.CurrentCulture, fontUrls, draggedFilename, formats[extension]);
 
-            return string.Format(CultureInfo.CurrentCulture,fontFace, "MyFontName", sourceUrl);
+            return string.Format(CultureInfo.CurrentCulture, fontFace, "MyFontName", sourceUrl);
         }
 
         private IEnumerable<string> GetRelativeFiles(string fileName)

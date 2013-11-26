@@ -1,10 +1,10 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.IO;
 using System.Globalization;
+using System.IO;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -31,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
                 Declaration dec = url.FindType<Declaration>();
                 if (dec != null && dec.PropertyName != null && dec.PropertyName.Text[0] != '*' && dec.PropertyName.Text[0] != '_')
                 {
-                    string error = string.Format(CultureInfo.CurrentCulture,Resources.PerformanceEmbedImageAsDataUri, file.Length);
+                    string error = string.Format(CultureInfo.CurrentCulture, Resources.PerformanceEmbedImageAsDataUri, file.Length);
                     context.AddError(new SimpleErrorTag(url.UrlString, error));
                 }
             }

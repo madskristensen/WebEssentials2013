@@ -1,9 +1,9 @@
-﻿using CssSorter;
+﻿using System;
+using System.Windows.Media.Imaging;
+using CssSorter;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using System;
-using System.Windows.Media.Imaging;
 
 namespace MadsKristensen.EditorExtensions
 {

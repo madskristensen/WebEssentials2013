@@ -1,20 +1,11 @@
-﻿using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Text;
-using Microsoft.Html.Editor;
-using Microsoft.Html.Editor.ContainedLanguage;
 using System.Reflection;
 using Microsoft.Html.Core;
-using Microsoft.Web.Core;
-using Microsoft.Web.Editor;
-using Microsoft.Html.Editor.Projection;
-using Microsoft.Web.Editor.Composition;
+using Microsoft.Html.Editor;
+using Microsoft.Html.Editor.ContainedLanguage;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {

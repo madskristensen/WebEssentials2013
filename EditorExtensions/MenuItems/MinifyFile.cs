@@ -1,17 +1,16 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using Microsoft.Ajax.Utilities;
-using Microsoft.VisualStudio.Shell;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using EnvDTE80;
+using Microsoft.Ajax.Utilities;
+using Microsoft.VisualStudio.Shell;
 using WebMarkupMin.Core;
 using WebMarkupMin.Core.Minifiers;
 using WebMarkupMin.Core.Settings;
-using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -90,7 +89,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void EnableSync(string extension)
         {
-            string message = string.Format(CultureInfo.CurrentCulture,"Do you also want to enable automatic minification when the source file changes?", extension);
+            string message = string.Format(CultureInfo.CurrentCulture, "Do you also want to enable automatic minification when the source file changes?", extension);
 
             if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase) && !WESettings.GetBoolean(WESettings.Keys.EnableCssMinification))
             {
@@ -143,7 +142,8 @@ namespace MadsKristensen.EditorExtensions
 
                 return minifier.MinifyJavaScript(content, settings);
             }
-            else if (_htmlExt.Contains(extension.ToLowerInvariant())){
+            else if (_htmlExt.Contains(extension.ToLowerInvariant()))
+            {
                 var settings = new HtmlMinificationSettings
                 {
                     RemoveOptionalEndTags = false,
@@ -152,7 +152,7 @@ namespace MadsKristensen.EditorExtensions
 
                 var minifier = new HtmlMinifier(settings);
                 MarkupMinificationResult result = minifier.Minify(content, generateStatistics: true);
-                
+
                 if (result.Errors.Count == 0)
                 {
                     EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: HTML minified by " + result.Statistics.SavedInPercent + "%";

@@ -1,8 +1,8 @@
-﻿using Microsoft.CSS.Core;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using System.Collections.Generic;
-using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -52,23 +52,23 @@ namespace MadsKristensen.EditorExtensions
             }
 
             ValueOrderSignature signature1 = new ValueOrderSignature(
-                string.Format(CultureInfo.CurrentCulture,"div {{ {0}: {1} {2} {3} {4}; }} ", dec.PropertyName.Text, value1, value2, value3, value4),
-                string.Format(CultureInfo.CurrentCulture,"[top={0}] [right={1}] [bottom={2}] [left={3}]", value1, value2, value3, value4),
+                string.Format(CultureInfo.CurrentCulture, "div {{ {0}: {1} {2} {3} {4}; }} ", dec.PropertyName.Text, value1, value2, value3, value4),
+                string.Format(CultureInfo.CurrentCulture, "[top={0}] [right={1}] [bottom={2}] [left={3}]", value1, value2, value3, value4),
                 span, session);
 
             ValueOrderSignature signature2 = new ValueOrderSignature(
-                string.Format(CultureInfo.CurrentCulture,"div {{ {0}: {1} {2} {3}; }} ", dec.PropertyName.Text, value1, value2, value3),
-                string.Format(CultureInfo.CurrentCulture,"[top={0}] [right and left={1}] [bottom={2}]", value1, value2, value3),
+                string.Format(CultureInfo.CurrentCulture, "div {{ {0}: {1} {2} {3}; }} ", dec.PropertyName.Text, value1, value2, value3),
+                string.Format(CultureInfo.CurrentCulture, "[top={0}] [right and left={1}] [bottom={2}]", value1, value2, value3),
                 span, session);
 
             ValueOrderSignature signature3 = new ValueOrderSignature(
-                string.Format(CultureInfo.CurrentCulture,"div {{ {0}: {1} {2}; }} ", dec.PropertyName.Text, value1, value2),
-                string.Format(CultureInfo.CurrentCulture,"[top and bottom={0}] [right and left={1}]", value1, value2),
+                string.Format(CultureInfo.CurrentCulture, "div {{ {0}: {1} {2}; }} ", dec.PropertyName.Text, value1, value2),
+                string.Format(CultureInfo.CurrentCulture, "[top and bottom={0}] [right and left={1}]", value1, value2),
                 span, session);
 
             ValueOrderSignature signature4 = new ValueOrderSignature(
-                string.Format(CultureInfo.CurrentCulture,"div {{ {0}: {1}; }} ", dec.PropertyName.Text, value1),
-                string.Format(CultureInfo.CurrentCulture,"[top and right and bottom and left={0}]", value1),
+                string.Format(CultureInfo.CurrentCulture, "div {{ {0}: {1}; }} ", dec.PropertyName.Text, value1),
+                string.Format(CultureInfo.CurrentCulture, "[top and right and bottom and left={0}]", value1),
                 span, session);
 
             signatures.Add(signature1);
@@ -93,23 +93,23 @@ namespace MadsKristensen.EditorExtensions
 
             }
             ValueOrderSignature signature1 = new ValueOrderSignature(
-                string.Format(CultureInfo.CurrentCulture,"div {{ {0}: {1} {2} {3} {4}; }} ", dec.PropertyName.Text, value1, value2, value3, value4),
-                string.Format(CultureInfo.CurrentCulture,"[top-left={0}] [top-right={1}] [bottom-right={2}] [bottom-left={3}]", value1, value2, value3, value4),
+                string.Format(CultureInfo.CurrentCulture, "div {{ {0}: {1} {2} {3} {4}; }} ", dec.PropertyName.Text, value1, value2, value3, value4),
+                string.Format(CultureInfo.CurrentCulture, "[top-left={0}] [top-right={1}] [bottom-right={2}] [bottom-left={3}]", value1, value2, value3, value4),
                 span, session);
 
             ValueOrderSignature signature2 = new ValueOrderSignature(
-                string.Format(CultureInfo.CurrentCulture,"div {{ {0}: {1} {2} {3}; }} ", dec.PropertyName.Text, value1, value2, value3),
-                string.Format(CultureInfo.CurrentCulture,"[top-left={0}] [top-right and bottom-left={1}] [bottom-right={2}]", value1, value2, value3),
+                string.Format(CultureInfo.CurrentCulture, "div {{ {0}: {1} {2} {3}; }} ", dec.PropertyName.Text, value1, value2, value3),
+                string.Format(CultureInfo.CurrentCulture, "[top-left={0}] [top-right and bottom-left={1}] [bottom-right={2}]", value1, value2, value3),
                 span, session);
 
             ValueOrderSignature signature3 = new ValueOrderSignature(
-                string.Format(CultureInfo.CurrentCulture,"div {{ {0}: {1} {2}; }} ", dec.PropertyName.Text, value1, value2),
-                string.Format(CultureInfo.CurrentCulture,"[top-left and bottom-right={0}] [top-right and bottom-left={1}]", value1, value2),
+                string.Format(CultureInfo.CurrentCulture, "div {{ {0}: {1} {2}; }} ", dec.PropertyName.Text, value1, value2),
+                string.Format(CultureInfo.CurrentCulture, "[top-left and bottom-right={0}] [top-right and bottom-left={1}]", value1, value2),
                 span, session);
 
             ValueOrderSignature signature4 = new ValueOrderSignature(
-                string.Format(CultureInfo.CurrentCulture,"div {{ {0}: {1}; }} ", dec.PropertyName.Text, value1),
-                string.Format(CultureInfo.CurrentCulture,"[top-left and top-right and bottom-right and bottom-left={0}]", value1),
+                string.Format(CultureInfo.CurrentCulture, "div {{ {0}: {1}; }} ", dec.PropertyName.Text, value1),
+                string.Format(CultureInfo.CurrentCulture, "[top-left and top-right and bottom-right and bottom-left={0}]", value1),
                 span, session);
 
             signatures.Add(signature1);

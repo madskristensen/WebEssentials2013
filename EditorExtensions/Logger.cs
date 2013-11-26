@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio;
+﻿using System;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
-using System;
 
 namespace MadsKristensen.EditorExtensions
 {

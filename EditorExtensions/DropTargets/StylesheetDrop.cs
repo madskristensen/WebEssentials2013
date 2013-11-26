@@ -51,7 +51,7 @@ namespace MadsKristensen.EditorExtensions
             reference = HttpUtility.UrlPathEncode(reference);
 
             string import = Path.GetExtension(_filename).Equals(".less", StringComparison.OrdinalIgnoreCase) ? _lessImport : _cssImport;
-            _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(CultureInfo.CurrentCulture,import, reference));
+            _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(CultureInfo.CurrentCulture, import, reference));
 
             return DragDropPointerEffects.Copy;
         }

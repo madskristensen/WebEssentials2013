@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -35,11 +35,11 @@ namespace MadsKristensen.EditorExtensions
 
             if (_textType != TextType.Robots)
                 return list;
-            
+
             if (index == -1 || index > 0)
             {
                 string[] args = text.Split(':');
-                
+
                 if (args.Length >= 2 && _valid.Contains(args[0].Trim().ToLowerInvariant()))
                 {
                     var result = new SnapshotSpan(span.Snapshot, span.Start, args[0].Length);
@@ -55,7 +55,7 @@ namespace MadsKristensen.EditorExtensions
             _isRobotsTxt = true;
             _textType = type;
             var handler = this.ClassificationChanged;
-            
+
             if (handler != null)
                 handler(this, new ClassificationChangedEventArgs(span));
         }

@@ -1,11 +1,10 @@
-﻿using EnvDTE80;
-using Microsoft.CSS.Editor;
-using Microsoft.CSS.Editor.Schemas;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
+using EnvDTE80;
+using Microsoft.CSS.Editor.Schemas;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -20,7 +19,7 @@ namespace MadsKristensen.EditorExtensions
             get
             {
                 string path = GetSolutionFilePath();
-                
+
                 if (_browsers.Count == 0 && File.Exists(path))
                 {
                     ParseXml(path);

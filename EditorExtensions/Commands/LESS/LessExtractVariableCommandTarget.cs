@@ -1,11 +1,11 @@
-﻿using EnvDTE80;
+﻿using System;
+using EnvDTE80;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.Less.Core;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
 
 namespace MadsKristensen.EditorExtensions
 {

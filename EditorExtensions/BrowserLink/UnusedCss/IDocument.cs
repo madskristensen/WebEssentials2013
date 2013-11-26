@@ -1,6 +1,6 @@
-﻿using Microsoft.CSS.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {

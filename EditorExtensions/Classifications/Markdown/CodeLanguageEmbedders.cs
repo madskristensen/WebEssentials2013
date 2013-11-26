@@ -8,7 +8,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using Microsoft.Win32;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {

@@ -1,11 +1,11 @@
-﻿using EnvDTE;
-using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Web.BrowserLink;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using EnvDTE;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -143,7 +143,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 return sheetRules.Intersect(UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()));
             }
         }
-        
+
         public static bool IsAProtectedClass(IStylingRule rule)
         {
             var selectorName = rule.DisplaySelectorName;

@@ -1,8 +1,8 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -24,7 +24,8 @@ namespace MadsKristensen.EditorExtensions
 
             // The 2nd and 3rd arguments to hsl() require units even when zero
             var function = unit.Parent.Parent as FunctionColor;
-            if (function != null && function.FunctionName.Text.StartsWith("hsl", StringComparison.OrdinalIgnoreCase)) {
+            if (function != null && function.FunctionName.Text.StartsWith("hsl", StringComparison.OrdinalIgnoreCase))
+            {
                 var arg = unit.Parent as FunctionArgument;
                 if (arg != function.Arguments[0])
                     return ItemCheckResult.Continue;
@@ -32,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (number.Number.Text == "0" && unit.UnitType != UnitType.Unknown && unit.UnitType != UnitType.Time)
             {
-                string message = string.Format(System.Globalization.CultureInfo.CurrentCulture,Resources.BestPracticeZeroUnit, unit.UnitToken.Text);
+                string message = string.Format(System.Globalization.CultureInfo.CurrentCulture, Resources.BestPracticeZeroUnit, unit.UnitToken.Text);
                 context.AddError(new SimpleErrorTag(number, message));
             }
 

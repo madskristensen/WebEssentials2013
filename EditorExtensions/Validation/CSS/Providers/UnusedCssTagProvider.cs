@@ -40,7 +40,7 @@ namespace MadsKristensen.EditorExtensions
 
             return new UnusedCssTag
             {
-                ToolTipContent = string.Format(CultureInfo.CurrentCulture,"No usages of the CSS selector '{0}' have been found.", rule.DisplaySelectorName),
+                ToolTipContent = string.Format(CultureInfo.CurrentCulture, "No usages of the CSS selector '{0}' have been found.", rule.DisplaySelectorName),
                 ErrorType = "compiler warning",
                 Span = ss,
             };

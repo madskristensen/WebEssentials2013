@@ -1,10 +1,9 @@
-﻿using Microsoft.CSS.Editor;
+﻿using System;
+using System.ComponentModel.Composition;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.CSS.Editor.Schemas;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
-using System;
-using System.ComponentModel.Composition;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -24,7 +23,7 @@ namespace MadsKristensen.EditorExtensions
         {
             if (WESettings.GetBoolean(WESettings.Keys.ShowUnsupported))
                 return entry.IsSupported(cssVersion);
-            
+
             return entry.GetAttribute("browsers") != "none" || entry.DisplayText.Contains("gradient");
         }
 

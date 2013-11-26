@@ -1,5 +1,5 @@
-﻿using Microsoft.CSS.Core;
-using System.Linq;
+﻿using System.Linq;
+using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions
 {

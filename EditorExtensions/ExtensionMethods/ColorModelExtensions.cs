@@ -1,5 +1,5 @@
-﻿using Microsoft.Web.Editor;
-using System.Windows.Media;
+﻿using System.Windows.Media;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {

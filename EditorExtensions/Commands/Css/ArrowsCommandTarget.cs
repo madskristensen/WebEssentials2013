@@ -1,4 +1,9 @@
-﻿using Microsoft.CSS.Core;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel.Composition;
+using System.Globalization;
+using System.Linq;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio;
@@ -8,12 +13,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-using System;
-using System.Linq;
-using System.ComponentModel.Composition;
-using System.Globalization;
 using Editor = Microsoft.Web.Editor;
-using System.Collections.ObjectModel;
 
 namespace MadsKristensen.EditorExtensions
 {

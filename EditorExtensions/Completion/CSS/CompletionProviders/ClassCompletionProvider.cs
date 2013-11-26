@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.VisualStudio.Utilities;
 using Microsoft.CSS.Editor.Intellisense;
-using System.Collections.Generic;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -24,7 +22,7 @@ namespace MadsKristensen.EditorExtensions
             var visitorRules = new CssItemCollector<ClassSelector>();
             stylesheet.Accept(visitorRules);
 
-            foreach (string item in visitorRules.Items.Where(s => s != context.ContextItem).Select(s=> s.Text).Distinct())
+            foreach (string item in visitorRules.Items.Where(s => s != context.ContextItem).Select(s => s.Text).Distinct())
             {
                 yield return new CompletionListEntry(item);
             }

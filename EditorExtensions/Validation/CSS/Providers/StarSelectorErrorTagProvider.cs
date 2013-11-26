@@ -1,9 +1,9 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -24,11 +24,11 @@ namespace MadsKristensen.EditorExtensions
                 //string afterStar = sel.Text.Length > index + 1 ? sel.Text.Substring(index + 1) : null;
                 //if (afterStar == null || !afterStar.Trim().StartsWith("html", StringComparison.OrdinalIgnoreCase))
                 //{
-                    string errorMessage = string.Format(CultureInfo.InvariantCulture, Resources.PerformanceDontUseStarSelector);
+                string errorMessage = string.Format(CultureInfo.InvariantCulture, Resources.PerformanceDontUseStarSelector);
 
-                    SimpleErrorTag tag = new SimpleErrorTag(sel, errorMessage);
+                SimpleErrorTag tag = new SimpleErrorTag(sel, errorMessage);
 
-                    context.AddError(tag);
+                context.AddError(tag);
                 //}
             }
 

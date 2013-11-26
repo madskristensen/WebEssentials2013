@@ -6,11 +6,10 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
+using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.CSS.Editor.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -94,17 +93,18 @@ namespace MadsKristensen.EditorExtensions
             lock (_syncRoot)
             {
                 fontFamily = text;
-                using(OpenFileDialog dialog = new OpenFileDialog()){
-                dialog.InitialDirectory = Path.GetDirectoryName(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
-                dialog.Filter = "Fonts (*.woff;*.eot;*.ttf;*.otf;*.svg)|*.woff;*.eot;*.ttf;*.otf;*.svg";
-                dialog.DefaultExt = ".woff";
+                using (OpenFileDialog dialog = new OpenFileDialog())
+                {
+                    dialog.InitialDirectory = Path.GetDirectoryName(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+                    dialog.Filter = "Fonts (*.woff;*.eot;*.ttf;*.otf;*.svg)|*.woff;*.eot;*.ttf;*.otf;*.svg";
+                    dialog.DefaultExt = ".woff";
 
-                if (dialog.ShowDialog() != DialogResult.OK)
-                    return null;
+                    if (dialog.ShowDialog() != DialogResult.OK)
+                        return null;
 
-                FontDropHandler fdh = new FontDropHandler(view);
-                return fdh.GetCodeFromFile(dialog.FileName, out fontFamily);
-            }
+                    FontDropHandler fdh = new FontDropHandler(view);
+                    return fdh.GetCodeFromFile(dialog.FileName, out fontFamily);
+                }
             }
         }
     }

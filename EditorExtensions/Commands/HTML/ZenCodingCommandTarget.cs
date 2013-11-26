@@ -1,13 +1,13 @@
-﻿using Microsoft.VisualStudio;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Threading;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Windows.Threading;
 using ZenCoding;
 
 namespace MadsKristensen.EditorExtensions
@@ -56,7 +56,8 @@ namespace MadsKristensen.EditorExtensions
 
                 ITextSelection selection = UpdateTextBuffer(zenSpan, result);
 
-                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => {
+                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+                {
 
                     EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
 
@@ -67,7 +68,7 @@ namespace MadsKristensen.EditorExtensions
                     SetCaret(newSpan, false);
 
                 }), DispatcherPriority.ApplicationIdle, null);
-                
+
                 return true;
             }
 

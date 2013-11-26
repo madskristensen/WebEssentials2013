@@ -28,7 +28,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public bool Continue { get; set; }
 
         [JsonProperty]
-        public List<string> Sheets { get; set; } 
+        public List<string> Sheets { get; set; }
 
         private HashSet<RuleUsage> _ruleUsages;
 
@@ -38,7 +38,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         private void ThrowIfNotResolved()
         {
-            if(Volatile.Read(ref _isResolved) == 0)
+            if (Volatile.Read(ref _isResolved) == 0)
             {
                 throw new InvalidOperationException("Data source must be resolved first");
             }
@@ -65,7 +65,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             return GetAllRules().Except(_ruleUsages.Select(x => x.Rule)).Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
         }
-        
+
         private IEnumerable<Task> GetWarnings(string formatString)
         {
             var orderedRules = GetUnusedRules().OrderBy(x => x.File).ThenBy(x => x.Line).ThenBy(x => x.Column);
@@ -81,12 +81,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             return _ruleUsages;
         }
-    
+
         public IEnumerable<Task> GetWarnings(Uri uri)
         {
             return GetWarnings("Unused CSS rule \"{1}\" in " + _extension.Connection.AppName + " on page " + (uri ?? _extension.Connection.Url));
         }
-        
+
         public async System.Threading.Tasks.Task ResyncAsync()
         {
             _ruleUsages = await RuleRegistry.ResolveAsync(RawUsageData);
