@@ -34,6 +34,8 @@ namespace MadsKristensen.EditorExtensions
         public const uint cmdSolutionSettings = 0x1044;
         public const uint cmdSolutionColors = 0x1045;
         public const uint cmdMarkdownStylesheet = 0x1046;
+        public const uint cmdJavaScriptIntellisense = 0x1047;
+        public const uint cmdTypeScriptIntellisense = 0x1048;
         public const uint CssIntellisenseSubMenu = 0x1031;
         public const uint MinifyCss = 0x1051;
         public const uint MinifyJs = 0x1052;
