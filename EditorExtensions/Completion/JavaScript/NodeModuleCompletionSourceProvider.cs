@@ -40,8 +40,8 @@ namespace MadsKristensen.EditorExtensions
 
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
-            int position = session.TextView.Caret.Position.BufferPosition.Position;
-            var line = _buffer.CurrentSnapshot.Lines.SingleOrDefault(l => l.Start <= position && l.End >= position);
+            var position = session.GetTriggerPoint(_buffer).GetPoint(_buffer.CurrentSnapshot);
+            var line = position.GetContainingLine();
             if (line == null) return;
 
             int linePos = position - line.Start.Position;

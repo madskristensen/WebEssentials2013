@@ -47,7 +47,7 @@ namespace MadsKristensen.EditorExtensions
         readonly ReadOnlyCollection<StringCompletionSource> completionSources;
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
-            var position = session.TextView.Caret.Position.BufferPosition;
+            var position = session.GetTriggerPoint(_buffer).GetPoint(_buffer.CurrentSnapshot);
             var line = position.GetContainingLine();
 
             if (line == null)
