@@ -9,7 +9,7 @@ namespace MadsKristensen.EditorExtensions
     public abstract class StringCompletionSource
     {
         ///<summary>Gets the span within a line of text that this source should provide completion for, or null if their is no completions for the caret position.</summary>
-        public abstract Span? GetInvocationSpan(string text, int linePosition);
+        public abstract Span? GetInvocationSpan(string text, int linePosition, SnapshotPoint position);
 
         ///<summary>Gets the completion entries for the specified quoted string.</summary>
         public abstract IEnumerable<Intel.Completion> GetEntries(char quoteChar, SnapshotPoint caret);
@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions
     {
         protected abstract string FunctionName { get; }
 
-        public override Span? GetInvocationSpan(string text, int linePosition)
+        public override Span? GetInvocationSpan(string text, int linePosition, SnapshotPoint position)
         {
             // Find the quoted string inside function call
             int startIndex = text.LastIndexOf(FunctionName + "(", linePosition);

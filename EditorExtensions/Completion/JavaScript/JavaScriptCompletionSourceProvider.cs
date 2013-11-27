@@ -47,19 +47,18 @@ namespace MadsKristensen.EditorExtensions
         readonly ReadOnlyCollection<StringCompletionSource> completionSources;
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
-            var position = session.GetTriggerPoint(session.TextView.TextBuffer.CurrentSnapshot);
-            if (position == null) return;
-            var line = _buffer.CurrentSnapshot.Lines.SingleOrDefault(l => l.Start <= position && l.End >= position.Value.Position);
+            var position = session.GetTriggerPoint(_buffer).GetPoint(_buffer.CurrentSnapshot);
+            var line = position.GetContainingLine();
 
             if (line == null)
                 return;
 
             string text = line.GetText();
-            var linePosition = position.Value - line.Start;
+            var linePosition = position - line.Start;
 
             foreach (var source in completionSources)
             {
-                var span = source.GetInvocationSpan(text, linePosition);
+                var span = source.GetInvocationSpan(text, linePosition, position);
                 if (span == null) continue;
 
 
@@ -67,7 +66,7 @@ namespace MadsKristensen.EditorExtensions
                 completionSets.Add(new StringCompletionSet(
                     source.GetType().Name,
                     trackingSpan,
-                    source.GetEntries(quoteChar: text[span.Value.Start], caret: position.Value)
+                    source.GetEntries(quoteChar: text[span.Value.Start], caret: session.TextView.Caret.Position.BufferPosition)
                 ));
             }
             // TODO: Merge & resort all sets?  Will StringCompletionSource handle other entries?
