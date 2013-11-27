@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
     public class MarkdownCodeArtifactCollection : ArtifactCollection
     {
-        public MarkdownCodeArtifactCollection(IArtifactProcessor p) : base(p) { }
+        public MarkdownCodeArtifactCollection(IArtifactProcessor artifactProcessor) : base(artifactProcessor) { }
 
         ///<summary>Checks the old and new text to see whether either text matches a condition.</summary>
         ///<param name="surroundingLength">The number of characters around the modified portion (in each direction) to include in the check.  Pass zero to only check the modified range.</param>

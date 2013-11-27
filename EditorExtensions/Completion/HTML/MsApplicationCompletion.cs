@@ -7,14 +7,13 @@ using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [HtmlCompletionProvider(CompletionType.Values, "meta", "content")]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
-    public class MsApplicationCompletion : StaticListCompletion, IHtmlTreeVisitor
+    public class MSApplicationCompletion : StaticListCompletion, IHtmlTreeVisitor
     {
         private static readonly IList<HtmlCompletion> BooleanValues = Values("false", "true");
 
         protected override string KeyProperty { get { return "name"; } }
-        public MsApplicationCompletion()
+        public MSApplicationCompletion()
             : base(new Dictionary<string, IList<HtmlCompletion>>(StringComparer.OrdinalIgnoreCase)
             {
                 { "MSApplication-AllowDomainApiCalls",  BooleanValues },

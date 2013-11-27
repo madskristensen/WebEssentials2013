@@ -65,7 +65,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return GetWarnings("Unused CSS rule \"{1}\" on page " + uri);
         }
 
-        public async System.Threading.Tasks.Task ResyncAsync()
+        public async System.Threading.Tasks.Task ResynchronizeAsync()
         {
             await ResyncSourcesAsync();
 
@@ -91,7 +91,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             foreach (var source in srcs)
             {
-                await source.ResyncAsync();
+                await source.ResynchronizeAsync();
             }
         }
 
@@ -106,11 +106,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             foreach (var source in srcs)
             {
-                source.Resync();
+                source.Resynchronize();
             }
         }
 
-        public void Resync()
+        public void Resynchronize()
         {
             ResyncSources();
 

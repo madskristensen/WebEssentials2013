@@ -75,7 +75,7 @@ namespace MadsKristensen.EditorExtensions
             }
 
             doc.Reparse(_buffer.CurrentSnapshot.GetText());
-            UsageRegistry.Resync();
+            UsageRegistry.Resynchronize();
         }
 
         private void OnTagsChanged()

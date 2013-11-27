@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
+    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Microdata")]
     public class Microdata : IRule
     {
         public string Message

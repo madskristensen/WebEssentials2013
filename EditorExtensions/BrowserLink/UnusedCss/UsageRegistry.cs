@@ -88,23 +88,23 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        public static async System.Threading.Tasks.Task ResyncAsync()
+        public static async System.Threading.Tasks.Task ResynchronizeAsync()
         {
             foreach (var value in UsageDataByProject.Values)
             {
-                await value.ResyncAsync();
+                await value.ResynchronizeAsync();
             }
 
             foreach (var value in UsageDataByLocation.Values)
             {
-                await value.ResyncAsync();
+                await value.ResynchronizeAsync();
             }
 
             foreach (var bag in UsageDataByConnectionAndLocation.Values)
             {
                 foreach (var value in bag.Values)
                 {
-                    await value.ResyncAsync();
+                    await value.ResynchronizeAsync();
                 }
             }
 
@@ -112,23 +112,23 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             MessageDisplayManager.Refresh();
         }
 
-        public static void Resync()
+        public static void Resynchronize()
         {
             foreach (var value in UsageDataByProject.Values)
             {
-                value.Resync();
+                value.Resynchronize();
             }
 
             foreach (var value in UsageDataByLocation.Values)
             {
-                value.Resync();
+                value.Resynchronize();
             }
 
             foreach (var bag in UsageDataByConnectionAndLocation.Values)
             {
                 foreach (var value in bag.Values)
                 {
-                    value.Resync();
+                    value.Resynchronize();
                 }
             }
 

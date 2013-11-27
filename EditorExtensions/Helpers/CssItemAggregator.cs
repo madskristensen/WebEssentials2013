@@ -46,14 +46,14 @@ namespace MadsKristensen.EditorExtensions
                 return true;
             });
         }
-        public void Add<TNode>(Func<TNode, IEnumerable<TResult>> multiSelector) where TNode : ParseItem
+        public void Add<TNode>(Func<TNode, IEnumerable<TResult>> selectors) where TNode : ParseItem
         {
             _funcs.Add(item =>
             {
                 var typedItem = item as TNode;
                 if (typedItem == null)
                     return false;
-                _writableItems.AddRange(multiSelector(typedItem));
+                _writableItems.AddRange(selectors(typedItem));
                 return true;
             });
         }

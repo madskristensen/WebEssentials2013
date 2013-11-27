@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Html.Core;
 using Microsoft.Web.Core;
 
@@ -476,6 +477,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         }
     }
     ///<summary>Allows code in a using() block to peek ahead in a stream without consuming characters.</summary>
+    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Peeker")]
     public class StreamPeeker : IDisposable
     {
         public int StartPosition { get; private set; }

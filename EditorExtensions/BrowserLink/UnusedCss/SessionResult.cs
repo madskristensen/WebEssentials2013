@@ -87,12 +87,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return GetWarnings("Unused CSS rule \"{1}\" in " + _extension.Connection.AppName + " on page " + (uri ?? _extension.Connection.Url));
         }
 
-        public async System.Threading.Tasks.Task ResyncAsync()
+        public async System.Threading.Tasks.Task ResynchronizeAsync()
         {
             _ruleUsages = await RuleRegistry.ResolveAsync(RawUsageData);
         }
 
-        public void Resync()
+        public void Resynchronize()
         {
             _ruleUsages = RuleRegistry.Resolve(RawUsageData);
         }
@@ -100,7 +100,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public void Merge(SessionResult source)
         {
             RawUsageData.UnionWith(source.RawUsageData);
-            Resync();
+            Resynchronize();
         }
     }
 }

@@ -128,7 +128,7 @@ namespace MadsKristensen.EditorExtensions
             }
 
             if (WESettings.GetBoolean(WESettings.Keys.JavaScriptEnableGzipping))
-                CssSaveListener.GzipFile(file, minFile, content);
+                CssSaveListener.ZipFile(file, minFile, content);
         }
     }
 }

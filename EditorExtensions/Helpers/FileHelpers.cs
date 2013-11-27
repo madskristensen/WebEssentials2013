@@ -101,10 +101,10 @@ namespace MadsKristensen.EditorExtensions
         }
 
         static char[] pathSplit = { '/', '\\' };
-        public static string RelativePath(string absPath, string relTo)
+        public static string RelativePath(string absolutePath, string relativeTo)
         {
-            string[] absDirs = absPath.Split(pathSplit);
-            string[] relDirs = relTo.Split(pathSplit);
+            string[] absDirs = absolutePath.Split(pathSplit);
+            string[] relDirs = relativeTo.Split(pathSplit);
 
             // Get the shortest of the two paths
             int len = Math.Min(absDirs.Length, relDirs.Length);
@@ -123,7 +123,7 @@ namespace MadsKristensen.EditorExtensions
             // If we didn't find a common prefix then throw
             if (lastCommonRoot == -1)
             {
-                return relTo;
+                return relativeTo;
             }
 
             // Build up the relative path

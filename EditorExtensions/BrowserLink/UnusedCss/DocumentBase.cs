@@ -38,7 +38,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private void CleanUpWarnings(object sender, FileSystemEventArgs e)
         {
             DocumentFactory.UnregisterDocument(this);
-            UsageRegistry.Resync();
+            UsageRegistry.Resynchronize();
         }
 
         public object ParseSync
@@ -91,7 +91,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 await Task.Delay(100);
             }
 
-            await UsageRegistry.ResyncAsync();
+            await UsageRegistry.ResynchronizeAsync();
 
             if (IsProcessingUnusedCssRules)
             {

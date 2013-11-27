@@ -388,7 +388,7 @@ namespace MadsKristensen.EditorExtensions
                 MarginBase.AddFileToProject(filePath, minPath);
 
                 if (WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping))
-                    CssSaveListener.GzipFile(filePath, minPath, minContent);
+                    CssSaveListener.ZipFile(filePath, minPath, minContent);
             }
         }
     }

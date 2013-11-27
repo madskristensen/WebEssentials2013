@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Html.Editor.Projection;
 using Microsoft.VisualStudio.Shell;
@@ -18,6 +19,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     /// Implementations should be state-less; only one instance will
     /// be created.
     ///</remarks>
+    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Embedder")]
     public interface ICodeLanguageEmbedder
     {
         ///<summary>Gets a string to insert at the top of the generated ProjectionBuffr for this language.</summary>

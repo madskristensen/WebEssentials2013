@@ -8,7 +8,7 @@ using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [ComVisible(true)]  // Required to expose this instance to WebBrowser for JS
+    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Js"), ComVisible(true)]  // Required to expose this instance to WebBrowser for JS
     public class JsHintCompiler : ScriptRunnerBase
     {
         private string _defaultSettings;
@@ -102,9 +102,9 @@ namespace MadsKristensen.EditorExtensions
         public int line { get; set; }
         [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "character")]
         public int character { get; set; }
-        [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "a")]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "a"), SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "a")]
         public string a { get; set; }
-        [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "b")]
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "b"), SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "b")]
         public string b { get; set; }
         [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "reason")]
         public string reason { get; set; }
