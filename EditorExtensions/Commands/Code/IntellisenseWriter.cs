@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 
@@ -15,7 +16,7 @@ namespace MadsKristensen.EditorExtensions
                 WriteTypeScript(objects, sb);
             else
                 WriteJavaScript(objects, sb);
-            
+
             WriteFileToDisk(file, sb);
         }
 
@@ -55,7 +56,7 @@ namespace MadsKristensen.EditorExtensions
                     sb.AppendLine("\t\t" + p.Name + ": " + value + ";");
                 }
 
-                sb.AppendLine("}");                
+                sb.AppendLine("}");
             }
 
             sb.AppendLine("}");
@@ -71,7 +72,7 @@ namespace MadsKristensen.EditorExtensions
 
             //if (current != sb.ToString())
             //{
-                File.WriteAllText(fileName, sb.ToString());
+            File.WriteAllText(fileName, sb.ToString());
             //}
         }
 
@@ -106,6 +107,7 @@ namespace MadsKristensen.EditorExtensions
         }
     }
 
+    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Intellisense")]
     public class IntellisenseObject
     {
         public string Name { get; set; }
@@ -113,6 +115,7 @@ namespace MadsKristensen.EditorExtensions
         public List<IntellisenseProperty> Properties { get; set; }
     }
 
+    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Intellisense")]
     public class IntellisenseProperty
     {
         public string Name { get; set; }

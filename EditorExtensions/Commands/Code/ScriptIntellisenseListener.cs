@@ -1,12 +1,12 @@
-﻿using EnvDTE;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Windows.Threading;
+using EnvDTE;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -112,7 +112,7 @@ namespace MadsKristensen.EditorExtensions
             foreach (CodeProperty property in cc.Members)
             {
                 bool isAllowed = true;
-                
+
                 foreach (CodeAttribute attr in property.Attributes)
                 {
                     if (attr.Name == "IgnoreDataMember")

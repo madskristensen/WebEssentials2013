@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         IEnumerable<Task> GetWarnings();
 
         IEnumerable<Task> GetWarnings(Uri uri);
-        
+
         IEnumerable<RuleUsage> GetRuleUsages();
 
         System.Threading.Tasks.Task ResynchronizeAsync();
