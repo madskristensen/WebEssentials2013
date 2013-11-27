@@ -47,8 +47,8 @@ namespace MadsKristensen.EditorExtensions
         readonly ReadOnlyCollection<StringCompletionSource> completionSources;
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
-            int position = session.TextView.Caret.Position.BufferPosition.Position;
-            var line = _buffer.CurrentSnapshot.Lines.SingleOrDefault(l => l.Start <= position && l.End >= position);
+            var position = session.GetTriggerPoint(_buffer).GetPoint(_buffer.CurrentSnapshot);
+            var line = position.GetContainingLine();
 
             if (line == null)
                 return;
@@ -58,7 +58,7 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (var source in completionSources)
             {
-                var span = source.GetInvocationSpan(text, linePosition);
+                var span = source.GetInvocationSpan(text, linePosition, position);
                 if (span == null) continue;
 
                 var trackingSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(span.Value.Start + line.Start, span.Value.Length, SpanTrackingMode.EdgeInclusive);
