@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -13,14 +14,11 @@ namespace MadsKristensen.EditorExtensions
     [TagType(typeof(SmartTag))]
     internal class SmartTagProvider : IViewTaggerProvider
     {
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer textBuffer) where T : ITag
         {
-            ITagger<T> _tagger;
-            using (CssSmartTagger tagger = new CssSmartTagger(textView, textBuffer))
-            {
-                _tagger = tagger as ITagger<T>;
-            }
-            return _tagger;
+            CssSmartTagger tagger = new CssSmartTagger(textView, textBuffer);
+            return tagger as ITagger<T>;
         }
     }
 }
