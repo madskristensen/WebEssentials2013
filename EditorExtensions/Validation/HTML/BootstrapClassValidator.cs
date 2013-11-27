@@ -56,7 +56,7 @@ namespace MadsKristensen.EditorExtensions
         {
             List<string> childrenClassNames = null;
 
-            if (_childDependentTokens.Any(tk => token.StartsWith(tk, StringComparison.CurrentCulture)))
+            if (_childDependentTokens.Any(tk => token.StartsWith(tk, StringComparison.Ordinal)))
             {
                 childrenClassNames = new List<string>();
                 // childrenClassNames = element.Children.Select<ElementNode, string>(child => child.GetAttribute("class") == null ? "" : child.GetAttribute("class").Value).ToList<string>();

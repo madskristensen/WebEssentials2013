@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Html.Editor.Intellisense;
 using Microsoft.Html.Schemas;
@@ -10,7 +9,6 @@ using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Equiv"), HtmlCompletionProvider(CompletionType.Values, "meta", "content")]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
     public class MetaHttpEquivCompletion : StaticListCompletion
     {

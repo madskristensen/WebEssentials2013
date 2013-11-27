@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -159,7 +158,6 @@ namespace MadsKristensen.EditorExtensions
     ///<summary>Contains host-agnostic methods used to provide Node.js module completions.</summary>
     ///<remarks>This is a separate class so that it can be unit-tested without running any
     ///field initializers that require the VS hosting environment.</remarks>
-    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Utils")]
     public static class NodeModuleCompletionUtils
     {
         static readonly Regex regex = new Regex(@"(?<=\brequire\s*\(\s*(['""]))[a-z0-9_./+=-]*(?=\s*\1\s*\)?)?", RegexOptions.IgnoreCase);

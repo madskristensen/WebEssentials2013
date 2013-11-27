@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Js"), ComVisible(true)]  // Required to expose this instance to WebBrowser for JS
+    // Required to expose this instance to WebBrowser for JS
     public class JsHintCompiler : ScriptRunnerBase
     {
         private string _defaultSettings;

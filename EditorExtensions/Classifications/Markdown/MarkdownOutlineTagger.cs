@@ -54,8 +54,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         yield return new TagSpan<IOutliningRegionTag>(
                             new SnapshotSpan(spans[0].Snapshot, Span.FromBounds(blockStart.Start, artifacts[i - 1].End)),
                             new OutliningRegionTag(false, true, " [Code] ", String.Join(Environment.NewLine,
-                                artifacts.SkipWhile(a => !object.Equals(a, blockStart))
-                                         .TakeWhile(a => !object.Equals(a, mca))
+                                artifacts.SkipWhile(a => !object.ReferenceEquals(a, blockStart))
+                                         .TakeWhile(a => !object.ReferenceEquals(a, mca))
                                           .Select(a => a.GetText(spans[0].Snapshot))
                     )));
 

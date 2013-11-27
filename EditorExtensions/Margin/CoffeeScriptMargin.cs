@@ -122,14 +122,9 @@ namespace MadsKristensen.EditorExtensions
             Match match = Regex.Match(message, @"^(\d{1,})[:](\d{1,})");
             if (match.Success)
             {
-                if (!int.TryParse(match.Groups[1].Value, out line))
-                {
-                    line = 0;
-                }
-                if (!int.TryParse(match.Groups[2].Value, out column))
-                {
-                    column = 0;
-                }
+                bool parseResult =
+                    int.TryParse(match.Groups[1].Value, out line) &
+                    int.TryParse(match.Groups[2].Value, out column);
             }
             CompilerError result = new CompilerError()
             {

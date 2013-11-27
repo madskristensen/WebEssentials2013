@@ -209,7 +209,7 @@ namespace MadsKristensen.EditorExtensions
 
                     if (File.Exists(bundlePath))
                     {
-                        MessageBox.Show(String.Format(CultureInfo.CurrentCulture, "The bundle file already exists."), "Web Essentials", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show("The bundle file already exists.", "Web Essentials", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                     else
                     {
@@ -388,7 +388,7 @@ namespace MadsKristensen.EditorExtensions
                 MarginBase.AddFileToProject(filePath, minPath);
 
                 if (WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping))
-                    CssSaveListener.ZipFile(filePath, minPath, minContent);
+                    CssSaveListener.GzipFile(filePath, minPath, minContent);
             }
         }
     }

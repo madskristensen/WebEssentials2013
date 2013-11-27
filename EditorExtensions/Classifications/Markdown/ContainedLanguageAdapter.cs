@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-
 using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Projection;
-
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Html.ContainedLanguage;
 using Microsoft.VisualStudio.Html.Editor;
@@ -51,7 +50,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             Guid retVal;
             IVsTextManager globalService = Globals.GetGlobalService<IVsTextManager>(typeof(SVsTextManager));
-            globalService.MapFilenameToLanguageSID("file." + extension, out retVal).Equals(VSConstants.S_OK);
+            globalService.MapFilenameToLanguageSID("file." + extension, out retVal);
 
             return retVal;
         }
@@ -120,12 +119,12 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 }
 
                 Guid langService;
-                vsContainedLanguage.GetLanguageServiceID(out langService).Equals(VSConstants.S_OK);
-                vsTextLines.SetLanguageServiceID(ref langService).Equals(VSConstants.S_OK);
+                vsContainedLanguage.GetLanguageServiceID(out langService);
+                vsTextLines.SetLanguageServiceID(ref langService);
 
                 containedLanguage = vsContainedLanguage;
                 IVsContainedLanguageHost legacyContainedLanguageHost = GetLegacyContainedLanguageHost();
-                vsContainedLanguage.SetHost(legacyContainedLanguageHost).Equals(VSConstants.S_OK);
+                vsContainedLanguage.SetHost(legacyContainedLanguageHost);
                 _legacyCommandTarget = new LegacyContainedLanguageCommandTarget();
 
                 IVsTextViewFilter textViewFilter;
@@ -158,14 +157,14 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 _secondaryBuffer.SetTextBufferData(VSConstants.VsTextBufferUserDataGuid.VsBufferMoniker_guid, owner.WorkspaceItem.PhysicalPath);
 
                 IOleUndoManager oleUndoManager;
-                _secondaryBuffer.GetUndoManager(out oleUndoManager).Equals(VSConstants.S_OK);
+                _secondaryBuffer.GetUndoManager(out oleUndoManager);
                 oleUndoManager.Enable(0);
 
                 _textBufferCoordinator = adapterFactory.CreateVsTextBufferCoordinatorAdapter();
                 vsTextBuffer.SetTextBufferData(HtmlConstants.SID_SBufferCoordinatorServerLanguage, _textBufferCoordinator);
                 vsTextBuffer.SetTextBufferData(typeof(VsTextBufferCoordinatorClass).GUID, _textBufferCoordinator);
 
-                _textBufferCoordinator.SetBuffers(vsTextBuffer as IVsTextLines, _secondaryBuffer).Equals(VSConstants.S_OK);
+                _textBufferCoordinator.SetBuffers(vsTextBuffer as IVsTextLines, _secondaryBuffer);
 
                 return _secondaryBuffer;
             }
@@ -188,13 +187,13 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     _legacyCommandTarget.Dispose();
                     _legacyCommandTarget = null;
                 }
-                containedLanguage.SetHost(null).Equals(VSConstants.S_OK);
+                containedLanguage.SetHost(null);
 
                 _textBufferCoordinator = null;
                 _containedLanguageHost = null;
                 if (_secondaryBuffer != null)
                 {
-                    ((_secondaryBuffer as IVsPersistDocData)).Close().Equals(VSConstants.S_OK);
+                    ((_secondaryBuffer as IVsPersistDocData)).Close();
                     _secondaryBuffer = null;
                 }
 
@@ -213,6 +212,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         ///<summary>Creates a ContainedLanguage for the specified ProjectionBuffer, using an IVsIntellisenseProjectManager to initialize the language.</summary>
         ///<param name="projectionBuffer">The buffer to connect to the language service.</param>
         ///<param name="intelliSenseGuid">The GUID of the IntellisenseProvider; used to create IVsIntellisenseProject.</param>
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public void AddIntellisenseProjectLanguage(LanguageProjectionBuffer projectionBuffer, Guid intelliSenseGuid)
         {
             var contentType = projectionBuffer.IProjectionBuffer.ContentType;
@@ -245,9 +245,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             hr = project.AddAssemblyReference(typeof(System.Data.DataSet).Assembly.Location);
 
             int needsFile;
-            project.IsWebFileRequiredByProject(out needsFile).Equals(VSConstants.S_OK);
+            project.IsWebFileRequiredByProject(out needsFile);
             if (needsFile != 0)
-                project.AddFile(fileName, MarkdownCodeProject.FileItemId).Equals(VSConstants.S_OK);
+                project.AddFile(fileName, MarkdownCodeProject.FileItemId);
 
             hr = project.WaitForIntellisenseReady();
             IVsContainedLanguageFactory factory;
@@ -255,14 +255,12 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             if (factory == null)
             {
                 Logger.Log("Markdown: Couldn't create IVsContainedLanguageFactory for " + contentType);
-                project.Close().Equals(VSConstants.S_OK);
+                project.Close();
                 return;
             }
-            using (LanguageBridge bridge = new LanguageBridge(this, projectionBuffer, factory, hierarchy))
-            {
-                bridge.Disposing += delegate { project.Close().Equals(VSConstants.S_OK); };
-                languageBridges.Add(contentType, bridge);
-            }
+            LanguageBridge bridge = new LanguageBridge(this, projectionBuffer, factory, hierarchy);
+            bridge.Disposing += delegate { project.Close(); };
+            languageBridges.Add(contentType, bridge);
         }
 
         class MarkdownCodeProject : IVsContainedLanguageProjectNameProvider, IVsHierarchy, IVsProject3

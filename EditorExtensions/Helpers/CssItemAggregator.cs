@@ -46,18 +46,19 @@ namespace MadsKristensen.EditorExtensions
                 return true;
             });
         }
-        public void Add<TNode>(Func<TNode, IEnumerable<TResult>> selectors) where TNode : ParseItem
+
+        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "multi")]
+        public void Add<TNode>(Func<TNode, IEnumerable<TResult>> multiSelector) where TNode : ParseItem
         {
             _funcs.Add(item =>
             {
                 var typedItem = item as TNode;
                 if (typedItem == null)
                     return false;
-                _writableItems.AddRange(selectors(typedItem));
+                _writableItems.AddRange(multiSelector(typedItem));
                 return true;
             });
         }
-
 
         VisitItemResult ICssSimpleTreeVisitor.Visit(ParseItem parseItem)
         {

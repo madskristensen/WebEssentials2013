@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.Web.BrowserLink;
@@ -43,7 +42,6 @@ namespace MadsKristensen.EditorExtensions
             Interlocked.Increment(ref _suppressionCount);
         }
 
-        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "ms")]
         public static CssSyncSuppressionContext Get(int msAfterDisposeToWaitToRelease = 1000, params BrowserLinkConnection[] excludeSpecificConnections)
         {
             return new CssSyncSuppressionContext(msAfterDisposeToWaitToRelease, excludeSpecificConnections);

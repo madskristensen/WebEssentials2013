@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
 using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Projection;
 using Microsoft.Html.Editor.WebForms;
-
 using Microsoft.VisualStudio.Html.ContainedLanguage;
 using Microsoft.VisualStudio.Html.Editor;
 using Microsoft.VisualStudio.Html.Interop;
@@ -16,7 +14,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.TextManager.Interop;
-
 using Microsoft.VisualStudio.Web.Editor;
 using Microsoft.VisualStudio.Web.Editor.Workspace;
 using Microsoft.Web.Editor;
@@ -51,7 +48,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             Guid gUID = typeof(IVsTextViewIntellisenseHost).GUID;
             IntPtr intPtr;
-            vsTextViewIntellisenseHostProvider.CreateIntellisenseHost(bufferCoordinator, ref gUID, out intPtr).Equals(VSConstants.S_OK);
+            vsTextViewIntellisenseHostProvider.CreateIntellisenseHost(bufferCoordinator, ref gUID, out intPtr);
             if (intPtr == IntPtr.Zero)
                 return;
 

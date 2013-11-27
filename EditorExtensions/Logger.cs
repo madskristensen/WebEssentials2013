@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (EnsurePane())
                 {
-                    pane.OutputString(DateTime.Now.ToString() + ": " + message + Environment.NewLine).Equals(VSConstants.S_OK);
+                    pane.OutputString(DateTime.Now.ToString() + ": " + message + Environment.NewLine);
                 }
             }
             catch

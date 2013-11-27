@@ -27,22 +27,11 @@ namespace MadsKristensen.EditorExtensions
         public string GetScript()
         {
             string result = null;
-            Stream stream = null;
-
-            try
+            using (Stream stream = GetType().Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.BrowserLink.BestPractices.BestPracticesBrowserLink.js"))
+            using (StreamReader reader = new StreamReader(stream))
             {
-                stream = GetType().Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.BrowserLink.BestPractices.BestPracticesBrowserLink.js");
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    result = reader.ReadToEnd();
-                }
+                result = reader.ReadToEnd();
             }
-            finally
-            {
-                if (stream == null)
-                    stream.Dispose();
-            }
-
             return result;
         }
     }

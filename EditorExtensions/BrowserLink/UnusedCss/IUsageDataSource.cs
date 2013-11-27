@@ -16,8 +16,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         IEnumerable<RuleUsage> GetRuleUsages();
 
-        System.Threading.Tasks.Task ResynchronizeAsync();
+        System.Threading.Tasks.Task ResyncAsync();
 
-        void Resynchronize();
+        void Resync();
     }
 }

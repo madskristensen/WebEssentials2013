@@ -21,18 +21,16 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             var path = Path.GetDirectoryName(file);
             _localFileName = (Path.GetFileName(file) ?? "").ToLowerInvariant();
 
-            using (_watcher = new FileSystemWatcher())
-            {
-                _watcher.Path = path;
-                _watcher.Filter = _localFileName;
-                _watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.DirectoryName;
-                _watcher.Changed += Reparse;
-                _watcher.Renamed += ProxyRename;
-                _watcher.Created += Reparse;
-                _watcher.Deleted += CleanUpWarnings;
-                _watcher.EnableRaisingEvents = true;
-                Reparse();
-            }
+            _watcher = new FileSystemWatcher();
+            _watcher.Path = path;
+            _watcher.Filter = _localFileName;
+            _watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.DirectoryName;
+            _watcher.Changed += Reparse;
+            _watcher.Renamed += ProxyRename;
+            _watcher.Created += Reparse;
+            _watcher.Deleted += CleanUpWarnings;
+            _watcher.EnableRaisingEvents = true;
+            Reparse();
         }
 
         private void CleanUpWarnings(object sender, FileSystemEventArgs e)

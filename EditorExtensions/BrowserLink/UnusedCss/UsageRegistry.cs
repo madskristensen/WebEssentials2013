@@ -92,19 +92,19 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             foreach (var value in UsageDataByProject.Values)
             {
-                await value.ResynchronizeAsync();
+                await value.ResyncAsync();
             }
 
             foreach (var value in UsageDataByLocation.Values)
             {
-                await value.ResynchronizeAsync();
+                await value.ResyncAsync();
             }
 
             foreach (var bag in UsageDataByConnectionAndLocation.Values)
             {
                 foreach (var value in bag.Values)
                 {
-                    await value.ResynchronizeAsync();
+                    await value.ResyncAsync();
                 }
             }
 
@@ -116,19 +116,19 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             foreach (var value in UsageDataByProject.Values)
             {
-                value.Resynchronize();
+                value.Resync();
             }
 
             foreach (var value in UsageDataByLocation.Values)
             {
-                value.Resynchronize();
+                value.Resync();
             }
 
             foreach (var bag in UsageDataByConnectionAndLocation.Values)
             {
                 foreach (var value in bag.Values)
                 {
-                    value.Resynchronize();
+                    value.Resync();
                 }
             }
 

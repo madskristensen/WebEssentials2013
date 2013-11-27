@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.Text;
@@ -47,6 +48,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public static void RunOnAllFilesInProject()
         {
             string dir = ProjectHelpers.GetRootFolder();
@@ -55,10 +57,8 @@ namespace MadsKristensen.EditorExtensions
             {
                 foreach (string file in Directory.GetFiles(dir, "*.js", SearchOption.AllDirectories))
                 {
-                    using (JsHintRunner runner = new JsHintRunner(file))
-                    {
-                        runner.RunCompiler();
-                    }
+                    JsHintRunner runner = new JsHintRunner(file);
+                    runner.RunCompiler();
                 }
             }
         }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
@@ -21,31 +22,17 @@ namespace MadsKristensen.EditorExtensions
             _mcs = mcs;
         }
 
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public void SetupCommands()
         {
             SetupCommand(PkgCmdIDList.titleCaseTransform, new Replacement(x => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(x)));
             SetupCommand(PkgCmdIDList.reverseTransform, new Replacement(x => new string(x.Reverse().ToArray())));
             SetupCommand(PkgCmdIDList.normalizeTransform, new Replacement(x => RemoveDiacritics(x)));
-            using (var md5Hash = new MD5CryptoServiceProvider())
-            {
-                SetupCommand(PkgCmdIDList.md5Transform, new Replacement(x => Hash(x, md5Hash)));
-            }
-            using (var sha1Hash = new MD5CryptoServiceProvider())
-            {
-                SetupCommand(PkgCmdIDList.sha1Transform, new Replacement(x => Hash(x, sha1Hash)));
-            }
-            using (var sha256Hash = new MD5CryptoServiceProvider())
-            {
-                SetupCommand(PkgCmdIDList.sha256Transform, new Replacement(x => Hash(x, sha256Hash)));
-            }
-            using (var sha384Hash = new MD5CryptoServiceProvider())
-            {
-                SetupCommand(PkgCmdIDList.sha384Transform, new Replacement(x => Hash(x, sha384Hash)));
-            }
-            using (var sha512Hash = new MD5CryptoServiceProvider())
-            {
-                SetupCommand(PkgCmdIDList.sha512Transform, new Replacement(x => Hash(x, sha512Hash)));
-            }
+            SetupCommand(PkgCmdIDList.md5Transform, new Replacement(x => Hash(x, new MD5CryptoServiceProvider())));
+            SetupCommand(PkgCmdIDList.sha1Transform, new Replacement(x => Hash(x, new SHA1CryptoServiceProvider())));
+            SetupCommand(PkgCmdIDList.sha256Transform, new Replacement(x => Hash(x, new SHA256CryptoServiceProvider())));
+            SetupCommand(PkgCmdIDList.sha384Transform, new Replacement(x => Hash(x, new SHA384CryptoServiceProvider())));
+            SetupCommand(PkgCmdIDList.sha512Transform, new Replacement(x => Hash(x, new SHA512CryptoServiceProvider())));
         }
 
         public static string RemoveDiacritics(string s)
@@ -74,7 +61,7 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (byte b in hash)
             {
-                sb.Append(b.ToString("x2", CultureInfo.CurrentCulture).ToLowerInvariant());
+                sb.Append(b.ToString("x2", CultureInfo.InvariantCulture).ToLowerInvariant());
             }
 
             return sb.ToString();

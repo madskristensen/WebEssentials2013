@@ -61,7 +61,7 @@ namespace MadsKristensen.EditorExtensions
                 }
 
                 if (WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping))
-                    ZipFile(file, minFile, content);
+                    GzipFile(file, minFile, content);
             }
             catch
             {
@@ -69,7 +69,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public static void ZipFile(string file, string minFile, string content)
+        public static void GzipFile(string file, string minFile, string content)
         {
             string gzipFile = minFile + ".gzip";
             ProjectHelpers.CheckOutFileFromSourceControl(gzipFile);

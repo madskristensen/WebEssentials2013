@@ -60,14 +60,14 @@ namespace MadsKristensen.EditorExtensions
                 {
                     LOGFONTW[] Fnt = new LOGFONTW[] { new LOGFONTW() };
                     FontInfo[] Info = new FontInfo[] { new FontInfo() };
-                    storage.GetFont(Fnt, Info).Equals(VSConstants.S_OK);
+                    storage.GetFont(Fnt, Info);
                     _fontSize = (int)Info[0].wPointSize;
                 }
 
                 if (storage != null && storage.OpenCategory(ref guid, (uint)(__FCSTORAGEFLAGS.FCSF_NOAUTOCOLORS | __FCSTORAGEFLAGS.FCSF_LOADDEFAULTS)) == VS.VSConstants.S_OK)
                 {
                     var info = new ColorableItemInfo[1];
-                    storage.GetItem("Plain Text", info).Equals(VSConstants.S_OK);
+                    storage.GetItem("Plain Text", info);
                     _backgroundColor = ConvertFromWin32Color((int)info[0].crBackground);
                 }
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.CSS.Core;
 using Microsoft.Less.Core;
@@ -24,7 +23,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         }
 
 
-        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "mixin")]
         public static IEnumerable<string> GetSelectorNames(RuleSet ruleSet, LessMixinAction mixinAction)
         {
             if (ruleSet.Selectors.Any(s => s.SimpleSelectors.Any(ss => ss.SubSelectors.Any(sss => sss is LessMixinDeclaration))))
@@ -126,7 +124,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         }
     }
     ///<summary>Specifies how to handle mixins (and selectors within mixins) when constructing generated CSS selectors from LESS rulesets.</summary>
-    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Mixin")]
     public enum LessMixinAction
     {
         ///<summary>Return null for any selector in a mixin.</summary>
