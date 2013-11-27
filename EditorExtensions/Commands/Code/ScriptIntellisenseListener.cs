@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
@@ -140,9 +141,15 @@ namespace MadsKristensen.EditorExtensions
         {
             foreach (CodeAttribute attr in property.Attributes)
             {
-                if (attr.Name == "UIHint")
+                if (attr.Name == "DataMember" || attr.Name.EndsWith(".DataMember"))
                 {
-                    return attr.Value.Trim('"');
+                    string value = attr.Value;
+                    var match = Regex.Match(value, "(?<=[\\(\\s,]?)Name([\\s=]+)\"([^\"]+)\"");
+
+                    if (match.Success)
+                    {
+                        return match.Groups[2].Value;
+                    }
                 }
             }
 
