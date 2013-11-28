@@ -66,8 +66,16 @@ namespace MadsKristensen.EditorExtensions
                 }
                 catch (ArgumentException)
                 {
-                    // MFC projects don't have FullPath, and there seems to be no way to query existence
-                    fullPath = project.Properties.Item("ProjectDirectory").Value as string;
+                    try
+                    {
+                        // MFC projects don't have FullPath, and there seems to be no way to query existence
+                        fullPath = project.Properties.Item("ProjectDirectory").Value as string;
+                    }
+                    catch (ArgumentException)
+                    {
+                        // Installer projects have a ProjectPath.
+                        fullPath = project.Properties.Item("ProjectPath").Value as string;
+                    }
                 }
 
                 if (String.IsNullOrEmpty(fullPath))
@@ -139,7 +147,7 @@ namespace MadsKristensen.EditorExtensions
         public static string ToAbsoluteFilePath(string relativeUrl, string relativeToFile)
         {
             var file = EditorExtensionsPackage.DTE.Solution.FindProjectItem(relativeToFile);
-            if (file == null)
+            if (file == null || file.Properties == null)
                 return ToAbsoluteFilePath(relativeUrl, GetRootFolder(), Path.GetDirectoryName(relativeToFile));
             return ToAbsoluteFilePath(relativeUrl, file);
         }
@@ -171,14 +179,14 @@ namespace MadsKristensen.EditorExtensions
                 return relUri.LocalPath;
             }
 
-            if (projectRoot == null && baseFolder == null)
-                return "";
-
-            if (relUri.OriginalString.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar).StartsWith(new string(Path.DirectorySeparatorChar, 1)))
+            if (relUri.OriginalString.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar).StartsWith(Path.DirectorySeparatorChar.ToString()))
             {
                 baseFolder = null;
                 relUri = new Uri(relUri.OriginalString.Substring(1), UriKind.Relative);
             }
+
+            if (projectRoot == null && baseFolder == null)
+                return "";
 
             var root = (baseFolder ?? projectRoot).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
