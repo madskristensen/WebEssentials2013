@@ -8,6 +8,7 @@ using System.IO;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System.Web;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -15,7 +16,6 @@ namespace MadsKristensen.EditorExtensions
     {
         private ITextBuffer _buffer;
         private CssTree _tree;
-        private static List<string> _imageExtensions = new List<string>() { ".png", ".jpg", "gif", ".jpeg", ".bmp", ".tif", ".tiff" };
 
         public ImageQuickInfo(ITextBuffer subjectBuffer)
         {
@@ -39,20 +39,22 @@ namespace MadsKristensen.EditorExtensions
 
             UrlItem urlItem = item.FindType<UrlItem>();
 
-            if (urlItem != null && urlItem.UrlString != null && urlItem.UrlString.IsValid)
-            {
-                string url = GetFileName(urlItem.UrlString.Text.Trim('\'', '"'));
-                if (!string.IsNullOrEmpty(url))
-                {
-                    applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(point.Value.Position, 1, SpanTrackingMode.EdgeNegative);
-                    var image = CreateImage(url);
-                    if (image != null && image.Source != null)
-                    {
-                        qiContent.Add(image);
-                        qiContent.Add(Math.Round(image.Source.Width) + "x" + Math.Round(image.Source.Height));
-                    }
-                }
-            }
+            if (urlItem == null || urlItem.UrlString == null || !urlItem.UrlString.IsValid)
+                return;
+
+            string url = GetFileName(urlItem.UrlString.Text.Trim('\'', '"'), _buffer);
+            if (string.IsNullOrEmpty(url))
+                return;
+
+            applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(point.Value.Position, 1, SpanTrackingMode.EdgeNegative);
+
+            var image = CreateImage(url);
+            qiContent.Add(image);
+
+            if (image.Tag == null)
+                qiContent.Add(Math.Round(image.Source.Width) + "×" + Math.Round(image.Source.Height));
+            else
+                qiContent.Add(image.Tag);
         }
 
         /// <summary>
@@ -76,52 +78,38 @@ namespace MadsKristensen.EditorExtensions
             return _tree != null;
         }
 
-        public static string GetFileName(string text)
+        public static string GetFileName(string text, ITextBuffer sourceBuffer)
+        {
+            return GetFileName(text, sourceBuffer.GetFileName() ?? EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+        }
+        public static string GetFileName(string text, string sourceFilename)
         {
             if (!string.IsNullOrEmpty(text))
             {
-                if (text.StartsWith("data:", StringComparison.Ordinal))
+                string imageUrl = text.Trim(new[] { '\'', '"' });
+
+                if (imageUrl.StartsWith("data:", StringComparison.Ordinal))
                     return text;
 
-                string imageUrl = text.Trim(new[] { '\'', '"' });
-                //if (!_imageExtensions.Contains(Path.GetExtension(imageUrl)))
-                //    return null;
-                
                 string filePath = string.Empty;
 
                 if (text.StartsWith("//", StringComparison.Ordinal))
                     text = "http:" + text;
 
-                if (text.StartsWith("http://", StringComparison.Ordinal) || text.Contains(";base64,"))
+                if (text.Contains("://") || text.Contains(";base64,"))
                 {
                     return text;
                 }
-                else if (imageUrl.StartsWith("/", StringComparison.Ordinal))
+                else
                 {
-                    imageUrl = HttpUtility.UrlDecode(imageUrl);
-                    
-                    string root = ProjectHelpers.GetProjectFolder(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
-                    if (root.Contains("://"))
-                        return root + imageUrl;
-                    
-                    if (!string.IsNullOrEmpty(root))
-                        filePath = ProjectHelpers.ToAbsoluteFilePathFromActiveFile(imageUrl);// new FileInfo(root).Directory + imageUrl;
-                }
-                else if (EditorExtensionsPackage.DTE.ActiveDocument != null)
-                {
-                    imageUrl = HttpUtility.UrlDecode(imageUrl);
-                    FileInfo fi = new FileInfo(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
-                    DirectoryInfo dir = fi.Directory;
-                    while (imageUrl.Contains("../"))
-                    {
-                        imageUrl = imageUrl.Remove(imageUrl.IndexOf("../", StringComparison.Ordinal), 3);
-                        dir = dir.Parent;
-                    }
+                    if (String.IsNullOrEmpty(sourceFilename))
+                        return null;
 
-                    filePath = Path.Combine(dir.FullName, imageUrl.Replace("/", "\\"));
+                    imageUrl = HttpUtility.UrlDecode(imageUrl);
+                    filePath = ProjectHelpers.ToAbsoluteFilePath(imageUrl, sourceFilename);
                 }
 
-                return File.Exists(filePath) ? filePath : "pack://application:,,,/WebEssentials2013;component/Resources/nopreview.png";
+                return filePath;
             }
 
             return null;
@@ -129,31 +117,33 @@ namespace MadsKristensen.EditorExtensions
 
         public static Image CreateImage(string file)
         {
+            var image = new Image();
             try
             {
-                var image = new Image();
-
                 if (file.StartsWith("data:", StringComparison.Ordinal))
                 {
                     int index = file.IndexOf("base64,", StringComparison.Ordinal) + 7;
                     byte[] imageBytes = Convert.FromBase64String(file.Substring(index));
-                    
+
                     using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
                     {
                         image.Source = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                     }
+                    return image;
                 }
-                else if (File.Exists(file))
+                else if (file.Contains("://") || File.Exists(file))
                 {
-                    image.Source = BitmapFrame.Create(new Uri(file), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    image.Source = BitmapFrame.Create(new Uri(file));
+                    return image;
                 }
-
-                return image;
+                image.Tag = "File not found";
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null;
+                image.Tag = ex.Message;
             }
+            image.Source = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/nopreview.png"), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+            return image;
         }
 
         public void Dispose()
