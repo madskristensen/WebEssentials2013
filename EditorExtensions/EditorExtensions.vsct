@@ -433,7 +433,25 @@
         <Strings>
           <ButtonText>Run JSHint</ButtonText>
         </Strings>
-      </Button>      
+      </Button>
+
+      <Button guid="guidDiffCmdSet" id="cmdJavaScriptIntellisense" priority="0x0106" type="Button">
+        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Create JavaScript Intellisense file</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidDiffCmdSet" id="cmdTypeScriptIntellisense" priority="0x0106" type="Button">
+        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Create TypeScript Intellisense file</ButtonText>
+        </Strings>
+      </Button>
 
       <Button guid="guidMinifyCmdSet" id="cmdMinifyCss" priority="0x0101" type="Button">
         <Parent guid="guidSolutionExplorerCmdSet" id="MySubGroup"/>
@@ -738,6 +756,8 @@
       <IDSymbol name="cmdSolutionSettings" value="0x1044" />
       <IDSymbol name="cmdSolutionColors" value="0x1045" />
       <IDSymbol name="cmdMarkdownStylesheet" value="0x1046" />
+      <IDSymbol name="cmdJavaScriptIntellisense" value="0x1047" />
+      <IDSymbol name="cmdTypeScriptIntellisense" value="0x1048" />
     </GuidSymbol>
 
     <GuidSymbol name="guidMinifyCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e61}">

@@ -1,15 +1,14 @@
-﻿using Microsoft.Html.Editor.Intellisense;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Html.Editor.Intellisense;
 using Microsoft.Html.Schemas;
 using Microsoft.Html.Schemas.Model;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [HtmlCompletionProvider(CompletionType.Values, "meta", "content")]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
     public class MetaHttpEquivCompletion : StaticListCompletion
     {

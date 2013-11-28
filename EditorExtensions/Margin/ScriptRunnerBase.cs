@@ -13,6 +13,8 @@ namespace MadsKristensen.EditorExtensions
         private bool _disposed;
         private Dispatcher _dispatcher;
 
+        protected ScriptRunnerBase() { }
+
         protected ScriptRunnerBase(Dispatcher dispatcher)
         {
             _dispatcher = dispatcher;

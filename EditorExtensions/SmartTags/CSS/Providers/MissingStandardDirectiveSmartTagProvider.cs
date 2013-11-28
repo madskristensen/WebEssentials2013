@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
+using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.CSS.Editor.Schemas;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.CSS.Editor.Schemas;
-using Microsoft.CSS.Editor.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {

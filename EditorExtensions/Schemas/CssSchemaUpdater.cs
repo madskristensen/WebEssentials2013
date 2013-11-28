@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -99,7 +100,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static XmlDocument DownloadXml()
         {
-            string url = "http://realworldvalidator.com/api?date=" + _lastRequest.AddDays(-7).ToString("yyyy-MM-dd");
+            string url = "http://realworldvalidator.com/api?date=" + _lastRequest.AddDays(-7).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             XmlDocument doc = new XmlDocument();
 
             try

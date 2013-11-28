@@ -1,14 +1,14 @@
-﻿using EnvDTE;
-using Microsoft.VisualStudio.Shell;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using System.Windows.Threading;
+using EnvDTE;
 using MadsKristensen.EditorExtensions.Commands.JavaScript;
 using MadsKristensen.EditorExtensions.Helpers;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {

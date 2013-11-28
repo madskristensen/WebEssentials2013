@@ -1,16 +1,15 @@
-﻿using EnvDTE;
+﻿using System;
+using System.ComponentModel.Design;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Windows.Threading;
+using EnvDTE;
 using EnvDTE80;
 using MadsKristensen.EditorExtensions.BrowserLink.PixelPushing;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using System;
-using System.ComponentModel.Design;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -92,6 +91,9 @@ namespace MadsKristensen.EditorExtensions
 
                 MarkdownStylesheetMenu markdownMenu = new MarkdownStylesheetMenu(DTE, mcs);
                 markdownMenu.SetupCommands();
+
+                AddIntellisenseFileMenu intellisenseFile = new AddIntellisenseFileMenu(DTE, mcs);
+                intellisenseFile.SetupCommands();
 
                 UnusedCssMenu unusedCssMenu = new UnusedCssMenu(mcs);
                 unusedCssMenu.SetupCommands();

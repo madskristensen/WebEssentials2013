@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.Text.Classification;
+﻿using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
-using System.ComponentModel.Composition;
 
 namespace MadsKristensen.EditorExtensions
 {

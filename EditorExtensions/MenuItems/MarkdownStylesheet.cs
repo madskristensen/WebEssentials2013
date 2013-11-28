@@ -1,13 +1,6 @@
 ﻿using System.ComponentModel.Design;
-using System.Linq;
-using System.Text;
-using EnvDTE;
 using EnvDTE80;
-using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Shell;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -29,7 +22,7 @@ namespace MadsKristensen.EditorExtensions
             menuCommand.BeforeQueryStatus += menuCommand_BeforeQueryStatus;
             _mcs.AddCommand(menuCommand);
         }
-        
+
         void menuCommand_BeforeQueryStatus(object sender, System.EventArgs e)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -299,7 +300,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    string error = string.Format("Bundle error: The file '{0}' doesn't exist", node.InnerText);
+                    string error = string.Format(CultureInfo.CurrentCulture, "Bundle error: The file '{0}' doesn't exist", node.InnerText);
                     _dte.ItemOperations.OpenFile(filePath);
                     MessageBox.Show(error, "Web Essentials");
                     return;

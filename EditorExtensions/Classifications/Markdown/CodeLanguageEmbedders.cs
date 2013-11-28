@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Html.Editor.Projection;
 using Microsoft.VisualStudio.Shell;
@@ -8,7 +9,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using Microsoft.Win32;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
@@ -19,6 +19,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     /// Implementations should be state-less; only one instance will
     /// be created.
     ///</remarks>
+    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Embedder")]
     public interface ICodeLanguageEmbedder
     {
         ///<summary>Gets a string to insert at the top of the generated ProjectionBuffr for this language.</summary>
@@ -117,21 +118,23 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             get
             {
-                return @"
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-";
+                return @"using System;
+                         using System.Collections.Generic;
+                         using System.Data;
+                         using System.Linq;
+                         using System.Text;
+                         using System.Threading;
+                         using System.Threading.Tasks;";
             }
         }
         public override IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
         {
-            return new[] { @"
-partial class Entry { object SampleMethod" + Guid.NewGuid().ToString("n") + @"() {", "}}" };
+            return new[] { @"partial class Entry
+                            {
+                                  object SampleMethod" + Guid.NewGuid().ToString("n") + @"()
+                            {",
+                            @"}
+                            }" };
         }
     }
 
@@ -144,25 +147,23 @@ partial class Entry { object SampleMethod" + Guid.NewGuid().ToString("n") + @"()
         {
             get
             {
-                return @"
-Imports System
-Imports System.Collections.Generic
-Imports System.Data
-Imports System.Linq
-Imports System.Text
-Imports System.Threading
-Imports System.Threading.Tasks
-";
+                return @"Imports System
+                        Imports System.Collections.Generic
+                        Imports System.Data
+                        Imports System.Linq
+                        Imports System.Text
+                        Imports System.Threading
+                        Imports System.Threading.Tasks";
             }
         }
         public override IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
         {
             return new[] { @"
-Partial Class Entry
-Function SampleMethod" + Guid.NewGuid().ToString("n") + @"() As Object", @"
-Return Nothing
-End Function
-End Class" };
+                            Partial Class Entry
+                            Function SampleMethod" + Guid.NewGuid().ToString("n") + @"() As Object", @"
+                                Return Nothing
+                            End Function
+                            End Class"};
         }
     }
 }

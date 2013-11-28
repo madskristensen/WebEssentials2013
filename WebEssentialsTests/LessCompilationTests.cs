@@ -1,12 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
 
 namespace WebEssentialsTests
 {
@@ -62,11 +61,12 @@ namespace WebEssentialsTests
 
         static async Task<string> CompileLess(string fileName, string targetFilename = null)
         {
-            var result = await LessCompiler.Compile(fileName, targetFilename);
+            string siteMapPath = "/" + Path.GetDirectoryName(FileHelpers.RelativePath(BaseDirectory, fileName)).Replace("\\", "/");
+            var result = await LessCompiler.Compile(fileName, targetFilename, siteMapPath);
+
             if (result.IsSuccess)
             {
-                // remove the sourceMappingURL comment at the end of compiled file and return.
-                return Regex.Replace(result.Result, @"\n\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", ""); ;
+                return result.Result;
             }
             else
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -26,17 +27,22 @@ namespace MadsKristensen.EditorExtensions
             return tcs.Task;
         }
 
-        public static async Task<CompilerResult> Compile(string filename, string targetFilename = null)
+        public static async Task<CompilerResult> Compile(string filename, string targetFilename = null, string sourceMapRootPath = null)
         {
             string output = Path.GetTempFileName();
 
             string webEssentialsDir = Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location);
             string lessc = Path.Combine(webEssentialsDir, @"Resources\nodejs\node_modules\.bin\lessc.cmd");
             string arguments = String.Format("--no-color --relative-urls \"{0}\" \"{1}\"", filename, output);
+            string fileNameWithoutPath = Path.GetFileName(filename);
+            string sourceMapArguments = (sourceMapRootPath != null) ?
+                String.Format("--source-map-rootpath=\"{0}\" ", sourceMapRootPath.Replace("\\", "/")) : "";
+
             if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
                 arguments = String.Format(
-                  "--relative-urls --source-map=\"{0}.map\" \"{1}\" \"{2}\"",
-                  targetFilename ?? filename,
+                  "--relative-urls {0}--source-map=\"{1}.map\" \"{2}\" \"{3}\"",
+                  sourceMapArguments,
+                  fileNameWithoutPath,
                   filename,
                   output);
 
@@ -119,8 +125,8 @@ namespace MadsKristensen.EditorExtensions
             {
                 Message = m.Groups[1].Value,
                 FileName = m.Groups[2].Value,
-                Line = int.Parse(m.Groups[3].Value),
-                Column = int.Parse(m.Groups[4].Value)
+                Line = int.Parse(m.Groups[3].Value, CultureInfo.CurrentCulture),
+                Column = int.Parse(m.Groups[4].Value, CultureInfo.CurrentCulture)
             };
         }
     }

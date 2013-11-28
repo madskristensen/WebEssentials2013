@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Html.Core;
 using Microsoft.Web.Core;
 
@@ -508,7 +504,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     public class MarkdownCodeArtifact : Artifact
     {
         public MarkdownCodeArtifact(string language, ITextRange range, int leftLength, int rightLength, int blockStart)
-            : base(TreatAs(language), range, leftLength, rightLength, MarkdownClassificationTypes.MarkdownCode, true)
+            : base(TreatAsWhich(language), range, leftLength, rightLength, MarkdownClassificationTypes.MarkdownCode, true)
         {
             Language = language;
             BlockStart = blockStart;
@@ -518,7 +514,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         ///<remarks>This is used to group code runs (lines) from the same block, for language prefixing.</remarks>
         public int BlockStart { get; private set; }
 
-        static ArtifactTreatAs TreatAs(string language)
+        static ArtifactTreatAs TreatAsWhich(string language)
         {
             if ((language ?? "").StartsWith("htm", StringComparison.OrdinalIgnoreCase))
                 return ArtifactTreatAs.Tag;

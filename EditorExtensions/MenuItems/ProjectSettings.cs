@@ -1,9 +1,9 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
-using System.ComponentModel.Design;
+﻿using System.ComponentModel.Design;
 using System.IO;
 using System.Windows.Forms;
+using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {

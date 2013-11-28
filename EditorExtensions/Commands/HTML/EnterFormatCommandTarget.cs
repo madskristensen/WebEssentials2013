@@ -1,4 +1,8 @@
-﻿using Microsoft.Html.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Threading;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
 using Microsoft.Html.Schemas;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -8,10 +12,6 @@ using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.Web.Editor.Formatting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -144,7 +144,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 string text = element.GetText(element.InnerRange);
 
-                for (int i = text.Length -1; i > -1; i--)
+                for (int i = text.Length - 1; i > -1; i--)
                 {
                     if (!char.IsWhiteSpace(text[i]))
                     {

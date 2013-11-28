@@ -1,9 +1,9 @@
-﻿using Microsoft.VisualStudio.Editor;
+﻿using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-using System.ComponentModel.Composition;
 
 namespace MadsKristensen.EditorExtensions
 {

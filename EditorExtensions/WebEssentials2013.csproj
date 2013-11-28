@@ -337,6 +337,9 @@
     <Compile Include="Classifications\Markdown\MarkdownClassifier.cs" />
     <Compile Include="Classifications\Markdown\MarkdownContentTypeDefinition.cs" />
     <Compile Include="Classifications\CSS\ModernizrClassifier.cs" />
+    <Compile Include="MenuItems\AddIntellisenseFile.cs" />
+    <Compile Include="Commands\Code\IntellisenseWriter.cs" />
+    <Compile Include="Commands\Code\ScriptIntellisenseListener.cs" />
     <Compile Include="Commands\CommandTargetBase.cs" />
     <Compile Include="Commands\Css\CssSelectBrowsers.cs" />
     <Compile Include="Commands\Css\CssFormatCommandTarget.cs" />

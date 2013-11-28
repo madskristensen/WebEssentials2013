@@ -1,13 +1,9 @@
-﻿using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
-using System;
+﻿using System;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {

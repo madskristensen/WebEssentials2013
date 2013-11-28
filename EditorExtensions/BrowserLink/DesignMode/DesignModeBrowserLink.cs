@@ -1,13 +1,13 @@
-﻿using Microsoft.Html.Core;
-using Microsoft.Html.Editor;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Web.BrowserLink;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Threading;
+using Microsoft.Html.Core;
+using Microsoft.Html.Editor;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -19,14 +19,14 @@ namespace MadsKristensen.EditorExtensions
             return new DesignMode();
         }
 
-        public  string GetScript()
+        public string GetScript()
         {
-                using (Stream stream = GetType().Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.BrowserLink.DesignMode.DesignModeBrowserLink.js"))
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
-         }
+            using (Stream stream = GetType().Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.BrowserLink.DesignMode.DesignModeBrowserLink.js"))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
+        }
     }
 
     public class DesignMode : BrowserLinkExtension

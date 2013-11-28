@@ -233,13 +233,12 @@ a {
         [TestMethod]
         public void TestMixinExpansion()
         {
-            var lessCode = @"
-a {
-    .myMixin(@p) {
-        b, code {
-        }
-    }
-}";
+            var lessCode = @"a {
+                                .myMixin(@p) {
+                                    b, code {
+                                    }
+                                }
+                            }";
 
             var lessDoc = new LessParser().Parse(lessCode, false);
             var lessBlocks = new CssItemAggregator<RuleSet>(true) { (RuleSet rs) => rs }.Crawl(lessDoc).ToList();

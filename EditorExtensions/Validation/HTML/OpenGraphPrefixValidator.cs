@@ -1,12 +1,11 @@
-﻿using Microsoft.Html.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Validation.Validators;
 using Microsoft.Html.Validation;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions.Validation.Html
 {
@@ -29,7 +28,7 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
             if (property.Value.StartsWith("og:", StringComparison.Ordinal))
             {
                 ElementNode head = element.Parent;
-                
+
                 if (head != null && head.Name == "head")
                 {
                     AttributeNode prefix = head.GetAttribute("prefix");

@@ -1,9 +1,9 @@
-﻿using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Threading;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -120,10 +120,10 @@ namespace MadsKristensen.EditorExtensions
             Match match = Regex.Match(message, @"^(\d{1,})[:](\d{1,})");
             if (match.Success)
             {
-                int.TryParse(match.Groups[1].Value, out line);
-                int.TryParse(match.Groups[2].Value, out column);
+                bool parseResult =
+                    int.TryParse(match.Groups[1].Value, out line) &
+                    int.TryParse(match.Groups[2].Value, out column);
             }
-
             CompilerError result = new CompilerError()
             {
                 Message = "CoffeeScript: " + message,

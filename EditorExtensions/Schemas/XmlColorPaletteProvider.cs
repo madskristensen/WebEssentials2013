@@ -1,4 +1,10 @@
-﻿using EnvDTE;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using EnvDTE;
 using EnvDTE80;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
@@ -7,12 +13,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace MadsKristensen.EditorExtensions
 {

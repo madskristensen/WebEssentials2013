@@ -1,12 +1,12 @@
-﻿using Microsoft.CSS.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -52,7 +52,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged 
+        public event EventHandler<SnapshotSpanEventArgs> TagsChanged
         {
             add { }
             remove { }

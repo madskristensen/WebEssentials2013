@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.ContainedLanguage;

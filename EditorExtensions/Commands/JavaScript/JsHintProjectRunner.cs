@@ -1,7 +1,8 @@
-﻿using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Windows.Threading;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -47,6 +48,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public static void RunOnAllFilesInProject()
         {
             string dir = ProjectHelpers.GetRootFolder();

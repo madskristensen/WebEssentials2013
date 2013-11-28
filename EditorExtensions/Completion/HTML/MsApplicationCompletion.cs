@@ -1,20 +1,19 @@
-﻿using Microsoft.Html.Core;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System;
-using System.Collections.Generic;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [HtmlCompletionProvider(CompletionType.Values, "meta", "content")]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
-    public class MsApplicationCompletion : StaticListCompletion, IHtmlTreeVisitor
+    public class MSApplicationCompletion : StaticListCompletion, IHtmlTreeVisitor
     {
         private static readonly IList<HtmlCompletion> BooleanValues = Values("false", "true");
 
         protected override string KeyProperty { get { return "name"; } }
-        public MsApplicationCompletion()
+        public MSApplicationCompletion()
             : base(new Dictionary<string, IList<HtmlCompletion>>(StringComparer.OrdinalIgnoreCase)
             {
                 { "MSApplication-AllowDomainApiCalls",  BooleanValues },

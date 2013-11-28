@@ -1,13 +1,13 @@
-﻿using Microsoft.CSS.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Web;
+using System.Windows.Controls;
+using System.Windows.Media.Imaging;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
-using System.Web;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions
                 }
             }
         }
-        
+
         public static string GetFileName(string text)
         {
             if (!string.IsNullOrEmpty(text))
@@ -65,7 +65,7 @@ namespace MadsKristensen.EditorExtensions
                 string imageUrl = text.Trim(new[] { '\'', '"' });
                 //if (!_imageExtensions.Contains(Path.GetExtension(imageUrl)))
                 //    return null;
-                
+
                 string filePath = string.Empty;
 
                 if (text.StartsWith("//", StringComparison.Ordinal))
@@ -78,11 +78,11 @@ namespace MadsKristensen.EditorExtensions
                 else if (imageUrl.StartsWith("/", StringComparison.Ordinal))
                 {
                     imageUrl = HttpUtility.UrlDecode(imageUrl);
-                    
+
                     string root = ProjectHelpers.GetProjectFolder(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
                     if (root.Contains("://"))
                         return root + imageUrl;
-                    
+
                     if (!string.IsNullOrEmpty(root))
                         filePath = ProjectHelpers.ToAbsoluteFilePathFromActiveFile(imageUrl);// new FileInfo(root).Directory + imageUrl;
                 }
@@ -116,7 +116,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     int index = file.IndexOf("base64,", StringComparison.Ordinal) + 7;
                     byte[] imageBytes = Convert.FromBase64String(file.Substring(index));
-                    
+
                     using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
                     {
                         image.Source = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);

@@ -1,12 +1,12 @@
-﻿using Microsoft.Html.Core;
-using Microsoft.Html.Editor;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using Microsoft.Html.Core;
+using Microsoft.Html.Editor;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -17,13 +17,13 @@ namespace MadsKristensen.EditorExtensions
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> qiContent, out ITrackingSpan applicableToSpan)
         {
             applicableToSpan = null;
-                    
+
             SnapshotPoint? point = session.GetTriggerPoint(session.TextView.TextBuffer.CurrentSnapshot);
 
             if (!point.HasValue)
                 return;
 
-            HtmlEditorTree tree = HtmlEditorDocument.FromTextView(session.TextView).HtmlEditorTree;    
+            HtmlEditorTree tree = HtmlEditorDocument.FromTextView(session.TextView).HtmlEditorTree;
 
             ElementNode node = null;
             AttributeNode attr = null;

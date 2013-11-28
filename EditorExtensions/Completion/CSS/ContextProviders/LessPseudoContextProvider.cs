@@ -1,11 +1,10 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.Less.Core;
 using Microsoft.VisualStudio.Utilities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
 
 namespace MadsKristensen.EditorExtensions
 {

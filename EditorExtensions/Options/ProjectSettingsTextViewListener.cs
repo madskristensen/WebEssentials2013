@@ -1,8 +1,8 @@
-﻿using Microsoft.VisualStudio.Text;
+﻿using System.ComponentModel.Composition;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using System.ComponentModel.Composition;
-using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions.Options
 {

@@ -1,9 +1,8 @@
-﻿using EnvDTE80;
+﻿using System;
+using System.IO;
+using EnvDTE80;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace MadsKristensen.EditorExtensions
 {

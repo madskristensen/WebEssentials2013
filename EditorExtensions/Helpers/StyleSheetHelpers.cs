@@ -1,8 +1,8 @@
-﻿using EnvDTE;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using EnvDTE;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -24,10 +24,8 @@ namespace MadsKristensen.EditorExtensions
                 .Where(f => f != null);
         }
 
-        public static string GetStyleSheetFileForUrl(string location, Project project, Uri projUri = null)
+        public static string GetStyleSheetFileForUrl(string location, Project project, Uri projectUri = null)
         {
-            var projectUri = projUri;
-
             if (projectUri == null)
             {
                 //TODO: This needs to expand bundles, convert urls to local file names, and move from .min.css files to .css files where applicable

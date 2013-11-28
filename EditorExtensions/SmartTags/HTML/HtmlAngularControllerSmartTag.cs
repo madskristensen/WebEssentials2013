@@ -1,15 +1,15 @@
-﻿using Microsoft.Html.Core;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Globalization;
+using System.IO;
+using System.Windows.Forms;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor.SmartTags;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.IO;
-using System.Text;
-using System.Windows.Forms;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -69,13 +69,13 @@ namespace MadsKristensen.EditorExtensions
                         return;
 
                     file = dialog.FileName;
-                }                
-                                               
+                }
+
                 EditorExtensionsPackage.DTE.UndoContext.Open(this.DisplayText);
-                
+
                 string script = GetScript(value);
                 File.WriteAllText(file, script);
-                
+
                 ProjectHelpers.AddFileToActiveProject(file);
                 EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
 
@@ -87,7 +87,7 @@ namespace MadsKristensen.EditorExtensions
                 using (Stream stream = typeof(HtmlAngularControllerSmartTag).Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.Resources.Scripts.AngularController.js"))
                 using (StreamReader reader = new StreamReader(stream))
                 {
-                    return string.Format(reader.ReadToEnd(), value);
+                    return string.Format(CultureInfo.CurrentCulture, reader.ReadToEnd(), value);
                 }
             }
         }

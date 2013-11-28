@@ -1,11 +1,12 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
-using System.ComponentModel.Design;
+﻿using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -21,6 +22,7 @@ namespace MadsKristensen.EditorExtensions
             _mcs = mcs;
         }
 
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public void SetupCommands()
         {
             SetupCommand(PkgCmdIDList.titleCaseTransform, new Replacement(x => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(x)));
@@ -52,14 +54,14 @@ namespace MadsKristensen.EditorExtensions
 
         private static string Hash(string original, HashAlgorithm algorithm)
         {
-            byte[] hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(original));            
+            byte[] hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(original));
             algorithm.Dispose();
 
             StringBuilder sb = new StringBuilder();
-            
+
             foreach (byte b in hash)
             {
-                sb.Append(b.ToString("x2").ToLowerInvariant());
+                sb.Append(b.ToString("x2", CultureInfo.InvariantCulture).ToLowerInvariant());
             }
 
             return sb.ToString();

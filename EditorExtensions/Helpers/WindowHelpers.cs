@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio;
+﻿using System;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -19,18 +19,18 @@ namespace MadsKristensen.EditorExtensions
         internal static IVsTextView GetIVsTextView(string filePath)
         {
             var sp = (Microsoft.VisualStudio.OLE.Interop.IServiceProvider)EditorExtensionsPackage.DTE;
-            var serviceProvider = new ServiceProvider(sp);
-
-            uint itemId;
-            IVsUIHierarchy uiHierarchy;
-            IVsWindowFrame windowFrame;
-
-            if (VsShellUtilities.IsDocumentOpen(serviceProvider, filePath, Guid.Empty, out uiHierarchy, out itemId, out windowFrame))
+            using (var serviceProvider = new ServiceProvider(sp))
             {
-                // Get the IVsTextView from the windowFrame.
-                return VsShellUtilities.GetTextView(windowFrame);
-            }
+                uint itemId;
+                IVsUIHierarchy uiHierarchy;
+                IVsWindowFrame windowFrame;
 
+                if (VsShellUtilities.IsDocumentOpen(serviceProvider, filePath, Guid.Empty, out uiHierarchy, out itemId, out windowFrame))
+                {
+                    // Get the IVsTextView from the windowFrame.
+                    return VsShellUtilities.GetTextView(windowFrame);
+                }
+            }
             return null;
         }
 

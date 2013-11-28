@@ -21,13 +21,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             var path = Path.GetDirectoryName(file);
             _localFileName = (Path.GetFileName(file) ?? "").ToLowerInvariant();
 
-            _watcher = new FileSystemWatcher
-            {
-                Path = path,
-                Filter = _localFileName,
-                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.DirectoryName
-            };
-
+            _watcher = new FileSystemWatcher();
+            _watcher.Path = path;
+            _watcher.Filter = _localFileName;
+            _watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.DirectoryName;
             _watcher.Changed += Reparse;
             _watcher.Renamed += ProxyRename;
             _watcher.Created += Reparse;
@@ -39,7 +36,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private void CleanUpWarnings(object sender, FileSystemEventArgs e)
         {
             DocumentFactory.UnregisterDocument(this);
-            UsageRegistry.Resync();
+            UsageRegistry.Resynchronize();
         }
 
         public object ParseSync
@@ -92,7 +89,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 await Task.Delay(100);
             }
 
-            await UsageRegistry.ResyncAsync();
+            await UsageRegistry.ResynchronizeAsync();
 
             if (IsProcessingUnusedCssRules)
             {

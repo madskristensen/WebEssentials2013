@@ -61,6 +61,8 @@
       <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Web.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -94,6 +96,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="fixtures\less\css\URLs.css" />
+    <Content Include="fixtures\less\css\_Deep Inclusion.css" />
+    <Content Include="fixtures\less\css\_Entry1.css" />
+    <Content Include="fixtures\less\sub1\css\_Entry2.css" />
+    <Content Include="fixtures\less\sub1\deeper\css\_Entry3.css" />
+    <Content Include="fixtures\less\sub1\deeper\css\_lib.css" />
     <Content Include="fixtures\less\sub1\deeper\_lib.css" />
     <Content Include="fixtures\less\sub1\deeper\_Entry3.css" />
     <Content Include="fixtures\less\sub1\_Entry2.css" />

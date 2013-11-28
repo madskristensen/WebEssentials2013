@@ -4,9 +4,8 @@ using System.ComponentModel.Composition;
 using System.Globalization;
 using System.Linq;
 using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.VisualStudio.Utilities;
 using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {

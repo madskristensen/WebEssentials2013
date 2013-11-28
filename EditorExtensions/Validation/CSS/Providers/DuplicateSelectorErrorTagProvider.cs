@@ -41,7 +41,7 @@ namespace MadsKristensen.EditorExtensions
                     dupe = cache[i];
                     break;
                 }
-            }            
+            }
 
             if (dupe != null)
             {

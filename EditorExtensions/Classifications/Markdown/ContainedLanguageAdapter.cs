@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-
 using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Projection;
-
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Html.ContainedLanguage;
 using Microsoft.VisualStudio.Html.Editor;
@@ -52,6 +51,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             Guid retVal;
             IVsTextManager globalService = Globals.GetGlobalService<IVsTextManager>(typeof(SVsTextManager));
             globalService.MapFilenameToLanguageSID("file." + extension, out retVal);
+
             return retVal;
         }
 
@@ -212,6 +212,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         ///<summary>Creates a ContainedLanguage for the specified ProjectionBuffer, using an IVsIntellisenseProjectManager to initialize the language.</summary>
         ///<param name="projectionBuffer">The buffer to connect to the language service.</param>
         ///<param name="intelliSenseGuid">The GUID of the IntellisenseProvider; used to create IVsIntellisenseProject.</param>
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public void AddIntellisenseProjectLanguage(LanguageProjectionBuffer projectionBuffer, Guid intelliSenseGuid)
         {
             var contentType = projectionBuffer.IProjectionBuffer.ContentType;
@@ -345,7 +346,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     case __VSHPROPID.VSHPROPID_Parent:
                         pvar = VSConstants.VSITEMID_NIL;
                         return 0;
-                    case __VSHPROPID.VSHPROPID_ExtObject:   
+                    case __VSHPROPID.VSHPROPID_ExtObject:
                         // Not returning this makes the native language service throw an access violation
                         return inner.GetProperty(itemid, propid, out pvar);
                     case __VSHPROPID.VSHPROPID_BrowseObject:

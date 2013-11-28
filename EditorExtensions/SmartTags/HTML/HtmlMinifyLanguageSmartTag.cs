@@ -1,4 +1,6 @@
-﻿using Microsoft.Html.Core;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor.SmartTags;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -6,8 +8,6 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Core;
 using Microsoft.Web.Editor;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
 
 namespace MadsKristensen.EditorExtensions.SmartTags
 {
@@ -64,7 +64,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags
                     edit.Replace(range.Start, range.Length, result);
                     edit.Apply();
                 }
-                
+
                 EditorExtensionsPackage.DTE.UndoContext.Close();
             }
         }

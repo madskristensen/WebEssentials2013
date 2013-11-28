@@ -2,16 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.Html.Core;
-using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Classification;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using Microsoft.Web.Editor.Extensions.Text;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
@@ -58,8 +54,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         yield return new TagSpan<IOutliningRegionTag>(
                             new SnapshotSpan(spans[0].Snapshot, Span.FromBounds(blockStart.Start, artifacts[i - 1].End)),
                             new OutliningRegionTag(false, true, " [Code] ", String.Join(Environment.NewLine,
-                                artifacts.SkipWhile(a => (object)a != blockStart)
-                                         .TakeWhile(a => (object)a != mca)
+                                artifacts.SkipWhile(a => ReferenceEquals(a, blockStart))
+                                         .TakeWhile(a => ReferenceEquals(a, mca))
                                           .Select(a => a.GetText(spans[0].Snapshot))
                     )));
 

@@ -47,7 +47,9 @@ namespace MadsKristensen.EditorExtensions
             var line = position.GetContainingLine();
             int linePos = position - line.Start.Position;
 
-            var match = regex.Matches(line.GetText()).Cast<Match>().FirstOrDefault(m => m.Index <= linePos && m.Index + m.Length >= linePos);
+            var match = regex.Matches(line.GetText())
+                             .Cast<Match>()
+                             .FirstOrDefault(m => m.Index <= linePos && m.Index + m.Length >= linePos);
             if (match == null) return null;
 
             return match.Groups["path"].Value;

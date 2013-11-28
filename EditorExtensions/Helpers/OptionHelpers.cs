@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.Shell.Interop;
+﻿using System;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Web.Editor;
-using System;
 using VS = Microsoft.VisualStudio;
 
 namespace MadsKristensen.EditorExtensions

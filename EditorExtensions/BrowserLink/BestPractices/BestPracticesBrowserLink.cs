@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Web.BrowserLink;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions
 {

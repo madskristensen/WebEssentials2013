@@ -1,15 +1,15 @@
-﻿using EnvDTE;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using EnvDTE;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -295,10 +295,10 @@ namespace MadsKristensen.EditorExtensions
             return Path.Combine(sourceDir, compiledFileName);
         }
 
-        public static void AddFileToProject(string parentFileName, string fileName)
+        public static ProjectItem AddFileToProject(string parentFileName, string fileName)
         {
             if (!File.Exists(fileName))
-                return;
+                return null;
 
             var item = EditorExtensionsPackage.DTE.Solution.FindProjectItem(parentFileName);
 
@@ -307,13 +307,15 @@ namespace MadsKristensen.EditorExtensions
                 if (item.ProjectItems != null && Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
                 {
                     // WAP
-                    item.ProjectItems.AddFromFile(fileName);
+                    return item.ProjectItems.AddFromFile(fileName);
                 }
                 else
                 {   // Website
-                    item.ContainingProject.ProjectItems.AddFromFile(fileName);
+                    return item.ContainingProject.ProjectItems.AddFromFile(fileName);
                 }
             }
+
+            return null;
         }
 
         private bool WriteFile(string content, string fileName, bool fileExist, bool fileWritten)

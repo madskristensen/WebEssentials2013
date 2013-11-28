@@ -1,9 +1,9 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
         public ItemCheckResult CheckItem(ParseItem item, ICssCheckerContext context)
         {
             FunctionColor function = (FunctionColor)item;
-            
+
             if (!function.IsValid || context == null)
                 return ItemCheckResult.Continue;
 
@@ -56,7 +56,7 @@ namespace MadsKristensen.EditorExtensions
             for (int i = 0; i < function.Arguments.Count; i++)
             {
                 var argument = function.Arguments[i];
-                string text = argument.Text.Trim(',','%');
+                string text = argument.Text.Trim(',', '%');
 
                 if (i < 3)
                 {

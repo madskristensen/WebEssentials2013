@@ -1,9 +1,4 @@
-﻿using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
@@ -12,6 +7,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
+using Newtonsoft.Json.Linq;
 using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
@@ -40,12 +40,12 @@ namespace MadsKristensen.EditorExtensions
 
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
-            var position = session.GetTriggerPoint(session.TextView.TextBuffer.CurrentSnapshot);
-            if (position == null) return;
-            var line = position.Value.GetContainingLine();
+            var position = session.GetTriggerPoint(_buffer).GetPoint(_buffer.CurrentSnapshot);
+            var line = position.GetContainingLine();
+
             if (line == null) return;
 
-            int linePos = position.Value - line.Start.Position;
+            int linePos = position - line.Start.Position;
 
             var info = NodeModuleCompletionUtils.FindCompletionInfo(line.GetText(), linePos);
             if (info == null) return;

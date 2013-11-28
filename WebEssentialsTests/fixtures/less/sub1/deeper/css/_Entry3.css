@@ -1,0 +1,10 @@
+﻿a {
+    background: url(../../../base-image.png);
+    background: url(/absolute/path/to/image.png);
+}
+
+b {
+    background: url(../deep-image.png);
+}
+
+/*# sourceMappingURL=/fixtures/less/sub1/deeper/_Entry3.less.map */

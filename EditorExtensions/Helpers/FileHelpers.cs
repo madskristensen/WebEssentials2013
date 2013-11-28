@@ -1,11 +1,11 @@
-﻿using EnvDTE80;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using EnvDTE80;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -101,10 +101,10 @@ namespace MadsKristensen.EditorExtensions
         }
 
         static char[] pathSplit = { '/', '\\' };
-        public static string RelativePath(string absPath, string relTo)
+        public static string RelativePath(string absolutePath, string relativeTo)
         {
-            string[] absDirs = absPath.Split(pathSplit);
-            string[] relDirs = relTo.Split(pathSplit);
+            string[] absDirs = absolutePath.Split(pathSplit);
+            string[] relDirs = relativeTo.Split(pathSplit);
 
             // Get the shortest of the two paths
             int len = Math.Min(absDirs.Length, relDirs.Length);
@@ -123,7 +123,7 @@ namespace MadsKristensen.EditorExtensions
             // If we didn't find a common prefix then throw
             if (lastCommonRoot == -1)
             {
-                return relTo;
+                return relativeTo;
             }
 
             // Build up the relative path
