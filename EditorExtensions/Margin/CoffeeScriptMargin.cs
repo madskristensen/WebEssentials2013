@@ -53,11 +53,9 @@ namespace MadsKristensen.EditorExtensions
                     {
                         _projectFileCount++;
 
-                        using (CoffeeScriptCompiler compiler = new CoffeeScriptCompiler(Dispatcher.CurrentDispatcher))
-                        {
-                            compiler.Completed += compiler_Completed;
-                            compiler.Compile(File.ReadAllText(file), file);
-                        }
+                        CoffeeScriptCompiler compiler = new CoffeeScriptCompiler(Dispatcher.CurrentDispatcher);
+                        compiler.Completed += compiler_Completed;
+                        compiler.Compile(File.ReadAllText(file), file);
                     }
                 }
             }
