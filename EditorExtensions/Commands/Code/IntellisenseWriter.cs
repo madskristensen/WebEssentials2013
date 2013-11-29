@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -15,7 +17,7 @@ namespace MadsKristensen.EditorExtensions
                 WriteTypeScript(objects, sb);
             else
                 WriteJavaScript(objects, sb);
-            
+
             WriteFileToDisk(file, sb);
         }
 
@@ -31,8 +33,9 @@ namespace MadsKristensen.EditorExtensions
                 {
                     string value = GetValue(p.Type);
                     string comment = p.Summary ?? "The " + p.Name + " property as defined in " + io.FullName;
-                    sb.AppendLine("\t/// <field name=\"" + p.Name + "\" type=\"" + value + "\">" + comment + "</field>");
-                    sb.AppendLine("\tthis." + p.Name + "= new " + value + "();");
+                    comment = Regex.Replace(comment, @"\s*[\r\n]+\s*", " ").Trim();
+                    sb.AppendLine("\t/// <field name=\"" + p.Name + "\" type=\"" + value + "\">" + SecurityElement.Escape(comment) + "</field>");
+                    sb.AppendLine("\tthis." + p.Name + " = new " + value + "();");
                 }
 
                 sb.AppendLine("};");
@@ -55,7 +58,7 @@ namespace MadsKristensen.EditorExtensions
                     sb.AppendLine("\t\t" + p.Name + ": " + value + ";");
                 }
 
-                sb.AppendLine("}");                
+                sb.AppendLine("}");
             }
 
             sb.AppendLine("}");
@@ -71,7 +74,7 @@ namespace MadsKristensen.EditorExtensions
 
             //if (current != sb.ToString())
             //{
-                File.WriteAllText(fileName, sb.ToString());
+            File.WriteAllText(fileName, sb.ToString());
             //}
         }
 
