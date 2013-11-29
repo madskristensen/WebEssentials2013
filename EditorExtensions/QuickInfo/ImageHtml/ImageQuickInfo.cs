@@ -31,19 +31,13 @@ namespace MadsKristensen.EditorExtensions
             if (attr == null || (attr.Name != "href" && attr.Name != "src"))
                 return;
 
-            string url = ImageQuickInfo.GetFileName(attr.Value, session.TextView.TextBuffer);
+            string url = ImageQuickInfo.GetFullUrl(attr.Value, session.TextView.TextBuffer);
             if (string.IsNullOrEmpty(url))
                 return;
 
             applicableToSpan = session.TextView.TextBuffer.CurrentSnapshot.CreateTrackingSpan(point.Value.Position, 1, SpanTrackingMode.EdgeNegative);
 
-            var image = ImageQuickInfo.CreateImage(url);
-            qiContent.Add(image);
-
-            if (image.Tag == null)
-                qiContent.Add(Math.Round(image.Source.Width) + " × " + Math.Round(image.Source.Height));
-            else
-                qiContent.Add(image.Tag);
+            ImageQuickInfo.AddImageContent(qiContent, url);
         }
 
         public void Dispose()
