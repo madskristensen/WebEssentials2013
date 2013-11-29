@@ -8,6 +8,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Threading;
+using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -110,7 +111,7 @@ namespace MadsKristensen.EditorExtensions
             data.FullName = cc.FullName;
             data.Properties = new List<IntellisenseProperty>();
 
-            foreach (CodeProperty property in cc.Members)
+            foreach (CodeProperty property in cc.Members.OfType<CodeProperty>())
             {
                 bool isAllowed = true;
                 
