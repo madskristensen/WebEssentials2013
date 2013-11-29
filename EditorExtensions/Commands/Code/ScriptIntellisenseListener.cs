@@ -45,6 +45,9 @@ namespace MadsKristensen.EditorExtensions
 
         public static void Process(string filePath)
         {
+            if (!File.Exists(filePath + ".js") && !File.Exists(filePath + ".d.ts"))
+                return;
+
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
                 var item = EditorExtensionsPackage.DTE.Solution.FindProjectItem(filePath);
@@ -63,18 +66,18 @@ namespace MadsKristensen.EditorExtensions
         {
             string resultPath = filePath + extension;
 
-            if (File.Exists(resultPath))
-            {
-                IntellisenseWriter writer = new IntellisenseWriter();
-                writer.Write(list, resultPath);
-                var item = MarginBase.AddFileToProject(filePath, resultPath);
+            if (!File.Exists(resultPath))
+                return;
 
-                if (extension.Equals(".d.ts", StringComparison.OrdinalIgnoreCase))
-                    item.Properties.Item("ItemType").Value = "TypeScriptCompile";
-                else
-                {
-                    item.Properties.Item("ItemType").Value = "None";
-                }
+            IntellisenseWriter writer = new IntellisenseWriter();
+            writer.Write(list, resultPath);
+            var item = MarginBase.AddFileToProject(filePath, resultPath);
+
+            if (extension.Equals(".d.ts", StringComparison.OrdinalIgnoreCase))
+                item.Properties.Item("ItemType").Value = "TypeScriptCompile";
+            else
+            {
+                item.Properties.Item("ItemType").Value = "None";
             }
         }
 
