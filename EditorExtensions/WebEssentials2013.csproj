@@ -459,6 +459,7 @@
     </Compile>
     <Compile Include="SmartTags\CSS\Actions\RemoveCssRuleSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Providers\RemoveCssRuleSmartTagProvider.cs" />
+    <Compile Include="SmartTags\HTML\Base64DecodeSmartTag.cs" />
     <Compile Include="SmartTags\HTML\ExtractToFileSmartTag.cs">
       <SubType>Code</SubType>
     </Compile>

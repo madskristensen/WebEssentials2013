@@ -5,6 +5,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Windows.Forms;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -30,26 +31,73 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-
-        public static string ConvertToBase64(string fileName)
+        public static string ShowDialog(string extension)
         {
-            string format = "data:{0};base64,{1}";
-            byte[] buffer = File.ReadAllBytes(fileName);
-            string extension = Path.GetExtension(fileName).Substring(1);
-            string contentType = GetMimeType(extension);
+            var initialPath = Path.GetDirectoryName(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
 
-            return string.Format(CultureInfo.InvariantCulture, format, contentType, Convert.ToBase64String(buffer));
+            using (var dialog = new SaveFileDialog())
+            {
+                dialog.FileName = "file." + extension;
+                dialog.DefaultExt = extension;
+                dialog.Filter = extension.ToUpperInvariant() + " files | *." + extension;
+                dialog.InitialDirectory = initialPath;
+
+                if (dialog.ShowDialog() == DialogResult.OK)
+                {
+                    return dialog.FileName;
+                }
+            }
+
+            return null;
         }
 
-        private static string GetMimeType(string extension)
+        public static string GetExtension(string mimeType)
         {
-            switch (extension)
+            switch (mimeType)
+            {
+                case "image/png":
+                    return "png";
+
+                case "image/jpg":
+                case "image/jpeg":
+                    return "jpg";
+
+                case "image/gif":
+                    return "gif";
+
+                case "image/svg":
+                    return "svg";
+
+                case "font/x-woff":
+                    return "woff";
+
+                case "font/otf":
+                    return "otf";
+
+                case "application/vnd.ms-fontobject":
+                    return "eot";
+
+                case "application/octet-stream":
+                    return "ttf";
+            }
+
+            return null;
+        }
+
+        private static string GetMimeTypeFromFileExtension(string extension)
+        {
+            string ext = extension.TrimStart('.');
+ 
+            switch (ext)
             {
                 case "png":
                 case "jpg":
                 case "jpeg":
                 case "gif":
-                    return "image/" + extension;
+                case "tiff":
+                case "webp":
+                case "bmp":
+                    return "image/" + ext;
 
                 case "woff":
                     return "font/x-woff";
@@ -66,6 +114,28 @@ namespace MadsKristensen.EditorExtensions
                 default:
                     return "text/plain";
             }
+        }
+
+        public static string GetMimeTypeFromBase64(string base64)
+        {
+            int end = base64.IndexOf(";", StringComparison.Ordinal);
+
+            if (end > -1)
+            {
+                return base64.Substring(5, end - 5);
+            }
+
+            return string.Empty;
+        }
+
+        public static string ConvertToBase64(string fileName)
+        {
+            string format = "data:{0};base64,{1}";
+            byte[] buffer = File.ReadAllBytes(fileName);
+            string extension = Path.GetExtension(fileName).Substring(1);
+            string contentType = GetMimeTypeFromFileExtension(extension);
+
+            return string.Format(CultureInfo.InvariantCulture, format, contentType, Convert.ToBase64String(buffer));
         }
 
         static char[] pathSplit = { '/', '\\' };
