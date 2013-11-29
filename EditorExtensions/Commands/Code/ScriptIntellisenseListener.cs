@@ -9,6 +9,9 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Threading;
 using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
+using EnvDTE80;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -106,32 +109,26 @@ namespace MadsKristensen.EditorExtensions
 
         private static void ProcessClass(CodeClass cc, List<IntellisenseObject> list)
         {
-            IntellisenseObject data = new IntellisenseObject();
-            data.Name = cc.Name;
-            data.FullName = cc.FullName;
-            data.Properties = new List<IntellisenseProperty>();
+            IntellisenseObject data = new IntellisenseObject
+            {
+                Name = cc.Name,
+                FullName = cc.FullName,
+                Properties = new List<IntellisenseProperty>()
+            };
 
             foreach (CodeProperty property in cc.Members.OfType<CodeProperty>())
             {
-                bool isAllowed = true;
-                
-                foreach (CodeAttribute attr in property.Attributes)
-                {
-                    if (attr.Name == "IgnoreDataMember")
-                        isAllowed = false;
-                }
+                if (property.Attributes.Cast<CodeAttribute>().Any(a => a.Name == "IgnoreDataMember"))
+                    continue;
 
-                if (isAllowed)
+                var prop = new IntellisenseProperty()
                 {
-                    var prop = new IntellisenseProperty()
-                    {
-                        Name = GetName(property),
-                        Type = property.Type.AsString,
-                        Summary = GetSummary(property)
-                    };
+                    Name = GetName(property),
+                    Type = property.Type.AsString,
+                    Summary = GetSummary(property)
+                };
 
-                    data.Properties.Add(prop);
-                }
+                data.Properties.Add(prop);
             }
 
             if (data.Properties.Count > 0)
@@ -142,16 +139,15 @@ namespace MadsKristensen.EditorExtensions
         {
             foreach (CodeAttribute attr in property.Attributes)
             {
-                if (attr.Name == "DataMember" || attr.Name.EndsWith(".DataMember"))
-                {
-                    string value = attr.Value;
-                    var match = Regex.Match(value, "(?<=[\\(\\s,]?)Name([\\s=]+)\"([^\"]+)\"");
+                if (attr.Name != "DataMember" && !attr.Name.EndsWith(".DataMember"))
+                    continue;
 
-                    if (match.Success)
-                    {
-                        return match.Groups[2].Value;
-                    }
-                }
+                var value = attr.Children.OfType<CodeAttributeArgument>().FirstOrDefault(p => p.Name == "Name");
+
+                if (value == null)
+                    break;
+                // Strip the leading & trailing quotes
+                return value.Value.Substring(1, value.Value.Length - 2);
             }
 
             return property.Name;
@@ -159,16 +155,21 @@ namespace MadsKristensen.EditorExtensions
 
         private static string GetSummary(CodeProperty property)
         {
-            int start = property.DocComment.IndexOf("<summary>", StringComparison.OrdinalIgnoreCase);
-            if (start > -1)
-            {
-                start = start + 9;
-                int end = property.DocComment.IndexOf("</summary>", start, StringComparison.OrdinalIgnoreCase);
-                if (end > -1)
-                    return property.DocComment.Substring(start, end - start).Trim();
-            }
+            if (string.IsNullOrWhiteSpace(property.DocComment))
+                return null;
 
-            return null;
+            try
+            {
+                return XElement.Parse(property.DocComment)
+                               .Descendants("summary")
+                               .Select(x => x.Value)
+                               .FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Couldn't parse XML Doc Comment for " + property.FullName + ":\n" + ex);
+                return null;
+            }
         }
     }
 }
