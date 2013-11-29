@@ -19,8 +19,8 @@ namespace MadsKristensen.EditorExtensions
             if (!WESettings.GetBoolean(WESettings.Keys.ValidateEmbedImages) || !url.IsValid || url.UrlString.Text.Contains("base64,") || context == null)
                 return ItemCheckResult.Continue;
 
-            string fileName = ImageQuickInfo.GetFileName(url.UrlString.Text);
-            if (fileName.Contains("://"))
+            string fileName = ImageQuickInfo.GetFullUrl(url.UrlString.Text, EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+            if (string.IsNullOrEmpty(fileName) || fileName.Contains("://"))
                 return ItemCheckResult.Continue;
 
             FileInfo file = new FileInfo(fileName);
