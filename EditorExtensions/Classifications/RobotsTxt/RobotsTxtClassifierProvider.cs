@@ -19,6 +19,9 @@ namespace MadsKristensen.EditorExtensions
         [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
 
+        [Import]
+        internal ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+
         public IClassifier GetClassifier(ITextBuffer textBuffer)
         {
             return textBuffer.Properties.GetOrCreateSingletonProperty<RobotsTxtClassifier>(() => new RobotsTxtClassifier(Registry));
@@ -30,10 +33,8 @@ namespace MadsKristensen.EditorExtensions
             RobotsTxtClassifier classifier;
 
             var view = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
-            view.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
-
-            if (document != null)
-            {
+            if (TextDocumentFactoryService.TryGetTextDocument(view.TextDataModel.DocumentBuffer, out document))
+            { 
                 TextType type = GetTextType(document.FilePath);
                 if (type == TextType.Unsupported)
                     return;

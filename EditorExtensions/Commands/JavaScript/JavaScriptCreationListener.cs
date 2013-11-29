@@ -19,6 +19,9 @@ namespace MadsKristensen.EditorExtensions
         [Import(typeof(ITextStructureNavigatorSelectorService))]
         internal ITextStructureNavigatorSelectorService Navigator { get; set; }
 
+        [Import]
+        internal ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+
         public void VsTextViewCreated(IVsTextView textViewAdapter)
         {
             var textView = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
@@ -30,9 +33,7 @@ namespace MadsKristensen.EditorExtensions
             textView.Properties.GetOrCreateSingletonProperty<ReferenceTagGoToDefinition>(() => new ReferenceTagGoToDefinition(textViewAdapter, textView));
 
             ITextDocument document;
-            textView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
-
-            if (document != null)
+            if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
             {
                 JsHintProjectRunner runner = new JsHintProjectRunner(document);
                 textView.Closed += (s, e) => runner.Dispose();
