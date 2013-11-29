@@ -101,21 +101,26 @@ namespace MadsKristensen.EditorExtensions
 
         private static BitmapFrame LoadImage(string url)
         {
-            if (url.StartsWith("data:", StringComparison.Ordinal))
+            try
             {
-                int index = url.IndexOf("base64,", StringComparison.Ordinal) + 7;
-                byte[] imageBytes = Convert.FromBase64String(url.Substring(index));
-
-                using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+                if (url.StartsWith("data:", StringComparison.Ordinal))
                 {
-                    // Must cache OnLoad before the stream is disposed
-                    return BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    int index = url.IndexOf("base64,", StringComparison.Ordinal) + 7;
+                    byte[] imageBytes = Convert.FromBase64String(url.Substring(index));
+
+                    using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
+                    {
+                        // Must cache OnLoad before the stream is disposed
+                        return BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    }
+                }
+                else if (url.Contains("://") || File.Exists(url))
+                {
+                    return BitmapFrame.Create(new Uri(url));
                 }
             }
-            else if (url.Contains("://") || File.Exists(url))
-            {
-                return BitmapFrame.Create(new Uri(url));
-            }
+            catch { }
+
             return null;
         }
 
