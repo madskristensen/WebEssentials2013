@@ -1,20 +1,17 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel.Composition;
-using System.Linq;
+﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
+using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [Export(typeof(IWpfTextViewConnectionListener))]
+    [Export(typeof(IVsTextViewCreationListener))]
     [ContentType("JavaScript")]
-    [ContentType("Node.js")]
-    [ContentType("htmlx")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    public class JavaScriptSortPropertiesViewCreationListener : IWpfTextViewConnectionListener
+    public class JavaScriptSortPropertiesViewCreationListener : IVsTextViewCreationListener
     {
         [Import]
         public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
@@ -22,13 +19,12 @@ namespace MadsKristensen.EditorExtensions
         [Import(typeof(ITextStructureNavigatorSelectorService))]
         public ITextStructureNavigatorSelectorService Navigator { get; set; }
 
-        public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
-        {
-            var jsBuffer = subjectBuffers.FirstOrDefault(b => b.ContentType.IsOfType("JavaScript"));
-            if (jsBuffer == null)
-                return;
+        [Import]
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
-            var textViewAdapter = EditorAdaptersFactoryService.GetViewAdapter(textView);
+        public void VsTextViewCreated(IVsTextView textViewAdapter)
+        {
+            var textView = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
 
             textView.Properties.GetOrCreateSingletonProperty<MinifySelection>(() => new MinifySelection(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<JavaScriptFindReferences>(() => new JavaScriptFindReferences(textViewAdapter, textView, Navigator));
@@ -37,9 +33,7 @@ namespace MadsKristensen.EditorExtensions
             textView.Properties.GetOrCreateSingletonProperty<ReferenceTagGoToDefinition>(() => new ReferenceTagGoToDefinition(textViewAdapter, textView));
 
             ITextDocument document;
-            jsBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
-
-            if (document != null)
+            if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
             {
                 JsHintProjectRunner runner = new JsHintProjectRunner(document);
                 textView.Closed += (s, e) => runner.Dispose();
@@ -47,9 +41,6 @@ namespace MadsKristensen.EditorExtensions
                 textView.TextBuffer.Properties.GetOrCreateSingletonProperty(() => runner);
             }
         }
-
-        public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
-        {
-        }
     }
 }
+

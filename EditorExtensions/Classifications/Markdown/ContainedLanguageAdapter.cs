@@ -211,9 +211,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         ///<summary>Creates a ContainedLanguage for the specified ProjectionBuffer, using an IVsIntellisenseProjectManager to initialize the language.</summary>
         ///<param name="projectionBuffer">The buffer to connect to the language service.</param>
-        ///<param name="intelliSenseGuid">The GUID of the IntellisenseProvider; used to create IVsIntellisenseProject.</param>
+        ///<param name="intellisenseGuid">The GUID of the IntellisenseProvider; used to create IVsIntellisenseProject.</param>
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        public void AddIntellisenseProjectLanguage(LanguageProjectionBuffer projectionBuffer, Guid intelliSenseGuid)
+        public void AddIntellisenseProjectLanguage(LanguageProjectionBuffer projectionBuffer, Guid intellisenseGuid)
         {
             var contentType = projectionBuffer.IProjectionBuffer.ContentType;
             if (languageBridges.ContainsKey(contentType))
@@ -228,7 +228,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             IVsPackage package;
             hr = shell.LoadPackage(ref otherPackage, out package);
 
-            var project = (IVsIntellisenseProject)EditorExtensionsPackage.Instance.CreateInstance(ref intelliSenseGuid, ref iid_vsip, typeof(IVsIntellisenseProject));
+            var project = (IVsIntellisenseProject)EditorExtensionsPackage.Instance.CreateInstance(ref intellisenseGuid, ref iid_vsip, typeof(IVsIntellisenseProject));
 
             string fileName = projectionBuffer.IProjectionBuffer.GetFileName();
             var hierarchy = new MarkdownCodeProject(fileName, contentType + " code in " + Path.GetFileName(fileName), WorkspaceItem.Hierarchy);

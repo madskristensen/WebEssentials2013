@@ -14,6 +14,8 @@
       <Word>Embedder</Word>
       <Word>Mixin</Word>
       <Word>Peeker</Word>
+      <Word>Intellisense</Word>
+      <Word>Htmlx</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>

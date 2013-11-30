@@ -9,14 +9,15 @@ namespace MadsKristensen.EditorExtensions.Options
     [Export(typeof(IWpfTextViewCreationListener))]
     [ContentType("XML")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    internal class ProjectSettingsTextViewListener : IWpfTextViewCreationListener
+    public class ProjectSettingsTextViewListener : IWpfTextViewCreationListener
     {
+        [Import]
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+
         public void TextViewCreated(IWpfTextView textView)
         {
             ITextDocument document;
-            textView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
-
-            if (document != null)
+            if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
             {
                 document.FileActionOccurred += document_FileActionOccurred;
             }
