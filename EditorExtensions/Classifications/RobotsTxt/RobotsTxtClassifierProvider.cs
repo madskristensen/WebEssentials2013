@@ -14,10 +14,10 @@ namespace MadsKristensen.EditorExtensions
     public class RobotsTxtClassifierProvider : IClassifierProvider, IVsTextViewCreationListener
     {
         [Import]
-        internal IClassificationTypeRegistryService Registry { get; set; }
+        public IClassificationTypeRegistryService Registry { get; set; }
 
         [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
+        public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
 
         public IClassifier GetClassifier(ITextBuffer textBuffer)
         {

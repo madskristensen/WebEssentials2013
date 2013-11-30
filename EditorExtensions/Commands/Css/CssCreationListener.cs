@@ -16,7 +16,7 @@ namespace MadsKristensen.EditorExtensions
     [ContentType(CssContentTypeDefinition.CssContentType)]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    class CssConnectionListener : IWpfTextViewConnectionListener
+    public class CssConnectionListener : IWpfTextViewConnectionListener
     {
         [Import]
         public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }

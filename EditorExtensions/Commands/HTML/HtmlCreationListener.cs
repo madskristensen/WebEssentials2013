@@ -13,13 +13,13 @@ namespace MadsKristensen.EditorExtensions
     [ContentType("HTML")]
     [ContentType("HTMLX")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    class HtmlViewCreationListener : IVsTextViewCreationListener
+    public class HtmlViewCreationListener : IVsTextViewCreationListener
     {
-        [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
+        [Import]
+        public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
 
         [Import]
-        internal ICompletionBroker CompletionBroker { get; set; }
+        public ICompletionBroker CompletionBroker { get; set; }
 
         public void VsTextViewCreated(IVsTextView textViewAdapter)
         {
@@ -54,13 +54,13 @@ namespace MadsKristensen.EditorExtensions
     [Export(typeof(IVsTextViewCreationListener))]
     [ContentType("HTMLX")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    class HtmlxViewCreationListener : IVsTextViewCreationListener
+    public class HtmlxViewCreationListener : IVsTextViewCreationListener
     {
         [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
+        public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
 
         [Import]
-        internal ICompletionBroker CompletionBroker { get; set; }
+        public ICompletionBroker CompletionBroker { get; set; }
 
         public void VsTextViewCreated(IVsTextView textViewAdapter)
         {

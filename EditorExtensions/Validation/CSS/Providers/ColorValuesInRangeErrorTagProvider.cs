@@ -51,26 +51,6 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static void ValidateHsl(ICssCheckerContext context, FunctionColor function)
-        {
-            for (int i = 0; i < function.Arguments.Count; i++)
-            {
-                var argument = function.Arguments[i];
-                string text = argument.Text.Trim(',', '%');
-
-                if (i < 3)
-                {
-                    int value;
-                    if (int.TryParse(text, out value) && (value < 0 || value > 100))
-                        context.AddError(new SimpleErrorTag(argument, "Validation: Values must be between 0 and 100%", CssErrorFlags.TaskListWarning | CssErrorFlags.UnderlineRed));
-                }
-                else
-                {
-                    ValidateAlphaValue(context, argument, text);
-                }
-            }
-        }
-
         private static void ValidateAlphaValue(ICssCheckerContext context, ParseItem argument, string text)
         {
             double value;

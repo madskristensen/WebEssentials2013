@@ -14,13 +14,13 @@ namespace MadsKristensen.EditorExtensions
     [ContentType("Node.js")]
     [ContentType("htmlx")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    class JavaScriptSortPropertiesViewCreationListener : IWpfTextViewConnectionListener
+    public class JavaScriptSortPropertiesViewCreationListener : IWpfTextViewConnectionListener
     {
-        [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
+        [Import]
+        public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
 
         [Import(typeof(ITextStructureNavigatorSelectorService))]
-        internal ITextStructureNavigatorSelectorService Navigator { get; set; }
+        public ITextStructureNavigatorSelectorService Navigator { get; set; }
 
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {

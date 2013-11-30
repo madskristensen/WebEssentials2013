@@ -35,7 +35,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     // All of this can go away when the Roslyn editor ships.
 
 
-    class ContainedLanguageAdapter
+    public class ContainedLanguageAdapter
     {
         public static string ExtensionFromContentType(IContentType contentType)
         {
@@ -204,7 +204,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             public event EventHandler Disposing;
         }
 
-        IWebApplicationCtxSvc WebApplicationContextService
+        public IWebApplicationCtxSvc WebApplicationContextService
         {
             get { return ServiceProvider.GlobalProvider.GetService(typeof(SWebApplicationCtxSvc)) as IWebApplicationCtxSvc; }
         }

@@ -31,8 +31,6 @@ namespace MadsKristensen.EditorExtensions
             get { return File.Exists(GetSolutionFilePath()); }
         }
 
-        public static float Version { get; private set; }
-
         public static object GetValue(string propertyName)
         {
             lock (_syncCacheRoot)
@@ -108,15 +106,6 @@ namespace MadsKristensen.EditorExtensions
                         if (settingsNode != null)
                         {
                             XmlAttribute versionAttr = settingsNode.Attributes["version"];
-                            if (versionAttr != null)
-                            {
-                                float version;
-
-                                if (float.TryParse(versionAttr.InnerText, out version))
-                                {
-                                    Version = version;
-                                }
-                            }
 
                             lock (_syncCacheRoot)
                             {

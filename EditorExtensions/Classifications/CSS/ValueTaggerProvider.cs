@@ -36,7 +36,6 @@ namespace MadsKristensen.EditorExtensions
         ITextView View { get; set; }
         ITextBuffer Buffer { get; set; }
         SnapshotPoint? CurrentChar { get; set; }
-        VendorTaggerProvider Provider { get; set; }
         readonly IClassifier _classifier;
         private VendorClassifier _vendorClassifier;
         private bool _pendingUpdate = false;
@@ -46,7 +45,6 @@ namespace MadsKristensen.EditorExtensions
             View = view;
             Buffer = buffer;
             CurrentChar = null;
-            Provider = provider;
             _classifier = provider.AggregatorFactory.GetClassifier(buffer);
             buffer.Properties.TryGetProperty(typeof(VendorClassifier), out _vendorClassifier);
 

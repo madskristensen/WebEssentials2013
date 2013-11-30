@@ -16,7 +16,7 @@ namespace MadsKristensen.EditorExtensions
         /// <param name="filePath">Full Path of the file you are looking for.</param>
         /// <returns>The IVsTextView for this file, if it is open, null otherwise.</returns>
         /// <remarks>Based on http://stackoverflow.com/questions/2413530/find-an-ivstextview-or-iwpftextview-for-a-given-projectitem-in-vs-2010-rc-exten</remarks>
-        internal static IVsTextView GetIVsTextView(string filePath)
+        public static IVsTextView GetIVsTextView(string filePath)
         {
             var sp = (Microsoft.VisualStudio.OLE.Interop.IServiceProvider)EditorExtensionsPackage.DTE;
             using (var serviceProvider = new ServiceProvider(sp))

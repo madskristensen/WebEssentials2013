@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.CSS.Editor.Schemas;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
@@ -21,9 +20,6 @@ namespace MadsKristensen.EditorExtensions
         private static string _path = Path.Combine(WebEditor.Host.UserFolder, @"schemas\css");
         private static DateTime _lastRequest;
         private const int _days = 1;
-
-        public void SetupLanguageServices(ITextView textView, ITextBuffer textBuffer)
-        { }
 
         public void OnTextBufferDisposed(ITextBuffer textBuffer)
         { }

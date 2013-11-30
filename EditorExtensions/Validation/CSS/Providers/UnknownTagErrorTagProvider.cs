@@ -9,10 +9,9 @@ namespace MadsKristensen.EditorExtensions
     [Export(typeof(ICssItemChecker))]
     [Name("UnknownTagErrorTagProvider")]
     [Order(After = "Default Declaration")]
-    internal class UnknownTagErrorTagProvider : ICssItemChecker
+    public class UnknownTagErrorTagProvider : ICssItemChecker
     {
         private HashSet<string> _cache = new HashSet<string>(BuildCache());
-
 
         private static IEnumerable<string> BuildCache()
         {

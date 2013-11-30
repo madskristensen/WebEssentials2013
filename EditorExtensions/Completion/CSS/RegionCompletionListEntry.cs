@@ -53,7 +53,7 @@ namespace MadsKristensen.EditorExtensions
             get { return true; }
         }
 
-        public int SortingPriority { get; set; }
+        public int SortingPriority { get { return 0; } }
 
 
         public bool IsSupported(BrowserVersion browser)
