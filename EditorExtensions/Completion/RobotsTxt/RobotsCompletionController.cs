@@ -26,16 +26,18 @@ namespace MadsKristensen.EditorExtensions
         [Import]
         ICompletionBroker CompletionBroker = null;
 
+        [Import]
+        ITextDocumentFactoryService TextDocumentFactoryService = null;
+
         public void VsTextViewCreated(IVsTextView textViewAdapter)
         {
             IWpfTextView view = AdaptersFactory.GetWpfTextView(textViewAdapter);
             Debug.Assert(view != null);
 
             ITextDocument document;
-            view.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
-
-            if (document == null)
+            if (!TextDocumentFactoryService.TryGetTextDocument(view.TextDataModel.DocumentBuffer, out document))
                 return;
+
             TextType type = RobotsTxtClassifierProvider.GetTextType(document.FilePath);
             if (type == TextType.Unsupported)
                 return;
