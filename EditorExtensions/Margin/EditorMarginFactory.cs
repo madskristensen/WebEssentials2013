@@ -19,14 +19,14 @@ namespace MadsKristensen.EditorExtensions
         [Import]
         public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
-        public IWpfTextViewMargin CreateMargin(IWpfTextViewHost textViewHost, IWpfTextViewMargin containerMargin)
+        public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
-            string source = textViewHost.TextView.TextBuffer.CurrentSnapshot.GetText();
+            string source = wpfTextViewHost.TextView.TextBuffer.CurrentSnapshot.GetText();
             ITextDocument document;
 
-            if (TextDocumentFactoryService.TryGetTextDocument(textViewHost.TextView.TextDataModel.DocumentBuffer, out document))
+            if (TextDocumentFactoryService.TryGetTextDocument(wpfTextViewHost.TextView.TextDataModel.DocumentBuffer, out document))
             {
-                switch (textViewHost.TextView.TextBuffer.ContentType.DisplayName.ToLowerInvariant())
+                switch (wpfTextViewHost.TextView.TextBuffer.ContentType.DisplayName.ToLowerInvariant())
                 {
                     case "less":
                         bool showLess = WESettings.GetBoolean(WESettings.Keys.ShowLessPreviewWindow);

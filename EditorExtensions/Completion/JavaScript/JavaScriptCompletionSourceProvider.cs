@@ -21,9 +21,9 @@ namespace MadsKristensen.EditorExtensions
         [Import]
         private ICssNameCache _classNames = null;
 
-        public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer)
+        public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer)
         {
-            return buffer.Properties.GetOrCreateSingletonProperty(() => new JavaScriptCompletionSource(buffer, _classNames)) as ICompletionSource;
+            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new JavaScriptCompletionSource(textBuffer, _classNames)) as ICompletionSource;
         }
     }
 

@@ -29,9 +29,9 @@ namespace MadsKristensen.EditorExtensions
         [Import]
         public IClassificationTypeRegistryService Registry { get; set; }
 
-        public IClassifier GetClassifier(ITextBuffer buffer)
+        public IClassifier GetClassifier(ITextBuffer textBuffer)
         {
-            return buffer.Properties.GetOrCreateSingletonProperty<VendorClassifier>(() => { return new VendorClassifier(Registry, buffer); });
+            return textBuffer.Properties.GetOrCreateSingletonProperty<VendorClassifier>(() => { return new VendorClassifier(Registry, textBuffer); });
         }
     }
 

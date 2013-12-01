@@ -22,9 +22,9 @@ namespace MadsKristensen.EditorExtensions
     Name("NodeJsCompletion")]
     public class NodeModuleCompletionSourceProvider : ICompletionSourceProvider
     {
-        public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer)
+        public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer)
         {
-            return buffer.Properties.GetOrCreateSingletonProperty(() => new NodeModuleCompletionSource(buffer)) as ICompletionSource;
+            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new NodeModuleCompletionSource(textBuffer)) as ICompletionSource;
         }
     }
 
