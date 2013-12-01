@@ -149,8 +149,6 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static Settings _projectStore;
-
         public static bool GetBoolean(string propertyName)
         {
             bool result;
