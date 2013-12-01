@@ -10,10 +10,10 @@ namespace MadsKristensen.EditorExtensions.QuickInfo
     [Export(typeof(IIntellisenseControllerProvider))]
     [Name("Image Html QuickInfo Controller")]
     [ContentType("htmlx")]
-    internal class ImageHtmlQuickInfoControllerProvider : IIntellisenseControllerProvider
+    public class ImageHtmlQuickInfoControllerProvider : IIntellisenseControllerProvider
     {
-        [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IQuickInfoBroker QuickInfoBroker { get; set; }
+        [Import]
+        public IQuickInfoBroker QuickInfoBroker { get; set; }
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers)
         {

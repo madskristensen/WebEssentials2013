@@ -13,10 +13,10 @@ namespace MadsKristensen.EditorExtensions
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
     [ContentType(LessContentTypeDefinition.LessContentType)]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    class LessViewCreationListener : IWpfTextViewConnectionListener
+    public class LessViewCreationListener : IWpfTextViewConnectionListener
     {
-        [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
+        [Import]
+        public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
 
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {

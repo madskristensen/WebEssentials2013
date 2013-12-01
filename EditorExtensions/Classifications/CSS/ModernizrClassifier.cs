@@ -19,10 +19,10 @@ namespace MadsKristensen.EditorExtensions
 
     [Export(typeof(IClassifierProvider))]
     [ContentType("css")]
-    internal sealed class ModernizrClassifierProvider : IClassifierProvider
+    public sealed class ModernizrClassifierProvider : IClassifierProvider
     {
-        [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IClassificationTypeRegistryService Registry { get; set; }
+        [Import]
+        public IClassificationTypeRegistryService Registry { get; set; }
 
         public IClassifier GetClassifier(ITextBuffer buffer)
         {
