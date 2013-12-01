@@ -35,26 +35,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     // All of this can go away when the Roslyn editor ships.
 
 
-    public class ContainedLanguageAdapter
+    class ContainedLanguageAdapter
     {
-        public static string ExtensionFromContentType(IContentType contentType)
-        {
-            IFileExtensionRegistryService value = WebEditor.ExportProvider.GetExport<IFileExtensionRegistryService>().Value;
-            return value.GetExtensionsForContentType(contentType).FirstOrDefault();
-        }
-        public static Guid LanguageServiceFromContentType(IContentType contentType)
-        {
-            string extension = ExtensionFromContentType(contentType);
-            if (extension == null)
-                return Guid.Empty;
-
-            Guid retVal;
-            IVsTextManager globalService = Globals.GetGlobalService<IVsTextManager>(typeof(SVsTextManager));
-            globalService.MapFilenameToLanguageSID("file." + extension, out retVal);
-
-            return retVal;
-        }
-
         public static ContainedLanguageAdapter ForBuffer(ITextBuffer textBuffer)
         {
             var retVal = ServiceManager.GetService<ContainedLanguageAdapter>(textBuffer);
@@ -202,11 +184,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             }
 
             public event EventHandler Disposing;
-        }
-
-        public IWebApplicationCtxSvc WebApplicationContextService
-        {
-            get { return ServiceProvider.GlobalProvider.GetService(typeof(SWebApplicationCtxSvc)) as IWebApplicationCtxSvc; }
         }
 
         ///<summary>Creates a ContainedLanguage for the specified ProjectionBuffer, using an IVsIntellisenseProjectManager to initialize the language.</summary>
