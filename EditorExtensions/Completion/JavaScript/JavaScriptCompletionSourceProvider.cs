@@ -30,7 +30,6 @@ namespace MadsKristensen.EditorExtensions
     public class JavaScriptCompletionSource : ICompletionSource
     {
         private ITextBuffer _buffer;
-        private static ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphXmlItem, StandardGlyphItem.GlyphItemPublic);
 
         public JavaScriptCompletionSource(ITextBuffer buffer, ICssNameCache classNames)
         {

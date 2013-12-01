@@ -39,8 +39,6 @@ namespace MadsKristensen.EditorExtensions
             _mcs.AddCommand(menuCommandJs);
         }
 
-        private readonly string[] _supported = new[] { "CSS", "JAVASCRIPT" };
-
         void BeforeQueryStatus(object sender, string extension)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;

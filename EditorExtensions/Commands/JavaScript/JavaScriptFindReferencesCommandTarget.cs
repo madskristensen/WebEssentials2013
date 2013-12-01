@@ -22,7 +22,6 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            int position = TextView.Caret.Position.BufferPosition.Position;
             SnapshotPoint? point = TextView.Caret.Position.Point.GetPoint(TextView.TextBuffer, PositionAffinity.Predecessor);
 
             if (point.HasValue)

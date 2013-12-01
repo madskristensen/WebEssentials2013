@@ -9,7 +9,6 @@ namespace MadsKristensen.EditorExtensions
     internal class CssSelectBrowsers : CommandTargetBase
     {
         private DTE2 _dte;
-        private List<string> _possible = new List<string>() { ".CSS", ".LESS", ".SCSS" };
 
         public CssSelectBrowsers(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, GuidList.guidMinifyCmdSet, PkgCmdIDList.SelectBrowsers)

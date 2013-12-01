@@ -22,13 +22,7 @@ namespace MadsKristensen.EditorExtensions
         public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
 
         [Import]
-        public IClassifierAggregatorService AggregatorService { get; set; }
-
-        [Import]
         public ICompletionBroker CompletionBroker { get; set; }
-
-        [Import]
-        public IQuickInfoBroker QuickInfoBroker { get; set; }
 
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {

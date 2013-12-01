@@ -13,7 +13,6 @@ namespace MadsKristensen.EditorExtensions
     [Name("UrlPickerCompletionProvider")]
     internal class UrlPickerCompletionProvider : ICssCompletionListProvider, ICssCompletionCommitListener
     {
-        private static List<string> _imageExtensions = new List<string>() { "", ".png", ".jpg", "gif", ".svg", ".jpeg", ".bmp", ".tif", ".tiff" };
         public CssCompletionContextType ContextType
         {
             get { return (CssCompletionContextType)604; }

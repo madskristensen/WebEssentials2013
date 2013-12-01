@@ -56,7 +56,6 @@ namespace MadsKristensen.EditorExtensions
         private void InsertEmbedString(ITextSnapshot snapshot, string dataUri)
         {
             EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            Declaration dec = _url.FindType<Declaration>();
 
             _span.TextBuffer.Replace(_span.GetSpan(snapshot), dataUri);
 

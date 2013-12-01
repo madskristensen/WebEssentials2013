@@ -31,7 +31,6 @@ namespace MadsKristensen.EditorExtensions
     public class NodeModuleCompletionSource : ICompletionSource
     {
         private ITextBuffer _buffer;
-        private static ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphXmlItem, StandardGlyphItem.GlyphItemPublic);
 
         public NodeModuleCompletionSource(ITextBuffer buffer)
         {

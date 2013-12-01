@@ -105,8 +105,6 @@ namespace MadsKristensen.EditorExtensions
 
                         if (settingsNode != null)
                         {
-                            XmlAttribute versionAttr = settingsNode.Attributes["version"];
-
                             lock (_syncCacheRoot)
                             {
                                 _cache.Clear();

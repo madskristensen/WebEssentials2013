@@ -14,13 +14,10 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class CssRemoveDuplicates : CommandTargetBase
     {
-        private DTE2 _dte;
-        private readonly string[] _supported = new[] { "CSS", "LESS" };
 
         public CssRemoveDuplicates(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, GuidList.guidCssCmdSet, PkgCmdIDList.cssRemoveDuplicates)
         {
-            _dte = EditorExtensionsPackage.DTE;
         }
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)

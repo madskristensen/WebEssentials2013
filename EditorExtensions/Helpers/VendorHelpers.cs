@@ -10,7 +10,6 @@ namespace MadsKristensen.EditorExtensions
 {
     internal static class VendorHelpers
     {
-        private static object _syncRoot = new object();
         private static Dictionary<int, string[]> prefixes = new Dictionary<int, string[]>();
 
         public static string[] GetPrefixes(ICssSchemaInstance schema)

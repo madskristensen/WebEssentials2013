@@ -45,14 +45,6 @@ namespace MadsKristensen.EditorExtensions
         //    return schema.GetPseudo(":" + item.Text) != null;
         //}
 
-        private static List<string> _invalids = new List<string>()
-        {
-            ":before",
-            "::before",
-            ":after",
-            "::after",
-        };
-
         public IEnumerable<Type> ItemTypes
         {
             get
