@@ -15,13 +15,14 @@ namespace MadsKristensen.EditorExtensions
     internal class JsHintRunner : IDisposable
     {
         private readonly ErrorListProvider _provider;
-        private readonly static Dictionary<string, ErrorListProvider> _providers = new Dictionary<string, ErrorListProvider>();
+        private readonly static Dictionary<string, ErrorListProvider> _providers = InitializeResources();
         private readonly string _fileName;
         private bool _isDisposed;
 
-        static JsHintRunner()
+        static Dictionary<string, ErrorListProvider> InitializeResources()
         {
             EditorExtensionsPackage.DTE.Events.SolutionEvents.AfterClosing += SolutionEvents_AfterClosing;
+            return new Dictionary<string, ErrorListProvider>();
         }
 
         static void SolutionEvents_AfterClosing()
