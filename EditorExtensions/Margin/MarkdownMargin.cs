@@ -1,14 +1,14 @@
-﻿using System;
+﻿using EnvDTE;
+using EnvDTE80;
+using MarkdownSharp;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using EnvDTE;
-using EnvDTE80;
-using MarkdownSharp;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -46,27 +46,22 @@ namespace MadsKristensen.EditorExtensions
 
             string result = _compiler.Transform(source);
 
-            string html = "<html><head><meta charset=\"utf-8\" />" +
+            if (_browser != null)
+            {
+                string html = "<html><head><meta charset=\"utf-8\" />" +
                           GetStylesheet() +
                           "</head>" +
                           "<body>" + result + "</body></html>";
 
-            _browser.NavigateToString(html);
+                _browser.NavigateToString(html);
+            }
 
             // NOTE: Markdown files are always compiled for the Preview window.
             //       But, only saved to disk when the CompileEnabled flag is true.
             //       That is why the following if statement is not wrapping this whole method.
             if (CompileEnabled)
             {
-                string htmlFilename = GetCompiledFileName(Document.FilePath, ".html", CompileToLocation);
-                try
-                {
-                    File.WriteAllText(htmlFilename, html);
-                }
-                catch (Exception exception)
-                {
-                    Logger.Log("An error occurred while compiling " + Document.FilePath + ":\n" + exception);
-                }
+                OnCompilationDone(result.Trim(), Document.FilePath);
             }
         }
 
@@ -155,12 +150,12 @@ namespace MadsKristensen.EditorExtensions
 
         public override bool IsSaveFileEnabled
         {
-            get { return false; }
+            get { return true; }
         }
 
         protected override bool CanWriteToDisk(string source)
         {
-            return false;
+            return true;
         }
 
         public override bool CompileEnabled
