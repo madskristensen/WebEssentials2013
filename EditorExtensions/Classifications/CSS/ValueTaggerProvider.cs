@@ -104,7 +104,7 @@ namespace MadsKristensen.EditorExtensions
                 currentChar = currentChar.TranslateTo(spans[0].Snapshot, PointTrackingMode.Positive);
             }
 
-            var allTags = _vendorClassifier.GetClassificationSpans(spans[0]).Where(s => s.ClassificationType.Classification == ClassificationTypes._value);
+            var allTags = _vendorClassifier.GetClassificationSpans(spans[0]).Where(s => s.ClassificationType.Classification == VendorClassificationTypes.Value);
             foreach (var tagSpan in allTags)
             {
                 if (tagSpan.Span.Contains(currentChar))

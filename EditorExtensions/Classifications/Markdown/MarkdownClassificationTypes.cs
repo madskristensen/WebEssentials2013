@@ -14,20 +14,20 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public const string MarkdownCode = "md_code";
         public const string MarkdownQuote = "md_quote";
 
-        [Export, Name(MarkdownClassificationTypes.MarkdownBold), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal static ClassificationTypeDefinition MarkdownClassificationBold = null;
+        [Export, Name(MarkdownClassificationTypes.MarkdownBold)]
+        public static ClassificationTypeDefinition MarkdownClassificationBold { get; set; }
 
-        [Export, Name(MarkdownClassificationTypes.MarkdownItalic), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal static ClassificationTypeDefinition MarkdownClassificationItalic = null;
+        [Export, Name(MarkdownClassificationTypes.MarkdownItalic)]
+        public static ClassificationTypeDefinition MarkdownClassificationItalic { get; set; }
 
-        [Export, Name(MarkdownClassificationTypes.MarkdownHeader), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal static ClassificationTypeDefinition MarkdownClassificationHeader = null;
+        [Export, Name(MarkdownClassificationTypes.MarkdownHeader)]
+        public static ClassificationTypeDefinition MarkdownClassificationHeader { get; set; }
 
-        [Export, Name(MarkdownClassificationTypes.MarkdownCode), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal static ClassificationTypeDefinition MarkdownClassificationCode = null;
+        [Export, Name(MarkdownClassificationTypes.MarkdownCode)]
+        public static ClassificationTypeDefinition MarkdownClassificationCode { get; set; }
 
-        [Export, Name(MarkdownClassificationTypes.MarkdownQuote), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal static ClassificationTypeDefinition MarkdownClassificationQuote = null;
+        [Export, Name(MarkdownClassificationTypes.MarkdownQuote)]
+        public static ClassificationTypeDefinition MarkdownClassificationQuote { get; set; }
     }
 
     [Export(typeof(EditorFormatDefinition))]

@@ -9,12 +9,12 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal static class ModernizrClassificationTypes
+    public static class ModernizrClassificationType
     {
-        internal const string _modernizr = "modernizr";
+        public const string Name = "modernizr";
 
-        [Export, Name(ModernizrClassificationTypes._modernizr), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal static ClassificationTypeDefinition ModernizrClassificationType = null;
+        [Export, Name(ModernizrClassificationType.Name)]
+        public static ClassificationTypeDefinition Definition { get; set; }
     }
 
     [Export(typeof(IClassifierProvider))]
@@ -44,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
         {
             _registry = registry;
             _buffer = buffer;
-            _modernizrClassification = _registry.GetClassificationType(ModernizrClassificationTypes._modernizr);
+            _modernizrClassification = _registry.GetClassificationType(ModernizrClassificationType.Name);
 
             _tree = CssTreeWatcher.ForBuffer(_buffer);
             _tree.TreeUpdated += TreeUpdated;
@@ -115,8 +115,8 @@ namespace MadsKristensen.EditorExtensions
 
     [Export(typeof(EditorFormatDefinition))]
     [UserVisible(true)]
-    [ClassificationType(ClassificationTypeNames = ModernizrClassificationTypes._modernizr)]
-    [Name(ModernizrClassificationTypes._modernizr)]
+    [ClassificationType(ClassificationTypeNames = ModernizrClassificationType.Name)]
+    [Name(ModernizrClassificationType.Name)]
     [Order(After = Priority.Default)]
     internal sealed class ModernizrFormatDefinition : ClassificationFormatDefinition
     {

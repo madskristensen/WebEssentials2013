@@ -4,21 +4,21 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
-    static class RobotsTxtClassificationTypes
+    public static class RobotsTxtClassificationTypes
     {
-        public const string RobotsTxtKeyword = "robotstxt_keyword";
-        public const string RobotsTxtComment = "robotstxt_comment";
+        public const string Keyword = "robotstxt_keyword";
+        public const string Comment = "robotstxt_comment";
 
-        [Export, Name(RobotsTxtClassificationTypes.RobotsTxtKeyword), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal static ClassificationTypeDefinition RobotsTxtClassificationBold = null;
+        [Export, Name(RobotsTxtClassificationTypes.Keyword)]
+        public static ClassificationTypeDefinition RobotsTxtClassificationBold { get; set; }
 
-        [Export, Name(RobotsTxtClassificationTypes.RobotsTxtComment), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal static ClassificationTypeDefinition RobotsTxtClassificationHeader = null;
+        [Export, Name(RobotsTxtClassificationTypes.Comment)]
+        public static ClassificationTypeDefinition RobotsTxtClassificationHeader { get; set; }
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = RobotsTxtClassificationTypes.RobotsTxtKeyword)]
-    [Name(RobotsTxtClassificationTypes.RobotsTxtKeyword)]
+    [ClassificationType(ClassificationTypeNames = RobotsTxtClassificationTypes.Keyword)]
+    [Name(RobotsTxtClassificationTypes.Keyword)]
     [Order(After = Priority.Default)]
     [UserVisible(true)]
     internal sealed class RobotsTxtBoldFormatDefinition : ClassificationFormatDefinition
@@ -31,8 +31,8 @@ namespace MadsKristensen.EditorExtensions
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = RobotsTxtClassificationTypes.RobotsTxtComment)]
-    [Name(RobotsTxtClassificationTypes.RobotsTxtComment)]
+    [ClassificationType(ClassificationTypeNames = RobotsTxtClassificationTypes.Comment)]
+    [Name(RobotsTxtClassificationTypes.Comment)]
     [Order(After = Priority.Default)]
     [UserVisible(true)]
     internal sealed class RobotsTxtHeaderFormatDefinition : ClassificationFormatDefinition

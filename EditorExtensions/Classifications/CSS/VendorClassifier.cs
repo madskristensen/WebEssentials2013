@@ -10,16 +10,16 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal static class ClassificationTypes
+    public static class VendorClassificationTypes
     {
-        internal const string _declaration = "vendor.declaration";
-        internal const string _value = "vendor.value";
+        public const string Declaration = "vendor.declaration";
+        public const string Value = "vendor.value";
 
-        [Export, Name(ClassificationTypes._declaration), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal static ClassificationTypeDefinition VendorDeclarationClassificationType = null;
+        [Export, Name(VendorClassificationTypes.Declaration)]
+        public static ClassificationTypeDefinition VendorDeclarationClassificationType { get; set; }
 
-        [Export, Name(ClassificationTypes._value), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal static ClassificationTypeDefinition VendorValueClassificationType = null;
+        [Export, Name(VendorClassificationTypes.Value)]
+        public static ClassificationTypeDefinition VendorValueClassificationType { get; set; }
     }
 
     [Export(typeof(IClassifierProvider))]
@@ -48,8 +48,8 @@ namespace MadsKristensen.EditorExtensions
         {
             _registry = registry;
             _buffer = buffer;
-            _decClassification = _registry.GetClassificationType(ClassificationTypes._declaration);
-            _valClassification = _registry.GetClassificationType(ClassificationTypes._value);
+            _decClassification = _registry.GetClassificationType(VendorClassificationTypes.Declaration);
+            _valClassification = _registry.GetClassificationType(VendorClassificationTypes.Value);
 
             _tree = CssTreeWatcher.ForBuffer(_buffer);
             _tree.TreeUpdated += TreeUpdated;
@@ -208,8 +208,8 @@ namespace MadsKristensen.EditorExtensions
 
     [Export(typeof(EditorFormatDefinition))]
     [UserVisible(true)]
-    [ClassificationType(ClassificationTypeNames = ClassificationTypes._declaration)]
-    [Name(ClassificationTypes._declaration)]
+    [ClassificationType(ClassificationTypeNames = VendorClassificationTypes.Declaration)]
+    [Name(VendorClassificationTypes.Declaration)]
     [Order(After = Priority.Default)]
     internal sealed class VendorDeclarationFormatDefinition : ClassificationFormatDefinition
     {

@@ -14,8 +14,8 @@ namespace MadsKristensen.EditorExtensions
 
         public RobotsTxtClassifier(IClassificationTypeRegistryService registry)
         {
-            _keyword = registry.GetClassificationType(RobotsTxtClassificationTypes.RobotsTxtKeyword);
-            _comment = registry.GetClassificationType(RobotsTxtClassificationTypes.RobotsTxtComment);
+            _keyword = registry.GetClassificationType(RobotsTxtClassificationTypes.Keyword);
+            _comment = registry.GetClassificationType(RobotsTxtClassificationTypes.Comment);
         }
 
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
