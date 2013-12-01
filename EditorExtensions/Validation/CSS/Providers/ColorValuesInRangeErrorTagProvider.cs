@@ -72,6 +72,7 @@ namespace MadsKristensen.EditorExtensions
                 if (i < 3)
                 {
                     pair = text.Split('%');
+
                     if (pair.Length > 1 || pair[0].ValidateNumericality())
                     {
                         context.AddError(new SimpleErrorTag(argument, "Validation: Invalid value", CssErrorFlags.TaskListWarning | CssErrorFlags.UnderlineRed));

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -6,14 +6,7 @@ namespace MadsKristensen.EditorExtensions
     {
         internal static bool ValidateNumericality(this string input)
         {
-            foreach (char digit in input)
-            {
-                if (!Char.IsDigit(digit) && digit != '.')
-                {
-                    return false;
-                }
-            }
-            return true;
+            return input.All(digit => char.IsDigit(digit) || digit.Equals('.'));
         }
     }
 }
