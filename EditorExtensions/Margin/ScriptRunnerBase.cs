@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions
             _dispatcher = dispatcher;
         }
 
-        protected abstract string CreateHtml(string source, string state);
+        protected abstract string CreateHtml(string source, string filename);
 
         public void Compile(string source, string state)
         {
