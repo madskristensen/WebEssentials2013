@@ -24,16 +24,16 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         [Export(typeof(FileExtensionToContentTypeDefinition))]
         [ContentType(MarkdownContentType)]
         [FileExtension(".md")]
-        public FileExtensionToContentTypeDefinition IMDFileExtension { get; set; }
+        public FileExtensionToContentTypeDefinition MDFileExtension { get; set; }
 
         [Export(typeof(FileExtensionToContentTypeDefinition))]
         [ContentType(MarkdownContentType)]
         [FileExtension(".mdown")]
-        public FileExtensionToContentTypeDefinition IMDownFileExtension { get; set; }
+        public FileExtensionToContentTypeDefinition MDownFileExtension { get; set; }
 
         [Export(typeof(FileExtensionToContentTypeDefinition))]
         [ContentType(MarkdownContentType)]
         [FileExtension(".markdown")]
-        public FileExtensionToContentTypeDefinition IMarkDownFileExtension { get; set; }
+        public FileExtensionToContentTypeDefinition MarkdownFileExtension { get; set; }
     }
 }

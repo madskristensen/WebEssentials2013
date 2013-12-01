@@ -13,6 +13,7 @@ namespace MadsKristensen.EditorExtensions
     /// To use this class, add a collection initializer with a list of typed lambdas.
     /// </summary>
     [SuppressMessage("Microsoft.Design", "CA1010:CollectionsShouldImplementGenericInterface", Justification = "Not actually a collection; implements IEnumerable for initializer syntax")]
+    [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix")]
     public sealed class CssItemAggregator<TResult> : ICssSimpleTreeVisitor, System.Collections.IEnumerable   // For collection initializer syntax
     {
         public ReadOnlyCollection<TResult> Items { get; private set; }

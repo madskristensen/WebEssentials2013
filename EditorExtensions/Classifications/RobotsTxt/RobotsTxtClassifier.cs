@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions
         private IClassificationType _keyword, _comment;
         private bool _isRobotsTxt = false;
         private TextType _textType;
-        public static HashSet<string> _valid = new HashSet<string>() { "user-agent", "disallow", "sitemap", "crawl-delay", "host" };
+        public readonly static HashSet<string> Valid = new HashSet<string>() { "user-agent", "disallow", "sitemap", "crawl-delay", "host" };
 
         public RobotsTxtClassifier(IClassificationTypeRegistryService registry)
         {
@@ -40,7 +40,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 string[] args = text.Split(':');
 
-                if (args.Length >= 2 && _valid.Contains(args[0].Trim().ToLowerInvariant()))
+                if (args.Length >= 2 && Valid.Contains(args[0].Trim().ToLowerInvariant()))
                 {
                     var result = new SnapshotSpan(span.Snapshot, span.Start, args[0].Length);
                     list.Add(new ClassificationSpan(result, _keyword));

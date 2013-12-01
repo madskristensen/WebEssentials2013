@@ -38,7 +38,7 @@ namespace MadsKristensen.EditorExtensions
                 return;
 
             List<Intel.Completion> completions = new List<Intel.Completion>();
-            foreach (string item in RobotsTxtClassifier._valid)
+            foreach (string item in RobotsTxtClassifier.Valid)
             {
                 completions.Add(new Intel.Completion(item, item, null, _glyph, item));
             }
