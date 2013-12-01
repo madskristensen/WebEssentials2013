@@ -14,13 +14,14 @@ namespace MadsKristensen.EditorExtensions
     [TextViewRole(PredefinedTextViewRoles.Document)]
     public class CssSaveListener : IWpfTextViewCreationListener
     {
+        [Import]
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+
         private ITextDocument _document;
 
         public void TextViewCreated(IWpfTextView textView)
         {
-            textView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out _document);
-
-            if (_document != null)
+            if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out _document))
             {
                 _document.FileActionOccurred += document_FileActionOccurred;
             }

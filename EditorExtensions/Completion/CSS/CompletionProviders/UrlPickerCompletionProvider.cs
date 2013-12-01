@@ -24,9 +24,11 @@ namespace MadsKristensen.EditorExtensions
             UrlItem urlItem = (UrlItem)context.ContextItem;
 
             string url = urlItem.UrlString != null ? urlItem.UrlString.Text : string.Empty;
+            if (url.StartsWith("http") || url.Contains("//") || url.Contains(";base64,"))
+                yield break;
             string directory = GetDirectory(url);
 
-            if (url.StartsWith("http") || url.Contains("//") || url.Contains(";base64,") || !Directory.Exists(directory))
+            if (!Directory.Exists(directory))
                 yield break;
 
             foreach (FileSystemInfo item in new DirectoryInfo(directory).EnumerateFileSystemInfos())

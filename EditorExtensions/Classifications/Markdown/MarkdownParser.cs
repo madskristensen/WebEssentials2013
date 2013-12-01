@@ -76,11 +76,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     return true;
                 }
             }
-            protected void SkipToEndOfLine()
-            {
-                while (!stream.IsEndOfStream() && !stream.IsAtNewLine())
-                    stream.MoveToNextChar();
-            }
+
             protected bool TryConsumeNewLine()
             {
                 var start = stream.Position;
@@ -90,11 +86,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     stream.MoveToNextChar();
                 return stream.Position != start;
             }
-            protected void SkipToNextLine()
-            {
-                SkipToEndOfLine();
-                TryConsumeNewLine();
-            }
+
             ///<summary>Tries to consume a line of whitespace characters.</summary>
             ///<param name="consumeCodeBlock">If false, this will not consume four or more spaces, to allow them to be parsed as an empty code block</param>
             ///<remarks>dontConsumeCodeBlock should only be false at the beginning of a line that may start a new block.</remarks>
@@ -124,6 +116,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 return true;
             }
         }
+
         private abstract class BlockParser : ParserBase
         {
             private int quoteDepth;
@@ -190,6 +183,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             protected abstract bool ReadContent();
 
             protected bool BlockEnded { get; private set; }
+
             ///<summary>Moves to the next content character inside the block (after quote prefixes).</summary>
             ///<returns>False if the block had ended (the stream will be up to the next block).</returns>
             protected bool MoveToNextContentChar()
@@ -256,6 +250,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     return true;
                 }
             }
+
             ///<summary>Checks whether this line begins with a quote prefix deeper than the rest of the block.</summary>
             ///<returns>True if this line should begin a new block.</returns>
             ///<remarks>This method will not advance the stream.</remarks>
@@ -394,6 +389,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 }
                 return true;
             }
+
             protected override bool TryConsumeLinePrefix()
             {
                 if (!base.TryConsumeLinePrefix())
@@ -401,6 +397,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 lineStart = stream.Position;
                 return TryReadSpaces(spaceCount);
             }
+
             protected override bool TryConsumeEnd()
             {
                 // If the next line is still a code block, we haven't ended
@@ -413,6 +410,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 return base.TryConsumeEnd();
             }
         }
+
         class FencedCodeBlockParser : BlockParser
         {
             public FencedCodeBlockParser(CharacterStream stream, Action<MarkdownCodeArtifact> reporter) : base(stream, reporter) { }
@@ -442,8 +440,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         break;
                     ReportArtifact(new MarkdownCodeArtifact(language, range, 0, 0, blockStart));
                 }
+
                 return true;
             }
+
             protected override bool TryConsumeEnd()
             {
                 using (var peek = Peek())
@@ -487,12 +487,14 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             this.stream = stream;
             this.StartPosition = stream.Position;
         }
+
         ///<summary>Commits the peeked characters.</summary>
         ///<remarks>After calling this method, Dispose() will not roll back the stream.</remarks>
         public void Consume()
         {
             shouldRevert = false;
         }
+
         public void Dispose()
         {
             if (!shouldRevert) return;
@@ -509,7 +511,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             Language = language;
             BlockStart = blockStart;
         }
+
         public string Language { get; private set; }
+
         ///<summary>Gets the character position in the stream that entire containing code block started.</summary>
         ///<remarks>This is used to group code runs (lines) from the same block, for language prefixing.</remarks>
         public int BlockStart { get; private set; }

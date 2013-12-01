@@ -67,19 +67,6 @@ namespace MadsKristensen.EditorExtensions
             return sb.ToString();
         }
 
-        private string GetVendorDeclarations(IEnumerable<string> prefixes, Declaration declaration)
-        {
-            StringBuilder sb = new StringBuilder();
-            string separator = true ? Environment.NewLine : " ";
-
-            foreach (var entry in prefixes)
-            {
-                sb.Append(entry + declaration.Text + separator);
-            }
-
-            return sb.ToString();
-        }
-
         protected override bool IsEnabled()
         {
             return TextView.GetSelection("CSS") != null;

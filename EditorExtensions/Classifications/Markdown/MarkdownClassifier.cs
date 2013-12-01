@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     public class MarkdownClassifierProvider : IClassifierProvider
     {
         [Import]
-        internal IClassificationTypeRegistryService Registry { get; set; }
+        public IClassificationTypeRegistryService Registry { get; set; }
 
         public IClassifier GetClassifier(ITextBuffer textBuffer)
         {

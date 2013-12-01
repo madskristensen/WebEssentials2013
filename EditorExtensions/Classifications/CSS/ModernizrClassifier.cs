@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Windows.Threading;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -38,6 +37,8 @@ namespace MadsKristensen.EditorExtensions
         private readonly CssTreeWatcher _tree;
         private readonly SortedRangeList<SimpleSelector> _cache = new SortedRangeList<SimpleSelector>();
         private readonly IClassificationType _modernizrClassification;
+
+        public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;
 
         internal ModernizrClassifier(IClassificationTypeRegistryService registry, ITextBuffer buffer)
         {
@@ -108,18 +109,6 @@ namespace MadsKristensen.EditorExtensions
             foreach (ParseItem item in e.InsertedItems)
             {
                 UpdateCache(item);
-            }
-        }
-
-        public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;
-
-        public void RaiseClassificationChanged(SnapshotSpan span)
-        {
-            var handler = this.ClassificationChanged;
-            if (handler != null)
-            {
-                Dispatcher.CurrentDispatcher.BeginInvoke(
-                    new Action(() => handler(this, new ClassificationChangedEventArgs(span))), DispatcherPriority.ApplicationIdle);
             }
         }
     }

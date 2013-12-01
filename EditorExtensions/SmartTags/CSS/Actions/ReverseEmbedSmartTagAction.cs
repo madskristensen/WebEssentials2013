@@ -32,10 +32,10 @@ namespace MadsKristensen.EditorExtensions
         public override void Invoke()
         {
             string base64 = _url.UrlString.Text.Trim('\'', '"');
-            string mimeType = GetMimeType(base64);
-            string extension = GetExtension(mimeType) ?? "png";
+            string mimeType = FileHelpers.GetMimeTypeFromBase64(base64);
+            string extension = FileHelpers.GetExtension(mimeType) ?? "png";
 
-            var fileName = ShowDialog(extension);
+            var fileName = FileHelpers.ShowDialog(extension);
 
             if (!string.IsNullOrEmpty(fileName) && TrySaveFile(base64, fileName))
             {
@@ -45,26 +45,6 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static string ShowDialog(string extension)
-        {
-            var initialPath = Path.GetDirectoryName(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
-
-            using (var dialog = new SaveFileDialog())
-            {
-                dialog.FileName = "file." + extension;
-                dialog.DefaultExt = extension;
-                dialog.Filter = extension.ToUpperInvariant() + " files | *." + extension;
-                dialog.InitialDirectory = initialPath;
-
-                if (dialog.ShowDialog() == DialogResult.OK)
-                {
-                    return dialog.FileName;
-                }
-            }
-
-            return null;
-        }
-
         private void ReplaceUrlValue(string fileName)
         {
             string relative = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, fileName);
@@ -72,14 +52,14 @@ namespace MadsKristensen.EditorExtensions
             _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), urlValue);
         }
 
-        private static bool TrySaveFile(string base64, string file)
+        public static bool TrySaveFile(string base64, string filePath)
         {
             try
             {
                 int index = base64.IndexOf("base64,", StringComparison.Ordinal) + 7;
                 byte[] imageBytes = Convert.FromBase64String(base64.Substring(index));
-                File.WriteAllBytes(file, imageBytes);
-                ProjectHelpers.AddFileToActiveProject(file);
+                File.WriteAllBytes(filePath, imageBytes);
+                ProjectHelpers.AddFileToActiveProject(filePath);
                 return true;
             }
             catch (Exception ex)
@@ -87,51 +67,6 @@ namespace MadsKristensen.EditorExtensions
                 MessageBox.Show(ex.Message, ex.GetType().Name, MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 return false;
             }
-        }
-
-        private static string GetMimeType(string base64)
-        {
-            int end = base64.IndexOf(";", StringComparison.Ordinal);
-
-            if (end > -1)
-            {
-                return base64.Substring(5, end - 5);
-            }
-
-            return string.Empty;
-        }
-
-        private static string GetExtension(string mimeType)
-        {
-            switch (mimeType)
-            {
-                case "image/png":
-                    return "png";
-
-                case "image/jpg":
-                case "image/jpeg":
-                    return "jpg";
-
-                case "image/gif":
-                    return "gif";
-
-                case "image/svg":
-                    return "svg";
-
-                case "font/x-woff":
-                    return "woff";
-
-                case "font/otf":
-                    return "otf";
-
-                case "application/vnd.ms-fontobject":
-                    return "eot";
-
-                case "application/octet-stream":
-                    return "ttf";
-            }
-
-            return null;
         }
     }
 }

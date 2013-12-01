@@ -27,11 +27,6 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public bool IsExposedToUser
-        {
-            get { return true; }
-        }
-
         public ParseItem Item
         {
             get { return _range.First(); }

@@ -68,12 +68,6 @@ namespace MadsKristensen.EditorExtensions
             return string.Concat(selectorsText);
         }
 
-        private static int GetSelectorLength(RuleSet rule)
-        {
-            var selector = rule.Selectors.Last();
-            return selector.AfterEnd - rule.Start;
-        }
-
         public IEnumerable<Type> ItemTypes
         {
             get { return new[] { typeof(RuleSet) }; }

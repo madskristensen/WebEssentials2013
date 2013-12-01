@@ -14,14 +14,17 @@ namespace MadsKristensen.EditorExtensions
     //[ContentType("TypeScript")]
     [ContentType("Markdown")]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
-    internal sealed class MarginFactory : IWpfTextViewMarginProvider
+    public sealed class MarginFactory : IWpfTextViewMarginProvider
     {
+        [Import]
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost textViewHost, IWpfTextViewMargin containerMargin)
         {
             string source = textViewHost.TextView.TextBuffer.CurrentSnapshot.GetText();
             ITextDocument document;
 
-            if (textViewHost.TextView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document))
+            if (TextDocumentFactoryService.TryGetTextDocument(textViewHost.TextView.TextDataModel.DocumentBuffer, out document))
             {
                 switch (textViewHost.TextView.TextBuffer.ContentType.DisplayName.ToLowerInvariant())
                 {

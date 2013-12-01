@@ -18,13 +18,13 @@ namespace MadsKristensen.EditorExtensions
     [Export(typeof(IViewTaggerProvider))]
     [ContentType("CSS")]
     [TagType(typeof(TextMarkerTag))]
-    internal class CssHighlightWordTaggerProvider : IViewTaggerProvider
+    public class CssHighlightWordTaggerProvider : IViewTaggerProvider
     {
         [Import]
-        internal ITextSearchService TextSearchService { get; set; }
+        public ITextSearchService TextSearchService { get; set; }
 
         [Import]
-        internal ITextStructureNavigatorSelectorService TextStructureNavigatorSelector { get; set; }
+        public ITextStructureNavigatorSelectorService TextStructureNavigatorSelector { get; set; }
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
