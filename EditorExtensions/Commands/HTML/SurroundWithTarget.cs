@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;

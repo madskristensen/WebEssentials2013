@@ -1,5 +1,4 @@
 ﻿using System;
-using EnvDTE80;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.Less.Core;

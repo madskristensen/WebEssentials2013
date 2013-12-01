@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
 using Microsoft.Web.Editor;
 

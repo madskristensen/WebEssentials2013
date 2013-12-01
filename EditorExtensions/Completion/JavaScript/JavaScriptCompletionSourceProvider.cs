@@ -2,11 +2,9 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Windows.Media;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
 using Microsoft.Web.Editor.Intellisense;
 using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
