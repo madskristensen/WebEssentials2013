@@ -38,7 +38,11 @@ namespace MadsKristensen.EditorExtensions
         private readonly SortedRangeList<SimpleSelector> _cache = new SortedRangeList<SimpleSelector>();
         private readonly IClassificationType _modernizrClassification;
 
-        public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;
+        public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged
+        {
+            add { }
+            remove { }
+        }
 
         internal ModernizrClassifier(IClassificationTypeRegistryService registry, ITextBuffer buffer)
         {
