@@ -7,9 +7,16 @@
     <Rule Id="CA1020" Action="None" />
     <Rule Id="CA1026" Action="None" />
     <Rule Id="CA1031" Action="None" />
+    <Rule Id="CA1054" Action="None" />
+    <Rule Id="CA1055" Action="None" />
+    <Rule Id="CA1056" Action="None" />
+    <Rule Id="CA1057" Action="None" />
     <Rule Id="CA1062" Action="None" />
     <Rule Id="CA1300" Action="None" />
+    <Rule Id="CA1303" Action="None" />
     <Rule Id="CA1308" Action="None" />
+    <Rule Id="CA2202" Action="None" />
     <Rule Id="CA2210" Action="None" />
+    <Rule Id="CA2234" Action="None" />
   </Rules>
 </RuleSet>
