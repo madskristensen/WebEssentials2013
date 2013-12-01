@@ -10,12 +10,9 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class SortSelectedLines : CommandTargetBase
     {
-        private DTE2 _dte;
-
         public SortSelectedLines(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, GuidList.guidEditorLinesCmdSet, PkgCmdIDList.SortAsc, PkgCmdIDList.SortDesc)
         {
-            _dte = EditorExtensionsPackage.DTE;
         }
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
