@@ -51,7 +51,7 @@ namespace MadsKristensen.EditorExtensions
                 TextView.TextBuffer.CurrentSnapshot.GetText(element.InnerRange.Start, element.InnerRange.Length).Trim().Length == 0)
                 return false;
 
-            UpdateTextBuffer(element, position);
+            UpdateTextBuffer(element);
 
             return false;
         }
@@ -91,13 +91,12 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-        private void UpdateTextBuffer(ElementNode element, int position)
+        private void UpdateTextBuffer(ElementNode element)
         {
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
                 FormatTag(element);
-                PlaceCaret(element, position);
-
+                PlaceCaret(element);
             }), DispatcherPriority.Normal, null);
         }
 
@@ -133,7 +132,7 @@ namespace MadsKristensen.EditorExtensions
             return current;
         }
 
-        private void PlaceCaret(ElementNode element, int position)
+        private void PlaceCaret(ElementNode element)
         {
             SnapshotPoint point = new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, TextView.Caret.Position.BufferPosition.Position);
 

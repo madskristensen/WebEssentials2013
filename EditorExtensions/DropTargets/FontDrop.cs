@@ -87,7 +87,7 @@ namespace MadsKristensen.EditorExtensions
                 //string extension = Path.GetExtension(draggedFilename).ToLowerInvariant();
                 //string sourceUrl = string.Format(fontUrls, draggedFilename, formats[extension]);
 
-                view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, GetCodeFromLocalhost(draggedFilename));
+                view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, GetCodeFromLocalhost());
 
                 return DragDropPointerEffects.Copy;
             }
@@ -124,7 +124,7 @@ namespace MadsKristensen.EditorExtensions
             return string.Format(CultureInfo.CurrentCulture, fontFace, fontName, sourceUrls);
         }
 
-        private string GetCodeFromLocalhost(string fileName)
+        private string GetCodeFromLocalhost()
         {
             int index = draggedFilename.IndexOf('/', 24);
             if (index > -1)

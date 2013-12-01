@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions
             foreach (ITextBuffer buffer in subjectBuffers)
             {
                 CssEditorDocument doc = CssEditorDocument.FromTextBuffer(buffer);
-                doc.Tree.ItemsChanged += (sender, e) => { ItemsChanged(doc.Tree, buffer, e); };
+                doc.Tree.ItemsChanged += (sender, e) => { ItemsChanged(buffer, e); };
                 doc.Tree.TreeUpdated += Tree_TreeUpdated;
                 InitializeCache(doc.Tree.StyleSheet);
             }
@@ -60,7 +60,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private void ItemsChanged(CssTree tree, ITextBuffer buffer, CssItemsChangedEventArgs e)
+        private void ItemsChanged(ITextBuffer buffer, CssItemsChangedEventArgs e)
         {
             foreach (ParseItem item in e.InsertedItems)
             {
@@ -74,7 +74,7 @@ namespace MadsKristensen.EditorExtensions
                         _cache.Add(dec);
 
                         ParseItem rule = dec.Parent;
-                        Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => Update(rule, tree, buffer)), DispatcherPriority.Normal);
+                        Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => Update(rule, buffer)), DispatcherPriority.Normal);
                     }
                 }
             }
@@ -91,13 +91,13 @@ namespace MadsKristensen.EditorExtensions
                         _cache.Remove(deleted);
 
                         ParseItem rule = deleted.Parent;
-                        Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => Update(rule, tree, buffer)), DispatcherPriority.Normal);
+                        Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => Update(rule, buffer)), DispatcherPriority.Normal);
                     }
                 }
             }
         }
 
-        private static void Update(ParseItem rule, CssTree tree, ITextBuffer buffer)
+        private static void Update(ParseItem rule, ITextBuffer buffer)
         {
             CssErrorTagger tagger = CssErrorTagger.FromTextBuffer(buffer);
             ParseItemList list = new ParseItemList() { rule };
