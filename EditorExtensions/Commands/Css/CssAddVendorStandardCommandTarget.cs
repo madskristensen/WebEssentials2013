@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-        private string AddMissingVendorDeclarations(StringBuilder sb, CssEditorDocument doc, ICssSchemaInstance rootSchema)
+        private static string AddMissingVendorDeclarations(StringBuilder sb, CssEditorDocument doc, ICssSchemaInstance rootSchema)
         {
             var visitor = new CssItemCollector<Declaration>(true);
             doc.Tree.StyleSheet.Accept(visitor);
@@ -69,7 +69,7 @@ namespace MadsKristensen.EditorExtensions
             return sb.ToString();
         }
 
-        private string GetVendorDeclarations(IEnumerable<string> prefixes, Declaration declaration)
+        private static string GetVendorDeclarations(IEnumerable<string> prefixes, Declaration declaration)
         {
             StringBuilder sb = new StringBuilder();
             string separator = true ? Environment.NewLine : " ";

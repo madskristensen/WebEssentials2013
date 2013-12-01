@@ -75,7 +75,7 @@ namespace MadsKristensen.EditorExtensions
         //    }
         //}
 
-        private void Minify()
+        private static void Minify()
         {
             _dte.StatusBar.Text = "Web Essentials: Minifying files...";
             var files = GetFiles();
@@ -101,7 +101,7 @@ namespace MadsKristensen.EditorExtensions
             _dte.StatusBar.Text = "Web Essentials: Files minified";
         }
 
-        private IEnumerable<string> GetFiles()
+        private static IEnumerable<string> GetFiles()
         {
             foreach (Project project in ProjectHelpers.GetAllProjects())
             {

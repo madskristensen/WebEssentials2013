@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
-    class RobotsTxtClassificationTypes
+    static class RobotsTxtClassificationTypes
     {
         public const string RobotsTxtKeyword = "robotstxt_keyword";
         public const string RobotsTxtComment = "robotstxt_comment";

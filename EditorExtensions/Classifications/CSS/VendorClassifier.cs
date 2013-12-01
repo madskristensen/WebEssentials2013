@@ -89,7 +89,7 @@ namespace MadsKristensen.EditorExtensions
             return spans;
         }
 
-        public string GetStandardName(Declaration dec)
+        public static string GetStandardName(Declaration dec)
         {
             string name = dec.PropertyName.Text;
             if (name.Length > 0 && name[0] == '-')

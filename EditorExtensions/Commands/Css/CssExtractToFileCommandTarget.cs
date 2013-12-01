@@ -71,7 +71,7 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-        private bool IsValidTextBuffer(IWpfTextView view)
+        private static bool IsValidTextBuffer(IWpfTextView view)
         {
             return (ProjectionBufferHelper.MapToBuffer(view, "css", view.Caret.Position.BufferPosition)
                 ?? ProjectionBufferHelper.MapToBuffer(view, "javascript", view.Caret.Position.BufferPosition)

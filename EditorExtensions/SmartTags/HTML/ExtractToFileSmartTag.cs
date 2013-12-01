@@ -99,7 +99,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags
                 EditorExtensionsPackage.DTE.UndoContext.Close();
             }
 
-            private string GetReference(ElementNode element, string fileName, string root)
+            private static string GetReference(ElementNode element, string fileName, string root)
             {
                 string relative = FileHelpers.RelativePath(root, fileName);
                 string reference = "<script src=\"/{0}\"></script>";

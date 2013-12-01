@@ -116,7 +116,7 @@ namespace MadsKristensen.EditorExtensions
                     Declaration dec = _vendorClassifier.Cache.FirstOrDefault(e => currentChar.Position > e.Start && currentChar.Position < e.AfterEnd);
                     if (dec != null && dec.PropertyName.Text.Length > 0 && !dec.IsVendorSpecific())
                     {
-                        foreach (Declaration vendor in _vendorClassifier.Cache.Where(d => d.Parent == dec.Parent && _vendorClassifier.GetStandardName(d) == dec.PropertyName.Text))
+                        foreach (Declaration vendor in _vendorClassifier.Cache.Where(d => d.Parent == dec.Parent && VendorClassifier.GetStandardName(d) == dec.PropertyName.Text))
                         {
                             // Manage quotes for -ms-filter
                             string value = Buffer.CurrentSnapshot.GetText(vendor.Colon.AfterEnd, vendor.AfterEnd - vendor.Colon.AfterEnd);

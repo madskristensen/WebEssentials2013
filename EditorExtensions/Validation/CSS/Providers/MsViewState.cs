@@ -31,9 +31,9 @@ namespace MadsKristensen.EditorExtensions
             return ItemCheckResult.Continue;
         }
 
-        private bool IsWindowsWebApp()
+        private static bool IsWindowsWebApp()
         {
-            // Add logic to determine if the current project is WWA
+            // TODO: Add logic to determine if the current project is WWA
             return true;
         }
 

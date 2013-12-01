@@ -44,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private IEnumerable<ParseItem> GetColors(CssTree tree, SnapshotSpan span)
+        private static IEnumerable<ParseItem> GetColors(CssTree tree, SnapshotSpan span)
         {
             ParseItem complexItem = tree.StyleSheet.ItemFromRange(span.Start, span.Length);
             if (complexItem == null || (!(complexItem is AtDirective) && !(complexItem is RuleBlock) && !(complexItem is LessVariableDeclaration) && !(complexItem is FunctionArgument)))

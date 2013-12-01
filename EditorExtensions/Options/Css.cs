@@ -47,7 +47,7 @@ namespace MadsKristensen.EditorExtensions
             CssPreserveRelativePathsOnMinify = WESettings.GetBoolean(WESettings.Keys.CssPreserveRelativePathsOnMinify);
         }
 
-        protected void OnChanged()
+        private static void OnChanged()
         {
             CssSchemaManager.SchemaManager.ReloadSchemas();
         }

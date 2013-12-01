@@ -39,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
             return new List<ICssCompletionListEntry>();
         }
 
-        private IEnumerable<ICssCompletionListEntry> KnownTagName(IHtmlSchema schema, string tagName, string attrName)
+        private static IEnumerable<ICssCompletionListEntry> KnownTagName(IHtmlSchema schema, string tagName, string attrName)
         {
             var element = schema.GetElementInfo(tagName);
 

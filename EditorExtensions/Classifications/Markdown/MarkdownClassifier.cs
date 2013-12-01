@@ -119,7 +119,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             yield return new ClassificationSpan(artifact.ToSnapshotSpan(snapshot), codeType);
         }
 
-        private IEnumerable<ClassificationSpan> ClassifyMatches(SnapshotSpan span, string text, Regex regex, IClassificationType type)
+        private static IEnumerable<ClassificationSpan> ClassifyMatches(SnapshotSpan span, string text, Regex regex, IClassificationType type)
         {
             Match match = regex.Match(text);
 

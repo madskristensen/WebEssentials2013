@@ -87,8 +87,8 @@ namespace MadsKristensen.EditorExtensions
             EditorExtensionsPackage.DTE.UndoContext.Close();
         }
 
-        private static object _syncRoot = new object();
-        private string GetFontFromFile(string text, IWpfTextView view, out string fontFamily)
+        private static readonly object _syncRoot = new object();
+        private static string GetFontFromFile(string text, IWpfTextView view, out string fontFamily)
         {
             lock (_syncRoot)
             {

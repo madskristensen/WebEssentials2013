@@ -73,7 +73,7 @@ namespace MadsKristensen.EditorExtensions
             get { return new[] { typeof(RuleSet) }; }
         }
 
-        private List<RuleResult> BuildCache(RuleSet rule)
+        private static List<RuleResult> BuildCache(RuleSet rule)
         {
             var visitor = new CssItemCollector<RuleSet>();
             rule.Parent.Accept(visitor);

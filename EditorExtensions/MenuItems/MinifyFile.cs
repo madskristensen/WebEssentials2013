@@ -87,7 +87,7 @@ namespace MadsKristensen.EditorExtensions
             EnableSync(extension);
         }
 
-        private void EnableSync(string extension)
+        private static void EnableSync(string extension)
         {
             string message = string.Format(CultureInfo.CurrentCulture, "Do you also want to enable automatic minification when the source file changes?", extension);
 

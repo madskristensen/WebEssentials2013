@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
 
         private delegate ICssCompletionListEntry Reference(string name);
 
-        private bool SchemaLookup(ParseItem item, ITextBuffer buffer)
+        private static bool SchemaLookup(ParseItem item, ITextBuffer buffer)
         {
             if (item is ClassSelector || item is IdSelector || item is ItemName || item.Parent is RuleBlock || item.Parent is StyleSheet)
                 return false;
@@ -66,7 +66,7 @@ namespace MadsKristensen.EditorExtensions
             return false;
         }
 
-        private bool OpenReferenceUrl(Reference reference, string name, string baseUrl)
+        private static bool OpenReferenceUrl(Reference reference, string name, string baseUrl)
         {
             ICssCompletionListEntry entry = reference.Invoke(name);
             if (entry != null)

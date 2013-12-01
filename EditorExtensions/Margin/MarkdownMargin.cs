@@ -174,32 +174,32 @@ namespace MadsKristensen.EditorExtensions
             get { return WESettings.GetString(WESettings.Keys.MarkdownCompileToLocation); }
         }
 
-        public bool AutoHyperlinks
+        public static bool AutoHyperlinks
         {
             get { return WESettings.GetBoolean(WESettings.Keys.MarkdownAutoHyperlinks); }
         }
 
-        public bool LinkEmails
+        public static bool LinkEmails
         {
             get { return WESettings.GetBoolean(WESettings.Keys.MarkdownLinkEmails); }
         }
 
-        public bool AutoNewLines
+        public static bool AutoNewLines
         {
             get { return WESettings.GetBoolean(WESettings.Keys.MarkdownAutoNewLine); }
         }
 
-        public bool GenerateXHTML
+        public static bool GenerateXHTML
         {
             get { return WESettings.GetBoolean(WESettings.Keys.MarkdownGenerateXHTML); }
         }
 
-        public bool EncodeProblemUrlCharacters
+        public static bool EncodeProblemUrlCharacters
         {
             get { return WESettings.GetBoolean(WESettings.Keys.MarkdownEncodeProblemUrlCharacters); }
         }
 
-        public bool StrictBoldItalic
+        public static bool StrictBoldItalic
         {
             get { return WESettings.GetBoolean(WESettings.Keys.MarkdownStrictBoldItalic); }
         }

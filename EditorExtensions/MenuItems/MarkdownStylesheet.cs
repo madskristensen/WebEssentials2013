@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
             menuCommand.Enabled = string.IsNullOrEmpty(MarkdownMargin.GetStylesheet());
         }
 
-        private void AddStylesheet()
+        private static void AddStylesheet()
         {
             MarkdownMargin.CreateStylesheet();
         }

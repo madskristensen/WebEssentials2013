@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-        private string RemoveLines(string[] lines)
+        private static string RemoveLines(string[] lines)
         {
             return string.Join(Environment.NewLine, lines.Where(s => !string.IsNullOrWhiteSpace(s)));
         }

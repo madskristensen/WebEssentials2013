@@ -47,7 +47,7 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-        private string AddMissingStandardDeclaration(StringBuilder sb, CssEditorDocument doc, ICssSchemaInstance rootSchema)
+        private static string AddMissingStandardDeclaration(StringBuilder sb, CssEditorDocument doc, ICssSchemaInstance rootSchema)
         {
             var visitor = new CssItemCollector<RuleBlock>(true);
             doc.Tree.StyleSheet.Accept(visitor);

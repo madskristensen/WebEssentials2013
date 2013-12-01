@@ -72,7 +72,7 @@ namespace MadsKristensen.EditorExtensions
             StartCompiler(source);
         }
 
-        private IWpfTextViewHost CreateTextViewHost(string contentType)
+        private static IWpfTextViewHost CreateTextViewHost(string contentType)
         {
             var componentModel = ProjectHelpers.GetComponentModel();
             var service = componentModel.GetService<IContentTypeRegistryService>();

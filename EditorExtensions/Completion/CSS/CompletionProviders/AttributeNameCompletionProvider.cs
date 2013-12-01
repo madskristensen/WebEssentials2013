@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
             return schemas;
         }
 
-        private IEnumerable<ICssCompletionListEntry> KnownTagName(IEnumerable<IHtmlSchema> schemas, string tagName)
+        private static IEnumerable<ICssCompletionListEntry> KnownTagName(IEnumerable<IHtmlSchema> schemas, string tagName)
         {
             foreach (IHtmlSchema schema in schemas)
             {

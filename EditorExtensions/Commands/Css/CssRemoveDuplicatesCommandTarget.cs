@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-        private string RemoveDuplicateProperties(StringBuilder sb, CssEditorDocument doc)
+        private static string RemoveDuplicateProperties(StringBuilder sb, CssEditorDocument doc)
         {
             var visitor = new CssItemCollector<RuleBlock>(true);
             doc.Tree.StyleSheet.Accept(visitor);

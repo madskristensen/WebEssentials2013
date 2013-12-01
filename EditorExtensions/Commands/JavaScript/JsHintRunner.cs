@@ -41,7 +41,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private void Clean()
+        private static void Clean()
         {
             var nonExisting = _providers.Keys.FirstOrDefault(k => !File.Exists(k));
             if (!string.IsNullOrEmpty(nonExisting))
@@ -251,7 +251,7 @@ namespace MadsKristensen.EditorExtensions
             return TaskErrorCategory.Message;
         }
 
-        private string GetErrorMessage(Result error)
+        private static string GetErrorMessage(Result error)
         {
             string raw = error.raw;
             if (raw == "Missing radix parameter.")

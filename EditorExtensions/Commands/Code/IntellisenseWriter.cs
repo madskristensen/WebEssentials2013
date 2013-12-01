@@ -8,9 +8,9 @@ using System.Text.RegularExpressions;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class IntellisenseWriter
+    internal static class IntellisenseWriter
     {
-        public void Write(List<IntellisenseObject> objects, string file)
+        public static void Write(List<IntellisenseObject> objects, string file)
         {
             StringBuilder sb = new StringBuilder();
 

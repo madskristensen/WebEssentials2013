@@ -27,7 +27,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
             return null;
         }
 
-        private bool IsEnabled(ElementNode element)
+        private static bool IsEnabled(ElementNode element)
         {
             if (element.Name != "img")
                 return false;
@@ -79,7 +79,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
                 }
             }
 
-            private void ReplaceUrlValue(string fileName, ITextBuffer buffer, AttributeNode src)
+            private static void ReplaceUrlValue(string fileName, ITextBuffer buffer, AttributeNode src)
             {
                 string relative = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, fileName);
                 Span span = new Span(src.ValueRangeUnquoted.Start, src.ValueRangeUnquoted.Length);

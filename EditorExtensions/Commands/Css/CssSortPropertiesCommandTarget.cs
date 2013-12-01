@@ -41,7 +41,7 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-        private string SortProperties(string text, IContentType contentType)
+        private static string SortProperties(string text, IContentType contentType)
         {
             Sorter sorter = new Sorter();
 
