@@ -240,6 +240,11 @@ namespace MadsKristensen.EditorExtensions
                     fileName = GetCompiledFileName(currentFileName, ".js", CompileToLocation);
                     break;
 
+                case ".md":
+                case ".markdown":
+                    fileName = GetCompiledFileName(currentFileName, ".html", CompileToLocation);
+                    break;
+
                 default: // For the Diff view
                     return;
             }
