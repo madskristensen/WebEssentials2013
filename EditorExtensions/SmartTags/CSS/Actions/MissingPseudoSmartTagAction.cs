@@ -43,10 +43,11 @@ namespace MadsKristensen.EditorExtensions
                 sb.Append(text + "," + Environment.NewLine);
             }
 
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            _span.TextBuffer.Insert(_selector.Start, sb.ToString());
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            {
+                _span.TextBuffer.Insert(_selector.Start, sb.ToString());
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+            }
         }
     }
 }

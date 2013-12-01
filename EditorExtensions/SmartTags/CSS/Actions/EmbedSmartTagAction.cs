@@ -69,27 +69,28 @@ namespace MadsKristensen.EditorExtensions
 
         private void InsertEmbedString(ITextSnapshot snapshot, string dataUri)
         {
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            Declaration dec = _url.FindType<Declaration>();
-
-            if (dec != null && dec.Parent != null && !(dec.Parent.Parent is FontFaceDirective)) // No declartion in LESS variable definitions
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
             {
-                RuleBlock rule = _url.FindType<RuleBlock>();
-                string text = dec.Text;
+                Declaration dec = _url.FindType<Declaration>();
 
-                if (dec != null && rule != null)
+                if (dec != null && dec.Parent != null && !(dec.Parent.Parent is FontFaceDirective)) // No declaration in LESS variable definitions
                 {
-                    Declaration match = rule.Declarations.FirstOrDefault(d => d.PropertyName != null && d.PropertyName.Text == "*" + dec.PropertyName.Text);
-                    if (!text.StartsWith("*") && match == null)
-                        _span.TextBuffer.Insert(dec.AfterEnd, "*" + text + "/* For IE 6 and 7 */");
+                    RuleBlock rule = _url.FindType<RuleBlock>();
+                    string text = dec.Text;
+
+                    if (dec != null && rule != null)
+                    {
+                        Declaration match = rule.Declarations.FirstOrDefault(d => d.PropertyName != null && d.PropertyName.Text == "*" + dec.PropertyName.Text);
+                        if (!text.StartsWith("*") && match == null)
+                            _span.TextBuffer.Insert(dec.AfterEnd, "*" + text + "/* For IE 6 and 7 */");
+                    }
                 }
+
+                _span.TextBuffer.Replace(_span.GetSpan(snapshot), dataUri);
+
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                EditorExtensionsPackage.ExecuteCommand("Edit.CollapsetoDefinitions");
             }
-
-            _span.TextBuffer.Replace(_span.GetSpan(snapshot), dataUri);
-
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-            EditorExtensionsPackage.ExecuteCommand("Edit.CollapsetoDefinitions");
-            EditorExtensionsPackage.DTE.UndoContext.Close();
         }
     }
 }

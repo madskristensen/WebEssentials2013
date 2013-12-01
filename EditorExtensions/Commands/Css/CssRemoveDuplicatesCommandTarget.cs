@@ -30,17 +30,17 @@ namespace MadsKristensen.EditorExtensions
 
             StringBuilder sb = new StringBuilder(snapshot.GetText());
 
-            EditorExtensionsPackage.DTE.UndoContext.Open("Remove Duplicate Properties");
+            using (EditorExtensionsPackage.UndoContext("Remove Duplicate Properties"))
+            {
+                string result = RemoveDuplicateProperties(sb, doc);
+                Span span = new Span(0, snapshot.Length);
+                snapshot.TextBuffer.Replace(span, result);
 
-            string result = RemoveDuplicateProperties(sb, doc);
-            Span span = new Span(0, snapshot.Length);
-            snapshot.TextBuffer.Replace(span, result);
+                var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
+                selection.GotoLine(1);
 
-            var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
-            selection.GotoLine(1);
-
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
+            }
 
             return true;
         }

@@ -30,17 +30,17 @@ namespace MadsKristensen.EditorExtensions
 
             StringBuilder sb = new StringBuilder(buffer.CurrentSnapshot.GetText());
 
-            EditorExtensionsPackage.DTE.UndoContext.Open("Add Missing Vendor Specifics");
+            using (EditorExtensionsPackage.UndoContext("Add Missing Vendor Specifics"))
+            {
+                string result = AddMissingVendorDeclarations(sb, doc, rootSchema);
+                Span span = new Span(0, buffer.CurrentSnapshot.Length);
+                buffer.Replace(span, result);
 
-            string result = AddMissingVendorDeclarations(sb, doc, rootSchema);
-            Span span = new Span(0, buffer.CurrentSnapshot.Length);
-            buffer.Replace(span, result);
+                var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
+                selection.GotoLine(1);
 
-            var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
-            selection.GotoLine(1);
-
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
+            }
 
             return true;
         }

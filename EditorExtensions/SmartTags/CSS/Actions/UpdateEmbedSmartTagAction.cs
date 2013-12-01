@@ -53,13 +53,13 @@ namespace MadsKristensen.EditorExtensions
 
         private void InsertEmbedString(ITextSnapshot snapshot, string dataUri)
         {
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            {
+                _span.TextBuffer.Replace(_span.GetSpan(snapshot), dataUri);
 
-            _span.TextBuffer.Replace(_span.GetSpan(snapshot), dataUri);
-
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-            EditorExtensionsPackage.ExecuteCommand("Edit.CollapsetoDefinitions");
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                EditorExtensionsPackage.ExecuteCommand("Edit.CollapsetoDefinitions");
+            }
         }
     }
 }

@@ -36,12 +36,13 @@ namespace MadsKristensen.EditorExtensions
             //int index = _directive.Text.IndexOf(":", StringComparison.Ordinal);
             //string newDec = _standardName + _directive.Text.Substring(index);
 
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            //SnapshotSpan span = _span.GetSpan(_span.TextBuffer.CurrentSnapshot);
-            string text = _directive.Text.Replace("@" + _directive.Keyword.Text, _standardName);
-            _span.TextBuffer.Insert(_directive.AfterEnd, Environment.NewLine + Environment.NewLine + text);
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            {
+                //SnapshotSpan span = _span.GetSpan(_span.TextBuffer.CurrentSnapshot);
+                string text = _directive.Text.Replace("@" + _directive.Keyword.Text, _standardName);
+                _span.TextBuffer.Insert(_directive.AfterEnd, Environment.NewLine + Environment.NewLine + text);
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+            }
         }
     }
 }

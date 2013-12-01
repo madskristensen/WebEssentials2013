@@ -49,18 +49,17 @@ namespace MadsKristensen.EditorExtensions
 
                 if (!File.Exists(fileName))
                 {
-                    _dte.UndoContext.Open("Extract to file...");
-
-                    using (StreamWriter writer = new StreamWriter(fileName, false, new UTF8Encoding(true)))
+                    using (EditorExtensionsPackage.UndoContext("Extract to file..."))
                     {
-                        writer.Write(content);
+                        using (StreamWriter writer = new StreamWriter(fileName, false, new UTF8Encoding(true)))
+                        {
+                            writer.Write(content);
+                        }
+
+                        ProjectHelpers.AddFileToActiveProject(fileName);
+                        TextView.TextBuffer.Delete(TextView.Selection.SelectedSpans[0].Span);
+                        _dte.ItemOperations.OpenFile(fileName);
                     }
-
-                    ProjectHelpers.AddFileToActiveProject(fileName);
-                    TextView.TextBuffer.Delete(TextView.Selection.SelectedSpans[0].Span);
-                    _dte.ItemOperations.OpenFile(fileName);
-
-                    _dte.UndoContext.Close();
                 }
                 else
                 {

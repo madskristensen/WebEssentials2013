@@ -40,9 +40,8 @@ namespace MadsKristensen.EditorExtensions
                 sb.Append(text + Environment.NewLine + Environment.NewLine);
             }
 
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            _span.TextBuffer.Replace(new Span(_directive.Start, _directive.Length), sb.ToString() + _directive.Text);
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+                _span.TextBuffer.Replace(new Span(_directive.Start, _directive.Length), sb.ToString() + _directive.Text);
         }
     }
 }

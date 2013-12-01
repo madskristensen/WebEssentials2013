@@ -89,14 +89,13 @@ namespace MadsKristensen.EditorExtensions.SmartTags
 
                 string reference = GetReference(element, fileName, root);
 
-                EditorExtensionsPackage.DTE.UndoContext.Open(this.DisplayText);
-
-                textBuffer.Replace(new Span(element.Start, element.Length), reference);
-                File.WriteAllText(fileName, text);
-                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(fileName);
-                ProjectHelpers.AddFileToActiveProject(fileName);
-
-                EditorExtensionsPackage.DTE.UndoContext.Close();
+                using (EditorExtensionsPackage.UndoContext((this.DisplayText)))
+                {
+                    textBuffer.Replace(new Span(element.Start, element.Length), reference);
+                    File.WriteAllText(fileName, text);
+                    EditorExtensionsPackage.DTE.ItemOperations.OpenFile(fileName);
+                    ProjectHelpers.AddFileToActiveProject(fileName);
+                }
             }
 
             private static string GetReference(ElementNode element, string fileName, string root)

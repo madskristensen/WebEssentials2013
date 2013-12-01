@@ -71,15 +71,14 @@ namespace MadsKristensen.EditorExtensions
                     file = dialog.FileName;
                 }
 
-                EditorExtensionsPackage.DTE.UndoContext.Open(this.DisplayText);
+                using (EditorExtensionsPackage.UndoContext((this.DisplayText)))
+                {
+                    string script = GetScript(value);
+                    File.WriteAllText(file, script);
 
-                string script = GetScript(value);
-                File.WriteAllText(file, script);
-
-                ProjectHelpers.AddFileToActiveProject(file);
-                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
-
-                EditorExtensionsPackage.DTE.UndoContext.Close();
+                    ProjectHelpers.AddFileToActiveProject(file);
+                    EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
+                }
             }
 
             private static string GetScript(string value)

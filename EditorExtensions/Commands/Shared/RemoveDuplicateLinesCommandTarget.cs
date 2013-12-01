@@ -28,9 +28,8 @@ namespace MadsKristensen.EditorExtensions
 
             string result = RemoveDuplicates(lines);
 
-            _dte.UndoContext.Open("Remove Duplicate Lines");
-            TextView.TextBuffer.Replace(span.Span, result);
-            _dte.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext(("Remove Duplicate Lines")))
+                TextView.TextBuffer.Replace(span.Span, result);
 
             return true;
         }

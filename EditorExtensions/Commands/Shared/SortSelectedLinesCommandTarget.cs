@@ -28,9 +28,8 @@ namespace MadsKristensen.EditorExtensions
 
             string result = SortLines(commandId, lines);
 
-            _dte.UndoContext.Open("Sort Selected Lines");
-            TextView.TextBuffer.Replace(span.Span, result);
-            _dte.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext(("Sort Selected Lines")))
+                TextView.TextBuffer.Replace(span.Span, result);
 
             return true;
         }

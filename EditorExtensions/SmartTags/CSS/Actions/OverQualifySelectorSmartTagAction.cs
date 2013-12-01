@@ -32,10 +32,8 @@ namespace MadsKristensen.EditorExtensions
         {
             Span ruleSpan = new Span(_selector.Start, _index);
 
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            _span.TextBuffer.Delete(ruleSpan);
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+                _span.TextBuffer.Delete(ruleSpan);
         }
     }
-
 }

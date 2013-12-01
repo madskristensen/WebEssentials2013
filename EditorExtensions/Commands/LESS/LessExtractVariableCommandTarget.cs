@@ -31,21 +31,18 @@ namespace MadsKristensen.EditorExtensions
             string text = item.Text;
             string name = Microsoft.VisualBasic.Interaction.InputBox("Name of the variable", "Web Essentials");
 
-            if (!string.IsNullOrEmpty(name))
-            {
-                EditorExtensionsPackage.DTE.UndoContext.Open("Extract to variable");
+            if (string.IsNullOrEmpty(name))
+                return false;
 
+            using (EditorExtensionsPackage.UndoContext(("Extract to variable")))
+            {
                 buffer.Insert(rule.Start, "@" + name + ": " + text + ";" + Environment.NewLine + Environment.NewLine);
 
                 Span span = TextView.Selection.SelectedSpans[0].Span;
                 TextView.TextBuffer.Replace(span, "@" + name);
-
-                EditorExtensionsPackage.DTE.UndoContext.Close();
-
-                return true;
             }
 
-            return false;
+            return true;
         }
 
         public static ParseItem FindParent(ParseItem item)

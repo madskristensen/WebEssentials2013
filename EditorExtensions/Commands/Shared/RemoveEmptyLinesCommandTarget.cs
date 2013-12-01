@@ -27,9 +27,8 @@ namespace MadsKristensen.EditorExtensions
 
             string result = RemoveLines(lines);
 
-            _dte.UndoContext.Open("Remove Empty Lines");
-            TextView.TextBuffer.Replace(span.Span, result);
-            _dte.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext(("Remove Empty Lines")))
+                TextView.TextBuffer.Replace(span.Span, result);
 
             return true;
         }

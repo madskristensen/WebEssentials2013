@@ -26,17 +26,16 @@ namespace MadsKristensen.EditorExtensions
 
             var buffer = point.Value.Snapshot.TextBuffer;
 
-            _dte.UndoContext.Open("Sort All Properties");
+            using (EditorExtensionsPackage.UndoContext("Sort All Properties"))
+            {
+                string result = SortProperties(buffer.CurrentSnapshot.GetText(), buffer.ContentType);
+                Span span = new Span(0, buffer.CurrentSnapshot.Length);
+                buffer.Replace(span, result);
 
-            string result = SortProperties(buffer.CurrentSnapshot.GetText(), buffer.ContentType);
-            Span span = new Span(0, buffer.CurrentSnapshot.Length);
-            buffer.Replace(span, result);
-
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
-            var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
-            selection.GotoLine(1);
-
-            _dte.UndoContext.Close();
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
+                var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
+                selection.GotoLine(1);
+            }
 
             return true;
         }

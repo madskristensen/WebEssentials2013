@@ -236,13 +236,8 @@ namespace MadsKristensen.EditorExtensions
             if (result.Length > 1)
                 result = result.TrimStart('0');
 
-            using (ITextEdit edit = span.Snapshot.TextBuffer.CreateEdit())
-            {
-                EditorExtensionsPackage.DTE.UndoContext.Open(undoTitle);
-                edit.Replace(span, result);
-                edit.Apply();
-                EditorExtensionsPackage.DTE.UndoContext.Close();
-            }
+            using (EditorExtensionsPackage.UndoContext(undoTitle))
+                span.Snapshot.TextBuffer.Replace(span, result);
         }
 
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)

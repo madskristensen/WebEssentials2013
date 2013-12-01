@@ -54,22 +54,17 @@ namespace MadsKristensen.EditorExtensions.SmartTags
                 int start = element.Start;
                 int length = content.Length;
 
-                EditorExtensionsPackage.DTE.UndoContext.Open(this.DisplayText);
-
-                using (var edit = textBuffer.CreateEdit())
+                using (EditorExtensionsPackage.UndoContext((this.DisplayText)))
                 {
-                    edit.Replace(element.Start, element.OuterRange.Length, content);
-                    edit.Apply();
+                    textBuffer.Replace(new Span(element.Start, element.OuterRange.Length), content);
+
+                    SnapshotSpan span = new SnapshotSpan(view.TextBuffer.CurrentSnapshot, start, length);
+
+                    view.Selection.Select(span, false);
+                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                    view.Caret.MoveTo(new SnapshotPoint(view.TextBuffer.CurrentSnapshot, start));
+                    view.Selection.Clear();
                 }
-
-                SnapshotSpan span = new SnapshotSpan(view.TextBuffer.CurrentSnapshot, start, length);
-
-                view.Selection.Select(span, false);
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-                view.Caret.MoveTo(new SnapshotPoint(view.TextBuffer.CurrentSnapshot, start));
-                view.Selection.Clear();
-
-                EditorExtensionsPackage.DTE.UndoContext.Close();
             }
         }
     }

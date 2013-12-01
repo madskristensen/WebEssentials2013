@@ -73,9 +73,8 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
 
                 if (!string.IsNullOrEmpty(fileName) && ReverseEmbedSmartTagAction.TrySaveFile(src.Value, fileName))
                 {
-                    EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-                    ReplaceUrlValue(fileName, textBuffer, src);
-                    EditorExtensionsPackage.DTE.UndoContext.Close();
+                    using (EditorExtensionsPackage.UndoContext((DisplayText)))
+                        ReplaceUrlValue(fileName, textBuffer, src);
                 }
             }
 

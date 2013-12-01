@@ -52,21 +52,18 @@ namespace MadsKristensen.EditorExtensions
 
             if (!string.IsNullOrEmpty(result))
             {
-                EditorExtensionsPackage.DTE.UndoContext.Open("ZenCoding");
-
-                ITextSelection selection = UpdateTextBuffer(zenSpan, result);
-
                 Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
                 {
+                    using (EditorExtensionsPackage.UndoContext("ZenCoding"))
+                    {
+                        ITextSelection selection = UpdateTextBuffer(zenSpan, result);
 
-                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                        EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
 
-                    Span newSpan = new Span(zenSpan.Start, selection.SelectedSpans[0].Length);
-                    selection.Clear();
-
-                    EditorExtensionsPackage.DTE.UndoContext.Close();
-                    SetCaret(newSpan, false);
-
+                        Span newSpan = new Span(zenSpan.Start, selection.SelectedSpans[0].Length);
+                        selection.Clear();
+                        SetCaret(newSpan, false);
+                    }
                 }), DispatcherPriority.ApplicationIdle, null);
 
                 return true;

@@ -81,10 +81,11 @@ namespace MadsKristensen.EditorExtensions
 
         private static void Replace(ITrackingSpan contextSpan, ITextView textView, string atDirective, string fontFamily)
         {
-            EditorExtensionsPackage.DTE.UndoContext.Open("Embed font");
-            textView.TextBuffer.Insert(0, atDirective + Environment.NewLine + Environment.NewLine);
-            textView.TextBuffer.Insert(contextSpan.GetSpan(textView.TextBuffer.CurrentSnapshot).Start, fontFamily);
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext(("Embed font")))
+            {
+                textView.TextBuffer.Insert(0, atDirective + Environment.NewLine + Environment.NewLine);
+                textView.TextBuffer.Insert(contextSpan.GetSpan(textView.TextBuffer.CurrentSnapshot).Start, fontFamily);
+            }
         }
 
         private static readonly object _syncRoot = new object();

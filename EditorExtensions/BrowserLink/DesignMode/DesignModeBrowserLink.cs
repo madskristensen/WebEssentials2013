@@ -93,19 +93,17 @@ namespace MadsKristensen.EditorExtensions
 
         private static void UpdateBuffer(string innerHTML, HtmlEditorDocument html, Span span)
         {
-            try
+            using (EditorExtensionsPackage.UndoContext("Design Mode changes"))
             {
-                EditorExtensionsPackage.DTE.UndoContext.Open("Design Mode changes");
-                html.TextBuffer.Replace(span, innerHTML);
-                EditorExtensionsPackage.DTE.ActiveDocument.Save();
-            }
-            catch
-            {
-                // Do nothing
-            }
-            finally
-            {
-                EditorExtensionsPackage.DTE.UndoContext.Close();
+                try
+                {
+                    html.TextBuffer.Replace(span, innerHTML);
+                    EditorExtensionsPackage.DTE.ActiveDocument.Save();
+                }
+                catch
+                {
+                    // Do nothing
+                }
             }
         }
 

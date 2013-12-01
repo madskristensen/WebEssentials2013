@@ -26,9 +26,8 @@ namespace MadsKristensen.EditorExtensions
 
                 if (result != content)
                 {
-                    _dte.UndoContext.Open("Minify");
-                    TextView.TextBuffer.Replace(TextView.Selection.SelectedSpans[0].Span, result);
-                    _dte.UndoContext.Close();
+                    using (EditorExtensionsPackage.UndoContext(("Minify")))
+                        TextView.TextBuffer.Replace(TextView.Selection.SelectedSpans[0].Span, result);
                 }
             }
 

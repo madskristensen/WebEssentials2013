@@ -42,13 +42,14 @@ namespace MadsKristensen.EditorExtensions
                 sb.Append(entry + _declaration.Text + separator);
             }
 
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), sb.ToString() + _declaration.Text);
-            if (separator == Environment.NewLine)
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
             {
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), sb.ToString() + _declaration.Text);
+                if (separator == Environment.NewLine)
+                {
+                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                }
             }
-            EditorExtensionsPackage.DTE.UndoContext.Close();
         }
     }
 }

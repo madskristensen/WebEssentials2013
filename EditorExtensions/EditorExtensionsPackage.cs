@@ -149,7 +149,8 @@ namespace MadsKristensen.EditorExtensions
                 {
                     EditorExtensionsPackage.DTE.ExecuteCommand(commandName);
                 }
-                catch { }
+                catch
+                { }
             }
         }
 
@@ -179,6 +180,14 @@ namespace MadsKristensen.EditorExtensions
         public static IComponentModel ComponentModel
         {
             get { return GetGlobalService<IComponentModel>(typeof(SComponentModel)); }
+        }
+
+        ///<summary>Opens an Undo context, and returns an IDisposable that will close the context when disposed.</summary>
+        ///<remarks>Use this method in a using() block to make sure that exceptions don't break Undo.</remarks>
+        public static IDisposable UndoContext(string name)
+        {
+            EditorExtensionsPackage.DTE.UndoContext.Open(name);
+            return new Disposable(DTE.UndoContext.Close);
         }
     }
 }

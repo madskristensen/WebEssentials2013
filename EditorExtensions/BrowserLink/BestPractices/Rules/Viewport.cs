@@ -63,14 +63,13 @@ namespace MadsKristensen.EditorExtensions
                 var view = ProjectHelpers.GetCurentTextView();
                 var buffer = view.TextBuffer;
 
-                EditorExtensionsPackage.DTE.UndoContext.Open("Adding <meta> viewport");
-
-                buffer.Insert(index, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />" + Environment.NewLine);
-                view.Caret.MoveTo(new SnapshotPoint(buffer.CurrentSnapshot, index + 31 + 37));
-                view.Selection.Select(new SnapshotSpan(buffer.CurrentSnapshot, 31 + index, 37), false);
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-
-                EditorExtensionsPackage.DTE.UndoContext.Close();
+                using (EditorExtensionsPackage.UndoContext("Adding <meta> viewport"))
+                {
+                    buffer.Insert(index, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />" + Environment.NewLine);
+                    view.Caret.MoveTo(new SnapshotPoint(buffer.CurrentSnapshot, index + 31 + 37));
+                    view.Selection.Select(new SnapshotSpan(buffer.CurrentSnapshot, 31 + index, 37), false);
+                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                }
                 EditorExtensionsPackage.DTE.ActiveDocument.Save();
 
             }), DispatcherPriority.ApplicationIdle, null);

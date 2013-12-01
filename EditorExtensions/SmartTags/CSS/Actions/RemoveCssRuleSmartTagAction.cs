@@ -28,16 +28,16 @@ namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Actions
 
         public override void Invoke()
         {
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            var snapshot = _span.TextBuffer.CurrentSnapshot;
-            var position = _rule.Start + _rule.Length;
-            var start = CalculateDeletionStartFromStartPosition(snapshot, _rule.Start);
-            var end = CalculateDeletionEndFromRuleEndPosition(snapshot, position);
-            var length = end - start;
-            var ss = new SnapshotSpan(snapshot, start, length);
-            _span.TextBuffer.Delete(ss);
-
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            {
+                var snapshot = _span.TextBuffer.CurrentSnapshot;
+                var position = _rule.Start + _rule.Length;
+                var start = CalculateDeletionStartFromStartPosition(snapshot, _rule.Start);
+                var end = CalculateDeletionEndFromRuleEndPosition(snapshot, position);
+                var length = end - start;
+                var ss = new SnapshotSpan(snapshot, start, length);
+                _span.TextBuffer.Delete(ss);
+            }
         }
 
         private static int CalculateDeletionStartFromStartPosition(ITextSnapshot snapshot, int startPosition)

@@ -32,9 +32,8 @@ namespace MadsKristensen.EditorExtensions
 
         public override void Invoke()
         {
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), _hack + _selector.Text);
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+                _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), _hack + _selector.Text);
         }
     }
 }

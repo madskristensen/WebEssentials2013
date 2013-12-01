@@ -91,9 +91,8 @@ namespace MadsKristensen.EditorExtensions
             TextDocument document = GetTextDocument();
             string replacement = callback(document.Selection.Text);
 
-            _dte.UndoContext.Open(callback.Method.Name);
-            document.Selection.Insert(replacement, 0);
-            _dte.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((callback.Method.Name)))
+                document.Selection.Insert(replacement, 0);
         }
     }
 }

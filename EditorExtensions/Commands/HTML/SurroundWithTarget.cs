@@ -61,22 +61,21 @@ namespace MadsKristensen.EditorExtensions
 
         private void Update(int start, int end)
         {
-            EditorExtensionsPackage.DTE.UndoContext.Open("Surround with...");
-
-            using (var edit = _buffer.CreateEdit())
+            using (EditorExtensionsPackage.UndoContext("Surround with..."))
             {
-                edit.Insert(end, "</div>");
-                edit.Insert(start, "<div>");
-                edit.Apply();
+                using (var edit = _buffer.CreateEdit())
+                {
+                    edit.Insert(end, "</div>");
+                    edit.Insert(start, "<div>");
+                    edit.Apply();
+                }
+
+                SnapshotPoint point = new SnapshotPoint(_buffer.CurrentSnapshot, start + 1);
+
+                _view.Caret.MoveTo(point);
+                _view.Selection.Select(new SnapshotSpan(_buffer.CurrentSnapshot, point, 3), false);
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
             }
-
-            SnapshotPoint point = new SnapshotPoint(_buffer.CurrentSnapshot, start + 1);
-
-            _view.Caret.MoveTo(point);
-            _view.Selection.Select(new SnapshotSpan(_buffer.CurrentSnapshot, point, 3), false);
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-
-            EditorExtensionsPackage.DTE.UndoContext.Close();
         }
 
         protected override bool IsEnabled()

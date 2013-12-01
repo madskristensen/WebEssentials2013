@@ -31,19 +31,18 @@ namespace MadsKristensen.EditorExtensions
 
             if (!string.IsNullOrEmpty(name))
             {
-                EditorExtensionsPackage.DTE.UndoContext.Open("Extract to mixin");
+                using (EditorExtensionsPackage.UndoContext(("Extract to mixin")))
+                {
+                    string text = TextView.Selection.SelectedSpans[0].GetText();
+                    buffer.Insert(rule.Start, "." + name + "() {" + Environment.NewLine + text + Environment.NewLine + "}" + Environment.NewLine + Environment.NewLine);
 
-                string text = TextView.Selection.SelectedSpans[0].GetText();
-                buffer.Insert(rule.Start, "." + name + "() {" + Environment.NewLine + text + Environment.NewLine + "}" + Environment.NewLine + Environment.NewLine);
+                    var selection = TextView.Selection.SelectedSpans[0];
+                    TextView.TextBuffer.Replace(selection.Span, "." + name + "();");
 
-                var selection = TextView.Selection.SelectedSpans[0];
-                TextView.TextBuffer.Replace(selection.Span, "." + name + "();");
-
-                TextView.Selection.Select(new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, mixinStart, 1), false);
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-                TextView.Selection.Clear();
-
-                EditorExtensionsPackage.DTE.UndoContext.Close();
+                    TextView.Selection.Select(new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, mixinStart, 1), false);
+                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                    TextView.Selection.Clear();
+                }
 
                 return true;
             }

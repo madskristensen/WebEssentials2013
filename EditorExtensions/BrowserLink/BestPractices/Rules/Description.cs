@@ -64,14 +64,13 @@ namespace MadsKristensen.EditorExtensions
                 var view = ProjectHelpers.GetCurentTextView();
                 var buffer = view.TextBuffer;
 
-                EditorExtensionsPackage.DTE.UndoContext.Open("Adding <meta> description");
-
-                buffer.Insert(index, "<meta name=\"description\" content=\"The description of my page\" />" + Environment.NewLine);
-                view.Caret.MoveTo(new SnapshotPoint(buffer.CurrentSnapshot, index + 34 + 26));
-                view.Selection.Select(new SnapshotSpan(buffer.CurrentSnapshot, 34 + index, 26), false);
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-
-                EditorExtensionsPackage.DTE.UndoContext.Close();
+                using (EditorExtensionsPackage.UndoContext("Adding <meta> description"))
+                {
+                    buffer.Insert(index, "<meta name=\"description\" content=\"The description of my page\" />" + Environment.NewLine);
+                    view.Caret.MoveTo(new SnapshotPoint(buffer.CurrentSnapshot, index + 34 + 26));
+                    view.Selection.Select(new SnapshotSpan(buffer.CurrentSnapshot, 34 + index, 26), false);
+                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                }
                 EditorExtensionsPackage.DTE.ActiveDocument.Save();
 
                 view.ViewScroller.EnsureSpanVisible(new SnapshotSpan(buffer.CurrentSnapshot, index, 1), EnsureSpanVisibleOptions.AlwaysCenter);

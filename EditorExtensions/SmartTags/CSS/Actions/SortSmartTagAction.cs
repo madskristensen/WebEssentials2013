@@ -45,16 +45,14 @@ namespace MadsKristensen.EditorExtensions
             {
                 result = sorter.SortStyleSheet(_rule.Text);
             }
-            //var declarations = _rule.Block.Declarations.OrderBy(d => d.PropertyName, new DeclarationComparer());
             var position = _view.Caret.Position.BufferPosition;
 
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-
-            _span.TextBuffer.Replace(ruleSpan, result);// string.Concat(declarations.Select(d => d.Text)));
-            _view.Caret.MoveTo(new SnapshotPoint(position.Snapshot.TextBuffer.CurrentSnapshot, position));
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            {
+                _span.TextBuffer.Replace(ruleSpan, result);
+                _view.Caret.MoveTo(new SnapshotPoint(position.Snapshot.TextBuffer.CurrentSnapshot, position));
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+            }
         }
     }
 
