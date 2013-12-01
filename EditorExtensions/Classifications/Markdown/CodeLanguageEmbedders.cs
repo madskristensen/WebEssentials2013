@@ -50,7 +50,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
     [Export(typeof(ICodeLanguageEmbedder))]
     [ContentType("CSS")]
-    class CssEmbedder : ICodeLanguageEmbedder
+    public class CssEmbedder : ICodeLanguageEmbedder
     {
 
         public IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
@@ -67,7 +67,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     }
     [Export(typeof(ICodeLanguageEmbedder))]
     [ContentType("Javascript")]
-    class JavascriptEmbedder : ICodeLanguageEmbedder
+    public class JavascriptEmbedder : ICodeLanguageEmbedder
     {
         // Statements like return or arguments can only appear inside a function.
         // There are no statements that cannot appear in a function.
@@ -79,7 +79,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public string GlobalSuffix { get { return ""; } }
     }
 
-    abstract class IntellisenseProjectEmbedder : ICodeLanguageEmbedder
+    public abstract class IntellisenseProjectEmbedder : ICodeLanguageEmbedder
     {
         public abstract IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code);
         public abstract string ProviderName { get; }
@@ -111,7 +111,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
     [Export(typeof(ICodeLanguageEmbedder))]
     [ContentType("CSharp")]
-    class CSharpEmbedder : IntellisenseProjectEmbedder
+    public class CSharpEmbedder : IntellisenseProjectEmbedder
     {
         public override string ProviderName { get { return "CSharpCodeProvider"; } }
         public override string GlobalPrefix
@@ -140,7 +140,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
     [Export(typeof(ICodeLanguageEmbedder))]
     [ContentType("Basic")]
-    class VBEmbedder : IntellisenseProjectEmbedder
+    public class VBEmbedder : IntellisenseProjectEmbedder
     {
         public override string ProviderName { get { return "VBCodeProvider"; } }
         public override string GlobalPrefix
@@ -163,7 +163,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                             Function SampleMethod" + Guid.NewGuid().ToString("n") + @"() As Object", @"
                                 Return Nothing
                             End Function
-                            End Class"};
+                            End Class" };
         }
     }
 }

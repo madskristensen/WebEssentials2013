@@ -8,6 +8,7 @@ using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
+    [SuppressMessage("Microsoft.Interoperability", "CA1409:ComVisibleTypesShouldBeCreatable", Justification = "Exposed via WebBrowser ScriptingObject; cannot be created independently")]
     [ComVisible(true)]  // Required to expose this instance to WebBrowser for JS
     public class JsHintCompiler : ScriptRunnerBase
     {

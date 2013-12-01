@@ -87,7 +87,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static void EnableSync(string extension)
         {
-            string message = string.Format(CultureInfo.CurrentCulture, "Do you also want to enable automatic minification when the source file changes?", extension);
+            string message = "Do you also want to enable automatic minification when the source file changes?";
 
             if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase) && !WESettings.GetBoolean(WESettings.Keys.EnableCssMinification))
             {
