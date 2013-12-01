@@ -10,14 +10,12 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class SurroundWith : CommandTargetBase
     {
-        private ICompletionBroker _broker;
         private IWpfTextView _view;
         private ITextBuffer _buffer;
 
-        public SurroundWith(IVsTextView adapter, IWpfTextView textView, ICompletionBroker broker)
+        public SurroundWith(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, GuidList.guidFormattingCmdSet, PkgCmdIDList.SurroundWith)
         {
-            _broker = broker;
             _view = textView;
             _buffer = textView.TextBuffer;
         }

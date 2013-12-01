@@ -14,14 +14,12 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class FontQuickInfo : IQuickInfoSource
     {
-        private FontQuickInfoSourceProvider _provider;
         private ITextBuffer _buffer;
         private static InstalledFontCollection fonts = new InstalledFontCollection();
         private List<string> _allowed = new List<string>() { "FONT", "FONT-FAMILY" };
 
-        public FontQuickInfo(FontQuickInfoSourceProvider provider, ITextBuffer subjectBuffer)
+        public FontQuickInfo(ITextBuffer subjectBuffer)
         {
-            _provider = provider;
             _buffer = subjectBuffer;
         }
 

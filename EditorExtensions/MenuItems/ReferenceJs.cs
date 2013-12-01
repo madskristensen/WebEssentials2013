@@ -10,13 +10,11 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class ReferenceJsMenu
     {
-        private DTE2 _dte;
         private OleMenuCommandService _mcs;
         private string _referencesJsPath;
 
-        public ReferenceJsMenu(DTE2 dte, OleMenuCommandService mcs)
+        public ReferenceJsMenu(OleMenuCommandService mcs)
         {
-            _dte = dte;
             _mcs = mcs;
         }
 

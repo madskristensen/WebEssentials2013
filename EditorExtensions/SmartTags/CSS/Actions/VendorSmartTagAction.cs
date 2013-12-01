@@ -13,14 +13,12 @@ namespace MadsKristensen.EditorExtensions
         private ITrackingSpan _span;
         private Declaration _declaration;
         private IEnumerable<string> _prefixes;
-        private ITextView _view;
 
-        public VendorSmartTagAction(ITrackingSpan span, Declaration declaration, IEnumerable<string> prefixes, ITextView view)
+        public VendorSmartTagAction(ITrackingSpan span, Declaration declaration, IEnumerable<string> prefixes)
         {
             _span = span;
             _declaration = declaration;
             _prefixes = prefixes;
-            _view = view;
 
             if (Icon == null)
             {

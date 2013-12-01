@@ -21,9 +21,6 @@ namespace MadsKristensen.EditorExtensions
         [Import]
         public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
 
-        [Import]
-        public ICompletionBroker CompletionBroker { get; set; }
-
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
             if (!subjectBuffers.Any(b => b.ContentType.IsOfType(CssContentTypeDefinition.CssContentType)))
@@ -40,7 +37,7 @@ namespace MadsKristensen.EditorExtensions
             textView.Properties.GetOrCreateSingletonProperty<CssFindReferences>(() => new CssFindReferences(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<F1Help>(() => new F1Help(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<CssSelectBrowsers>(() => new CssSelectBrowsers(textViewAdapter, textView));
-            textView.Properties.GetOrCreateSingletonProperty<RetriggerTarget>(() => new RetriggerTarget(textViewAdapter, textView, CompletionBroker));
+            textView.Properties.GetOrCreateSingletonProperty<RetriggerTarget>(() => new RetriggerTarget(textViewAdapter, textView));
 
             uint cssFormatProperties;
             ErrorHandler.ThrowOnFailure(EditorExtensionsPackage.PriorityCommandTarget.RegisterPriorityCommandTarget(0, new CssFormatProperties(textView), out cssFormatProperties));

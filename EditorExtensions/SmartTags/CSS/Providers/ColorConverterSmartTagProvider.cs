@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (ColorConverterSmartTagAction.GetNamedColor(model.Color) != null)
                 {
-                    yield return new ColorConverterSmartTagAction(itemTrackingSpan, hex, model, ColorFormat.Name);
+                    yield return new ColorConverterSmartTagAction(itemTrackingSpan, model, ColorFormat.Name);
                 }
 
                 if (model.Format == ColorFormat.RgbHex6)
@@ -43,12 +43,12 @@ namespace MadsKristensen.EditorExtensions
 
                     if (hex3.Length == 4)
                     {
-                        yield return new ColorConverterSmartTagAction(itemTrackingSpan, hex, model, ColorFormat.RgbHex3);
+                        yield return new ColorConverterSmartTagAction(itemTrackingSpan, model, ColorFormat.RgbHex3);
                     }
                 }
 
-                yield return new ColorConverterSmartTagAction(itemTrackingSpan, hex, model, ColorFormat.Rgb);
-                yield return new ColorConverterSmartTagAction(itemTrackingSpan, hex, model, ColorFormat.Hsl);
+                yield return new ColorConverterSmartTagAction(itemTrackingSpan, model, ColorFormat.Rgb);
+                yield return new ColorConverterSmartTagAction(itemTrackingSpan, model, ColorFormat.Hsl);
             }
         }
     }
@@ -77,19 +77,19 @@ namespace MadsKristensen.EditorExtensions
                 {
                     if (ColorConverterSmartTagAction.GetNamedColor(model.Color) != null)
                     {
-                        yield return new ColorConverterSmartTagAction(itemTrackingSpan, function, model, ColorFormat.Name);
+                        yield return new ColorConverterSmartTagAction(itemTrackingSpan, model, ColorFormat.Name);
                     }
 
-                    yield return new ColorConverterSmartTagAction(itemTrackingSpan, function, model, ColorFormat.RgbHex3);
+                    yield return new ColorConverterSmartTagAction(itemTrackingSpan, model, ColorFormat.RgbHex3);
                 }
 
                 if (model.Format == ColorFormat.Rgb)
                 {
-                    yield return new ColorConverterSmartTagAction(itemTrackingSpan, function, model, ColorFormat.Hsl);
+                    yield return new ColorConverterSmartTagAction(itemTrackingSpan, model, ColorFormat.Hsl);
                 }
                 else if (model.Format == ColorFormat.Hsl)
                 {
-                    yield return new ColorConverterSmartTagAction(itemTrackingSpan, function, model, ColorFormat.Rgb);
+                    yield return new ColorConverterSmartTagAction(itemTrackingSpan, model, ColorFormat.Rgb);
                 }
             }
         }
@@ -116,9 +116,9 @@ namespace MadsKristensen.EditorExtensions
                 ColorModel model = ColorParser.TryParseColor(token.Text, ColorParser.Options.AllowNames);
                 if (model != null)
                 {
-                    yield return new ColorConverterSmartTagAction(itemTrackingSpan, token, model, ColorFormat.RgbHex3);
-                    yield return new ColorConverterSmartTagAction(itemTrackingSpan, token, model, ColorFormat.Rgb);
-                    yield return new ColorConverterSmartTagAction(itemTrackingSpan, token, model, ColorFormat.Hsl);
+                    yield return new ColorConverterSmartTagAction(itemTrackingSpan, model, ColorFormat.RgbHex3);
+                    yield return new ColorConverterSmartTagAction(itemTrackingSpan, model, ColorFormat.Rgb);
+                    yield return new ColorConverterSmartTagAction(itemTrackingSpan, model, ColorFormat.Hsl);
                 }
             }
         }

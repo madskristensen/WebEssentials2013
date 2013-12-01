@@ -14,12 +14,10 @@ namespace MadsKristensen.EditorExtensions
     {
         private ITextView _textView;
         private IOleCommandTarget _nextCommandTarget;
-        private ICompletionBroker _broker;
 
-        public RetriggerTarget(IVsTextView adapter, ITextView textView, ICompletionBroker broker)
+        public RetriggerTarget(IVsTextView adapter, ITextView textView)
         {
             _textView = textView;
-            _broker = broker;
             ErrorHandler.ThrowOnFailure(adapter.AddCommandFilter(this, out _nextCommandTarget));
         }
 

@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
             if (comment != null && comment.CommentText != null)
             {
                 string path = comment.CommentText.Text.Trim();
-                yield return new UpdateEmbedSmartTagAction(itemTrackingSpan, url, path);
+                yield return new UpdateEmbedSmartTagAction(itemTrackingSpan, path);
             }
             else
             {
@@ -50,7 +50,7 @@ namespace MadsKristensen.EditorExtensions
                         UrlItem siblingUrl = visitor.Items.FirstOrDefault();
                         if (siblingUrl != null && siblingUrl.UrlString != null)
                         {
-                            yield return new UpdateEmbedSmartTagAction(itemTrackingSpan, url, siblingUrl.UrlString.Text);
+                            yield return new UpdateEmbedSmartTagAction(itemTrackingSpan, siblingUrl.UrlString.Text);
                             break;
                         }
                     }

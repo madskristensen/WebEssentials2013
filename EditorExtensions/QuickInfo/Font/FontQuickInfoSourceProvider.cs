@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions
     {
         public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer)
         {
-            return new FontQuickInfo(this, textBuffer);
+            return new FontQuickInfo(textBuffer);
         }
     }
 }

@@ -6,12 +6,10 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class MarkdownStylesheetMenu
     {
-        private DTE2 _dte;
         private OleMenuCommandService _mcs;
 
-        public MarkdownStylesheetMenu(DTE2 dte, OleMenuCommandService mcs)
+        public MarkdownStylesheetMenu(OleMenuCommandService mcs)
         {
-            _dte = dte;
             _mcs = mcs;
         }
 

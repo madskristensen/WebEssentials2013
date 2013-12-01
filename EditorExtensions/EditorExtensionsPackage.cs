@@ -68,7 +68,7 @@ namespace MadsKristensen.EditorExtensions
                 TransformMenu transform = new TransformMenu(DTE, mcs);
                 transform.SetupCommands();
 
-                DiffMenu diffMenu = new DiffMenu(DTE, mcs);
+                DiffMenu diffMenu = new DiffMenu(mcs);
                 diffMenu.SetupCommands();
 
                 MinifyFileMenu minifyMenu = new MinifyFileMenu(DTE, mcs);
@@ -83,13 +83,13 @@ namespace MadsKristensen.EditorExtensions
                 ProjectSettingsMenu projectSettingsMenu = new ProjectSettingsMenu(DTE, mcs);
                 projectSettingsMenu.SetupCommands();
 
-                SolutionColorsMenu solutionColorsMenu = new SolutionColorsMenu(DTE, mcs);
+                SolutionColorsMenu solutionColorsMenu = new SolutionColorsMenu(mcs);
                 solutionColorsMenu.SetupCommands();
 
                 BuildMenu buildMenu = new BuildMenu(DTE, mcs);
                 buildMenu.SetupCommands();
 
-                MarkdownStylesheetMenu markdownMenu = new MarkdownStylesheetMenu(DTE, mcs);
+                MarkdownStylesheetMenu markdownMenu = new MarkdownStylesheetMenu(mcs);
                 markdownMenu.SetupCommands();
 
                 AddIntellisenseFileMenu intellisenseFile = new AddIntellisenseFileMenu(DTE, mcs);
@@ -101,7 +101,7 @@ namespace MadsKristensen.EditorExtensions
                 PixelPushingMenu pixelPushingMenu = new PixelPushingMenu(mcs);
                 pixelPushingMenu.SetupCommands();
 
-                ReferenceJsMenu referenceJsMenu = new ReferenceJsMenu(DTE, mcs);
+                ReferenceJsMenu referenceJsMenu = new ReferenceJsMenu(mcs);
                 referenceJsMenu.SetupCommands();
             }
 

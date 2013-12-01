@@ -10,7 +10,6 @@ namespace MadsKristensen.EditorExtensions
         private ITextView m_textView;
         private IList<ITextBuffer> m_subjectBuffers;
         private SelectorQuickInfoControllerProvider m_provider;
-        private IQuickInfoSession m_session;
 
         internal SelectorQuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, SelectorQuickInfoControllerProvider provider)
         {
@@ -37,7 +36,7 @@ namespace MadsKristensen.EditorExtensions
 
                 if (!m_provider.QuickInfoBroker.IsQuickInfoActive(m_textView))
                 {
-                    m_session = m_provider.QuickInfoBroker.TriggerQuickInfo(m_textView, triggerPoint, true);
+                    m_provider.QuickInfoBroker.TriggerQuickInfo(m_textView, triggerPoint, true);
                 }
             }
         }

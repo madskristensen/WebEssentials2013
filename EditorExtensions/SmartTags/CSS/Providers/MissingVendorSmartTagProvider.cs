@@ -41,7 +41,7 @@ namespace MadsKristensen.EditorExtensions
             if (missingEntries.Any())
             {
                 var missingPrefixes = missingEntries.Select(e => e.Substring(0, e.IndexOf('-', 1) + 1));
-                yield return new VendorSmartTagAction(itemTrackingSpan, dec, missingPrefixes, view);
+                yield return new VendorSmartTagAction(itemTrackingSpan, dec, missingPrefixes);
             }
         }
     }

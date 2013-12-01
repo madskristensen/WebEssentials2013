@@ -17,14 +17,12 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class DeclarationQuickInfo : IQuickInfoSource
     {
-        private DeclarationQuickInfoSourceProvider _provider;
         private ITextBuffer _buffer;
         private static readonly string[] browserAbbr = new[] { "C", "FF", "IE", "O", "S" };
         private ICssSchemaInstance _rootSchema;
 
-        public DeclarationQuickInfo(DeclarationQuickInfoSourceProvider provider, ITextBuffer buffer)
+        public DeclarationQuickInfo(ITextBuffer buffer)
         {
-            _provider = provider;
             _buffer = buffer;
             _rootSchema = CssSchemaManager.SchemaManager.GetSchemaRootForBuffer(buffer);
         }

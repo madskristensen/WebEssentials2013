@@ -12,14 +12,12 @@ namespace MadsKristensen.EditorExtensions
         private ITrackingSpan _span;
         private Declaration _declaration;
         private string _standardName;
-        private ITextView _view;
 
-        public MissingStandardSmartTagAction(ITrackingSpan span, Declaration declaration, string standardName, ITextView view)
+        public MissingStandardSmartTagAction(ITrackingSpan span, Declaration declaration, string standardName)
         {
             _span = span;
             _declaration = declaration;
             _standardName = standardName;
-            _view = view;
 
             if (Icon == null)
             {

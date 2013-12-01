@@ -17,8 +17,6 @@ namespace MadsKristensen.EditorExtensions
     [TagType(typeof(TextMarkerTag))]
     internal class VendorTaggerProvider : IViewTaggerProvider
     {
-        [Import]
-        internal IClassifierAggregatorService AggregatorFactory = null;
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
@@ -27,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
                 return null;
             }
 
-            return buffer.Properties.GetOrCreateSingletonProperty(() => new VendorTagger(textView, buffer, this)) as ITagger<T>;
+            return buffer.Properties.GetOrCreateSingletonProperty(() => new VendorTagger(textView, buffer)) as ITagger<T>;
         }
     }
 
@@ -36,16 +34,14 @@ namespace MadsKristensen.EditorExtensions
         ITextView View { get; set; }
         ITextBuffer Buffer { get; set; }
         SnapshotPoint? CurrentChar { get; set; }
-        readonly IClassifier _classifier;
-        private VendorClassifier _vendorClassifier;
+        private readonly VendorClassifier _vendorClassifier;
         private bool _pendingUpdate = false;
 
-        internal VendorTagger(ITextView view, ITextBuffer buffer, VendorTaggerProvider provider)
+        internal VendorTagger(ITextView view, ITextBuffer buffer)
         {
             View = view;
             Buffer = buffer;
             CurrentChar = null;
-            _classifier = provider.AggregatorFactory.GetClassifier(buffer);
             buffer.Properties.TryGetProperty(typeof(VendorClassifier), out _vendorClassifier);
 
             View.Caret.PositionChanged += CaretPositionChanged;

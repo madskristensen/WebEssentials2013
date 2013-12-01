@@ -12,13 +12,11 @@ namespace MadsKristensen.EditorExtensions
     internal class UpdateEmbedSmartTagAction : CssSmartTagActionBase
     {
         private ITrackingSpan _span;
-        private UrlItem _url;
         private string _path;
 
-        public UpdateEmbedSmartTagAction(ITrackingSpan span, UrlItem url, string path)
+        public UpdateEmbedSmartTagAction(ITrackingSpan span, string path)
         {
             _span = span;
-            _url = url;
             _path = path;
 
             if (Icon == null)

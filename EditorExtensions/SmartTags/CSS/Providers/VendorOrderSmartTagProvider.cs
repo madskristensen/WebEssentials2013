@@ -39,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
                 IEnumerable<Declaration> vendors = VendorHelpers.GetMatchingVendorEntriesInRule(dec, rule, schema);
                 if (vendors.Any(v => v.Start > dec.Start))
                 {
-                    yield return new VendorOrderSmartTagAction(itemTrackingSpan, vendors.Last(), dec, view);
+                    yield return new VendorOrderSmartTagAction(itemTrackingSpan, vendors.Last(), dec);
                 }
             }
             else
@@ -47,7 +47,7 @@ namespace MadsKristensen.EditorExtensions
                 ICssCompletionListEntry entry = VendorHelpers.GetMatchingStandardEntry(dec, schema);
                 if (entry != null && !rule.Declarations.Any(d => d.PropertyName != null && d.PropertyName.Text == entry.DisplayText))
                 {
-                    yield return new MissingStandardSmartTagAction(itemTrackingSpan, dec, entry.DisplayText, view);
+                    yield return new MissingStandardSmartTagAction(itemTrackingSpan, dec, entry.DisplayText);
                 }
             }
         }

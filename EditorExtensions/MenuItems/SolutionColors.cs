@@ -6,12 +6,10 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class SolutionColorsMenu
     {
-        private DTE2 _dte;
         private OleMenuCommandService _mcs;
 
-        public SolutionColorsMenu(DTE2 dte, OleMenuCommandService mcs)
+        public SolutionColorsMenu(OleMenuCommandService mcs)
         {
-            _dte = dte;
             _mcs = mcs;
         }
 

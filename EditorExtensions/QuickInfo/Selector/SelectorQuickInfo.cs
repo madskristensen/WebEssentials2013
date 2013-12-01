@@ -10,12 +10,10 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class SelectorQuickInfo : IQuickInfoSource
     {
-        private SelectorQuickInfoSourceProvider _provider;
         private ITextBuffer _buffer;
 
-        public SelectorQuickInfo(SelectorQuickInfoSourceProvider provider, ITextBuffer subjectBuffer)
+        public SelectorQuickInfo(ITextBuffer subjectBuffer)
         {
-            _provider = provider;
             _buffer = subjectBuffer;
         }
 

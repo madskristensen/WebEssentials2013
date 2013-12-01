@@ -35,7 +35,7 @@ namespace MadsKristensen.EditorExtensions
             ICssCompletionListEntry entry = VendorHelpers.GetMatchingStandardEntry(directive, schema);
             if (entry != null && !visitor.Items.Any(d => d.Keyword != null && "@" + d.Keyword.Text == entry.DisplayText))
             {
-                yield return new MissingStandardDirectiveSmartTagAction(itemTrackingSpan, directive, entry.DisplayText, view);
+                yield return new MissingStandardDirectiveSmartTagAction(itemTrackingSpan, directive, entry.DisplayText);
             }
         }
     }

@@ -12,14 +12,12 @@ namespace MadsKristensen.EditorExtensions
         private ITrackingSpan _span;
         private Declaration _lastVendor;
         private Declaration _standard;
-        private ITextView _view;
 
-        public VendorOrderSmartTagAction(ITrackingSpan span, Declaration lastVendor, Declaration standard, ITextView view)
+        public VendorOrderSmartTagAction(ITrackingSpan span, Declaration lastVendor, Declaration standard)
         {
             _span = span;
             _lastVendor = lastVendor;
             _standard = standard;
-            _view = view;
 
             if (Icon == null)
             {

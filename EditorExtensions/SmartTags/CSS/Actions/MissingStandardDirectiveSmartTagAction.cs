@@ -12,14 +12,12 @@ namespace MadsKristensen.EditorExtensions
         private ITrackingSpan _span;
         private AtDirective _directive;
         private string _standardName;
-        private ITextView _view;
 
-        public MissingStandardDirectiveSmartTagAction(ITrackingSpan span, AtDirective directive, string standardName, ITextView view)
+        public MissingStandardDirectiveSmartTagAction(ITrackingSpan span, AtDirective directive, string standardName)
         {
             _span = span;
             _directive = directive;
             _standardName = standardName;
-            _view = view;
 
             if (Icon == null)
             {
