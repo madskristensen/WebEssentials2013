@@ -44,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
                 if (classifier != null)
                 {
                     ITextSnapshot snapshot = view.TextBuffer.CurrentSnapshot;
-                    classifier.RaiseClassificationChanged(new SnapshotSpan(snapshot, 0, snapshot.Length), type);
+                    classifier.OnClassificationChanged(new SnapshotSpan(snapshot, 0, snapshot.Length), type);
                 }
             }
         }

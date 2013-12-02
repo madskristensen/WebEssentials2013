@@ -50,7 +50,7 @@ namespace MadsKristensen.EditorExtensions
             return list;
         }
 
-        public void RaiseClassificationChanged(SnapshotSpan span, TextType type)
+        public void OnClassificationChanged(SnapshotSpan span, TextType type)
         {
             _isRobotsTxt = true;
             _textType = type;
