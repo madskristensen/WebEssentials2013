@@ -14,6 +14,7 @@ using Microsoft.Web.Editor.Extensions.Text;
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
     [Export(typeof(IClassifierProvider))]
+    [Order(After = "Microsoft.Html.Editor.Classification.HtmlClassificationProvider")]
     [ContentType(MarkdownContentTypeDefinition.MarkdownContentType)]
     public class MarkdownClassifierProvider : IClassifierProvider
     {
