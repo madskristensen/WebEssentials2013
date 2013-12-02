@@ -138,9 +138,9 @@ namespace MadsKristensen.EditorExtensions
         {
             try
             {
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(File.ReadAllText(filePath));
-                return doc;
+                XmlDocument xmlDocument = new XmlDocument();
+                xmlDocument.LoadXml(File.ReadAllText(filePath).Trim());
+                return xmlDocument;
             }
             catch (Exception)
             {
