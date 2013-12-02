@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Projection;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -164,6 +165,27 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                                 Return Nothing
                             End Function
                             End Class" };
+        }
+    }
+
+    [Export(typeof(ICodeLanguageEmbedder))]
+    [ContentType("htmlx")]
+    public class HtmlEmbedder : ICodeLanguageEmbedder
+    {
+        public string GlobalPrefix { get { return null; } }
+        public string GlobalSuffix { get { return null; } }
+        public IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
+        {
+            return null;
+        }
+
+        public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer)
+        {
+            if (HtmlEditorDocument.FromTextBuffer(projectionBuffer.IProjectionBuffer) == null)
+            {
+                new HtmlEditorDocument(projectionBuffer.IProjectionBuffer, null);
+
+            }
         }
     }
 }

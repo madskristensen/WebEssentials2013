@@ -36,9 +36,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                                                .GroupBy(a => contentTypeRegistry.FromFriendlyName(a.Language)))
             {
                 if (language.Key == null) continue;  // If we can't identify the language, just use normal artifacts.
-                // We can't nest HTML buffers
-                if (language.Key.IsOfType("html") || language.Key.IsOfType("htmlx"))
-                    continue;
                 PopulateLanguageBuffer(language.Key, language);
             }
         }
@@ -103,12 +100,52 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             if (string.IsNullOrWhiteSpace(friendlyName))
                 return null;
+            if (friendlyName.Equals("html", StringComparison.OrdinalIgnoreCase) || friendlyName.Equals("htmlx", StringComparison.OrdinalIgnoreCase))
+                return new NonHtmlContentType(registry.GetContentType("htmlx"));
 
             string realName;
             if (!ContentTypeAliases.TryGetValue(friendlyName, out realName))
                 realName = friendlyName;
 
-            return registry.GetContentType(realName);
+            var ctype = registry.GetContentType(realName);
+            if (ctype == null) return null;
+            if (ctype.IsOfType("htmlx"))
+                return new NonHtmlContentType(ctype);
+            return ctype;
+        }
+
+        ///<summary>A wrapper around the HTMLX content type that lies in IsOfType().</summary>
+        ///<remarks>ProjectionBufferManager.GetProjectionBuffer() refuses to get a buffer for HTMLX, so I pass this ContentType to lie to it.</remarks>
+        class NonHtmlContentType : IContentType
+        {
+            readonly IContentType actual;
+            public NonHtmlContentType(IContentType actual) { this.actual = actual; }
+            public IEnumerable<IContentType> BaseTypes { get { return actual.BaseTypes; } }
+            public string DisplayName { get { return actual.DisplayName; } }
+            public string TypeName { get { return actual.TypeName; } }
+
+            public bool IsOfType(string type)
+            {
+                if (type == "htmlx")
+                    return false;
+                return actual.IsOfType(type);
+            }
+
+            public override string ToString() { return actual.ToString() + " - Fake"; }
+
+            public override bool Equals(object obj)
+            {
+                if (obj == null) return false;
+                var fakeout = obj as NonHtmlContentType;
+                if (fakeout != null)
+                    return this.actual == fakeout.actual;
+
+                return actual.Equals(obj);
+            }
+            public override int GetHashCode()
+            {
+                return actual.GetHashCode();
+            }
         }
     }
 }
