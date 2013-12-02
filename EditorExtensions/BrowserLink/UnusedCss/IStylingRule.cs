@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         int Line { get; }
         int Offset { get; }
         bool IsMatch(string standardizedSelectorText);
-        bool Is(RuleSet rule);
+        bool Matches(RuleSet rule);
         RuleSet Source { get; }
         string CleansedSelectorName { get; }
     }
