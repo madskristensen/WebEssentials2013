@@ -27,14 +27,14 @@ namespace MadsKristensen.EditorExtensions
             return tcs.Task;
         }
 
-        public static async Task<CompilerResult> Compile(string filename, string targetFilename = null, string sourceMapRootPath = null)
+        public static async Task<CompilerResult> Compile(string fileName, string targetFileName = null, string sourceMapRootPath = null)
         {
             string output = Path.GetTempFileName();
 
             string webEssentialsDir = Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location);
             string lessc = Path.Combine(webEssentialsDir, @"Resources\nodejs\node_modules\.bin\lessc.cmd");
-            string arguments = String.Format("--no-color --relative-urls \"{0}\" \"{1}\"", filename, output);
-            string fileNameWithoutPath = Path.GetFileName(filename);
+            string arguments = String.Format("--no-color --relative-urls \"{0}\" \"{1}\"", fileName, output);
+            string fileNameWithoutPath = Path.GetFileName(fileName);
             string sourceMapArguments = (sourceMapRootPath != null) ?
                 String.Format("--source-map-rootpath=\"{0}\" ", sourceMapRootPath.Replace("\\", "/")) : "";
 
@@ -43,7 +43,7 @@ namespace MadsKristensen.EditorExtensions
                   "--relative-urls {0}--source-map=\"{1}.map\" \"{2}\" \"{3}\"",
                   sourceMapArguments,
                   fileNameWithoutPath,
-                  filename,
+                  fileName,
                   output);
 
             ProcessStartInfo start = new ProcessStartInfo(lessc)
@@ -58,7 +58,7 @@ namespace MadsKristensen.EditorExtensions
 
             using (var process = await ExecuteAsync(start))
             {
-                CompilerResult result = new CompilerResult(filename);
+                CompilerResult result = new CompilerResult(fileName);
 
                 ProcessResult(output, process, result);
 
@@ -68,23 +68,23 @@ namespace MadsKristensen.EditorExtensions
                     result.Result = _endingCurlyBraces.Replace(_linesStartingWithTwoSpaces.Replace(result.Result.Trim(), "$1$2"), "$&\n");
 
                     // If the caller wants us to renormalize URLs to a different filename, do so.
-                    if (targetFilename != null && result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
+                    if (targetFileName != null && result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
                     {
                         try
                         {
                             result.Result = CssUrlNormalizer.NormalizeUrls(
                                 tree: new CssParser().Parse(result.Result, true),
-                                targetFile: targetFilename,
-                                oldBasePath: filename
+                                targetFile: targetFileName,
+                                oldBasePath: fileName
                             );
                         }
                         catch (Exception ex)
                         {
-                            Logger.Log("An error occurred while normalizing generated paths in " + filename + "\r\n" + ex);
+                            Logger.Log("An error occurred while normalizing generated paths in " + fileName + "\r\n" + ex);
                         }
                     }
                 }
-                Logger.Log(Path.GetFileName(filename) + " compiled");
+                Logger.Log(Path.GetFileName(fileName) + " compiled");
                 return result;
             }
         }

@@ -70,7 +70,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     }
     [Export(typeof(ICodeLanguageEmbedder))]
     [ContentType("Javascript")]
-    public class JavascriptEmbedder : ICodeLanguageEmbedder
+    public class JavaScriptEmbedder : ICodeLanguageEmbedder
     {
         // Statements like return or arguments can only appear inside a function.
         // There are no statements that cannot appear in a function.
