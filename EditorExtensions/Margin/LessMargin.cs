@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
             string projectRoot = ProjectHelpers.GetRootFolder(ProjectHelpers.GetActiveProject());
             string fileBasePath = "/" + Path.GetDirectoryName(FileHelpers.RelativePath(projectRoot, lessFilePath)).Replace("\\", "/");
 
-            var result = await LessCompiler.Compile(lessFilePath, cssFilename, projectRoot + fileBasePath);
+            var result = await LessCompiler.Compile(lessFilePath, cssFilename, Path.Combine(projectRoot , fileBasePath));
             if (result.IsSuccess)
             {
                 OnCompilationDone(result.Result, result.FileName);

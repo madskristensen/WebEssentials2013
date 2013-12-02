@@ -35,7 +35,7 @@ namespace MadsKristensen.EditorExtensions
             string arguments = String.Format("--no-color --relative-urls \"{0}\" \"{1}\"", filename, output);
             string fileNameWithoutPath = Path.GetFileName(filename);
             string sourceMapArguments = (sourceMapRootPath != null) ?
-                String.Format("--source-map-rootpath=\"{0}\" ", sourceMapRootPath.Replace("\\", "/")) : "";
+                String.Format("--source-map-rootpath=\"{0}\" ", sourceMapRootPath) : "";
 
             if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
                 arguments = String.Format(
