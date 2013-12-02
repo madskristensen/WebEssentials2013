@@ -47,6 +47,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             // TODO: Call RemoveSpans() on each created LanguageProjectionBuffer iff IsRegenerationNeeded()
             base.UpdateContainedLanguageBuffers();
         }
+
+        public override IContentType GetContentTypeOfLocation(int position)
+        {
+            return base.GetContentTypeOfLocation(position).GetActualContentType();
+        }
     }
 
     class CodeBlockBlockHandler : ArtifactBasedBlockHandler
@@ -69,7 +74,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             if (alb == null)
                 return contentTypeRegistry.GetContentType("text");
 
-            return alb.ContentType ?? contentTypeRegistry.GetContentType("code");
+            return alb.ContentType.GetActualContentType() ?? contentTypeRegistry.GetContentType("code");
         }
 
         protected override void BuildLanguageBlockCollection()

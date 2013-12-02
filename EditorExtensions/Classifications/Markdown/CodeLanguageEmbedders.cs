@@ -10,6 +10,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
+using Microsoft.Web.Editor.Composition;
+using Microsoft.Web.Editor.Workspace;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
@@ -178,13 +180,30 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             return null;
         }
+        //class HtmlDocumentFactoryProjectionsDisabled : IWebEditorDocumentFactory
+        //{
+        //    public IWebEditorDocument CreateDocument(IWebEditorInstance editorInstance)
+        //    {
+        //        HtmlEditorDocument result = new HtmlEditorDocument(editorInstance.ProjectedBuffer, editorInstance.WorkspaceItem, true);
+        //        return result;
+        //    }
+        //}
+
 
         public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer)
         {
-            if (HtmlEditorDocument.FromTextBuffer(projectionBuffer.IProjectionBuffer) == null)
+            var innerBuffer = projectionBuffer.IProjectionBuffer;
+            if (ServiceManager.GetService<IWebEditorInstance>(innerBuffer) == null)
             {
-                new HtmlEditorDocument(projectionBuffer.IProjectionBuffer, null);
+                var contentTypeImportComposer = new ContentTypeImportComposer<IWebEditorFactory>(WebEditor.CompositionService);
+                IWebEditorFactory factory = contentTypeImportComposer.GetImport(innerBuffer.ContentType.TypeName);
 
+                // ILSpy tells me that the WorkspaceItem is required
+                // by HtmlEditorInstance, but optional in *Document,
+                // and is not used elsewhere. I pass the parent item
+                // to avoid ArgumentNullException.
+                var workspaceItem = ServiceManager.GetService<IWebWorkspaceItem>(editorBuffer);
+                factory.CreateEditorInstance(workspaceItem, innerBuffer, new HtmlDocumentFactory());
             }
         }
     }
