@@ -96,7 +96,7 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (string file in Directory.GetFiles(dir, "*" + _ext, SearchOption.AllDirectories))
             {
-                if (_ignoreFolders.Any(p => file.IndexOf("\\" + p +"\\", StringComparison.OrdinalIgnoreCase) > -1))
+                if (_ignoreFolders.Any(p => file.IndexOf("\\" + p + "\\", StringComparison.OrdinalIgnoreCase) > -1))
                     continue;
 
                 XmlDocument doc = GetXmlDocument(file);
