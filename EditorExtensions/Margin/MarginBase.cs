@@ -275,7 +275,7 @@ namespace MadsKristensen.EditorExtensions
                 return Path.Combine(sourceDir, compiledFileName);
             }
 
-            if (customFolder != null && customFolder.Length > 0)
+            if (!string.IsNullOrEmpty(customFolder) && customFolder != "false" && customFolder != "true")
             {
                 if (customFolder.StartsWith("~/") || customFolder.StartsWith("/"))
                 {
