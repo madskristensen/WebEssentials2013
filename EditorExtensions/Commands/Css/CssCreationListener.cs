@@ -25,6 +25,8 @@ namespace MadsKristensen.EditorExtensions
                 return;
 
             var textViewAdapter = EditorAdaptersFactoryService.GetViewAdapter(textView);
+            if (textViewAdapter == null)
+                return;
 
             textView.Properties.GetOrCreateSingletonProperty<CssSortProperties>(() => new CssSortProperties(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<CssExtractToFile>(() => new CssExtractToFile(textViewAdapter, textView));
@@ -36,6 +38,7 @@ namespace MadsKristensen.EditorExtensions
             textView.Properties.GetOrCreateSingletonProperty<F1Help>(() => new F1Help(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<CssSelectBrowsers>(() => new CssSelectBrowsers(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<RetriggerTarget>(() => new RetriggerTarget(textViewAdapter, textView));
+            textView.Properties.GetOrCreateSingletonProperty<ArrowsCommandTarget>(() => new ArrowsCommandTarget(textViewAdapter, textView));
 
             uint cssFormatProperties;
             ErrorHandler.ThrowOnFailure(EditorExtensionsPackage.PriorityCommandTarget.RegisterPriorityCommandTarget(0, new CssFormatProperties(textView), out cssFormatProperties));

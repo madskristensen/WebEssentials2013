@@ -17,34 +17,12 @@ using Editor = Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [Export(typeof(IWpfTextViewConnectionListener))]
-    [ContentType(Editor.CssContentTypeDefinition.CssContentType)]
-    [ContentType(Editor.HtmlContentTypeDefinition.HtmlContentType)]
-    [TextViewRole(PredefinedTextViewRoles.Document)]
-    public class NumberTextViewCreationListener : IWpfTextViewConnectionListener
-    {
-        [Import]
-        public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
-
-        public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
-        {
-            if (!subjectBuffers.Any(b => b.ContentType.IsOfType(Editor.CssContentTypeDefinition.CssContentType)))
-                return;
-            var adapter = EditorAdaptersFactoryService.GetViewAdapter(textView);
-            textView.Properties.GetOrCreateSingletonProperty<NumberTarget>(() => new NumberTarget(adapter, textView));
-        }
-
-        public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
-        {
-        }
-    }
-
-    class NumberTarget : IOleCommandTarget
+    class ArrowsCommandTarget : IOleCommandTarget
     {
         private ITextView _textView;
         private IOleCommandTarget _nextCommandTarget;
 
-        public NumberTarget(IVsTextView adapter, ITextView textView)
+        public ArrowsCommandTarget(IVsTextView adapter, ITextView textView)
         {
             this._textView = textView;
             ErrorHandler.ThrowOnFailure(adapter.AddCommandFilter(this, out _nextCommandTarget));

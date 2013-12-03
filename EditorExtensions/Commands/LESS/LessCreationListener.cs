@@ -24,6 +24,8 @@ namespace MadsKristensen.EditorExtensions
                 return;
 
             var textViewAdapter = EditorAdaptersFactoryService.GetViewAdapter(textView);
+            if (textViewAdapter == null)
+                return;
 
             textView.Properties.GetOrCreateSingletonProperty<LessExtractVariableCommandTarget>(() => new LessExtractVariableCommandTarget(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<LessExtractMixinCommandTarget>(() => new LessExtractMixinCommandTarget(textViewAdapter, textView));
