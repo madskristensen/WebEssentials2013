@@ -30,6 +30,7 @@ namespace MadsKristensen.EditorExtensions
         private static DTE2 _dte;
         private OleMenuCommandService _mcs;
         public const string _ext = ".bundle";
+        private static string[] _ignoreFolders = new[] { "app_data", "bin", "obj" };
 
         public BundleFilesMenu()
         {
@@ -95,7 +96,7 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (string file in Directory.GetFiles(dir, "*" + _ext, SearchOption.AllDirectories))
             {
-                if (file.IndexOf("\\app_data\\", StringComparison.OrdinalIgnoreCase) > -1)
+                if (_ignoreFolders.Any(p => file.IndexOf("\\" + p + "\\", StringComparison.OrdinalIgnoreCase) > -1))
                     continue;
 
                 XmlDocument doc = GetXmlDocument(file);

@@ -108,17 +108,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             columnNumber = leadingContent[leadingContent.Length - 1].Length;
         }
 
-
         public bool IsMatch(string standardizedSelectorText)
         {
             return string.Equals(CleansedSelectorName, standardizedSelectorText, StringComparison.Ordinal);
         }
 
-
         public int SelectorLength { get; private set; }
 
 
-        public bool Is(RuleSet rule)
+        public bool Matches(RuleSet rule)
         {
             return rule.Text == _ruleSet.Text;
         }

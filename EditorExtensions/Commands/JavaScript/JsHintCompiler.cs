@@ -19,11 +19,11 @@ namespace MadsKristensen.EditorExtensions
             : base(dispatcher)
         { }
 
-        protected override string CreateHtml(string source, string filename)
+        protected override string CreateHtml(string source, string fileName)
         {
             // I override the meaning of this parameter to
             // get the path so that I can find .jshintrc.
-            if (!File.Exists(filename))
+            if (!File.Exists(fileName))
                 throw new ArgumentException("The state parameter to Compile() must be the full path to the file being linted.", "filename");
             if (_options == null)
             {
@@ -41,10 +41,10 @@ namespace MadsKristensen.EditorExtensions
                 .Replace("'", "\\'");
 
             string script = ReadResourceFile("MadsKristensen.EditorExtensions.Resources.Scripts.jshint-2.1.4.js") +
-                            "var settings = " + (FindLocalSettings(filename) ?? "{" + _defaultSettings + "}") + ";" +   // If this file has no .jshintrc, fall back to the configured settings
+                            "var settings = " + (FindLocalSettings(fileName) ?? "{" + _defaultSettings + "}") + ";" +   // If this file has no .jshintrc, fall back to the configured settings
                             "var globals = settings.globals; delete settings.globals;" +  // .jshintrc files have an optional globals section, which becomes the third parameter.  (globals is not a valid option)
                             "JSHINT('" + source + "', settings, globals);" +
-                            "window.external.Execute(JSON.stringify(JSHINT.errors), '" + filename.Replace("\\", "\\\\") + "')";
+                            "window.external.Execute(JSON.stringify(JSHINT.errors), '" + fileName.Replace("\\", "\\\\") + "')";
 
             return "<html><head><meta http-equiv=\"X-UA-Compatible\" content=\"IE=9\" /><script>" + script + "</script></head><html/>";
         }

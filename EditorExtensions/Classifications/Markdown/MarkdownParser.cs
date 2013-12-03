@@ -328,9 +328,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     }
 
                     ReportArtifact(new MarkdownCodeArtifact(
-                        null, 
-                        TextRange.FromBounds(peek.StartPosition, stream.Position + 1), 
-                        1, 1, 
+                        null,
+                        TextRange.FromBounds(peek.StartPosition, stream.Position + 1),
+                        1, 1,
                         peek.StartPosition  // Inline code blocks aren't grouped.
                     ));
                     peek.Consume();
@@ -517,7 +517,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         ///<summary>Gets the character position in the stream that entire containing code block started.</summary>
         ///<remarks>This is used to group code runs (lines) from the same block, for language prefixing.</remarks>
         public int BlockStart { get; private set; }
-     }
+    }
 
     ///<summary>Provides data for Artifact events.</summary>
     public class MarkdownArtifactEventArgs : EventArgs

@@ -153,7 +153,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         internal static bool IsRuleUsed(RuleSet rule)
         {
-            return GetAllUnusedRules().All(x => !x.Is(rule));
+            return GetAllUnusedRules().All(x => !x.Matches(rule));
         }
     }
 }
