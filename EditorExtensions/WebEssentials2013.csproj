@@ -451,6 +451,9 @@
     <Compile Include="MenuItems\ReferenceJs.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineTag.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineProvider.cs" />
+    <Compile Include="Options\CodeGeneration.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Options\Markdown.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -697,7 +700,9 @@
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Resources\Images.png" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Security;
 using System.Text;
@@ -9,7 +10,7 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class IntellisenseWriter
     {
-        public void Write(List<IntellisenseObject> objects, string file)
+        public void Write(IEnumerable<IntellisenseObject> objects, string file)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -21,21 +22,49 @@ namespace MadsKristensen.EditorExtensions
             WriteFileToDisk(file, sb);
         }
 
-        private static void WriteJavaScript(List<IntellisenseObject> objects, StringBuilder sb)
+        static string CamelCasePropertyName(string name)
+        {
+            if (WESettings.GetBoolean(WESettings.Keys.JavaScriptCamelCasePropertyNames))
+            {
+                name = CamelCase(name);
+            }
+            return name;
+        }
+        static string CamelCaseClassName(string name)
+        {
+            if (WESettings.GetBoolean(WESettings.Keys.JavaScriptCamelCaseClassNames))
+            {
+                name = CamelCase(name);
+
+            }
+            return name;
+        }
+
+        private static string CamelCase(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return name;
+            }
+            return name[0].ToString(CultureInfo.CurrentCulture).ToLower() + name.Substring(1); 
+        }
+
+        private static void WriteJavaScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
         {
             sb.AppendLine("var server = server || {};");
 
             foreach (IntellisenseObject io in objects)
             {
-                sb.AppendLine("server." + io.Name + " = function()  {");
+                sb.AppendLine("server." + CamelCaseClassName(io.Name) + " = function()  {");
 
                 foreach (var p in io.Properties)
                 {
                     string value = GetValue(p.Type);
-                    string comment = p.Summary ?? "The " + p.Name + " property as defined in " + io.FullName;
+                    var propertyName = CamelCasePropertyName(p.Name);
+                    string comment = p.Summary ?? "The " +propertyName+ " property as defined in " + io.FullName;
                     comment = Regex.Replace(comment, @"\s*[\r\n]+\s*", " ").Trim();
-                    sb.AppendLine("\t/// <field name=\"" + p.Name + "\" type=\"" + value + "\">" + SecurityElement.Escape(comment) + "</field>");
-                    sb.AppendLine("\tthis." + p.Name + " = new " + value + "();");
+                    sb.AppendLine("\t/// <field name=\"" + propertyName + "\" type=\"" + value + "\">" + SecurityElement.Escape(comment) + "</field>");
+                    sb.AppendLine("\tthis." + propertyName + " = new " + value + "();");
                 }
 
                 sb.AppendLine("};");
@@ -43,19 +72,19 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static void WriteTypeScript(List<IntellisenseObject> objects, StringBuilder sb)
+        private static void WriteTypeScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
         {
             sb.AppendLine("declare module server {");
             sb.AppendLine();
 
             foreach (IntellisenseObject io in objects)
             {
-                sb.AppendLine("\tinterface " + io.Name + "{");
+                sb.AppendLine("\tinterface " + CamelCaseClassName(io.Name) + "{");
 
                 foreach (var p in io.Properties)
                 {
                     string value = GetValue(p.Type);
-                    sb.AppendLine("\t\t" + p.Name + ": " + value + ";");
+                    sb.AppendLine("\t\t" + CamelCasePropertyName(p.Name) + ": " + value + ";");
                 }
 
                 sb.AppendLine("}");
