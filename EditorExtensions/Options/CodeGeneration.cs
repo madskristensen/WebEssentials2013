@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
         [LocDisplayName("Camel Casing Property Names")]
-        [Description("When generating an Intellisense File for JavaScript or TypeSript the property names will generated in camelCase instead of PascalCase")]
+        [Description("When generating an Intellisense File for JavaScript or TypeScript the property names will generated in camelCase instead of PascalCase")]
         [Category("Intellisense Generation")]
         public bool JavaScriptCamelCasePropertyNames { get; set; }
 

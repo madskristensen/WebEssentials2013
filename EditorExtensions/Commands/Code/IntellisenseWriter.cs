@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions
             WriteFileToDisk(file, sb);
         }
 
-        static string CamelCasePropertyName(string name)
+        private static string CamelCasePropertyName(string name)
         {
             if (WESettings.GetBoolean(WESettings.Keys.JavaScriptCamelCasePropertyNames))
             {
@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
             }
             return name;
         }
-        static string CamelCaseClassName(string name)
+        private static string CamelCaseClassName(string name)
         {
             if (WESettings.GetBoolean(WESettings.Keys.JavaScriptCamelCaseClassNames))
             {
