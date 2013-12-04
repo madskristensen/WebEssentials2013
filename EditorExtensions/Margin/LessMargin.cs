@@ -1,5 +1,8 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Web.Helpers;
 using EnvDTE;
 using Microsoft.VisualStudio.Text;
 
@@ -33,7 +36,7 @@ namespace MadsKristensen.EditorExtensions
             string projectRoot = ProjectHelpers.GetRootFolder(ProjectHelpers.GetActiveProject());
             string fileBasePath = "/" + Path.GetDirectoryName(FileHelpers.RelativePath(projectRoot, lessFilePath)).Replace("\\", "/");
 
-            var result = await LessCompiler.Compile(lessFilePath, cssFilename, Path.Combine(projectRoot , fileBasePath));
+            var result = await LessCompiler.Compile(lessFilePath, cssFilename, Path.Combine(projectRoot, fileBasePath));
             if (result.IsSuccess)
             {
                 OnCompilationDone(result.Result, result.FileName);
@@ -91,6 +94,37 @@ namespace MadsKristensen.EditorExtensions
             //StyleSheet stylesheet = parser.Parse(source, false);
 
             return true;// !string.IsNullOrWhiteSpace(stylesheet.Text);
+        }
+
+        protected override void UpdateLessSourceMapUrls(ref string content, string oldFileName, string newFileName)
+        {
+            dynamic jsonSourceMap = null;
+            string sourceMapFilename = oldFileName + ".map";
+            // Read JSON map file and deserialize.
+            string sourceMapContents = File.ReadAllText(sourceMapFilename);
+
+            jsonSourceMap = Json.Decode(sourceMapContents);
+
+            if (jsonSourceMap == null)
+                return;
+
+            string projectRoot = ProjectHelpers.GetRootFolder(ProjectHelpers.GetActiveProject());
+            string cssNetworkPath = FileHelpers.RelativePath(oldFileName, newFileName);
+            string sourceMapRelativePath = FileHelpers.RelativePath(oldFileName, sourceMapFilename);
+
+            jsonSourceMap.sources = new List<dynamic>(jsonSourceMap.sources);
+            jsonSourceMap.names = new List<dynamic>(jsonSourceMap.names);
+            jsonSourceMap.file = cssNetworkPath;
+
+            for (int i = 0; i < jsonSourceMap.sources.Count; ++i)
+            {
+                jsonSourceMap.sources[i] = FileHelpers.RelativePath(newFileName, projectRoot + jsonSourceMap.sources[i]);
+            }
+
+            WriteFile(Json.Encode(jsonSourceMap), sourceMapFilename, File.Exists(sourceMapFilename), false);
+
+            // Fixed sourceMappingURL comment in CSS file with network accessible path.
+            content = Regex.Replace(content, @"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", "/*# sourceMappingURL=" + sourceMapRelativePath + "*/");
         }
     }
 }

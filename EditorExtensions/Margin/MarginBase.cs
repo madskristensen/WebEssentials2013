@@ -1,15 +1,15 @@
-﻿using EnvDTE;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using EnvDTE;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -72,7 +72,7 @@ namespace MadsKristensen.EditorExtensions
             StartCompiler(source);
         }
 
-        private IWpfTextViewHost CreateTextViewHost(string contentType)
+        private static IWpfTextViewHost CreateTextViewHost(string contentType)
         {
             var componentModel = ProjectHelpers.GetComponentModel();
             var service = componentModel.GetService<IContentTypeRegistryService>();
@@ -202,15 +202,17 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (isSuccess)
                 {
-                    SetText(result);
-
                     if (!IsFirstRun)
                     {
                         if (IsSaveFileEnabled)
-                            WriteCompiledFile(result, state);
+                            WriteCompiledFile(ref result, state);
 
                         MinifyFile(state, result);
                     }
+
+                    // Moved after the WriteCompiledFile method to 
+                    // get the updated source map in CSS file comment.
+                    SetText(result);
                 }
                 else
                 {
@@ -224,7 +226,7 @@ namespace MadsKristensen.EditorExtensions
 
         public abstract void MinifyFile(string fileName, string source);
 
-        protected void WriteCompiledFile(string content, string currentFileName)
+        protected void WriteCompiledFile(ref string content, string currentFileName)
         {
             string extension = Path.GetExtension(currentFileName);
             string fileName = null;
@@ -233,6 +235,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 case ".less":
                     fileName = GetCompiledFileName(currentFileName, ".css", CompileToLocation);
+                    UpdateLessSourceMapUrls(ref content, currentFileName, fileName);
                     break;
 
                 case ".coffee":
@@ -259,6 +262,12 @@ namespace MadsKristensen.EditorExtensions
             {
                 AddFileToProject(currentFileName, fileName);
             }
+        }
+
+        protected virtual void UpdateLessSourceMapUrls(ref string content, string currentFileName, string fileName)
+        {
+            // If not overridden by derived, throw exception.
+            throw new NotImplementedException();
         }
 
         public static string GetCompiledFileName(string sourceFileName, string compiledExtension, string customFolder)
@@ -323,7 +332,7 @@ namespace MadsKristensen.EditorExtensions
             return null;
         }
 
-        private bool WriteFile(string content, string fileName, bool fileExist, bool fileWritten)
+        protected bool WriteFile(string content, string fileName, bool fileExist, bool fileWritten)
         {
             try
             {
