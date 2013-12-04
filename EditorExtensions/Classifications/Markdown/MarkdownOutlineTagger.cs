@@ -2,9 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Classification;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
@@ -16,22 +21,117 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     [ContentType(MarkdownContentTypeDefinition.MarkdownContentType)]
     public class MarkdownOutlineTaggerProvider : ITaggerProvider
     {
+        // Some people at Microsoft will recognize this.
+        internal class ViewHostingControl : ContentControl
+        {
+            private readonly Func<IWpfTextView> createView;
+            public ITextView TextView
+            {
+                get
+                {
+                    var wpfTextView = (IWpfTextView)base.Content;
+                    if (wpfTextView == null)
+                    {
+                        wpfTextView = createView();
+                        Content = wpfTextView.VisualElement;
+                    }
+                    return wpfTextView;
+                }
+            }
+            public ViewHostingControl(Func<IWpfTextView> createView)
+            {
+                this.createView = createView;
+                IsVisibleChanged += OnIsVisibleChanged;
+                Background = Brushes.Transparent;
+            }
+            private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+            {
+                if ((bool)e.NewValue)
+                {
+                    if (Content == null)
+                        Content = createView().VisualElement;
+                }
+                else
+                {
+                    TextView.Close();
+                    Content = null;
+                }
+            }
+            public override string ToString()
+            {
+                return TextView.TextBuffer.CurrentSnapshot.GetText();
+            }
+        }
+
+        [Import]
+        public ITextEditorFactoryService TextEditorFactory { get; set; }
+        [Import]
+        public IProjectionBufferFactoryService ProjectionFactory { get; set; }
+
+        public IWpfTextView CreateTextView(IEnumerable<SnapshotSpan> lines)
+        {
+            var buffer = ProjectionFactory.CreateProjectionBuffer(
+                null,
+                lines.SelectMany(s => new object[] {
+                        Environment.NewLine,
+                        s.Snapshot.CreateTrackingSpan(s, SpanTrackingMode.EdgeExclusive)
+                    })
+                    .Skip(1)    // Skip first newline
+                    .ToList(),
+                ProjectionBufferOptions.None
+            );
+            var view = TextEditorFactory.CreateTextView(buffer, TextEditorFactory.NoRoles);
+            view.Background = Brushes.Transparent;
+            SizeToFit(view);
+            return view;
+        }
+
+        private static bool IsNormal(double value)
+        {
+            return !double.IsNaN(value) && !double.IsInfinity(value);
+        }
+
+        public static void SizeToFit(IWpfTextView view)
+        {
+            view.VisualElement.Height = view.LineHeight * view.TextBuffer.CurrentSnapshot.LineCount;
+            view.LayoutChanged += (s, e) =>
+            {
+                view.VisualElement.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    double width = view.VisualElement.Width;
+                    if (!IsNormal(view.MaxTextRightCoordinate))
+                        return;
+                    if (IsNormal(width) && view.MaxTextRightCoordinate <= width)
+                        return;
+                    view.VisualElement.Width = view.MaxTextRightCoordinate;
+                }));
+            };
+        }
+
+
+        public IOutliningRegionTag CreateTag(object collapsed, IEnumerable<SnapshotSpan> lines)
+        {
+            return new OutliningRegionTag(false, true, collapsed, new ViewHostingControl(() => CreateTextView(lines)));
+        }
+
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
             // The classifier periodically recreates its ArtifactsCollection, so I need to pass a getter.
             var classifier = ServiceManager.GetService<HtmlClassifier>(buffer);
-            return buffer.Properties.GetOrCreateSingletonProperty(() => new MarkdownOutlineTagger(() => classifier.ArtifactCollection)) as ITagger<T>;
+            return buffer.Properties.GetOrCreateSingletonProperty(() => new MarkdownOutlineTagger(() => classifier.ArtifactCollection, CreateTag)) as ITagger<T>;
         }
     }
 
+    public delegate IOutliningRegionTag OutlineTagCreator(object collapsed, IEnumerable<SnapshotSpan> lines);
     public class MarkdownOutlineTagger : ITagger<IOutliningRegionTag>
     {
         private readonly Func<ArtifactCollection> artifactsGetter;
-
-        public MarkdownOutlineTagger(ArtifactCollection artifacts) : this(() => artifacts) { }
-        public MarkdownOutlineTagger(Func<ArtifactCollection> artifactsGetter)
+        private readonly OutlineTagCreator tagCreator;
+        public MarkdownOutlineTagger(ArtifactCollection artifacts, OutlineTagCreator tagCreator) : this(() => artifacts, tagCreator) { }
+        public MarkdownOutlineTagger(Func<ArtifactCollection> artifactsGetter, OutlineTagCreator tagCreator)
         {
             this.artifactsGetter = artifactsGetter;
+            this.tagCreator = tagCreator;
             // TODO: Forward events
         }
 
@@ -58,15 +158,19 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 {
                     var lastMCA = i == 0 ? null : (MarkdownCodeArtifact)artifacts[i - 1];
                     // If we concluded a block with more than one line (Artifact), tag it!
-                    if (blockStart != null && lastMCA.BlockInfo == blockStart)
+                    if (blockStart != null && i >= 2
+                     && lastMCA.BlockInfo == ((MarkdownCodeArtifact)artifacts[i - 2]).BlockInfo)
                         yield return new TagSpan<IOutliningRegionTag>(
                             new SnapshotSpan(spans[0].Snapshot, Span.FromBounds(blockStart.OuterStart, blockStart.OuterEnd)),
-                            new OutliningRegionTag(false, true, Caption(lastMCA), String.Join(Environment.NewLine,
+                            tagCreator(
+                                Caption(lastMCA),
                                 artifacts.Cast<MarkdownCodeArtifact>()
                                          .SkipWhile(a => a.BlockInfo != blockStart)
                                          .TakeWhile(a => !ReferenceEquals(a, mca))
-                                         .Select(a => a.GetText(spans[0].Snapshot))
-                    )));
+                                         .Select(a => a.ToSnapshotSpan(spans[0].Snapshot))
+                                         .ToList()      // Force eager evaluation; this query is only enumerated when a tooltip is shown, so we need to grab the snapshot
+                            )
+                        );
 
                     // If we're at the beginning, skip to the first artifact in the requested range
                     if (blockStart == null)
