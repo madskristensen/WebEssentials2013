@@ -52,7 +52,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 fullSource.AppendLine(embedder.GlobalPrefix);
             var mappings = new List<ProjectionMapping>();
 
-            foreach (var block in artifacts.GroupBy(a => a.BlockStart))
+            foreach (var block in artifacts.GroupBy(a => a.BlockInfo))
             {
                 IReadOnlyCollection<string> surround = null;
                 if (embedder != null)

@@ -35,6 +35,13 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             // TODO: Forward events
         }
 
+        static string Caption(MarkdownCodeArtifact artifact)
+        {
+            if (string.IsNullOrEmpty(artifact.Language))
+                return "[ Code Block ]";
+            return "[ " + artifact.Language + " Code Block ]";
+        }
+
         public IEnumerable<ITagSpan<IOutliningRegionTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
             if (!spans.Any())
@@ -42,21 +49,23 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             var artifacts = artifactsGetter();
 
-            MarkdownCodeArtifact blockStart = null;
+            CodeBlockInfo blockStart = null;
             for (int i = 0; i < artifacts.Count; i++)
             {
                 var mca = (MarkdownCodeArtifact)artifacts[i];
                 // If we concluded a run of blocks, or if we're at the beginning, start the next run.
-                if (blockStart == null || blockStart.BlockStart != mca.BlockStart)
+                if (blockStart == null || blockStart != mca.BlockInfo)
                 {
-                    // If we concluded a multi-line block, tag it!
-                    if (blockStart != null && (object)blockStart != artifacts[i - 1])
+                    var lastMCA = i == 0 ? null : (MarkdownCodeArtifact)artifacts[i - 1];
+                    // If we concluded a block with more than one line (Artifact), tag it!
+                    if (blockStart != null && lastMCA.BlockInfo == blockStart)
                         yield return new TagSpan<IOutliningRegionTag>(
-                            new SnapshotSpan(spans[0].Snapshot, Span.FromBounds(blockStart.Start, artifacts[i - 1].End)),
-                            new OutliningRegionTag(false, true, " [Code] ", String.Join(Environment.NewLine,
-                                artifacts.SkipWhile(a => ReferenceEquals(a, blockStart))
-                                         .TakeWhile(a => ReferenceEquals(a, mca))
-                                          .Select(a => a.GetText(spans[0].Snapshot))
+                            new SnapshotSpan(spans[0].Snapshot, Span.FromBounds(blockStart.OuterStart, blockStart.OuterEnd)),
+                            new OutliningRegionTag(false, true, Caption(lastMCA), String.Join(Environment.NewLine,
+                                artifacts.Cast<MarkdownCodeArtifact>()
+                                         .SkipWhile(a => a.BlockInfo != blockStart)
+                                         .TakeWhile(a => !ReferenceEquals(a, mca))
+                                         .Select(a => a.GetText(spans[0].Snapshot))
                     )));
 
                     // If we're at the beginning, skip to the first artifact in the requested range
@@ -71,13 +80,13 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         // Rewind to the beginning of this block so that we
                         // don't return partial blocks when the spans start
                         // in the middle of a code block.
-                        while (i > 0 && artifacts[i - 1].Start > mca.BlockStart)
+                        while (i > 0 && artifacts[i - 1].Start > mca.BlockInfo.OuterStart)
                             i--;
                         mca = (MarkdownCodeArtifact)artifacts[i];
                     }
                     else if (mca.Start > spans.Last().End)
                         break;  // If we have completely passed the requested range, stop.
-                    blockStart = mca;
+                    blockStart = mca.BlockInfo;
                 }
             }
         }

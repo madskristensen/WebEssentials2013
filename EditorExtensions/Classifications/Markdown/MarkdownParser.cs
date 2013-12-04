@@ -331,7 +331,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         null,
                         TextRange.FromBounds(peek.StartPosition, stream.Position + 1),
                         1, 1,
-                        peek.StartPosition  // Inline code blocks aren't grouped.
+                        new CodeBlockInfo { OuterStart = peek.StartPosition, OuterEnd = stream.Position + 1 } // Inline code blocks aren't grouped.
                     ));
                     peek.Consume();
                 }
@@ -372,7 +372,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             int lineStart;
             protected override bool ReadContent()
             {
-                int blockStart = stream.Position;
+                var blockInfo = new CodeBlockInfo { OuterStart = stream.Position };
                 lineStart = stream.Position;
                 if (!TryReadSpaces(spaceCount))
                     return false;
@@ -382,10 +382,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     var range = TryConsumeContentLine();
                     if (range == null)
                         break;
-                    // Get the character count of the indent, which may be different if tabs are involved.
+                    blockInfo.OuterEnd = range.End;
+                    // Get the character count of the indent, which may be different if; tabs are involved.
                     var indentSize = range.Start - thisLineStart;
                     range.Expand(-indentSize, 0);
-                    ReportArtifact(new MarkdownCodeArtifact(null, range, indentSize, 0, blockStart));
+                    ReportArtifact(new MarkdownCodeArtifact(null, range, indentSize, 0, blockInfo));
                 }
                 return true;
             }
@@ -416,12 +417,12 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             public FencedCodeBlockParser(CharacterStream stream, Action<MarkdownCodeArtifact> reporter) : base(stream, reporter) { }
 
             string fence;
-
+            CodeBlockInfo blockInfo;
             protected override bool ReadContent()
             {
                 string language = null;
 
-                int blockStart = stream.Position;
+                blockInfo = new CodeBlockInfo { OuterStart = stream.Position };
                 if (TryConsume("```"))
                     fence = "```";
                 else if (TryConsume("~~~"))
@@ -438,7 +439,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     var range = TryConsumeContentLine();
                     if (range == null)
                         break;
-                    ReportArtifact(new MarkdownCodeArtifact(language, range, 0, 0, blockStart));
+                    ReportArtifact(new MarkdownCodeArtifact(language, range, 0, 0, blockInfo));
                 }
 
                 return true;
@@ -451,6 +452,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     TryConsumeLinePrefix();
                     if (!TryConsume(fence))
                         return false;
+                    blockInfo.OuterEnd = stream.Position;
                     if (!stream.IsAtLastCharacter() && !TrySkipBlankLine(consumeCodeBlock: true))    // If there is any content after the fence, the block did not end.
                         return false;
                     peek.Consume();
@@ -505,18 +507,23 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
     public class MarkdownCodeArtifact : Artifact
     {
-        public MarkdownCodeArtifact(string language, ITextRange range, int leftLength, int rightLength, int blockStart)
+        public MarkdownCodeArtifact(string language, ITextRange range, int leftLength, int rightLength, CodeBlockInfo blockInfo)
             : base(ArtifactTreatAs.Code, range, leftLength, rightLength, MarkdownClassificationTypes.MarkdownCode, true)
         {
             Language = language;
-            BlockStart = blockStart;
+            BlockInfo = blockInfo;
         }
 
         public string Language { get; private set; }
 
-        ///<summary>Gets the character position in the stream that entire containing code block started.</summary>
-        ///<remarks>This is used to group code runs (lines) from the same block, for language prefixing.</remarks>
-        public int BlockStart { get; private set; }
+        ///<summary>Gets information about the containing code block.</summary>
+        public CodeBlockInfo BlockInfo { get; private set; }
+    }
+    ///<summary>Stores information about a complete code block, which may include multiple Artifacts.</summary>
+    public class CodeBlockInfo
+    {
+        public int OuterStart { get; set; }
+        public int OuterEnd { get; set; }
     }
 
     ///<summary>Provides data for Artifact events.</summary>
