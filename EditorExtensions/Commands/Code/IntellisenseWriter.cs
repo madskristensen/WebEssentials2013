@@ -89,17 +89,17 @@ namespace MadsKristensen.EditorExtensions
                 case "double":
                 case "float":
                 case "decimal":
-                    return "Number";
+                    return "number";
 
                 case "system.datetime":
                     return "Date";
 
                 case "string":
-                    return "String";
+                    return "string";
 
                 case "bool":
                 case "boolean":
-                    return "Boolean";
+                    return "boolean";
             }
 
             if (type.Contains("System.Collections") || type.Contains("[]") || type.Contains("Array"))
