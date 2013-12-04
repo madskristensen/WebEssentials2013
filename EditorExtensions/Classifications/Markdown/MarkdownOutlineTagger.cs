@@ -70,12 +70,19 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         public IWpfTextView CreateTextView(IEnumerable<SnapshotSpan> lines)
         {
+            var parentView = TextViewConnectionListener.GetTextViewDataForBuffer(lines.First().Snapshot.TextBuffer).LastActiveView;
+
             var buffer = ProjectionFactory.CreateProjectionBuffer(
                 null,
-                lines.SelectMany(s => new object[] {
-                        Environment.NewLine,
-                        s.Snapshot.CreateTrackingSpan(s, SpanTrackingMode.EdgeExclusive)
-                    })
+                lines.SelectMany(s => new object[] { Environment.NewLine }.Concat(
+                    // Use the text from the outer ProjectionBuffer, which can
+                    // include language services from other projected buffers.
+                    // This makes the tooltip include syntax highlighting that
+                    // does not exist in the innermost Markdown buffer.
+                    parentView.BufferGraph
+                        .MapUpToBuffer(s, SpanTrackingMode.EdgeInclusive, parentView.TextBuffer)
+                            .Select(s2 => s2.Snapshot.CreateTrackingSpan(s, SpanTrackingMode.EdgeInclusive))
+                    ))
                     .Skip(1)    // Skip first newline
                     .ToList(),
                 ProjectionBufferOptions.None
