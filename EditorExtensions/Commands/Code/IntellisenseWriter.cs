@@ -25,18 +25,24 @@ namespace MadsKristensen.EditorExtensions
         {
             sb.AppendLine("var server = server || {};");
 
+            // all /// <field/> entries must be listed at the very top, otherwise Intellisense won't work for subsequent entries
+            StringBuilder typeLiteralBuilder = new StringBuilder();
+
             foreach (IntellisenseObject io in objects)
             {
                 sb.AppendLine("server." + io.Name + " = function()  {");
 
                 foreach (var p in io.Properties)
                 {
-                    string value = GetValue(p.Type);
+                    string typeName = GetTypeName(p.Type, Language.JavaScript);
+                    string typeLiteral = GetTypeLiteral(p.Type);
                     string comment = p.Summary ?? "The " + p.Name + " property as defined in " + io.FullName;
                     comment = Regex.Replace(comment, @"\s*[\r\n]+\s*", " ").Trim();
-                    sb.AppendLine("\t/// <field name=\"" + p.Name + "\" type=\"" + value + "\">" + SecurityElement.Escape(comment) + "</field>");
-                    sb.AppendLine("\tthis." + p.Name + " = new " + value + "();");
+                    sb.AppendLine("\t/// <field name=\"" + p.Name + "\" type=\"" + typeName + "\">" + SecurityElement.Escape(comment) + "</field>");
+                    typeLiteralBuilder.AppendLine("\tthis." + p.Name + " = " + typeLiteral + ";");
                 }
+
+                sb.Append(typeLiteralBuilder.ToString());
 
                 sb.AppendLine("};");
                 sb.AppendLine();
@@ -54,8 +60,8 @@ namespace MadsKristensen.EditorExtensions
 
                 foreach (var p in io.Properties)
                 {
-                    string value = GetValue(p.Type);
-                    sb.AppendLine("\t\t" + p.Name + ": " + value + ";");
+                    string typeName = GetTypeName(p.Type, Language.TypeScript);
+                    sb.AppendLine("\t\t" + p.Name + ": " + typeName + ";");
                 }
 
                 sb.AppendLine("}");
@@ -78,7 +84,7 @@ namespace MadsKristensen.EditorExtensions
             //}
         }
 
-        public static string GetValue(string type)
+        public static string GetTypeName(string type, Language language)
         {
             switch (type.ToLowerInvariant())
             {
@@ -89,23 +95,53 @@ namespace MadsKristensen.EditorExtensions
                 case "double":
                 case "float":
                 case "decimal":
-                    return "Number";
+                    return language == Language.JavaScript ? "Number" : "number";
 
                 case "system.datetime":
                     return "Date";
 
                 case "string":
-                    return "String";
+                    return language == Language.JavaScript ? "String" : "string";
 
                 case "bool":
                 case "boolean":
-                    return "Boolean";
+                    return language == Language.JavaScript ? "Boolean" : "boolean";
             }
 
             if (type.Contains("System.Collections") || type.Contains("[]") || type.Contains("Array"))
                 return "Array";
 
             return "Object";
+        }
+
+        public static string GetTypeLiteral(string type)
+        {
+            switch (type.ToLowerInvariant())
+            {
+                case "int":
+                case "int32":
+                case "int64":
+                case "long":
+                case "double":
+                case "float":
+                case "decimal":
+                    return "0";
+
+                case "system.datetime":
+                    return "new Date()";
+
+                case "string":
+                    return "''";
+
+                case "bool":
+                case "boolean":
+                    return "false";
+            }
+
+            if (type.Contains("System.Collections") || type.Contains("[]") || type.Contains("Array"))
+                return "[]";
+
+            return "{}";
         }
     }
 
@@ -121,5 +157,11 @@ namespace MadsKristensen.EditorExtensions
         public string Name { get; set; }
         public string Type { get; set; }
         public string Summary { get; set; }
+    }
+    
+    public enum Language
+    {
+		JavaScript,
+		TypeScript
     }
 }
