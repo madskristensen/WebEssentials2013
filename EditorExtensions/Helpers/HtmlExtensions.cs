@@ -27,11 +27,6 @@ namespace MadsKristensen.EditorExtensions
             return snapshot.GetText(artifact.InnerRange.Start, artifact.InnerRange.Length);
         }
 
-        public static SnapshotSpan ToSnapshotSpan(this IArtifact artifact, ITextSnapshot snapshot)
-        {
-            return new SnapshotSpan(snapshot, artifact.InnerRange.Start, artifact.InnerRange.Length);
-        }
-
         public static Microsoft.VisualStudio.OLE.Interop.IServiceProvider GetServiceProvider(this IVsTextBuffer buffer)
         {
             IntPtr pUnk = IntPtr.Zero;

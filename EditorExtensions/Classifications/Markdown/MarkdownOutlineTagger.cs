@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
+using Microsoft.Web.Editor.Extensions.Text;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
@@ -174,7 +175,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                                 artifacts.Cast<MarkdownCodeArtifact>()
                                          .SkipWhile(a => a.BlockInfo != blockStart)
                                          .TakeWhile(a => !ReferenceEquals(a, mca))
-                                         .Select(a => a.ToSnapshotSpan(spans[0].Snapshot))
+                                         .Select(a => a.InnerRange.ToSnapshotSpan(spans[0].Snapshot))
                                          .ToList()      // Force eager evaluation; this query is only enumerated when a tooltip is shown, so we need to grab the snapshot
                             )
                         );
