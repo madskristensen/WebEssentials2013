@@ -78,7 +78,9 @@ namespace WebEssentialsTests
 ```cs
 var x = 2;
 var y = 3;").Should().Equal(Code("var x = 2;"), Code("var y = 3;"));
-            Classify(@"    font-weight: _bold_;").Should().Equal(Code("    font-weight: _bold_;"));
+            Classify(@"    font-weight: _bold_;
+    Normal line
+      Furtherly indented line").Should().Equal(Code("font-weight: _bold_;"), Code("Normal line"), Code("  Furtherly indented line"));
             Classify(@"
 ```html
 <b>**ABC**!</b>
@@ -97,7 +99,7 @@ var y = 3;").Should().Equal(Code("var x = 2;"), Code("var y = 3;"));
     Some (<code
     More code!
 
-**Bold**>)").Should().Equal(Code("    Some code"), Code("    More code!"), Bold("**Bold**"));
+**Bold**>)").Should().Equal(Code("Some code"), Code("More code!"), Bold("**Bold**"));
             Classify(@"
 ```html
 (<<b>**ABC**!</b>

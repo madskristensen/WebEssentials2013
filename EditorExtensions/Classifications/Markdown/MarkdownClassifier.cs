@@ -8,6 +8,7 @@ using Microsoft.Html.Editor.Classification;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Core;
 using Microsoft.Web.Editor;
 using Microsoft.Web.Editor.Extensions.Text;
 
@@ -117,7 +118,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         }
         private IEnumerable<ClassificationSpan> ClassifyArtifact(ITextSnapshot snapshot, IArtifact artifact)
         {
-            yield return new ClassificationSpan(artifact.ToSnapshotSpan(snapshot), codeType);
+            ITextRange range = artifact;
+            // Don't highlight indent for indented code blocks
+            if (artifact.LeftSeparator.Length > 0 && artifact.RightSeparator.Length == 0)
+                range = artifact.InnerRange;
+            yield return new ClassificationSpan(range.ToSnapshotSpan(snapshot), codeType);
         }
 
         private static IEnumerable<ClassificationSpan> ClassifyMatches(SnapshotSpan span, string text, Regex regex, IClassificationType type)
