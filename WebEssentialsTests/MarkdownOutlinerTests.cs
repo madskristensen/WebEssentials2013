@@ -17,8 +17,6 @@ namespace WebEssentialsTests
     {
         static void TestOutlines(string markdown, params Tuple<string, string[]>[] expectedOutlines)
         {
-            var artifacts = new ArtifactCollection(new MarkdownCodeArtifactProcessor());
-            artifacts.Build(markdown);
 
             var snapshot = new MockSnapshot(markdown.Replace("{[", "").Replace("]}", ""));
 
@@ -27,11 +25,14 @@ namespace WebEssentialsTests
             for (int i = 0; i < expectedOutlines.Length; i++)
             {
                 var spanStart = markdown.IndexOf("{[", lastIndex);
+                if (spanStart < 0)
+                    throw new ArgumentException("Not enough test delimiters");
+
                 markdown = markdown.Remove(spanStart, 2);
                 var spanEnd = markdown.IndexOf("]}", spanStart);
                 markdown = markdown.Remove(spanEnd, 2);
                 expected.Add(new TagSpan<IOutliningRegionTag>(
-                    new SnapshotSpan(snapshot, spanStart, spanEnd),
+                    new SnapshotSpan(snapshot, Span.FromBounds(spanStart, spanEnd)),
                     new SimpleOutlineTag(expectedOutlines[i])
                 ));
                 lastIndex = spanEnd;
@@ -39,13 +40,17 @@ namespace WebEssentialsTests
             if (markdown != snapshot.GetText())
                 throw new ArgumentException("Unexpected test delimiters");
 
+            var artifacts = new ArtifactCollection(new MarkdownCodeArtifactProcessor());
+            artifacts.Build(markdown);
 
             var tagger = new MarkdownOutlineTagger(artifacts, (c, t) => new SimpleOutlineTag(c, t));
             var actual = tagger.GetTags(new NormalizedSnapshotSpanCollection(new SnapshotSpan(
-                new MockSnapshot(markdown),
+                snapshot,
                 new Span(0, markdown.Length)
             )));
-            actual.ShouldAllBeEquivalentTo(expected);
+            actual
+                .Select(ts => new { ts.Span.Span, ts.Tag })
+                .ShouldAllBeEquivalentTo(expected.Select(ts => new { ts.Span.Span, ts.Tag }));
         }
 
         class SimpleOutlineTag : IOutliningRegionTag
@@ -88,22 +93,28 @@ namespace WebEssentialsTests
         public void TestCodeBlocks()
         {
             TestOutlines(@"`code`");
+
             TestOutlines(@"`code` `more`
 `even more inline code blocks should not be outlined`");
+
             TestOutlines(@"
     Single indented line should not be outlines");
+
             TestOutlines(@"{[```
 First line
 Second line
 ```]}", Tuple.Create("[ Code Block ]", new[] { "First line", "Second line" }));
-            TestOutlines(@"{[```html
-First line
-Second line
-```]}", Tuple.Create("[ html Code Block ]", new[] { "First line", "Second line" }));
-            TestOutlines(@"{[
-    First line
-    Second line
-]}", Tuple.Create("[ Code Block ]", new[] { "First line", "Second line" }));
+
+            TestOutlines(@"
+{[    First line
+    Second line]}
+{[```html
+First line2
+Second line2
+```]}",
+    Tuple.Create("[ Code Block ]", new[] { "First line", "Second line" }),
+    Tuple.Create("[ html Code Block ]", new[] { "First line2", "Second line2" })
+);
         }
         // TODO: Test quoted code blocks, test overlapping partial spans.
     }

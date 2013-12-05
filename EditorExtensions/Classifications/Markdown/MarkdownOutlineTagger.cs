@@ -158,11 +158,13 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             var artifacts = artifactsGetter();
 
             CodeBlockInfo blockStart = null;
-            for (int i = 0; i < artifacts.Count; i++)
+            // Continue the loop past the last artifact
+            // to return the lat code block.
+            for (int i = 0; i < artifacts.Count + 1; i++)
             {
-                var mca = (MarkdownCodeArtifact)artifacts[i];
+                var mca = i == artifacts.Count ? null : (MarkdownCodeArtifact)artifacts[i];
                 // If we concluded a run of blocks, or if we're at the beginning, start the next run.
-                if (blockStart == null || blockStart != mca.BlockInfo)
+                if (blockStart == null || i == artifacts.Count || blockStart != mca.BlockInfo)
                 {
                     var lastMCA = i == 0 ? null : (MarkdownCodeArtifact)artifacts[i - 1];
                     // If we concluded a block with more than one line (Artifact), tag it!
@@ -179,6 +181,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                                          .ToList()      // Force eager evaluation; this query is only enumerated when a tooltip is shown, so we need to grab the snapshot
                             )
                         );
+                    if (i == artifacts.Count)
+                        break;
 
                     // If we're at the beginning, skip to the first artifact in the requested range
                     if (blockStart == null)
