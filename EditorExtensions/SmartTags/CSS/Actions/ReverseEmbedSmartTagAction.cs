@@ -65,7 +65,17 @@ namespace MadsKristensen.EditorExtensions
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, ex.GetType().Name, MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                string title = "Web Essentials " + ex.GetType().Name;
+                string message = ex.Message;
+
+                if (WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow))
+                {
+                    Logger.Log(String.Format("{0}: {1}", title, message));
+                }
+                else
+                {
+                    MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                }
                 return false;
             }
         }

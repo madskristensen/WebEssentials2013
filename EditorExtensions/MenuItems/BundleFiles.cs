@@ -209,7 +209,17 @@ namespace MadsKristensen.EditorExtensions
 
                     if (File.Exists(bundlePath))
                     {
-                        MessageBox.Show("The bundle file already exists.", "Web Essentials", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        const string title = "Web Essentials";
+                        const string message = "The bundle file already exists.";
+
+                        if (WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow))
+                        {
+                            Logger.Log(String.Format("{0}: {1}", title, message));
+                        }
+                        else
+                        {
+                            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Warning);    
+                        }
                     }
                     else
                     {
@@ -273,7 +283,17 @@ namespace MadsKristensen.EditorExtensions
 
             if (outputAttr != null && (outputAttr.InnerText.Contains("/") || outputAttr.InnerText.Contains("\\")))
             {
-                MessageBox.Show("The 'output' attribute should contain a file name without a path; '" + outputAttr.InnerText + "' is not valid", "Web Essentials");
+                const string title = "Web Essentials";
+                string message = String.Format("The 'output' attribute should contain a file name without a path; '{0}' is not valid", outputAttr.InnerText);
+
+                if (WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow))
+                {
+                    Logger.Log(String.Format("{0}: {1}", title, message));
+                }
+                else
+                {
+                    MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
                 return;
             }
 
@@ -302,7 +322,17 @@ namespace MadsKristensen.EditorExtensions
                 {
                     string error = string.Format("Bundle error: The file '{0}' doesn't exist", node.InnerText);
                     _dte.ItemOperations.OpenFile(filePath);
-                    MessageBox.Show(error, "Web Essentials");
+
+                    const string title = "Web Essentials";
+                    if (WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow))
+                    {
+                        Logger.Log(String.Format("{0}: {1}", title, error));
+                    }
+                    else
+                    {
+                        MessageBox.Show(error, title, MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+
                     return;
                 }
             }
@@ -347,7 +377,7 @@ namespace MadsKristensen.EditorExtensions
                 using (StreamWriter writer = new StreamWriter(bundlePath, false, new UTF8Encoding(true)))
                 {
                     writer.Write(sb.ToString().Trim());
-                    Logger.Log("Updating bundle: " + Path.GetFileName(bundlePath));
+                    Logger.Log("Web Essentials: Updating bundle: " + Path.GetFileName(bundlePath));
                 }
                 MarginBase.AddFileToProject(filePath, bundlePath);
             }

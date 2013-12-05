@@ -3,6 +3,7 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 
@@ -74,7 +75,17 @@ namespace MadsKristensen.EditorExtensions
             }
             catch (IOException)
             {
-                System.Windows.Forms.MessageBox.Show("Can't write to the folder");
+                const string title = "Web Essentials";
+                string message = "Can't write to the folder: " + _referencesJsPath;
+
+                if (WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow))
+                {
+                    Logger.Log(String.Format("{0}: {1}", title, message));
+                }
+                else
+                {
+                    MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
         }
     }

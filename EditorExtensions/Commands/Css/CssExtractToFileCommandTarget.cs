@@ -66,7 +66,17 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    MessageBox.Show("The file already exist", "Web Essentials", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    const string title = "Web Essentials";
+                    const string message = "The file already exists.";
+
+                    if (WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow))
+                    {
+                        Logger.Log(String.Format("{0}: {1}", title, message));
+                    }
+                    else
+                    {
+                        MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
                 }
             }
 

@@ -47,7 +47,17 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                MessageBox.Show("'" + _path + "' could not be resolved.", "File not found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                const string title = "Web Essentials: File not found";
+                string message = String.Format("'{0}' could not be resolved.", _path);
+
+                if (WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow))
+                {
+                    Logger.Log(String.Format("{0}: {1}", title, message));
+                }
+                else
+                {
+                    MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
         }
 
