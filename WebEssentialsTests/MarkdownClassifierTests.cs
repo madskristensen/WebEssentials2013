@@ -15,6 +15,20 @@ namespace WebEssentialsTests
     {
         static List<Tuple<string, string>> Classify(string markdown, Span? subSpan = null)
         {
+            if (subSpan == null)
+            {
+                var spanStart = markdown.IndexOf("(<");
+                if (spanStart >= 0)
+                {
+                    markdown = markdown.Remove(spanStart, 2);
+                    var spanEnd = markdown.IndexOf(">)", spanStart);
+                    if (spanEnd < 0)
+                        throw new ArgumentException("Markdown (<...>) span indicator must be well-formed", "markdown");
+                    markdown = markdown.Remove(spanEnd, 2);
+                    subSpan = Span.FromBounds(spanStart, spanEnd);
+                }
+            }
+
             var artifacts = new ArtifactCollection(new MarkdownCodeArtifactProcessor());
             artifacts.Build(markdown);
             var classifier = new MarkdownClassifier(artifacts, new MockClassificationTypeRegistry());
@@ -72,7 +86,27 @@ var y = 3;").Should().Equal(Code("var x = 2;"), Code("var y = 3;"));
 ```
 **Bold**").Should().Equal(Code("<b>**ABC**!</b>"), Code("<code>`hi`</code>"), Bold("**Bold**"));
         }
-        // TODO: Test quoted code blocks, test overlapping partial spans.
+
+        [TestMethod]
+        public void TestPartialSpans()
+        {
+            Classify(@"**a** (< _b_ `cod>)e`").Should().Equal(Italic("_b_"), Code("`code`"));
+            Classify(@"`co(<de` _b_  >)**a**").Should().Equal(Code("`code`"), Italic("_b_"));
+            Classify(@"
+    Indented code block
+    Some (<code
+    More code!
+
+**Bold**>)").Should().Equal(Code("    Some code"), Code("    More code!"), Bold("**Bold**"));
+            Classify(@"
+```html
+(<<b>**ABC**!</b>
+<code>`hi`</code>
+```
+**Bold**>)").Should().Equal(Code("<b>**ABC**!</b>"), Code("<code>`hi`</code>"), Bold("**Bold**"));
+        }
+        // TODO: Expand partial span until newline to catch constructs containing span end.
+        // TODO: Test quoted code blocks
     }
 
     class MockClassificationTypeRegistry : IClassificationTypeRegistryService
