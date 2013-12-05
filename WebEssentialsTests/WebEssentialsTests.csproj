@@ -78,18 +78,18 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="BootStrapValidationTests.cs" />
-    <Compile Include="LessCompilationTests.cs" />
-    <Compile Include="LessDocumentTests.cs">
+    <Compile Include="Tests\BootStrap\BootStrapValidationTests.cs" />
+    <Compile Include="Tests\LESS\LessCompilationTests.cs" />
+    <Compile Include="Tests\LESS\LessDocumentTests.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MarkdownOutlinerTests.cs" />
-    <Compile Include="MarkdownParserTests.cs" />
-    <Compile Include="MockSnapshot.cs" />
+    <Compile Include="Tests\Markdown\MarkdownOutlinerTests.cs" />
+    <Compile Include="Tests\Markdown\MarkdownParserTests.cs" />
+    <Compile Include="Tests\Snapshot\MockSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="NodeModuleImportedTests.cs" />
-    <Compile Include="NodeModuleCompletionTests.cs" />
-    <Compile Include="MarkdownClassifierTests.cs" />
+    <Compile Include="Tests\Node\NodeModuleImportedTests.cs" />
+    <Compile Include="Tests\Node\NodeModuleCompletionTests.cs" />
+    <Compile Include="Tests\Markdown\MarkdownClassifierTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EditorExtensions\WebEssentials2013.csproj">
