@@ -65,6 +65,12 @@ namespace WebEssentialsTests
 var x = 2;
 var y = 3;").Should().Equal(Code("var x = 2;"), Code("var y = 3;"));
             Classify(@"    font-weight: _bold_;").Should().Equal(Code("    font-weight: _bold_;"));
+            Classify(@"
+```html
+<b>**ABC**!</b>
+<code>`hi`</code>
+```
+**Bold**").Should().Equal(Code("<b>**ABC**!</b>"), Code("<code>`hi`</code>"), Bold("**Bold**"));
         }
         // TODO: Test quoted code blocks, test overlapping partial spans.
     }
