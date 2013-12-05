@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.ComponentModel.Composition;
 using System.Globalization;
-using System.Linq;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Utilities;
 using Editor = Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
