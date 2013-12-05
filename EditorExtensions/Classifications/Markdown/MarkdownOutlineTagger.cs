@@ -159,51 +159,53 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             CodeBlockInfo blockStart = null;
             // Continue the loop past the last artifact
-            // to return the lat code block.
+            // to return the last code block.
             for (int i = 0; i < artifacts.Count + 1; i++)
             {
                 var mca = i == artifacts.Count ? null : (MarkdownCodeArtifact)artifacts[i];
-                // If we concluded a run of blocks, or if we're at the beginning, start the next run.
-                if (blockStart == null || i == artifacts.Count || blockStart != mca.BlockInfo)
-                {
-                    var lastMCA = i == 0 ? null : (MarkdownCodeArtifact)artifacts[i - 1];
-                    // If we concluded a block with more than one line (Artifact), tag it!
-                    if (blockStart != null && i >= 2
-                     && lastMCA.BlockInfo == ((MarkdownCodeArtifact)artifacts[i - 2]).BlockInfo)
-                        yield return new TagSpan<IOutliningRegionTag>(
-                            new SnapshotSpan(spans[0].Snapshot, Span.FromBounds(blockStart.OuterStart, blockStart.OuterEnd)),
-                            tagCreator(
-                                Caption(lastMCA),
-                                artifacts.Cast<MarkdownCodeArtifact>()
-                                         .SkipWhile(a => a.BlockInfo != blockStart)
-                                         .TakeWhile(a => !ReferenceEquals(a, mca))
-                                         .Select(a => a.InnerRange.ToSnapshotSpan(spans[0].Snapshot))
-                                         .ToList()      // Force eager evaluation; this query is only enumerated when a tooltip is shown, so we need to grab the snapshot
-                            )
-                        );
-                    if (i == artifacts.Count)
-                        break;
 
-                    // If we're at the beginning, skip to the first artifact in the requested range
-                    if (blockStart == null)
-                    {
-                        i = artifacts.GetItemContainingUsingInclusion(spans[0].Start, true);
-                        if (i < 0)
-                            i = artifacts.GetFirstItemAfterOrAtPosition(spans[0].Start);
-                        if (i < 0)
-                            yield break;
-                        mca = (MarkdownCodeArtifact)artifacts[i];
-                        // Rewind to the beginning of this block so that we
-                        // don't return partial blocks when the spans start
-                        // in the middle of a code block.
-                        while (i > 0 && artifacts[i - 1].Start > mca.BlockInfo.OuterStart)
-                            i--;
-                        mca = (MarkdownCodeArtifact)artifacts[i];
-                    }
-                    else if (mca.Start > spans.Last().End)
-                        break;  // If we have completely passed the requested range, stop.
-                    blockStart = mca.BlockInfo;
+                // If we're in the middle of an existing block, 
+                // keep going until we hit its end.
+                if (blockStart != null && i < artifacts.Count && blockStart == mca.BlockInfo)
+                    continue;
+
+                var lastMCA = i == 0 ? null : (MarkdownCodeArtifact)artifacts[i - 1];
+                // If we concluded a block with more than one line (Artifact), tag it!
+                if (blockStart != null && i >= 2
+                 && lastMCA.BlockInfo == ((MarkdownCodeArtifact)artifacts[i - 2]).BlockInfo)
+                    yield return new TagSpan<IOutliningRegionTag>(
+                        new SnapshotSpan(spans[0].Snapshot, Span.FromBounds(blockStart.OuterStart, blockStart.OuterEnd)),
+                        tagCreator(
+                            Caption(lastMCA),
+                            artifacts.Cast<MarkdownCodeArtifact>()
+                                     .SkipWhile(a => a.BlockInfo != blockStart)
+                                     .TakeWhile(a => !ReferenceEquals(a, mca))
+                                     .Select(a => a.InnerRange.ToSnapshotSpan(spans[0].Snapshot))
+                                     .ToList()      // Force eager evaluation; this query is only enumerated when a tooltip is shown, so we need to grab the snapshot
+                            )
+                    );
+                if (i == artifacts.Count)
+                    break;
+
+                // If we're at the beginning, skip to the first artifact in the requested range
+                if (blockStart == null)
+                {
+                    i = artifacts.GetItemContainingUsingInclusion(spans[0].Start, true);
+                    if (i < 0)
+                        i = artifacts.GetFirstItemAfterOrAtPosition(spans[0].Start);
+                    if (i < 0)
+                        yield break;
+                    mca = (MarkdownCodeArtifact)artifacts[i];
+                    // Rewind to the beginning of this block so that we
+                    // don't return partial blocks when the spans start
+                    // in the middle of a code block.
+                    while (i > 0 && artifacts[i - 1].Start > mca.BlockInfo.OuterStart)
+                        i--;
+                    mca = (MarkdownCodeArtifact)artifacts[i];
                 }
+                else if (mca.Start > spans.Last().End)
+                    break;  // If we have completely passed the requested range, stop.
+                blockStart = mca.BlockInfo;
             }
         }
 

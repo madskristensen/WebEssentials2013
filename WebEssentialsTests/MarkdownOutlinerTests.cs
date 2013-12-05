@@ -48,6 +48,7 @@ namespace WebEssentialsTests
                 snapshot,
                 new Span(0, markdown.Length)
             )));
+
             actual
                 .Select(ts => new { ts.Span.Span, ts.Tag })
                 .ShouldAllBeEquivalentTo(expected.Select(ts => new { ts.Span.Span, ts.Tag }));
@@ -72,25 +73,10 @@ namespace WebEssentialsTests
             object IOutliningRegionTag.CollapsedHintForm { get { return HintLines; } }
             bool IOutliningRegionTag.IsDefaultCollapsed { get { return false; } }
             bool IOutliningRegionTag.IsImplementation { get { return true; } }
-
-            public override bool Equals(object obj)
-            {
-                var tag = obj as SimpleOutlineTag;
-                return tag != null
-                    && EqualityComparer<string>.Default.Equals(CollapsedText, tag.CollapsedText)
-                    && EqualityComparer<string>.Default.Equals(String.Join(Environment.NewLine, HintLines), String.Join(Environment.NewLine, tag.HintLines));
-            }
-
-            public override int GetHashCode()
-            {
-                var hashCode = EqualityComparer<string>.Default.GetHashCode(CollapsedText);
-                hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(String.Join(Environment.NewLine, HintLines));
-                return hashCode;
-            }
         }
 
         [TestMethod]
-        public void TestCodeBlocks()
+        public void TestCodeOutlining()
         {
             TestOutlines(@"`code`");
 
@@ -112,6 +98,17 @@ Second line
 First line2
 Second line2
 ```]}",
+    Tuple.Create("[ Code Block ]", new[] { "First line", "Second line" }),
+    Tuple.Create("[ html Code Block ]", new[] { "First line2", "Second line2" })
+);
+
+            TestOutlines(@"
+>>> {[    First line
+    Second line]}
+> {[```html
+> First line2
+> Second line2
+> ```]}",
     Tuple.Create("[ Code Block ]", new[] { "First line", "Second line" }),
     Tuple.Create("[ html Code Block ]", new[] { "First line2", "Second line2" })
 );
