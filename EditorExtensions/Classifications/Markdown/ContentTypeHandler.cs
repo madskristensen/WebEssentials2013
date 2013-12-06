@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using System.Reflection;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
@@ -75,10 +76,13 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         protected override void BuildLanguageBlockCollection()
         {
             LanguageBlocks.Clear();
-            foreach (MarkdownCodeArtifact current in EditorTree.RootNode.Tree.ArtifactCollection)
+            foreach (var artifact in EditorTree.RootNode.Tree.ArtifactCollection.OfType<CodeLineArtifact>())
             {
-                if (current.TreatAs == ArtifactTreatAs.Code)
-                    LanguageBlocks.AddBlock(new ArtifactLanguageBlock(current, contentTypeRegistry.FromFriendlyName(current.Language)));
+                if (artifact.BlockInfo == null)
+                    continue;
+                var contentType = contentTypeRegistry.FromFriendlyName(artifact.BlockInfo.Language);
+                if (contentType != null)
+                    LanguageBlocks.AddBlock(new ArtifactLanguageBlock(artifact, contentType));
             }
             LanguageBlocks.SortByPosition();
         }
@@ -86,7 +90,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
     class ArtifactLanguageBlock : LanguageBlock
     {
-        public ArtifactLanguageBlock(MarkdownCodeArtifact a, IContentType contentType)
+        public ArtifactLanguageBlock(CodeLineArtifact a, IContentType contentType)
             : base(a)
         {
             ContentType = contentType;

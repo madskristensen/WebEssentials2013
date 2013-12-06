@@ -32,18 +32,21 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             if (ProjectionBufferManager == null)
                 return;
 
-            foreach (var language in EditorTree.RootNode.Tree.ArtifactCollection.OfType<MarkdownCodeArtifact>()
-                                               .GroupBy(a => contentTypeRegistry.FromFriendlyName(a.Language)))
+            foreach (var language in EditorTree.RootNode.Tree.ArtifactCollection
+                                               .OfType<BlockBoundaryArtifact>()
+                                               .Select(b => b.BlockInfo)
+                                               .Distinct()
+                                               .GroupBy(b => contentTypeRegistry.FromFriendlyName(b.Language)))
             {
                 if (language.Key == null) continue;  // If we can't identify the language, just use normal artifacts.
                 // We can't nest HTML buffers
                 if (language.Key.IsOfType("html") || language.Key.IsOfType("htmlx"))
                     continue;
-                PopulateLanguageBuffer(language.Key, language);
+                PopulateLanguageBuffer(language.Key, language.SelectMany(b => b.CodeLines));
             }
         }
 
-        private void PopulateLanguageBuffer(IContentType contentType, IEnumerable<MarkdownCodeArtifact> artifacts)
+        private void PopulateLanguageBuffer(IContentType contentType, IEnumerable<CodeLineArtifact> artifacts)
         {
             var pBuffer = ProjectionBufferManager.GetProjectionBuffer(contentType);
 

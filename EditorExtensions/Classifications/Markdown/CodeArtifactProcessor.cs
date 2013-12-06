@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.Html.Core;
 using Microsoft.Web.Core;
@@ -16,8 +17,26 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public void GetArtifacts(ITextProvider text, ArtifactCollection artifactCollection)
         {
             var parser = new MarkdownParser(new CharacterStream(text));
-            parser.ArtifactFound += (s, e) => artifactCollection.Add(e.Artifact);
+            BlockBoundaryArtifact lastBlock = null;
+            parser.ArtifactFound += (s, e) =>
+            {
+                if (e.Artifact.BlockInfo != null)
+                {
+                    if (lastBlock == null || lastBlock.BlockInfo != e.Artifact.BlockInfo)
+                    {
+                        if (lastBlock != null)
+                            artifactCollection.Add(new Artifact(ArtifactTreatAs.Code, lastBlock.BlockInfo.OuterEnd));
+                        lastBlock = new BlockBoundaryArtifact(e.Artifact.BlockInfo);
+                        artifactCollection.Add(lastBlock);
+                    }
+                }
+                // Don't add artifacts for HTML code lines.
+                if (e.Artifact.BlockInfo == null || !(e.Artifact.BlockInfo.Language ?? "").StartsWith("htm", StringComparison.OrdinalIgnoreCase))
+                    artifactCollection.Add(e.Artifact);
+            };
             parser.Parse();
+            if (lastBlock != null)
+                artifactCollection.Add(new Artifact(ArtifactTreatAs.Code, lastBlock.BlockInfo.OuterEnd));
         }
 
         public bool IsReady { get { return true; } }
@@ -26,6 +45,17 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public string RightSeparator { get { return "`"; } }
         public string LeftCommentSeparator { get { return "<!--"; } }
         public string RightCommentSeparator { get { return "<!--"; } }
+    }
+
+    ///<summary>An Artifact that marks the start or end boundaries of a block of code.</summary>
+    public class BlockBoundaryArtifact : Artifact, ICodeBlockArtifact
+    {
+        public BlockBoundaryArtifact(CodeBlockInfo blockInfo)
+            : base(ArtifactTreatAs.Code, blockInfo.OuterStart, 0, 0, MarkdownClassificationTypes.MarkdownCode, true)
+        {
+            BlockInfo = blockInfo;
+        }
+        public CodeBlockInfo BlockInfo { get; private set; }
     }
 
     public class MarkdownCodeArtifactCollection : ArtifactCollection
