@@ -302,7 +302,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     _dte.ItemOperations.OpenFile(filePath);
 
-                    Logger.ShowMessage(string.Format("Bundle error: The file '{0}' doesn't exist", node.InnerText));
+                    Logger.ShowMessage(String.Format("Bundle error: The file '{0}' doesn't exist", node.InnerText));
 
                     return;
                 }
