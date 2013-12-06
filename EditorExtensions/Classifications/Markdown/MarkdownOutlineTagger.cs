@@ -81,8 +81,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     // This makes the tooltip include syntax highlighting that
                     // does not exist in the innermost Markdown buffer.
                     parentView.BufferGraph
-                        .MapUpToBuffer(s, SpanTrackingMode.EdgeInclusive, parentView.TextBuffer)
-                            .Select(s2 => s2.Snapshot.CreateTrackingSpan(s, SpanTrackingMode.EdgeInclusive))
+                        .MapUpToBuffer(s, SpanTrackingMode.EdgeExclusive, parentView.TextBuffer)
+                            .Select(s2 => s2.Snapshot.CreateTrackingSpan(s, SpanTrackingMode.EdgeExclusive))
                     ))
                     .Skip(1)    // Skip first newline
                     .ToList(),
