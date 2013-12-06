@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.Text;
 using System;
 using System.IO;
-using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 
 namespace MadsKristensen.EditorExtensions
@@ -47,23 +46,14 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                const string title = "Web Essentials: File not found";
-                string message = String.Format("'{0}' could not be resolved.", _path);
-
-                if (WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow))
-                {
-                    Logger.Log(String.Format("{0}: {1}", title, message));
-                }
-                else
-                {
-                    MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                Logger.ShowMessage(String.Format("'{0}' could not be resolved.", _path), "Web Essentials: File not found");
             }
         }
 
         private void InsertEmbedString(ITextSnapshot snapshot, string dataUri)
         {
             EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
+            // it's not used anywhere...
             Declaration dec = _url.FindType<Declaration>();
 
             _span.TextBuffer.Replace(_span.GetSpan(snapshot), dataUri);

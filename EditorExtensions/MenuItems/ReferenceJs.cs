@@ -75,17 +75,7 @@ namespace MadsKristensen.EditorExtensions
             }
             catch (IOException)
             {
-                const string title = "Web Essentials";
-                string message = "Can't write to the folder: " + _referencesJsPath;
-
-                if (WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow))
-                {
-                    Logger.Log(String.Format("{0}: {1}", title, message));
-                }
-                else
-                {
-                    MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
+                Logger.ShowMessage("Can't write to the folder: " + _referencesJsPath);
             }
         }
     }

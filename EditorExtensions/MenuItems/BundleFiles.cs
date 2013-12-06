@@ -209,17 +209,7 @@ namespace MadsKristensen.EditorExtensions
 
                     if (File.Exists(bundlePath))
                     {
-                        const string title = "Web Essentials";
-                        const string message = "The bundle file already exists.";
-
-                        if (WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow))
-                        {
-                            Logger.Log(String.Format("{0}: {1}", title, message));
-                        }
-                        else
-                        {
-                            MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Warning);    
-                        }
+                        Logger.ShowMessage("The bundle file already exists.");
                     }
                     else
                     {
@@ -283,17 +273,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (outputAttr != null && (outputAttr.InnerText.Contains("/") || outputAttr.InnerText.Contains("\\")))
             {
-                const string title = "Web Essentials";
-                string message = String.Format("The 'output' attribute should contain a file name without a path; '{0}' is not valid", outputAttr.InnerText);
-
-                if (WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow))
-                {
-                    Logger.Log(String.Format("{0}: {1}", title, message));
-                }
-                else
-                {
-                    MessageBox.Show(message, title, MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
+                Logger.ShowMessage(String.Format("The 'output' attribute should contain a file name without a path; '{0}' is not valid", outputAttr.InnerText));
                 return;
             }
 
@@ -320,18 +300,9 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    string error = string.Format("Bundle error: The file '{0}' doesn't exist", node.InnerText);
                     _dte.ItemOperations.OpenFile(filePath);
 
-                    const string title = "Web Essentials";
-                    if (WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow))
-                    {
-                        Logger.Log(String.Format("{0}: {1}", title, error));
-                    }
-                    else
-                    {
-                        MessageBox.Show(error, title, MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
+                    Logger.ShowMessage(string.Format("Bundle error: The file '{0}' doesn't exist", node.InnerText));
 
                     return;
                 }
