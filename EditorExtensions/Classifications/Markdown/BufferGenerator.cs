@@ -36,6 +36,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                                                .GroupBy(a => contentTypeRegistry.FromFriendlyName(a.Language)))
             {
                 if (language.Key == null) continue;  // If we can't identify the language, just use normal artifacts.
+                // We can't nest HTML buffers
+                if (language.Key.IsOfType("html") || language.Key.IsOfType("htmlx"))
+                    continue;
                 PopulateLanguageBuffer(language.Key, language);
             }
         }
@@ -76,17 +79,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             if (embedder != null)
                 fullSource.AppendLine(embedder.GlobalSuffix);
             pBuffer.SetTextAndMappings(fullSource.ToString(), mappings.ToArray());
-            if (createdContentTypes.Add(contentType))
-            {
-                // If we needed a fake wrapper around the ContentType,
-                // revert the actual buffer to the real ContentType.
-                var native = contentType.GetActualContentType();
-                if (native != contentType)
-                    pBuffer.IProjectionBuffer.ChangeContentType(native, null);
 
+            if (createdContentTypes.Add(contentType))
                 if (embedder != null)
                     embedder.OnBlockCreated(EditorTree.TextBuffer, pBuffer);
-            }
         }
     }
 
@@ -107,61 +103,12 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             if (string.IsNullOrWhiteSpace(friendlyName))
                 return null;
-            if (friendlyName.Equals("html", StringComparison.OrdinalIgnoreCase) || friendlyName.Equals("htmlx", StringComparison.OrdinalIgnoreCase))
-                return new NonHtmlContentType(registry.GetContentType("htmlx"));
 
             string realName;
             if (!ContentTypeAliases.TryGetValue(friendlyName, out realName))
                 realName = friendlyName;
 
-            var ctype = registry.GetContentType(realName);
-            if (ctype == null) return null;
-            if (ctype.IsOfType("htmlx"))
-                return new NonHtmlContentType(ctype);
-            return ctype;
-        }
-
-        ///<summary>Gets the underlying native ContentType from a fake wrapper.</summary>
-        public static IContentType GetActualContentType(this IContentType contentType)
-        {
-            var fake = contentType as NonHtmlContentType;
-            if (fake != null)
-                return fake.Actual;
-            return contentType;
-        }
-
-        ///<summary>A wrapper around the HTMLX content type that lies in IsOfType().</summary>
-        ///<remarks>ProjectionBufferManager.GetProjectionBuffer() refuses to get a buffer for HTMLX, so I pass this ContentType to lie to it.</remarks>
-        class NonHtmlContentType : IContentType
-        {
-            public readonly IContentType Actual;
-            public NonHtmlContentType(IContentType actual) { Actual = actual; }
-            public IEnumerable<IContentType> BaseTypes { get { return Actual.BaseTypes; } }
-            public string DisplayName { get { return Actual.DisplayName; } }
-            public string TypeName { get { return Actual.TypeName; } }
-
-            public bool IsOfType(string type)
-            {
-                if (type == "htmlx")
-                    return false;
-                return Actual.IsOfType(type);
-            }
-
-            public override string ToString() { return Actual.ToString() + " - Fake"; }
-
-            public override bool Equals(object obj)
-            {
-                if (obj == null) return false;
-                var fakeout = obj as NonHtmlContentType;
-                if (fakeout != null)
-                    return this.Actual == fakeout.Actual;
-
-                return Actual.Equals(obj);
-            }
-            public override int GetHashCode()
-            {
-                return Actual.GetHashCode();
-            }
+            return registry.GetContentType(realName);
         }
     }
 }

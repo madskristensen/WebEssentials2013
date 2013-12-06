@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Projection;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using Microsoft.Web.Editor.Composition;
-using Microsoft.Web.Editor.Workspace;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
@@ -167,44 +164,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                                 Return Nothing
                             End Function
                             End Class" };
-        }
-    }
-
-    [Export(typeof(ICodeLanguageEmbedder))]
-    [ContentType("htmlx")]
-    public class HtmlEmbedder : ICodeLanguageEmbedder
-    {
-        public string GlobalPrefix { get { return null; } }
-        public string GlobalSuffix { get { return null; } }
-        public IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
-        {
-            return null;
-        }
-        //class HtmlDocumentFactoryProjectionsDisabled : IWebEditorDocumentFactory
-        //{
-        //    public IWebEditorDocument CreateDocument(IWebEditorInstance editorInstance)
-        //    {
-        //        HtmlEditorDocument result = new HtmlEditorDocument(editorInstance.ProjectedBuffer, editorInstance.WorkspaceItem, true);
-        //        return result;
-        //    }
-        //}
-
-
-        public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer)
-        {
-            var innerBuffer = projectionBuffer.IProjectionBuffer;
-            if (ServiceManager.GetService<IWebEditorInstance>(innerBuffer) == null)
-            {
-                var contentTypeImportComposer = new ContentTypeImportComposer<IWebEditorFactory>(WebEditor.CompositionService);
-                IWebEditorFactory factory = contentTypeImportComposer.GetImport(innerBuffer.ContentType.TypeName);
-
-                // ILSpy tells me that the WorkspaceItem is required
-                // by HtmlEditorInstance, but optional in *Document,
-                // and is not used elsewhere. I pass the parent item
-                // to avoid ArgumentNullException.
-                var workspaceItem = ServiceManager.GetService<IWebWorkspaceItem>(editorBuffer);
-                factory.CreateEditorInstance(workspaceItem, innerBuffer, new HtmlDocumentFactory());
-            }
         }
     }
 }
