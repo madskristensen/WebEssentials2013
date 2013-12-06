@@ -60,52 +60,38 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             };
         }
 
-        // This does not work properly for multiline fenced code-blocks,
-        // since we get each line separately.  If I can assume that this
-        // always runs sequentially without skipping, I can add state to
-        // track whether we're in a fenced block.
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
         {
             var results = new List<ClassificationSpan>();
 
             var artifacts = artifactsGetter();
-            int lastArtifact = artifacts.GetItemContainingUsingInclusion(span.Start, true);
 
-            if (lastArtifact >= 0)
-                results.AddRange(ClassifyArtifact(span.Snapshot, artifacts[lastArtifact]));
-            else
-                lastArtifact = artifacts.GetLastItemBeforeOrAtPosition(span.Start);
+            // In case the span starts in the middle
+            // of an HTML code block, we must always
+            // start from the previous artifact.
+            int thisArtifact = artifacts.GetLastItemBeforeOrAtPosition(span.Start);
 
-            while (true)
+            // For each artifact, classify the artifact and
+            // the plain text after it.  If the span starts
+            // before the first artifact, the 1st iteration
+            // will classify the leading text only.
+            while (thisArtifact < artifacts.Count)
             {
-                // Find the span between the previous artifact and the current one
-                SnapshotSpan? plainSpan;
-                // If there are no artifacts in the document, check the entire document
-                if (artifacts.Count == 0)
-                    plainSpan = span;
-                // If the span starts before the first artifact, check until the first artifact.
-                else if (lastArtifact < 0)
-                    plainSpan = new SnapshotSpan(span.Snapshot, Span.FromBounds(0, artifacts[0].Start));
-                // If we just checked the final artifact, check the rest of the document
-                else if (lastArtifact >= artifacts.Count - 1)
-                    plainSpan = new SnapshotSpan(span.Snapshot, Span.FromBounds(artifacts[lastArtifact].End, span.Snapshot.Length));
-                // Otherwise, check between the two artifacts.
-                else
-                    plainSpan = new SnapshotSpan(span.Snapshot, Span.FromBounds(artifacts[lastArtifact].End, artifacts[lastArtifact + 1].Start));
+                // If the span starts before the first artifact, thisArtifact will be negative.
+                if (thisArtifact >= 0)
+                    results.AddRange(ClassifyArtifacts(span.Snapshot, artifacts, ref thisArtifact));
+
+                int plainStart = thisArtifact < 0 ? 0 : artifacts[thisArtifact].End;
+                thisArtifact++;
+                int plainEnd = thisArtifact == artifacts.Count ? span.Snapshot.Length : artifacts[thisArtifact].Start;
 
                 // Chop off any part before or after the span being classified
-                plainSpan = plainSpan.Value.Intersection(span);
+                var plainSpan = span.Intersection(Span.FromBounds(plainStart, plainEnd));
 
                 // If there was no intersection, we've passed the target span and can stop.
                 if (plainSpan == null) break;
 
                 results.AddRange(ClassifyPlainSpan(plainSpan.Value));
-
-                lastArtifact++;
-                // If we're at the last artifact, stop after processing whatever text came after it.
-                if (lastArtifact == artifacts.Count)
-                    break;
-                results.AddRange(ClassifyArtifact(span.Snapshot, artifacts[lastArtifact]));
             }
 
             return results;
@@ -115,6 +101,37 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             var text = span.GetText();
             return typeRegexes.SelectMany(t => ClassifyMatches(span, text, t.Item1, t.Item2));
+        }
+        ///<summary>Classifies an entire code block from any artifact in the block.</summary>
+        /// <param name="index">The index of the artifact that the classifier is up to.  The method will update this parameter to point to the last artifact in the block.</param>
+        private IEnumerable<ClassificationSpan> ClassifyArtifacts(ITextSnapshot snapshot, ArtifactCollection artifacts, ref int index)
+        {
+            var blockArtifact = artifacts[index] as ICodeBlockArtifact;
+            if (blockArtifact == null)
+            {
+                if (artifacts[index].TreatAs == ArtifactTreatAs.Code)
+                    return ClassifyArtifact(snapshot, artifacts[index]);
+                else
+                    return Enumerable.Empty<ClassificationSpan>();
+            }
+
+            IEnumerable<IArtifact> toClassify = blockArtifact.BlockInfo.CodeLines;
+
+            // Find the end of the artifacts for this code block
+            for (; index < artifacts.Count; index++)
+            {
+                var boundary = artifacts[index] as BlockBoundaryArtifact;
+                // If we reached the end boundary, consume it & stop
+                if (boundary != null && boundary.Boundary == BoundaryType.End)
+                    break;
+
+                // If a non-code artifact is interspersed inside a
+                // code block (eg, quote prefixes), handle it too.
+                if (boundary == null && !(artifacts[index] is CodeLineArtifact))
+                    toClassify = toClassify.Concat(new[] { artifacts[index] });
+            }
+
+            return toClassify.SelectMany(a => ClassifyArtifact(snapshot, a));
         }
         private IEnumerable<ClassificationSpan> ClassifyArtifact(ITextSnapshot snapshot, IArtifact artifact)
         {

@@ -24,10 +24,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         }
 
         ///<summary>Occurs when an artifact is found.</summary>
-        public event EventHandler<MarkdownArtifactEventArgs> ArtifactFound;
+        public event EventHandler<ArtifactEventArgs> ArtifactFound;
         ///<summary>Raises the ArtifactFound event.</summary>
-        ///<param name="e">A  ArtifactEventArgs object that provides the event data.</param>
-        internal protected virtual void OnArtifactFound(MarkdownArtifactEventArgs e)
+        ///<param name="e">An ArtifactEventArgs object that provides the event data.</param>
+        internal protected virtual void OnArtifactFound(ArtifactEventArgs e)
         {
             if (ArtifactFound != null)
                 ArtifactFound(this, e);
@@ -40,8 +40,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
 
             protected readonly CharacterStream stream;
-            private readonly Action<CodeLineArtifact> artifactReporter;
-            protected ParserBase(CharacterStream stream, Action<CodeLineArtifact> reporter)
+            private readonly Action<Artifact> artifactReporter;
+            protected ParserBase(CharacterStream stream, Action<Artifact> reporter)
             {
                 this.stream = stream;
                 this.artifactReporter = reporter;
@@ -50,8 +50,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             protected void ReportArtifact(CodeLineArtifact artifact)
             {
-                if (artifact.BlockInfo != null)
-                    artifact.BlockInfo.CodeLines.Add(artifact);
+                artifact.BlockInfo.CodeLines.Add(artifact);
+                artifactReporter(artifact);
+            }
+            protected void ReportArtifact(Artifact artifact)
+            {
                 artifactReporter(artifact);
             }
             protected void SkipSpaces(int max)
@@ -128,7 +131,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             private int quoteDepth;
 
-            protected BlockParser(CharacterStream stream, Action<CodeLineArtifact> reporter) : base(stream, reporter) { }
+            protected BlockParser(CharacterStream stream, Action<Artifact> reporter) : base(stream, reporter) { }
 
             private int ReadBlockQuotePrefix(int? maxDepth = null)
             {
@@ -318,7 +321,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         class ContentBlockParser : BlockParser
         {
-            public ContentBlockParser(CharacterStream stream, Action<CodeLineArtifact> reporter) : base(stream, reporter) { }
+            public ContentBlockParser(CharacterStream stream, Action<Artifact> reporter) : base(stream, reporter) { }
 
             void ReadInlineCodeBlock()
             {
@@ -334,10 +337,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         stream.MoveToNextChar();
                     }
 
-                    ReportArtifact(new CodeLineArtifact(
-                        null,
+                    ReportArtifact(new Artifact(
+                        ArtifactTreatAs.Code,
                         TextRange.FromBounds(peek.StartPosition, stream.Position + 1),
-                        1, 1
+                        1, 1,
+                        MarkdownClassificationTypes.MarkdownCode, true
                     ));
                     peek.Consume();
                 }
@@ -367,7 +371,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         class IndentedCodeBlockParser : BlockParser
         {
-            public IndentedCodeBlockParser(CharacterStream stream, Action<CodeLineArtifact> reporter) : base(stream, reporter) { }
+            public IndentedCodeBlockParser(CharacterStream stream, Action<Artifact> reporter) : base(stream, reporter) { }
 
             // TODO: Detect numbered list and require 8 spaces
             int spaceCount = 4;
@@ -378,7 +382,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             int lineStart;
             protected override bool ReadContent()
             {
-                var blockInfo = new CodeBlockInfo { OuterStart = new TextRange(stream.Position) };
+                var blockInfo = new CodeBlockInfo { OuterStart = new TextRange(stream.Position, 0) };
                 lineStart = stream.Position;
                 if (!TryReadSpaces(spaceCount))
                     return false;
@@ -388,7 +392,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     var range = TryConsumeContentLine();
                     if (range == null)
                         break;
-                    blockInfo.OuterEnd = new TextRange(range.End);
+                    blockInfo.OuterEnd = new TextRange(range.End, 0);
                     // Get the character count of the indent, which may be different if tabs are involved.
                     var indentSize = range.Start - thisLineStart;
                     range.Expand(-indentSize, 0);
@@ -420,7 +424,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         class FencedCodeBlockParser : BlockParser
         {
-            public FencedCodeBlockParser(CharacterStream stream, Action<CodeLineArtifact> reporter) : base(stream, reporter) { }
+            public FencedCodeBlockParser(CharacterStream stream, Action<Artifact> reporter) : base(stream, reporter) { }
 
             string fence;
             CodeBlockInfo blockInfo;
@@ -435,7 +439,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 else
                     return false;
 
-                blockInfo = new CodeBlockInfo { OuterStart = new TextRange(sepStart, stream.Position) };
+                blockInfo = new CodeBlockInfo { OuterStart = TextRange.FromBounds(sepStart, stream.Position) };
 
                 var langRange = TryConsumeContentLine();
                 if (langRange != null)
@@ -448,7 +452,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         break;
                     ReportArtifact(new CodeLineArtifact(blockInfo, range, 0, 0));
                 }
-
+                // If the stream ended without a closing fence, give an empty end.
+                if (blockInfo.OuterEnd == null)
+                    blockInfo.OuterEnd = new TextRange(stream.Length, 0);
                 return true;
             }
 
@@ -460,7 +466,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     var sepStart = stream.Position;
                     if (!TryConsume(fence))
                         return false;
-                    blockInfo.OuterEnd = new TextRange(sepStart, stream.Position);
+                    blockInfo.OuterEnd = TextRange.FromBounds(sepStart, stream.Position);
                     if (!stream.IsAtLastCharacter() && !TrySkipBlankLine(consumeCodeBlock: true))    // If there is any content after the fence, the block did not end.
                         return false;
                     peek.Consume();
@@ -471,7 +477,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         public void Parse()
         {
-            Action<CodeLineArtifact> reporter = a => OnArtifactFound(new MarkdownArtifactEventArgs(a));
+            Action<Artifact> reporter = a => OnArtifactFound(new ArtifactEventArgs(a));
             while (!stream.IsAtLastCharacter())
             {
                 // As soon as a parse succeeds, try all parsers again, so that
@@ -519,10 +525,12 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public CodeLineArtifact(CodeBlockInfo blockInfo, ITextRange range, int leftLength, int rightLength)
             : base(ArtifactTreatAs.Code, range, leftLength, rightLength, MarkdownClassificationTypes.MarkdownCode, true)
         {
+            if (blockInfo == null) throw new ArgumentNullException("blockInfo");
+
             BlockInfo = blockInfo;
         }
 
-        ///<summary>Gets information about the containing code block, if any.</summary>
+        ///<summary>Gets information about the containing code block.</summary>
         public CodeBlockInfo BlockInfo { get; private set; }
     }
     ///<summary>An artifact associated with a code block.</summary>
@@ -541,12 +549,12 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     }
 
     ///<summary>Provides data for Artifact events.</summary>
-    public class MarkdownArtifactEventArgs : EventArgs
+    public class ArtifactEventArgs : EventArgs
     {
-        ///<summary>Creates a new MarkdownArtifactEventArgs instance.</summary>
-        public MarkdownArtifactEventArgs(CodeLineArtifact artifact) { Artifact = artifact; }
+        ///<summary>Creates a new ArtifactEventArgs instance.</summary>
+        public ArtifactEventArgs(Artifact artifact) { Artifact = artifact; }
 
         ///<summary>Gets the artifact.</summary>
-        public CodeLineArtifact Artifact { get; private set; }
+        public Artifact Artifact { get; private set; }
     }
 }

@@ -78,9 +78,14 @@ namespace WebEssentialsTests
 ```cs
 var x = 2;
 var y = 3;").Should().Equal(Code("var x = 2;"), Code("var y = 3;"));
+
             Classify(@"    font-weight: _bold_;
     Normal line
       Furtherly indented line").Should().Equal(Code("font-weight: _bold_;"), Code("Normal line"), Code("  Furtherly indented line"));
+
+            Classify(@"    Indented line
+_italic_ `code`").Should().Equal(Code("Indented line"), Italic("_italic_"), Code("`code`"));
+
             Classify(@"
 ```html
 <b>**ABC**!</b>
@@ -95,17 +100,19 @@ var y = 3;").Should().Equal(Code("var x = 2;"), Code("var y = 3;"));
             Classify(@"**a** (< _b_ `cod>)e`").Should().Equal(Italic("_b_"), Code("`code`"));
             Classify(@"`co(<de` _b_  >)**a**").Should().Equal(Code("`code`"), Italic("_b_"));
             Classify(@"
+    Earlier block
+
     Indented code block
     Some (<code
     More code!
 
-**Bold**>)").Should().Equal(Code("Some code"), Code("More code!"), Bold("**Bold**"));
+**Bold**>)").Should().Equal(Code("Indented code block"), Code("Some code"), Code("More code!"), Bold("**Bold**"));
             Classify(@"
 ```html
-(<<b>**ABC**!</b>
+<b>(<**ABC**!</b>
 <code>`hi`</code>
 ```
-**Bold**>)").Should().Equal(Code("<b>**ABC**!</b>"), Code("<code>`hi`</code>"), Bold("**Bold**"));
+**Bold** `a`>)").Should().Equal(Code("<b>**ABC**!</b>"), Code("<code>`hi`</code>"), Bold("**Bold**"), Code("`a`"));
         }
         // TODO: Expand partial span until newline to catch constructs containing span end.
         // TODO: Test quoted code blocks

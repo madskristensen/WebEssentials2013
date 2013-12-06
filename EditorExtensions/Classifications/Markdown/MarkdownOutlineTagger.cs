@@ -172,10 +172,15 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
                 // Skip artifacts that aren't in code blocks, and
                 // those in code blocks we have already returned.
-                if (cba == null || cba.BlockInfo == null || cba.BlockInfo == lastBlock)
+                if (cba == null || cba.BlockInfo == lastBlock)
                     continue;
 
                 lastBlock = cba.BlockInfo;
+
+                // Skip single-line indented code blocks, but not single-line fenced code blocks
+                if (lastBlock.CodeLines.Count == 1 && lastBlock.OuterEnd.End == lastBlock.CodeLines[0].End)
+                    continue;
+
                 yield return new TagSpan<IOutliningRegionTag>(
                     new SnapshotSpan(spans[0].Snapshot, Span.FromBounds(lastBlock.OuterStart.Start, lastBlock.OuterEnd.End)),
                     tagCreator(
@@ -183,7 +188,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         lastBlock.CodeLines
                                  .Select(a => a.InnerRange.ToSnapshotSpan(spans[0].Snapshot))
                                  .ToList()      // Force eager evaluation; this query is only enumerated when a tooltip is shown, so we need to grab the snapshot
-                            )
+                    )
                 );
                 if (lastBlock.OuterStart.Start > spans.Last().End)
                     break;  // If we have completely passed the requested range, stop.

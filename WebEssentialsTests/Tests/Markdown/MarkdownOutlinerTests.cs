@@ -83,11 +83,20 @@ namespace WebEssentialsTests
 
             TestOutlines(@"
     Single indented line should not be outlines");
+            TestOutlines(@"
+{[    Line 1
+    Line 2]}",
+    Tuple.Create("[ Code Block ]", new[] { "Line 1", "Line 2" })
+);
 
             TestOutlines(@"{[```
 First line
 Second line
 ```]}", Tuple.Create("[ Code Block ]", new[] { "First line", "Second line" }));
+
+            TestOutlines(@"{[```
+Single line should still be outlined
+```]}", Tuple.Create("[ Code Block ]", new[] { "Single line should still be outlined" }));
 
             TestOutlines(@"
 {[    First line

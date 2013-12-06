@@ -17,26 +17,35 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public void GetArtifacts(ITextProvider text, ArtifactCollection artifactCollection)
         {
             var parser = new MarkdownParser(new CharacterStream(text));
-            BlockBoundaryArtifact lastBlock = null;
+            CodeBlockInfo lastBlock = null;
             parser.ArtifactFound += (s, e) =>
             {
-                if (e.Artifact.BlockInfo != null)
+                var cla = e.Artifact as CodeLineArtifact;
+                if (cla != null)
                 {
-                    if (lastBlock == null || lastBlock.BlockInfo != e.Artifact.BlockInfo)
+                    if (lastBlock == null || lastBlock != cla.BlockInfo)
                     {
                         if (lastBlock != null)
-                            artifactCollection.Add(new Artifact(ArtifactTreatAs.Code, lastBlock.BlockInfo.OuterEnd));
-                        lastBlock = new BlockBoundaryArtifact(e.Artifact.BlockInfo);
-                        artifactCollection.Add(lastBlock);
+                            artifactCollection.Add(new BlockBoundaryArtifact(lastBlock, BoundaryType.End));
+                        lastBlock = cla.BlockInfo;
+                        artifactCollection.Add(new BlockBoundaryArtifact(cla.BlockInfo, BoundaryType.Start));
                     }
+
+                    // Don't add artifacts for HTML code lines.
+                    if ((cla.BlockInfo.Language ?? "").StartsWith("htm", StringComparison.OrdinalIgnoreCase))
+                        return;
                 }
-                // Don't add artifacts for HTML code lines.
-                if (e.Artifact.BlockInfo == null || !(e.Artifact.BlockInfo.Language ?? "").StartsWith("htm", StringComparison.OrdinalIgnoreCase))
-                    artifactCollection.Add(e.Artifact);
+                // If we got a non-block artifact after a block end, add the end marker.
+                else if (lastBlock != null && e.Artifact.Start >= lastBlock.OuterEnd.End)
+                {
+                    artifactCollection.Add(new BlockBoundaryArtifact(lastBlock, BoundaryType.End));
+                    lastBlock = null;
+                }
+                artifactCollection.Add(e.Artifact);
             };
             parser.Parse();
             if (lastBlock != null)
-                artifactCollection.Add(new Artifact(ArtifactTreatAs.Code, lastBlock.BlockInfo.OuterEnd));
+                artifactCollection.Add(new BlockBoundaryArtifact(lastBlock, BoundaryType.End));
         }
 
         public bool IsReady { get { return true; } }
@@ -50,13 +59,17 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     ///<summary>An Artifact that marks the start or end boundaries of a block of code.</summary>
     public class BlockBoundaryArtifact : Artifact, ICodeBlockArtifact
     {
-        public BlockBoundaryArtifact(CodeBlockInfo blockInfo)
-            : base(ArtifactTreatAs.Code, blockInfo.OuterStart, 0, 0, MarkdownClassificationTypes.MarkdownCode, true)
+        public BlockBoundaryArtifact(CodeBlockInfo blockInfo, BoundaryType type)
+            : base(ArtifactTreatAs.Code, type == BoundaryType.Start ? blockInfo.OuterStart : blockInfo.OuterEnd, 0, 0, MarkdownClassificationTypes.MarkdownCode, true)
         {
             BlockInfo = blockInfo;
+            Boundary = type;
         }
         public CodeBlockInfo BlockInfo { get; private set; }
+        public BoundaryType Boundary { get; private set; }
     }
+
+    public enum BoundaryType { Start, End }
 
     public class MarkdownCodeArtifactCollection : ArtifactCollection
     {
