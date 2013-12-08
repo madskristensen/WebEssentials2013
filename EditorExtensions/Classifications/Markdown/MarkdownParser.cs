@@ -16,9 +16,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
     public class MarkdownParser
     {
-        readonly CharacterStream stream;
+        readonly TabAwareCharacterStream stream;
 
-        public MarkdownParser(CharacterStream stream)
+        public MarkdownParser(TabAwareCharacterStream stream)
         {
             this.stream = stream;
         }
@@ -32,16 +32,16 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             if (ArtifactFound != null)
                 ArtifactFound(this, e);
         }
-        // CharacterStream cannot overflow; setting Position
+        // TabAwareCharacterStream cannot overflow; setting Position
         // past the end will move the the end and return \0.
         // The parsing logic is based on GitHub experiments.
 
         private abstract class ParserBase
         {
 
-            protected readonly CharacterStream stream;
+            protected readonly TabAwareCharacterStream stream;
             private readonly Action<Artifact> artifactReporter;
-            protected ParserBase(CharacterStream stream, Action<Artifact> reporter)
+            protected ParserBase(TabAwareCharacterStream stream, Action<Artifact> reporter)
             {
                 this.stream = stream;
                 this.artifactReporter = reporter;
@@ -131,7 +131,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             private int quoteDepth;
 
-            protected BlockParser(CharacterStream stream, Action<Artifact> reporter) : base(stream, reporter) { }
+            protected BlockParser(TabAwareCharacterStream stream, Action<Artifact> reporter) : base(stream, reporter) { }
 
             private int ReadBlockQuotePrefix(int? maxDepth = null)
             {
@@ -198,7 +198,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             ///<returns>False if the block had ended (the stream will be up to the next block).</returns>
             protected bool MoveToNextContentChar()
             {
-                // CharacterStream can go past the end of the stream,
+                // TabAwareCharacterStream can go past the end of the stream,
                 // setting CurrentChar equal to '\0', and Position ==
                 // Length.  This state is not a content character; we
                 // stop at the last valid CurrentChar.
@@ -321,7 +321,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         class ContentBlockParser : BlockParser
         {
-            public ContentBlockParser(CharacterStream stream, Action<Artifact> reporter) : base(stream, reporter) { }
+            public ContentBlockParser(TabAwareCharacterStream stream, Action<Artifact> reporter) : base(stream, reporter) { }
 
             void ReadInlineCodeBlock()
             {
@@ -371,7 +371,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         class IndentedCodeBlockParser : BlockParser
         {
-            public IndentedCodeBlockParser(CharacterStream stream, Action<Artifact> reporter) : base(stream, reporter) { }
+            public IndentedCodeBlockParser(TabAwareCharacterStream stream, Action<Artifact> reporter) : base(stream, reporter) { }
 
             // TODO: Detect numbered list and require 8 spaces
             int spaceCount = 4;
@@ -424,7 +424,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         class FencedCodeBlockParser : BlockParser
         {
-            public FencedCodeBlockParser(CharacterStream stream, Action<Artifact> reporter) : base(stream, reporter) { }
+            public FencedCodeBlockParser(TabAwareCharacterStream stream, Action<Artifact> reporter) : base(stream, reporter) { }
 
             string fence;
             CodeBlockInfo blockInfo;
@@ -495,10 +495,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     public class StreamPeeker : IDisposable
     {
         public int StartPosition { get; private set; }
-        readonly CharacterStream stream;
+        readonly TabAwareCharacterStream stream;
         private bool shouldRevert = true;
 
-        public StreamPeeker(CharacterStream stream)
+        public StreamPeeker(TabAwareCharacterStream stream)
         {
             this.stream = stream;
             this.StartPosition = stream.Position;
@@ -556,5 +556,58 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         ///<summary>Gets the artifact.</summary>
         public Artifact Artifact { get; private set; }
+    }
+
+    ///<summary>A TabAwareCharacterStream that consumes tabs as spaces without affecting reported character positions.</summary>
+    ///<remarks><see cref="CharacterStream"/> doesn't have any virtual methods, so I need to recreate it from scratch.</remarks>
+    public class TabAwareCharacterStream
+    {
+        private int position;
+        public int TabWidth { get; private set; }
+        public TabAwareCharacterStream(ITextProvider text, int tabWidth = 4)
+        {
+            TabWidth = tabWidth;
+            Text = text;
+            Position = 0;
+        }
+
+        public TabAwareCharacterStream(string text, int tabWidth = 4) :this(new TextStream(text)) { }
+
+        public ITextProvider Text { get; private set; }
+        public int Length { get { return Text.Length; } }
+        public string GetSubstringAt(int start, int length) { return Text.GetText(new TextRange(start, length)); }
+        public bool CompareTo(int position, int length, string text, bool ignoreCase)
+        {
+            return Text.CompareTo(position, length, text, ignoreCase);
+        }
+
+        public int Position
+        {
+            get { return position; }
+            set
+            {
+                if (value == 0) value = 0;
+                if (value > Length) value = Length;
+                position = value;
+                CurrentChar = value == Length ? '\0' : Text[position];
+            }
+        }
+        public char CurrentChar { get; private set; }
+
+        public char PrevChar { get { return Position == 0 ? '\0' : Text[Position - 1]; } }
+        public char NextChar { get { return Position >= Length - 1 ? '\0' : Text[Position + 1]; } }
+
+        ///<summary>Returns the number of characters remaining before the end of the stream.  This will only be zero when the current position is past the end.</summary>
+        public int DistanceFromEnd { get { return Length - Position; } }
+
+        public void MoveToNextChar() { Advance(1); }
+        public void Advance(int offset) { Position += offset; }
+
+        ///<summary>Checks whether the current character is a newline character.</summary>
+        public bool IsAtNewLine() { return CurrentChar == '\r' || CurrentChar == '\n'; }
+
+        ///<summary>Checks whether the current position is after the end of the stream.  If true, the current character will be '\0'.</summary>
+        public bool IsEndOfStream() { return Position == Length; }
+
     }
 }

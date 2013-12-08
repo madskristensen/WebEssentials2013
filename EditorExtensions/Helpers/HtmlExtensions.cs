@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using MadsKristensen.EditorExtensions.Classifications.Markdown;
 using Microsoft.Html.Core;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text;
@@ -10,14 +11,14 @@ namespace MadsKristensen.EditorExtensions
 {
     public static class HtmlExtensions
     {
-        public static bool CompareCurrent(this CharacterStream stream, string text, bool ignoreCase = false)
+        public static bool CompareCurrent(this TabAwareCharacterStream stream, string text, bool ignoreCase = false)
         {
             return stream.CompareTo(stream.Position, text.Length, text, ignoreCase);
         }
 
         ///<summary>Indicates whether a stream is current at the last valid character.</summary>
         ///<remarks>IsEndOfStream() returns true if the stream is _after_ the last character, at '\0'.</remarks>
-        public static bool IsAtLastCharacter(this CharacterStream stream)
+        public static bool IsAtLastCharacter(this TabAwareCharacterStream stream)
         {
             return stream.DistanceFromEnd <= 1;
         }

@@ -16,7 +16,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         public void GetArtifacts(ITextProvider text, ArtifactCollection artifactCollection)
         {
-            var parser = new MarkdownParser(new CharacterStream(text));
+            var parser = new MarkdownParser(new TabAwareCharacterStream(text));
             CodeBlockInfo lastBlock = null;
             parser.ArtifactFound += (s, e) =>
             {

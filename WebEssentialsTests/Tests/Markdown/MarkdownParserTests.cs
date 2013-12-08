@@ -12,7 +12,7 @@ namespace WebEssentialsTests
         static List<string> ParseCodeBlocks(string markdown)
         {
             var retVal = new List<string>();
-            var parser = new MarkdownParser(new CharacterStream(markdown));
+            var parser = new MarkdownParser(new TabAwareCharacterStream(markdown));
             parser.ArtifactFound += (s, e) => retVal.Add(markdown.Substring(e.Artifact.InnerRange.Start, e.Artifact.InnerRange.Length));
             parser.Parse();
             return retVal;
