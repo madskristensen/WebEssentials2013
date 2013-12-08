@@ -94,11 +94,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         static readonly IReadOnlyDictionary<string, string> ContentTypeAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             { "C#",             "CSharp" },
-            { "CS",             "CSharp" },
-            { "VB",             "Basic" },
             { "VB.Net",         "Basic" },
             { "VisualBasic",    "Basic" },
-            { "JS",             "Javascript" },
             { "JScript",        "Javascript" }
         };
 
@@ -111,7 +108,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             if (!ContentTypeAliases.TryGetValue(friendlyName, out realName))
                 realName = friendlyName;
 
-            return registry.GetContentType(realName);
+            return registry.GetContentType(realName)
+                ?? WebEditor.ExportProvider.GetExport<IFileExtensionRegistryService>().Value.GetContentTypeForExtension(friendlyName);
         }
     }
 }
