@@ -85,7 +85,7 @@ namespace MadsKristensen.EditorExtensions
                 sb.AppendFormat("declare module {0} {{\r\n", ns.Key);
                 sb.AppendLine();
 
-                foreach (IntellisenseObject io in objects)
+                foreach (IntellisenseObject io in ns)
                 {
                     if (io.Kind == "vsCMElementEnum")
                     {
