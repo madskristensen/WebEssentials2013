@@ -52,11 +52,11 @@ namespace MadsKristensen.EditorExtensions
 
         private static string Hash(string original, HashAlgorithm algorithm)
         {
-            byte[] hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(original));            
+            byte[] hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(original));
             algorithm.Dispose();
 
             StringBuilder sb = new StringBuilder();
-            
+
             foreach (byte b in hash)
             {
                 sb.Append(b.ToString("x2").ToLowerInvariant());
@@ -72,7 +72,12 @@ namespace MadsKristensen.EditorExtensions
 
             menuCommand.BeforeQueryStatus += (s, e) =>
             {
-                string selection = GetTextDocument().Selection.Text;
+                var document = GetTextDocument();
+                
+                if (document == null)
+                    return;
+
+                string selection = document.Selection.Text;
                 menuCommand.Enabled = selection.Length > 0 && callback(selection) != selection;
             };
 
@@ -81,12 +86,19 @@ namespace MadsKristensen.EditorExtensions
 
         private TextDocument GetTextDocument()
         {
-            return _dte.ActiveDocument.Object("TextDocument") as TextDocument;
+            if (_dte.ActiveDocument != null)
+                return _dte.ActiveDocument.Object("TextDocument") as TextDocument;
+
+            return null;
         }
 
         private void Replace(Replacement callback)
         {
             TextDocument document = GetTextDocument();
+
+            if (document == null)
+                return;
+
             string replacement = callback(document.Selection.Text);
 
             _dte.UndoContext.Open(callback.Method.Name);
