@@ -2,7 +2,6 @@
 using FluentAssertions;
 using MadsKristensen.EditorExtensions.Classifications.Markdown;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Web.Core;
 
 namespace WebEssentialsTests
 {

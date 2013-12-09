@@ -1,5 +1,4 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using MadsKristensen.EditorExtensions.Classifications.Markdown;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

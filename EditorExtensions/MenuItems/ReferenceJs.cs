@@ -71,7 +71,7 @@ namespace MadsKristensen.EditorExtensions
             }
             catch (IOException)
             {
-                System.Windows.Forms.MessageBox.Show("Can't write to the folder");
+                Logger.ShowMessage("Can't write to the folder: " + _referencesJsPath);
             }
         }
     }

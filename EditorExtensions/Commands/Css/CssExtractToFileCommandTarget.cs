@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Windows;
 using EnvDTE80;
 using Microsoft.VisualBasic;
 using Microsoft.VisualStudio.Text.Editor;
@@ -63,7 +62,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    MessageBox.Show("The file already exist", "Web Essentials", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Logger.ShowMessage("The file already exists.");
                 }
             }
 

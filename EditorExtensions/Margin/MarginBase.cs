@@ -202,15 +202,17 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (isSuccess)
                 {
-                    SetText(result);
-
                     if (!IsFirstRun)
                     {
                         if (IsSaveFileEnabled)
-                            WriteCompiledFile(result, state);
+                            WriteCompiledFile(ref result, state);
 
                         MinifyFile(state, result);
                     }
+
+                    // Moved after the WriteCompiledFile method to 
+                    // get the updated source map in CSS file comment.
+                    SetText(result);
                 }
                 else
                 {
@@ -224,7 +226,7 @@ namespace MadsKristensen.EditorExtensions
 
         public abstract void MinifyFile(string fileName, string source);
 
-        protected void WriteCompiledFile(string content, string currentFileName)
+        protected void WriteCompiledFile(ref string content, string currentFileName)
         {
             string extension = Path.GetExtension(currentFileName);
             string fileName = null;
@@ -233,6 +235,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 case ".less":
                     fileName = GetCompiledFileName(currentFileName, ".css", CompileToLocation);
+                    UpdateLessSourceMapUrls(ref content, currentFileName, fileName);
                     break;
 
                 case ".coffee":
@@ -261,6 +264,12 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        protected virtual void UpdateLessSourceMapUrls(ref string content, string currentFileName, string fileName)
+        {
+            // If not overridden by derived, throw exception.
+            throw new NotImplementedException();
+        }
+
         public static string GetCompiledFileName(string sourceFileName, string compiledExtension, string customFolder)
         {
             string sourceExtension = Path.GetExtension(sourceFileName);
@@ -275,7 +284,7 @@ namespace MadsKristensen.EditorExtensions
                 return Path.Combine(sourceDir, compiledFileName);
             }
 
-            if (customFolder != null && customFolder.Length > 0)
+            if (!string.IsNullOrEmpty(customFolder) && customFolder != "false" && customFolder != "true")
             {
                 if (customFolder.StartsWith("~/") || customFolder.StartsWith("/"))
                 {
@@ -309,9 +318,8 @@ namespace MadsKristensen.EditorExtensions
 
             if (item != null && item.ContainingProject != null && !string.IsNullOrEmpty(item.ContainingProject.FullName))
             {
-                if (item.ProjectItems != null && Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
-                {
-                    // WAP
+                if (item.ContainingProject.GetType().Name != "OAProject" && item.ProjectItems != null && Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
+                {   // WAP
                     return item.ProjectItems.AddFromFile(fileName);
                 }
                 else
@@ -323,7 +331,7 @@ namespace MadsKristensen.EditorExtensions
             return null;
         }
 
-        private bool WriteFile(string content, string fileName, bool fileExist, bool fileWritten)
+        protected bool WriteFile(string content, string fileName, bool fileExist, bool fileWritten)
         {
             try
             {

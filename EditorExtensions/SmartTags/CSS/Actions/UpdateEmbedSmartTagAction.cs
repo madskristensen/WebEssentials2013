@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
-using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 using Microsoft.VisualStudio.Text;
-using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -26,12 +23,12 @@ namespace MadsKristensen.EditorExtensions
 
         public override string DisplayText
         {
-            get { return string.Format(CultureInfo.CurrentCulture, Resources.UpdateEmbedSmartTagActionName, _path); }
+            get { return string.Format(Resources.UpdateEmbedSmartTagActionName, _path); }
         }
 
         public override void Invoke()
         {
-            string filePath = ProjectHelpers.ToAbsoluteFilePath(_path, _span.TextBuffer.GetFileName());
+            string filePath = ProjectHelpers.ToAbsoluteFilePath(_path, ProjectHelpers.GetActiveFile());
             ApplyChanges(filePath);
         }
 
@@ -46,7 +43,7 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                MessageBox.Show("'" + _path + "' could not be resolved.", "File not found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Logger.ShowMessage(String.Format("'{0}' could not be resolved.", _path), "Web Essentials: File not found");
             }
         }
 
@@ -55,7 +52,6 @@ namespace MadsKristensen.EditorExtensions
             using (EditorExtensionsPackage.UndoContext((DisplayText)))
             {
                 _span.TextBuffer.Replace(_span.GetSpan(snapshot), dataUri);
-
                 EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
                 EditorExtensionsPackage.ExecuteCommand("Edit.CollapsetoDefinitions");
             }

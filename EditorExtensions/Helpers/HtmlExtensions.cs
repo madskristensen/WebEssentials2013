@@ -5,7 +5,6 @@ using Microsoft.Html.Core;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.Web.Core;
 
 namespace MadsKristensen.EditorExtensions
 {

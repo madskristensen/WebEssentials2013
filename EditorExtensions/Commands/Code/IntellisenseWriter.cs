@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -46,23 +47,26 @@ namespace MadsKristensen.EditorExtensions
 
         private static void WriteTypeScript(List<IntellisenseObject> objects, StringBuilder sb)
         {
-            sb.AppendLine("declare module server {");
-            sb.AppendLine();
-
-            foreach (IntellisenseObject io in objects)
+            foreach (var ns in objects.GroupBy(o => o.Namespace))
             {
-                sb.AppendLine("\tinterface " + io.Name + "{");
+                sb.AppendFormat("declare module {0} {{\r\n", ns.Key);
+                sb.AppendLine();
 
-                foreach (var p in io.Properties)
+                foreach (IntellisenseObject io in ns)
                 {
-                    string value = GetValue(p.Type);
-                    sb.AppendLine("\t\t" + p.Name + ": " + value + ";");
+                    sb.AppendLine("\tinterface " + io.Name + "{");
+
+                    foreach (var p in io.Properties)
+                    {
+                        string value = GetValue(p.Type);
+                        sb.AppendLine("\t\t" + p.Name + ": " + value + ";");
+                    }
+
+                    sb.AppendLine("\t}");
                 }
 
                 sb.AppendLine("}");
             }
-
-            sb.AppendLine("}");
         }
 
         private static void WriteFileToDisk(string fileName, StringBuilder sb)
@@ -113,6 +117,7 @@ namespace MadsKristensen.EditorExtensions
     [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Intellisense")]
     public class IntellisenseObject
     {
+        public string Namespace { get; set; }
         public string Name { get; set; }
         public string FullName { get; set; }
         public List<IntellisenseProperty> Properties { get; set; }

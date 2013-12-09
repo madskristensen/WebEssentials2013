@@ -9,6 +9,7 @@ namespace MadsKristensen.EditorExtensions
             public const string KeepImportantComments = "KeepImportantComments";
             public const string EnableEnterFormat = "EnableEnterFormat";
             public const string EnableBrowserLinkMenu = "EnableBrowserLinkMenu";
+            public const string AllMessagesToOutputWindow = "AllMessagesToOutputWindow";
 
             // LESS
             public const string GenerateCssFileFromLess = "LessGenerateCssFile";
