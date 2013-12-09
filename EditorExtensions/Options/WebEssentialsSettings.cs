@@ -5,6 +5,8 @@ namespace MadsKristensen.EditorExtensions
     {
         public static class Keys
         {
+            public const string JavaScriptCamelCasePropertyNames = "JavaScriptCamelCasePropertyNames";
+            public const string JavaScriptCamelCaseClassNames = "JavaScriptCamelCaseClassNames";
             // General
             public const string KeepImportantComments = "KeepImportantComments";
             public const string EnableEnterFormat = "EnableEnterFormat";
