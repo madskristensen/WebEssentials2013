@@ -120,16 +120,14 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 if (maxDepth == 0) return 0;
                 using (var peek = Peek())
                 {
-                    // This is an exception to the normal tab equivalency rules
-                    // Nested quote blocks can have up to 3 spaces between them
-                    // (any more spaces and it becomes a literal >), or exactly
-                    // one tab character.
-                    // However, > \t> or >\t > should be parsed as a code block
-                    // inside a quote, consisting of a single > character.
-                    if (stream.PrevChar != '>' || !TryConsume("\t")) SkipSpaces(3);
-                    // If we didn't find a > at the beginning, don't consume anything.
+                    SkipSpaces(3);
+                    // If there are more than three spaces before this arrow,
+                    // it's actually an indented code block. This comes after
+                    // the single space consumed by the previous quote block,
+                    // if any.
                     if (stream.HasPendingWhitespace())
                         return 0;
+                    // If we didn't find a > at the beginning, don't consume anything.
                     if (!TryConsume(">"))
                         return 0;
                     SkipSpaces(1);  // A single space following the > is consumed as part of the prefix, and doesn't count for anything else.

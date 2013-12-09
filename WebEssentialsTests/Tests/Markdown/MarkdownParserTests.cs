@@ -131,14 +131,16 @@ Bye!").Should().Equal(new[] { "abc" }, "Less-deep indent still counts");
 >     abc").Should().Equal(new[] { "abc" });
             ParseCodeBlocks(@">     abc").Should().Equal(new[] { "abc" });
 
+            // A code block in a quote needs five spaces, including one trailing space consumed by the quote.
             ParseCodeBlocks("\t> abc\n\t>def").Should().Equal(new[] { "> abc", ">def" }, "a tab at the beginning of the line is parsed as an indented code block, not a quote");
-            ParseCodeBlocks(" >   > \tabc").Should().Equal(new[] { "abc" }, "up to three spaces are allowed between quote arrows");
-            ParseCodeBlocks(" >    > \tabc").Should().BeEmpty("a fourth space is parsed as content");
-            ParseCodeBlocks(" >\t> \tabc").Should().Equal(new[] { "abc" }, "a single tab (only) is also allowed between quote arrows");
-            ParseCodeBlocks(" >\t > abc").Should().Equal(new[] { "> abc" }, "a tab with a space is parsed as a space followed by an indented code block");
-            ParseCodeBlocks(" > \t> abc").Should().Equal(new[] { "> abc" }, "a space with a tab is parsed as a space followed by an indented code block");
-            ParseCodeBlocks(" >  \t> abc").Should().Equal(new[] { "> abc" }, "A partially-consumed tab should not be emitted as part of the code block");
-            ParseCodeBlocks(" >   \t > abc").Should().Equal(new[] { "\t > abc" });
+            ParseCodeBlocks(" >    > \tabc").Should().Equal(new[] { "abc" }, "up to four spaces are allowed between quote arrows");
+            ParseCodeBlocks(" >\t> \tabc").Should().Equal(new[] { "abc" }, "a single tab is also allowed between quote arrows");
+            ParseCodeBlocks(" >\t > abc").Should().Equal(new[] { "> abc" }, "a tab with a space together make up the five spaces for an indented code block");
+            ParseCodeBlocks(" > \t> abc").Should().Equal(new[] { "> abc" }, "a partially-consumed tab should not be emitted as part of the code block");
+            ParseCodeBlocks(" >  \t> abc").Should().Equal(new[] { "> abc" }, "a partially-consumed tab should not be emitted as part of the code block");
+            ParseCodeBlocks(" >   \t > abc").Should().Equal(new[] { " > abc" }, "a partially-consumed tab should not affect subsequent spaces");
+            ParseCodeBlocks(" >    \t > abc").Should().Equal(new[] { " > abc" }, "a partially-consumed tab should not be affect subsequent spaces");
+            ParseCodeBlocks(" >     \t > abc").Should().Equal(new[] { "\t > abc" }, "five spaces should not affect subsequent tabs");
         }
 
         [TestMethod]
