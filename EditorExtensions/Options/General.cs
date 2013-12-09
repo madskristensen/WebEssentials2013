@@ -15,6 +15,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.KeepImportantComments, KeepImportantComments);
             Settings.SetValue(WESettings.Keys.EnableEnterFormat, EnableEnterFormat);
             Settings.SetValue(WESettings.Keys.EnableBrowserLinkMenu, EnableBrowserLinkMenu);
+            Settings.SetValue(WESettings.Keys.AllMessagesToOutputWindow, AllMessagesToOutputWindow);
 
             Settings.Save();
         }
@@ -24,6 +25,7 @@ namespace MadsKristensen.EditorExtensions
             KeepImportantComments = WESettings.GetBoolean(WESettings.Keys.KeepImportantComments);
             EnableEnterFormat = WESettings.GetBoolean(WESettings.Keys.EnableEnterFormat);
             EnableBrowserLinkMenu = WESettings.GetBoolean(WESettings.Keys.EnableBrowserLinkMenu);
+            AllMessagesToOutputWindow = WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow);
         }
 
         // MISC
@@ -41,5 +43,10 @@ namespace MadsKristensen.EditorExtensions
         [Description("Enable the menu that shows up in the browser. Requires restart.")]
         [Category("Browser Link")]
         public bool EnableBrowserLinkMenu { get; set; }
+
+        [LocDisplayName("Redirect Messages to Output Window")]
+        [Description("Redirect messages/notifications to output window.")]
+        [Category("Messages")]
+        public bool AllMessagesToOutputWindow { get; set; }
     }
 }

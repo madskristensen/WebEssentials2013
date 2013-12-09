@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 using Microsoft.CSS.Core;
@@ -65,7 +64,7 @@ namespace MadsKristensen.EditorExtensions
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, ex.GetType().Name, MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
+                Logger.ShowMessage(ex.Message, "Web Essentials " + ex.GetType().Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
         }

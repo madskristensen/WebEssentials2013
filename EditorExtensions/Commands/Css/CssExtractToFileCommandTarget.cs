@@ -66,7 +66,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    MessageBox.Show("The file already exist", "Web Essentials", MessageBoxButton.OK, MessageBoxImage.Warning);
+                   Logger.ShowMessage("The file already exists.");
                 }
             }
 
