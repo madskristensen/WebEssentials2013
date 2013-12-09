@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
 using System.Windows.Threading;
 using System.Xml;
 using EnvDTE;
@@ -210,7 +208,7 @@ namespace MadsKristensen.EditorExtensions
 
                     if (File.Exists(bundlePath))
                     {
-                        MessageBox.Show("The bundle file already exists.", "Web Essentials", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        Logger.ShowMessage("The bundle file already exists.");
                     }
                     else
                     {
@@ -274,7 +272,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (outputAttr != null && (outputAttr.InnerText.Contains("/") || outputAttr.InnerText.Contains("\\")))
             {
-                MessageBox.Show("The 'output' attribute should contain a file name without a path; '" + outputAttr.InnerText + "' is not valid", "Web Essentials");
+                Logger.ShowMessage(String.Format("The 'output' attribute should contain a file name without a path; '{0}' is not valid", outputAttr.InnerText));
                 return;
             }
 
@@ -301,9 +299,9 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    string error = string.Format(CultureInfo.CurrentCulture, "Bundle error: The file '{0}' doesn't exist", node.InnerText);
                     _dte.ItemOperations.OpenFile(filePath);
-                    MessageBox.Show(error, "Web Essentials");
+                    Logger.ShowMessage(String.Format("Bundle error: The file '{0}' doesn't exist", node.InnerText));
+
                     return;
                 }
             }
@@ -348,7 +346,7 @@ namespace MadsKristensen.EditorExtensions
                 using (StreamWriter writer = new StreamWriter(bundlePath, false, new UTF8Encoding(true)))
                 {
                     writer.Write(sb.ToString().Trim());
-                    Logger.Log("Updating bundle: " + Path.GetFileName(bundlePath));
+                    Logger.Log("Web Essentials: Updating bundle: " + Path.GetFileName(bundlePath));
                 }
                 MarginBase.AddFileToProject(filePath, bundlePath);
             }

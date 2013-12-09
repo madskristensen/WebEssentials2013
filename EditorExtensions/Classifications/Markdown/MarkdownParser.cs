@@ -614,7 +614,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         class TabAwarePeeker : StreamPeeker
         {
             readonly int remainingSpaces;
-            public TabAwarePeeker(TabAwareCharacterStream stream) : base(stream)
+            public TabAwarePeeker(TabAwareCharacterStream stream)
+                : base(stream)
             {
                 this.remainingSpaces = stream.remainingSpaces;
             }

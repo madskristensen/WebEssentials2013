@@ -45,6 +45,7 @@ namespace WebEssentialsTests
             foreach (var lessFilename in Directory.EnumerateFiles(Path.Combine(BaseDirectory, "fixtures/less"), "*.less", SearchOption.AllDirectories))
             {
                 var expectedPath = Path.Combine(Path.GetDirectoryName(lessFilename), "css", Path.GetFileNameWithoutExtension(lessFilename) + ".css");
+
                 if (!File.Exists(expectedPath))
                     continue;
 
@@ -57,7 +58,6 @@ namespace WebEssentialsTests
                 compiled.Should().Be(expected);
             }
         }
-
 
         static async Task<string> CompileLess(string fileName, string targetFilename = null)
         {

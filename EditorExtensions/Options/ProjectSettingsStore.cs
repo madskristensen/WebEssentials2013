@@ -241,7 +241,6 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.ShowLessPreviewWindow, true);
             dic.Add(Keys.LessMinify, true);
             dic.Add(Keys.LessEnableCompiler, true);
-            dic.Add(Keys.LessCompileToLocation, true);
 
             // CoffeeScript
             dic.Add(Keys.GenerateJsFileFromCoffeeScript, true);
@@ -296,7 +295,6 @@ namespace MadsKristensen.EditorExtensions
 
             // Source Maps
             dic.Add(Keys.GenerateJavaScriptSourceMaps, true);
-            dic.Add(Keys.LessSourceMaps, true);
 
             // Unused CSS
             //Bootstrap, Reset, Normalize, JQuery (UI), Toastr, Foundation, Animate, Inuit, LESS Elements, Ratchet, Hint.css, Flat UI, 960.gs, Skeleton

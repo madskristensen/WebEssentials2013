@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -24,7 +25,9 @@ namespace MadsKristensen.EditorExtensions
 
             tree.GetPositionElement(point.Value.Position, out node, out attr);
 
-            if (attr == null || (attr.Name != "href" && attr.Name != "src"))
+            if (node == null || !node.Name.Equals("img", StringComparison.OrdinalIgnoreCase))
+                return;
+            if (attr == null || !attr.Name.Equals("src", StringComparison.OrdinalIgnoreCase))
                 return;
 
             string url = ImageQuickInfo.GetFullUrl(attr.Value, session.TextView.TextBuffer);
