@@ -161,7 +161,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (propertType.Contains("system.collections") || propertType.EndsWith("[]"))
                 return TypeScriptArrayName(ip.Type, io);
-            if (propertType.Contains("Array"))
+            if (propertType.Contains("array"))
             {
                 return "[]";
             }
