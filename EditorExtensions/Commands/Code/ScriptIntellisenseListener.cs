@@ -96,30 +96,75 @@ namespace MadsKristensen.EditorExtensions
                     CodeNamespace cn = (CodeNamespace)element;
                     foreach (CodeElement member in cn.Members)
                     {
-                        if (member.Kind == vsCMElement.vsCMElementClass)
+                        if (ShouldProcess(member))
                         {
-                            ProcessClass((CodeClass)member, list);
+                            ProcessElement(member, list);
                         }
                     }
                 }
-                else if (element.Kind == vsCMElement.vsCMElementClass)
+                else if (ShouldProcess(element))
                 {
-                    ProcessClass((CodeClass)element, list);
+                    ProcessElement(element, list);
                 }
             }
 
             return list;
         }
 
+        private static void ProcessElement(CodeElement element, List<IntellisenseObject> list)
+        {
+            if (element.Kind == vsCMElement.vsCMElementEnum)
+            {
+                ProcessEnum((CodeEnum) element, list);
+            } else if (element.Kind == vsCMElement.vsCMElementClass)
+            {
+                ProcessClass((CodeClass)element,list);
+            }
+        }
+
+        private static bool ShouldProcess(CodeElement member)
+        {
+            return
+                member.Kind == vsCMElement.vsCMElementClass
+                || member.Kind == vsCMElement.vsCMElementEnum;
+        }
+        private static void ProcessEnum(CodeEnum element, List<IntellisenseObject> list)
+        {
+            IntellisenseObject data = new IntellisenseObject
+            {
+                Name = element.Name,
+                Kind = element.Kind.ToString(),
+                FullName = element.FullName,
+                Properties = new List<IntellisenseProperty>(),
+                Namespace = element.Namespace.FullName
+            };
+
+            foreach (var codeEnum in element.Members.OfType<CodeElement>())
+            {
+                
+                var prop = new IntellisenseProperty()
+                {
+                    Name = codeEnum.Name,
+                };
+
+                data.Properties.Add(prop);
+            }
+
+            if (data.Properties.Count > 0)
+                list.Add(data);
+
+        }
         private static void ProcessClass(CodeClass cc, List<IntellisenseObject> list)
         {
             IntellisenseObject data = new IntellisenseObject
             {
                 Name = cc.Name,
+                Kind = cc.Kind.ToString(),
                 FullName = cc.FullName,
-                Properties = new List<IntellisenseProperty>()
+                Properties = new List<IntellisenseProperty>(),
+                Namespace = cc.Namespace.FullName
             };
-
+            
             foreach (CodeProperty property in cc.Members.OfType<CodeProperty>())
             {
                 if (property.Attributes.Cast<CodeAttribute>().Any(a => a.Name == "IgnoreDataMember"))
@@ -129,7 +174,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     Name = GetName(property),
                     Type = property.Type.AsString,
-                    Summary = GetSummary(property)
+                    Summary = GetSummary(property),
                 };
 
                 data.Properties.Add(prop);
@@ -159,6 +204,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static string GetSummary(CodeProperty property)
         {
+           
             if (string.IsNullOrWhiteSpace(property.DocComment))
                 return null;
 
