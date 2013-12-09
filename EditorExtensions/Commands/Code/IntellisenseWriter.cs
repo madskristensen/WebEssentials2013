@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Security;
@@ -45,23 +46,25 @@ namespace MadsKristensen.EditorExtensions
 
         private static void WriteTypeScript(List<IntellisenseObject> objects, StringBuilder sb)
         {
-            sb.AppendLine("declare module server {");
-            sb.AppendLine();
+						foreach( var ns in objects.GroupBy( o => o.Namespace ) ) {
+							sb.AppendFormat("declare module {0} {{\r\n", ns.Key);
+							sb.AppendLine();
 
-            foreach (IntellisenseObject io in objects)
-            {
-                sb.AppendLine("\tinterface " + io.Name + "{");
+							foreach (IntellisenseObject io in ns)
+							{
+									sb.AppendLine("\tinterface " + io.Name + "{");
 
-                foreach (var p in io.Properties)
-                {
-                    string value = GetValue(p.Type);
-                    sb.AppendLine("\t\t" + p.Name + ": " + value + ";");
-                }
+									foreach (var p in io.Properties)
+									{
+											string value = GetValue(p.Type);
+											sb.AppendLine("\t\t" + p.Name + ": " + value + ";");
+									}
 
-                sb.AppendLine("}");
-            }
+									sb.AppendLine("\t}");
+							}
 
-            sb.AppendLine("}");
+							sb.AppendLine("}");
+						}
         }
 
         private static void WriteFileToDisk(string fileName, StringBuilder sb)
@@ -111,6 +114,7 @@ namespace MadsKristensen.EditorExtensions
 
     public class IntellisenseObject
     {
+        public string Namespace { get; set; }
         public string Name { get; set; }
         public string FullName { get; set; }
         public List<IntellisenseProperty> Properties { get; set; }

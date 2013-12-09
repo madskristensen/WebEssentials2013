@@ -113,8 +113,16 @@ namespace MadsKristensen.EditorExtensions
 
         private static void ProcessClass(CodeClass cc, List<IntellisenseObject> list)
         {
-            IntellisenseObject data = new IntellisenseObject
+						var namespaceFromAttr = from a in cc.Attributes.Cast<CodeAttribute2>()
+																		where a.Name.EndsWith( "TypeScriptModule", StringComparison.InvariantCultureIgnoreCase )
+																		from arg in a.Arguments.Cast<CodeAttributeArgument>()
+																		let v = (arg.Value??"").Trim('\"')
+																		where !string.IsNullOrWhiteSpace( v )
+																		select v;
+					
+						IntellisenseObject data = new IntellisenseObject
             {
+                Namespace = namespaceFromAttr.FirstOrDefault() ?? "server",
                 Name = cc.Name,
                 FullName = cc.FullName,
                 Properties = new List<IntellisenseProperty>()
