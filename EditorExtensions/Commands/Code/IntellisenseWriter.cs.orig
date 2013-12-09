@@ -80,44 +80,58 @@ namespace MadsKristensen.EditorExtensions
 
         private static void WriteTypeScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
         {
-            foreach (var ns in objects.GroupBy(o => o.ServerNamespace))
-            {
-                sb.AppendFormat("declare module {0} {{\r\n", ns.Key);
-                sb.AppendLine();
+						foreach( var ns in objects.GroupBy( o => o.Namespace ) ) {
+							sb.AppendFormat("declare module {0} {{\r\n", ns.Key);
+							sb.AppendLine();
 
-                foreach (IntellisenseObject io in objects)
+<<<<<<< HEAD
+            foreach (IntellisenseObject io in objects)
+            {
+                if (io.Kind == "vsCMElementEnum")
                 {
-                    if (io.Kind == "vsCMElementEnum")
+                    sb.AppendLine("\tenum " + CamelCaseClassName(io.Name) + " {");
+                }
+                else
+                {
+                    sb.AppendLine("\tinterface " + CamelCaseClassName(io.Name) + " {");
+                }
+
+                foreach (var p in io.Properties)
+                {
+                    if (p.Type != null)
                     {
-                        sb.AppendLine("\tenum " + CamelCaseClassName(io.Name) + " {");
+                        string value = GetTypeScriptType(p, io);
+                        sb.AppendLine("\t\t" + CamelCasePropertyName(p.Name) + ": " + value + ";");
                     }
                     else
                     {
-                        sb.AppendLine("\tinterface " + CamelCaseClassName(io.Name) + " {");
+                        sb.AppendLine("\t\t" + CamelCasePropertyName(p.Name) + ",");
                     }
-
-                    foreach (var p in io.Properties)
-                    {
-                        if (p.Type != null)
-                        {
-                            string value = GetTypeScriptType(p, io);
-                            sb.AppendLine("\t\t" + CamelCasePropertyName(p.Name) + ": " + value + ";");
-                        }
-                        else
-                        {
-                            sb.AppendLine("\t\t" + CamelCasePropertyName(p.Name) + ",");
-                        }
-                    }
-                    if (io.Kind == "vsCMElementEnum")
-                    {
-                        sb.Remove(sb.Length - (Environment.NewLine.Length + 1), 1);
-                    }
-
-                    sb.AppendLine("\t}");
+                }
+                if (io.Kind == "vsCMElementEnum")
+                {
+                    sb.Remove(sb.Length - (Environment.NewLine.Length + 1), 1);
                 }
 
-                sb.AppendLine("}");
+                sb.AppendLine("\t}");
             }
+=======
+							foreach (IntellisenseObject io in ns)
+							{
+									sb.AppendLine("\tinterface " + io.Name + "{");
+
+									foreach (var p in io.Properties)
+									{
+											string value = GetValue(p.Type);
+											sb.AppendLine("\t\t" + p.Name + ": " + value + ";");
+									}
+
+									sb.AppendLine("\t}");
+							}
+>>>>>>> aa32004129cdaa18435f7c32bec8304abd440424
+
+							sb.AppendLine("}");
+						}
         }
 
         private static void WriteFileToDisk(string fileName, StringBuilder sb)
@@ -241,7 +255,7 @@ namespace MadsKristensen.EditorExtensions
         public string Namespace { get; set; }
         public string Name { get; set; }
         public string FullName { get; set; }
-        public string ServerNamespace { get; set; }
+        public string Namespace { get; set; }
         public List<IntellisenseProperty> Properties { get; set; }
         public string Kind { get; set; }
     }

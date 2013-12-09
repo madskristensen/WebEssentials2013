@@ -3,6 +3,7 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Windows;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 
@@ -74,7 +75,7 @@ namespace MadsKristensen.EditorExtensions
             }
             catch (IOException)
             {
-                System.Windows.Forms.MessageBox.Show("Can't write to the folder");
+                Logger.ShowMessage("Can't write to the folder: " + _referencesJsPath);
             }
         }
     }

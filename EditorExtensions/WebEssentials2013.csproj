@@ -177,6 +177,7 @@
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
@@ -836,7 +837,7 @@
     <MadsKristensen.EditorExtensions.PreBuildTask />
     <!-- Include newly downloaded files now ... -->
     <ItemGroup>
-      <Content Include="Resources\nodejs\node.exe; Resources\nodejs\node_modules\.bin\lessc.cmd; Resources\nodejs\node_modules\less\lib\**; Resources\nodejs\node_modules\less\bin\**">
+      <Content Include="Resources\nodejs\node.exe; Resources\nodejs\node_modules\less\lib\**; Resources\nodejs\node_modules\less\bin\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <Content Include="Resources\nodejs\node_modules\less\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
