@@ -318,9 +318,8 @@ namespace MadsKristensen.EditorExtensions
 
             if (item != null && item.ContainingProject != null && !string.IsNullOrEmpty(item.ContainingProject.FullName))
             {
-                if (item.ProjectItems != null && Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
-                {
-                    // WAP
+                if (item.ContainingProject.GetType().Name != "OAProject" && item.ProjectItems != null && Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
+                {   // WAP
                     return item.ProjectItems.AddFromFile(fileName);
                 }
                 else
