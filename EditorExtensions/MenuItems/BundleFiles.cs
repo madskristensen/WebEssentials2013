@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -272,7 +273,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (outputAttr != null && (outputAttr.InnerText.Contains("/") || outputAttr.InnerText.Contains("\\")))
             {
-                Logger.ShowMessage(String.Format("The 'output' attribute should contain a file name without a path; '{0}' is not valid", outputAttr.InnerText));
+                Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "The 'output' attribute should contain a file name without a path; '{0}' is not valid", outputAttr.InnerText));
                 return;
             }
 
@@ -300,7 +301,7 @@ namespace MadsKristensen.EditorExtensions
                 else
                 {
                     _dte.ItemOperations.OpenFile(filePath);
-                    Logger.ShowMessage(String.Format("Bundle error: The file '{0}' doesn't exist", node.InnerText));
+                    Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "Bundle error: The file '{0}' doesn't exist", node.InnerText));
 
                     return;
                 }

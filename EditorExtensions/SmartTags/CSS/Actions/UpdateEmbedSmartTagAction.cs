@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Windows.Media.Imaging;
 using Microsoft.VisualStudio.Text;
@@ -43,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                Logger.ShowMessage(String.Format("'{0}' could not be resolved.", _path), "Web Essentials: File not found");
+                Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "'{0}' could not be resolved.", _path), "Web Essentials: File not found");
             }
         }
 

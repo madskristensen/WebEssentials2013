@@ -17,6 +17,7 @@
       <Word>Intellisense</Word>
       <Word>Modernizr</Word>
       <Word>Htmlx</Word>
+      <Word>Prev</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>
