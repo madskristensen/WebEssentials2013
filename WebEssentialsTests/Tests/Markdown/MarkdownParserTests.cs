@@ -79,7 +79,7 @@ Bye!").Should().Equal(new[] { "abc", "def" });
             //Bye!").Should().Equal(new[] { "abc", "def" });
             //ParseCodeBlocks(" 1. abc\n\n  \t  Code!").Should().Equal(new[] { "Code!" });
 
-            // ParseCodeBlocks("Hi there!\n\tabc\nBye!").Should().Equal(new[] { "abc" });
+            ParseCodeBlocks("Hi there!\n\n\tabc\nBye!").Should().Equal(new[] { "abc" });
             ParseCodeBlocks(@"Hi there!
     abc
 Bye!").Should().BeEmpty();
@@ -131,11 +131,14 @@ Bye!").Should().Equal(new[] { "abc" }, "Less-deep indent still counts");
 >     abc").Should().Equal(new[] { "abc" });
             ParseCodeBlocks(@">     abc").Should().Equal(new[] { "abc" });
 
-            //            ParseCodeBlocks(" >\t> \tabc").Should().Equal(new[] { "abc" });
-            //            ParseCodeBlocks(" >\t > \tabc").Should().Equal(new[] { "abc" });
-            //            ParseCodeBlocks(" >  \t > \tabc").Should().Equal(new[] { "abc" });
-            //            ParseCodeBlocks(" >  \t  > abc").Should().Equal(new[] { "> abc" });
-            //            ParseCodeBlocks(" >\t  > abc").Should().Equal(new[] { "> abc" });
+            ParseCodeBlocks("\t> abc\n\t>def").Should().Equal(new[] { "> abc", ">def" }, "a tab at the beginning of the line is parsed as an indented code block, not a quote");
+            ParseCodeBlocks(" >   > \tabc").Should().Equal(new[] { "abc" }, "up to three spaces are allowed between quote arrows");
+            ParseCodeBlocks(" >    > \tabc").Should().BeEmpty("a fourth space is parsed as content");
+            ParseCodeBlocks(" >\t> \tabc").Should().Equal(new[] { "abc" }, "a single tab (only) is also allowed between quote arrows");
+            ParseCodeBlocks(" >\t > abc").Should().Equal(new[] { "> abc" }, "a tab with a space is parsed as a space followed by an indented code block");
+            ParseCodeBlocks(" > \t> abc").Should().Equal(new[] { "> abc" }, "a space with a tab is parsed as a space followed by an indented code block");
+            ParseCodeBlocks(" >  \t> abc").Should().Equal(new[] { "> abc" }, "A partially-consumed tab should not be emitted as part of the code block");
+            ParseCodeBlocks(" >   \t > abc").Should().Equal(new[] { "\t > abc" });
         }
 
         [TestMethod]

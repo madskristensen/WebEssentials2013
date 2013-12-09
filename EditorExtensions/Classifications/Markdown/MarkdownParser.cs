@@ -38,7 +38,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         private abstract class ParserBase
         {
-
             protected readonly TabAwareCharacterStream stream;
             private readonly Action<Artifact> artifactReporter;
             protected ParserBase(TabAwareCharacterStream stream, Action<Artifact> reporter)
@@ -46,7 +45,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 this.stream = stream;
                 this.artifactReporter = reporter;
             }
-            protected StreamPeeker Peek() { return new StreamPeeker(stream); }
+            protected StreamPeeker Peek() { return stream.Peek(); }
 
             protected void ReportArtifact(CodeLineArtifact artifact)
             {
@@ -68,24 +67,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             ///<summary>Consumes exactly the requested number of characters of whitespace, potentially including partial tabs.</summary>
             ///<returns>True if enough whitespace was consumed; false if the stream was not moved.</returns>
-            protected bool TryReadSpaces(int count)
-            {
-                using (var peek = Peek())
-                {
-                    for (int i = 0; i < count; i++)
-                    {
-                        if (stream.CurrentChar == '\t')
-                        {
-                            // TODO: Tab equivalence in TabAwareCharacterStream class
-                        }
-                        else if (stream.CurrentChar != ' ')
-                            return false;
-                        stream.MoveToNextChar();
-                    }
-                    peek.Consume();
-                    return true;
-                }
-            }
+            protected bool TryReadSpaces(int count) { return stream.TryConsumeWhitespace(count); }
 
             protected bool TryConsumeNewLine()
             {
@@ -138,12 +120,18 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 if (maxDepth == 0) return 0;
                 using (var peek = Peek())
                 {
-                    // TODO: Add more accurate logic for pathological mixes of tabs and spaces in nested quotes & code blocks
-                    if (!TryConsume("\t")) SkipSpaces(3);
+                    // This is an exception to the normal tab equivalency rules
+                    // Nested quote blocks can have up to 3 spaces between them
+                    // (any more spaces and it becomes a literal >), or exactly
+                    // one tab character.
+                    // However, > \t> or >\t > should be parsed as a code block
+                    // inside a quote, consisting of a single > character.
+                    if (stream.PrevChar != '>' || !TryConsume("\t")) SkipSpaces(3);
                     // If we didn't find a > at the beginning, don't consume anything.
-                    if (stream.CurrentChar != '>')
+                    if (stream.HasPendingWhitespace())
                         return 0;
-                    stream.MoveToNextChar();
+                    if (!TryConsume(">"))
+                        return 0;
                     SkipSpaces(1);  // A single space following the > is consumed as part of the prefix, and doesn't count for anything else.
                     peek.Consume();
                     // If we did consume a quote, look for another one.
@@ -492,16 +480,16 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         }
     }
     ///<summary>Allows code in a using() block to peek ahead in a stream without consuming characters.</summary>
-    public class StreamPeeker : IDisposable
+    public abstract class StreamPeeker : IDisposable
     {
         public int StartPosition { get; private set; }
-        readonly TabAwareCharacterStream stream;
+        protected readonly TabAwareCharacterStream stream;
         private bool shouldRevert = true;
 
         public StreamPeeker(TabAwareCharacterStream stream)
         {
             this.stream = stream;
-            this.StartPosition = stream.Position;
+            StartPosition = stream.Position;
         }
 
         ///<summary>Commits the peeked characters.</summary>
@@ -515,8 +503,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             if (!shouldRevert) return;
             stream.Position = StartPosition;
+            Revert();
             shouldRevert = false;
         }
+        protected abstract void Revert();
     }
 
     ///<summary>An Artifact containing a single line of code.</summary>
@@ -562,8 +552,16 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     ///<remarks><see cref="CharacterStream"/> doesn't have any virtual methods, so I need to recreate it from scratch.</remarks>
     public class TabAwareCharacterStream
     {
+        // When we reach a tab, the ConsumeWhitespace()
+        // method will immediately move beyond the tab,
+        // then set remainingSpaces to record what part
+        // of the tab remains available. If it's called
+        // when this field is non-zero, it will consume
+        // the rest of the tab before moving forward.
+        private int remainingSpaces;
         private int position;
         public int TabWidth { get; private set; }
+        public ITextProvider Text { get; private set; }
         public TabAwareCharacterStream(ITextProvider text, int tabWidth = 4)
         {
             TabWidth = tabWidth;
@@ -571,15 +569,16 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             Position = 0;
         }
 
-        public TabAwareCharacterStream(string text, int tabWidth = 4) :this(new TextStream(text)) { }
+        public TabAwareCharacterStream(string text, int tabWidth = 4) : this(new TextStream(text)) { }
 
-        public ITextProvider Text { get; private set; }
+        #region TextProvider wrappers
         public int Length { get { return Text.Length; } }
         public string GetSubstringAt(int start, int length) { return Text.GetText(new TextRange(start, length)); }
         public bool CompareTo(int position, int length, string text, bool ignoreCase)
         {
             return Text.CompareTo(position, length, text, ignoreCase);
         }
+        #endregion
 
         public int Position
         {
@@ -589,11 +588,13 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 if (value == 0) value = 0;
                 if (value > Length) value = Length;
                 position = value;
+                remainingSpaces = 0;
                 CurrentChar = value == Length ? '\0' : Text[position];
             }
         }
         public char CurrentChar { get; private set; }
 
+        #region Helper properties
         public char PrevChar { get { return Position == 0 ? '\0' : Text[Position - 1]; } }
         public char NextChar { get { return Position >= Length - 1 ? '\0' : Text[Position + 1]; } }
 
@@ -608,6 +609,89 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         ///<summary>Checks whether the current position is after the end of the stream.  If true, the current character will be '\0'.</summary>
         public bool IsEndOfStream() { return Position == Length; }
+        #endregion
 
+        public StreamPeeker Peek() { return new TabAwarePeeker(this); }
+
+        class TabAwarePeeker : StreamPeeker
+        {
+            readonly int remainingSpaces;
+            public TabAwarePeeker(TabAwareCharacterStream stream) : base(stream)
+            {
+                this.remainingSpaces = stream.remainingSpaces;
+            }
+            protected override void Revert()
+            {
+                stream.remainingSpaces = this.remainingSpaces;
+            }
+        }
+
+        #region Tab awareness
+        ///<summary>Consumes exactly the requested number of characters of whitespace, potentially including partial tabs.</summary>
+        ///<returns>True if enough whitespace was consumed; false if the stream was not moved.</returns>
+        public bool TryConsumeWhitespace(int width)
+        {
+            if (remainingSpaces > 0)
+            {
+                // If we need to consume more than the current partial tab,
+                // consume the tab, then try again to consume the remaining
+                // width from the subsequent characters.
+                if (width > remainingSpaces)
+                {
+                    using (var peek = Peek())
+                    {
+                        var consumed = remainingSpaces;
+                        remainingSpaces -= width;
+                        if (!TryConsumeWhitespace(width - consumed))
+                            return false;
+                        peek.Consume();
+                        return true;
+                    }
+                }
+                else
+                {
+                    // If this consumption fits entirely in the partial tab,
+                    // just subtract from the remaining counter and succeed.
+                    // If this finishes the tab, we will remain at the next
+                    remainingSpaces -= width;
+                    return true;
+                }
+            }
+
+            using (var peek = Peek())
+            {
+                while (width > 0)
+                {
+                    // If we're at a space, consume it immediately
+                    if (CurrentChar == ' ')
+                    {
+                        MoveToNextChar();
+                        width--;
+                    }
+                    // If we're at at tab, try consuming its whitespace
+                    else if (CurrentChar == '\t')
+                    {
+                        MoveToNextChar();
+                        remainingSpaces = TabWidth;
+                        if (!TryConsumeWhitespace(width))
+                            return false;
+                        peek.Consume();
+                        return true;
+                    }
+                    // If we're at any other character, fail
+                    else
+                        return false;
+                }
+                peek.Consume();
+                return true;
+            }
+        }
+
+        ///<summary>Indicates whether there is any whitespace from a perviously-encountered tab character that has not been consumed yet.  This can only return true if PrevChar is '\t'.</summary>
+        public bool HasPendingWhitespace()
+        {
+            return remainingSpaces > 0;
+        }
+        #endregion
     }
 }
