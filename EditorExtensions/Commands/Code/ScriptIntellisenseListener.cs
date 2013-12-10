@@ -90,34 +90,28 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static List<IntellisenseObject> ProcessFile(ProjectItem item)
-        {
-            if (item.FileCodeModel == null)
-                return null;
+				private static List<IntellisenseObject> ProcessFile( ProjectItem item ) {
+					if ( item.FileCodeModel == null )
+						return null;
 
-            List<IntellisenseObject> list = new List<IntellisenseObject>();
+					List<IntellisenseObject> list = new List<IntellisenseObject>();
 
-            foreach (CodeElement element in item.FileCodeModel.CodeElements)
-            {
-                if (element.Kind == vsCMElement.vsCMElementNamespace)
-                {
-                    CodeNamespace cn = (CodeNamespace) element;
-                    foreach (CodeElement member in cn.Members)
-                    {
-                        if (ShouldProcess(member))
-                        {
-                            ProcessElement(member, list);
-                        }
-                    }
-                }
-                else if (ShouldProcess(element))
-                        {
-                    ProcessElement(element, list);
-                }
-                        }
+					foreach ( CodeElement element in item.FileCodeModel.CodeElements ) {
+						if ( element.Kind == vsCMElement.vsCMElementNamespace ) {
+							CodeNamespace cn = (CodeNamespace)element;
+							foreach ( CodeElement member in cn.Members ) {
+								if ( ShouldProcess( member ) ) {
+									ProcessElement( member, list );
+								}
+							}
+						}
+						else if ( ShouldProcess( element ) ) {
+							ProcessElement( element, list );
+						}
+					}
 
-            return list;
-                    }
+					return list;
+				}
 
 				private static void ProcessElement( CodeElement element, List<IntellisenseObject> list ) {
 					if ( element.Kind == vsCMElement.vsCMElementEnum ) {
@@ -202,19 +196,21 @@ namespace MadsKristensen.EditorExtensions
 					if ( isArray && codeTypeRef.ElementType != null ) codeTypeRef = codeTypeRef.ElementType;
 
 					var cl = codeTypeRef.CodeType as CodeClass;
+					var en = codeTypeRef.CodeType as CodeEnum;
 					var isPrimitive = IsPrimitive( codeTypeRef );
-					var result = new IntellisenseType { 
+					var result = new IntellisenseType {
 						IsArray = isArray,
 						CodeName = codeTypeRef.AsString,
-						ClientSideReferenceName = cl != null 
-							&& codeTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType 
-							&& codeTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject
-							&& HasIntellisense(cl.ProjectItem, Ext.TypeScript) 
-							? (GetNamespace(cl) + "." + cl.Name)
+						ClientSideReferenceName =
+							codeTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType &&
+							codeTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject
+							?
+								(cl != null && HasIntellisense( cl.ProjectItem, Ext.TypeScript ) ? (GetNamespace( cl ) + "." + cl.Name) : null) ??
+								(en != null && HasIntellisense( en.ProjectItem, Ext.TypeScript ) ? (GetNamespace( en ) + "." + en.Name) : null)
 							: null
-            };
+					};
 
-					if ( !isPrimitive && !traversedTypes.Contains( codeTypeRef.CodeType.FullName ) ) {
+					if ( !isPrimitive && cl != null && !traversedTypes.Contains( codeTypeRef.CodeType.FullName ) ) {
 						traversedTypes.Add( codeTypeRef.CodeType.FullName );
 						result.Shape = GetProperties( codeTypeRef.CodeType.Members, traversedTypes ).ToList();
 						traversedTypes.Remove( codeTypeRef.CodeType.FullName );
