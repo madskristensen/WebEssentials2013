@@ -341,6 +341,7 @@
     <Compile Include="Classifications\CSS\ModernizrClassifier.cs" />
     <Compile Include="Commands\CommandExceptionFilter.cs" />
     <Compile Include="Completion\Markdown\MarkdownCompletionFilter.cs" />
+    <Compile Include="DropTargets\HtmlImageDrop.cs" />
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
     <Compile Include="Helpers\Disposable.cs" />
     <Compile Include="Helpers\Extensions.cs" />
