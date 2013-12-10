@@ -27,6 +27,7 @@ namespace MadsKristensen.EditorExtensions
     [ProvideOptionPage(typeof(JavaScriptOptions), "Web Essentials", "JavaScript", 101, 107, true, new[] { "JScript", "JS", "Minify", "Minification", "EcmaScript" })]
     [ProvideOptionPage(typeof(UnusedCssOptions), "Web Essentials", "Unused CSS", 101, 108, true, new[] { "Ignore", "Filter" })]
     [ProvideOptionPage(typeof(MarkdownOptions), "Web Essentials", "Markdown", 101, 109, true, new[] { "markdown", "Markdown", "md" })]
+    [ProvideOptionPage(typeof(CodeGenerationOptions), "Web Essentials", "Code Generation", 101, 210, true, new[] { "CodeGeneration", "codeGeneration"})]
     public sealed class EditorExtensionsPackage : Package
     {
         private static DTE2 _dte;

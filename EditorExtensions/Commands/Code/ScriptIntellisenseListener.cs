@@ -15,13 +15,14 @@ using EnvDTE80;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [Export(typeof(IWpfTextViewCreationListener))]
+    [Export(typeof (IWpfTextViewCreationListener))]
     [ContentType("CSharp")]
     [ContentType("VisualBasic")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    class ScriptIntellisense : IWpfTextViewCreationListener
+    internal class ScriptIntellisense : IWpfTextViewCreationListener
     {
 			public const string DefaultModuleName = "server";
+			public const string ModuleNameAttributeName = "TypeScriptModule";
 
 			static class Ext
 			{
@@ -44,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
-            ITextDocument document = (ITextDocument)sender;
+            ITextDocument document = (ITextDocument) sender;
 
             if (document.TextBuffer == null || e.FileActionType != FileActionTypes.ContentSavedToDisk)
                 return;
@@ -67,7 +68,6 @@ namespace MadsKristensen.EditorExtensions
                     AddScript(filePath, Ext.JavaScript, list);
                     AddScript(filePath, Ext.TypeScript, list);
                 }
-
             }), DispatcherPriority.ApplicationIdle, null);
         }
 
@@ -101,22 +101,62 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (element.Kind == vsCMElement.vsCMElementNamespace)
                 {
-                    CodeNamespace cn = (CodeNamespace)element;
+                    CodeNamespace cn = (CodeNamespace) element;
                     foreach (CodeElement member in cn.Members)
                     {
-                        if (member.Kind == vsCMElement.vsCMElementClass)
+                        if (ShouldProcess(member))
                         {
-                            ProcessClass((CodeClass)member, list);
+                            ProcessElement(member, list);
                         }
                     }
                 }
-                else if (element.Kind == vsCMElement.vsCMElementClass)
-                {
-                    ProcessClass((CodeClass)element, list);
+                else if (ShouldProcess(element))
+                        {
+                    ProcessElement(element, list);
                 }
-            }
+                        }
 
             return list;
+                    }
+
+				private static void ProcessElement( CodeElement element, List<IntellisenseObject> list ) {
+					if ( element.Kind == vsCMElement.vsCMElementEnum ) {
+						ProcessEnum( (CodeEnum)element, list );
+					}
+					else if ( element.Kind == vsCMElement.vsCMElementClass ) {
+						ProcessClass( (CodeClass)element, list );
+					}
+				}
+
+				private static bool ShouldProcess( CodeElement member ) {
+					return
+							member.Kind == vsCMElement.vsCMElementClass
+							|| member.Kind == vsCMElement.vsCMElementEnum;
+				}
+
+        private static void ProcessEnum(CodeEnum element, List<IntellisenseObject> list)
+        {
+            IntellisenseObject data = new IntellisenseObject
+            {
+                Name = element.Name,
+                IsEnum = element.Kind == vsCMElement.vsCMElementEnum,
+                FullName = element.FullName,
+                Properties = new List<IntellisenseProperty>(),
+                Namespace = GetNamespace( element ),
+            };
+
+            foreach (var codeEnum in element.Members.OfType<CodeElement>())
+            {
+                var prop = new IntellisenseProperty()
+                {
+                    Name = codeEnum.Name,
+                };
+
+                data.Properties.Add(prop);
+            }
+
+            if (data.Properties.Count > 0)
+                list.Add(data);
         }
 
         private static void ProcessClass(CodeClass cc, List<IntellisenseObject> list)
@@ -142,14 +182,18 @@ namespace MadsKristensen.EditorExtensions
 								 };
 				}
 
-				private static string GetNamespace( CodeClass cc ) {
-					var namespaceFromAttr = from a in cc.Attributes.Cast<CodeAttribute2>()
-																	where a.Name.EndsWith( "TypeScriptModule", StringComparison.InvariantCultureIgnoreCase )
+				private static string GetNamespace( CodeClass e ) { return GetNamespace( e.Attributes ); }
+				private static string GetNamespace( CodeEnum e ) { return GetNamespace( e.Attributes ); }
+
+				private static string GetNamespace( CodeElements attrs ) {
+					if ( attrs == null ) return DefaultModuleName;
+					var namespaceFromAttr = from a in attrs.Cast<CodeAttribute2>()
+																	where a.Name.EndsWith( ModuleNameAttributeName, StringComparison.InvariantCultureIgnoreCase )
 																	from arg in a.Arguments.Cast<CodeAttributeArgument>()
 																	let v = (arg.Value ?? "").Trim( '\"' )
 																	where !string.IsNullOrWhiteSpace( v )
 																	select v;
-
+					
 					return namespaceFromAttr.FirstOrDefault() ?? DefaultModuleName;
 				}
 
@@ -168,7 +212,7 @@ namespace MadsKristensen.EditorExtensions
 							&& HasIntellisense(cl.ProjectItem, Ext.TypeScript) 
 							? (GetNamespace(cl) + "." + cl.Name)
 							: null
-					};
+            };
 
 					if ( !isPrimitive && !traversedTypes.Contains( codeTypeRef.CodeType.FullName ) ) {
 						traversedTypes.Add( codeTypeRef.CodeType.FullName );
@@ -183,14 +227,14 @@ namespace MadsKristensen.EditorExtensions
 					if ( codeTypeRef.TypeKind != vsCMTypeRef.vsCMTypeRefOther && codeTypeRef.TypeKind != vsCMTypeRef.vsCMTypeRefCodeType ) return true;
 					if ( codeTypeRef.AsString.EndsWith( "DateTime" ) ) return true;
 					return false;
-				}
+            }
 
 				private static bool HasIntellisense( ProjectItem projectItem, string ext ) {
 					for ( short i = 0; i < projectItem.FileCount; i++ ) {
 						if ( File.Exists( projectItem.FileNames[i] + ext ) ) return true;
 					}
 					return false;
-				}
+        }
 
         private static string GetName(CodeProperty property)
         {

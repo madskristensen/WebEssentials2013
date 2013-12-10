@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class IntellisenseWriter
     {
-        public void Write(List<IntellisenseObject> objects, string file)
+        public void Write(IEnumerable<IntellisenseObject> objects, string file)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -22,21 +24,52 @@ namespace MadsKristensen.EditorExtensions
             WriteFileToDisk(file, sb);
         }
 
-        private static void WriteJavaScript(List<IntellisenseObject> objects, StringBuilder sb)
+        private static string CamelCasePropertyName(string name)
+        {
+            if (WESettings.GetBoolean(WESettings.Keys.JavaScriptCamelCasePropertyNames))
+            {
+                name = CamelCase(name);
+            }
+            return name;
+        }
+
+        private static string CamelCaseClassName(string name)
+        {
+            if (WESettings.GetBoolean(WESettings.Keys.JavaScriptCamelCaseClassNames))
+            {
+                name = CamelCase(name);
+            }
+            return name;
+        }
+
+        private static string CamelCase(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return name;
+            }
+            return name[0].ToString(CultureInfo.CurrentCulture).ToLower() + name.Substring(1);
+        }
+
+        private static void WriteJavaScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
         {
             sb.AppendLine("var server = server || {};");
 
             foreach (IntellisenseObject io in objects)
             {
-                sb.AppendLine("server." + io.Name + " = function()  {");
+                if (io.IsEnum) continue;
+
+                sb.AppendLine("server." + CamelCaseClassName(io.Name) + " = function()  {");
 
                 foreach (var p in io.Properties)
                 {
 										string value = p.Type.GetJavaScriptName() + (p.Type.IsArray ? "[]" : "" );
-                    string comment = p.Summary ?? "The " + p.Name + " property as defined in " + io.FullName;
+                    var propertyName = CamelCasePropertyName(p.Name);
+                    string comment = p.Summary ?? "The " + propertyName + " property as defined in " + io.FullName;
                     comment = Regex.Replace(comment, @"\s*[\r\n]+\s*", " ").Trim();
-                    sb.AppendLine("\t/// <field name=\"" + p.Name + "\" type=\"" + value + "\">" + SecurityElement.Escape(comment) + "</field>");
-                    sb.AppendLine("\tthis." + p.Name + " = new " + value + "();");
+                    sb.AppendLine("\t/// <field name=\"" + propertyName + "\" type=\"" + value + "\">" +
+                                  SecurityElement.Escape(comment) + "</field>");
+                    sb.AppendLine("\tthis." + propertyName + " = new " + value + "();");
                 }
 
                 sb.AppendLine("};");
@@ -44,20 +77,25 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static void WriteTypeScript(List<IntellisenseObject> objects, StringBuilder sb)
+        private static void WriteTypeScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
         {
-						foreach( var ns in objects.GroupBy( o => o.Namespace ) ) {
-							sb.AppendFormat("declare module {0} {{\r\n", ns.Key);
+					foreach ( var ns in objects.GroupBy( o => o.Namespace ) ) {
+						sb.AppendFormat( "declare module {0} {{\r\n", ns.Key );
 
-							foreach (IntellisenseObject io in ns)
-							{
-									sb.Append("\tinterface ").Append( io.Name ).Append( " " );
-									WriteTSInterfaceDefinition( sb, "\t", io.Properties );
-									sb.AppendLine();
+						foreach ( IntellisenseObject io in ns ) {
+							if ( io.IsEnum ) {
+								sb.AppendLine( "\tenum " + CamelCaseClassName( io.Name ) + " {" );
+								foreach ( var p in io.Properties ) sb.AppendLine( "\t\t" + CamelCasePropertyName( p.Name ) + "," );
 							}
-
-							sb.AppendLine("}");
+							else {
+								sb.Append( "\tinterface " ).Append( CamelCaseClassName( io.Name ) ).Append( " " );
+								WriteTSInterfaceDefinition( sb, "\t", io.Properties );
+								sb.AppendLine();
+							}
 						}
+
+						sb.AppendLine( "}" );
+					}
         }
 
 				private static void WriteTSInterfaceDefinition( StringBuilder sb, string prefix, IEnumerable<IntellisenseProperty> props ) {
@@ -71,14 +109,14 @@ namespace MadsKristensen.EditorExtensions
 						else {
 							if ( p.Type.Shape == null ) sb.Append( "any" );
 							else WriteTSInterfaceDefinition( sb, prefix + "\t", p.Type.Shape );
-						}
+							}
 						if ( p.Type.IsArray ) sb.Append( "[]" );
 
 						sb.AppendLine( ";" );
-					}
+						}
 
 					sb.Append( prefix ).Append( "}" );
-				}
+        }
 
         private static void WriteFileToDisk(string fileName, StringBuilder sb)
         {
@@ -100,8 +138,9 @@ namespace MadsKristensen.EditorExtensions
         public string Namespace { get; set; }
         public string Name { get; set; }
         public string FullName { get; set; }
+				public bool IsEnum { get; set; }
         public List<IntellisenseProperty> Properties { get; set; }
-    }
+		}
 
     public class IntellisenseProperty
     {
@@ -111,7 +150,7 @@ namespace MadsKristensen.EditorExtensions
     }
 
 		public class IntellisenseType
-		{
+            {
 			/// <summary>
 			/// This is the name of this type as it appears in the source code
 			/// </summary>
@@ -136,10 +175,11 @@ namespace MadsKristensen.EditorExtensions
 			/// </summary>
 			public IEnumerable<IntellisenseProperty> Shape { get; set; }
 
-			public bool IsPrimitive() { return GetJavaScriptName() != "Object"; }
+			public bool IsPrimitive() { return GetJavaScriptName() != "object"; }
 
 			public string GetJavaScriptName() {
-				switch ( CodeName.ToLower() ) {
+				var t = CodeName.ToLower();
+				switch ( t ) {
 					case "int":
 					case "int32":
 					case "int64":
@@ -147,23 +187,23 @@ namespace MadsKristensen.EditorExtensions
 					case "double":
 					case "float":
 					case "decimal":
-						return "Number";
+						return "number";
 
 					case "system.datetime":
 						return "Date";
 
 					case "string":
-						return "String";
+						return "string";
 
 					case "bool":
 					case "boolean":
-						return "Boolean";
+						return "boolean";
 				}
 
-				if ( CodeName.Contains( "System.Collections" ) || CodeName.Contains( "[]" ) || CodeName.Contains( "Array" ) )
+				if ( t.Contains( "system.collections" ) || t.Contains( "[]" ) || t.Contains( "array" ) )
 					return "Array";
 
-				return "Object";
+				return "object";
 			}
-		}
+    }
 }
