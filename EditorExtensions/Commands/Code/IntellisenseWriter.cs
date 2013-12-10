@@ -86,6 +86,7 @@ namespace MadsKristensen.EditorExtensions
 							if ( io.IsEnum ) {
 								sb.AppendLine( "\tenum " + CamelCaseClassName( io.Name ) + " {" );
 								foreach ( var p in io.Properties ) sb.AppendLine( "\t\t" + CamelCasePropertyName( p.Name ) + "," );
+								sb.AppendLine( "\t}" );
 							}
 							else {
 								sb.Append( "\tinterface " ).Append( CamelCaseClassName( io.Name ) ).Append( " " );
