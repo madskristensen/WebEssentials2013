@@ -105,7 +105,7 @@ namespace MadsKristensen.EditorExtensions
 					foreach ( var p in props ) {
 						sb.AppendFormat( "{0}\t{1}: ", prefix, CamelCasePropertyName( p.Name ) );
 						
-						if ( p.Type.IsPrimitive() ) sb.Append( p.Type.GetJavaScriptName() );
+						if ( p.Type.IsPrimitive() ) sb.Append( p.Type.GetTypeScriptName() );
 						else if ( !string.IsNullOrEmpty( p.Type.ClientSideReferenceName ) ) sb.Append( p.Type.ClientSideReferenceName );
 						else {
 							if ( p.Type.Shape == null ) sb.Append( "any" );
@@ -176,9 +176,11 @@ namespace MadsKristensen.EditorExtensions
 			/// </summary>
 			public IEnumerable<IntellisenseProperty> Shape { get; set; }
 
-			public bool IsPrimitive() { return GetJavaScriptName() != "object"; }
+			public bool IsPrimitive() { return GetTypeScriptName() != "any"; }
+			public string GetJavaScriptName() { return GetTargetName( true ); }
+			public string GetTypeScriptName() { return GetTargetName( false ); }
 
-			public string GetJavaScriptName() {
+			string GetTargetName( bool js ) {
 				var t = CodeName.ToLower();
 				switch ( t ) {
 					case "int":
@@ -188,23 +190,23 @@ namespace MadsKristensen.EditorExtensions
 					case "double":
 					case "float":
 					case "decimal":
-						return "number";
+						return js ? "Number" : "number";
 
 					case "system.datetime":
 						return "Date";
 
 					case "string":
-						return "string";
+						return js ? "String" : "string";
 
 					case "bool":
 					case "boolean":
-						return "boolean";
+						return js ? "Boolean" : "boolean";
 				}
 
 				if ( t.Contains( "system.collections" ) || t.Contains( "[]" ) || t.Contains( "array" ) )
 					return "Array";
 
-				return "object";
+				return js ? "Object" : "any";
 			}
     }
 }
