@@ -74,7 +74,12 @@ namespace MadsKristensen.EditorExtensions
 
             menuCommand.BeforeQueryStatus += (s, e) =>
             {
-                string selection = GetTextDocument().Selection.Text;
+                var document = GetTextDocument();
+                
+                if (document == null)
+                    return;
+
+                string selection = document.Selection.Text;
                 menuCommand.Enabled = selection.Length > 0 && callback(selection) != selection;
             };
 
@@ -83,12 +88,19 @@ namespace MadsKristensen.EditorExtensions
 
         private TextDocument GetTextDocument()
         {
-            return _dte.ActiveDocument.Object("TextDocument") as TextDocument;
+            if (_dte.ActiveDocument != null)
+                return _dte.ActiveDocument.Object("TextDocument") as TextDocument;
+
+            return null;
         }
 
         private void Replace(Replacement callback)
         {
             TextDocument document = GetTextDocument();
+
+            if (document == null)
+                return;
+
             string replacement = callback(document.Selection.Text);
 
             using (EditorExtensionsPackage.UndoContext((callback.Method.Name)))

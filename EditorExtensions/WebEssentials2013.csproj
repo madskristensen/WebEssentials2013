@@ -95,6 +95,7 @@
       <HintPath>..\MarkdownSharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.JScript" />
     <Reference Include="Microsoft.VisualStudio.JSLS" />
     <Reference Include="Microsoft.VisualStudio.Language.StandardClassification" />
     <Reference Include="Microsoft.CSS.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -466,6 +467,9 @@
     <Compile Include="MenuItems\ReferenceJs.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineTag.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineProvider.cs" />
+    <Compile Include="Options\CodeGeneration.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Options\Markdown.cs">
       <SubType>Component</SubType>
     </Compile>

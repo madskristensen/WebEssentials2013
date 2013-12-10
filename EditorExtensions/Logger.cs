@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Windows.Forms;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -43,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
         {
             if (WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow))
             {
-                Log(String.Format("{0}: {1}", title, message));
+                Log(String.Format(CultureInfo.CurrentCulture, "{0}: {1}", title, message));
             }
             else
             {
