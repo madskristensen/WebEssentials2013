@@ -79,7 +79,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             LanguageBlocks.Clear();
             foreach (var artifact in EditorTree.RootNode.Tree.ArtifactCollection.OfType<CodeLineArtifact>())
             {
-                var contentType = contentTypeRegistry.FromFriendlyName(artifact.BlockInfo.Language);
+                var contentType = contentTypeRegistry.FromFriendlyName(artifact.BlockInfo.Language).ToEmbeddableContentType();
                 if (contentType != null)
                     LanguageBlocks.AddBlock(new ArtifactLanguageBlock(artifact, contentType));
             }

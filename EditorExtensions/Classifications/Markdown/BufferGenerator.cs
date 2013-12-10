@@ -36,12 +36,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                                                .OfType<BlockBoundaryArtifact>()
                                                .Select(b => b.BlockInfo)
                                                .Distinct()
-                                               .GroupBy(b => contentTypeRegistry.FromFriendlyName(b.Language)))
+                                               .GroupBy(b => contentTypeRegistry.FromFriendlyName(b.Language).ToEmbeddableContentType()))
             {
                 if (language.Key == null) continue;  // If we can't identify the language, just use normal artifacts.
-                // We can't nest HTML buffers
-                if (language.Key.IsOfType("html") || language.Key.IsOfType("htmlx"))
-                    continue;
                 PopulateLanguageBuffer(language.Key, language.SelectMany(b => b.CodeLines));
             }
         }
@@ -99,6 +96,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             { "JScript",        "Javascript" }
         };
 
+        ///<summary>Finds the ContentType corresponding to a user-facing string.</summary>
         public static IContentType FromFriendlyName(this IContentTypeRegistryService registry, string friendlyName)
         {
             if (string.IsNullOrWhiteSpace(friendlyName))
@@ -110,6 +108,29 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             return registry.GetContentType(realName)
                 ?? WebEditor.ExportProvider.GetExport<IFileExtensionRegistryService>().Value.GetContentTypeForExtension(friendlyName);
+        }
+        ///<summary>Converts a ContenType to a ContentType that can be embedded.  This function contains workarounds for issues with specific ContentTypes.</summary>
+        public static IContentType ToEmbeddableContentType(this IContentType original)
+        {
+            if (original == null)
+                return null;
+
+            // Having both CSS LESS buffers in the same TextView
+            // breaks IntelliSense.  Also, embedding CSS as LESS
+            // allows CSS code blocks to have both selectors and
+            // and properties together.
+            if (original.IsOfType("CSS"))
+                return WebEditor.ExportProvider.GetExport<IContentTypeRegistryService>().Value.GetContentType("LESS");
+
+            // Having two HTMLX buffers within the same TextView
+            // breaks most of their code.
+            // The original HTML classifier doesn't work without
+            // an IVsTextBuffer for the buffer.
+            // Instead, we report this as normal text.
+            if (original.IsOfType("htmlx") || original.IsOfType("html"))
+                return null;
+
+            return original;
         }
     }
 }
