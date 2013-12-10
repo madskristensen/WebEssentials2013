@@ -103,7 +103,7 @@ namespace MadsKristensen.EditorExtensions
 					sb.AppendLine( "{" );
 					
 					foreach ( var p in props ) {
-						sb.AppendFormat( "{0}\t{1}: ", prefix, p.Name );
+						sb.AppendFormat( "{0}\t{1}: ", prefix, CamelCasePropertyName( p.Name ) );
 						
 						if ( p.Type.IsPrimitive() ) sb.Append( p.Type.GetJavaScriptName() );
 						else if ( !string.IsNullOrEmpty( p.Type.ClientSideReferenceName ) ) sb.Append( p.Type.ClientSideReferenceName );
