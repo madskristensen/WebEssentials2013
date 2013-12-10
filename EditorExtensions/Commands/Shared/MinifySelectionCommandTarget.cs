@@ -4,7 +4,7 @@ using EnvDTE80;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions 
 {
     internal class MinifySelection : CommandTargetBase
     {
@@ -36,10 +36,12 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool IsEnabled()
         {
+            // Don't minify Markdown
+            if (TextView.GetSelection("Markdown").HasValue)
+                return false;
+
             if (TextView != null && TextView.Selection.SelectedSpans.Count > 0)
-            {
                 return TextView.Selection.SelectedSpans[0].Length > 0;
-            }
 
             return false;
         }
