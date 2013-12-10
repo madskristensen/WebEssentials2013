@@ -19,6 +19,15 @@ namespace MadsKristensen.EditorExtensions
     [TextViewRole(PredefinedTextViewRoles.Document)]
     public class ScriptIntellisense : IWpfTextViewCreationListener
     {
+        public const string DefaultModuleName = "server";
+        public const string ModuleNameAttributeName = "TypeScriptModule";
+
+        static class Ext
+        {
+            public const string JavaScript = ".js";
+            public const string TypeScript = ".d.ts";
+        }
+
         [Import]
         public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
@@ -44,7 +53,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static void Process(string filePath)
         {
-            if (!File.Exists(filePath + ".js") && !File.Exists(filePath + ".d.ts"))
+            if (!File.Exists(filePath + Ext.JavaScript) && !File.Exists(filePath + Ext.TypeScript))
                 return;
 
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
@@ -54,8 +63,8 @@ namespace MadsKristensen.EditorExtensions
 
                 if (list != null)
                 {
-                    AddScript(filePath, ".js", list);
-                    AddScript(filePath, ".d.ts", list);
+                    AddScript(filePath, Ext.JavaScript, list);
+                    AddScript(filePath, Ext.TypeScript, list);
                 }
             }), DispatcherPriority.ApplicationIdle, null);
         }
@@ -71,7 +80,7 @@ namespace MadsKristensen.EditorExtensions
             writer.Write(list, resultPath);
             var item = MarginBase.AddFileToProject(filePath, resultPath);
 
-            if (extension.Equals(".d.ts", StringComparison.OrdinalIgnoreCase))
+            if (extension.Equals(Ext.TypeScript, StringComparison.OrdinalIgnoreCase))
                 item.Properties.Item("ItemType").Value = "TypeScriptCompile";
             else
             {
@@ -123,22 +132,19 @@ namespace MadsKristensen.EditorExtensions
         private static bool ShouldProcess(CodeElement member)
         {
             return
-                member.Kind == vsCMElement.vsCMElementClass
-                || member.Kind == vsCMElement.vsCMElementEnum;
+                    member.Kind == vsCMElement.vsCMElementClass
+                    || member.Kind == vsCMElement.vsCMElementEnum;
         }
 
         private static void ProcessEnum(CodeEnum element, List<IntellisenseObject> list)
         {
-            var namespaceFromAttr = GetNamespaceFromAttr(element);
-
             IntellisenseObject data = new IntellisenseObject
             {
                 Name = element.Name,
-                Kind = element.Kind.ToString(),
+                IsEnum = element.Kind == vsCMElement.vsCMElementEnum,
                 FullName = element.FullName,
                 Properties = new List<IntellisenseProperty>(),
-                Namespace = element.Namespace.FullName,
-                ServerNamespace = namespaceFromAttr
+                Namespace = GetNamespace(element),
             };
 
             foreach (var codeEnum in element.Members.OfType<CodeElement>())
@@ -157,56 +163,94 @@ namespace MadsKristensen.EditorExtensions
 
         private static void ProcessClass(CodeClass cc, List<IntellisenseObject> list)
         {
-            var namespaceFromAttr = GetNamespaceFromAttr(cc);
-
-            IntellisenseObject data = new IntellisenseObject
+            var props = GetProperties(cc.Members, new HashSet<string>()).ToList();
+            if (props.Any()) list.Add(new IntellisenseObject
             {
-                ServerNamespace = namespaceFromAttr,
+                Namespace = GetNamespace(cc),
                 Name = cc.Name,
-                Kind = cc.Kind.ToString(),
                 FullName = cc.FullName,
-                Properties = new List<IntellisenseProperty>(),
-                Namespace = cc.Namespace.FullName
+                Properties = props
+            });
+        }
+
+        private static IEnumerable<IntellisenseProperty> GetProperties(CodeElements props, HashSet<string> traversedTypes)
+        {
+            return from p in props.OfType<CodeProperty>()
+                   where !p.Attributes.Cast<CodeAttribute>().Any(a => a.Name == "IgnoreDataMember")
+                   where p.Getter != null && !p.Getter.IsShared && p.Getter.Access == vsCMAccess.vsCMAccessPublic
+                   select new IntellisenseProperty()
+                   {
+                       Name = GetName(p),
+                       Type = GetType(p.Type, traversedTypes),
+                       Summary = GetSummary(p)
+                   };
+        }
+
+        private static string GetNamespace(CodeClass e) { return GetNamespace(e.Attributes); }
+        private static string GetNamespace(CodeEnum e) { return GetNamespace(e.Attributes); }
+
+        private static string GetNamespace(CodeElements attrs)
+        {
+            if (attrs == null) return DefaultModuleName;
+            var namespaceFromAttr = from a in attrs.Cast<CodeAttribute2>()
+                                    where a.Name.EndsWith(ModuleNameAttributeName, StringComparison.InvariantCultureIgnoreCase)
+                                    from arg in a.Arguments.Cast<CodeAttributeArgument>()
+                                    let v = (arg.Value ?? "").Trim('\"')
+                                    where !string.IsNullOrWhiteSpace(v)
+                                    select v;
+
+            return namespaceFromAttr.FirstOrDefault() ?? DefaultModuleName;
+        }
+
+        private static IntellisenseType GetType(CodeTypeRef codeTypeRef, HashSet<string> traversedTypes)
+        {
+            var isArray = codeTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefArray;
+            if (isArray && codeTypeRef.ElementType != null) codeTypeRef = codeTypeRef.ElementType;
+
+            var cl = codeTypeRef.CodeType as CodeClass;
+            var en = codeTypeRef.CodeType as CodeEnum;
+            var isPrimitive = IsPrimitive(codeTypeRef);
+            var result = new IntellisenseType
+            {
+                IsArray = isArray,
+                CodeName = codeTypeRef.AsString,
+                ClientSideReferenceName =
+                    codeTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType &&
+                    codeTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject
+                    ?
+                        (cl != null && HasIntellisense(cl.ProjectItem, Ext.TypeScript) ? (GetNamespace(cl) + "." + cl.Name) : null) ??
+                        (en != null && HasIntellisense(en.ProjectItem, Ext.TypeScript) ? (GetNamespace(en) + "." + en.Name) : null)
+                    : null
             };
 
-            foreach (CodeProperty property in cc.Members.OfType<CodeProperty>())
+            if (!isPrimitive && cl != null && !traversedTypes.Contains(codeTypeRef.CodeType.FullName))
             {
-                if (property.Attributes.Cast<CodeAttribute>().Any(a => a.Name == "IgnoreDataMember"))
-                    continue;
-
-                var prop = new IntellisenseProperty()
-                {
-                    Name = GetName(property),
-                    Type = property.Type.AsString,
-                    Summary = GetSummary(property),
-                };
-
-                data.Properties.Add(prop);
+                traversedTypes.Add(codeTypeRef.CodeType.FullName);
+                result.Shape = GetProperties(codeTypeRef.CodeType.Members, traversedTypes).ToList();
+                traversedTypes.Remove(codeTypeRef.CodeType.FullName);
             }
 
-            if (data.Properties.Count > 0)
-                list.Add(data);
+            return result;
         }
 
-        private static string GetNamespaceFromAttr(CodeClass cc)
+        private static bool IsPrimitive(CodeTypeRef codeTypeRef)
         {
-            var namespaceFromAttr = from a in cc.Attributes.Cast<CodeAttribute2>()
-                                    where a.Name.EndsWith("TypeScriptModule", StringComparison.InvariantCultureIgnoreCase)
-                                    from arg in a.Arguments.Cast<CodeAttributeArgument>()
-                                    let v = (arg.Value ?? "").Trim('\"')
-                                    where !string.IsNullOrWhiteSpace(v)
-                                    select v;
-            return namespaceFromAttr.FirstOrDefault() ?? "server";
+            if (codeTypeRef.TypeKind != vsCMTypeRef.vsCMTypeRefOther && codeTypeRef.TypeKind != vsCMTypeRef.vsCMTypeRefCodeType)
+                return true;
+
+            if (codeTypeRef.AsString.EndsWith("DateTime"))
+                return true;
+
+            return false;
         }
-        private static string GetNamespaceFromAttr(CodeEnum cc)
+
+        private static bool HasIntellisense(ProjectItem projectItem, string ext)
         {
-            var namespaceFromAttr = from a in cc.Attributes.Cast<CodeAttribute2>()
-                                    where a.Name.EndsWith("TypeScriptModule", StringComparison.InvariantCultureIgnoreCase)
-                                    from arg in a.Arguments.Cast<CodeAttributeArgument>()
-                                    let v = (arg.Value ?? "").Trim('\"')
-                                    where !string.IsNullOrWhiteSpace(v)
-                                    select v;
-            return namespaceFromAttr.FirstOrDefault() ?? "server";
+            for (short i = 0; i < projectItem.FileCount; i++)
+            {
+                if (File.Exists(projectItem.FileNames[i] + ext)) return true;
+            }
+            return false;
         }
 
         private static string GetName(CodeProperty property)
@@ -220,6 +264,7 @@ namespace MadsKristensen.EditorExtensions
 
                 if (value == null)
                     break;
+
                 // Strip the leading & trailing quotes
                 return value.Value.Substring(1, value.Value.Length - 2);
             }
@@ -229,15 +274,15 @@ namespace MadsKristensen.EditorExtensions
 
         private static string GetSummary(CodeProperty property)
         {
-            if (string.IsNullOrWhiteSpace(property.DocComment))
+            if (property.InfoLocation != vsCMInfoLocation.vsCMInfoLocationProject || string.IsNullOrWhiteSpace(property.DocComment))
                 return null;
 
             try
             {
                 return XElement.Parse(property.DocComment)
-                    .Descendants("summary")
-                    .Select(x => x.Value)
-                    .FirstOrDefault();
+                               .Descendants("summary")
+                               .Select(x => x.Value)
+                               .FirstOrDefault();
             }
             catch (Exception ex)
             {
