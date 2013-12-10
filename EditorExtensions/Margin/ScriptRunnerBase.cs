@@ -13,12 +13,14 @@ namespace MadsKristensen.EditorExtensions
         private bool _disposed;
         private Dispatcher _dispatcher;
 
+        protected ScriptRunnerBase() { }
+
         protected ScriptRunnerBase(Dispatcher dispatcher)
         {
             _dispatcher = dispatcher;
         }
 
-        protected abstract string CreateHtml(string source, string state);
+        protected abstract string CreateHtml(string source, string fileName);
 
         public void Compile(string source, string state)
         {

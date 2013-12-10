@@ -1,9 +1,10 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Windows.Media.Imaging;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -29,23 +30,24 @@ namespace MadsKristensen.EditorExtensions
 
         public override string DisplayText
         {
-            get { return string.Format("Add missing pseudo ({0})", string.Join(", ", _missingPseudos)); }
+            get { return string.Format(CultureInfo.CurrentCulture, "Add missing pseudo ({0})", string.Join(", ", _missingPseudos)); }
         }
 
         public override void Invoke()
         {
             StringBuilder sb = new StringBuilder();
-         
+
             foreach (var entry in _missingPseudos)
             {
                 string text = _selector.Text.Replace(_pseudo.Text, entry).Trim(',');
                 sb.Append(text + "," + Environment.NewLine);
             }
-            
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            _span.TextBuffer.Insert(_selector.Start, sb.ToString());
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            {
+                _span.TextBuffer.Insert(_selector.Start, sb.ToString());
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+            }
         }
     }
 }

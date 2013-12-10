@@ -84,6 +84,7 @@ namespace MadsKristensen.EditorExtensions
                     }
                 }
             }
+
             Logger.Log(Path.GetFileName(fileName) + " compiled");
             return result;
         }

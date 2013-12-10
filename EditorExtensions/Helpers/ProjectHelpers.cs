@@ -1,4 +1,8 @@
-﻿using EnvDTE;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -7,10 +11,6 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {

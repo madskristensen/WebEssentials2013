@@ -6,11 +6,10 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
+using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.CSS.Editor.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -82,28 +81,31 @@ namespace MadsKristensen.EditorExtensions
 
         private static void Replace(ITrackingSpan contextSpan, ITextView textView, string atDirective, string fontFamily)
         {
-            EditorExtensionsPackage.DTE.UndoContext.Open("Embed font");
-            textView.TextBuffer.Insert(0, atDirective + Environment.NewLine + Environment.NewLine);
-            textView.TextBuffer.Insert(contextSpan.GetSpan(textView.TextBuffer.CurrentSnapshot).Start, fontFamily);
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext(("Embed font")))
+            {
+                textView.TextBuffer.Insert(0, atDirective + Environment.NewLine + Environment.NewLine);
+                textView.TextBuffer.Insert(contextSpan.GetSpan(textView.TextBuffer.CurrentSnapshot).Start, fontFamily);
+            }
         }
 
-        private static object _syncRoot = new object();
-        private string GetFontFromFile(string text, IWpfTextView view, out string fontFamily)
+        private static readonly object _syncRoot = new object();
+        private static string GetFontFromFile(string text, IWpfTextView view, out string fontFamily)
         {
             lock (_syncRoot)
             {
                 fontFamily = text;
-                OpenFileDialog dialog = new OpenFileDialog();
-                dialog.InitialDirectory = Path.GetDirectoryName(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
-                dialog.Filter = "Fonts (*.woff;*.eot;*.ttf;*.otf;*.svg)|*.woff;*.eot;*.ttf;*.otf;*.svg";
-                dialog.DefaultExt = ".woff";
+                using (OpenFileDialog dialog = new OpenFileDialog())
+                {
+                    dialog.InitialDirectory = Path.GetDirectoryName(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+                    dialog.Filter = "Fonts (*.woff;*.eot;*.ttf;*.otf;*.svg)|*.woff;*.eot;*.ttf;*.otf;*.svg";
+                    dialog.DefaultExt = ".woff";
 
-                if (dialog.ShowDialog() != DialogResult.OK)
-                    return null;
+                    if (dialog.ShowDialog() != DialogResult.OK)
+                        return null;
 
-                FontDropHandler fdh = new FontDropHandler(view);
-                return fdh.GetCodeFromFile(dialog.FileName, out fontFamily);
+                    FontDropHandler fdh = new FontDropHandler(view);
+                    return fdh.GetCodeFromFile(dialog.FileName, out fontFamily);
+                }
             }
         }
     }

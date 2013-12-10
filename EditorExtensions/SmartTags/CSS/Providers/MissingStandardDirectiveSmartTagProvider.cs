@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
+using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.CSS.Editor.Schemas;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.CSS.Editor.Schemas;
-using Microsoft.CSS.Editor.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -36,7 +35,7 @@ namespace MadsKristensen.EditorExtensions
             ICssCompletionListEntry entry = VendorHelpers.GetMatchingStandardEntry(directive, schema);
             if (entry != null && !visitor.Items.Any(d => d.Keyword != null && "@" + d.Keyword.Text == entry.DisplayText))
             {
-                yield return new MissingStandardDirectiveSmartTagAction(itemTrackingSpan, directive, entry.DisplayText, view);
+                yield return new MissingStandardDirectiveSmartTagAction(itemTrackingSpan, directive, entry.DisplayText);
             }
         }
     }

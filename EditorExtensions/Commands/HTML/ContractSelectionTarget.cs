@@ -1,11 +1,10 @@
-﻿using Microsoft.Html.Core;
+﻿using System;
+using System.Linq;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -36,7 +35,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (tag == null)
                 return false;
-            
+
             if (tag.EndTag != null && tag.StartTag.Start == start && tag.EndTag.End == end)
             {
                 Select(tag.InnerRange.Start, tag.InnerRange.Length);

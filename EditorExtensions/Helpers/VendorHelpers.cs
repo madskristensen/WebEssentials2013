@@ -1,16 +1,15 @@
-﻿using Microsoft.CSS.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.CSS.Editor.Schemas;
 using Microsoft.CSS.Editor.SyntaxCheck;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal static class VendorHelpers
     {
-        private static object _syncRoot = new object();
         private static Dictionary<int, string[]> prefixes = new Dictionary<int, string[]>();
 
         public static string[] GetPrefixes(ICssSchemaInstance schema)

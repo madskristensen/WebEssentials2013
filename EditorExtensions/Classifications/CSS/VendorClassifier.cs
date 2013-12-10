@@ -1,63 +1,67 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Windows.Threading;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal static class ClassificationTypes
+    public static class VendorClassificationTypes
     {
-        internal const string _declaration = "vendor.declaration";
-        internal const string _value = "vendor.value";
+        public const string Declaration = "vendor.declaration";
+        public const string Value = "vendor.value";
 
-        [Export, Name(ClassificationTypes._declaration), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal static ClassificationTypeDefinition VendorDeclarationClassificationType = null;
+        [Export, Name(VendorClassificationTypes.Declaration)]
+        public static ClassificationTypeDefinition VendorDeclarationClassificationType { get; set; }
 
-        [Export, Name(ClassificationTypes._value), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal static ClassificationTypeDefinition VendorValueClassificationType = null;
+        [Export, Name(VendorClassificationTypes.Value)]
+        public static ClassificationTypeDefinition VendorValueClassificationType { get; set; }
     }
 
     [Export(typeof(IClassifierProvider))]
     [ContentType("css")]
-    internal sealed class VendorClassifierProvider : IClassifierProvider
+    public sealed class VendorClassifierProvider : IClassifierProvider
     {
-        [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IClassificationTypeRegistryService Registry { get; set; }
+        [Import]
+        public IClassificationTypeRegistryService Registry { get; set; }
 
-        public IClassifier GetClassifier(ITextBuffer buffer)
+        public IClassifier GetClassifier(ITextBuffer textBuffer)
         {
-            return buffer.Properties.GetOrCreateSingletonProperty<VendorClassifier>(() => { return new VendorClassifier(Registry, buffer); });
+            return textBuffer.Properties.GetOrCreateSingletonProperty<VendorClassifier>(() => { return new VendorClassifier(Registry, textBuffer); });
         }
     }
 
     internal sealed class VendorClassifier : IClassifier
     {
-        private IClassificationTypeRegistryService _registry;
-        private ITextBuffer _buffer;
-        private CssTree _tree;
-        internal SortedRangeList<Declaration> Cache = new SortedRangeList<Declaration>();
-        private IClassificationType _decClassification;
-        private IClassificationType _valClassification;
+        private readonly IClassificationTypeRegistryService _registry;
+        private readonly ITextBuffer _buffer;
+        private readonly CssTreeWatcher _tree;
+        internal readonly SortedRangeList<Declaration> Cache = new SortedRangeList<Declaration>();
+        private readonly IClassificationType _decClassification;
+        private readonly IClassificationType _valClassification;
 
         internal VendorClassifier(IClassificationTypeRegistryService registry, ITextBuffer buffer)
         {
             _registry = registry;
             _buffer = buffer;
-            _decClassification = _registry.GetClassificationType(ClassificationTypes._declaration);
-            _valClassification = _registry.GetClassificationType(ClassificationTypes._value);
+            _decClassification = _registry.GetClassificationType(VendorClassificationTypes.Declaration);
+            _valClassification = _registry.GetClassificationType(VendorClassificationTypes.Value);
+
+            _tree = CssTreeWatcher.ForBuffer(_buffer);
+            _tree.TreeUpdated += TreeUpdated;
+            _tree.ItemsChanged += TreeItemsChanged;
+            UpdateDeclarationCache(_tree.StyleSheet);
+
         }
 
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
         {
             List<ClassificationSpan> spans = new List<ClassificationSpan>();
-            if (!WESettings.GetBoolean(WESettings.Keys.SyncVendorValues) || !EnsureInitialized())
+            if (!WESettings.GetBoolean(WESettings.Keys.SyncVendorValues))
                 return spans;
 
             foreach (Declaration dec in Cache.Where(d => d.PropertyName.Text.Length > 0 && span.Start <= d.Start && span.End >= d.AfterEnd))
@@ -85,7 +89,7 @@ namespace MadsKristensen.EditorExtensions
             return spans;
         }
 
-        public string GetStandardName(Declaration dec)
+        public static string GetStandardName(Declaration dec)
         {
             string name = dec.PropertyName.Text;
             if (name.Length > 0 && name[0] == '-')
@@ -97,25 +101,6 @@ namespace MadsKristensen.EditorExtensions
             return name;
         }
 
-        public bool EnsureInitialized()
-        {
-            if (_tree == null && WebEditor.Host != null)
-            {
-                try
-                {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(_buffer);
-                    _tree = document.Tree;
-                    _tree.TreeUpdated += TreeUpdated;
-                    _tree.ItemsChanged += TreeItemsChanged;
-                    UpdateDeclarationCache(_tree.StyleSheet);
-                }
-                catch (ArgumentNullException)
-                {
-                }
-            }
-
-            return _tree != null;
-        }
 
         private void UpdateDeclarationCache(ParseItem item)
         {
@@ -223,8 +208,8 @@ namespace MadsKristensen.EditorExtensions
 
     [Export(typeof(EditorFormatDefinition))]
     [UserVisible(true)]
-    [ClassificationType(ClassificationTypeNames = ClassificationTypes._declaration)]
-    [Name(ClassificationTypes._declaration)]
+    [ClassificationType(ClassificationTypeNames = VendorClassificationTypes.Declaration)]
+    [Name(VendorClassificationTypes.Declaration)]
     [Order(After = Priority.Default)]
     internal sealed class VendorDeclarationFormatDefinition : ClassificationFormatDefinition
     {

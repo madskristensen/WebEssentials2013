@@ -1,9 +1,4 @@
-﻿using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
@@ -12,6 +7,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
+using Newtonsoft.Json.Linq;
 using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
@@ -22,16 +22,15 @@ namespace MadsKristensen.EditorExtensions
     Name("NodeJsCompletion")]
     public class NodeModuleCompletionSourceProvider : ICompletionSourceProvider
     {
-        public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer)
+        public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer)
         {
-            return buffer.Properties.GetOrCreateSingletonProperty(() => new NodeModuleCompletionSource(buffer)) as ICompletionSource;
+            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new NodeModuleCompletionSource(textBuffer)) as ICompletionSource;
         }
     }
 
     public class NodeModuleCompletionSource : ICompletionSource
     {
         private ITextBuffer _buffer;
-        private static ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphXmlItem, StandardGlyphItem.GlyphItemPublic);
 
         public NodeModuleCompletionSource(ITextBuffer buffer)
         {
@@ -42,6 +41,7 @@ namespace MadsKristensen.EditorExtensions
         {
             var position = session.GetTriggerPoint(_buffer).GetPoint(_buffer.CurrentSnapshot);
             var line = position.GetContainingLine();
+
             if (line == null) return;
 
             int linePos = position - line.Start.Position;

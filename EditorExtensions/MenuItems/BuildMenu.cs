@@ -1,11 +1,11 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
+using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -75,7 +75,7 @@ namespace MadsKristensen.EditorExtensions
         //    }
         //}
 
-        private void Minify()
+        private static void Minify()
         {
             _dte.StatusBar.Text = "Web Essentials: Minifying files...";
             var files = GetFiles();
@@ -101,7 +101,7 @@ namespace MadsKristensen.EditorExtensions
             _dte.StatusBar.Text = "Web Essentials: Files minified";
         }
 
-        private IEnumerable<string> GetFiles()
+        private static IEnumerable<string> GetFiles()
         {
             foreach (Project project in ProjectHelpers.GetAllProjects())
             {

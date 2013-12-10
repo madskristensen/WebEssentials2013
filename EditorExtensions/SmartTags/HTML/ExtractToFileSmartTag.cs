@@ -1,15 +1,16 @@
-﻿using Microsoft.Html.Core;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Globalization;
+using System.IO;
+using System.Web;
+using System.Windows.Forms;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor.SmartTags;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.IO;
-using System.Windows.Forms;
-using System.Web;
 
 namespace MadsKristensen.EditorExtensions.SmartTags
 {
@@ -88,17 +89,16 @@ namespace MadsKristensen.EditorExtensions.SmartTags
 
                 string reference = GetReference(element, fileName, root);
 
-                EditorExtensionsPackage.DTE.UndoContext.Open(this.DisplayText);
-
-                textBuffer.Replace(new Span(element.Start, element.Length), reference);
-                File.WriteAllText(fileName, text);
-                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(fileName);
-                ProjectHelpers.AddFileToActiveProject(fileName);
-
-                EditorExtensionsPackage.DTE.UndoContext.Close();
+                using (EditorExtensionsPackage.UndoContext((this.DisplayText)))
+                {
+                    textBuffer.Replace(new Span(element.Start, element.Length), reference);
+                    File.WriteAllText(fileName, text);
+                    EditorExtensionsPackage.DTE.ItemOperations.OpenFile(fileName);
+                    ProjectHelpers.AddFileToActiveProject(fileName);
+                }
             }
 
-            private string GetReference(ElementNode element, string fileName, string root)
+            private static string GetReference(ElementNode element, string fileName, string root)
             {
                 string relative = FileHelpers.RelativePath(root, fileName);
                 string reference = "<script src=\"/{0}\"></script>";
@@ -106,7 +106,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags
                 if (element.IsStyleBlock())
                     reference = "<link rel=\"stylesheet\" href=\"/{0}\" />";
 
-                return string.Format(reference, HttpUtility.HtmlAttributeEncode(relative));
+                return string.Format(CultureInfo.CurrentCulture, reference, HttpUtility.HtmlAttributeEncode(relative));
             }
         }
     }

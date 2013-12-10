@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using Microsoft.CSS.Core;
@@ -225,7 +226,7 @@ a {
                                                 .SelectMany(rs => LessDocument.GetSelectorNames(rs, LessMixinAction.Literal))
                                                 .ToList();
 
-                CollectionAssert.AreEqual(cssSelectors, lessSelectors);
+                lessSelectors.Should().Equal(cssSelectors);
             }
         }
 
@@ -246,13 +247,13 @@ a {
                 ;
 
             var literalExpansions = lessBlocks.SelectMany(rs => LessDocument.GetSelectorNames(rs, LessMixinAction.Literal)).ToList();
-            CollectionAssert.AreEqual(new[] { "a .myMixin(@p) b", "a .myMixin(@p) code" }, literalExpansions);
+            literalExpansions.Should().Equal(new[] { "a .myMixin(@p) b", "a .myMixin(@p) code" });
 
             var skipExpansions = lessBlocks.SelectMany(rs => LessDocument.GetSelectorNames(rs, LessMixinAction.Skip)).ToList();
-            CollectionAssert.AreEqual(new string[0], skipExpansions);
+            skipExpansions.Should().BeEmpty();
 
             var nestedExpansions = lessBlocks.SelectMany(rs => LessDocument.GetSelectorNames(rs, LessMixinAction.NestedOnly)).ToList();
-            CollectionAssert.AreEqual(new[] { "«mixin .myMixin» b", "«mixin .myMixin» code" }, nestedExpansions);
+            nestedExpansions.Should().Equal(new[] { "«mixin .myMixin» b", "«mixin .myMixin» code" });
         }
 
         static async Task<string> CompileLess(string source)

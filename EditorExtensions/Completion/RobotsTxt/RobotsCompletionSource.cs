@@ -1,11 +1,11 @@
-﻿using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Windows.Media;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
 using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
@@ -38,11 +38,11 @@ namespace MadsKristensen.EditorExtensions
                 return;
 
             List<Intel.Completion> completions = new List<Intel.Completion>();
-            foreach (string item in RobotsTxtClassifier._valid)
+            foreach (string item in RobotsTxtClassifier.Valid)
             {
                 completions.Add(new Intel.Completion(item, item, null, _glyph, item));
             }
-            
+
             ITextSnapshot snapshot = _buffer.CurrentSnapshot;
             var triggerPoint = session.GetTriggerPoint(snapshot);
 

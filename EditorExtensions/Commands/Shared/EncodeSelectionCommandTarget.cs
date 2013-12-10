@@ -1,9 +1,9 @@
-﻿using EnvDTE;
+﻿using System;
+using System.Web;
+using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.Web;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -53,9 +53,8 @@ namespace MadsKristensen.EditorExtensions
             TextDocument document = GetTextDocument();
             string replacement = callback(document.Selection.Text);
 
-            _dte.UndoContext.Open(callback.Method.Name);
-            document.Selection.Insert(replacement, 0);
-            _dte.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((callback.Method.Name)))
+                document.Selection.Insert(replacement, 0);
 
             return true;
         }

@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.CSS.Editor;
+using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using Microsoft.CSS.Editor.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -56,7 +56,7 @@ namespace MadsKristensen.EditorExtensions
             get { return false; }
         }
 
-        public int SortingPriority { get; set; }
+        public int SortingPriority { get { return 0; } }
 
 
         public bool IsSupported(BrowserVersion browser)

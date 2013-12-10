@@ -1,12 +1,12 @@
-﻿using Microsoft.CSS.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.Html.Schemas;
 using Microsoft.Html.Schemas.Model;
 using Microsoft.VisualStudio.Utilities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
             return schemas;
         }
 
-        private IEnumerable<ICssCompletionListEntry> KnownTagName(IEnumerable<IHtmlSchema> schemas, string tagName)
+        private static IEnumerable<ICssCompletionListEntry> KnownTagName(IEnumerable<IHtmlSchema> schemas, string tagName)
         {
             foreach (IHtmlSchema schema in schemas)
             {

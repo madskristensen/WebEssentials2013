@@ -1,31 +1,28 @@
-﻿using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
-using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.CSS.Editor.Intellisense;
-using Microsoft.CSS.Editor.Schemas;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+using Microsoft.CSS.Core;
+using Microsoft.CSS.Editor;
+using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.CSS.Editor.Schemas;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class DeclarationQuickInfo : IQuickInfoSource
     {
-        private DeclarationQuickInfoSourceProvider _provider;
         private ITextBuffer _buffer;
-        private CssTree _tree;
         private static readonly string[] browserAbbr = new[] { "C", "FF", "IE", "O", "S" };
         private ICssSchemaInstance _rootSchema;
 
-        public DeclarationQuickInfo(DeclarationQuickInfoSourceProvider provider, ITextBuffer buffer)
+        public DeclarationQuickInfo(ITextBuffer buffer)
         {
-            _provider = provider;
             _buffer = buffer;
             _rootSchema = CssSchemaManager.SchemaManager.GetSchemaRootForBuffer(buffer);
         }
@@ -34,14 +31,15 @@ namespace MadsKristensen.EditorExtensions
         {
             applicableToSpan = null;
 
-            if (!EnsureTreeInitialized() || session == null || qiContent == null || qiContent.Count > 0 || !WESettings.GetBoolean(WESettings.Keys.ShowBrowserTooltip))
+            if (session == null || qiContent == null || qiContent.Count > 0 || !WESettings.GetBoolean(WESettings.Keys.ShowBrowserTooltip))
                 return;
 
             SnapshotPoint? point = session.GetTriggerPoint(_buffer.CurrentSnapshot);
             if (!point.HasValue)
                 return;
 
-            ParseItem item = _tree.StyleSheet.ItemBeforePosition(point.Value.Position);
+            var tree = CssEditorDocument.FromTextBuffer(_buffer);
+            ParseItem item = tree.StyleSheet.ItemBeforePosition(point.Value.Position);
             if (item == null || !item.IsValid)
                 return;
 
@@ -200,28 +198,6 @@ namespace MadsKristensen.EditorExtensions
             return new KeyValuePair<string, string>(name, value);
         }
 
-        //private static UIElement CreateExample(string example)
-        //{
-        //    StackPanel panel = new StackPanel();
-        //    panel.Orientation = Orientation.Horizontal;
-        //    panel.Margin = new Thickness(0, 0, 0, 5);
-
-        //    TextBlock label = new TextBlock();
-        //    label.Text = "Example: ";
-        //    label.FontWeight = FontWeights.Bold;
-        //    label.FontSize = 11;
-        //    label.FontFamily = new FontFamily("Consolas");
-        //    panel.Children.Add(label);
-
-        //    TextBlock value = new TextBlock();
-        //    value.Text = example;
-        //    value.FontSize = 11;
-        //    value.FontFamily = new FontFamily("Consolas");
-        //    panel.Children.Add(value);
-
-        //    return panel;
-        //}
-
         private static UIElement CreateBrowserList(Dictionary<string, string> browsers)
         {
             StackPanel panel = new System.Windows.Controls.StackPanel();
@@ -266,27 +242,6 @@ namespace MadsKristensen.EditorExtensions
             }
 
             return panel;
-        }
-
-        /// <summary>
-        /// This must be delayed so that the TextViewConnectionListener
-        /// has a chance to initialize the WebEditor host.
-        /// </summary>
-        public bool EnsureTreeInitialized()
-        {
-            if (_tree == null)// && WebEditor.GetHost(CssContentTypeDefinition.CssContentType) != null)
-            {
-                try
-                {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(_buffer);
-                    _tree = document.Tree;
-                }
-                catch (Exception)
-                {
-                }
-            }
-
-            return _tree != null;
         }
 
         private bool m_isDisposed;

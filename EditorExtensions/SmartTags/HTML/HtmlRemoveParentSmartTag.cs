@@ -1,12 +1,12 @@
-﻿using Microsoft.Html.Core;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor.SmartTags;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
 
 namespace MadsKristensen.EditorExtensions.SmartTags
 {
@@ -53,23 +53,18 @@ namespace MadsKristensen.EditorExtensions.SmartTags
                 var content = textBuffer.CurrentSnapshot.GetText(element.InnerRange.Start, element.InnerRange.Length).Trim();
                 int start = element.Start;
                 int length = content.Length;
-                
-                EditorExtensionsPackage.DTE.UndoContext.Open(this.DisplayText);
 
-                using (var edit = textBuffer.CreateEdit())
+                using (EditorExtensionsPackage.UndoContext((this.DisplayText)))
                 {
-                    edit.Replace(element.Start, element.OuterRange.Length, content);
-                    edit.Apply();
-                }
-                
-                SnapshotSpan span = new SnapshotSpan(view.TextBuffer.CurrentSnapshot, start, length);
+                    textBuffer.Replace(new Span(element.Start, element.OuterRange.Length), content);
 
-                view.Selection.Select(span, false);
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-                view.Caret.MoveTo(new SnapshotPoint(view.TextBuffer.CurrentSnapshot, start));
-                view.Selection.Clear();
-                                
-                EditorExtensionsPackage.DTE.UndoContext.Close();
+                    SnapshotSpan span = new SnapshotSpan(view.TextBuffer.CurrentSnapshot, start, length);
+
+                    view.Selection.Select(span, false);
+                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                    view.Caret.MoveTo(new SnapshotPoint(view.TextBuffer.CurrentSnapshot, start));
+                    view.Selection.Clear();
+                }
             }
         }
     }

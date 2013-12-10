@@ -1,35 +1,32 @@
-﻿using System.ComponentModel.Composition;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel.Composition;
+using System.Linq;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [Export(typeof(IVsTextViewCreationListener))]
+    [Export(typeof(IWpfTextViewConnectionListener))]
     [ContentType(CssContentTypeDefinition.CssContentType)]
+    [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    class CssSortPropertiesViewCreationListener : IVsTextViewCreationListener
+    public class CssConnectionListener : IWpfTextViewConnectionListener
     {
-        [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
-
         [Import]
-        internal IClassifierAggregatorService AggregatorService { get; set; }
+        public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
 
-        [Import]
-        internal ICompletionBroker CompletionBroker { get; set; }
-
-        [Import]
-        internal IQuickInfoBroker QuickInfoBroker { get; set; }
-
-        public void VsTextViewCreated(IVsTextView textViewAdapter)
+        public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
-            var textView = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
+            if (!subjectBuffers.Any(b => b.ContentType.IsOfType(CssContentTypeDefinition.CssContentType)))
+                return;
+
+            var textViewAdapter = EditorAdaptersFactoryService.GetViewAdapter(textView);
+            if (textViewAdapter == null)
+                return;
 
             textView.Properties.GetOrCreateSingletonProperty<CssSortProperties>(() => new CssSortProperties(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<CssExtractToFile>(() => new CssExtractToFile(textViewAdapter, textView));
@@ -40,11 +37,16 @@ namespace MadsKristensen.EditorExtensions
             textView.Properties.GetOrCreateSingletonProperty<CssFindReferences>(() => new CssFindReferences(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<F1Help>(() => new F1Help(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<CssSelectBrowsers>(() => new CssSelectBrowsers(textViewAdapter, textView));
-            textView.Properties.GetOrCreateSingletonProperty<RetriggerTarget>(() => new RetriggerTarget(textViewAdapter, textView, CompletionBroker));
+            textView.Properties.GetOrCreateSingletonProperty<RetriggerTarget>(() => new RetriggerTarget(textViewAdapter, textView));
+            textView.Properties.GetOrCreateSingletonProperty<ArrowsCommandTarget>(() => new ArrowsCommandTarget(textViewAdapter, textView));
 
             uint cssFormatProperties;
             ErrorHandler.ThrowOnFailure(EditorExtensionsPackage.PriorityCommandTarget.RegisterPriorityCommandTarget(0, new CssFormatProperties(textView), out cssFormatProperties));
             textView.Closed += delegate { ErrorHandler.ThrowOnFailure(EditorExtensionsPackage.PriorityCommandTarget.UnregisterPriorityCommandTarget(cssFormatProperties)); };
+        }
+
+        public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
+        {
         }
     }
 }

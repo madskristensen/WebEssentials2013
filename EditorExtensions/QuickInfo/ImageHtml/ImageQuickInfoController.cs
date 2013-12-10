@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.Language.Intellisense;
+﻿using System.Collections.Generic;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using System.Collections.Generic;
 
 namespace MadsKristensen.EditorExtensions.QuickInfo
 {

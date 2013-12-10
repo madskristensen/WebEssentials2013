@@ -10,8 +10,6 @@
 //***************************************************************************
 
 using System.Windows.Media;
-using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 
 namespace MadsKristensen.EditorExtensions
@@ -27,11 +25,11 @@ namespace MadsKristensen.EditorExtensions
     /// </remarks>
     internal class ColorTag : ITag
     {
+        internal readonly Color Color;
+
         internal ColorTag(Color color)
         {
             this.Color = color;
         }
-
-        internal readonly Color Color;
     }
 }

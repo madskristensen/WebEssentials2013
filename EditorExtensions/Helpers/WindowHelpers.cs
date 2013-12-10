@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio;
+﻿using System;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -16,21 +16,21 @@ namespace MadsKristensen.EditorExtensions
         /// <param name="filePath">Full Path of the file you are looking for.</param>
         /// <returns>The IVsTextView for this file, if it is open, null otherwise.</returns>
         /// <remarks>Based on http://stackoverflow.com/questions/2413530/find-an-ivstextview-or-iwpftextview-for-a-given-projectitem-in-vs-2010-rc-exten</remarks>
-        internal static IVsTextView GetIVsTextView(string filePath)
+        public static IVsTextView GetIVsTextView(string filePath)
         {
             var sp = (Microsoft.VisualStudio.OLE.Interop.IServiceProvider)EditorExtensionsPackage.DTE;
-            var serviceProvider = new ServiceProvider(sp);
-
-            uint itemId;
-            IVsUIHierarchy uiHierarchy;
-            IVsWindowFrame windowFrame;
-
-            if (VsShellUtilities.IsDocumentOpen(serviceProvider, filePath, Guid.Empty, out uiHierarchy, out itemId, out windowFrame))
+            using (var serviceProvider = new ServiceProvider(sp))
             {
-                // Get the IVsTextView from the windowFrame.
-                return VsShellUtilities.GetTextView(windowFrame);
-            }
+                uint itemId;
+                IVsUIHierarchy uiHierarchy;
+                IVsWindowFrame windowFrame;
 
+                if (VsShellUtilities.IsDocumentOpen(serviceProvider, filePath, Guid.Empty, out uiHierarchy, out itemId, out windowFrame))
+                {
+                    // Get the IVsTextView from the windowFrame.
+                    return VsShellUtilities.GetTextView(windowFrame);
+                }
+            }
             return null;
         }
 

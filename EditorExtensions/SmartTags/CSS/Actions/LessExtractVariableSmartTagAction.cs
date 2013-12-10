@@ -1,9 +1,9 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media.Imaging;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -36,17 +36,16 @@ namespace MadsKristensen.EditorExtensions
 
             if (!string.IsNullOrEmpty(name))
             {
-                EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-
-                foreach (ParseItem item in FindItems())
+                using (EditorExtensionsPackage.UndoContext((DisplayText)))
                 {
-                    Span span = new Span(item.Start, item.Length);
-                    _span.TextBuffer.Replace(span, "@" + name);
+                    foreach (ParseItem item in FindItems())
+                    {
+                        Span span = new Span(item.Start, item.Length);
+                        _span.TextBuffer.Replace(span, "@" + name);
+                    }
+
+                    _span.TextBuffer.Insert(rule.Start, "@" + name + ": " + text + ";" + Environment.NewLine + Environment.NewLine);
                 }
-
-                _span.TextBuffer.Insert(rule.Start, "@" + name + ": " + text + ";" + Environment.NewLine + Environment.NewLine);
-
-                EditorExtensionsPackage.DTE.UndoContext.Close();
             }
         }
 

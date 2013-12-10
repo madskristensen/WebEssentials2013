@@ -1,27 +1,28 @@
-﻿using EnvDTE;
-using Microsoft.VisualStudio.Shell;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using System.Windows.Threading;
+using EnvDTE;
 using MadsKristensen.EditorExtensions.Commands.JavaScript;
 using MadsKristensen.EditorExtensions.Helpers;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class JsHintRunner : IDisposable
     {
         private readonly ErrorListProvider _provider;
-        private readonly static Dictionary<string, ErrorListProvider> _providers = new Dictionary<string, ErrorListProvider>();
+        private readonly static Dictionary<string, ErrorListProvider> _providers = InitializeResources();
         private readonly string _fileName;
         private bool _isDisposed;
 
-        static JsHintRunner()
+        static Dictionary<string, ErrorListProvider> InitializeResources()
         {
             EditorExtensionsPackage.DTE.Events.SolutionEvents.AfterClosing += SolutionEvents_AfterClosing;
+            return new Dictionary<string, ErrorListProvider>();
         }
 
         static void SolutionEvents_AfterClosing()
@@ -41,7 +42,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private void Clean()
+        private static void Clean()
         {
             var nonExisting = _providers.Keys.FirstOrDefault(k => !File.Exists(k));
             if (!string.IsNullOrEmpty(nonExisting))
@@ -251,7 +252,7 @@ namespace MadsKristensen.EditorExtensions
             return TaskErrorCategory.Message;
         }
 
-        private string GetErrorMessage(Result error)
+        private static string GetErrorMessage(Result error)
         {
             string raw = error.raw;
             if (raw == "Missing radix parameter.")

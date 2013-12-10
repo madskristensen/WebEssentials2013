@@ -1,8 +1,8 @@
-﻿using Microsoft.Html.Editor.Intellisense;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Microsoft.Html.Editor.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {

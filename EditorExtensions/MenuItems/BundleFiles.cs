@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
 using System.Windows.Threading;
 using System.Xml;
 using EnvDTE;
@@ -95,7 +95,7 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (string file in Directory.GetFiles(dir, "*" + _ext, SearchOption.AllDirectories))
             {
-                if (_ignoreFolders.Any(p => file.IndexOf("\\" + p +"\\", StringComparison.OrdinalIgnoreCase) > -1))
+                if (_ignoreFolders.Any(p => file.IndexOf("\\" + p + "\\", StringComparison.OrdinalIgnoreCase) > -1))
                     continue;
 
                 XmlDocument doc = GetXmlDocument(file);
@@ -138,9 +138,9 @@ namespace MadsKristensen.EditorExtensions
         {
             try
             {
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(File.ReadAllText(filePath));
-                return doc;
+                XmlDocument xmlDocument = new XmlDocument();
+                xmlDocument.LoadXml(File.ReadAllText(filePath).Trim());
+                return xmlDocument;
             }
             catch (Exception)
             {
@@ -273,7 +273,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (outputAttr != null && (outputAttr.InnerText.Contains("/") || outputAttr.InnerText.Contains("\\")))
             {
-                Logger.ShowMessage(String.Format("The 'output' attribute should contain a file name without a path; '{0}' is not valid", outputAttr.InnerText));
+                Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "The 'output' attribute should contain a file name without a path; '{0}' is not valid", outputAttr.InnerText));
                 return;
             }
 
@@ -301,8 +301,7 @@ namespace MadsKristensen.EditorExtensions
                 else
                 {
                     _dte.ItemOperations.OpenFile(filePath);
-
-                    Logger.ShowMessage(String.Format("Bundle error: The file '{0}' doesn't exist", node.InnerText));
+                    Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "Bundle error: The file '{0}' doesn't exist", node.InnerText));
 
                     return;
                 }

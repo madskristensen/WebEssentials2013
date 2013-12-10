@@ -1,4 +1,8 @@
-﻿using Microsoft.VisualStudio;
+﻿using System;
+using System.ComponentModel.Composition;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -6,10 +10,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-using System;
-using System.ComponentModel.Composition;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -66,7 +66,7 @@ namespace MadsKristensen.EditorExtensions
         public ICompletionBroker Broker { get; private set; }
         public IOleCommandTarget Next { get; set; }
 
-        private char GetTypeChar(IntPtr pvaIn)
+        private static char GetTypeChar(IntPtr pvaIn)
         {
             return (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
         }

@@ -1,23 +1,20 @@
-﻿using Microsoft.Html.Core;
+﻿using System;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class SurroundWith : CommandTargetBase
     {
-        private ICompletionBroker _broker;
         private IWpfTextView _view;
         private ITextBuffer _buffer;
-        
-        public SurroundWith(IVsTextView adapter, IWpfTextView textView, ICompletionBroker broker)
+
+        public SurroundWith(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, GuidList.guidFormattingCmdSet, PkgCmdIDList.SurroundWith)
         {
-            _broker = broker;
             _view = textView;
             _buffer = textView.TextBuffer;
         }
@@ -63,22 +60,21 @@ namespace MadsKristensen.EditorExtensions
 
         private void Update(int start, int end)
         {
-            EditorExtensionsPackage.DTE.UndoContext.Open("Surround with...");
-
-            using (var edit = _buffer.CreateEdit())
+            using (EditorExtensionsPackage.UndoContext("Surround with..."))
             {
-                edit.Insert(end, "</div>");
-                edit.Insert(start, "<div>");
-                edit.Apply();
+                using (var edit = _buffer.CreateEdit())
+                {
+                    edit.Insert(end, "</div>");
+                    edit.Insert(start, "<div>");
+                    edit.Apply();
+                }
+
+                SnapshotPoint point = new SnapshotPoint(_buffer.CurrentSnapshot, start + 1);
+
+                _view.Caret.MoveTo(point);
+                _view.Selection.Select(new SnapshotSpan(_buffer.CurrentSnapshot, point, 3), false);
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
             }
-
-            SnapshotPoint point = new SnapshotPoint(_buffer.CurrentSnapshot, start + 1);
-
-            _view.Caret.MoveTo(point);
-            _view.Selection.Select(new SnapshotSpan(_buffer.CurrentSnapshot, point, 3), false);
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-
-            EditorExtensionsPackage.DTE.UndoContext.Close();
         }
 
         protected override bool IsEnabled()

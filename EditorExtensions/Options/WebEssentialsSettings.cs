@@ -152,13 +152,6 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static Settings _projectStore;
-
-        static WESettings()
-        {
-            _projectStore = new Settings();
-        }
-
         public static bool GetBoolean(string propertyName)
         {
             bool result;

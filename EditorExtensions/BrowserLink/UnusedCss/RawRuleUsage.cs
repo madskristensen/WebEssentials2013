@@ -8,7 +8,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     {
         [JsonProperty]
         public string Selector { get; set; }
-
         [JsonProperty]
         public List<SourceLocation> SourceLocations { get; set; }
 

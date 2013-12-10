@@ -1,13 +1,13 @@
-﻿using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using Microsoft.Web.Editor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
-using Intel = Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.Web.Editor;
+using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
                 if (!prevLine.MoveNext() || prevLine.Current.Span.GetText() != "{")
                     return null;
                 // If there is non-comment code after the function, stop
-                if (prevLine.MoveNext() && SkipComments(prevLine)) 
+                if (prevLine.MoveNext() && SkipComments(prevLine))
                     return null;
             }
 

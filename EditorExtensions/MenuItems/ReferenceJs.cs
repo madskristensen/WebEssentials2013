@@ -3,21 +3,17 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
-using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class ReferenceJsMenu
     {
-        private DTE2 _dte;
         private OleMenuCommandService _mcs;
         private string _referencesJsPath;
 
-        public ReferenceJsMenu(DTE2 dte, OleMenuCommandService mcs)
+        public ReferenceJsMenu(OleMenuCommandService mcs)
         {
-            _dte = dte;
             _mcs = mcs;
         }
 

@@ -19,6 +19,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 if (stream == null)
                 {
                     Logger.Log("Could not get script for extension " + typeof(UnusedCssExtension));
+
                     return "";
                 }
 

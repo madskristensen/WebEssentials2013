@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualStudio.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using System.ComponentModel.Composition;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -14,35 +16,32 @@ namespace MadsKristensen.EditorExtensions
     //[ContentType("TypeScript")]
     [ContentType("Markdown")]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
-    internal sealed class MarginFactory : IWpfTextViewMarginProvider
+    public sealed class MarginFactory : IWpfTextViewMarginProvider
     {
         [Import]
-        internal ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
-        public IWpfTextViewMargin CreateMargin(IWpfTextViewHost textViewHost, IWpfTextViewMargin containerMargin)
+        static readonly Dictionary<string, Func<string, ITextDocument, IWpfTextViewMargin>> marginFactories = new Dictionary<string, Func<string, ITextDocument, IWpfTextViewMargin>>(StringComparer.OrdinalIgnoreCase)
         {
-            string source = textViewHost.TextView.TextBuffer.CurrentSnapshot.GetText();
+            { "LESS",           (source, document) => new LessMargin("CSS", source, WESettings.GetBoolean(WESettings.Keys.ShowLessPreviewWindow), document) },
+            { "CoffeeScript",   (source, document) => new CoffeeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow), document) },
+            { "Markdown",       (source, document) => new MarkdownMargin("text", source, WESettings.GetBoolean(WESettings.Keys.MarkdownShowPreviewWindow), document) }
+        };
+
+        public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
+        {
+            Func<string, ITextDocument, IWpfTextViewMargin> creator;
+            if (!marginFactories.TryGetValue(wpfTextViewHost.TextView.TextDataModel.DocumentBuffer.ContentType.TypeName, out creator))
+                return null;
+
             ITextDocument document;
 
-            if (TextDocumentFactoryService.TryGetTextDocument(textViewHost.TextView.TextDataModel.DocumentBuffer, out document))
-            {
-                switch (textViewHost.TextView.TextBuffer.ContentType.DisplayName.ToLowerInvariant())
-                {
-                    case "less":
-                        bool showLess = WESettings.GetBoolean(WESettings.Keys.ShowLessPreviewWindow);
-                        return new LessMargin("CSS", source, showLess, document);
+            if (!TextDocumentFactoryService.TryGetTextDocument(wpfTextViewHost.TextView.TextDataModel.DocumentBuffer, out document))
+                return null;
 
-                    case "coffeescript":
-                        bool showCoffee = WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow);
-                        return new CoffeeScriptMargin("JavaScript", source, showCoffee, document);
+            string source = wpfTextViewHost.TextView.TextBuffer.CurrentSnapshot.GetText();
 
-                    case "markdown":
-                        bool showMarkdown = WESettings.GetBoolean(WESettings.Keys.MarkdownShowPreviewWindow);
-                        return new MarkdownMargin("text", source, showMarkdown, document);
-                }
-            }
-
-            return null;
+            return creator(source, document);
         }
     }
 }

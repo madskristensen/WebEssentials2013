@@ -1,22 +1,23 @@
-﻿using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.Language.Intellisense;
+﻿using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-using System.ComponentModel.Composition;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Commands
 {
     [Export(typeof(IVsTextViewCreationListener))]
     [ContentType("text")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    class TextViewCreationListener : IVsTextViewCreationListener
+    public class TextViewCreationListener : IVsTextViewCreationListener
     {
-        [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
+        [Import]
+        public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
 
         [Import]
-        internal ICompletionBroker CompletionBroker { get; set; }
+        public ITextUndoHistoryRegistry UndoRegistry { get; set; }
+
 
         public void VsTextViewCreated(IVsTextView textViewAdapter)
         {
@@ -26,6 +27,8 @@ namespace MadsKristensen.EditorExtensions
             textView.Properties.GetOrCreateSingletonProperty<SortSelectedLines>(() => new SortSelectedLines(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<RemoveDuplicateLines>(() => new RemoveDuplicateLines(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<RemoveEmptyLines>(() => new RemoveEmptyLines(textViewAdapter, textView));
+
+            textView.Properties.GetOrCreateSingletonProperty(() => new CommandExceptionFilter(textViewAdapter, textView, UndoRegistry));
         }
     }
 }

@@ -19,7 +19,18 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
         private readonly BrowserLinkConnection _connection;
         private readonly UploadHelper _uploadHelper;
         private static bool _isPixelPushingModeEnabled = WESettings.GetBoolean(WESettings.Keys.PixelPushing_OnByDefault);
+        private static List<Regex> _ignoreList;
+        private bool _isDisconnecting;
+        private int _expectSequenceNumber;
 
+        public override IEnumerable<BrowserLinkAction> Actions
+        {
+            get
+            {
+                yield return new BrowserLinkAction("Save F12 Changes", PullStyleUpdates, PullStyleUpdatesBeforeQueryStatus);
+                yield return new BrowserLinkAction("F12 Auto-Sync", AutoSyncStyleUpdates, AutoSyncStyleUpdatesBeforeQueryStatus);
+            }
+        }
         public static bool IsPixelPushingModeEnabled
         {
             get { return _isPixelPushingModeEnabled; }
@@ -29,13 +40,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 {
                     Settings.SetValue(WESettings.Keys.PixelPushing_OnByDefault, value);
                     Settings.Save();
+
                     _isPixelPushingModeEnabled = value;
                 }
             }
         }
-
-        private static List<Regex> _ignoreList;
-
         public static List<Regex> IgnoreList
         {
             get
@@ -60,15 +69,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             foreach (var extension in ExtensionByConnection.Values)
             {
                 method(extension);
-            }
-        }
-
-        public override IEnumerable<BrowserLinkAction> Actions
-        {
-            get
-            {
-                yield return new BrowserLinkAction("Save F12 Changes", PullStyleUpdates, PullStyleUpdatesBeforeQueryStatus);
-                yield return new BrowserLinkAction("F12 Auto-Sync", AutoSyncStyleUpdates, AutoSyncStyleUpdatesBeforeQueryStatus);
             }
         }
 
@@ -135,6 +135,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             }
 
             locationUri = new Uri(locationUrl, UriKind.Relative);
+
             string filePath;
 
             try
@@ -164,7 +165,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                     }
 
                     locationUri = new Uri(lessFile, UriKind.Relative);
+
                     Uri.TryCreate(projectUri, locationUri, out realLocation);
+
                     filePath = realLocation.LocalPath;
                 }
             }
@@ -181,17 +184,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             SetMode();
         }
 
-        private bool _isDisconnecting;
-
         public override void OnDisconnecting(BrowserLinkConnection connection)
         {
             PixelPushingMode extension;
             ExtensionByConnection.TryRemove(connection, out extension);
             _isDisconnecting = true;
+
             base.OnDisconnecting(connection);
         }
-
-        private int _expectSequenceNumber;
 
         [BrowserLinkCallback]
         public async Task SyncCssRules(string operationId, string chunkContents, int chunkNumber, int chunkCount)
@@ -199,6 +199,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             CssSelectorChangeData[][] result;
             var autoOpId = int.Parse(operationId);
             var opId = new Guid(autoOpId, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
             if (_uploadHelper.TryFinishOperation(opId, chunkContents, chunkNumber, chunkCount, out result))
             {
                 while (Volatile.Read(ref _expectSequenceNumber) != autoOpId && !_isDisconnecting)
@@ -260,20 +261,21 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             ////Get off the UI thread
             //await Task.Factory.StartNew(() => { });
             var doc = DocumentFactory.GetDocument(file, true);
+
             if (doc == null)
             {
                 return;
             }
 
             var oldSnapshotOnChange = doc.IsProcessingUnusedCssRules;
-            doc.IsProcessingUnusedCssRules = false;
             var window = EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
-            window.Activate();
             var buffer = ProjectHelpers.GetCurentTextBuffer();
-            doc.Reparse(buffer.CurrentSnapshot.GetText());
             var flattenedRules = FlattenRules(doc);
-
             var allEdits = new List<CssRuleBlockSyncAction>();
+
+            doc.IsProcessingUnusedCssRules = false;
+            window.Activate();
+            doc.Reparse(buffer.CurrentSnapshot.GetText());
 
             foreach (var item in set)
             {
@@ -281,6 +283,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 var matchingRules = flattenedRules.Where(x => string.Equals(x.CleansedSelectorName, selectorName, StringComparison.Ordinal)).OrderBy(x => x.Offset).ToList();
                 var rule = matchingRules[item.RuleIndex];
                 var actions = await CssRuleDefinitionSync.ComputeSyncActionsAsync(rule.Source, item.NewValue, item.OldValue);
+
                 allEdits.AddRange(actions);
             }
 
@@ -320,6 +323,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             ContinuousSyncModeByProject.AddOrUpdate(_connection.Project.UniqueName, p => value, (p, x) =>
             {
                 changed = x ^ value;
+
                 return value;
             });
 
@@ -332,6 +336,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
         public void SetMode()
         {
             var continuousSyncMode = ContinuousSyncModeByProject.GetOrAdd(_connection.Project.UniqueName, p => false);
+
             Browsers.Client(_connection).Invoke("setPixelPusingMode", IsPixelPushingModeEnabled, continuousSyncMode);
         }
     }

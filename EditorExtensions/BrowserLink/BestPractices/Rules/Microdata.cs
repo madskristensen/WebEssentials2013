@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.Shell;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -19,14 +19,14 @@ namespace MadsKristensen.EditorExtensions
 
         public TaskErrorCategory Category
         {
-            get { return TaskErrorCategory.Message;  }
+            get { return TaskErrorCategory.Message; }
         }
 
         public void Navigate(object sender, EventArgs e)
         {
             if (MessageBox.Show(Question, "Web Essentials", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                var process = Process.Start("http://www.seomoves.org/blog/build/html5-microdata-2711/");
+                Process.Start("http://www.seomoves.org/blog/build/html5-microdata-2711/");
             }
         }
     }

@@ -16,7 +16,6 @@ namespace MadsKristensen.EditorExtensions
         private readonly bool _previousSuppressionState;
 
         public static bool SuppressAllBrowsers { get; private set; }
-
         public static IEnumerable<BrowserLinkConnection> ConnectionsToExclude
         {
             get { return ConnectionsToExcludeLookup.Where(x => x.Value > 0).Select(x => x.Key); }

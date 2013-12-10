@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.Utilities;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
     /// <summary>
     /// Exports the Markdown content type and file extension
@@ -18,22 +18,22 @@ namespace MadsKristensen.EditorExtensions
         [BaseDefinition("htmlx")]
         public ContentTypeDefinition IMarkdownContentType { get; set; }
 
-        /// <summary>
-        /// Exports the markdown file extension
-        /// </summary>
+        // All of these extensions must also be registered in registry.pkgdef.
+        // See https://twitter.com/Schabse/status/390280700043472896 and http://blogs.msdn.com/b/noahric/archive/2010/03/01/new-extension-css-is-less.aspx
+
         [Export(typeof(FileExtensionToContentTypeDefinition))]
         [ContentType(MarkdownContentType)]
         [FileExtension(".md")]
-        public FileExtensionToContentTypeDefinition IMDFileExtension { get; set; }
+        public FileExtensionToContentTypeDefinition MDFileExtension { get; set; }
 
         [Export(typeof(FileExtensionToContentTypeDefinition))]
         [ContentType(MarkdownContentType)]
         [FileExtension(".mdown")]
-        public FileExtensionToContentTypeDefinition IMDownFileExtension { get; set; }
+        public FileExtensionToContentTypeDefinition MDownFileExtension { get; set; }
 
         [Export(typeof(FileExtensionToContentTypeDefinition))]
         [ContentType(MarkdownContentType)]
         [FileExtension(".markdown")]
-        public FileExtensionToContentTypeDefinition IMarkDownFileExtension { get; set; }
+        public FileExtensionToContentTypeDefinition MarkdownFileExtension { get; set; }
     }
 }

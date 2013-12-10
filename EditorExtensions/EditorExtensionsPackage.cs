@@ -1,16 +1,15 @@
-﻿using EnvDTE;
+﻿using System;
+using System.ComponentModel.Design;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Windows.Threading;
+using EnvDTE;
 using EnvDTE80;
 using MadsKristensen.EditorExtensions.BrowserLink.PixelPushing;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using System;
-using System.ComponentModel.Design;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -27,7 +26,7 @@ namespace MadsKristensen.EditorExtensions
     [ProvideOptionPage(typeof(JavaScriptOptions), "Web Essentials", "JavaScript", 101, 107, true, new[] { "JScript", "JS", "Minify", "Minification", "EcmaScript" })]
     [ProvideOptionPage(typeof(UnusedCssOptions), "Web Essentials", "Unused CSS", 101, 108, true, new[] { "Ignore", "Filter" })]
     [ProvideOptionPage(typeof(MarkdownOptions), "Web Essentials", "Markdown", 101, 109, true, new[] { "markdown", "Markdown", "md" })]
-    [ProvideOptionPage(typeof(CodeGenerationOptions), "Web Essentials", "Code Generation", 101, 210, true, new[] { "CodeGeneration", "codeGeneration"})]
+    [ProvideOptionPage(typeof(CodeGenerationOptions), "Web Essentials", "Code Generation", 101, 210, true, new[] { "CodeGeneration", "codeGeneration" })]
     public sealed class EditorExtensionsPackage : Package
     {
         private static DTE2 _dte;
@@ -43,7 +42,6 @@ namespace MadsKristensen.EditorExtensions
                 return _dte;
             }
         }
-
         internal static IVsRegisterPriorityCommandTarget PriorityCommandTarget
         {
             get
@@ -54,57 +52,45 @@ namespace MadsKristensen.EditorExtensions
                 return _pct;
             }
         }
-
         public static EditorExtensionsPackage Instance { get; private set; }
 
         protected override void Initialize()
         {
             base.Initialize();
+
             Instance = this;
 
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (null != mcs)
             {
-                HandleMenuVisibility(mcs);
-
                 TransformMenu transform = new TransformMenu(DTE, mcs);
-                transform.SetupCommands();
-
-                DiffMenu diffMenu = new DiffMenu(DTE, mcs);
-                diffMenu.SetupCommands();
-
+                DiffMenu diffMenu = new DiffMenu(mcs);
                 MinifyFileMenu minifyMenu = new MinifyFileMenu(DTE, mcs);
-                minifyMenu.SetupCommands();
-
                 BundleFilesMenu bundleMenu = new BundleFilesMenu(DTE, mcs);
-                bundleMenu.SetupCommands();
-
                 JsHintMenu jsHintMenu = new JsHintMenu(DTE, mcs);
-                jsHintMenu.SetupCommands();
-
                 ProjectSettingsMenu projectSettingsMenu = new ProjectSettingsMenu(DTE, mcs);
-                projectSettingsMenu.SetupCommands();
-
-                SolutionColorsMenu solutionColorsMenu = new SolutionColorsMenu(DTE, mcs);
-                solutionColorsMenu.SetupCommands();
-
+                SolutionColorsMenu solutionColorsMenu = new SolutionColorsMenu(mcs);
                 BuildMenu buildMenu = new BuildMenu(DTE, mcs);
-                buildMenu.SetupCommands();
-
-                MarkdownStylesheetMenu markdownMenu = new MarkdownStylesheetMenu(DTE, mcs);
-                markdownMenu.SetupCommands();
-
+                MarkdownStylesheetMenu markdownMenu = new MarkdownStylesheetMenu(mcs);
                 AddIntellisenseFileMenu intellisenseFile = new AddIntellisenseFileMenu(DTE, mcs);
-                intellisenseFile.SetupCommands();
-
                 UnusedCssMenu unusedCssMenu = new UnusedCssMenu(mcs);
-                unusedCssMenu.SetupCommands();
-
                 PixelPushingMenu pixelPushingMenu = new PixelPushingMenu(mcs);
-                pixelPushingMenu.SetupCommands();
+                ReferenceJsMenu referenceJsMenu = new ReferenceJsMenu(mcs);
 
-                ReferenceJsMenu referenceJsMenu = new ReferenceJsMenu(DTE, mcs);
+                HandleMenuVisibility(mcs);
                 referenceJsMenu.SetupCommands();
+                pixelPushingMenu.SetupCommands();
+                unusedCssMenu.SetupCommands();
+                intellisenseFile.SetupCommands();
+                markdownMenu.SetupCommands();
+                buildMenu.SetupCommands();
+                solutionColorsMenu.SetupCommands();
+                projectSettingsMenu.SetupCommands();
+                jsHintMenu.SetupCommands();
+                bundleMenu.SetupCommands();
+                minifyMenu.SetupCommands();
+                diffMenu.SetupCommands();
+                transform.SetupCommands();
             }
 
             // Hook up event handlers
@@ -145,13 +131,15 @@ namespace MadsKristensen.EditorExtensions
         public static void ExecuteCommand(string commandName)
         {
             var command = EditorExtensionsPackage.DTE.Commands.Item(commandName);
+
             if (command.IsAvailable)
             {
                 try
                 {
                     EditorExtensionsPackage.DTE.ExecuteCommand(commandName);
                 }
-                catch { }
+                catch
+                { }
             }
         }
 
@@ -160,6 +148,7 @@ namespace MadsKristensen.EditorExtensions
             CommandID commandId = new CommandID(GuidList.guidCssIntellisenseCmdSet, (int)PkgCmdIDList.CssIntellisenseSubMenu);
             OleMenuCommand menuCommand = new OleMenuCommand((s, e) => { }, commandId);
             menuCommand.BeforeQueryStatus += menuCommand_BeforeQueryStatus;
+
             mcs.AddCommand(menuCommand);
         }
 
@@ -181,6 +170,15 @@ namespace MadsKristensen.EditorExtensions
         public static IComponentModel ComponentModel
         {
             get { return GetGlobalService<IComponentModel>(typeof(SComponentModel)); }
+        }
+
+        ///<summary>Opens an Undo context, and returns an IDisposable that will close the context when disposed.</summary>
+        ///<remarks>Use this method in a using() block to make sure that exceptions don't break Undo.</remarks>
+        public static IDisposable UndoContext(string name)
+        {
+            EditorExtensionsPackage.DTE.UndoContext.Open(name);
+
+            return new Disposable(DTE.UndoContext.Close);
         }
     }
 }

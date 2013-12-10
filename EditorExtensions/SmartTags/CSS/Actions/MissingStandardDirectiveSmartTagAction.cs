@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Media.Imaging;
 using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -15,14 +11,12 @@ namespace MadsKristensen.EditorExtensions
         private ITrackingSpan _span;
         private AtDirective _directive;
         private string _standardName;
-        private ITextView _view;
 
-        public MissingStandardDirectiveSmartTagAction(ITrackingSpan span, AtDirective directive, string standardName, ITextView view)
+        public MissingStandardDirectiveSmartTagAction(ITrackingSpan span, AtDirective directive, string standardName)
         {
             _span = span;
             _directive = directive;
             _standardName = standardName;
-            _view = view;
 
             if (Icon == null)
             {
@@ -41,12 +35,13 @@ namespace MadsKristensen.EditorExtensions
             //int index = _directive.Text.IndexOf(":", StringComparison.Ordinal);
             //string newDec = _standardName + _directive.Text.Substring(index);
 
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            //SnapshotSpan span = _span.GetSpan(_span.TextBuffer.CurrentSnapshot);
-            string text = _directive.Text.Replace("@" + _directive.Keyword.Text, _standardName);
-            _span.TextBuffer.Insert(_directive.AfterEnd, Environment.NewLine + Environment.NewLine + text);
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            {
+                //SnapshotSpan span = _span.GetSpan(_span.TextBuffer.CurrentSnapshot);
+                string text = _directive.Text.Replace("@" + _directive.Keyword.Text, _standardName);
+                _span.TextBuffer.Insert(_directive.AfterEnd, Environment.NewLine + Environment.NewLine + text);
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+            }
         }
     }
 }

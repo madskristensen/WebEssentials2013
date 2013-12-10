@@ -1,4 +1,8 @@
-﻿using Microsoft.Html.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Threading;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
 using Microsoft.Html.Schemas;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -8,10 +12,6 @@ using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.Web.Editor.Formatting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -51,7 +51,7 @@ namespace MadsKristensen.EditorExtensions
                 TextView.TextBuffer.CurrentSnapshot.GetText(element.InnerRange.Start, element.InnerRange.Length).Trim().Length == 0)
                 return false;
 
-            UpdateTextBuffer(element, position);
+            UpdateTextBuffer(element);
 
             return false;
         }
@@ -91,13 +91,12 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-        private void UpdateTextBuffer(ElementNode element, int position)
+        private void UpdateTextBuffer(ElementNode element)
         {
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
                 FormatTag(element);
-                PlaceCaret(element, position);
-
+                PlaceCaret(element);
             }), DispatcherPriority.Normal, null);
         }
 
@@ -133,7 +132,7 @@ namespace MadsKristensen.EditorExtensions
             return current;
         }
 
-        private void PlaceCaret(ElementNode element, int position)
+        private void PlaceCaret(ElementNode element)
         {
             SnapshotPoint point = new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, TextView.Caret.Position.BufferPosition.Position);
 
@@ -144,7 +143,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 string text = element.GetText(element.InnerRange);
 
-                for (int i = text.Length -1; i > -1; i--)
+                for (int i = text.Length - 1; i > -1; i--)
                 {
                     if (!char.IsWhiteSpace(text[i]))
                     {

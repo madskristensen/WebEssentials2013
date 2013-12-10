@@ -1,17 +1,31 @@
 ﻿<?xml version="1.0" ?>
 <Dictionary>
-    <Words>
-        <Recognized>
-            <Word>Mads</Word>
-            <Word>Kristensen</Word>
-        </Recognized>
-        <DiscreteExceptions>
-            <Term>CoffeeScript</Term>
-        </DiscreteExceptions>
-    </Words>
-    <Acronyms>
-        <CasingExceptions>
-            <Acronym>Js</Acronym>
-        </CasingExceptions>
-    </Acronyms>
+  <Words>
+    <Recognized>
+      <Word>Mads</Word>
+      <Word>Kristensen</Word>
+      <Word>Gzip</Word>
+      <Word>Js</Word>
+      <Word>Equiv</Word>
+      <Word>Utils</Word>
+      <Word>Microdata</Word>
+      <Word>ms</Word>
+      <Word>Resync</Word>
+      <Word>Embedder</Word>
+      <Word>Mixin</Word>
+      <Word>Peeker</Word>
+      <Word>Intellisense</Word>
+      <Word>Modernizr</Word>
+      <Word>Htmlx</Word>
+      <Word>Prev</Word>
+    </Recognized>
+    <DiscreteExceptions>
+      <Term>CoffeeScript</Term>
+    </DiscreteExceptions>
+  </Words>
+  <Acronyms>
+    <CasingExceptions>
+      <Acronym>Js</Acronym>
+    </CasingExceptions>
+  </Acronyms>
 </Dictionary>

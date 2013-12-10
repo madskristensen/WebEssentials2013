@@ -1,9 +1,8 @@
-﻿using Microsoft.CSS.Editor;
-using Microsoft.CSS.Editor.Schemas;
-using Microsoft.VisualStudio.Utilities;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.IO;
 using System.Reflection;
+using Microsoft.CSS.Editor.Schemas;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {

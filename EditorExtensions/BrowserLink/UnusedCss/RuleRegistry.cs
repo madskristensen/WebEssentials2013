@@ -19,6 +19,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 if (store != null)
                 {
                     store.IsProcessingUnusedCssRules = true;
+
                     var rules = store.Rules;
 
                     if (rules != null)

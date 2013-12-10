@@ -1,16 +1,43 @@
-﻿using EnvDTE80;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using EnvDTE80;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
     public static class FileHelpers
     {
+        public static SnapshotPoint? GetCurrentSelection(string contentType) { return ProjectHelpers.GetCurentTextView().GetSelection(contentType); }
+        ///<summary>Gets the currently selected span within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
+        ///<param name="view">The TextView containing the selection</param>
+        ///<param name="contentType">The ContentType to filter the selection by.</param>        
+        public static SnapshotPoint? GetSelection(this ITextView view, string contentType)
+        {
+            return view.BufferGraph.MapDownToInsertionPoint(view.Caret.Position.BufferPosition, PointTrackingMode.Positive, ts => ts.ContentType.IsOfType(contentType));
+        }
+        ///<summary>Gets the currently selected span within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
+        ///<param name="view">The TextView containing the selection</param>
+        ///<param name="contentTypes">The ContentTypes to filter the selection by.</param>        
+        public static SnapshotPoint? GetSelection(this ITextView view, params string[] contentTypes)
+        {
+            return view.BufferGraph.MapDownToInsertionPoint(view.Caret.Position.BufferPosition, PointTrackingMode.Positive, ts => contentTypes.Any(c => ts.ContentType.IsOfType(c)));
+        }
+        ///<summary>Gets the currently selected span within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
+        ///<param name="view">The TextView containing the selection</param>
+        ///<param name="contentTypeFilter">The ContentType to filter the selection by.</param>        
+        public static SnapshotPoint? GetSelection(this ITextView view, Func<IContentType, bool> contentTypeFilter)
+        {
+            return view.BufferGraph.MapDownToInsertionPoint(view.Caret.Position.BufferPosition, PointTrackingMode.Positive, ts => contentTypeFilter(ts.ContentType));
+        }
+
         public static void OpenFileInPreviewTab(string file)
         {
             IVsNewDocumentStateContext newDocumentStateContext = null;
@@ -87,12 +114,15 @@ namespace MadsKristensen.EditorExtensions
         private static string GetMimeTypeFromFileExtension(string extension)
         {
             string ext = extension.TrimStart('.');
- 
+
             switch (ext)
             {
-                case "png":
                 case "jpg":
                 case "jpeg":
+                    return "image/jpeg" + extension;
+                case "svg":
+                    return "image/svg+xml";
+                case "png":
                 case "gif":
                 case "tiff":
                 case "webp":
@@ -139,10 +169,10 @@ namespace MadsKristensen.EditorExtensions
         }
 
         static char[] pathSplit = { '/', '\\' };
-        public static string RelativePath(string absPath, string relTo)
+        public static string RelativePath(string absolutePath, string relativeTo)
         {
-            string[] absDirs = absPath.Split(pathSplit);
-            string[] relDirs = relTo.Split(pathSplit);
+            string[] absDirs = absolutePath.Split(pathSplit);
+            string[] relDirs = relativeTo.Split(pathSplit);
 
             // Get the shortest of the two paths
             int len = Math.Min(absDirs.Length, relDirs.Length);
@@ -161,7 +191,7 @@ namespace MadsKristensen.EditorExtensions
             // If we didn't find a common prefix then throw
             if (lastCommonRoot == -1)
             {
-                return relTo;
+                return relativeTo;
             }
 
             // Build up the relative path

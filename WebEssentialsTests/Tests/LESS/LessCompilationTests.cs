@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -34,7 +35,7 @@ namespace WebEssentialsTests
                 var expected = File.ReadAllText(Path.ChangeExtension(lessFilename, ".css"))
                                .Replace("\r", "");
 
-                Assert.AreEqual(expected, compiled);
+                compiled.Should().Be(expected);
             }
         }
 
@@ -54,7 +55,7 @@ namespace WebEssentialsTests
                 compiled = new CssFormatter().Format(compiled).Replace("\r", "");
                 expected = new CssFormatter().Format(expected).Replace("\r", "");
 
-                Assert.AreEqual(expected, compiled);
+                compiled.Should().Be(expected);
             }
         }
 

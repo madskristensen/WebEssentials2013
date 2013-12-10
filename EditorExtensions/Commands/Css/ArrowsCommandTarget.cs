@@ -1,42 +1,23 @@
-﻿using Microsoft.CSS.Core;
+﻿using System;
+using System.Globalization;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Utilities;
-using System;
-using System.ComponentModel.Composition;
-using System.Globalization;
 using Editor = Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [Export(typeof(IVsTextViewCreationListener))]
-    [ContentType(Microsoft.Web.Editor.CssContentTypeDefinition.CssContentType)]
-    [TextViewRole(PredefinedTextViewRoles.Document)]
-    class NumberTextViewCreationListener : IVsTextViewCreationListener
-    {
-        [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
-
-        public void VsTextViewCreated(IVsTextView textViewAdapter)
-        {
-            var textView = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
-            textView.Properties.GetOrCreateSingletonProperty<NumberTarget>(() => new NumberTarget(textViewAdapter, textView));
-        }
-    }
-
-    class NumberTarget : IOleCommandTarget
+    class ArrowsCommandTarget : IOleCommandTarget
     {
         private ITextView _textView;
         private IOleCommandTarget _nextCommandTarget;
-        private CssTree _tree;
 
-        public NumberTarget(IVsTextView adapter, ITextView textView)
+        public ArrowsCommandTarget(IVsTextView adapter, ITextView textView)
         {
             this._textView = textView;
             ErrorHandler.ThrowOnFailure(adapter.AddCommandFilter(this, out _nextCommandTarget));
@@ -71,31 +52,34 @@ namespace MadsKristensen.EditorExtensions
 
         private bool Move(Direction direction)
         {
-            if (!EnsureInitialized())
+            if (Editor.WebEditor.Host == null)
                 return false;
 
-            int position = _textView.Caret.Position.BufferPosition.Position;
+            var point = _textView.BufferGraph.MapDownToInsertionPoint(_textView.Caret.Position.BufferPosition, PointTrackingMode.Positive, ts => ts.ContentType.IsOfType(Editor.CssContentTypeDefinition.CssContentType));
+            if (point == null)
+                return false;
 
-            ParseItem item = _tree.StyleSheet.ItemBeforePosition(position);
+            var tree = CssEditorDocument.FromTextBuffer(point.Value.Snapshot.TextBuffer);
+            ParseItem item = tree.StyleSheet.ItemBeforePosition(point.Value.Position);
             if (item == null)
                 return false;
 
             NumericalValue unit = item.FindType<NumericalValue>();
             if (unit != null)
             {
-                return HandleUnits(direction, unit);
+                return HandleUnits(direction, unit, point.Value.Snapshot);
             }
 
             HexColorValue hex = item.FindType<HexColorValue>();
             if (hex != null)
             {
-                return HandleHex(direction, hex);
+                return HandleHex(direction, hex, point.Value.Snapshot);
             }
 
             return false;
         }
 
-        private bool HandleUnits(Direction direction, NumericalValue item)
+        private static bool HandleUnits(Direction direction, NumericalValue item, ITextSnapshot snapshot)
         {
             float value;
             if (!float.TryParse(item.Number.Text, out value))
@@ -104,7 +88,7 @@ namespace MadsKristensen.EditorExtensions
             if (!AreWithinLimits(direction, value, item))
                 return true;
 
-            var span = new SnapshotSpan(_textView.Selection.SelectedSpans[0].Snapshot, item.Number.Start, item.Number.Length);
+            var span = new SnapshotSpan(snapshot, item.Number.Start, item.Number.Length);
             float delta = GetDelta(item.Number.Text);
             string format = item.Number.Text.Contains(".") ? "#.#0" : string.Empty;
             if (NumberDecimalPlaces(item.Number.Text) == 1)
@@ -120,7 +104,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static int NumberDecimalPlaces(string value)
         {
-            int s = value.IndexOf(".") + 1; // the first numbers plus decimal point
+            int s = value.IndexOf(".", StringComparison.CurrentCulture) + 1; // the first numbers plus decimal point
             if (s == 0)                     // No decimal point
                 return 0;
 
@@ -181,13 +165,13 @@ namespace MadsKristensen.EditorExtensions
             return (unitValue != null) ? unitValue.UnitType : UnitType.Unknown;
         }
 
-        private bool HandleHex(Direction direction, HexColorValue item)
+        private static bool HandleHex(Direction direction, HexColorValue item, ITextSnapshot snapshot)
         {
             var model = ColorParser.TryParseColor(item.Text, ColorParser.Options.None);
 
             if (model != null)
             {
-                var span = new SnapshotSpan(_textView.Selection.SelectedSpans[0].Snapshot, item.Start, item.Length);
+                var span = new SnapshotSpan(snapshot, item.Start, item.Length);
 
                 if (direction == Direction.Down && model.HslLightness > 0)
                 {
@@ -220,18 +204,13 @@ namespace MadsKristensen.EditorExtensions
             return 1F;
         }
 
-        private void UpdateSpan(SnapshotSpan span, string result, string undoTitle)
+        private static void UpdateSpan(SnapshotSpan span, string result, string undoTitle)
         {
             if (result.Length > 1)
                 result = result.TrimStart('0');
 
-            using (ITextEdit edit = _textView.TextBuffer.CreateEdit())
-            {
-                EditorExtensionsPackage.DTE.UndoContext.Open(undoTitle);
-                edit.Replace(span, result);
-                edit.Apply();
-                EditorExtensionsPackage.DTE.UndoContext.Close();
-            }
+            using (EditorExtensionsPackage.UndoContext(undoTitle))
+                span.Snapshot.TextBuffer.Replace(span, result);
         }
 
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
@@ -251,23 +230,6 @@ namespace MadsKristensen.EditorExtensions
             }
 
             return _nextCommandTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
-        }
-
-        public bool EnsureInitialized()
-        {
-            if (_tree == null && Microsoft.Web.Editor.WebEditor.Host != null)
-            {
-                try
-                {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(_textView.TextBuffer);
-                    _tree = document.Tree;
-                }
-                catch (ArgumentNullException)
-                {
-                }
-            }
-
-            return _tree != null;
         }
     }
 }

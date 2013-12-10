@@ -1,10 +1,9 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Media.Imaging;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -13,14 +12,12 @@ namespace MadsKristensen.EditorExtensions
         private ITrackingSpan _span;
         private Declaration _declaration;
         private IEnumerable<string> _prefixes;
-        private ITextView _view;
 
-        public VendorSmartTagAction(ITrackingSpan span, Declaration declaration, IEnumerable<string> prefixes, ITextView view)
+        public VendorSmartTagAction(ITrackingSpan span, Declaration declaration, IEnumerable<string> prefixes)
         {
             _span = span;
             _declaration = declaration;
             _prefixes = prefixes;
-            _view = view;
 
             if (Icon == null)
             {
@@ -44,13 +41,14 @@ namespace MadsKristensen.EditorExtensions
                 sb.Append(entry + _declaration.Text + separator);
             }
 
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), sb.ToString() + _declaration.Text);
-            if (separator == Environment.NewLine)
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
             {
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), sb.ToString() + _declaration.Text);
+                if (separator == Environment.NewLine)
+                {
+                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                }
             }
-            EditorExtensionsPackage.DTE.UndoContext.Close();
         }
     }
 }

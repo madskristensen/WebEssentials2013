@@ -1,9 +1,9 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
-using System.ComponentModel.Design;
+﻿using System.ComponentModel.Design;
 using System.IO;
 using System.Windows.Forms;
+using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -41,12 +41,12 @@ namespace MadsKristensen.EditorExtensions
             menuCommand.Enabled = !settingsExist;
         }
 
-        private void ApplySolutionSettings()
+        private static void ApplySolutionSettings()
         {
             Settings.CreateSolutionSettings();
         }
 
-        private void ItemRenamed(ProjectItem ProjectItem, string OldName)
+        private static void ItemRenamed(ProjectItem ProjectItem, string OldName)
         {
             if (OldName.EndsWith(Settings._fileName) || ProjectItem.Name == Settings._fileName)
                 Settings.UpdateCache();

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
@@ -37,6 +38,7 @@ namespace MadsKristensen.EditorExtensions
             menuCommand.Enabled = files.Count > 0;
         }
 
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         private void RunJsHint()
         {
             JsHintRunner.Reset();

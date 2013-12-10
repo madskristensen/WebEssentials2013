@@ -15,14 +15,14 @@ namespace MadsKristensen.EditorExtensions
     public class CssSaveListener : IWpfTextViewCreationListener
     {
         [Import]
-        internal ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
         private ITextDocument _document;
 
         public void TextViewCreated(IWpfTextView textView)
         {
             if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out _document))
-            { 
+            {
                 _document.FileActionOccurred += document_FileActionOccurred;
             }
         }

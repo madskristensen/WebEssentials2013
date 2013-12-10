@@ -1,13 +1,13 @@
-﻿using Microsoft.VisualStudio;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Threading;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Windows.Threading;
 using ZenCoding;
 
 namespace MadsKristensen.EditorExtensions
@@ -52,22 +52,20 @@ namespace MadsKristensen.EditorExtensions
 
             if (!string.IsNullOrEmpty(result))
             {
-                EditorExtensionsPackage.DTE.UndoContext.Open("ZenCoding");
+                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+                {
+                    using (EditorExtensionsPackage.UndoContext("ZenCoding"))
+                    {
+                        ITextSelection selection = UpdateTextBuffer(zenSpan, result);
 
-                ITextSelection selection = UpdateTextBuffer(zenSpan, result);
+                        EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
 
-                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => {
-
-                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-
-                    Span newSpan = new Span(zenSpan.Start, selection.SelectedSpans[0].Length);
-                    selection.Clear();
-
-                    EditorExtensionsPackage.DTE.UndoContext.Close();
-                    SetCaret(newSpan, false);
-
+                        Span newSpan = new Span(zenSpan.Start, selection.SelectedSpans[0].Length);
+                        selection.Clear();
+                        SetCaret(newSpan, false);
+                    }
                 }), DispatcherPriority.ApplicationIdle, null);
-                
+
                 return true;
             }
 

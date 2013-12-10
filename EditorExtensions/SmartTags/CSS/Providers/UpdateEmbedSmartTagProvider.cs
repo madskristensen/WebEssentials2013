@@ -1,7 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
             if (comment != null && comment.CommentText != null)
             {
                 string path = comment.CommentText.Text.Trim();
-                yield return new UpdateEmbedSmartTagAction(itemTrackingSpan, url, path);
+                yield return new UpdateEmbedSmartTagAction(itemTrackingSpan, path);
             }
             else
             {
@@ -50,7 +50,7 @@ namespace MadsKristensen.EditorExtensions
                         UrlItem siblingUrl = visitor.Items.FirstOrDefault();
                         if (siblingUrl != null && siblingUrl.UrlString != null)
                         {
-                            yield return new UpdateEmbedSmartTagAction(itemTrackingSpan, url, siblingUrl.UrlString.Text);
+                            yield return new UpdateEmbedSmartTagAction(itemTrackingSpan, siblingUrl.UrlString.Text);
                             break;
                         }
                     }

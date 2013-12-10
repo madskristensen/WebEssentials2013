@@ -1,18 +1,18 @@
-﻿using Microsoft.VisualStudio.Text;
+﻿using System.ComponentModel.Composition;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using System.ComponentModel.Composition;
-using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions.Options
 {
     [Export(typeof(IWpfTextViewCreationListener))]
     [ContentType("XML")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    internal class ProjectSettingsTextViewListener : IWpfTextViewCreationListener
+    public class ProjectSettingsTextViewListener : IWpfTextViewCreationListener
     {
         [Import]
-        internal ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
         public void TextViewCreated(IWpfTextView textView)
         {

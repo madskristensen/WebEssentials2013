@@ -1,9 +1,8 @@
-﻿using EnvDTE80;
+﻿using System;
+using System.IO;
+using EnvDTE80;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -27,9 +26,8 @@ namespace MadsKristensen.EditorExtensions
 
                 if (result != content)
                 {
-                    _dte.UndoContext.Open("Minify");
-                    TextView.TextBuffer.Replace(TextView.Selection.SelectedSpans[0].Span, result);
-                    _dte.UndoContext.Close();
+                    using (EditorExtensionsPackage.UndoContext(("Minify")))
+                        TextView.TextBuffer.Replace(TextView.Selection.SelectedSpans[0].Span, result);
                 }
             }
 
@@ -38,10 +36,12 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool IsEnabled()
         {
+            // Don't minify Markdown
+            if (TextView.GetSelection("Markdown").HasValue)
+                return false;
+
             if (TextView != null && TextView.Selection.SelectedSpans.Count > 0)
-            {
                 return TextView.Selection.SelectedSpans[0].Length > 0;
-            }
 
             return false;
         }

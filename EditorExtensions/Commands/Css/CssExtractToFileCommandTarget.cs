@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Windows;
 using EnvDTE80;
 using Microsoft.VisualBasic;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -51,54 +48,32 @@ namespace MadsKristensen.EditorExtensions
 
                 if (!File.Exists(fileName))
                 {
-                    _dte.UndoContext.Open("Extract to file...");
-
-                    using (StreamWriter writer = new StreamWriter(fileName, false, new UTF8Encoding(true)))
+                    using (EditorExtensionsPackage.UndoContext("Extract to file..."))
                     {
-                        writer.Write(content);
+                        using (StreamWriter writer = new StreamWriter(fileName, false, new UTF8Encoding(true)))
+                        {
+                            writer.Write(content);
+                        }
+
+                        ProjectHelpers.AddFileToActiveProject(fileName);
+                        TextView.TextBuffer.Delete(TextView.Selection.SelectedSpans[0].Span);
+                        _dte.ItemOperations.OpenFile(fileName);
                     }
-
-                    ProjectHelpers.AddFileToActiveProject(fileName);
-                    TextView.TextBuffer.Delete(TextView.Selection.SelectedSpans[0].Span);
-                    _dte.ItemOperations.OpenFile(fileName);
-
-                    _dte.UndoContext.Close();
                 }
                 else
                 {
-                   Logger.ShowMessage("The file already exists.");
+                    Logger.ShowMessage("The file already exists.");
                 }
             }
 
             return true;
         }
 
-        private bool IsValidTextBuffer(IWpfTextView view)
+        private static bool IsValidTextBuffer(IWpfTextView view)
         {
-            var projection = view.TextBuffer as IProjectionBuffer;
-
-            if (projection != null)
-            {
-                var snapshotPoint = view.Caret.Position.BufferPosition;
-
-                var buffers = projection.SourceBuffers.Where(s =>
-                    s.ContentType.IsOfType("css") ||
-                    s.ContentType.IsOfType("javascript"));
-
-                foreach (ITextBuffer buffer in buffers)
-                {
-                    SnapshotPoint? point = view.BufferGraph.MapDownToBuffer(snapshotPoint, PointTrackingMode.Negative, buffer, PositionAffinity.Predecessor);
-
-                    if (point.HasValue)
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            return true;
+            return (ProjectionBufferHelper.MapToBuffer(view, "css", view.Caret.Position.BufferPosition)
+                ?? ProjectionBufferHelper.MapToBuffer(view, "javascript", view.Caret.Position.BufferPosition)
+                ) != null;
         }
 
         protected override bool IsEnabled()

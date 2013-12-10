@@ -1,9 +1,9 @@
-﻿using Microsoft.VisualStudio.Editor;
+﻿using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using System.ComponentModel.Composition;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -14,13 +14,13 @@ namespace MadsKristensen.EditorExtensions
     public class RobotsTxtClassifierProvider : IClassifierProvider, IVsTextViewCreationListener
     {
         [Import]
-        internal IClassificationTypeRegistryService Registry { get; set; }
-
-        [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
+        public IClassificationTypeRegistryService Registry { get; set; }
 
         [Import]
-        internal ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+        public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
+
+        [Import]
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
         public IClassifier GetClassifier(ITextBuffer textBuffer)
         {
@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions
 
             var view = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
             if (TextDocumentFactoryService.TryGetTextDocument(view.TextDataModel.DocumentBuffer, out document))
-            { 
+            {
                 TextType type = GetTextType(document.FilePath);
                 if (type == TextType.Unsupported)
                     return;
@@ -44,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
                 if (classifier != null)
                 {
                     ITextSnapshot snapshot = view.TextBuffer.CurrentSnapshot;
-                    classifier.RaiseClassificationChanged(new SnapshotSpan(snapshot, 0, snapshot.Length), type);
+                    classifier.OnClassificationChanged(new SnapshotSpan(snapshot, 0, snapshot.Length), type);
                 }
             }
         }

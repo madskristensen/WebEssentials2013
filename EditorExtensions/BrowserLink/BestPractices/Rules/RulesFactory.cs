@@ -1,9 +1,9 @@
 ﻿
 namespace MadsKristensen.EditorExtensions
 {
-    public class RulesFactory
+    public static class RulesFactory
     {
-        public IRule FindRule(string id, string data, BestPractices extension)
+        public static IRule FindRule(string id, string data, BestPractices extension)
         {
             switch (id)
             {

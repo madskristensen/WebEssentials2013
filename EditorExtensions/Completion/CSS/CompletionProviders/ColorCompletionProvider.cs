@@ -1,13 +1,13 @@
-﻿using Microsoft.CSS.Editor;
-using Microsoft.CSS.Editor.Intellisense;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor.Intellisense;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Drawing;
 using System.Reflection;
+using Microsoft.CSS.Editor;
+using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {

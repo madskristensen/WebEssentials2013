@@ -39,9 +39,8 @@ namespace MadsKristensen.EditorExtensions
 
             if (!string.IsNullOrEmpty(fileName) && TrySaveFile(base64, fileName))
             {
-                EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-                ReplaceUrlValue(fileName);
-                EditorExtensionsPackage.DTE.UndoContext.Close();
+                using (EditorExtensionsPackage.UndoContext((DisplayText)))
+                    ReplaceUrlValue(fileName);
             }
         }
 

@@ -202,7 +202,11 @@ namespace MadsKristensen.EditorExtensions
         public void Dispose()
         {
             _tree = null;
-            _textBuffer = null;
+            if (_textBuffer != null)
+            {
+                _textBuffer.ChangedLowPriority -= BufferChanged;
+                _textBuffer = null;
+            }
 
             if (_textView != null)
             {

@@ -1,13 +1,12 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.CSS.Editor.Schemas;
-using Microsoft.CSS.Editor.SyntaxCheck;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.Linq;
+using Microsoft.CSS.Core;
+using Microsoft.CSS.Editor.Schemas;
+using Microsoft.CSS.Editor.SyntaxCheck;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -16,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
     [Order(After = "Default Declaration")]
     internal class MissingVendorDirectiveErrorTagProvider : ICssItemChecker
     {
-          public ItemCheckResult CheckItem(ParseItem item, ICssCheckerContext context)
+        public ItemCheckResult CheckItem(ParseItem item, ICssCheckerContext context)
         {
             AtDirective directive = (AtDirective)item;
 

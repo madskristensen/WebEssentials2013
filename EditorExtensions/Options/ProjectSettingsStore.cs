@@ -1,12 +1,12 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using EnvDTE;
+using EnvDTE80;
 using Keys = MadsKristensen.EditorExtensions.WESettings.Keys;
 
 namespace MadsKristensen.EditorExtensions
@@ -30,8 +30,6 @@ namespace MadsKristensen.EditorExtensions
         {
             get { return File.Exists(GetSolutionFilePath()); }
         }
-
-        public static float Version { get; private set; }
 
         public static object GetValue(string propertyName)
         {
@@ -107,17 +105,6 @@ namespace MadsKristensen.EditorExtensions
 
                         if (settingsNode != null)
                         {
-                            XmlAttribute versionAttr = settingsNode.Attributes["version"];
-                            if (versionAttr != null)
-                            {
-                                float version;
-
-                                if (float.TryParse(versionAttr.InnerText, out version))
-                                {
-                                    Version = version;
-                                }
-                            }
-
                             lock (_syncCacheRoot)
                             {
                                 _cache.Clear();
@@ -317,8 +304,8 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.PixelPushing_OnByDefault, true);
 
             // Code Generation
-            dic.Add(Keys.JavaScriptCamelCaseClassNames,false);
-            dic.Add(Keys.JavaScriptCamelCasePropertyNames,false);
+            dic.Add(Keys.JavaScriptCamelCaseClassNames, false);
+            dic.Add(Keys.JavaScriptCamelCasePropertyNames, false);
             return dic;
         }
 

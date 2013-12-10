@@ -114,6 +114,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Html.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.12.0" />
+    <Reference Include="Microsoft.VisualStudio.Html.Package" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -322,6 +324,14 @@
     <Compile Include="Classifications\JavaScript\JavaScriptRegionTagger.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Classifications\Markdown\BufferGenerator.cs" />
+    <Compile Include="Classifications\Markdown\CodeArtifactProcessor.cs" />
+    <Compile Include="Classifications\Markdown\CodeLanguageEmbedders.cs" />
+    <Compile Include="Classifications\Markdown\ContainedLanguageAdapter.cs" />
+    <Compile Include="Classifications\Markdown\ContentTypeHandler.cs" />
+    <Compile Include="Classifications\Markdown\MarkdownOutlineTagger.cs" />
+    <Compile Include="Classifications\Markdown\MarkdownLanguageSupport.cs" />
+    <Compile Include="Classifications\Markdown\MarkdownParser.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassificationTypes.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifier.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifierProvider.cs" />
@@ -329,7 +339,13 @@
     <Compile Include="Classifications\Markdown\MarkdownClassifier.cs" />
     <Compile Include="Classifications\Markdown\MarkdownContentTypeDefinition.cs" />
     <Compile Include="Classifications\CSS\ModernizrClassifier.cs" />
+    <Compile Include="Commands\CommandExceptionFilter.cs" />
+    <Compile Include="Completion\Markdown\MarkdownCompletionFilter.cs" />
+    <Compile Include="DropTargets\HtmlImageDrop.cs" />
+    <Compile Include="ExtensionMethods\StringExtensions.cs" />
+    <Compile Include="Helpers\Disposable.cs" />
     <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="Helpers\TabAwareCharacterStream.cs" />
     <Compile Include="MenuItems\AddIntellisenseFile.cs" />
     <Compile Include="Commands\Code\IntellisenseWriter.cs" />
     <Compile Include="Commands\Code\ScriptIntellisenseListener.cs" />
@@ -445,8 +461,10 @@
     <Compile Include="DropTargets\ImageDrop.cs" />
     <Compile Include="DropTargets\TypeScriptDrop.cs" />
     <Compile Include="Helpers\CssExtensions.cs" />
+    <Compile Include="Helpers\CssTreeWatcher.cs" />
     <Compile Include="Helpers\CssUrlNormalizer.cs" />
     <Compile Include="Helpers\FileCache.cs" />
+    <Compile Include="Helpers\HtmlExtensions.cs" />
     <Compile Include="Helpers\NodeModuleService.cs" />
     <Compile Include="Helpers\StyleSheetHelpers.cs" />
     <Compile Include="Helpers\WindowHelpers.cs" />

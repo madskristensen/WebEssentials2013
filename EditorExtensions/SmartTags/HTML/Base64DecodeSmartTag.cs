@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.SmartTags;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -5,10 +8,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions.SmartTags.HTML
 {
@@ -28,7 +27,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
             return null;
         }
 
-        private bool IsEnabled(ElementNode element)
+        private static bool IsEnabled(ElementNode element)
         {
             if (element.Name != "img")
                 return false;
@@ -74,13 +73,12 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
 
                 if (!string.IsNullOrEmpty(fileName) && ReverseEmbedSmartTagAction.TrySaveFile(src.Value, fileName))
                 {
-                    EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-                    ReplaceUrlValue(fileName, textBuffer, src);
-                    EditorExtensionsPackage.DTE.UndoContext.Close();
+                    using (EditorExtensionsPackage.UndoContext((DisplayText)))
+                        ReplaceUrlValue(fileName, textBuffer, src);
                 }
             }
 
-            private void ReplaceUrlValue(string fileName, ITextBuffer buffer, AttributeNode src)
+            private static void ReplaceUrlValue(string fileName, ITextBuffer buffer, AttributeNode src)
             {
                 string relative = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, fileName);
                 Span span = new Span(src.ValueRangeUnquoted.Start, src.ValueRangeUnquoted.Length);

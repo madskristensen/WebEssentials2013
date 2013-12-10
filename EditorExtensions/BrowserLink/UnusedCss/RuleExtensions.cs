@@ -1,8 +1,9 @@
-﻿using EnvDTE;
+﻿using System;
+using System.Globalization;
+using EnvDTE;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using System;
-using Microsoft.VisualStudio;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -11,7 +12,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public static Task ProduceErrorListTask(this IStylingRule rule, TaskErrorCategory category, Project project, string format)
         {
             var item = ResolveVsHierarchyItem(project.UniqueName);
-
             var task = new ErrorTask
             {
                 Document = rule.File,
@@ -19,11 +19,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 Column = rule.Column,
                 ErrorCategory = category,
                 Category = TaskCategory.Html,
-                Text = string.Format(format, project.Name, rule.DisplaySelectorName, rule.File, rule.Line, rule.Column),
+                Text = string.Format(CultureInfo.CurrentCulture, format, project.Name, rule.DisplaySelectorName, rule.File, rule.Line, rule.Column),
                 HierarchyItem = item
             };
 
             task.Navigate += NavigateToItem;
+
             return task;
         }
 
@@ -31,6 +32,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             var task = (ErrorTask)sender;
             var doc = task.Document;
+
             Window window;
 
             try
@@ -44,6 +46,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             var selection = (TextSelection)window.Selection;
+
             selection.MoveTo(task.Line + 1, task.Column + 1);
         }
 

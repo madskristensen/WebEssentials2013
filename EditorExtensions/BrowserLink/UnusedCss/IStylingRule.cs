@@ -1,5 +1,5 @@
-﻿using Microsoft.CSS.Core;
-using System;
+﻿using System;
+using Microsoft.CSS.Core;
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public interface IStylingRule : IEquatable<IStylingRule>
@@ -11,9 +11,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         int SelectorLength { get; }
         int Line { get; }
         int Offset { get; }
-        bool IsMatch(string standardizedSelectorText);
-        bool Is(RuleSet rule);
+        bool Matches(RuleSet rule);
         RuleSet Source { get; }
         string CleansedSelectorName { get; }
+
+        bool IsMatch(string standardizedSelectorText);
     }
 }

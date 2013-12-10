@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Globalization;
 using System.Linq;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Validation.Validators;
@@ -41,7 +43,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     int index = element.Attributes.IndexOf(classNames);
                     string offender = GetOffendingClassName(classNames.Value, token);
-                    string error = string.Format(_error, offender, token);
+                    string error = string.Format(CultureInfo.CurrentCulture, _error, offender, token);
 
                     results.AddAttributeError(element, error, HtmlValidationErrorLocation.AttributeValue, index);
                 }
@@ -50,11 +52,11 @@ namespace MadsKristensen.EditorExtensions
             return results;
         }
 
-        private List<string> GetIfTokenIsDependent(string token, ElementNode element)
+        private static List<string> GetIfTokenIsDependent(string token, ElementNode element)
         {
             List<string> childrenClassNames = null;
 
-            if (_childDependentTokens.Any(tk => token.StartsWith(tk)))
+            if (_childDependentTokens.Any(tk => token.StartsWith(tk, StringComparison.Ordinal)))
             {
                 childrenClassNames = new List<string>();
                 // childrenClassNames = element.Children.Select<ElementNode, string>(child => child.GetAttribute("class") == null ? "" : child.GetAttribute("class").Value).ToList<string>();
@@ -67,8 +69,8 @@ namespace MadsKristensen.EditorExtensions
         private static bool IsCorrect(string input, string token, List<string> childrenClassNames = null)
         {
             if (input.Contains(token + "-") &&
-                 !(input.Contains(token + " ") || input.EndsWith(token) || IsWhitelisted(input, token)) &&
-                ((childrenClassNames != null && !childrenClassNames.All(cn => cn.Contains(token + " ") || cn.EndsWith(token))) || childrenClassNames == null))
+                 !(input.Contains(token + " ") || input.EndsWith(token, StringComparison.CurrentCulture) || IsWhitelisted(input, token)) &&
+                ((childrenClassNames != null && !childrenClassNames.All(cn => cn.Contains(token + " ") || cn.EndsWith(token, StringComparison.CurrentCulture))) || childrenClassNames == null))
                 return false;
 
             return true;
@@ -77,7 +79,7 @@ namespace MadsKristensen.EditorExtensions
         private static string GetOffendingClassName(string input, string token)
         {
             string[] classes = input.Split(' ');
-            return classes.FirstOrDefault(c => c.StartsWith(token + "-"));
+            return classes.FirstOrDefault(c => c.StartsWith(token + "-", StringComparison.CurrentCulture));
         }
 
         private static bool IsWhitelisted(string input, string token)

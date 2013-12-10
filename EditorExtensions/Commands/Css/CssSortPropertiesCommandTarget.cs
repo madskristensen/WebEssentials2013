@@ -1,69 +1,54 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
 using CssSorter;
 using EnvDTE;
-using EnvDTE80;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class CssSortProperties : CommandTargetBase
     {
-        private DTE2 _dte;
-        private readonly string[] _supported = new[] { "CSS", "LESS" };
-        //private static uint[] _commandIds = new uint[] { PkgCmdIDList.sortCssProperties };
-
         public CssSortProperties(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, GuidList.guidCssCmdSet, PkgCmdIDList.sortCssProperties)
         {
-            _dte = EditorExtensionsPackage.DTE;
         }
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            TextDocument doc = _dte.ActiveDocument.Object("TextDocument") as TextDocument;
-            EditPoint edit = doc.StartPoint.CreateEditPoint();
-            string text = SortProperties(edit.GetText(doc.EndPoint));
+            var point = TextView.GetSelection("css");
+            if (point == null) return false;
 
-            _dte.UndoContext.Open("Sort All Properties");
+            var buffer = point.Value.Snapshot.TextBuffer;
 
-            edit.ReplaceText(doc.EndPoint, text, (int)vsFindOptions.vsFindOptionsNone);
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
-            doc.Selection.MoveToPoint(doc.StartPoint);
+            using (EditorExtensionsPackage.UndoContext("Sort All Properties"))
+            {
+                string result = SortProperties(buffer.CurrentSnapshot.GetText(), buffer.ContentType);
+                Span span = new Span(0, buffer.CurrentSnapshot.Length);
+                buffer.Replace(span, result);
 
-            _dte.UndoContext.Close();
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
+                var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
+                selection.GotoLine(1);
+            }
 
             return true;
         }
 
-        private string SortProperties(string text)
+        private static string SortProperties(string text, IContentType contentType)
         {
             Sorter sorter = new Sorter();
 
-            if (Path.GetExtension(_dte.ActiveDocument.FullName) == ".css")
-            {
-                return sorter.SortStyleSheet(text);
-            }
-            else if (Path.GetExtension(_dte.ActiveDocument.FullName) == ".less")
-            {
+            if (contentType.IsOfType("LESS"))
                 return sorter.SortLess(text);
-            }
 
-            return text;
+            return sorter.SortStyleSheet(text);
         }
 
         protected override bool IsEnabled()
         {
-            var buffer = ProjectHelpers.GetCurentTextBuffer();
-
-            if (buffer != null && _supported.Contains(buffer.ContentType.DisplayName.ToUpperInvariant()))
-            {
-                return true;
-            }
-
-            return false;
+            return TextView.GetSelection("css").HasValue;
         }
     }
 }

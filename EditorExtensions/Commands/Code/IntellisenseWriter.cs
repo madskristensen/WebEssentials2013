@@ -1,114 +1,132 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class IntellisenseWriter
     {
-        public void Write( IEnumerable<IntellisenseObject> objects, string file ) {
+        public void Write(IEnumerable<IntellisenseObject> objects, string file)
+        {
             StringBuilder sb = new StringBuilder();
 
-            if ( Path.GetExtension( file ).Equals( ".ts", StringComparison.OrdinalIgnoreCase ) )
-                WriteTypeScript( objects, sb );
+            if (Path.GetExtension(file).Equals(".ts", StringComparison.OrdinalIgnoreCase))
+                WriteTypeScript(objects, sb);
             else
-                WriteJavaScript( objects, sb );
+                WriteJavaScript(objects, sb);
 
-            WriteFileToDisk( file, sb );
+            WriteFileToDisk(file, sb);
         }
 
-        private static string CamelCasePropertyName( string name ) {
-            if ( WESettings.GetBoolean( WESettings.Keys.JavaScriptCamelCasePropertyNames ) ) {
-                name = CamelCase( name );
+        private static string CamelCasePropertyName(string name)
+        {
+            if (WESettings.GetBoolean(WESettings.Keys.JavaScriptCamelCasePropertyNames))
+            {
+                name = CamelCase(name);
             }
             return name;
         }
 
-        private static string CamelCaseClassName( string name ) {
-            if ( WESettings.GetBoolean( WESettings.Keys.JavaScriptCamelCaseClassNames ) ) {
-                name = CamelCase( name );
+        private static string CamelCaseClassName(string name)
+        {
+            if (WESettings.GetBoolean(WESettings.Keys.JavaScriptCamelCaseClassNames))
+            {
+                name = CamelCase(name);
             }
             return name;
         }
 
-        private static string CamelCase( string name ) {
-            if ( string.IsNullOrWhiteSpace( name ) ) {
+        private static string CamelCase(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
                 return name;
             }
-            return name[0].ToString( CultureInfo.CurrentCulture ).ToLower() + name.Substring( 1 );
+            return name[0].ToString(CultureInfo.CurrentCulture).ToLower() + name.Substring(1);
         }
 
-        private static void WriteJavaScript( IEnumerable<IntellisenseObject> objects, StringBuilder sb ) {
-            sb.AppendLine( "var server = server || {};" );
+        private static void WriteJavaScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
+        {
+            sb.AppendLine("var server = server || {};");
 
-            foreach ( IntellisenseObject io in objects ) {
-                if ( io.IsEnum ) continue;
+            foreach (IntellisenseObject io in objects)
+            {
+                if (io.IsEnum) continue;
 
-                sb.AppendLine( "server." + CamelCaseClassName( io.Name ) + " = function()  {" );
+                sb.AppendLine("server." + CamelCaseClassName(io.Name) + " = function()  {");
 
-                foreach ( var p in io.Properties ) {
+                foreach (var p in io.Properties)
+                {
                     string value = p.Type.GetJavaScriptName() + (p.Type.IsArray ? "[]" : "");
-                    var propertyName = CamelCasePropertyName( p.Name );
+                    var propertyName = CamelCasePropertyName(p.Name);
                     string comment = p.Summary ?? "The " + propertyName + " property as defined in " + io.FullName;
-                    comment = Regex.Replace( comment, @"\s*[\r\n]+\s*", " " ).Trim();
-                    sb.AppendLine( "\t/// <field name=\"" + propertyName + "\" type=\"" + value + "\">" +
-                                  SecurityElement.Escape( comment ) + "</field>" );
-                    sb.AppendLine( "\tthis." + propertyName + " = new " + value + "();" );
+                    comment = Regex.Replace(comment, @"\s*[\r\n]+\s*", " ").Trim();
+                    sb.AppendLine("\t/// <field name=\"" + propertyName + "\" type=\"" + value + "\">" +
+                                  SecurityElement.Escape(comment) + "</field>");
+                    sb.AppendLine("\tthis." + propertyName + " = new " + value + "();");
                 }
 
-                sb.AppendLine( "};" );
+                sb.AppendLine("};");
                 sb.AppendLine();
             }
         }
 
-        private static void WriteTypeScript( IEnumerable<IntellisenseObject> objects, StringBuilder sb ) {
-            foreach ( var ns in objects.GroupBy( o => o.Namespace ) ) {
-                sb.AppendFormat( "declare module {0} {{\r\n", ns.Key );
+        private static void WriteTypeScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
+        {
+            foreach (var ns in objects.GroupBy(o => o.Namespace))
+            {
+                sb.AppendFormat("declare module {0} {{\r\n", ns.Key);
 
-                foreach ( IntellisenseObject io in ns ) {
-                    if ( io.IsEnum ) {
-                        sb.AppendLine( "\tenum " + CamelCaseClassName( io.Name ) + " {" );
-                        foreach ( var p in io.Properties ) sb.AppendLine( "\t\t" + CamelCasePropertyName( p.Name ) + "," );
-                        sb.AppendLine( "\t}" );
+                foreach (IntellisenseObject io in ns)
+                {
+                    if (io.IsEnum)
+                    {
+                        sb.AppendLine("\tenum " + CamelCaseClassName(io.Name) + " {");
+                        foreach (var p in io.Properties) sb.AppendLine("\t\t" + CamelCasePropertyName(p.Name) + ",");
+                        sb.AppendLine("\t}");
                     }
-                    else {
-                        sb.Append( "\tinterface " ).Append( CamelCaseClassName( io.Name ) ).Append( " " );
-                        WriteTSInterfaceDefinition( sb, "\t", io.Properties );
+                    else
+                    {
+                        sb.Append("\tinterface ").Append(CamelCaseClassName(io.Name)).Append(" ");
+                        WriteTSInterfaceDefinition(sb, "\t", io.Properties);
                         sb.AppendLine();
                     }
                 }
 
-                sb.AppendLine( "}" );
+                sb.AppendLine("}");
             }
         }
 
-        private static void WriteTSInterfaceDefinition( StringBuilder sb, string prefix, IEnumerable<IntellisenseProperty> props ) {
-            sb.AppendLine( "{" );
+        private static void WriteTSInterfaceDefinition(StringBuilder sb, string prefix, IEnumerable<IntellisenseProperty> props)
+        {
+            sb.AppendLine("{");
 
-            foreach ( var p in props ) {
-                sb.AppendFormat( "{0}\t{1}: ", prefix, CamelCasePropertyName( p.Name ) );
+            foreach (var p in props)
+            {
+                sb.AppendFormat("{0}\t{1}: ", prefix, CamelCasePropertyName(p.Name));
 
-                if ( p.Type.IsPrimitive() ) sb.Append( p.Type.GetTypeScriptName() );
-                else if ( !string.IsNullOrEmpty( p.Type.ClientSideReferenceName ) ) sb.Append( p.Type.ClientSideReferenceName );
-                else {
-                    if ( p.Type.Shape == null ) sb.Append( "any" );
-                    else WriteTSInterfaceDefinition( sb, prefix + "\t", p.Type.Shape );
+                if (p.Type.IsPrimitive()) sb.Append(p.Type.GetTypeScriptName());
+                else if (!string.IsNullOrEmpty(p.Type.ClientSideReferenceName)) sb.Append(p.Type.ClientSideReferenceName);
+                else
+                {
+                    if (p.Type.Shape == null) sb.Append("any");
+                    else WriteTSInterfaceDefinition(sb, prefix + "\t", p.Type.Shape);
                 }
-                if ( p.Type.IsArray ) sb.Append( "[]" );
+                if (p.Type.IsArray) sb.Append("[]");
 
-                sb.AppendLine( ";" );
+                sb.AppendLine(";");
             }
 
-            sb.Append( prefix ).Append( "}" );
+            sb.Append(prefix).Append("}");
         }
 
-        private static void WriteFileToDisk( string fileName, StringBuilder sb ) {
+        private static void WriteFileToDisk(string fileName, StringBuilder sb)
+        {
             //string current = string.Empty;
             //if (File.Exists(fileName))
             //{
@@ -117,7 +135,7 @@ namespace MadsKristensen.EditorExtensions
 
             //if (current != sb.ToString())
             //{
-            File.WriteAllText( fileName, sb.ToString() );
+            File.WriteAllText(fileName, sb.ToString());
             //}
         }
     }
@@ -165,12 +183,14 @@ namespace MadsKristensen.EditorExtensions
         public IEnumerable<IntellisenseProperty> Shape { get; set; }
 
         public bool IsPrimitive() { return GetTypeScriptName() != "any"; }
-        public string GetJavaScriptName() { return GetTargetName( true ); }
-        public string GetTypeScriptName() { return GetTargetName( false ); }
+        public string GetJavaScriptName() { return GetTargetName(true); }
+        public string GetTypeScriptName() { return GetTargetName(false); }
 
-        string GetTargetName( bool js ) {
+        string GetTargetName(bool js)
+        {
             var t = CodeName.ToLower();
-            switch ( t ) {
+            switch (t)
+            {
                 case "int":
                 case "int32":
                 case "int64":
@@ -191,7 +211,7 @@ namespace MadsKristensen.EditorExtensions
                     return js ? "Boolean" : "boolean";
             }
 
-            if ( t.Contains( "system.collections" ) || t.Contains( "[]" ) || t.Contains( "array" ) )
+            if (t.Contains("system.collections") || t.Contains("[]") || t.Contains("array"))
                 return "Array";
 
             return js ? "Object" : "any";

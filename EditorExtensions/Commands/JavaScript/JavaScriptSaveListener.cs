@@ -1,12 +1,12 @@
-﻿using Microsoft.Ajax.Utilities;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Ajax.Utilities;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -16,14 +16,14 @@ namespace MadsKristensen.EditorExtensions
     public class JavaScriptSaveListener : IWpfTextViewCreationListener
     {
         [Import]
-        internal ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
         private ITextDocument _document;
 
         public void TextViewCreated(IWpfTextView textView)
         {
             if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out _document))
-            { 
+            {
                 _document.FileActionOccurred += document_FileActionOccurred;
             }
         }

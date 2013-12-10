@@ -65,7 +65,7 @@ namespace MadsKristensen.EditorExtensions
         {
         }
 
-        private IEnumerable<ParseItem> GetItems(string file, CssParser parser, string searchValue)
+        private static IEnumerable<ParseItem> GetItems(string file, CssParser parser, string searchValue)
         {
             StyleSheet ss = parser.Parse(File.ReadAllText(file), true);
 
@@ -76,7 +76,7 @@ namespace MadsKristensen.EditorExtensions
             }.Crawl(ss).Where(s => s != null);
         }
 
-        private IEnumerable<string> GetFiles()
+        private static IEnumerable<string> GetFiles()
         {
             string folder = ProjectHelpers.GetRootFolder();
 

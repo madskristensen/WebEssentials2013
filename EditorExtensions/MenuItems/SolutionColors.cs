@@ -1,17 +1,14 @@
-﻿using EnvDTE80;
+﻿using System.ComponentModel.Design;
 using Microsoft.VisualStudio.Shell;
-using System.ComponentModel.Design;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class SolutionColorsMenu
     {
-        private DTE2 _dte;
         private OleMenuCommandService _mcs;
 
-        public SolutionColorsMenu(DTE2 dte, OleMenuCommandService mcs)
+        public SolutionColorsMenu(OleMenuCommandService mcs)
         {
-            _dte = dte;
             _mcs = mcs;
         }
 

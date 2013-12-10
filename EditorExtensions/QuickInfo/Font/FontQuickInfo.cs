@@ -14,15 +14,12 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class FontQuickInfo : IQuickInfoSource
     {
-        private FontQuickInfoSourceProvider _provider;
         private ITextBuffer _buffer;
         private static InstalledFontCollection fonts = new InstalledFontCollection();
-        private CssTree _tree;
         private List<string> _allowed = new List<string>() { "FONT", "FONT-FAMILY" };
 
-        public FontQuickInfo(FontQuickInfoSourceProvider provider, ITextBuffer subjectBuffer)
+        public FontQuickInfo(ITextBuffer subjectBuffer)
         {
-            _provider = provider;
             _buffer = subjectBuffer;
         }
 
@@ -30,7 +27,7 @@ namespace MadsKristensen.EditorExtensions
         {
             applicableToSpan = null;
 
-            if (!EnsureTreeInitialized() || session == null || qiContent == null)
+            if (session == null || qiContent == null)
                 return;
 
             // Map the trigger point down to our buffer.
@@ -38,7 +35,8 @@ namespace MadsKristensen.EditorExtensions
             if (!point.HasValue)
                 return;
 
-            ParseItem item = _tree.StyleSheet.ItemBeforePosition(point.Value.Position);
+            var tree = CssEditorDocument.FromTextBuffer(_buffer);
+            ParseItem item = tree.StyleSheet.ItemBeforePosition(point.Value.Position);
             if (item == null || !item.IsValid)
                 return;
 
@@ -60,27 +58,6 @@ namespace MadsKristensen.EditorExtensions
                 qiContent.Add(CreateFontPreview(font, 25));
                 qiContent.Add(CreateFontPreview(font, 40));
             }
-        }
-
-        /// <summary>
-        /// This must be delayed so that the TextViewConnectionListener
-        /// has a chance to initialize the WebEditor host.
-        /// </summary>
-        public bool EnsureTreeInitialized()
-        {
-            if (_tree == null)// && WebEditor.GetHost(CssContentTypeDefinition.CssContentType) != null)
-            {
-                try
-                {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(_buffer);
-                    _tree = document.Tree;
-                }
-                catch (Exception)
-                {
-                }
-            }
-
-            return _tree != null;
         }
 
         private static UIElement CreateFontPreview(FontFamily font, double size)

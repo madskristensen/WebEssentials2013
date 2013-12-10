@@ -1,9 +1,9 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Globalization;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -22,13 +22,13 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (next.Text.StartsWith(":") && item.IsPseudoElement() && !next.IsPseudoElement())
                 {
-                    string error = string.Format(Resources.ValidationPseudoOrder, item.Text, next.Text);
+                    string error = string.Format(CultureInfo.CurrentCulture, Resources.ValidationPseudoOrder, item.Text, next.Text);
                     context.AddError(new SimpleErrorTag(item, error, CssErrorFlags.TaskListError | CssErrorFlags.UnderlineRed));
                 }
 
                 else if (!next.Text.StartsWith(":") && item.AfterEnd == next.Start)
                 {
-                    string error = string.Format(Resources.BestPracticePseudosAfterOtherSelectors, next.Text);
+                    string error = string.Format(CultureInfo.CurrentCulture, Resources.BestPracticePseudosAfterOtherSelectors, next.Text);
                     context.AddError(new SimpleErrorTag(next, error));
                 }
             }
@@ -44,14 +44,6 @@ namespace MadsKristensen.EditorExtensions
         //    var schema = CssSchemaManager.SchemaManager.GetSchemaRoot(null);
         //    return schema.GetPseudo(":" + item.Text) != null;
         //}
-
-        private static List<string> _invalids = new List<string>()
-        {
-            ":before",
-            "::before",
-            ":after",
-            "::after",
-        };
 
         public IEnumerable<Type> ItemTypes
         {

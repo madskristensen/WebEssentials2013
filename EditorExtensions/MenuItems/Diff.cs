@@ -1,18 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Design;
-using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class DiffMenu
     {
-        private DTE2 _dte;
         private OleMenuCommandService _mcs;
 
-        public DiffMenu(DTE2 dte, OleMenuCommandService mcs)
+        public DiffMenu(OleMenuCommandService mcs)
         {
-            _dte = dte;
             _mcs = mcs;
         }
 

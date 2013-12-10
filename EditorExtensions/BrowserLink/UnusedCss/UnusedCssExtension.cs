@@ -17,14 +17,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private readonly IList<Guid> _operationsInProgress = new List<Guid>();
         private readonly UploadHelper _uploadHelper;
 
-        public UnusedCssExtension(BrowserLinkConnection connection)
-        {
-            ExtensionByConnection[connection] = this;
-            _uploadHelper = new UploadHelper();
-            _connection = connection;
-            UnusedCssOptions.SettingsUpdated += InstallIgnorePatterns;
-        }
-
+        public static bool IsAnyConnectionAlive { get { return ExtensionByConnection.Count > 0; } }
+        public BrowserLinkConnection Connection { get { return _connection; } }
+        public bool IsRecording { get; private set; }
         public static List<string> IgnoreList
         {
             get
@@ -34,9 +29,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 return ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
             }
         }
-
-        public static bool IsAnyConnectionAlive { get { return ExtensionByConnection.Count > 0; } }
-
+        private static List<string> IgnorePatternList
+        {
+            get { return IgnoreList.Select(FilePatternToRegex).ToList(); }
+        }
         public override IEnumerable<BrowserLinkAction> Actions
         {
             get
@@ -45,18 +41,18 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
+        public UnusedCssExtension(BrowserLinkConnection connection)
+        {
+            ExtensionByConnection[connection] = this;
+            _uploadHelper = new UploadHelper();
+            _connection = connection;
+
+            UnusedCssOptions.SettingsUpdated += InstallIgnorePatterns;
+        }
+
         private void ToggleRecordingModeAction(BrowserLinkAction obj)
         {
             ToggleRecordingMode();
-        }
-
-        public BrowserLinkConnection Connection { get { return _connection; } }
-
-        public bool IsRecording { get; private set; }
-
-        private static List<string> IgnorePatternList
-        {
-            get { return IgnoreList.Select(FilePatternToRegex).ToList(); }
         }
 
         public static IEnumerable<string> GetValidSheetUrls()
@@ -134,10 +130,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public void GetIgnoreList()
         {
             Browsers.Client(_connection).Invoke("installIgnorePatterns", IgnorePatternList);
+
             //Apply any deferred actions
             //NOTE: There should be some kind of check here to determine whether or not this is a new session for the browser (as the user may have closed the window during the recording session and opened a new browser)
             var appBag = BrowserLocationContinuationActions.GetOrAdd(_connection.AppName, n => new ConcurrentDictionary<string, Action<UnusedCssExtension>>());
             Action<UnusedCssExtension> act;
+
             if (appBag.TryRemove(_connection.Project.UniqueName, out act))
             {
                 act(this);
@@ -174,7 +172,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             UnusedCssExtension extension;
+
             ExtensionByConnection.TryRemove(connection, out extension);
+
             UnusedCssOptions.SettingsUpdated -= InstallIgnorePatterns;
         }
 
@@ -216,6 +216,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         internal static void All(Action<UnusedCssExtension> method)
         {
             MessageDisplayManager.DisplaySource = MessageDisplaySource.Project;
+
             foreach (var extension in ExtensionByConnection.Values)
             {
                 method(extension);
@@ -306,7 +307,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                         }
 
                         locationUri = new Uri(lessFile, UriKind.Relative);
+
                         Uri.TryCreate(projectUri, locationUri, out realLocation);
+
                         filePath = realLocation.LocalPath;
                     }
                 }

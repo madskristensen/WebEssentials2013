@@ -1,50 +1,46 @@
-﻿using EnvDTE;
-using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Web.BrowserLink;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using EnvDTE;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public static class UsageRegistry
     {
         private static readonly ConcurrentDictionary<string, SessionResult> UsageDataByLocation = new ConcurrentDictionary<string, SessionResult>();
-
         private static readonly ConcurrentDictionary<BrowserLinkConnection, ConcurrentDictionary<string, SessionResult>> UsageDataByConnectionAndLocation = new ConcurrentDictionary<BrowserLinkConnection, ConcurrentDictionary<string, SessionResult>>();
-
         private static readonly ConcurrentDictionary<string, SessionResult> UsageDataByProject = new ConcurrentDictionary<string, SessionResult>();
-
-        public static void Merge(UnusedCssExtension extension, SessionResult source)
-        {
-            var url = extension.Connection.Url.ToString().ToLowerInvariant();
-            var crossBrowserPageBucket = UsageDataByLocation.GetOrAdd(url, location => new SessionResult(extension));
-
-            var connectionSiteBucket = UsageDataByConnectionAndLocation.GetOrAdd(extension.Connection, conn => new ConcurrentDictionary<string, SessionResult>());
-            var connectionPageBucket = connectionSiteBucket.GetOrAdd(url, location => new SessionResult(extension));
-
-            var projectBucket = UsageDataByProject.GetOrAdd(extension.Connection.Project.UniqueName, proj => new SessionResult(extension));
-
-            crossBrowserPageBucket.Merge(source);
-            connectionPageBucket.Merge(source);
-            projectBucket.Merge(source);
-
-            OnUsageDataUpdated();
-        }
+        public static event EventHandler UsageDataUpdated;
 
         public static bool IsAnyUsageDataCaptured
         {
             get { return UsageDataByLocation.Count > 0; }
         }
 
+        public static void Merge(UnusedCssExtension extension, SessionResult source)
+        {
+            var url = extension.Connection.Url.ToString().ToLowerInvariant();
+            var crossBrowserPageBucket = UsageDataByLocation.GetOrAdd(url, location => new SessionResult(extension));
+            var connectionSiteBucket = UsageDataByConnectionAndLocation.GetOrAdd(extension.Connection, conn => new ConcurrentDictionary<string, SessionResult>());
+            var connectionPageBucket = connectionSiteBucket.GetOrAdd(url, location => new SessionResult(extension));
+            var projectBucket = UsageDataByProject.GetOrAdd(extension.Connection.Project.UniqueName, proj => new SessionResult(extension));
+
+            crossBrowserPageBucket.Merge(source);
+            connectionPageBucket.Merge(source);
+            projectBucket.Merge(source);
+            OnUsageDataUpdated();
+        }
+
+
         public static void Reset()
         {
             UsageDataByLocation.Clear();
             UsageDataByConnectionAndLocation.Clear();
             UsageDataByProject.Clear();
-
             OnUsageDataUpdated();
         }
 
@@ -78,8 +74,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()).Distinct().ToList();
         }
 
-        public static event EventHandler UsageDataUpdated;
-
         private static void OnUsageDataUpdated()
         {
             if (UsageDataUpdated != null)
@@ -88,7 +82,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
-        public static async System.Threading.Tasks.Task ResyncAsync()
+        public static async System.Threading.Tasks.Task ResynchronizeAsync()
         {
             foreach (var value in UsageDataByProject.Values)
             {
@@ -112,7 +106,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             MessageDisplayManager.Refresh();
         }
 
-        public static void Resync()
+        public static void Resynchronize()
         {
             foreach (var value in UsageDataByProject.Values)
             {
@@ -143,17 +137,18 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 return sheetRules.Intersect(UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()));
             }
         }
-        
+
         public static bool IsAProtectedClass(IStylingRule rule)
         {
             var selectorName = rule.DisplaySelectorName;
             var cleansedName = RuleRegistry.StandardizeSelector(selectorName);
+
             return cleansedName.IndexOf(":visited", StringComparison.Ordinal) > -1 || cleansedName.IndexOf(":hover", StringComparison.Ordinal) > -1 || cleansedName.IndexOf(":active", StringComparison.Ordinal) > -1;
         }
 
         internal static bool IsRuleUsed(RuleSet rule)
         {
-            return GetAllUnusedRules().All(x => !x.Is(rule));
+            return GetAllUnusedRules().All(x => !x.Matches(rule));
         }
     }
 }

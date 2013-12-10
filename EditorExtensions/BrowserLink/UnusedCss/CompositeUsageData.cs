@@ -44,7 +44,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             lock (_sync)
             {
                 var unusedRules = new HashSet<IStylingRule>(GetAllRules());
+
                 unusedRules.ExceptWith(_ruleUsages.Select(x => x.Rule).Distinct());
+
                 return unusedRules.Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
             }
         }
@@ -52,6 +54,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private IEnumerable<Task> GetWarnings(string formatString)
         {
             var orderedRules = GetUnusedRules().OrderBy(x => x.File).ThenBy(x => x.Line).ThenBy(x => x.Column);
+
             return orderedRules.Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _extension.Connection.Project, formatString));
         }
 
