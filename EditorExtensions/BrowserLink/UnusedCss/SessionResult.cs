@@ -9,6 +9,17 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public class SessionResult : IUsageDataSource, IResolutionRequiredDataSource
     {
+        private HashSet<RuleUsage> _ruleUsages;
+        private int _isResolved;
+        private UnusedCssExtension _extension;
+
+        [JsonProperty]
+        public HashSet<RawRuleUsage> RawUsageData { get; set; }
+        [JsonProperty]
+        public bool Continue { get; set; }
+        [JsonProperty]
+        public List<string> Sheets { get; set; }
+
         public SessionResult()
         {
         }
@@ -20,21 +31,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             _ruleUsages = new HashSet<RuleUsage>();
             _isResolved = 1;
         }
-
-        [JsonProperty]
-        public HashSet<RawRuleUsage> RawUsageData { get; set; }
-
-        [JsonProperty]
-        public bool Continue { get; set; }
-
-        [JsonProperty]
-        public List<string> Sheets { get; set; }
-
-        private HashSet<RuleUsage> _ruleUsages;
-
-        private int _isResolved;
-
-        private UnusedCssExtension _extension;
 
         private void ThrowIfNotResolved()
         {
@@ -58,6 +54,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public IEnumerable<IStylingRule> GetAllRules()
         {
             ThrowIfNotResolved();
+
             return AmbientRuleContext.GetAllRules();
         }
 
@@ -69,6 +66,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private IEnumerable<Task> GetWarnings(string formatString)
         {
             var orderedRules = GetUnusedRules().OrderBy(x => x.File).ThenBy(x => x.Line).ThenBy(x => x.Column);
+
             return orderedRules.Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _extension.Connection.Project, formatString));
         }
 

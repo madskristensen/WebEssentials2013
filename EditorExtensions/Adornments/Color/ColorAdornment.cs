@@ -9,6 +9,8 @@ namespace MadsKristensen.EditorExtensions
 {
     internal sealed class ColorAdornment : Border
     {
+        private static SolidColorBrush _borderColor = OptionHelpers.BackgroundColor.Invert().ToBrush();
+
         internal ColorAdornment(ColorTag colorTag, ITextView view)
         {
             this.Padding = new Thickness(0);
@@ -35,6 +37,7 @@ namespace MadsKristensen.EditorExtensions
         internal void Update(ColorTag colorTag)
         {
             this.Background = new SolidColorBrush(colorTag.Color);
+
             if (!HasContrastToBackground(colorTag.Color))
             {
                 this.BorderThickness = new Thickness(1);
@@ -46,8 +49,6 @@ namespace MadsKristensen.EditorExtensions
                 this.BorderBrush = this.Background;
             }
         }
-
-        private static SolidColorBrush _borderColor = OptionHelpers.BackgroundColor.Invert().ToBrush();
 
         private static bool HasContrastToBackground(Color color)
         {

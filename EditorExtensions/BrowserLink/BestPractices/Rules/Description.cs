@@ -50,8 +50,8 @@ namespace MadsKristensen.EditorExtensions
                 {
                     EditorExtensionsPackage.DTE.ItemOperations.OpenFile(_file);
                     _extension.ErrorList.Tasks.Remove(task);
-
                     AddMetaTag(index);
+
                     return;
                 }
             }
@@ -71,8 +71,8 @@ namespace MadsKristensen.EditorExtensions
                     view.Selection.Select(new SnapshotSpan(buffer.CurrentSnapshot, 34 + index, 26), false);
                     EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
                 }
-                EditorExtensionsPackage.DTE.ActiveDocument.Save();
 
+                EditorExtensionsPackage.DTE.ActiveDocument.Save();
                 view.ViewScroller.EnsureSpanVisible(new SnapshotSpan(buffer.CurrentSnapshot, index, 1), EnsureSpanVisibleOptions.AlwaysCenter);
 
             }), DispatcherPriority.ApplicationIdle, null);

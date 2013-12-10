@@ -4,7 +4,7 @@ using EnvDTE80;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
-namespace MadsKristensen.EditorExtensions 
+namespace MadsKristensen.EditorExtensions
 {
     internal class MinifySelection : CommandTargetBase
     {

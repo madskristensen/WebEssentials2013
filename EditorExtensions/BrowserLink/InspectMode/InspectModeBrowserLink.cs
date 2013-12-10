@@ -31,6 +31,7 @@ namespace MadsKristensen.EditorExtensions
         public override void OnConnected(BrowserLinkConnection connection)
         {
             _connection = connection;
+
             DisableInspectMode();
         }
 
@@ -50,6 +51,7 @@ namespace MadsKristensen.EditorExtensions
         private void InitiateInspectMode(BrowserLinkAction ction)
         {
             Browsers.Client(_connection).Invoke("setInspectMode", true);
+
             _instance = this;
         }
 

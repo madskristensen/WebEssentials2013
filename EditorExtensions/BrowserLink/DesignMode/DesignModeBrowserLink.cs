@@ -33,14 +33,14 @@ namespace MadsKristensen.EditorExtensions
     {
         BrowserLinkConnection _connection;
 
-        public override void OnConnected(BrowserLinkConnection connection)
-        {
-            _connection = connection;
-        }
-
         public override IEnumerable<BrowserLinkAction> Actions
         {
             get { yield return new BrowserLinkAction("Design Mode", SetDesignMode); }
+        }
+
+        public override void OnConnected(BrowserLinkConnection connection)
+        {
+            _connection = connection;
         }
 
         private void SetDesignMode(BrowserLinkAction action)
@@ -57,11 +57,10 @@ namespace MadsKristensen.EditorExtensions
             {
                 var view = ProjectHelpers.GetCurentTextView();
                 var html = HtmlEditorDocument.FromTextView(view);
-
-                view.Selection.Clear();
                 ElementNode element;
                 AttributeNode attribute;
 
+                view.Selection.Clear();
                 html.HtmlEditorTree.GetPositionElement(position + 1, out element, out attribute);
 
                 // HTML element
@@ -80,10 +79,12 @@ namespace MadsKristensen.EditorExtensions
                 {
                     //@Html.ActionLink("Application name", "Index", "Home", null, new { @class = "brand" })
                     Span span = new Span(position, 100);
+
                     if (position + 100 < html.TextBuffer.CurrentSnapshot.Length)
                     {
                         string text = html.TextBuffer.CurrentSnapshot.GetText(span);
                         var result = Regex.Replace(text, @"^html.actionlink\(""([^""]+)""", "Html.ActionLink(\"" + innerHtml + "\"", RegexOptions.IgnoreCase);
+
                         UpdateBuffer(result, html, span);
                     }
                 }

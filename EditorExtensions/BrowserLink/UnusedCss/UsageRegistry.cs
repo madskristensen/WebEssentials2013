@@ -12,39 +12,35 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     public static class UsageRegistry
     {
         private static readonly ConcurrentDictionary<string, SessionResult> UsageDataByLocation = new ConcurrentDictionary<string, SessionResult>();
-
         private static readonly ConcurrentDictionary<BrowserLinkConnection, ConcurrentDictionary<string, SessionResult>> UsageDataByConnectionAndLocation = new ConcurrentDictionary<BrowserLinkConnection, ConcurrentDictionary<string, SessionResult>>();
-
         private static readonly ConcurrentDictionary<string, SessionResult> UsageDataByProject = new ConcurrentDictionary<string, SessionResult>();
-
-        public static void Merge(UnusedCssExtension extension, SessionResult source)
-        {
-            var url = extension.Connection.Url.ToString().ToLowerInvariant();
-            var crossBrowserPageBucket = UsageDataByLocation.GetOrAdd(url, location => new SessionResult(extension));
-
-            var connectionSiteBucket = UsageDataByConnectionAndLocation.GetOrAdd(extension.Connection, conn => new ConcurrentDictionary<string, SessionResult>());
-            var connectionPageBucket = connectionSiteBucket.GetOrAdd(url, location => new SessionResult(extension));
-
-            var projectBucket = UsageDataByProject.GetOrAdd(extension.Connection.Project.UniqueName, proj => new SessionResult(extension));
-
-            crossBrowserPageBucket.Merge(source);
-            connectionPageBucket.Merge(source);
-            projectBucket.Merge(source);
-
-            OnUsageDataUpdated();
-        }
+        public static event EventHandler UsageDataUpdated;
 
         public static bool IsAnyUsageDataCaptured
         {
             get { return UsageDataByLocation.Count > 0; }
         }
 
+        public static void Merge(UnusedCssExtension extension, SessionResult source)
+        {
+            var url = extension.Connection.Url.ToString().ToLowerInvariant();
+            var crossBrowserPageBucket = UsageDataByLocation.GetOrAdd(url, location => new SessionResult(extension));
+            var connectionSiteBucket = UsageDataByConnectionAndLocation.GetOrAdd(extension.Connection, conn => new ConcurrentDictionary<string, SessionResult>());
+            var connectionPageBucket = connectionSiteBucket.GetOrAdd(url, location => new SessionResult(extension));
+            var projectBucket = UsageDataByProject.GetOrAdd(extension.Connection.Project.UniqueName, proj => new SessionResult(extension));
+
+            crossBrowserPageBucket.Merge(source);
+            connectionPageBucket.Merge(source);
+            projectBucket.Merge(source);
+            OnUsageDataUpdated();
+        }
+
+
         public static void Reset()
         {
             UsageDataByLocation.Clear();
             UsageDataByConnectionAndLocation.Clear();
             UsageDataByProject.Clear();
-
             OnUsageDataUpdated();
         }
 
@@ -77,8 +73,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             return UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()).Distinct().ToList();
         }
-
-        public static event EventHandler UsageDataUpdated;
 
         private static void OnUsageDataUpdated()
         {
@@ -148,6 +142,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             var selectorName = rule.DisplaySelectorName;
             var cleansedName = RuleRegistry.StandardizeSelector(selectorName);
+
             return cleansedName.IndexOf(":visited", StringComparison.Ordinal) > -1 || cleansedName.IndexOf(":hover", StringComparison.Ordinal) > -1 || cleansedName.IndexOf(":active", StringComparison.Ordinal) > -1;
         }
 

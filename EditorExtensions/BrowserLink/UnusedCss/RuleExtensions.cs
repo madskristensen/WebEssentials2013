@@ -12,7 +12,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public static Task ProduceErrorListTask(this IStylingRule rule, TaskErrorCategory category, Project project, string format)
         {
             var item = ResolveVsHierarchyItem(project.UniqueName);
-
             var task = new ErrorTask
             {
                 Document = rule.File,
@@ -25,6 +24,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             };
 
             task.Navigate += NavigateToItem;
+
             return task;
         }
 
@@ -32,6 +32,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             var task = (ErrorTask)sender;
             var doc = task.Document;
+
             Window window;
 
             try
@@ -45,6 +46,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             var selection = (TextSelection)window.Selection;
+
             selection.MoveTo(task.Line + 1, task.Column + 1);
         }
 

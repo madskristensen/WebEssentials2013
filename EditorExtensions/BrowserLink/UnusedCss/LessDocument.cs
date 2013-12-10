@@ -52,6 +52,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             // Cache the computed parents to avoid re-computing them
             // for every child permutation.
             var parentSelectors = GetSelectorNames(parentSet, mixinAction).ToList();
+
             return ruleSet.Selectors.SelectMany(child =>
                 CombineSelectors(parentSelectors, child.SelectorText())
             );
@@ -65,25 +66,29 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             // Build a chained LINQ query that expands every ampersand
             // into each parent to get every permutation of selectors.
             var result = Enumerable.Repeat("", 1);
-
             int lastIndex = 0;
+
             while (true)
             {
                 int nextIndex = child.IndexOf('&', lastIndex);
+
                 if (nextIndex < 0)
                 {
                     // If the child selector does not end in an ampersand, append the last chunk directly
                     var chunk = child.Substring(lastIndex);
+
                     return result.Select(c => c + chunk);
                 }
                 else
                 {
                     // If we got up to an ampersand, append the chunk followed by every parent selector.
                     var chunk = child.Substring(lastIndex, nextIndex - lastIndex);
+
                     result = result.SelectMany(c => parents.Select(p => c + chunk + p));
                 }
 
                 nextIndex++;    // Skip the ampersand
+
                 if (nextIndex == child.Length)
                     break;
                 else
@@ -102,6 +107,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             if (!includeShellSelectors)
             {
                 var block = ruleSet.Block as LessRuleBlock;
+
                 if (block == null || ruleSet.Block.Declarations.Count == 0 && ruleSet.Block.Directives.Count == 0 && block.RuleSets.Any())
                 {
                     //If we got here, the element won't be included in the output but has children that might be
@@ -110,6 +116,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             string name = string.Join(",\r\n", GetSelectorNames(ruleSet, includeShellSelectors ? LessMixinAction.NestedOnly : LessMixinAction.Skip));
+
             if (name.Length == 0)
                 return null;
 

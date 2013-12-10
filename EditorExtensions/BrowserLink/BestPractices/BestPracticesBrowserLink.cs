@@ -98,7 +98,6 @@ namespace MadsKristensen.EditorExtensions
                 AddHierarchyItem(task);
 
                 task.Navigate += rule.Navigate;
-
                 _tasks[id] = task;
             }
         }
