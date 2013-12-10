@@ -25,8 +25,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public IClassifier GetClassifier(ITextBuffer textBuffer)
         {
             // The classifier periodically recreates its ArtifactsCollection, so I need to pass a getter.
-            var classifier = ServiceManager.GetService<HtmlClassifier>(textBuffer);
-            return textBuffer.Properties.GetOrCreateSingletonProperty<MarkdownClassifier>(() => new MarkdownClassifier(() => classifier.ArtifactCollection, Registry));
+            HtmlClassifier classifier = null;
+            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new MarkdownClassifier(() =>
+                (classifier ?? (classifier = ServiceManager.GetService<HtmlClassifier>(textBuffer))).ArtifactCollection,
+                Registry
+            ));
         }
     }
 
@@ -84,6 +87,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 int plainStart = thisArtifact < 0 ? 0 : artifacts[thisArtifact].End;
                 thisArtifact++;
                 int plainEnd = thisArtifact == artifacts.Count ? span.Snapshot.Length : artifacts[thisArtifact].Start;
+
+                // If artifacts become inconsistent, don't choke
+                if (plainEnd <= plainStart)
+                    continue;
 
                 // Chop off any part before or after the span being classified
                 var plainSpan = span.Intersection(Span.FromBounds(plainStart, plainEnd));

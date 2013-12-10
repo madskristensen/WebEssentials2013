@@ -121,7 +121,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 return @"using System;
                          using System.Collections.Generic;
                          using System.Data;
+                         using System.IO;
                          using System.Linq;
+                         using System.Reflection;
                          using System.Text;
                          using System.Threading;
                          using System.Threading.Tasks;";
@@ -131,9 +133,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             return new[] { @"partial class Entry
                             {
-                                  object SampleMethod" + Guid.NewGuid().ToString("n") + @"()
-                            {",
-                            @"}
+                                  async Task<object> SampleMethod" + Guid.NewGuid().ToString("n") + @"() {",@"
+                                return await Task.FromResult(new object());
+                            }
                             }" };
         }
     }
@@ -150,7 +152,9 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 return @"Imports System
                         Imports System.Collections.Generic
                         Imports System.Data
+                        Imports System.IO
                         Imports System.Linq
+                        Imports System.Reflection
                         Imports System.Text
                         Imports System.Threading
                         Imports System.Threading.Tasks";
@@ -160,8 +164,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             return new[] { @"
                             Partial Class Entry
-                            Function SampleMethod" + Guid.NewGuid().ToString("n") + @"() As Object", @"
-                                Return Nothing
+                            Async Function SampleMethod" + Guid.NewGuid().ToString("n") + @"() As Task(Of Object)", @"
+                                Return Await Task.FromResult(New Object())
                             End Function
                             End Class" };
         }

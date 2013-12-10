@@ -208,7 +208,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             var project = (IVsIntellisenseProject)EditorExtensionsPackage.Instance.CreateInstance(ref intellisenseGuid, ref iid_vsip, typeof(IVsIntellisenseProject));
 
             string fileName = projectionBuffer.IProjectionBuffer.GetFileName();
-            var hierarchy = new MarkdownCodeProject(fileName, contentType + " code in " + Path.GetFileName(fileName), WorkspaceItem.Hierarchy);
+            var displayName = contentType.DisplayName;
+            if (displayName == "CSharp") displayName = "C#";
+            if (displayName == "Basic") displayName = "VB";
+            var hierarchy = new MarkdownCodeProject(fileName, displayName + " code in " + Path.GetFileName(fileName), WorkspaceItem.Hierarchy);
 
             hr = project.Init(new ProjectHost(hierarchy));
             hr = project.StartIntellisenseEngine();
