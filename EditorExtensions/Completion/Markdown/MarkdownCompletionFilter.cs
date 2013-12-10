@@ -38,6 +38,8 @@ namespace MadsKristensen.EditorExtensions.Completion.Markdown
 
             // TODO: Suppress within HTML code blocks
 
+            if (completionSets.Count != 1)
+                return;
             var set = completionSets[0];
 
             // If the user types " &a<ctrl+space>", don't change anything
