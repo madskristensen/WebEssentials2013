@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using MadsKristensen.EditorExtensions.Classifications.Markdown;
+using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebEssentialsTests.Tests.Markdown

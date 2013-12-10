@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using MadsKristensen.EditorExtensions.Classifications.Markdown;
+using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.Html.Core;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text;
