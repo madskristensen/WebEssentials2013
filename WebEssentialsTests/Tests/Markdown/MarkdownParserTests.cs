@@ -216,6 +216,11 @@ abc
 ```
 Bye!").Should().Equal(new[] { "abc" }, "Unquoted fence counts as block boundary");
             ParseCodeBlocks(@"Hi there!
+>>>    ```
+>>>   abc
+  ```
+Bye!").Should().Equal(new[] { "  abc" }, "Spaces before block boundary are ignored");
+            ParseCodeBlocks(@"Hi there!
 >>>> I'm in a quote!
 >>>>```
 >     abc

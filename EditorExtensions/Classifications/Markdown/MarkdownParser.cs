@@ -416,7 +416,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             CodeBlockInfo blockInfo;
             protected override bool ReadContent()
             {
-
+                SkipSpaces(3);
                 var sepStart = stream.Position;
                 if (TryConsume("```"))
                     fence = "```";
@@ -449,6 +449,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 using (var peek = Peek())
                 {
                     TryConsumeLinePrefix();
+                    SkipSpaces(3);
                     var sepStart = stream.Position;
                     if (!TryConsume(fence))
                         return false;

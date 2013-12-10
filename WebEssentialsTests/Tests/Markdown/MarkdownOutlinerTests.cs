@@ -108,6 +108,14 @@ Second line2
     Tuple.Create("[ Code Block ]", new[] { "First line", "Second line" }),
     Tuple.Create("[ html Code Block ]", new[] { "First line2", "Second line2" })
 );
+            TestOutlines(@"
+   {[```
+  First line
+Second line
+   ```]}
+abc",
+    Tuple.Create("[ Code Block ]", new[] { "  First line", "Second line" })
+);
 
             TestOutlines(@"
 >>> {[    First line
@@ -118,6 +126,15 @@ Second line2
 > ```]}",
     Tuple.Create("[ Code Block ]", new[] { "First line", "Second line" }),
     Tuple.Create("[ html Code Block ]", new[] { "First line2", "Second line2" })
+);
+
+            TestOutlines(@"
+>    {[```VB
+> First line
+> Second line
+>    ```]}
+abc",
+    Tuple.Create("[ VB Code Block ]", new[] { "First line", "Second line" })
 );
         }
         // TODO: Test quoted code blocks, test overlapping partial spans.
