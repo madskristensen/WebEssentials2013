@@ -304,8 +304,8 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.PixelPushing_OnByDefault, true);
 
             // Code Generation
-            dic.Add(Keys.JavaScriptCamelCaseClassNames,false);
-            dic.Add(Keys.JavaScriptCamelCasePropertyNames,false);
+            dic.Add(Keys.JavaScriptCamelCaseClassNames, false);
+            dic.Add(Keys.JavaScriptCamelCasePropertyNames, false);
             return dic;
         }
 

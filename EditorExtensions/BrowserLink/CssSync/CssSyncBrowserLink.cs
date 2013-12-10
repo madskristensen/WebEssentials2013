@@ -37,6 +37,7 @@ namespace MadsKristensen.EditorExtensions
     public class CssSync : BrowserLinkExtension
     {
         private FileSystemWatcher _fsw;
+        private DateTime _lastPushed = DateTime.Now;
 
         public override void OnConnected(BrowserLinkConnection connection)
         {
@@ -76,8 +77,6 @@ namespace MadsKristensen.EditorExtensions
             _fsw.IncludeSubdirectories = true;
             _fsw.EnableRaisingEvents = true;
         }
-
-        private DateTime _lastPushed = DateTime.Now;
 
         private void RefreshStyles(object sender, FileSystemEventArgs e)
         {

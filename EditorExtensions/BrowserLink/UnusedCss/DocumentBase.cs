@@ -15,10 +15,20 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private string _lastParsedText;
         private readonly object _parseSync = new object();
 
+        public object ParseSync
+        {
+            get { return _parseSync; }
+        }
+        public IEnumerable<IStylingRule> Rules { get; private set; }
+        public bool IsProcessingUnusedCssRules { get; set; }
+        public string FileName { get { return _file; } }
+
         protected DocumentBase(string file)
         {
             _file = file;
+
             var path = Path.GetDirectoryName(file);
+
             _localFileName = (Path.GetFileName(file) ?? "").ToLowerInvariant();
 
             _watcher = new FileSystemWatcher();
@@ -30,6 +40,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             _watcher.Created += Reparse;
             _watcher.Deleted += CleanUpWarnings;
             _watcher.EnableRaisingEvents = true;
+
             Reparse();
         }
 
@@ -39,17 +50,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             UsageRegistry.Resynchronize();
         }
 
-        public object ParseSync
-        {
-            get { return _parseSync; }
-        }
-
-        public IEnumerable<IStylingRule> Rules { get; private set; }
-
         public void Dispose()
         {
             _watcher.Changed -= Reparse;
             _watcher.Renamed -= ProxyRename;
+
             _watcher.Dispose();
         }
 
@@ -60,10 +65,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 Reparse();
             }
         }
-
-        public bool IsProcessingUnusedCssRules { get; set; }
-
-        public string FileName { get { return _file; } }
 
         private async void Reparse(object sender, FileSystemEventArgs e)
         {
@@ -80,7 +81,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 try
                 {
                     var text = File.ReadAllText(_file);
+
                     Reparse(text);
+
                     break;
                 }
                 catch (IOException)
@@ -125,6 +128,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
                 var parser = CreateParser();
                 var parseResult = parser.Parse(text, false);
+
                 Rules = new CssItemAggregator<IStylingRule>(true) { (RuleSet rs) => CssRule.From(_file, text, rs, this) }
                     .Crawl(parseResult)
                     .Where(x => x != null)

@@ -16,14 +16,13 @@ namespace MadsKristensen.EditorExtensions
     internal sealed class ColorTagger : ITagger<ColorTag>
     {
         private ITextBuffer _buffer;
+        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         internal ColorTagger(ITextBuffer buffer)
         {
             _buffer = buffer;
             _buffer.ChangedLowPriority += BufferChanged;
         }
-
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         public IEnumerable<ITagSpan<ColorTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {

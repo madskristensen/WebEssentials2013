@@ -30,13 +30,13 @@ namespace MadsKristensen.EditorExtensions
     /// </remarks>
     internal sealed class ColorAdornmentTagger : IntraTextAdornmentTagger<ColorTag, ColorAdornment>
     {
+        private ITagAggregator<ColorTag> colorTagger;
+
         internal static ITagger<IntraTextAdornmentTag> GetTagger(ITextView view, ITextBuffer buffer, Lazy<ITagAggregator<ColorTag>> colorTagger)
         {
             return buffer.Properties.GetOrCreateSingletonProperty<ColorAdornmentTagger>(
                 () => new ColorAdornmentTagger(view, buffer, colorTagger.Value));
         }
-
-        private ITagAggregator<ColorTag> colorTagger;
 
         private ColorAdornmentTagger(ITextView view, ITextBuffer buffer, ITagAggregator<ColorTag> colorTagger)
             : base(view, buffer)
@@ -47,7 +47,6 @@ namespace MadsKristensen.EditorExtensions
         public void Dispose()
         {
             this.colorTagger.Dispose();
-
             base.buffer.Properties.RemoveProperty(typeof(ColorAdornmentTagger));
         }
 
@@ -60,7 +59,6 @@ namespace MadsKristensen.EditorExtensions
                 yield break;
 
             ITextSnapshot snapshot = spans[0].Snapshot;
-
             var colorTags = this.colorTagger.GetTags(spans);
 
             foreach (IMappingTagSpan<ColorTag> dataTagSpan in colorTags)

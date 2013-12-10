@@ -17,14 +17,19 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             var commandId = new CommandID(GuidList.guidUnusedCssCmdSet, (int)PkgCmdIDList.cmdUnusedCssResetCommandId);
             var resetCommand = new OleMenuCommand(ResetUsageData, EmptyChangeHandler, ResetUsageDataBeforeQueryStatus, commandId);
+
             _mcs.AddCommand(resetCommand);
 
             commandId = new CommandID(GuidList.guidUnusedCssCmdSet, (int)PkgCmdIDList.cmdUnusedCssRecordAllCommandId);
+
             var recordAllCommand = new OleMenuCommand(RecordAll, EmptyChangeHandler, RecordAllBeforeQueryStatus, commandId);
+
             _mcs.AddCommand(recordAllCommand);
 
             commandId = new CommandID(GuidList.guidUnusedCssCmdSet, (int)PkgCmdIDList.cmdUnusedCssStopRecordAllCommandId);
+
             var stopRecordAllCommand = new OleMenuCommand(StopRecordAll, EmptyChangeHandler, StopRecordAllBeforeQueryStatus, commandId);
+
             _mcs.AddCommand(stopRecordAllCommand);
         }
 
@@ -40,6 +45,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private static void RecordAllBeforeQueryStatus(object sender, EventArgs e)
         {
             var menuCommand = (OleMenuCommand)sender;
+
             menuCommand.Enabled = UnusedCssExtension.IsAnyConnectionAlive;
             menuCommand.Visible = menuCommand.Enabled && !UnusedCssExtension.Any(x => x.IsRecording);
         }
@@ -55,6 +61,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private static void ResetUsageDataBeforeQueryStatus(object sender, EventArgs e)
         {
             var menu = (OleMenuCommand)sender;
+
             menu.Enabled = UsageRegistry.IsAnyUsageDataCaptured;
         }
 
@@ -66,6 +73,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private static void StopRecordAllBeforeQueryStatus(object sender, EventArgs e)
         {
             var menu = (OleMenuCommand)sender;
+
             menu.Visible = UnusedCssExtension.Any(x => x.IsRecording);
         }
     }

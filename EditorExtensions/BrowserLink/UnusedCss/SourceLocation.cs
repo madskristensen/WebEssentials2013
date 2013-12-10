@@ -7,10 +7,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     {
         [JsonProperty("sourcePath")]
         public string FileName { get; set; }
-
         [JsonProperty("startPosition")]
         public int Offset { get; set; }
-
         [JsonProperty("length")]
         public int Length { get; set; }
 

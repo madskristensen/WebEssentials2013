@@ -75,7 +75,7 @@ namespace MadsKristensen.EditorExtensions
             menuCommand.BeforeQueryStatus += (s, e) =>
             {
                 var document = GetTextDocument();
-                
+
                 if (document == null)
                     return;
 

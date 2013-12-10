@@ -9,12 +9,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private static readonly AmbientRuleContext Instance = new AmbientRuleContext();
         private int _referenceCount;
 
+        public IReadOnlyCollection<IStylingRule> Rules { get; private set; }
+
         public void Update()
         {
             Rules = RuleRegistry.GetAllRules();
         }
-
-        public IReadOnlyCollection<IStylingRule> Rules { get; private set; }
 
         public static AmbientRuleContext GetOrCreate()
         {

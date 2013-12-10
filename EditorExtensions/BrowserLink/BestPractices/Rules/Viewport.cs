@@ -70,6 +70,7 @@ namespace MadsKristensen.EditorExtensions
                     view.Selection.Select(new SnapshotSpan(buffer.CurrentSnapshot, 31 + index, 37), false);
                     EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
                 }
+
                 EditorExtensionsPackage.DTE.ActiveDocument.Save();
 
             }), DispatcherPriority.ApplicationIdle, null);
