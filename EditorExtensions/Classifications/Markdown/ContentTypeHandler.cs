@@ -7,6 +7,7 @@ using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.ContainedLanguage;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor.Formatting;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {
@@ -94,5 +95,18 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             ContentType = contentType;
         }
         public IContentType ContentType { get; private set; }
+    }
+
+    // The HTML formatter doesn't work properly with Artifacts
+    // unless you implement a whole bunch of internal features
+    // for Razor (providing ArtifactGroups).  Plus, it doesn't
+    // work properly with Artifacts in other ways (it swallows
+    // separators).  I disable it entirely to avoid trouble.
+    [Export(typeof(IEditorFormatterProvider))]
+    [ContentType(MarkdownContentTypeDefinition.MarkdownContentType)]
+    public class MarkdownNonFormatterProvider : IEditorFormatterProvider
+    {
+        public IEditorFormatter CreateFormatter() { return null; }
+        public IEditorRangeFormatter CreateRangeFormatter() { return null; }
     }
 }
