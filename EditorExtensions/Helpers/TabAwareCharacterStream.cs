@@ -85,7 +85,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
         #region Tab awareness
         ///<summary>Consumes exactly the requested number of characters of whitespace, potentially including partial tabs.</summary>
         ///<returns>True if enough whitespace was consumed; false if the stream was not moved.</returns>
-        public bool TryConsumeWhitespace(int width)
+        public bool TryConsumeWhiteSpace(int width)
         {
             if (remainingSpaces > 0)
             {
@@ -98,7 +98,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
                     {
                         var consumed = remainingSpaces;
                         remainingSpaces -= width;
-                        if (!TryConsumeWhitespace(width - consumed))
+                        if (!TryConsumeWhiteSpace(width - consumed))
                             return false;
                         peek.Consume();
                         return true;
@@ -129,7 +129,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
                     {
                         MoveToNextChar();
                         remainingSpaces = TabWidth;
-                        if (!TryConsumeWhitespace(width))
+                        if (!TryConsumeWhiteSpace(width))
                             return false;
                         peek.Consume();
                         return true;
@@ -144,7 +144,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
         }
 
         ///<summary>Indicates whether there is any whitespace from a perviously-encountered tab character that has not been consumed yet.  This can only return true if PrevChar is '\t'.</summary>
-        public bool HasPendingWhitespace()
+        public bool HasPendingWhiteSpace()
         {
             return remainingSpaces > 0;
         }

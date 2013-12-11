@@ -14,9 +14,9 @@ namespace WebEssentialsTests.Tests.Markdown
             stream.CurrentChar.Should().Be('a');
             stream.MoveToNextChar();
 
-            stream.TryConsumeWhitespace(4).Should().BeTrue();
+            stream.TryConsumeWhiteSpace(4).Should().BeTrue();
             stream.CurrentChar.Should().Be('b');
-            stream.TryConsumeWhitespace(1).Should().BeFalse();
+            stream.TryConsumeWhiteSpace(1).Should().BeFalse();
         }
         [TestMethod]
         public void TestConsumeTab()
@@ -25,9 +25,9 @@ namespace WebEssentialsTests.Tests.Markdown
             stream.CurrentChar.Should().Be('a');
             stream.MoveToNextChar();
 
-            stream.TryConsumeWhitespace(4).Should().BeTrue();
+            stream.TryConsumeWhiteSpace(4).Should().BeTrue();
             stream.CurrentChar.Should().Be('b');
-            stream.TryConsumeWhitespace(1).Should().BeFalse();
+            stream.TryConsumeWhiteSpace(1).Should().BeFalse();
         }
         [TestMethod]
         public void TestConsumePartialTab()
@@ -36,11 +36,11 @@ namespace WebEssentialsTests.Tests.Markdown
             stream.CurrentChar.Should().Be('a');
             stream.MoveToNextChar();
 
-            stream.TryConsumeWhitespace(2).Should().BeTrue();
+            stream.TryConsumeWhiteSpace(2).Should().BeTrue();
             stream.CurrentChar.Should().Be('b', "stream should be at next character after consuming partial tab");
-            stream.TryConsumeWhitespace(2).Should().BeTrue();
+            stream.TryConsumeWhiteSpace(2).Should().BeTrue();
             stream.CurrentChar.Should().Be('b');
-            stream.TryConsumeWhitespace(1).Should().BeFalse();
+            stream.TryConsumeWhiteSpace(1).Should().BeFalse();
         }
         [TestMethod]
         public void TestPeekPartialTab()
@@ -48,14 +48,14 @@ namespace WebEssentialsTests.Tests.Markdown
             var stream = new TabAwareCharacterStream("a\tb");
             stream.MoveToNextChar();
 
-            stream.TryConsumeWhitespace(2).Should().BeTrue();
+            stream.TryConsumeWhiteSpace(2).Should().BeTrue();
 
             using (stream.Peek())
-                stream.TryConsumeWhitespace(2).Should().BeTrue();
-            stream.TryConsumeWhitespace(2).Should().BeTrue("resetting peek should preserve partial tabs");
+                stream.TryConsumeWhiteSpace(2).Should().BeTrue();
+            stream.TryConsumeWhiteSpace(2).Should().BeTrue("resetting peek should preserve partial tabs");
 
             stream.CurrentChar.Should().Be('b');
-            stream.TryConsumeWhitespace(1).Should().BeFalse();
+            stream.TryConsumeWhiteSpace(1).Should().BeFalse();
         }
         [TestMethod]
         public void TestConsumeTooMuch()
@@ -63,14 +63,14 @@ namespace WebEssentialsTests.Tests.Markdown
             var stream = new TabAwareCharacterStream("a\tb");
             stream.MoveToNextChar();
 
-            stream.TryConsumeWhitespace(2).Should().BeTrue();
+            stream.TryConsumeWhiteSpace(2).Should().BeTrue();
 
-            stream.TryConsumeWhitespace(3).Should().BeFalse();
+            stream.TryConsumeWhiteSpace(3).Should().BeFalse();
             stream.CurrentChar.Should().Be('b');
-            stream.TryConsumeWhitespace(2).Should().BeTrue("consuming too much space should have no effect");
+            stream.TryConsumeWhiteSpace(2).Should().BeTrue("consuming too much space should have no effect");
             stream.CurrentChar.Should().Be('b');
 
-            stream.TryConsumeWhitespace(1).Should().BeFalse();
+            stream.TryConsumeWhiteSpace(1).Should().BeFalse();
         }
         [TestMethod]
         public void TestConsumeMixedWhitespace()
@@ -80,20 +80,20 @@ namespace WebEssentialsTests.Tests.Markdown
             stream.MoveToNextChar();
             // Stream is at first space
 
-            stream.TryConsumeWhitespace(99).Should().BeFalse();
-            stream.TryConsumeWhitespace(2).Should().BeTrue();
+            stream.TryConsumeWhiteSpace(99).Should().BeFalse();
+            stream.TryConsumeWhiteSpace(2).Should().BeTrue();
             // Stream is at center of first tab
 
-            stream.TryConsumeWhitespace(99).Should().BeFalse();
-            stream.TryConsumeWhitespace(4).Should().BeTrue();
+            stream.TryConsumeWhiteSpace(99).Should().BeFalse();
+            stream.TryConsumeWhiteSpace(4).Should().BeTrue();
             // Stream is at second tab
 
-            stream.TryConsumeWhitespace(99).Should().BeFalse();
-            stream.TryConsumeWhitespace(5).Should().BeTrue();
+            stream.TryConsumeWhiteSpace(99).Should().BeFalse();
+            stream.TryConsumeWhiteSpace(5).Should().BeTrue();
             // Stream is at first space in third tab
 
-            stream.TryConsumeWhitespace(99).Should().BeFalse();
-            stream.TryConsumeWhitespace(9).Should().BeTrue();
+            stream.TryConsumeWhiteSpace(99).Should().BeFalse();
+            stream.TryConsumeWhiteSpace(9).Should().BeTrue();
             stream.CurrentChar.Should().Be('b');
         }
     }

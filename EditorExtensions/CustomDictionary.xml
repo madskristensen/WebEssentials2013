@@ -21,6 +21,8 @@
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>
+      <Term>TypeScript</Term>
+      <Term>CodeName</Term>
     </DiscreteExceptions>
   </Words>
   <Acronyms>
