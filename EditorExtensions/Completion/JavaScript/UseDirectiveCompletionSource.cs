@@ -49,11 +49,11 @@ namespace MadsKristensen.EditorExtensions
         }
 
         static readonly ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupIntrinsic, StandardGlyphItem.GlyphItemPublic);
-        public override IEnumerable<Intel.Completion> GetEntries(char quoteChar, SnapshotPoint caret)
+        public override IEnumerable<Intel.Completion> GetEntries(char quote, SnapshotPoint caret)
         {
             return new[] { "use strict", "use asm" }.Select(s => new Intel.Completion(
-                quoteChar + s + quoteChar + ";",
-                quoteChar + s + quoteChar + ";",
+                quote + s + quote + ";",
+                quote + s + quote + ";",
                 "Instructs that this block be processed in " + s.Substring(4) + " mode by supporting JS engines",
                 _glyph,
                 null)

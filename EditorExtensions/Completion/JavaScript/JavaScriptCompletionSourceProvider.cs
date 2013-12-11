@@ -63,7 +63,7 @@ namespace MadsKristensen.EditorExtensions
                 completionSets.Add(new StringCompletionSet(
                     source.GetType().Name,
                     trackingSpan,
-                    source.GetEntries(quoteChar: text[span.Value.Start], caret: session.TextView.Caret.Position.BufferPosition)
+                    source.GetEntries(quote: text[span.Value.Start], caret: session.TextView.Caret.Position.BufferPosition)
                 ));
             }
             // TODO: Merge & resort all sets?  Will StringCompletionSource handle other entries?

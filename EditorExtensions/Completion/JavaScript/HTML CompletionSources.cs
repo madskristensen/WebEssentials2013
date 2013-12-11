@@ -23,11 +23,11 @@ namespace MadsKristensen.EditorExtensions
                                     .ToList()
                                     .AsReadOnly();
 
-        public override IEnumerable<Intel.Completion> GetEntries(char quoteChar, SnapshotPoint caret)
+        public override IEnumerable<Intel.Completion> GetEntries(char quote, SnapshotPoint caret)
         {
             return tagNames.Select(t => new Intel.Completion(
-                quoteChar + t.Item1 + quoteChar,
-                quoteChar + t.Item1 + quoteChar,
+                quote + t.Item1 + quote,
+                quote + t.Item1 + quote,
                 t.Item2,
                 _glyph,
                 null
@@ -43,13 +43,13 @@ namespace MadsKristensen.EditorExtensions
         protected override string FunctionName { get { return "getElementsByClassName"; } }
         protected abstract CssNameType NameType { get; }
 
-        public override IEnumerable<Intel.Completion> GetEntries(char quoteChar, SnapshotPoint caret)
+        public override IEnumerable<Intel.Completion> GetEntries(char quote, SnapshotPoint caret)
         {
             return _classNames.GetNames(new Uri(caret.Snapshot.TextBuffer.GetFileName()), caret, NameType)
                 .Select(s => s.Name)
                 .Distinct()
                 .OrderBy(s => s)
-                .Select(s => new Intel.Completion(quoteChar + s + quoteChar, quoteChar + s + quoteChar, null, _glyph, null));
+                .Select(s => new Intel.Completion(quote + s + quote, quote + s + quote, null, _glyph, null));
         }
     }
 
