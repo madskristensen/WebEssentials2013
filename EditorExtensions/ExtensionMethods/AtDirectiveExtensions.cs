@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions
             standardName = null;
 
             string propText = directive.Keyword.Text;
-            string prefix = VendorHelpers.GetPrefixes(schema).SingleOrDefault(p => propText.IndexOf(p, StringComparison.Ordinal) == 0);
+            string prefix = VendorHelpers.GetPrefixes(schema).SingleOrDefault(p => propText.StartsWith(p, StringComparison.Ordinal));
             if (prefix != null)
             {
                 standardName = propText.Substring(prefix.Length);
@@ -41,8 +41,6 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (!visitorRules.Items.Any(d => d.Keyword != null && "@" + d.Keyword.Text == item))
                     yield return item;
-                //if (!rule.Declarations.Any(d => d.PropertyName != null && d.PropertyName.Text == item))
-                //    yield return item;
             }
         }
 
@@ -54,9 +52,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 ICssCompletionListEntry entry = schema.GetAtDirective("@" + prefix + text);
                 if (entry != null)
-                {
                     yield return entry.DisplayText;
-                }
             }
         }
     }

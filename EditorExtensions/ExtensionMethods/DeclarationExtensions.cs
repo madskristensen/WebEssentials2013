@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions
             if (declaration.IsVendorSpecific())
             {
                 string propText = declaration.PropertyName.Text;
-                string prefix = VendorHelpers.GetPrefixes(schema).SingleOrDefault(p => propText.IndexOf(p, StringComparison.Ordinal) == 0);
+                string prefix = VendorHelpers.GetPrefixes(schema).SingleOrDefault(p => propText.StartsWith(p, StringComparison.Ordinal));
                 if (prefix != null)
                 {
                     standardName = propText.Substring(prefix.Length);
@@ -52,9 +52,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 ICssCompletionListEntry entry = schema.GetProperty(prefix + text);
                 if (entry != null)
-                {
                     yield return entry.DisplayText;
-                }
             }
         }
     }

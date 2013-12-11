@@ -342,9 +342,8 @@
     <Compile Include="Commands\CommandExceptionFilter.cs" />
     <Compile Include="Completion\Markdown\MarkdownCompletionFilter.cs" />
     <Compile Include="DropTargets\HtmlImageDrop.cs" />
-    <Compile Include="ExtensionMethods\StringExtensions.cs" />
     <Compile Include="Helpers\Disposable.cs" />
-    <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="ExtensionMethods\Extensions.cs" />
     <Compile Include="Helpers\TabAwareCharacterStream.cs" />
     <Compile Include="MenuItems\AddIntellisenseFile.cs" />
     <Compile Include="Commands\Code\IntellisenseWriter.cs" />
@@ -460,13 +459,13 @@
     <Compile Include="DropTargets\FontDrop.cs" />
     <Compile Include="DropTargets\ImageDrop.cs" />
     <Compile Include="DropTargets\TypeScriptDrop.cs" />
-    <Compile Include="Helpers\CssExtensions.cs" />
-    <Compile Include="Helpers\CssTreeWatcher.cs" />
-    <Compile Include="Helpers\CssUrlNormalizer.cs" />
+    <Compile Include="ExtensionMethods\CssExtensions.cs" />
+    <Compile Include="Helpers\Css\CssTreeWatcher.cs" />
+    <Compile Include="Helpers\Css\CssUrlNormalizer.cs" />
     <Compile Include="Helpers\FileCache.cs" />
-    <Compile Include="Helpers\HtmlExtensions.cs" />
+    <Compile Include="ExtensionMethods\HtmlExtensions.cs" />
     <Compile Include="Helpers\NodeModuleService.cs" />
-    <Compile Include="Helpers\StyleSheetHelpers.cs" />
+    <Compile Include="Helpers\Css\StyleSheetHelpers.cs" />
     <Compile Include="Helpers\WindowHelpers.cs" />
     <Compile Include="MenuItems\ReferenceJs.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineTag.cs" />
@@ -554,8 +553,7 @@
     <Compile Include="Validation\CSS\Filters\MsKeyframesCssErrorFilter.cs" />
     <Compile Include="ExtensionMethods\AtDirectiveExtensions.cs" />
     <Compile Include="ExtensionMethods\IVsExtensions.cs" />
-    <Compile Include="ExtensionMethods\PseudoExtensions.cs" />
-    <Compile Include="Helpers\CssItemAggregator.cs" />
+    <Compile Include="Helpers\Css\CssItemAggregator.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Margin\CoffeeScriptCompiler.cs" />
     <Compile Include="Helpers\FileHelpers.cs" />
@@ -646,7 +644,7 @@
     <Compile Include="ExtensionMethods\ColorModelExtensions.cs" />
     <Compile Include="ExtensionMethods\DeclarationExtensions.cs" />
     <Compile Include="Helpers\ProjectHelpers.cs" />
-    <Compile Include="Helpers\VendorHelpers.cs" />
+    <Compile Include="Helpers\Css\VendorHelpers.cs" />
     <Compile Include="QuickInfo\Image\ImageQuickInfo.cs" />
     <Compile Include="QuickInfo\Image\ImageQuickInfoControllerProvider.cs" />
     <Compile Include="QuickInfo\Image\ImageQuickInfoController.cs" />
@@ -684,7 +682,7 @@
     <Compile Include="SmartTags\CSS\CssSmartTag.cs" />
     <Compile Include="SmartTags\CSS\Actions\EmbedSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\CssSmartTagger.cs" />
-    <Compile Include="Helpers\CssItemCollector.cs" />
+    <Compile Include="Helpers\Css\CssItemCollector.cs" />
     <Compile Include="Options\WebEssentialsSettings.cs" />
     <Compile Include="Validation\HTML\OpenGraphPrefixValidator.cs" />
     <Compile Include="Validation\HTML\ItemTypeValidator.cs" />
