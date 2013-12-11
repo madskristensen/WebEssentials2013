@@ -83,9 +83,14 @@ namespace MadsKristensen.EditorExtensions
                         Logger.Log("An error occurred while normalizing generated paths in " + fileName + "\r\n" + ex);
                     }
                 }
+
+                Logger.Log(Path.GetFileName(fileName) + " compiled.");
+            }
+            else
+            {
+                Logger.Log(Path.GetFileName(fileName) + " compilation failed.");
             }
 
-            Logger.Log(Path.GetFileName(fileName) + " compiled");
             return result;
         }
 
