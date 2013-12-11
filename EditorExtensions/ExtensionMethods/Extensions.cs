@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Media.Imaging;
 using Microsoft.VisualStudio.Text;
 
@@ -19,6 +20,11 @@ namespace MadsKristensen.EditorExtensions
         public static void SetText(this ITextBuffer buffer, string text)
         {
             buffer.Replace(new Span(0, buffer.CurrentSnapshot.Length), text);
+        }
+
+        public static bool IsNumeric(this string input)
+        {
+            return input.All(digit => char.IsDigit(digit) || digit.Equals('.'));
         }
     }
 }

@@ -33,10 +33,7 @@ namespace MadsKristensen.EditorExtensions
 
             Logger.Log("LESS: Compiling " + Path.GetFileName(lessFilePath));
 
-            string projectRoot = ProjectHelpers.GetRootFolder(ProjectHelpers.GetActiveProject());
-            string fileBasePath = "/" + Path.GetDirectoryName(FileHelpers.RelativePath(projectRoot, lessFilePath)).Replace("\\", "/");
-
-            var result = await LessCompiler.Compile(lessFilePath, cssFilename, Path.Combine(projectRoot, fileBasePath));
+            var result = await LessCompiler.Compile(lessFilePath, cssFilename, Path.GetDirectoryName(lessFilePath));
             if (result.IsSuccess)
             {
                 OnCompilationDone(result.Result, result.FileName);
@@ -98,6 +95,8 @@ namespace MadsKristensen.EditorExtensions
 
         protected override void UpdateLessSourceMapUrls(ref string content, string oldFileName, string newFileName)
         {
+            if (!WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
+                return;
             dynamic jsonSourceMap = null;
             string sourceMapFilename = oldFileName + ".map";
             // Read JSON map file and deserialize.
