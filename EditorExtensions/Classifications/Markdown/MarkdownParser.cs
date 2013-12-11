@@ -68,7 +68,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
             ///<summary>Consumes exactly the requested number of characters of whitespace, potentially including partial tabs.</summary>
             ///<returns>True if enough whitespace was consumed; false if the stream was not moved.</returns>
-            protected bool TryReadSpaces(int count) { return stream.TryConsumeWhitespace(count); }
+            protected bool TryReadSpaces(int count) { return stream.TryConsumeWhiteSpace(count); }
 
             protected bool TryConsumeNewLine()
             {
@@ -126,7 +126,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     // it's actually an indented code block. This comes after
                     // the single space consumed by the previous quote block,
                     // if any.
-                    if (stream.HasPendingWhitespace())
+                    if (stream.HasPendingWhiteSpace())
                         return 0;
                     // If we didn't find a > at the beginning, don't consume anything.
                     if (!TryConsume(">"))

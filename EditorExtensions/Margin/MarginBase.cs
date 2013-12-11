@@ -264,7 +264,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        protected virtual void UpdateLessSourceMapUrls(ref string content, string currentFileName, string fileName)
+        protected virtual void UpdateLessSourceMapUrls(ref string content, string oldFileName, string newFileName)
         {
             // If not overridden by derived, throw exception.
             throw new NotImplementedException();

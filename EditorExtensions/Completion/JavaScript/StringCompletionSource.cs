@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions
         public abstract Span? GetInvocationSpan(string text, int linePosition, SnapshotPoint position);
 
         ///<summary>Gets the completion entries for the specified quoted string.</summary>
-        public abstract IEnumerable<Intel.Completion> GetEntries(char quoteChar, SnapshotPoint caret);
+        public abstract IEnumerable<Intel.Completion> GetEntries(char quote, SnapshotPoint caret);
     }
 
     ///<summary>A StringCompletionSource that provides completions for the parameter to a specific function call.</summary>
