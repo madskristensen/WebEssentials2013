@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
     public class AngularMissingAppValidatorProvider : BaseHtmlElementValidatorProvider<AngularMissingAppValidator>
     { }
 
-    public class AngularMissingAppValidator : BaseValidator, IHtmlTreeVisitor
+    public class AngularMissingAppValidator : BaseValidator
     {
         public override IList<IHtmlValidationError> ValidateElement(ElementNode element)
         {
@@ -59,11 +59,13 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
 
         private bool HasHtmlElement(ElementNode element)
         {
-            var list = new HashSet<string>();
+            if (element.Name == "html")
+                return true;
 
-            element.Root.Accept(this, list);
+            if (element.Parent != null)
+                return HasHtmlElement(element.Parent);
 
-            return list.Count > 0;
+            return false;
         }
 
         private bool IsParentApp(ElementNode element)
@@ -75,17 +77,6 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
                 return IsParentApp(element.Parent);
 
             return false;
-        }
-
-        public bool Visit(ElementNode element, object parameter)
-        {
-            if (element.Name == "html")
-            {
-                var list = (HashSet<string>)parameter;
-                list.Add(string.Empty);
-            }
-
-            return true;
         }
     }
 }
