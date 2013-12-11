@@ -1,0 +1,23 @@
+<ProjectConfiguration>
+  <CopyReferencedAssembliesToWorkspace>true</CopyReferencedAssembliesToWorkspace>
+  <ConsiderInconclusiveTestsAsPassing>false</ConsiderInconclusiveTestsAsPassing>
+  <PreloadReferencedAssemblies>false</PreloadReferencedAssemblies>
+  <AllowDynamicCodeContractChecking>true</AllowDynamicCodeContractChecking>
+  <AllowStaticCodeContractChecking>false</AllowStaticCodeContractChecking>
+  <IgnoreThisComponentCompletely>false</IgnoreThisComponentCompletely>
+  <RunPreBuildEvents>false</RunPreBuildEvents>
+  <RunPostBuildEvents>true</RunPostBuildEvents>
+  <PreviouslyBuiltSuccessfully>true</PreviouslyBuiltSuccessfully>
+  <InstrumentAssembly>true</InstrumentAssembly>
+  <PreventSigningOfAssembly>false</PreventSigningOfAssembly>
+  <AnalyseExecutionTimes>true</AnalyseExecutionTimes>
+  <IncludeStaticReferencesInWorkspace>false</IncludeStaticReferencesInWorkspace>
+  <DefaultTestTimeout>60000</DefaultTestTimeout>
+  <UseBuildConfiguration></UseBuildConfiguration>
+  <UseBuildPlatform></UseBuildPlatform>
+  <ProxyProcessPath></ProxyProcessPath>
+  <UseCPUArchitecture>AutoDetect</UseCPUArchitecture>
+  <MSTestThreadApartmentState>STA</MSTestThreadApartmentState>
+  <BuildProcessArchitecture>x86</BuildProcessArchitecture>
+  <AdditionalFilesToInclude>..\EditorExtensions\Resources\**.*</AdditionalFilesToInclude>
+</ProjectConfiguration>
