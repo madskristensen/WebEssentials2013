@@ -49,10 +49,15 @@ namespace MadsKristensen.EditorExtensions
 
             if (_browser != null)
             {
-                string html = "<html><head><meta charset=\"utf-8\" />" +
-                          GetStylesheet() +
-                          "</head>" +
-                          "<body>" + result + "</body></html>";
+                string html =
+                    String.Format(@"<!DOCTYPE html>
+                                    <html lang=""en"" xmlns=""http://www.w3.org/1999/xhtml"">
+                                    <head>
+                                        <meta charset=""utf-8"" />
+                                        <title>Markdown Preview</title>
+                                        {0}
+                                    </head>
+                                    <body>{1}</body></html>", GetStylesheet(), result);
 
                 _browser.NavigateToString(html);
             }
