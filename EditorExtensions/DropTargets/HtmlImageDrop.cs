@@ -21,9 +21,9 @@ namespace MadsKristensen.EditorExtensions
     {
         [Import]
         public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
-        public IDropHandler GetAssociatedDropHandler(IWpfTextView view)
+        public IDropHandler GetAssociatedDropHandler(IWpfTextView wpfTextView)
         {
-            return view.Properties.GetOrCreateSingletonProperty(() => new HtmlImageDropHandler(TextDocumentFactoryService, view));
+            return wpfTextView.Properties.GetOrCreateSingletonProperty(() => new HtmlImageDropHandler(TextDocumentFactoryService, wpfTextView));
         }
     }
 
