@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Web.Core;
 
 namespace MadsKristensen.EditorExtensions.Helpers
 {
     ///<summary>A TabAwareCharacterStream that consumes tabs as spaces without affecting reported character positions.</summary>
     ///<remarks><see cref="CharacterStream"/> doesn't have any virtual methods, so I need to recreate it from scratch.</remarks>
+    [SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
     public class TabAwareCharacterStream
     {
         // When we reach a tab, the ConsumeWhitespace()
