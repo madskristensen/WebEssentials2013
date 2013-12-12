@@ -35,7 +35,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
 
-        static readonly Regex regex = new Regex(@"\brequire\s*\(\s*(['""])(?<path>[^""]+)\1\)?");
+        static readonly Regex regex = new Regex(@"\brequire\s*\(\s*(['""])(?<path>[^""']+)\1\)?");
         private string FindRequirePath()
         {
             var position = TextView.Caret.Position.BufferPosition;
