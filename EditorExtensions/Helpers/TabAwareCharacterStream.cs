@@ -17,8 +17,10 @@ namespace MadsKristensen.EditorExtensions.Helpers
         // the rest of the tab before moving forward.
         private int remainingSpaces;
         private int position;
+
         public int TabWidth { get; private set; }
         public ITextProvider Text { get; private set; }
+
         public TabAwareCharacterStream(ITextProvider text, int tabWidth = 4)
         {
             TabWidth = tabWidth;
@@ -30,10 +32,15 @@ namespace MadsKristensen.EditorExtensions.Helpers
 
         #region TextProvider wrappers
         public int Length { get { return Text.Length; } }
-        public string GetSubstringAt(int start, int length) { return Text.GetText(new TextRange(start, length)); }
-        public bool CompareTo(int position, int length, string text, bool ignoreCase)
+
+        public string GetSubstringAt(int start, int length)
         {
-            return Text.CompareTo(position, length, text, ignoreCase);
+            return Text.GetText(new TextRange(start, length));
+        }
+
+        public bool CompareTo(int streamPosition, int length, string text, bool ignoreCase)
+        {
+            return Text.CompareTo(streamPosition, length, text, ignoreCase);
         }
         #endregion
 
