@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Projection;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Html.ContainedLanguage;
 using Microsoft.VisualStudio.Html.Editor;
@@ -88,6 +89,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     _containedLanguageHost = new VsLegacyContainedLanguageHost(owner.Document, ProjectionBuffer, hierarchy);
                 return _containedLanguageHost;
             }
+
+            [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
             private void InitContainedLanguage()
             {
                 IVsTextLines vsTextLines = EnsureBufferCoordinator();
@@ -122,6 +125,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 WebEditor.TraceEvent(1005);
             }
 
+            [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
             private IVsTextLines EnsureBufferCoordinator()
             {
                 if (_secondaryBuffer != null)
@@ -158,6 +162,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 vsTextBuffer.SetTextBufferData(typeof(VsTextBufferCoordinatorClass).GUID, null);
             }
 
+            [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
             public void Dispose()
             {
                 if (_legacyCommandTarget != null && _legacyCommandTarget.TextView != null)
@@ -190,7 +195,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         ///<summary>Creates a ContainedLanguage for the specified ProjectionBuffer, using an IVsIntellisenseProjectManager to initialize the language.</summary>
         ///<param name="projectionBuffer">The buffer to connect to the language service.</param>
         ///<param name="intellisenseGuid">The GUID of the IntellisenseProvider; used to create IVsIntellisenseProject.</param>
-        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults"),
+         SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public void AddIntellisenseProjectLanguage(LanguageProjectionBuffer projectionBuffer, Guid intellisenseGuid)
         {
             var contentType = projectionBuffer.IProjectionBuffer.ContentType;
@@ -226,8 +232,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             project.AddAssemblyReference(typeof(System.Data.DataSet).Assembly.Location);
 
             int needsFile;
-            project.IsWebFileRequiredByProject(out needsFile);
-            if (needsFile != 0)
+
+            if (ErrorHandler.Succeeded(project.IsWebFileRequiredByProject(out needsFile)) && needsFile != 0)
                 project.AddFile(fileName, MarkdownCodeProject.FileItemId);
 
             IVsContainedLanguageFactory factory;

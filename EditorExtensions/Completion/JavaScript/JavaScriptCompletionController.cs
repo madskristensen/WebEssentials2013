@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -62,6 +63,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
         ///<summary>Attempts to figure out whether the JSLS language service has been installed yet.</summary>
+        [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "Microsoft.VisualStudio.OLE.Interop.IOleCommandTarget.QueryStatus(System.Guid@,System.UInt32,Microsoft.VisualStudio.OLE.Interop.OLECMD[],System.IntPtr)")]
         static bool IsJSLSInstalled(IOleCommandTarget next)
         {
             Guid cmdGroup = VSConstants.VSStd2K;
