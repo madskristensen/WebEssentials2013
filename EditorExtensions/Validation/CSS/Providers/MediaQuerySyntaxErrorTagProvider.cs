@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Utilities;
+using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions.Validation.CSS.Providers
 {
