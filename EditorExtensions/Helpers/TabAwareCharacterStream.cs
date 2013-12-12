@@ -28,7 +28,8 @@ namespace MadsKristensen.EditorExtensions.Helpers
             Position = 0;
         }
 
-        public TabAwareCharacterStream(string text, int tabWidth = 4) : this(new TextStream(text)) { }
+        public TabAwareCharacterStream(string text, int tabWidth = 4)
+            : this(new TextStream(text), tabWidth) { }
 
         #region TextProvider wrappers
         public int Length { get { return Text.Length; } }
