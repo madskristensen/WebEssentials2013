@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
                 return list;
 
             string text = span.GetText();
-            int index = text.IndexOf("#");
+            int index = text.IndexOf("#", StringComparison.Ordinal);
 
             if (index > -1)
             {

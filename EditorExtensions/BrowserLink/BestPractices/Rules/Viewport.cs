@@ -43,7 +43,7 @@ namespace MadsKristensen.EditorExtensions
                     return;
 
                 string html = File.ReadAllText(_file);
-                int index = html.IndexOf("</head>");
+                int index = html.IndexOf("</head>", StringComparison.OrdinalIgnoreCase);
 
                 if (index > -1)
                 {

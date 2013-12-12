@@ -24,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
         public override Span? GetInvocationSpan(string text, int linePosition, SnapshotPoint position)
         {
             // Find the quoted string inside function call
-            int startIndex = text.LastIndexOf(FunctionName + "(", linePosition);
+            int startIndex = text.LastIndexOf(FunctionName + "(", linePosition, StringComparison.Ordinal);
             if (startIndex < 0)
                 return null;
             startIndex += FunctionName.Length + 1;
@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
             if (linePosition <= startIndex || (text[startIndex] != '"' && text[startIndex] != '\''))
                 return null;
 
-            var endIndex = text.IndexOf(text[startIndex] + ")", startIndex);
+            var endIndex = text.IndexOf(text[startIndex] + ")", startIndex, StringComparison.OrdinalIgnoreCase);
             if (endIndex < 0)
                 endIndex = startIndex + text.Skip(startIndex + 1).TakeWhile(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c) || c == '-' || c == '_').Count() + 1;
             else if (linePosition > endIndex + 1)

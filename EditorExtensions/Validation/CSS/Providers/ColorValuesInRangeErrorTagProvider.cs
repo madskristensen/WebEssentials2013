@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 ValidateRgb(context, function);
             }
-            else if (function.FunctionName.Text.StartsWith("hsl"))
+            else if (function.FunctionName.Text.StartsWith("hsl", StringComparison.OrdinalIgnoreCase))
             {
                 ValidateHsl(context, function);
             }
@@ -59,7 +59,7 @@ namespace MadsKristensen.EditorExtensions
             int argumentCount = function.Arguments.Count;
             int value;
 
-            if (function.FunctionName.Text.StartsWith("hsla") && argumentCount < 4)
+            if (function.FunctionName.Text.StartsWith("hsla", StringComparison.OrdinalIgnoreCase) && argumentCount < 4)
             {
                 context.AddError(new SimpleErrorTag(function.Arguments[2], "Validation: HSLA expects alpha value between 0 and 1 as fourth parameter", CssErrorFlags.TaskListWarning | CssErrorFlags.UnderlineRed));
             }
@@ -96,7 +96,7 @@ namespace MadsKristensen.EditorExtensions
                         }
                     }
                 }
-                else if (function.FunctionName.Text.StartsWith("hsla"))
+                else if (function.FunctionName.Text.StartsWith("hsla", StringComparison.OrdinalIgnoreCase))
                 {
                     ValidateAlphaValue(context, argument, text);
                 }

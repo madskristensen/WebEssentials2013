@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Html.Core;
@@ -19,7 +20,7 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
         public override IList<IHtmlValidationError> ValidateElement(ElementNode element)
         {
             var results = new ValidationErrorCollection();
-            AttributeNode attr = element.Attributes.SingleOrDefault(a => a.Name.StartsWith("ng-"));
+            AttributeNode attr = element.Attributes.SingleOrDefault(a => a.Name.StartsWith("ng-", StringComparison.Ordinal));
 
             if (ShouldIgnore(element, attr))
                 return results;
@@ -46,7 +47,7 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
                 return true;
 
             // Ignore everything bug <ng-*> elements and ng-* attributes
-            if (!element.Name.StartsWith("ng-") && (attr == null || attr.Name == "ng-app"))
+            if (!element.Name.StartsWith("ng-", StringComparison.Ordinal) && (attr == null || attr.Name == "ng-app"))
                 return true;
 
             // Ignore if <html> isn't present in the document (probably a partial or similar)

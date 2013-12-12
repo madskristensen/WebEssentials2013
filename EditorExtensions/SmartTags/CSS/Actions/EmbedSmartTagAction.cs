@@ -81,7 +81,7 @@ namespace MadsKristensen.EditorExtensions
                     if (dec != null && rule != null)
                     {
                         Declaration match = rule.Declarations.FirstOrDefault(d => d.PropertyName != null && d.PropertyName.Text == "*" + dec.PropertyName.Text);
-                        if (!text.StartsWith("*") && match == null)
+                        if (!text.StartsWith("*", StringComparison.Ordinal) && match == null)
                             _span.TextBuffer.Insert(dec.AfterEnd, "*" + text + "/* For IE 6 and 7 */");
                     }
                 }

@@ -94,9 +94,9 @@ namespace MadsKristensen.EditorExtensions
         public static bool ShouldIgnore(string file)
         {
             if (!Path.GetExtension(file).Equals(".js", StringComparison.OrdinalIgnoreCase) ||
-                file.EndsWith(".min.js") ||
-                file.EndsWith(".debug.js") ||
-                file.EndsWith(".intellisense.js") ||
+                file.EndsWith(".min.js", StringComparison.OrdinalIgnoreCase) ||
+                file.EndsWith(".debug.js", StringComparison.OrdinalIgnoreCase) ||
+                file.EndsWith(".intellisense.js", StringComparison.OrdinalIgnoreCase) ||
                 file.Contains("-vsdoc.js") ||
                 !File.Exists(file) ||
                 EditorExtensionsPackage.DTE.Solution.FindProjectItem(file) == null)

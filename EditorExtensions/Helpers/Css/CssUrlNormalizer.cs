@@ -65,8 +65,8 @@ namespace MadsKristensen.EditorExtensions.Helpers
 
         private static string DecodeStringLiteral(string str)
         {
-            if ((str.StartsWith("'") && str.EndsWith("'"))
-             || (str.StartsWith("\"") && str.EndsWith("\"")))
+            if ((str.StartsWith("'", StringComparison.Ordinal) && str.EndsWith("'", StringComparison.Ordinal))
+             || (str.StartsWith("\"", StringComparison.Ordinal) && str.EndsWith("\"", StringComparison.Ordinal)))
                 return str.Substring(1, str.Length - 2);
             return Regex.Unescape(str);
         }
@@ -75,7 +75,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
         private string FixPath(string url)
         {
             // Ignore absolute URLs, whether domain-relative, protocol-relative, or fully absolute.  (as opposed to Windows paths with drive letters)
-            if (url.StartsWith("/") || urlRegex.IsMatch(url))
+            if (url.StartsWith("/", StringComparison.Ordinal) || urlRegex.IsMatch(url))
                 return null;
 
             string suffix = "";

@@ -193,7 +193,7 @@ namespace MadsKristensen.EditorExtensions
         {
             if (attrs == null) return DefaultModuleName;
             var namespaceFromAttr = from a in attrs.Cast<CodeAttribute2>()
-                                    where a.Name.EndsWith(ModuleNameAttributeName, StringComparison.InvariantCultureIgnoreCase)
+                                    where a.Name.EndsWith(ModuleNameAttributeName, StringComparison.OrdinalIgnoreCase)
                                     from arg in a.Arguments.Cast<CodeAttributeArgument>()
                                     let v = (arg.Value ?? "").Trim('\"')
                                     where !string.IsNullOrWhiteSpace(v)
@@ -238,7 +238,7 @@ namespace MadsKristensen.EditorExtensions
             if (codeTypeRef.TypeKind != vsCMTypeRef.vsCMTypeRefOther && codeTypeRef.TypeKind != vsCMTypeRef.vsCMTypeRefCodeType)
                 return true;
 
-            if (codeTypeRef.AsString.EndsWith("DateTime"))
+            if (codeTypeRef.AsString.EndsWith("DateTime", StringComparison.Ordinal))
                 return true;
 
             return false;
@@ -257,7 +257,7 @@ namespace MadsKristensen.EditorExtensions
         {
             foreach (CodeAttribute attr in property.Attributes)
             {
-                if (attr.Name != "DataMember" && !attr.Name.EndsWith(".DataMember"))
+                if (attr.Name != "DataMember" && !attr.Name.EndsWith(".DataMember", StringComparison.Ordinal))
                     continue;
 
                 var value = attr.Children.OfType<CodeAttributeArgument>().FirstOrDefault(p => p.Name == "Name");

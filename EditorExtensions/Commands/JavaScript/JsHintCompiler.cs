@@ -57,7 +57,7 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (PropertyInfo item in properties)
             {
-                if (!item.Name.StartsWith("JsHint_"))
+                if (!item.Name.StartsWith("JsHint_", StringComparison.Ordinal))
                     continue;
 
                 object value = item.GetValue(_options, null);

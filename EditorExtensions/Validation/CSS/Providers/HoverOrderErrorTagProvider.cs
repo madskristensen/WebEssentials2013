@@ -14,19 +14,18 @@ namespace MadsKristensen.EditorExtensions
     {
         public ItemCheckResult CheckItem(ParseItem item, ICssCheckerContext context)
         {
-            if (item.Text.TrimStart(':').StartsWith("-"))
+            if (item.Text.TrimStart(':').StartsWith("-", StringComparison.Ordinal))
                 return ItemCheckResult.Continue;
 
             ParseItem next = item.NextSibling;
             if (next != null)
             {
-                if (next.Text.StartsWith(":") && item.IsPseudoElement() && !next.IsPseudoElement())
+                if (next.Text.StartsWith(":", StringComparison.Ordinal) && item.IsPseudoElement() && !next.IsPseudoElement())
                 {
                     string error = string.Format(CultureInfo.CurrentCulture, Resources.ValidationPseudoOrder, item.Text, next.Text);
                     context.AddError(new SimpleErrorTag(item, error, CssErrorFlags.TaskListError | CssErrorFlags.UnderlineRed));
                 }
-
-                else if (!next.Text.StartsWith(":") && item.AfterEnd == next.Start)
+                else if (!next.Text.StartsWith(":", StringComparison.Ordinal) && item.AfterEnd == next.Start)
                 {
                     string error = string.Format(CultureInfo.CurrentCulture, Resources.BestPracticePseudosAfterOtherSelectors, next.Text);
                     context.AddError(new SimpleErrorTag(next, error));

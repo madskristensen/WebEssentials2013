@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
                 potentialPaths.Add(Path.Combine(rawPath, "index"));
             }
             // Don't try to resolve a path with a trailing / as a file.
-            potentialPaths.RemoveAll(p => p.EndsWith("/"));
+            potentialPaths.RemoveAll(p => p.EndsWith("/", StringComparison.Ordinal));
 
             // Try adding the default extensions to each potential path we've found, then give up.
             return potentialPaths.SelectMany(path => ModuleExtensions.Select(e => path + e))
@@ -109,7 +109,7 @@ namespace MadsKristensen.EditorExtensions
             IEnumerable<string> ourModules;
             if (Directory.Exists(nmDir) && Path.GetFileName(directory) != "node_modules")   // don't search in node_modules/node_modules
                 ourModules = Directory.EnumerateDirectories(nmDir)
-                    .Where(s => !Path.GetFileName(s).StartsWith("."))
+                    .Where(s => !Path.GetFileName(s).StartsWith(".", StringComparison.Ordinal))
                     .Concat(Directory.EnumerateFiles(nmDir, "*.js").Select(p => Path.ChangeExtension(p, null)))
                     .OrderBy(s => s);
             else

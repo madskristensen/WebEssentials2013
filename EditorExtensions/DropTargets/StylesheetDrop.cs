@@ -42,7 +42,7 @@ namespace MadsKristensen.EditorExtensions
         {
             string reference = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, _filename);
 
-            if (reference.StartsWith("http://localhost:"))
+            if (reference.StartsWith("http://localhost:", StringComparison.OrdinalIgnoreCase))
             {
                 int index = reference.IndexOf('/', 24);
                 if (index > -1)

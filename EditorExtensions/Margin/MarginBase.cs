@@ -196,7 +196,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected void OnCompilationDone(string result, string state)
         {
-            bool isSuccess = !result.StartsWith("ERROR:");
+            bool isSuccess = !result.StartsWith("ERROR:", StringComparison.Ordinal);
 
             _dispatcher.BeginInvoke(new Action(() =>
             {
@@ -288,10 +288,10 @@ namespace MadsKristensen.EditorExtensions
                 !customFolder.Equals("false", StringComparison.OrdinalIgnoreCase) &&
                 !customFolder.Equals("true", StringComparison.OrdinalIgnoreCase))
             {
-                if (customFolder.StartsWith("~/") || customFolder.StartsWith("/"))
+                if (customFolder.StartsWith("~/", StringComparison.OrdinalIgnoreCase) || customFolder.StartsWith("/", StringComparison.OrdinalIgnoreCase))
                 {
                     // Output path starts at the project root..
-                    compiledDir = Path.Combine(rootDir, customFolder.Substring(customFolder.StartsWith("~/") ? 2 : 1));
+                    compiledDir = Path.Combine(rootDir, customFolder.Substring(customFolder.StartsWith("~/", StringComparison.OrdinalIgnoreCase) ? 2 : 1));
                 }
                 else
                 {

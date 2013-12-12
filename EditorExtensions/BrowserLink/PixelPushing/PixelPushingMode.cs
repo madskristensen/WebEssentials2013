@@ -129,7 +129,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             var locationUrl = locationUri.ToString().TrimStart('/').ToLowerInvariant();
 
             //Hoist .min.css -> .css
-            if (locationUrl.EndsWith(".min.css"))
+            if (locationUrl.EndsWith(".min.css", StringComparison.OrdinalIgnoreCase))
             {
                 locationUrl = locationUrl.Substring(0, locationUrl.Length - 8) + ".css";
             }

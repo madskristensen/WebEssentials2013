@@ -200,7 +200,7 @@ namespace MadsKristensen.EditorExtensions
 
                 if (result.Length > 0 && !text.Contains("<") && !char.IsWhiteSpace(result.Last()))
                 {
-                    return new Span(line.Start.Position + text.IndexOf(result), result.Length);
+                    return new Span(line.Start.Position + text.IndexOf(result, StringComparison.OrdinalIgnoreCase), result.Length);
                 }
             }
 
