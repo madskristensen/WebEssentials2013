@@ -80,7 +80,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
             }
             protected override void Revert()
             {
-                stream.remainingSpaces = this.remainingSpaces;
+                Stream.remainingSpaces = this.remainingSpaces;
             }
         }
 
@@ -156,8 +156,10 @@ namespace MadsKristensen.EditorExtensions.Helpers
     public abstract class StreamPeeker : IDisposable
     {
         public int StartPosition { get; private set; }
-        protected readonly TabAwareCharacterStream stream;
         private bool shouldRevert = true;
+        private readonly TabAwareCharacterStream stream;
+
+        protected TabAwareCharacterStream Stream { get { return stream; } }
 
         protected StreamPeeker(TabAwareCharacterStream stream)
         {
@@ -175,7 +177,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
         public void Dispose()
         {
             if (!shouldRevert) return;
-            stream.Position = StartPosition;
+            Stream.Position = StartPosition;
             Revert();
             shouldRevert = false;
         }
