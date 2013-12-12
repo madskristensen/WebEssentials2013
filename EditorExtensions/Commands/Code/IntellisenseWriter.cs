@@ -51,6 +51,8 @@ namespace MadsKristensen.EditorExtensions
             return name[0].ToString(CultureInfo.CurrentCulture).ToLower(CultureInfo.CurrentCulture) + name.Substring(1);
         }
 
+        static readonly Regex whitespaceTrimmer = new Regex(@"^\s+|\s+$|\s*[\r\n]+\s*", RegexOptions.Compiled);
+
         private static void WriteJavaScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
         {
             sb.AppendLine("var server = server || {};");
@@ -59,14 +61,17 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (io.IsEnum) continue;
 
+                string comment = io.Summary ?? "The " + io.Name + " class as defined in " + io.FullName;
+                comment = whitespaceTrimmer.Replace(comment, " ");
+                sb.AppendLine("/// <summary>" + SecurityElement.Escape(comment) + "</summary>");
                 sb.AppendLine("server." + CamelCaseClassName(io.Name) + " = function()  {");
 
                 foreach (var p in io.Properties)
                 {
                     string value = p.Type.JavaScriptName + (p.Type.IsArray ? "[]" : "");
                     var propertyName = CamelCasePropertyName(p.Name);
-                    string comment = p.Summary ?? "The " + propertyName + " property as defined in " + io.FullName;
-                    comment = Regex.Replace(comment, @"\s*[\r\n]+\s*", " ").Trim();
+                    comment = p.Summary ?? "The " + propertyName + " property as defined in " + io.FullName;
+                    comment = whitespaceTrimmer.Replace(comment, " ");
                     sb.AppendLine("\t/// <field name=\"" + propertyName + "\" type=\"" + value + "\">" + SecurityElement.Escape(comment) + "</field>");
                     sb.AppendLine("\tthis." + propertyName + " = new " + value + "();");
                 }
@@ -84,7 +89,7 @@ namespace MadsKristensen.EditorExtensions
 
                 foreach (IntellisenseObject io in ns)
                 {
-                    sb.AppendLine("\t/** " + io.Summary + " */");
+                    sb.AppendLine("\t/** " + whitespaceTrimmer.Replace(io.Summary, "") + " */");
                     if (io.IsEnum)
                     {
                         sb.AppendLine("\tenum " + CamelCaseClassName(io.Name) + " {");
@@ -110,9 +115,7 @@ namespace MadsKristensen.EditorExtensions
         private static void WriteTypeScriptComment(IntellisenseProperty p, StringBuilder sb)
         {
             if (string.IsNullOrEmpty(p.Summary)) return;
-            string comment = p.Summary;
-            comment = Regex.Replace(comment, @"\s*[\r\n]+\s*", " ").Trim();
-            sb.AppendLine("\t\t/** " + SecurityElement.Escape(comment) + " */");
+            sb.AppendLine("\t\t/** " + whitespaceTrimmer.Replace(p.Summary, "") + " */");
         }
 
         private static void WriteTSInterfaceDefinition(StringBuilder sb, string prefix, IEnumerable<IntellisenseProperty> props)
@@ -209,28 +212,25 @@ namespace MadsKristensen.EditorExtensions
 
         string GetTargetName(bool js)
         {
-            var t = CodeName.ToLowerInvariant();
-
+            var t = CodeName.ToLowerInvariant().TrimEnd('?');
             switch (t)
             {
-                case "int":
+                case "int16":
                 case "int32":
                 case "int64":
+                case "short":
+                case "int":
                 case "long":
-                case "double":
                 case "float":
+                case "double":
                 case "decimal":
-                case "int?":
-                case "int32?":
-                case "int64?":
-                case "long?":
-                case "double?":
-                case "float?":
-                case "decimal?":
+                case "biginteger":
                     return js ? "Number" : "number";
 
+                case "datetime":
+                case "Sdatetimeoffset":
                 case "system.datetime":
-                case "system.datetime?":
+                case "system.datetimeoffset":
                     return "Date";
 
                 case "string":
@@ -238,8 +238,6 @@ namespace MadsKristensen.EditorExtensions
 
                 case "bool":
                 case "boolean":
-                case "bool?":
-                case "boolean?":
                     return js ? "Boolean" : "boolean";
             }
 
