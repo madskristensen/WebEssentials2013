@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public void Update()
         {
-            Rules = RuleRegistry.AllRules;
+            Rules = RuleRegistry.GetAllRules();
         }
 
         public static AmbientRuleContext GetOrCreate()

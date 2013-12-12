@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -55,19 +56,17 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             ToggleRecordingMode();
         }
 
-        public static IEnumerable<string> ValidSheetUrls
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        public static IEnumerable<string> GetValidSheetUrls()
         {
-            get
+            HashSet<string> set;
+
+            lock (validSheetUrls)
             {
-                HashSet<string> set;
-
-                lock (validSheetUrls)
-                {
-                    set = new HashSet<string>(validSheetUrls);
-                }
-
-                return set;
+                set = new HashSet<string>(validSheetUrls);
             }
+
+            return set;
         }
 
         public void BlipRecording()

@@ -28,24 +28,18 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 return AmbientRuleContext.GetAllRules();
             }
         }
-        public IEnumerable<RuleUsage> RuleUsages
+
+        public IEnumerable<RuleUsage> GetRuleUsages()
         {
-            get
-            {
-                return _ruleUsages;
-            }
-        }
-        public IEnumerable<IStylingRule> UnusedRules
-        {
-            get
-            {
-                return AllRules.Except(_ruleUsages.Select(x => x.Rule)).Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
-            }
+            return _ruleUsages;
         }
 
-        public SessionResult()
+        public IEnumerable<IStylingRule> GetUnusedRules()
         {
+            return AllRules.Except(_ruleUsages.Select(x => x.Rule)).Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
         }
+
+        public SessionResult() { }
 
         public SessionResult(UnusedCssExtension extension)
         {
@@ -76,7 +70,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         private IEnumerable<Task> GetWarnings(string formatString)
         {
-            var orderedRules = UnusedRules.OrderBy(x => x.File).ThenBy(x => x.Line).ThenBy(x => x.Column);
+            var orderedRules = GetUnusedRules().OrderBy(x => x.File).ThenBy(x => x.Line).ThenBy(x => x.Column);
 
             return orderedRules.Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _extension.Connection.Project, formatString));
         }

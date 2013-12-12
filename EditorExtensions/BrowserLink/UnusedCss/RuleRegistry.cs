@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -6,50 +7,45 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public static class RuleRegistry
     {
-        public static IReadOnlyCollection<IStylingRule> AllRules
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
+        public static IReadOnlyCollection<IStylingRule> GetAllRules()
         {
-            get
+            //This lookup needs to be Project -> Browser -> Page (but page -> sheets should be tracked internally by the extension)
+            var files = UnusedCssExtension.GetValidSheetUrls();
+            var allRules = new List<IStylingRule>();
+
+            foreach (var file in files)
             {
-                //This lookup needs to be Project -> Browser -> Page (but page -> sheets should be tracked internally by the extension)
-                var files = UnusedCssExtension.ValidSheetUrls;
-                var allRules = new List<IStylingRule>();
+                var store = DocumentFactory.GetDocument(file.ToLowerInvariant(), true);
 
-                foreach (var file in files)
+                if (store != null)
                 {
-                    var store = DocumentFactory.GetDocument(file.ToLowerInvariant(), true);
+                    store.IsProcessingUnusedCssRules = true;
 
-                    if (store != null)
+                    var rules = store.Rules;
+
+                    if (rules != null)
                     {
-                        store.IsProcessingUnusedCssRules = true;
-
-                        var rules = store.Rules;
-
-                        if (rules != null)
-                        {
-                            allRules.AddRange(rules);
-                        }
-                        else
-                        {
-                            DocumentFactory.UnregisterDocument(store);
-                        }
+                        allRules.AddRange(rules);
+                    }
+                    else
+                    {
+                        DocumentFactory.UnregisterDocument(store);
                     }
                 }
-
-                return allRules;
             }
+
+            return allRules;
         }
 
-        public static Task<IReadOnlyCollection<IStylingRule>> AllRulesAsync
+        public static Task<IReadOnlyCollection<IStylingRule>> GetAllRulesAsync()
         {
-            get
-            {
-                return Task.Factory.StartNew(() => AmbientRuleContext.GetAllRules());
-            }
+            return Task.Factory.StartNew(() => AmbientRuleContext.GetAllRules());
         }
 
         public static async Task<HashSet<RuleUsage>> ResolveAsync(IEnumerable<RawRuleUsage> rawUsageData)
         {
-            var allRules = await AllRulesAsync;
+            var allRules = await GetAllRulesAsync();
             var result = new HashSet<RuleUsage>();
 
             foreach (var dataPoint in rawUsageData)
