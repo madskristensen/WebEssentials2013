@@ -20,6 +20,10 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
         public override IList<IHtmlValidationError> ValidateElement(ElementNode element)
         {
             var results = new ValidationErrorCollection();
+
+            if (!WESettings.GetBoolean(WESettings.Keys.EnableAngularValidation))
+                return results;
+
             AttributeNode attr = element.Attributes.SingleOrDefault(a => a.Name.StartsWith("ng-", StringComparison.Ordinal));
 
             if (ShouldIgnore(element, attr))
