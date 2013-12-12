@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 return name;
             }
-            return name[0].ToString(CultureInfo.CurrentCulture).ToLower() + name.Substring(1);
+            return name[0].ToString(CultureInfo.CurrentCulture).ToLower(CultureInfo.CurrentCulture) + name.Substring(1);
         }
 
         private static void WriteJavaScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
@@ -190,7 +190,8 @@ namespace MadsKristensen.EditorExtensions
 
         string GetTargetName(bool js)
         {
-            var t = CodeName.ToLower();
+            var t = CodeName.ToLower(CultureInfo.CurrentCulture);
+
             switch (t)
             {
                 case "int":
