@@ -94,10 +94,10 @@ namespace MadsKristensen.EditorExtensions
             return true;// !string.IsNullOrWhiteSpace(stylesheet.Text);
         }
 
-        protected override void UpdateLessSourceMapUrls(ref string content, string oldFileName, string newFileName)
+        protected override string UpdateLessSourceMapUrls(string content, string oldFileName, string newFileName)
         {
             if (!WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
-                return;
+                return content;
             dynamic jsonSourceMap = null;
             string sourceMapFilename = oldFileName + ".map";
             // Read JSON map file and deserialize.
@@ -106,7 +106,7 @@ namespace MadsKristensen.EditorExtensions
             jsonSourceMap = Json.Decode(sourceMapContents);
 
             if (jsonSourceMap == null)
-                return;
+                return content;
 
             string projectRoot = ProjectHelpers.GetRootFolder(ProjectHelpers.GetActiveProject());
             string cssNetworkPath = FileHelpers.RelativePath(oldFileName, newFileName);
@@ -124,7 +124,7 @@ namespace MadsKristensen.EditorExtensions
             WriteFile(Json.Encode(jsonSourceMap), sourceMapFilename, File.Exists(sourceMapFilename), false);
 
             // Fixed sourceMappingURL comment in CSS file with network accessible path.
-            content = Regex.Replace(content, @"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", "/*# sourceMappingURL=" + sourceMapRelativePath + "*/");
+            return Regex.Replace(content, @"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", "/*# sourceMappingURL=" + sourceMapRelativePath + "*/");
         }
     }
 }

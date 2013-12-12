@@ -205,7 +205,7 @@ namespace MadsKristensen.EditorExtensions
                     if (!IsFirstRun)
                     {
                         if (IsSaveFileEnabled)
-                            WriteCompiledFile(ref result, state);
+                            result = WriteCompiledFile(result, state);
 
                         MinifyFile(state, result);
                     }
@@ -226,7 +226,7 @@ namespace MadsKristensen.EditorExtensions
 
         public abstract void MinifyFile(string fileName, string source);
 
-        protected void WriteCompiledFile(ref string content, string currentFileName)
+        protected string WriteCompiledFile(string content, string currentFileName)
         {
             string extension = Path.GetExtension(currentFileName);
             string fileName = null;
@@ -235,7 +235,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 case ".less":
                     fileName = GetCompiledFileName(currentFileName, ".css", CompileToLocation);
-                    UpdateLessSourceMapUrls(ref content, currentFileName, fileName);
+                    content = UpdateLessSourceMapUrls(content, currentFileName, fileName);
                     break;
 
                 case ".coffee":
@@ -249,7 +249,7 @@ namespace MadsKristensen.EditorExtensions
                     break;
 
                 default: // For the Diff view
-                    return;
+                    return string.Empty;
             }
 
             bool fileExist = File.Exists(fileName);
@@ -262,12 +262,14 @@ namespace MadsKristensen.EditorExtensions
             {
                 AddFileToProject(currentFileName, fileName);
             }
+
+            return content;
         }
 
-        protected virtual void UpdateLessSourceMapUrls(ref string content, string oldFileName, string newFileName)
+        protected virtual string UpdateLessSourceMapUrls(string content, string oldFileName, string newFileName)
         {
-            // If not overridden by derived, throw exception.
-            throw new NotImplementedException();
+            // If not overridden by derived, return content as is.
+            return content;
         }
 
         public static string GetCompiledFileName(string sourceFileName, string compiledExtension, string customFolder)
