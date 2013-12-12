@@ -15,6 +15,27 @@ namespace WebEssentialsTests
     [TestClass]
     public class LessDocumentTests
     {
+        #region Helper Methods
+        private static async Task<string> CompileLess(string source)
+        {
+            var fileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".less");
+            try
+            {
+                File.WriteAllText(fileName, source);
+
+                var result = await LessCompiler.Compile(fileName);
+                if (result.IsSuccess)
+                    return result.Result;
+                else
+                    throw new ExternalException(result.Error.Message);
+            }
+            finally
+            {
+                File.Delete(fileName);
+            }
+        }
+        #endregion
+
         [TestMethod]
         public async Task SelectorExpansionTest()
         {
@@ -254,25 +275,6 @@ a {
 
             var nestedExpansions = lessBlocks.SelectMany(rs => LessDocument.GetSelectorNames(rs, LessMixinAction.NestedOnly)).ToList();
             nestedExpansions.Should().Equal(new[] { "«mixin .myMixin» b", "«mixin .myMixin» code" });
-        }
-
-        static async Task<string> CompileLess(string source)
-        {
-            var fileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".less");
-            try
-            {
-                File.WriteAllText(fileName, source);
-
-                var result = await LessCompiler.Compile(fileName);
-                if (result.IsSuccess)
-                    return result.Result;
-                else
-                    throw new ExternalException(result.Error.Message);
-            }
-            finally
-            {
-                File.Delete(fileName);
-            }
         }
     }
 }

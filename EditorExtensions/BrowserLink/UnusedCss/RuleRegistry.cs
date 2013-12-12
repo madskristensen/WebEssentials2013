@@ -38,6 +38,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return allRules;
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public static Task<IReadOnlyCollection<IStylingRule>> GetAllRulesAsync()
         {
             return Task.Factory.StartNew(() => AmbientRuleContext.GetAllRules());

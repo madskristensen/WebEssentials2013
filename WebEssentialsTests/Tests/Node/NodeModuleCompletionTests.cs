@@ -10,7 +10,8 @@ namespace WebEssentialsTests
     [TestClass]
     public class NodeModuleCompletionTests
     {
-        static void TestCase(string input, string expectedBasePath = null)
+        #region Helper Methods
+        private static void TestCase(string input, string expectedBasePath = null)
         {
             var cursorIndex = input.IndexOf('|');
             if (cursorIndex < 0 || cursorIndex != input.LastIndexOf('|'))
@@ -43,6 +44,7 @@ namespace WebEssentialsTests
             }
             NodeModuleCompletionUtils.FindCompletionInfo(input, cursorIndex).Should().Be(expected);
         }
+        #endregion
 
         [TestMethod]
         public void TestNonActivation()

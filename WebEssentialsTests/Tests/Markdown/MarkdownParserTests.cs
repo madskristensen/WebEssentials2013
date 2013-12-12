@@ -9,7 +9,8 @@ namespace WebEssentialsTests
     [TestClass]
     public class MarkdownParserTests
     {
-        static List<string> ParseCodeBlocks(string markdown)
+        #region Helper Methods
+        private static List<string> ParseCodeBlocks(string markdown)
         {
             var retVal = new List<string>();
             var parser = new MarkdownParser(new TabAwareCharacterStream(markdown));
@@ -17,7 +18,7 @@ namespace WebEssentialsTests
             parser.Parse();
             return retVal;
         }
-
+        #endregion
 
         [TestMethod]
         public void TestInlineCodeBlocks()

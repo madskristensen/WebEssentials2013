@@ -9,16 +9,17 @@ namespace WebEssentialsTests
     [TestClass]
     public class NodeModuleImportedTests
     {
-        static readonly string BaseDirectory = Path.GetDirectoryName(typeof(NodeModuleImportedTests).Assembly.Location);
-        static readonly string TargetFixturesDir = Path.Combine(BaseDirectory, @"fixtures\module-resolution");
-        static readonly string SourceDirectory = Path.Combine(BaseDirectory, @"fixtures\fake-node-source");
+        private static readonly string BaseDirectory = Path.GetDirectoryName(typeof(NodeModuleImportedTests).Assembly.Location);
+        private static readonly string TargetFixturesDir = Path.Combine(BaseDirectory, @"fixtures\module-resolution");
+        private static readonly string SourceDirectory = Path.Combine(BaseDirectory, @"fixtures\fake-node-source");
 
-        static string Require(string modulePath)
+        #region Helper Methods
+        private static string Require(string modulePath)
         {
             return NodeModuleService.ResolveModule(SourceDirectory, modulePath);
         }
 
-        static void AssertRequire(string modulePath, string expectedFile, string message = null)
+        private static void AssertRequire(string modulePath, string expectedFile, string message = null)
         {
             Assert.AreEqual(
                 expectedFile == null ? null : Path.GetFullPath(Path.Combine(TargetFixturesDir, expectedFile)),
@@ -26,6 +27,7 @@ namespace WebEssentialsTests
                 message ?? ("require('" + modulePath + "') failed")
             );
         }
+        #endregion
 
         [TestMethod]
         public void BasicResolveTest()

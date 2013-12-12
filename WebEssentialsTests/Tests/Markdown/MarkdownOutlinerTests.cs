@@ -13,9 +13,9 @@ namespace WebEssentialsTests
     [TestClass]
     public class MarkdownOutlinerTests
     {
-        static void TestOutlines(string markdown, params Tuple<string, string[]>[] expectedOutlines)
+        #region Helper Methods
+        private static void TestOutlines(string markdown, params Tuple<string, string[]>[] expectedOutlines)
         {
-
             var snapshot = new MockSnapshot(markdown.Replace("{[", "").Replace("]}", ""));
 
             var expected = new List<TagSpan<IOutliningRegionTag>>();
@@ -51,7 +51,9 @@ namespace WebEssentialsTests
                 .Select(ts => new { ts.Span.Span, ts.Tag })
                 .ShouldAllBeEquivalentTo(expected.Select(ts => new { ts.Span.Span, ts.Tag }));
         }
+        #endregion
 
+        #region Helper Classes
         class SimpleOutlineTag : IOutliningRegionTag
         {
             public SimpleOutlineTag(Tuple<string, string[]> tuple)
@@ -72,6 +74,7 @@ namespace WebEssentialsTests
             bool IOutliningRegionTag.IsDefaultCollapsed { get { return false; } }
             bool IOutliningRegionTag.IsImplementation { get { return true; } }
         }
+        #endregion
 
         [TestMethod]
         public void TestCodeOutlining()
