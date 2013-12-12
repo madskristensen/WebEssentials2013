@@ -8,10 +8,13 @@ namespace MadsKristensen.EditorExtensions
             public const string JavaScriptCamelCasePropertyNames = "JavaScriptCamelCasePropertyNames";
             public const string JavaScriptCamelCaseClassNames = "JavaScriptCamelCaseClassNames";
             // General
-            public const string KeepImportantComments = "KeepImportantComments";
-            public const string EnableEnterFormat = "EnableEnterFormat";
+            public const string KeepImportantComments = "KeepImportantComments";            
             public const string EnableBrowserLinkMenu = "EnableBrowserLinkMenu";
             public const string AllMessagesToOutputWindow = "AllMessagesToOutputWindow";
+
+            // HTML
+            public const string EnableEnterFormat = "EnableEnterFormat";
+            public const string EnableAngularValidation = "EnableAngularValidation";
 
             // LESS
             public const string GenerateCssFileFromLess = "LessGenerateCssFile";
