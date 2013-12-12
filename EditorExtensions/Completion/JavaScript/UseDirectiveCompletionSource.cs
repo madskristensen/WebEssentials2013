@@ -72,6 +72,9 @@ namespace MadsKristensen.EditorExtensions
             var tagger = start.Snapshot.TextBuffer.Properties.GetProperty<ITagger<ClassificationTag>>(jsTaggerType);
 
             var curLine = start.GetContainingLine();
+            if (curLine.LineNumber == 0)
+                yield break;
+
             bool foundCode = false;
             do
             {

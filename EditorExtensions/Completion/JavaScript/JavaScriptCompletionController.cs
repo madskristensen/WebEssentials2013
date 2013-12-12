@@ -240,10 +240,12 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
+                var positionNullable = _currentSession.GetTriggerPoint(TextView.TextBuffer.CurrentSnapshot);
                 var completion = _currentSession.SelectedCompletionSet.SelectionStatus.Completion;
+
+                // After this line, _currentSession will be null.  Do not use it.
                 _currentSession.Commit();
 
-                var positionNullable = _currentSession.GetTriggerPoint(TextView.TextBuffer.CurrentSnapshot);
                 if (positionNullable == null)
                     return null;
                 var position = positionNullable.Value;
@@ -265,9 +267,9 @@ namespace MadsKristensen.EditorExtensions
                     && (position.GetChar() == '"' || position.GetChar() == '\''))
                     TextView.Caret.MoveToNextCaretPosition();
                 // In either case, if there is a closing parenthesis, move past it
-                var prevChar = (position - 1).GetChar();
+                var prevChar = position.GetChar();
                 if ((prevChar == '"' || prevChar == '\'')
-                 && position.GetChar() == ')')
+                 && TextView.Caret.Position.BufferPosition.GetChar() == ')')
                     TextView.Caret.MoveToNextCaretPosition();
                 return completion;
             }
