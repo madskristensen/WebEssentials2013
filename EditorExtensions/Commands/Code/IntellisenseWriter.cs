@@ -89,7 +89,7 @@ namespace MadsKristensen.EditorExtensions
 
                 foreach (IntellisenseObject io in ns)
                 {
-                    sb.AppendLine("\t/** " + whitespaceTrimmer.Replace(io.Summary, "") + " */");
+                    if(!string.IsNullOrEmpty(io.Summary)) sb.AppendLine("\t/** " + whitespaceTrimmer.Replace(io.Summary, "") + " */");
                     if (io.IsEnum)
                     {
                         sb.AppendLine("\tenum " + CamelCaseClassName(io.Name) + " {");

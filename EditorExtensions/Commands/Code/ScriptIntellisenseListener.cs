@@ -287,10 +287,13 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                return XElement.Parse(comment)
+                string summary = XElement.Parse(comment)
                                .Descendants("summary")
                                .Select(x => x.Value)
-                               .FirstOrDefault().Trim();
+                               .FirstOrDefault();
+                if (!string.IsNullOrEmpty(summary)) summary = summary.Trim();
+
+                return summary;
             }
             catch (Exception ex)
             {
