@@ -17,6 +17,8 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
 
     public class AngularMissingAppValidator : BaseValidator
     {
+        private const string _error = "Angular: The 'ng-app' attribute is missing on a parent element.";
+
         public override IList<IHtmlValidationError> ValidateElement(ElementNode element)
         {
             var results = new ValidationErrorCollection();
@@ -29,16 +31,14 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
             if (ShouldIgnore(element, attr))
                 return results;
 
-            string error = "Angular: The 'ng-app' attribute is missing on a parent element.";
-
             if (attr != null)
             {
                 int index = element.Attributes.IndexOf(attr);
-                results.AddAttributeError(element, error, HtmlValidationErrorLocation.AttributeName, index);
+                results.AddAttributeError(element, _error, HtmlValidationErrorLocation.AttributeName, index);
             }
             else
             {
-                results.Add(element, error, HtmlValidationErrorLocation.ElementName);
+                results.Add(element, _error, HtmlValidationErrorLocation.ElementName);
             }
 
             return results;
