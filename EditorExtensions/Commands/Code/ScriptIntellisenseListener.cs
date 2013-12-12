@@ -145,6 +145,7 @@ namespace MadsKristensen.EditorExtensions
                 FullName = element.FullName,
                 Properties = new List<IntellisenseProperty>(),
                 Namespace = GetNamespace(element),
+                Summary = GetSummary(element),
             };
 
             foreach (var codeEnum in element.Members.OfType<CodeElement>())
@@ -169,7 +170,8 @@ namespace MadsKristensen.EditorExtensions
                 Namespace = GetNamespace(cc),
                 Name = cc.Name,
                 FullName = cc.FullName,
-                Properties = props
+                Properties = props,
+                Summary = GetSummary(cc),
             });
         }
 
@@ -272,21 +274,27 @@ namespace MadsKristensen.EditorExtensions
             return property.Name;
         }
 
-        private static string GetSummary(CodeProperty property)
+        private static string GetSummary(CodeProperty property) { return GetSummary(property.InfoLocation, property.DocComment, property.FullName); }
+
+        private static string GetSummary(CodeClass property) { return GetSummary(property.InfoLocation, property.DocComment, property.FullName); }
+
+        private static string GetSummary(CodeEnum property) { return GetSummary(property.InfoLocation, property.DocComment, property.FullName); }
+
+        private static string GetSummary(vsCMInfoLocation location, string comment, string fullName)
         {
-            if (property.InfoLocation != vsCMInfoLocation.vsCMInfoLocationProject || string.IsNullOrWhiteSpace(property.DocComment))
+            if (location != vsCMInfoLocation.vsCMInfoLocationProject || string.IsNullOrWhiteSpace(comment))
                 return null;
 
             try
             {
-                return XElement.Parse(property.DocComment)
+                return XElement.Parse(comment)
                                .Descendants("summary")
                                .Select(x => x.Value)
-                               .FirstOrDefault();
+                               .FirstOrDefault().Trim();
             }
             catch (Exception ex)
             {
-                Logger.Log("Couldn't parse XML Doc Comment for " + property.FullName + ":\n" + ex);
+                Logger.Log("Couldn't parse XML Doc Comment for " + fullName + ":\n" + ex);
                 return null;
             }
         }
