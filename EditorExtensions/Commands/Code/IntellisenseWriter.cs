@@ -67,8 +67,7 @@ namespace MadsKristensen.EditorExtensions
                     var propertyName = CamelCasePropertyName(p.Name);
                     string comment = p.Summary ?? "The " + propertyName + " property as defined in " + io.FullName;
                     comment = Regex.Replace(comment, @"\s*[\r\n]+\s*", " ").Trim();
-                    sb.AppendLine("\t/// <field name=\"" + propertyName + "\" type=\"" + value + "\">" +
-                                  SecurityElement.Escape(comment) + "</field>");
+                    sb.AppendLine("\t/// <field name=\"" + propertyName + "\" type=\"" + value + "\">" + SecurityElement.Escape(comment) + "</field>");
                     sb.AppendLine("\tthis." + propertyName + " = new " + value + "();");
                 }
 
@@ -85,10 +84,15 @@ namespace MadsKristensen.EditorExtensions
 
                 foreach (IntellisenseObject io in ns)
                 {
+                    sb.AppendLine("\t/** " + io.Summary + " */");
                     if (io.IsEnum)
                     {
                         sb.AppendLine("\tenum " + CamelCaseClassName(io.Name) + " {");
-                        foreach (var p in io.Properties) sb.AppendLine("\t\t" + CamelCasePropertyName(p.Name) + ",");
+                        foreach (var p in io.Properties)
+                        {
+                            WriteTypeScriptComment(p, sb);
+                            sb.AppendLine("\t\t" + CamelCasePropertyName(p.Name) + ",");
+                        }
                         sb.AppendLine("\t}");
                     }
                     else
@@ -103,12 +107,21 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        private static void WriteTypeScriptComment(IntellisenseProperty p, StringBuilder sb)
+        {
+            if (string.IsNullOrEmpty(p.Summary)) return;
+            string comment = p.Summary;
+            comment = Regex.Replace(comment, @"\s*[\r\n]+\s*", " ").Trim();
+            sb.AppendLine("\t\t/** " + SecurityElement.Escape(comment) + " */");
+        }
+
         private static void WriteTSInterfaceDefinition(StringBuilder sb, string prefix, IEnumerable<IntellisenseProperty> props)
         {
             sb.AppendLine("{");
 
             foreach (var p in props)
             {
+                WriteTypeScriptComment(p, sb);
                 sb.AppendFormat("{0}\t{1}: ", prefix, CamelCasePropertyName(p.Name));
 
                 if (p.Type.IsPrimitive()) sb.Append(p.Type.GetTypeScriptName());
@@ -147,6 +160,7 @@ namespace MadsKristensen.EditorExtensions
         public string Name { get; set; }
         public string FullName { get; set; }
         public bool IsEnum { get; set; }
+        public string Summary { get; set; }
         public List<IntellisenseProperty> Properties { get; set; }
     }
 
@@ -200,9 +214,17 @@ namespace MadsKristensen.EditorExtensions
                 case "double":
                 case "float":
                 case "decimal":
+                case "int?":
+                case "int32?":
+                case "int64?":
+                case "long?":
+                case "double?":
+                case "float?":
+                case "decimal?":
                     return js ? "Number" : "number";
 
                 case "system.datetime":
+                case "system.datetime?":
                     return "Date";
 
                 case "string":
@@ -210,6 +232,8 @@ namespace MadsKristensen.EditorExtensions
 
                 case "bool":
                 case "boolean":
+                case "bool?":
+                case "boolean?":
                     return js ? "Boolean" : "boolean";
             }
 
