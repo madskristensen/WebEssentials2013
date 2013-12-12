@@ -13,15 +13,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         };
         private static readonly ReaderWriterLockSlim Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
+        public static IDisposable UpdateSuspensionContext
+        {
+            get { return new ErrorListUpdateSuspensionContext(); }
+        }
+
 
         public static void AddItem(Task task)
         {
             ErrorListProvider.Tasks.Add(task);
-        }
-
-        public static IDisposable GetUpdateSuspensionContext()
-        {
-            return new ErrorListUpdateSuspensionContext();
         }
 
         public static void RemoveItem(Task task)

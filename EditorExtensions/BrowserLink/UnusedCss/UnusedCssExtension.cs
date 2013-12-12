@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     {
         private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>> BrowserLocationContinuationActions = new ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>>();
         private static readonly ConcurrentDictionary<BrowserLinkConnection, UnusedCssExtension> ExtensionByConnection = new ConcurrentDictionary<BrowserLinkConnection, UnusedCssExtension>();
-        private static readonly HashSet<string> ValidSheetUrls = new HashSet<string>();
+        private static readonly HashSet<string> validSheetUrls = new HashSet<string>();
         private readonly BrowserLinkConnection _connection;
         private readonly IList<Guid> _operationsInProgress = new List<Guid>();
         private readonly UploadHelper _uploadHelper;
@@ -55,16 +55,19 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             ToggleRecordingMode();
         }
 
-        public static IEnumerable<string> GetValidSheetUrls()
+        public static IEnumerable<string> ValidSheetUrls
         {
-            HashSet<string> set;
-
-            lock (ValidSheetUrls)
+            get
             {
-                set = new HashSet<string>(ValidSheetUrls);
-            }
+                HashSet<string> set;
 
-            return set;
+                lock (validSheetUrls)
+                {
+                    set = new HashSet<string>(validSheetUrls);
+                }
+
+                return set;
+            }
         }
 
         public void BlipRecording()
@@ -326,17 +329,17 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             var sheets = GetFiles(sheetUrls).Select(x => x.ToLowerInvariant());
 
-            lock (ValidSheetUrls)
+            lock (validSheetUrls)
             {
-                ValidSheetUrls.UnionWith(sheets);
+                validSheetUrls.UnionWith(sheets);
             }
         }
 
         private void InstallIgnorePatterns(object sender, EventArgs e)
         {
-            lock (ValidSheetUrls)
+            lock (validSheetUrls)
             {
-                ValidSheetUrls.Clear();
+                validSheetUrls.Clear();
             }
 
             UsageRegistry.Reset();

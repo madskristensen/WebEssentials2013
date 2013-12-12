@@ -71,7 +71,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public static IEnumerable<IStylingRule> GetAllUnusedRules()
         {
-            return UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()).Distinct().ToList();
+            return UsageDataByProject.Values.SelectMany(x => x.UnusedRules).Distinct().ToList();
         }
 
         private static void OnUsageDataUpdated()
@@ -134,7 +134,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             using (AmbientRuleContext.GetOrCreate())
             {
-                return sheetRules.Intersect(UsageDataByProject.Values.SelectMany(x => x.GetUnusedRules()));
+                return sheetRules.Intersect(UsageDataByProject.Values.SelectMany(x => x.UnusedRules));
             }
         }
 

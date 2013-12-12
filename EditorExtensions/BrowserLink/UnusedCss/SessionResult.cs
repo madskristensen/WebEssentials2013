@@ -19,6 +19,29 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public bool Continue { get; set; }
         [JsonProperty]
         public List<string> Sheets { get; set; }
+        public IEnumerable<IStylingRule> AllRules
+        {
+            get
+            {
+                ThrowIfNotResolved();
+
+                return AmbientRuleContext.GetAllRules();
+            }
+        }
+        public IEnumerable<RuleUsage> RuleUsages
+        {
+            get
+            {
+                return _ruleUsages;
+            }
+        }
+        public IEnumerable<IStylingRule> UnusedRules
+        {
+            get
+            {
+                return AllRules.Except(_ruleUsages.Select(x => x.Rule)).Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
+            }
+        }
 
         public SessionResult()
         {
@@ -51,21 +74,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             _ruleUsages = await RuleRegistry.ResolveAsync(RawUsageData);
         }
 
-        public IEnumerable<IStylingRule> GetAllRules()
-        {
-            ThrowIfNotResolved();
-
-            return AmbientRuleContext.GetAllRules();
-        }
-
-        public IEnumerable<IStylingRule> GetUnusedRules()
-        {
-            return GetAllRules().Except(_ruleUsages.Select(x => x.Rule)).Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
-        }
-
         private IEnumerable<Task> GetWarnings(string formatString)
         {
-            var orderedRules = GetUnusedRules().OrderBy(x => x.File).ThenBy(x => x.Line).ThenBy(x => x.Column);
+            var orderedRules = UnusedRules.OrderBy(x => x.File).ThenBy(x => x.Line).ThenBy(x => x.Column);
 
             return orderedRules.Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _extension.Connection.Project, formatString));
         }
@@ -73,11 +84,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public IEnumerable<Task> GetWarnings()
         {
             return GetWarnings("Unused CSS rule \"{1}\" in " + _extension.Connection.AppName);
-        }
-
-        public IEnumerable<RuleUsage> GetRuleUsages()
-        {
-            return _ruleUsages;
         }
 
         public IEnumerable<Task> GetWarnings(Uri uri)

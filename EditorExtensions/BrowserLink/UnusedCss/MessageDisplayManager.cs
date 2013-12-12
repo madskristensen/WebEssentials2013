@@ -42,7 +42,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public static MessageDisplaySource DisplaySource { get; set; }
         public static void ShowWarningsFor(Uri uri, Project project, IUsageDataSource browserSource)
         {
-            using (ErrorList.GetUpdateSuspensionContext())
+            using (ErrorList.UpdateSuspensionContext)
             {
                 if (_currentDisplayData != null)
                 {

@@ -6,44 +6,50 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public static class RuleRegistry
     {
-        public static IReadOnlyCollection<IStylingRule> GetAllRules()
+        public static IReadOnlyCollection<IStylingRule> AllRules
         {
-            //This lookup needs to be Project -> Browser -> Page (but page -> sheets should be tracked internally by the extension)
-            var files = UnusedCssExtension.GetValidSheetUrls();
-            var allRules = new List<IStylingRule>();
-
-            foreach (var file in files)
+            get
             {
-                var store = DocumentFactory.GetDocument(file.ToLowerInvariant(), true);
+                //This lookup needs to be Project -> Browser -> Page (but page -> sheets should be tracked internally by the extension)
+                var files = UnusedCssExtension.ValidSheetUrls;
+                var allRules = new List<IStylingRule>();
 
-                if (store != null)
+                foreach (var file in files)
                 {
-                    store.IsProcessingUnusedCssRules = true;
+                    var store = DocumentFactory.GetDocument(file.ToLowerInvariant(), true);
 
-                    var rules = store.Rules;
+                    if (store != null)
+                    {
+                        store.IsProcessingUnusedCssRules = true;
 
-                    if (rules != null)
-                    {
-                        allRules.AddRange(rules);
-                    }
-                    else
-                    {
-                        DocumentFactory.UnregisterDocument(store);
+                        var rules = store.Rules;
+
+                        if (rules != null)
+                        {
+                            allRules.AddRange(rules);
+                        }
+                        else
+                        {
+                            DocumentFactory.UnregisterDocument(store);
+                        }
                     }
                 }
-            }
 
-            return allRules;
+                return allRules;
+            }
         }
 
-        public static Task<IReadOnlyCollection<IStylingRule>> GetAllRulesAsync()
+        public static Task<IReadOnlyCollection<IStylingRule>> AllRulesAsync
         {
-            return Task.Factory.StartNew(() => AmbientRuleContext.GetAllRules());
+            get
+            {
+                return Task.Factory.StartNew(() => AmbientRuleContext.GetAllRules());
+            }
         }
 
         public static async Task<HashSet<RuleUsage>> ResolveAsync(IEnumerable<RawRuleUsage> rawUsageData)
         {
-            var allRules = await GetAllRulesAsync();
+            var allRules = await AllRulesAsync;
             var result = new HashSet<RuleUsage>();
 
             foreach (var dataPoint in rawUsageData)
