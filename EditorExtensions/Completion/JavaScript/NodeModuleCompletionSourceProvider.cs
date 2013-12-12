@@ -56,7 +56,12 @@ namespace MadsKristensen.EditorExtensions
             if (String.IsNullOrWhiteSpace(info.Item1))
                 results = GetRootCompletions(baseFolder);
             else
+            {
                 results = GetRelativeCompletions(NodeModuleService.ResolvePath(baseFolder, info.Item1));
+                // Show completions for ../../
+                if (parentTraversalRegex.IsMatch(info.Item1))
+                    results = new[] { parentFolder }.Concat(results);
+            }
 
             var trackingSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(info.Item2.Start + line.Start, info.Item2.Length, SpanTrackingMode.EdgeInclusive);
             completionSets.Add(new CompletionSet(
@@ -69,12 +74,14 @@ namespace MadsKristensen.EditorExtensions
 
         }
 
+        static readonly Regex parentTraversalRegex = new Regex(@"^(\.\./)+$");
         static readonly ImageSource folderIcon = GlyphService.GetGlyph(StandardGlyphGroup.GlyphOpenFolder, StandardGlyphItem.GlyphItemPublic);
         #region Root-level completions
         static ImageSource moduleIcon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/node_module.png", UriKind.RelativeOrAbsolute));
+        static readonly Intel.Completion parentFolder = new Intel.Completion("../", "../", "Prefix to access files in the parent directory", folderIcon, "Folder");
         static readonly ReadOnlyCollection<Intel.Completion> dotCompletions = new ReadOnlyCollection<Intel.Completion>(new[]{
             new Intel.Completion("./", "./", "Prefix to access files in the current directory", folderIcon, "Folder"),
-            new Intel.Completion("../", "../", "Prefix to access files in the parent directory", folderIcon, "Folder")
+            parentFolder
         });
 
         // Gathered from `require('<tab><tab>` on Node v0.10.15.
