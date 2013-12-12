@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 string minFile = GetMinFileName(path, extension);
 
-                if (!path.EndsWith(".min" + extension) && !File.Exists(minFile))
+                if (!path.EndsWith(".min" + extension, StringComparison.OrdinalIgnoreCase) && !File.Exists(minFile))
                 {
                     enabled = true;
                     break;
@@ -66,7 +66,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 string minPath = GetMinFileName(path, extension);
 
-                if (!path.EndsWith(".min" + extension) && !File.Exists(minPath) && _dte.Solution.FindProjectItem(path) != null)
+                if (!path.EndsWith(".min" + extension, StringComparison.OrdinalIgnoreCase) && !File.Exists(minPath) && _dte.Solution.FindProjectItem(path) != null)
                 {
                     if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase))
                     {

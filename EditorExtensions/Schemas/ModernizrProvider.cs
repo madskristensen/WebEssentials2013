@@ -62,7 +62,7 @@ namespace MadsKristensen.EditorExtensions
 
             string name = text.ToLowerInvariant().TrimStart('.');
 
-            if (name.StartsWith("no-"))
+            if (name.StartsWith("no-", StringComparison.Ordinal))
             {
                 name = name.Substring(3);
             }

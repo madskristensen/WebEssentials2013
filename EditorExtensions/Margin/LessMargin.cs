@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -53,7 +54,7 @@ namespace MadsKristensen.EditorExtensions
             if (!CompileEnabled)
                 return;
 
-            if (WESettings.GetBoolean(WESettings.Keys.LessMinify) && !Path.GetFileName(fileName).StartsWith("_"))
+            if (WESettings.GetBoolean(WESettings.Keys.LessMinify) && !Path.GetFileName(fileName).StartsWith("_", StringComparison.Ordinal))
             {
                 string content = MinifyFileMenu.MinifyString(".css", source);
                 string minFile = GetCompiledFileName(fileName, ".min.css", CompileToLocation);// fileName.Replace(".less", ".min.css");
@@ -82,7 +83,7 @@ namespace MadsKristensen.EditorExtensions
 
         public override bool IsSaveFileEnabled
         {
-            get { return WESettings.GetBoolean(WESettings.Keys.GenerateCssFileFromLess) && !Path.GetFileName(Document.FilePath).StartsWith("_"); }
+            get { return WESettings.GetBoolean(WESettings.Keys.GenerateCssFileFromLess) && !Path.GetFileName(Document.FilePath).StartsWith("_", StringComparison.Ordinal); }
         }
 
         protected override bool CanWriteToDisk(string source)
@@ -93,10 +94,10 @@ namespace MadsKristensen.EditorExtensions
             return true;// !string.IsNullOrWhiteSpace(stylesheet.Text);
         }
 
-        protected override void UpdateLessSourceMapUrls(ref string content, string oldFileName, string newFileName)
+        protected override string UpdateLessSourceMapUrls(string content, string oldFileName, string newFileName)
         {
             if (!WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
-                return;
+                return content;
             dynamic jsonSourceMap = null;
             string sourceMapFilename = oldFileName + ".map";
             // Read JSON map file and deserialize.
@@ -105,7 +106,7 @@ namespace MadsKristensen.EditorExtensions
             jsonSourceMap = Json.Decode(sourceMapContents);
 
             if (jsonSourceMap == null)
-                return;
+                return content;
 
             string projectRoot = ProjectHelpers.GetRootFolder(ProjectHelpers.GetActiveProject());
             string cssNetworkPath = FileHelpers.RelativePath(oldFileName, newFileName);
@@ -123,7 +124,7 @@ namespace MadsKristensen.EditorExtensions
             WriteFile(Json.Encode(jsonSourceMap), sourceMapFilename, File.Exists(sourceMapFilename), false);
 
             // Fixed sourceMappingURL comment in CSS file with network accessible path.
-            content = Regex.Replace(content, @"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", "/*# sourceMappingURL=" + sourceMapRelativePath + "*/");
+            return Regex.Replace(content, @"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", "/*# sourceMappingURL=" + sourceMapRelativePath + "*/");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.CSS.Core;
+﻿using System;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Schemas;
 
 namespace MadsKristensen.EditorExtensions
@@ -14,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static bool IsPseudoElement(this ParseItem item)
         {
-            if (item.Text.StartsWith("::"))
+            if (item.Text.StartsWith("::", StringComparison.Ordinal))
                 return true;
 
             var schema = CssSchemaManager.SchemaManager.GetSchemaRoot(null);

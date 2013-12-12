@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Composition;
+﻿using System;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -32,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
             if (!WESettings.GetBoolean(WESettings.Keys.EnableCssMinification))
                 return;
 
-            if (e.FileActionType == FileActionTypes.ContentSavedToDisk && e.FilePath.EndsWith(".css"))
+            if (e.FileActionType == FileActionTypes.ContentSavedToDisk && e.FilePath.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
             {
                 string minFile = e.FilePath.Insert(e.FilePath.Length - 3, "min.");
 
@@ -48,7 +49,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static void Minify(string file, string minFile)
         {
-            if (file.EndsWith(".min.css"))
+            if (file.EndsWith(".min.css", StringComparison.OrdinalIgnoreCase))
                 return;
 
             try

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Windows.Forms;
 using Microsoft.VisualStudio;
@@ -11,6 +12,7 @@ namespace MadsKristensen.EditorExtensions
         private static IVsOutputWindowPane pane;
         private static object _syncRoot = new object();
 
+        [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "Microsoft.VisualStudio.Shell.Interop.IVsOutputWindowPane.OutputString(System.String)")]
         public static void Log(string message)
         {
             if (string.IsNullOrEmpty(message))

@@ -12,6 +12,34 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private readonly HashSet<IUsageDataSource> _sources = new HashSet<IUsageDataSource>();
         private readonly object _sync = new object();
 
+        public IEnumerable<IStylingRule> AllRules
+        {
+            get
+            {
+                return AmbientRuleContext.GetAllRules();
+            }
+        }
+
+        public IEnumerable<IStylingRule> GetUnusedRules()
+        {
+            lock (_sync)
+            {
+                var unusedRules = new HashSet<IStylingRule>(AllRules);
+
+                unusedRules.ExceptWith(_ruleUsages.Select(x => x.Rule).Distinct());
+
+                return unusedRules.Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
+            }
+        }
+
+        public IEnumerable<RuleUsage> GetRuleUsages()
+        {
+            lock (_sync)
+            {
+                return _ruleUsages;
+            }
+        }
+
         public CompositeUsageData(UnusedCssExtension extension)
         {
             _extension = extension;
@@ -23,31 +51,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             {
                 _sources.Add(source);
                 _ruleUsages.UnionWith(source.GetRuleUsages());
-            }
-        }
-
-        public IEnumerable<IStylingRule> GetAllRules()
-        {
-            return AmbientRuleContext.GetAllRules();
-        }
-
-        public IEnumerable<RuleUsage> GetRuleUsages()
-        {
-            lock (_sync)
-            {
-                return _ruleUsages;
-            }
-        }
-
-        public IEnumerable<IStylingRule> GetUnusedRules()
-        {
-            lock (_sync)
-            {
-                var unusedRules = new HashSet<IStylingRule>(GetAllRules());
-
-                unusedRules.ExceptWith(_ruleUsages.Select(x => x.Rule).Distinct());
-
-                return unusedRules.Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
             }
         }
 

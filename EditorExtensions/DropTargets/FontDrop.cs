@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel.Composition;
 using System.Globalization;
@@ -78,7 +79,7 @@ namespace MadsKristensen.EditorExtensions
 
                 return DragDropPointerEffects.Copy;
             }
-            else if (draggedFilename.StartsWith("http://localhost:"))
+            else if (draggedFilename.StartsWith("http://localhost:", StringComparison.OrdinalIgnoreCase))
             {
                 //int index = draggedFilename.IndexOf('/', 24);
                 //if (index > -1)
@@ -108,7 +109,7 @@ namespace MadsKristensen.EditorExtensions
                 string extension = Path.GetExtension(file).ToLowerInvariant();
                 string reference = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, file);
 
-                if (reference.StartsWith("http://localhost:"))
+                if (reference.StartsWith("http://localhost:", StringComparison.OrdinalIgnoreCase))
                 {
                     int index = reference.IndexOf('/', 24);
                     if (index > -1)

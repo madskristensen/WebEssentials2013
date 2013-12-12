@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -6,6 +7,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public static class RuleRegistry
     {
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public static IReadOnlyCollection<IStylingRule> GetAllRules()
         {
             //This lookup needs to be Project -> Browser -> Page (but page -> sheets should be tracked internally by the extension)

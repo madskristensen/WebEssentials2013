@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -62,6 +63,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
         ///<summary>Attempts to figure out whether the JSLS language service has been installed yet.</summary>
+        [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "Microsoft.VisualStudio.OLE.Interop.IOleCommandTarget.QueryStatus(System.Guid@,System.UInt32,Microsoft.VisualStudio.OLE.Interop.OLECMD[],System.IntPtr)")]
         static bool IsJSLSInstalled(IOleCommandTarget next)
         {
             Guid cmdGroup = VSConstants.VSStd2K;
@@ -145,13 +147,13 @@ namespace MadsKristensen.EditorExtensions
                         closedCompletion = _currentSession != null;
                         var c = Complete(force: false, dontAdvance: true);
                         // If the completion inserted a quote, don't add another one
-                        handled = c != null && c.InsertionText.EndsWith(ch.ToString());
+                        handled = c != null && c.InsertionText.EndsWith(ch.ToString(), StringComparison.Ordinal);
                     }
                     else if (ch == '/')
                     {
                         var c = Complete(force: false, dontAdvance: true);
                         // If the completion inserted a slash, don't add another one.
-                        handled = c != null && c.InsertionText.EndsWith("/");
+                        handled = c != null && c.InsertionText.EndsWith("/", StringComparison.Ordinal);
                         // We will re-open completion after handling the keypress, to
                         // show completions for this folder.
                     }
@@ -252,14 +254,14 @@ namespace MadsKristensen.EditorExtensions
                 // If applicable, move the cursor to the end of the function call.
                 // Unless the user is in completing a deeper Node.js require path,
                 // in which case we should stay inside the string.
-                if (dontAdvance || completion.InsertionText.EndsWith("/"))
+                if (dontAdvance || completion.InsertionText.EndsWith("/", StringComparison.Ordinal))
                     return completion;
 
                 // If the user completed a Node require path (which won't have any
                 // quotes in the completion, move past any existing closing quote.
                 // Other completions will include the closing quote themselves, so
                 // we don't need to move 
-                if (!completion.InsertionText.EndsWith("'") && !completion.InsertionText.EndsWith("\"")
+                if (!completion.InsertionText.EndsWith("'", StringComparison.Ordinal) && !completion.InsertionText.EndsWith("\"", StringComparison.Ordinal)
                     && (position.GetChar() == '"' || position.GetChar() == '\''))
                     TextView.Caret.MoveToNextCaretPosition();
                 // In either case, if there is a closing parenthesis, move past it

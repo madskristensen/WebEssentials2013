@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions
 
             string referencedPath;
 
-            if (path.StartsWith("~/"))
+            if (path.StartsWith("~/", StringComparison.Ordinal))
                 referencedPath = Path.Combine(ProjectHelpers.GetProjectFolder(TextView.TextBuffer.GetFileName()), path.Substring(2));
             else
                 referencedPath = Path.Combine(Path.GetDirectoryName(TextView.TextBuffer.GetFileName()), path);

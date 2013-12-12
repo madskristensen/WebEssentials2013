@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Projection;
@@ -35,6 +36,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         public ITextView TextView { get; private set; }
         public ICommandTarget ContainedLanguageTarget { get; private set; }
 
+        [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "Microsoft.VisualStudio.TextManager.Interop.IVsTextViewIntellisenseHostProvider.CreateIntellisenseHost(Microsoft.VisualStudio.TextManager.Interop.IVsTextBufferCoordinator,System.Guid@,System.IntPtr@)")]
         internal void Create(HtmlEditorDocument document, IVsContainedLanguage containedLanguage, IVsTextBufferCoordinator bufferCoordinator, LanguageProjectionBuffer languageBuffer, out IVsTextViewFilter containedLanguageViewfilter)
         {
             containedLanguageViewfilter = null;

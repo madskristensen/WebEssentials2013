@@ -44,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
             if (EditorExtensionsPackage.DTE.Solution.FindProjectItem(fileName) == null)
                 return false;
 
-            if (Path.GetFileName(fileName).StartsWith("_"))
+            if (Path.GetFileName(fileName).StartsWith("_", StringComparison.Ordinal))
                 return false;
 
             string minFile = MarginBase.GetCompiledFileName(fileName, ".min.css", WESettings.GetString(WESettings.Keys.LessCompileToLocation));

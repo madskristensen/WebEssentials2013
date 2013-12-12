@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Web.Editor;
 using VS = Microsoft.VisualStudio;
@@ -50,6 +51,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
         private static void GetSize()
         {
             try

@@ -17,8 +17,10 @@ namespace MadsKristensen.EditorExtensions.Helpers
         // the rest of the tab before moving forward.
         private int remainingSpaces;
         private int position;
+
         public int TabWidth { get; private set; }
         public ITextProvider Text { get; private set; }
+
         public TabAwareCharacterStream(ITextProvider text, int tabWidth = 4)
         {
             TabWidth = tabWidth;
@@ -26,14 +28,20 @@ namespace MadsKristensen.EditorExtensions.Helpers
             Position = 0;
         }
 
-        public TabAwareCharacterStream(string text, int tabWidth = 4) : this(new TextStream(text)) { }
+        public TabAwareCharacterStream(string text, int tabWidth = 4)
+            : this(new TextStream(text), tabWidth) { }
 
         #region TextProvider wrappers
         public int Length { get { return Text.Length; } }
-        public string GetSubstringAt(int start, int length) { return Text.GetText(new TextRange(start, length)); }
-        public bool CompareTo(int position, int length, string text, bool ignoreCase)
+
+        public string GetSubstringAt(int start, int length)
         {
-            return Text.CompareTo(position, length, text, ignoreCase);
+            return Text.GetText(new TextRange(start, length));
+        }
+
+        public bool CompareTo(int streamPosition, int length, string text, bool ignoreCase)
+        {
+            return Text.CompareTo(streamPosition, length, text, ignoreCase);
         }
         #endregion
 
@@ -80,7 +88,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
             }
             protected override void Revert()
             {
-                stream.remainingSpaces = this.remainingSpaces;
+                Stream.remainingSpaces = this.remainingSpaces;
             }
         }
 
@@ -156,12 +164,13 @@ namespace MadsKristensen.EditorExtensions.Helpers
     public abstract class StreamPeeker : IDisposable
     {
         public int StartPosition { get; private set; }
-        protected readonly TabAwareCharacterStream stream;
         private bool shouldRevert = true;
+        
+        protected TabAwareCharacterStream Stream { get; private set; }
 
         protected StreamPeeker(TabAwareCharacterStream stream)
         {
-            this.stream = stream;
+            this.Stream = stream;
             StartPosition = stream.Position;
         }
 
@@ -175,7 +184,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
         public void Dispose()
         {
             if (!shouldRevert) return;
-            stream.Position = StartPosition;
+            Stream.Position = StartPosition;
             Revert();
             shouldRevert = false;
         }

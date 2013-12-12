@@ -83,12 +83,12 @@ namespace MadsKristensen.EditorExtensions
             if (DateTime.Now - _lastPushed < TimeSpan.FromMilliseconds(500))
                 return;
 
-            if (!CssSyncSuppressionContext.IsSuppressed && e.FullPath.EndsWith(".css"))
+            if (!CssSyncSuppressionContext.IsSuppressed && e.FullPath.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
             {
                 Browsers.All.Invoke("refresh", Path.GetFileName(e.FullPath));
                 _lastPushed = DateTime.Now;
             }
-            else if (e.FullPath.EndsWith(".css") && !CssSyncSuppressionContext.SuppressAllBrowsers)
+            else if (e.FullPath.EndsWith(".css", StringComparison.OrdinalIgnoreCase) && !CssSyncSuppressionContext.SuppressAllBrowsers)
             {
                 Browsers.AllExcept(CssSyncSuppressionContext.ConnectionsToExclude.ToArray()).Invoke("refresh", Path.GetFileName(e.FullPath));
                 _lastPushed = DateTime.Now;

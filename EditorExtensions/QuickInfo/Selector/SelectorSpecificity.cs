@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions
@@ -71,7 +72,7 @@ namespace MadsKristensen.EditorExtensions
             _selector.Accept(visitorPseudoClassFunctionSelector);
 
             int pseudoClases = visitorPseudoClassSelector.Items.Count(p => !p.IsPseudoElement());
-            pseudoClases += visitorPseudoClassFunctionSelector.Items.Where(p => !p.Text.StartsWith(":not(") && !p.Text.StartsWith(":matches(")).Count();
+            pseudoClases += visitorPseudoClassFunctionSelector.Items.Where(p => !p.Text.StartsWith(":not(", StringComparison.Ordinal) && !p.Text.StartsWith(":matches(", StringComparison.Ordinal)).Count();
             Elements += visitorPseudoClassSelector.Items.Count(p => p.IsPseudoElement());
 
             if (pseudoClases > 0)

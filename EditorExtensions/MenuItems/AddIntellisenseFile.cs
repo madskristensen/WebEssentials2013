@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Design;
+﻿using System;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using EnvDTE80;
@@ -37,7 +38,7 @@ namespace MadsKristensen.EditorExtensions
 
             var items = ProjectHelpers.GetSelectedItemPaths(_dte);
 
-            if (items.Count() == 1 && (items.ElementAt(0).EndsWith(".cs") || items.ElementAt(0).EndsWith(".vb")))
+            if (items.Count() == 1 && (items.ElementAt(0).EndsWith(".cs", StringComparison.OrdinalIgnoreCase) || items.ElementAt(0).EndsWith(".vb", StringComparison.OrdinalIgnoreCase)))
             {
                 _file = items.ElementAt(0);
             }
@@ -51,7 +52,7 @@ namespace MadsKristensen.EditorExtensions
 
             var items = ProjectHelpers.GetSelectedItemPaths(_dte);
 
-            if (items.Count() == 1 && (items.ElementAt(0).EndsWith(".cs") || items.ElementAt(0).EndsWith(".vb")))
+            if (items.Count() == 1 && (items.ElementAt(0).EndsWith(".cs", StringComparison.OrdinalIgnoreCase) || items.ElementAt(0).EndsWith(".vb", StringComparison.OrdinalIgnoreCase)))
             {
                 _file = items.ElementAt(0);
             }

@@ -179,7 +179,7 @@ namespace MadsKristensen.EditorExtensions
                 return relUri.LocalPath;
             }
 
-            if (relUri.OriginalString.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar).StartsWith(Path.DirectorySeparatorChar.ToString()))
+            if (relUri.OriginalString.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar).StartsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 baseFolder = null;
                 relUri = new Uri(relUri.OriginalString.Substring(1), UriKind.Relative);
@@ -195,7 +195,7 @@ namespace MadsKristensen.EditorExtensions
                 root = Path.GetDirectoryName(root);
             }
 
-            if (!root.EndsWith(new string(Path.DirectorySeparatorChar, 1)))
+            if (!root.EndsWith(new string(Path.DirectorySeparatorChar, 1), StringComparison.OrdinalIgnoreCase))
             {
                 root += Path.DirectorySeparatorChar;
             }
@@ -348,7 +348,7 @@ namespace MadsKristensen.EditorExtensions
 
             var uniformlySeparated = absolutePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
             var doubleSlash = new string(Path.DirectorySeparatorChar, 2);
-            var prependSeparator = uniformlySeparated.StartsWith(doubleSlash);
+            var prependSeparator = uniformlySeparated.StartsWith(doubleSlash, StringComparison.Ordinal);
             uniformlySeparated = uniformlySeparated.Replace(doubleSlash, new string(Path.DirectorySeparatorChar, 1));
 
             if (prependSeparator)

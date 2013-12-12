@@ -52,7 +52,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static void Minify(string sourceFile, string minFile, bool isBundle)
         {
-            if (sourceFile.EndsWith(".min.js"))
+            if (sourceFile.EndsWith(".min.js", StringComparison.OrdinalIgnoreCase))
                 return;
 
             try

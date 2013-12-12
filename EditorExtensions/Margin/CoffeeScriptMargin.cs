@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -113,18 +114,20 @@ namespace MadsKristensen.EditorExtensions
             OnCompilationDone(e.Result, e.State);
         }
 
+        [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Int32.TryParse(System.String,System.Int32@)")]
         private CompilerError ParseError(string error)
         {
             string message = error.Replace("ERROR:", string.Empty).Replace("Error:", string.Empty);
             int line = 0, column = 0;
 
             Match match = Regex.Match(message, @"^(\d{1,})[:](\d{1,})");
+
             if (match.Success)
             {
-                bool parseResult =
-                    int.TryParse(match.Groups[1].Value, out line) &
-                    int.TryParse(match.Groups[2].Value, out column);
+                int.TryParse(match.Groups[1].Value, out line);
+                int.TryParse(match.Groups[2].Value, out column);
             }
+
             CompilerError result = new CompilerError()
             {
                 Message = "CoffeeScript: " + message,

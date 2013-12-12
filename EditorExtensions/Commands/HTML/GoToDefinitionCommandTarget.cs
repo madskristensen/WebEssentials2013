@@ -83,11 +83,11 @@ namespace MadsKristensen.EditorExtensions
             {
                 foreach (string file in Directory.GetFiles(root, "*" + ext, SearchOption.AllDirectories))
                 {
-                    if (file.EndsWith(".min" + ext))
+                    if (file.EndsWith(".min" + ext, StringComparison.OrdinalIgnoreCase))
                         continue;
 
                     string text = File.ReadAllText(file);
-                    int index = text.IndexOf("." + _className);
+                    int index = text.IndexOf("." + _className, StringComparison.Ordinal);
 
                     if (index > -1)
                     {

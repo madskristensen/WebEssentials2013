@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Design;
+﻿using System;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Windows.Forms;
 using EnvDTE;
@@ -48,7 +49,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static void ItemRenamed(ProjectItem ProjectItem, string OldName)
         {
-            if (OldName.EndsWith(Settings._fileName) || ProjectItem.Name == Settings._fileName)
+            if (OldName.EndsWith(Settings._fileName, StringComparison.OrdinalIgnoreCase) || ProjectItem.Name == Settings._fileName)
                 Settings.UpdateCache();
         }
 
