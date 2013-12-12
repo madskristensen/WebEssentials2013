@@ -195,7 +195,7 @@ namespace MadsKristensen.EditorExtensions
 
         string GetTargetName(bool js)
         {
-            var t = CodeName.ToLower(CultureInfo.CurrentCulture);
+            var t = CodeName.ToLowerInvariant();
 
             switch (t)
             {
