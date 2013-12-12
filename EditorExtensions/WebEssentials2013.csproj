@@ -632,7 +632,6 @@
     <Compile Include="Schemas\XmlColorPaletteProvider.cs" />
     <Compile Include="SmartTags\CSS\Actions\LessExtractVariableSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\SortSmartTagAction.cs" />
-    <Compile Include="SmartTags\CSS\Actions\MissingPseudoSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\UpdateEmbedSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\MissingStandardDirectiveSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\VendorDirectiveSmartTagAction.cs" />
@@ -660,7 +659,6 @@
     <Compile Include="SmartTags\CSS\CssSmartTagActionBase.cs" />
     <Compile Include="SmartTags\CSS\ICssSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\Providers\ColorConverterSmartTagProvider.cs" />
-    <Compile Include="SmartTags\CSS\Providers\MissingPseudoSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\Providers\UpdateEmbedSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\Providers\MissingStandardDirectiveSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\Providers\MissingVendorDirectiveSmartTagProvider.cs" />
