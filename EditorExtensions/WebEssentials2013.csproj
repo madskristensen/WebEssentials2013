@@ -494,6 +494,7 @@
     <Compile Include="SmartTags\HTML\HtmlRemoveParentSmartTag.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Validation\CSS\Providers\MediaQuerySyntaxErrorTagProvider.cs" />
     <Compile Include="Validation\CSS\Providers\UnusedCssTagProvider.cs" />
     <Compile Include="Validation\HTML\BootstrapClassValidator.cs" />
     <Compile Include="Validation\HTML\AngularMissingAppValidator.cs" />
