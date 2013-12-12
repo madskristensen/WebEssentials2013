@@ -164,13 +164,12 @@ namespace MadsKristensen.EditorExtensions.Helpers
     {
         public int StartPosition { get; private set; }
         private bool shouldRevert = true;
-        private readonly TabAwareCharacterStream stream;
-
-        protected TabAwareCharacterStream Stream { get { return stream; } }
+        
+        protected TabAwareCharacterStream Stream { get; private set; }
 
         protected StreamPeeker(TabAwareCharacterStream stream)
         {
-            this.stream = stream;
+            this.Stream = stream;
             StartPosition = stream.Position;
         }
 
