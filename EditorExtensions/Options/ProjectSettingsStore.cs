@@ -232,12 +232,9 @@ namespace MadsKristensen.EditorExtensions
             var dic = new SortedDictionary<string, object>();
 
             // Misc
+            dic.Add(Keys.EnableEnterFormat, true);
             dic.Add(Keys.EnableBrowserLinkMenu, true);
             dic.Add(Keys.BrowserLink_ShowMenu, true);
-
-            // HTML
-            dic.Add(Keys.EnableEnterFormat, true);
-            dic.Add(Keys.EnableAngularValidation, true);
 
             // LESS
             dic.Add(Keys.GenerateCssFileFromLess, true);

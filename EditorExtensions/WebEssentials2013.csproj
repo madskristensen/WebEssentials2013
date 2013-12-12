@@ -473,9 +473,6 @@
     <Compile Include="Options\CodeGeneration.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\Html.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Options\Markdown.cs">
       <SubType>Component</SubType>
     </Compile>
