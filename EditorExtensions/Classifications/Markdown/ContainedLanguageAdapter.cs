@@ -93,7 +93,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                 IVsTextLines vsTextLines = EnsureBufferCoordinator();
                 IVsContainedLanguage vsContainedLanguage;
 
-                int hr = languageFactory.GetLanguage(hierarchy, MarkdownCodeProject.FileItemId, _textBufferCoordinator, out vsContainedLanguage);
+                languageFactory.GetLanguage(hierarchy, MarkdownCodeProject.FileItemId, _textBufferCoordinator, out vsContainedLanguage);
+
                 if (vsContainedLanguage == null)
                 {
                     Logger.Log("Markdown: Couldn't get IVsContainedLanguage for " + ProjectionBuffer.IProjectionBuffer.ContentType);
@@ -195,7 +196,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             var contentType = projectionBuffer.IProjectionBuffer.ContentType;
             if (languageBridges.ContainsKey(contentType))
                 return;
-            int hr;
 
             Guid iid_vsip = typeof(IVsIntellisenseProject).GUID;
 
@@ -203,7 +203,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             var shell = (IVsShell)ServiceProvider.GlobalProvider.GetService(typeof(SVsShell));
             Guid otherPackage = new Guid("{39c9c826-8ef8-4079-8c95-428f5b1c323f}");
             IVsPackage package;
-            hr = shell.LoadPackage(ref otherPackage, out package);
+
+            shell.LoadPackage(ref otherPackage, out package);
 
             var project = (IVsIntellisenseProject)EditorExtensionsPackage.Instance.CreateInstance(ref intellisenseGuid, ref iid_vsip, typeof(IVsIntellisenseProject));
 
@@ -213,25 +214,27 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             if (displayName == "Basic") displayName = "VB";
             var hierarchy = new MarkdownCodeProject(fileName, displayName + " code in " + Path.GetFileName(fileName), WorkspaceItem.Hierarchy);
 
-            hr = project.Init(new ProjectHost(hierarchy));
-            hr = project.StartIntellisenseEngine();
-            hr = project.AddAssemblyReference(typeof(object).Assembly.Location);
-            hr = project.AddAssemblyReference(typeof(Uri).Assembly.Location);
-            hr = project.AddAssemblyReference(typeof(Enumerable).Assembly.Location);
-            hr = project.AddAssemblyReference(typeof(System.Xml.Linq.XElement).Assembly.Location);
-            hr = project.AddAssemblyReference(typeof(System.Web.HttpContextBase).Assembly.Location);
-            hr = project.AddAssemblyReference(typeof(System.Windows.Forms.Form).Assembly.Location);
-            hr = project.AddAssemblyReference(typeof(System.Windows.Window).Assembly.Location);
-            hr = project.AddAssemblyReference(typeof(System.Data.DataSet).Assembly.Location);
+            project.Init(new ProjectHost(hierarchy));
+            project.StartIntellisenseEngine();
+            project.AddAssemblyReference(typeof(object).Assembly.Location);
+            project.AddAssemblyReference(typeof(Uri).Assembly.Location);
+            project.AddAssemblyReference(typeof(Enumerable).Assembly.Location);
+            project.AddAssemblyReference(typeof(System.Xml.Linq.XElement).Assembly.Location);
+            project.AddAssemblyReference(typeof(System.Web.HttpContextBase).Assembly.Location);
+            project.AddAssemblyReference(typeof(System.Windows.Forms.Form).Assembly.Location);
+            project.AddAssemblyReference(typeof(System.Windows.Window).Assembly.Location);
+            project.AddAssemblyReference(typeof(System.Data.DataSet).Assembly.Location);
 
             int needsFile;
             project.IsWebFileRequiredByProject(out needsFile);
             if (needsFile != 0)
                 project.AddFile(fileName, MarkdownCodeProject.FileItemId);
 
-            hr = project.WaitForIntellisenseReady();
             IVsContainedLanguageFactory factory;
-            hr = project.GetContainedLanguageFactory(out factory);
+
+            project.WaitForIntellisenseReady();
+            project.GetContainedLanguageFactory(out factory);
+
             if (factory == null)
             {
                 Logger.Log("Markdown: Couldn't create IVsContainedLanguageFactory for " + contentType);
@@ -345,10 +348,6 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         pvar = null;
                         return 0;
                 }
-                var prop2 = (__VSHPROPID2)propid;
-                var prop3 = (__VSHPROPID3)propid;
-                var prop4 = (__VSHPROPID4)propid;
-                var prop5 = (__VSHPROPID5)propid;
 
                 throw new NotImplementedException();
             }

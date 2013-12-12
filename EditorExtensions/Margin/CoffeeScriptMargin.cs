@@ -119,12 +119,13 @@ namespace MadsKristensen.EditorExtensions
             int line = 0, column = 0;
 
             Match match = Regex.Match(message, @"^(\d{1,})[:](\d{1,})");
+
             if (match.Success)
             {
-                bool parseResult =
-                    int.TryParse(match.Groups[1].Value, out line) &
-                    int.TryParse(match.Groups[2].Value, out column);
+                int.TryParse(match.Groups[1].Value, out line);
+                int.TryParse(match.Groups[2].Value, out column);
             }
+
             CompilerError result = new CompilerError()
             {
                 Message = "CoffeeScript: " + message,
