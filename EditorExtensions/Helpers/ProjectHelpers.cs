@@ -24,6 +24,9 @@ namespace MadsKristensen.EditorExtensions
         }
         private static IEnumerable<Project> GetChildProjects(Project parent)
         {
+            if (parent.Collection == null)  // Unloaded
+                return Enumerable.Empty<Project>();
+
             if (!String.IsNullOrEmpty(parent.FullName))
                 return new[] { parent };
             return parent.ProjectItems
@@ -50,7 +53,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 project = project ?? GetActiveProject();
 
-                if (project == null)
+                if (project == null || project.Collection == null)
                 {
                     var doc = EditorExtensionsPackage.DTE.ActiveDocument;
                     if (doc != null && !string.IsNullOrEmpty(doc.FullName))
