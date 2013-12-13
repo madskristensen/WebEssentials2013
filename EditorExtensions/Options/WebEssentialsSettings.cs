@@ -8,7 +8,7 @@ namespace MadsKristensen.EditorExtensions
             public const string JavaScriptCamelCasePropertyNames = "JavaScriptCamelCasePropertyNames";
             public const string JavaScriptCamelCaseClassNames = "JavaScriptCamelCaseClassNames";
             // General
-            public const string KeepImportantComments = "KeepImportantComments";            
+            public const string KeepImportantComments = "KeepImportantComments";
             public const string EnableBrowserLinkMenu = "EnableBrowserLinkMenu";
             public const string AllMessagesToOutputWindow = "AllMessagesToOutputWindow";
 

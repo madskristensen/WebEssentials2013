@@ -18,6 +18,7 @@ namespace WebEssentialsTests.Tests.Markdown
             stream.CurrentChar.Should().Be('b');
             stream.TryConsumeWhiteSpace(1).Should().BeFalse();
         }
+
         [TestMethod]
         public void TestConsumeTab()
         {
@@ -29,6 +30,7 @@ namespace WebEssentialsTests.Tests.Markdown
             stream.CurrentChar.Should().Be('b');
             stream.TryConsumeWhiteSpace(1).Should().BeFalse();
         }
+
         [TestMethod]
         public void TestConsumePartialTab()
         {
@@ -42,6 +44,7 @@ namespace WebEssentialsTests.Tests.Markdown
             stream.CurrentChar.Should().Be('b');
             stream.TryConsumeWhiteSpace(1).Should().BeFalse();
         }
+
         [TestMethod]
         public void TestPeekPartialTab()
         {
@@ -57,6 +60,7 @@ namespace WebEssentialsTests.Tests.Markdown
             stream.CurrentChar.Should().Be('b');
             stream.TryConsumeWhiteSpace(1).Should().BeFalse();
         }
+
         [TestMethod]
         public void TestConsumeTooMuch()
         {
@@ -72,6 +76,7 @@ namespace WebEssentialsTests.Tests.Markdown
 
             stream.TryConsumeWhiteSpace(1).Should().BeFalse();
         }
+
         [TestMethod]
         public void TestConsumeMixedWhitespace()
         {

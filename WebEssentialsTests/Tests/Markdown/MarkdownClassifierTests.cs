@@ -13,7 +13,15 @@ namespace WebEssentialsTests
     [TestClass]
     public class MarkdownClassifierTests
     {
-        static List<Tuple<string, string>> Classify(string markdown, Span? subSpan = null)
+        private static readonly Func<string, Tuple<string, string>> Bold = CreateCreator(MarkdownClassificationTypes.MarkdownBold);
+        private static readonly Func<string, Tuple<string, string>> Code = CreateCreator(MarkdownClassificationTypes.MarkdownCode);
+        private static readonly Func<string, Tuple<string, string>> Header = CreateCreator(MarkdownClassificationTypes.MarkdownHeader);
+        private static readonly Func<string, Tuple<string, string>> Italic = CreateCreator(MarkdownClassificationTypes.MarkdownItalic);
+        private static readonly Func<string, Tuple<string, string>> Quote = CreateCreator(MarkdownClassificationTypes.MarkdownQuote);
+
+        #region Helper Methods
+        private static Func<string, Tuple<string, string>> CreateCreator(string classificationType) { return source => Tuple.Create(classificationType, source); }
+        private static List<Tuple<string, string>> Classify(string markdown, Span? subSpan = null)
         {
             if (subSpan == null)
             {
@@ -37,14 +45,48 @@ namespace WebEssentialsTests
                              .ToList();
             return results;
         }
+        #endregion
 
-        static Func<string, Tuple<string, string>> CreateCreator(string classificationType) { return source => Tuple.Create(classificationType, source); }
+        #region Helper Classes
+        internal class MockClassificationTypeRegistry : IClassificationTypeRegistryService
+        {
+            public IClassificationType CreateClassificationType(string type, IEnumerable<IClassificationType> baseTypes)
+            {
+                throw new NotImplementedException();
+            }
 
-        static readonly Func<string, Tuple<string, string>> Bold = CreateCreator(MarkdownClassificationTypes.MarkdownBold);
-        static readonly Func<string, Tuple<string, string>> Code = CreateCreator(MarkdownClassificationTypes.MarkdownCode);
-        static readonly Func<string, Tuple<string, string>> Header = CreateCreator(MarkdownClassificationTypes.MarkdownHeader);
-        static readonly Func<string, Tuple<string, string>> Italic = CreateCreator(MarkdownClassificationTypes.MarkdownItalic);
-        static readonly Func<string, Tuple<string, string>> Quote = CreateCreator(MarkdownClassificationTypes.MarkdownQuote);
+            public IClassificationType CreateTransientClassificationType(params IClassificationType[] baseTypes)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IClassificationType CreateTransientClassificationType(IEnumerable<IClassificationType> baseTypes)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IClassificationType GetClassificationType(string type)
+            {
+                return new MockType(type);
+            }
+
+            internal class MockType : IClassificationType
+            {
+                public IEnumerable<IClassificationType> BaseTypes { get { yield break; } }
+                public string Classification { get; private set; }
+
+                public MockType(string type)
+                {
+                    Classification = type;
+                }
+
+                public bool IsOfType(string type)
+                {
+                    return Classification.Equals(type, StringComparison.OrdinalIgnoreCase) || BaseTypes.Any(b => b.IsOfType(type));
+                }
+            }
+        }
+        #endregion
 
         [TestMethod]
         public void TestBasicClassifications()
@@ -116,32 +158,5 @@ _italic_ `code`").Should().Equal(Code("Indented line"), Italic("_italic_"), Code
         }
         // TODO: Expand partial span until newline to catch constructs containing span end.
         // TODO: Test quoted code blocks
-    }
-
-    class MockClassificationTypeRegistry : IClassificationTypeRegistryService
-    {
-        public IClassificationType CreateClassificationType(string type, IEnumerable<IClassificationType> baseTypes)
-        { throw new NotImplementedException(); }
-        public IClassificationType CreateTransientClassificationType(params IClassificationType[] baseTypes)
-        { throw new NotImplementedException(); }
-        public IClassificationType CreateTransientClassificationType(IEnumerable<IClassificationType> baseTypes)
-        { throw new NotImplementedException(); }
-
-        public IClassificationType GetClassificationType(string type)
-        {
-            return new MockType(type);
-        }
-        class MockType : IClassificationType
-        {
-            public MockType(string type) { Classification = type; }
-
-            public IEnumerable<IClassificationType> BaseTypes { get { yield break; } }
-            public string Classification { get; private set; }
-
-            public bool IsOfType(string type)
-            {
-                return Classification.Equals(type, StringComparison.OrdinalIgnoreCase) || BaseTypes.Any(b => b.IsOfType(type));
-            }
-        }
     }
 }

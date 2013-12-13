@@ -12,20 +12,39 @@ namespace WebEssentialsTests
     [TestClass]
     public class LessCompilationTests
     {
-        static string originalPath;
+        private static string originalPath;
+        private static readonly string BaseDirectory = Path.GetDirectoryName(typeof(NodeModuleImportedTests).Assembly.Location);
+
+        #region Helper Methods
+        private static async Task<string> CompileLess(string fileName, string targetFilename = null)
+        {
+            string siteMapPath = "/" + Path.GetDirectoryName(FileHelpers.RelativePath(BaseDirectory, fileName)).Replace("\\", "/");
+            var result = await LessCompiler.Compile(fileName, targetFilename, siteMapPath);
+
+            if (result.IsSuccess)
+            {
+                return result.Result;
+            }
+            else
+            {
+                throw new ExternalException(result.Error.Message);
+            }
+        }
+        #endregion
+
         [ClassInitialize]
         public static void ObscureNode(TestContext context)
         {
             originalPath = Environment.GetEnvironmentVariable("PATH");
             Environment.SetEnvironmentVariable("PATH", originalPath.Replace(@";C:\Program Files\nodejs\", ""), EnvironmentVariableTarget.Process);
         }
+
         [ClassCleanup]
         public static void RestoreNode()
         {
             Environment.SetEnvironmentVariable("PATH", originalPath);
         }
 
-        static readonly string BaseDirectory = Path.GetDirectoryName(typeof(NodeModuleImportedTests).Assembly.Location);
         [TestMethod]
         public async Task PathCompilationTest()
         {
@@ -56,21 +75,6 @@ namespace WebEssentialsTests
                 expected = new CssFormatter().Format(expected).Replace("\r", "");
 
                 compiled.Should().Be(expected);
-            }
-        }
-
-        static async Task<string> CompileLess(string fileName, string targetFilename = null)
-        {
-            string siteMapPath = "/" + Path.GetDirectoryName(FileHelpers.RelativePath(BaseDirectory, fileName)).Replace("\\", "/");
-            var result = await LessCompiler.Compile(fileName, targetFilename, siteMapPath);
-
-            if (result.IsSuccess)
-            {
-                return result.Result;
-            }
-            else
-            {
-                throw new ExternalException(result.Error.Message);
             }
         }
     }
