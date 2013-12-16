@@ -176,7 +176,8 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: Cannot minify the current selection";
+                    EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: Cannot minify the current selection.  See Output Window for details.";
+                    Logger.ShowMessage("Cannot minify the selection:\r\n\r\n" + String.Join(Environment.NewLine, result.Errors.Select(e => e.Message)));
                     return content;
                 }
             }
