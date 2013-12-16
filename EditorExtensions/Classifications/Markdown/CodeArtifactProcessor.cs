@@ -64,6 +64,15 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             BlockInfo = blockInfo;
             Boundary = type;
+
+            // Replace the BlockInfo's TextRanges with our created
+            // artifacts so that they will be adjusted as the user
+            // edits the text. TextRangeCollection shifts existing
+            // artifacts as the user types elsewhere.
+            if (type == BoundaryType.Start)
+                BlockInfo.OuterStart = this;
+            else
+                BlockInfo.OuterEnd = this;
         }
         public CodeBlockInfo BlockInfo { get; private set; }
         public BoundaryType Boundary { get; private set; }
