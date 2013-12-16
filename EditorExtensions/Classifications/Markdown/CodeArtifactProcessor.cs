@@ -33,7 +33,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
                     // Don't add artifacts for HTML code lines.
                     if ((cla.BlockInfo.Language ?? "").StartsWith("htm", StringComparison.OrdinalIgnoreCase))
+                    {
+                        cla.BlockInfo.IsExtradited = true;
                         return;
+                    }
                 }
                 // If we got a non-block artifact after a block end, add the end marker.
                 else if (lastBlock != null && e.Artifact.Start >= lastBlock.OuterEnd.End)
@@ -136,6 +139,14 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         public override ICollection<IArtifact> ReflectTextChange(int start, int oldLength, int newLength)
         {
+            // Forward the change to any collections of artifacts
+            // that have been removed from this main collection.
+            foreach (var bba in this.OfType<BlockBoundaryArtifact>())
+            {
+                if (bba.Boundary==BoundaryType.Start && bba.BlockInfo.IsExtradited)
+                    bba.BlockInfo.CodeLines.ReflectTextChange(start, oldLength, newLength);
+            }
+
             return base.ReflectTextChange(start, oldLength, newLength);
         }
     }
