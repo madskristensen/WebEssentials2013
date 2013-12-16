@@ -502,8 +502,12 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
     ///<summary>Stores information about a complete code block, which may include multiple Artifacts.</summary>
     public class CodeBlockInfo
     {
-        public CodeBlockInfo() { CodeLines = new Collection<CodeLineArtifact>(); }
-        public Collection<CodeLineArtifact> CodeLines { get; private set; }
+        public CodeBlockInfo() { CodeLines = new TextRangeCollection<CodeLineArtifact>(); }
+
+        ///<summary>Indicates whether the CodeLineArtifacts in this block have been removed from the general ArtifactCollection.</summary>
+        public bool IsExtradited { get; set; }
+
+        public TextRangeCollection<CodeLineArtifact> CodeLines { get; private set; }
         public string Language { get; set; }
         public ITextRange OuterStart { get; set; }
         public ITextRange OuterEnd { get; set; }

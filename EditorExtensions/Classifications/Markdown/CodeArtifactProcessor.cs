@@ -33,7 +33,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
                     // Don't add artifacts for HTML code lines.
                     if ((cla.BlockInfo.Language ?? "").StartsWith("htm", StringComparison.OrdinalIgnoreCase))
+                    {
+                        cla.BlockInfo.IsExtradited = true;
                         return;
+                    }
                 }
                 // If we got a non-block artifact after a block end, add the end marker.
                 else if (lastBlock != null && e.Artifact.Start >= lastBlock.OuterEnd.End)
@@ -64,6 +67,15 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             BlockInfo = blockInfo;
             Boundary = type;
+
+            // Replace the BlockInfo's TextRanges with our created
+            // artifacts so that they will be adjusted as the user
+            // edits the text. TextRangeCollection shifts existing
+            // artifacts as the user types elsewhere.
+            if (type == BoundaryType.Start)
+                BlockInfo.OuterStart = this;
+            else
+                BlockInfo.OuterEnd = this;
         }
         public CodeBlockInfo BlockInfo { get; private set; }
         public BoundaryType Boundary { get; private set; }
@@ -127,6 +139,14 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
         public override ICollection<IArtifact> ReflectTextChange(int start, int oldLength, int newLength)
         {
+            // Forward the change to any collections of artifacts
+            // that have been removed from this main collection.
+            foreach (var bba in this.OfType<BlockBoundaryArtifact>())
+            {
+                if (bba.Boundary==BoundaryType.Start && bba.BlockInfo.IsExtradited)
+                    bba.BlockInfo.CodeLines.ReflectTextChange(start, oldLength, newLength);
+            }
+
             return base.ReflectTextChange(start, oldLength, newLength);
         }
     }
