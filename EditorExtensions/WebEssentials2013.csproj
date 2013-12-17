@@ -186,6 +186,10 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebMarkupMin.Core, Version=0.8.13.0, Culture=neutral, PublicKeyToken=99472178d266584b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebMarkupMin.Core.0.8.13\lib\net40\WebMarkupMin.Core.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="ZenCoding, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -692,6 +696,9 @@
     <Compile Include="Validation\HTML\ItemTypeValidator.cs" />
     <Compile Include="Validation\LESS\Providers\ImportOnceErrorTagProvider.cs" />
     <None Include="PreBuildTask.cs" />
+    <None Include="WebMarkupMin.Configuration.xsd">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
