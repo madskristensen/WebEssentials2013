@@ -19,6 +19,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public bool Continue { get; set; }
         [JsonProperty]
         public List<string> Sheets { get; set; }
+
         public IEnumerable<IStylingRule> AllRules
         {
             get

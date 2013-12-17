@@ -16,7 +16,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 ICssError error = errors[i];
                 Declaration dec = error.Item.FindType<Declaration>();
-                if (dec != null && (dec.Text.Contains("var-") || dec.Text.Contains("var(") ))
+                if (dec != null && (dec.Text.Contains("var-") || dec.Text.Contains("var(")))
                 {
                     errors.RemoveAt(i);
                 }

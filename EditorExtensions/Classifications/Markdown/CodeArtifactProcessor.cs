@@ -143,7 +143,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             // that have been removed from this main collection.
             foreach (var bba in this.OfType<BlockBoundaryArtifact>())
             {
-                if (bba.Boundary==BoundaryType.Start && bba.BlockInfo.IsExtradited)
+                if (bba.Boundary == BoundaryType.Start && bba.BlockInfo.IsExtradited)
                     bba.BlockInfo.CodeLines.ReflectTextChange(start, oldLength, newLength);
             }
 

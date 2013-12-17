@@ -18,7 +18,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             get { return new ErrorListUpdateSuspensionContext(); }
         }
 
-
         public static void AddItem(Task task)
         {
             ErrorListProvider.Tasks.Add(task);

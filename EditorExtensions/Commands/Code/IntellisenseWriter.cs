@@ -165,6 +165,11 @@ namespace MadsKristensen.EditorExtensions
         public bool IsEnum { get; set; }
         public string Summary { get; set; }
         public List<IntellisenseProperty> Properties { get; set; }
+
+        public IntellisenseObject()
+        {
+            Properties = new List<IntellisenseProperty>();
+        }
     }
 
     public class IntellisenseProperty

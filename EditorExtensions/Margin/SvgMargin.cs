@@ -19,7 +19,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
         protected override void StartCompiler(string source)
-        {            
+        {
             if (_browser != null && File.Exists(_fileName))
             {
                 _browser.Navigate(_fileName);

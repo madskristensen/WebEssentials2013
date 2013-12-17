@@ -61,6 +61,7 @@ namespace MadsKristensen.EditorExtensions
                 bool fileExist = File.Exists(minFile);
 
                 ProjectHelpers.CheckOutFileFromSourceControl(minFile);
+
                 using (StreamWriter writer = new StreamWriter(minFile, false, new UTF8Encoding(true)))
                 {
                     writer.Write(content);
