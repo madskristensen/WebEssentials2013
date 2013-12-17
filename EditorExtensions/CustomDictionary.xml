@@ -18,6 +18,7 @@
       <Word>Modernizr</Word>
       <Word>Htmlx</Word>
       <Word>Prev</Word>
+      <Word>Svg</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>
