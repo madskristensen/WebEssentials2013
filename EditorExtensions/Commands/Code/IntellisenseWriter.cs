@@ -152,7 +152,7 @@ namespace MadsKristensen.EditorExtensions
 
             //if (current != sb.ToString())
             //{
-            File.WriteAllText(fileName, sb.ToString());
+            File.WriteAllText(fileName, sb.ToString(), Encoding.UTF8);
             //}
         }
     }
@@ -228,7 +228,7 @@ namespace MadsKristensen.EditorExtensions
                     return js ? "Number" : "number";
 
                 case "datetime":
-                case "Sdatetimeoffset":
+                case "datetimeoffset":
                 case "system.datetime":
                 case "system.datetimeoffset":
                     return "Date";
