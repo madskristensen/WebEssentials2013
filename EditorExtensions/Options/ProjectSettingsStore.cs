@@ -234,6 +234,7 @@ namespace MadsKristensen.EditorExtensions
             // Misc
             dic.Add(Keys.EnableBrowserLinkMenu, true);
             dic.Add(Keys.BrowserLink_ShowMenu, true);
+            dic.Add(Keys.SvgShowPreviewWindow, true);
 
             // HTML
             dic.Add(Keys.EnableEnterFormat, true);

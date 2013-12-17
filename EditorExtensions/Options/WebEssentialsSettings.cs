@@ -46,6 +46,9 @@ namespace MadsKristensen.EditorExtensions
             public const string MarkdownEncodeProblemUrlCharacters = "MarkdownEncodeProblemUrlCharacters";
             public const string MarkdownStrictBoldItalic = "MarkdownStrictBoldItalic";
 
+            // SVG
+            public const string SvgShowPreviewWindow = "SvgShowPreviewWindow";
+
             // CSS
             public const string ValidateStarSelector = "CssValidateStarSelector";
             public const string ValidateOverQualifiedSelector = "CSSValidateOverQualifiedSelector";

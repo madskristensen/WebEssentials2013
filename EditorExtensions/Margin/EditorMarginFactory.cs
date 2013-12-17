@@ -15,6 +15,7 @@ namespace MadsKristensen.EditorExtensions
     [ContentType("CoffeeScript")]
     //[ContentType("TypeScript")]
     [ContentType("Markdown")]
+    [ContentType("svg")]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
     public sealed class MarginFactory : IWpfTextViewMarginProvider
     {
@@ -25,7 +26,8 @@ namespace MadsKristensen.EditorExtensions
         {
             { "LESS",           (source, document) => new LessMargin("CSS", source, WESettings.GetBoolean(WESettings.Keys.ShowLessPreviewWindow), document) },
             { "CoffeeScript",   (source, document) => new CoffeeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow), document) },
-            { "Markdown",       (source, document) => new MarkdownMargin("text", source, WESettings.GetBoolean(WESettings.Keys.MarkdownShowPreviewWindow), document) }
+            { "Markdown",       (source, document) => new MarkdownMargin("text", source, WESettings.GetBoolean(WESettings.Keys.MarkdownShowPreviewWindow), document) },
+            { "Svg",            (source, document) => new SvgMargin("svg", source, WESettings.GetBoolean(WESettings.Keys.SvgShowPreviewWindow), document) }
         };
 
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)

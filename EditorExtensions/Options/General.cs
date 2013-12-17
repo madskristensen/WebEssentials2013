@@ -15,6 +15,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.KeepImportantComments, KeepImportantComments);
             Settings.SetValue(WESettings.Keys.EnableBrowserLinkMenu, EnableBrowserLinkMenu);
             Settings.SetValue(WESettings.Keys.AllMessagesToOutputWindow, AllMessagesToOutputWindow);
+            Settings.SetValue(WESettings.Keys.SvgShowPreviewWindow, SvgShowPreviewWindow);
 
             Settings.Save();
         }
@@ -24,6 +25,7 @@ namespace MadsKristensen.EditorExtensions
             KeepImportantComments = WESettings.GetBoolean(WESettings.Keys.KeepImportantComments);
             EnableBrowserLinkMenu = WESettings.GetBoolean(WESettings.Keys.EnableBrowserLinkMenu);
             AllMessagesToOutputWindow = WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow);
+            SvgShowPreviewWindow = WESettings.GetBoolean(WESettings.Keys.SvgShowPreviewWindow);
         }
 
         // MISC
@@ -41,5 +43,10 @@ namespace MadsKristensen.EditorExtensions
         [Description("Redirect messages/notifications to output window.")]
         [Category("Messages")]
         public bool AllMessagesToOutputWindow { get; set; }
+
+        [LocDisplayName("Show preview window")]
+        [Description("Shows the preview window when editing an SVG file.")]
+        [Category("SVG")]
+        public bool SvgShowPreviewWindow { get; set; }
     }
 }

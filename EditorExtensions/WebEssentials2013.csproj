@@ -339,6 +339,7 @@
     <Compile Include="Classifications\Markdown\MarkdownClassifier.cs" />
     <Compile Include="Classifications\Markdown\MarkdownContentTypeDefinition.cs" />
     <Compile Include="Classifications\CSS\ModernizrClassifier.cs" />
+    <Compile Include="Classifications\SVG\SvgContentTypeDefinition.cs" />
     <Compile Include="Commands\CommandExceptionFilter.cs" />
     <Compile Include="Completion\HTML\InputIdAttributeCompletion.cs" />
     <Compile Include="Completion\Markdown\MarkdownCompletionFilter.cs" />
@@ -346,6 +347,7 @@
     <Compile Include="Helpers\Disposable.cs" />
     <Compile Include="ExtensionMethods\Extensions.cs" />
     <Compile Include="Helpers\TabAwareCharacterStream.cs" />
+    <Compile Include="Margin\SvgMargin.cs" />
     <Compile Include="MenuItems\AddIntellisenseFile.cs" />
     <Compile Include="Commands\Code\IntellisenseWriter.cs" />
     <Compile Include="Commands\Code\ScriptIntellisenseListener.cs" />
