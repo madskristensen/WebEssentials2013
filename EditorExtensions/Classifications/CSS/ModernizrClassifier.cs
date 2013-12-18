@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions
 
         public IClassifier GetClassifier(ITextBuffer textBuffer)
         {
-            return textBuffer.Properties.GetOrCreateSingletonProperty<ModernizrClassifier>(() => { return new ModernizrClassifier(Registry, textBuffer); });
+            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new ModernizrClassifier(Registry, textBuffer));
         }
     }
 
