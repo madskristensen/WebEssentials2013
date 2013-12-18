@@ -143,7 +143,6 @@ namespace MadsKristensen.EditorExtensions
                 Name = element.Name,
                 IsEnum = element.Kind == vsCMElement.vsCMElementEnum,
                 FullName = element.FullName,
-                Properties = new List<IntellisenseProperty>(),
                 Namespace = GetNamespace(element),
                 Summary = GetSummary(element),
             };
@@ -165,14 +164,20 @@ namespace MadsKristensen.EditorExtensions
         private static void ProcessClass(CodeClass cc, List<IntellisenseObject> list)
         {
             var props = GetProperties(cc.Members, new HashSet<string>()).ToList();
-            if (props.Any()) list.Add(new IntellisenseObject
+
+            if (props.Any())
             {
-                Namespace = GetNamespace(cc),
-                Name = cc.Name,
-                FullName = cc.FullName,
-                Properties = props,
-                Summary = GetSummary(cc),
-            });
+                var intellisenseObject = new IntellisenseObject
+                {
+                    Namespace = GetNamespace(cc),
+                    Name = cc.Name,
+                    FullName = cc.FullName,
+                    Summary = GetSummary(cc),
+                };
+
+                intellisenseObject.Properties.AddRange(props);
+                list.Add(intellisenseObject);
+            }
         }
 
         private static IEnumerable<IntellisenseProperty> GetProperties(CodeElements props, HashSet<string> traversedTypes)

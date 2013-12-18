@@ -56,11 +56,13 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
                 foreach (var match in allRules.Where(x => x.IsMatch(selector)))
                 {
-                    result.Add(new RuleUsage
+                    var ruleUsage = new RuleUsage
                     {
-                        SourceLocations = locations,
                         Rule = match
-                    });
+                    };
+
+                    ruleUsage.SourceLocations.UnionWith(locations);
+                    result.Add(ruleUsage);
                 }
             }
 
@@ -91,11 +93,13 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
                 foreach (var match in allRules.Where(x => x.IsMatch(selector)))
                 {
-                    result.Add(new RuleUsage
+                    var ruleUsage = new RuleUsage
                     {
-                        SourceLocations = locations,
                         Rule = match
-                    });
+                    };
+
+                    ruleUsage.SourceLocations.UnionWith(locations);
+                    result.Add(ruleUsage);
                 }
             }
 

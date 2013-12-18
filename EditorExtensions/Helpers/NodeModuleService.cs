@@ -10,10 +10,11 @@ namespace MadsKristensen.EditorExtensions
     ///<summary>Resolves paths to Node.js modules.</summary>
     public static class NodeModuleService
     {
-
         ///<summary>The default extensions used to resolve modules without extensions.</summary>
         ///<remarks>This must match require.extensions from Node.js; see https://github.com/joyent/node/blob/master/lib/module.js#L464-L484. </remarks>
-        public static readonly ReadOnlyCollection<string> ModuleExtensions = new ReadOnlyCollection<string>(new[] { "", ".js", ".json", ".node" });
+        private static readonly ReadOnlyCollection<string> _moduleExtensions = new ReadOnlyCollection<string>(new[] { "", ".js", ".json", ".node" });
+
+        public static ReadOnlyCollection<string> ModuleExtensions { get { return _moduleExtensions; } }
 
         ///<summary>Resolves the full path to the JS file that will be loaded by a call to require().  This will always return an existing file (not directory) on disk, or null.</summary>
         ///<param name="callerPath">The path to the directory containing the file that is calling require().  This must be an absolute path.</param>

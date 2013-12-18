@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -32,29 +33,28 @@ namespace MadsKristensen.EditorExtensions
                 Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/palette.png", UriKind.RelativeOrAbsolute));
             }
 
-            _displayText = "Convert to " + GetColorString();
+            _displayText = "Convert to " + GetColorString(_format, _colorModel);
         }
 
-        private string GetColorString()
+        private static string GetColorString(ColorFormat format, ColorModel model)
         {
-            switch (_format)
+            switch (format)
             {
                 case ColorFormat.Name:
-                    return GetNamedColor(_colorModel.Color);
+                    return GetNamedColor(model.Color);
 
                 case ColorFormat.Hsl:
-                    return FormatHslColor(_colorModel); //ColorFormatter.FormatColorAs(_colorModel, ColorFormat.Hsl);
+                    return FormatHslColor(model); //ColorFormatter.FormatColorAs(_colorModel, ColorFormat.Hsl);
 
                 case ColorFormat.Rgb:
                 case ColorFormat.RgbHex3:
                 case ColorFormat.RgbHex6:
-                    return ColorFormatter.FormatColor(_colorModel, _format);
+                    return ColorFormatter.FormatColor(model, format);
 
                 default:
-                    throw new InvalidEnumArgumentException("format", (int)_format, typeof(ColorFormat));
+                    throw new InvalidEnumArgumentException("format", (int)format, typeof(ColorFormat));
             }
         }
-
 
         public override string DisplayText
         {
@@ -63,7 +63,7 @@ namespace MadsKristensen.EditorExtensions
 
         public override void Invoke()
         {
-            _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), GetColorString());
+            _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), GetColorString(_format, _colorModel));
         }
 
         #region Fixed Hsl conversion
@@ -105,7 +105,7 @@ namespace MadsKristensen.EditorExtensions
         }
         #endregion
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
+        [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
         public static string GetNamedColor(Color color)
         {
             foreach (string name in _colorNames)
@@ -115,7 +115,6 @@ namespace MadsKristensen.EditorExtensions
                 {
                     return known.Name.ToLowerInvariant();
                 }
-
             }
 
             return null;

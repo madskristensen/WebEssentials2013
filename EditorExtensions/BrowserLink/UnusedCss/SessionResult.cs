@@ -14,11 +14,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private UnusedCssExtension _extension;
 
         [JsonProperty]
-        public HashSet<RawRuleUsage> RawUsageData { get; set; }
+        public HashSet<RawRuleUsage> RawUsageData { get; private set; }
         [JsonProperty]
         public bool Continue { get; set; }
         [JsonProperty]
-        public List<string> Sheets { get; set; }
+        public List<string> Sheets { get; private set; }
+
         public IEnumerable<IStylingRule> AllRules
         {
             get
@@ -39,11 +40,16 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return AllRules.Except(_ruleUsages.Select(x => x.Rule)).Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
         }
 
-        public SessionResult() { }
+        public SessionResult()
+        {
+            RawUsageData = new HashSet<RawRuleUsage>();
+            Sheets = new List<string>();
+        }
 
         public SessionResult(UnusedCssExtension extension)
         {
             RawUsageData = new HashSet<RawRuleUsage>();
+            Sheets = new List<string>();
             _extension = extension;
             _ruleUsages = new HashSet<RuleUsage>();
             _isResolved = 1;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.Html.Core;
 using Microsoft.Web.Core;

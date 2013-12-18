@@ -6,8 +6,13 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public class RuleUsage : IEquatable<RuleUsage>
     {
-        public HashSet<SourceLocation> SourceLocations { get; set; }
+        public HashSet<SourceLocation> SourceLocations { get; private set; }
         public IStylingRule Rule { get; set; }
+
+        public RuleUsage()
+        {
+            SourceLocations = new HashSet<SourceLocation>();
+        }
 
         public bool Equals(RuleUsage other)
         {

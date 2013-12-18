@@ -67,6 +67,8 @@ namespace MadsKristensen.EditorExtensions
                 // Inserts an empty row between each rule and replace two space indentation with 4 space indentation
                 result.Result = _endingCurlyBraces.Replace(_linesStartingWithTwoSpaces.Replace(result.Result.Trim(), "$1$2"), "$&\n");
 
+                var message = Path.GetFileName(fileName) + " compiled.";
+
                 // If the caller wants us to renormalize URLs to a different filename, do so.
                 if (targetFileName != null && result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
                 {
@@ -80,11 +82,11 @@ namespace MadsKristensen.EditorExtensions
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log("An error occurred while normalizing generated paths in " + fileName + "\r\n" + ex);
+                        message = "An error occurred while normalizing generated paths in " + fileName + "\r\n" + ex;
                     }
                 }
 
-                Logger.Log(Path.GetFileName(fileName) + " compiled.");
+                Logger.Log(message);
             }
             else
             {
@@ -120,9 +122,10 @@ namespace MadsKristensen.EditorExtensions
         private static CompilerError ParseError(string error)
         {
             var match = errorParser.Match(error);
+
             if (!match.Success)
             {
-                Logger.Log("Unparseable LESS error: " + error);
+                Logger.Log("LESS parse error: " + error);
                 return new CompilerError { Message = error };
             }
             return new CompilerError

@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions
             // Used for project compilation
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public void CompileProject(EnvDTE.Project project)
         {
             if (string.IsNullOrEmpty(project.FullName))

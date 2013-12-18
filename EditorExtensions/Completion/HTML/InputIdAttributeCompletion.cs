@@ -31,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
                 context.Document.HtmlEditorTree.RootNode.Accept(this, list);
                 tooltip = "Extracted from a <label> element in this document";
             }
-            
+
             return list.Select(s => new HtmlCompletion(s, s, tooltip, _glyph, HtmlIconAutomationText.AttributeIconText)).ToList();
         }
 

@@ -85,7 +85,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 string text = dec.Text;
 
-                if (text.StartsWith("var-"))
+                if (text.StartsWith("var-", StringComparison.Ordinal))
                 {
                     if (!_cache.Contains(dec))
                         _cache.Add(dec);

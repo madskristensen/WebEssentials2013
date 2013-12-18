@@ -10,7 +10,9 @@ namespace MadsKristensen.EditorExtensions
         private IClassificationType _keyword, _comment;
         private bool _isRobotsTxt = false;
         private TextType _textType;
-        public readonly static HashSet<string> Valid = new HashSet<string>() { "user-agent", "disallow", "sitemap", "crawl-delay", "host" };
+        private static readonly HashSet<string> _valid = new HashSet<string>() { "user-agent", "disallow", "sitemap", "crawl-delay", "host" };
+
+        public static HashSet<string> Valid { get { return _valid; } }
 
         public RobotsTxtClassifier(IClassificationTypeRegistryService registry)
         {

@@ -36,11 +36,11 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
 
                     if (prefix == null)
                     {
-                        results.AddAttributeError(element, "The 'prefix' attribute on <head> for OpenGraph is missing", HtmlValidationErrorLocation.AttributeValue, index);
+                        results.AddAttributeError(element, "The 'prefix' attribute on <head> for Open Graph is missing", HtmlValidationErrorLocation.AttributeValue, index);
                     }
                     else if (prefix.Value.IndexOf("og:", StringComparison.Ordinal) == -1)
                     {
-                        results.AddAttributeError(element, "To use OpenGraph, you must add the value 'og: http://ogp.me/ns#' to 'prefix' in <head>", HtmlValidationErrorLocation.AttributeValue, index);
+                        results.AddAttributeError(element, "To use Open Graph, you must add the value 'og: http://ogp.me/ns#' to 'prefix' in <head>", HtmlValidationErrorLocation.AttributeValue, index);
                     }
                 }
             }

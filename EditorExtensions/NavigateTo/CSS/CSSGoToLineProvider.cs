@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions
 {
     internal sealed class CssGoToLineProvider : DisposableObject, INavigateToItemProvider
     {
-        private sealed class Worker
+        private sealed class Worker : IDisposable
         {
             private readonly CssGoToLineProviderFactory _providerFactory;
             private readonly CancellationTokenSource _cancellationTokenSource;
@@ -129,6 +129,25 @@ namespace MadsKristensen.EditorExtensions
                 }
 
                 return folder;
+            }
+
+            private void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    _cancellationTokenSource.Dispose();
+                }
+            }
+
+            ~Worker()
+            {
+                Dispose(false);
+            }
+
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
             }
         }
 
