@@ -9,7 +9,9 @@ namespace MadsKristensen.EditorExtensions
     public abstract class StaticListCompletion : IHtmlCompletionListProvider
     {
         private readonly IReadOnlyDictionary<string, IList<HtmlCompletion>> values;
-        protected static readonly ReadOnlyCollection<HtmlCompletion> Empty = new ReadOnlyCollection<HtmlCompletion>(new HtmlCompletion[0]);
+        private static ReadOnlyCollection<HtmlCompletion> _empty = new ReadOnlyCollection<HtmlCompletion>(new HtmlCompletion[0]);
+
+        protected static ReadOnlyCollection<HtmlCompletion> Empty { get { return _empty; } }
 
         public CompletionType CompletionType
         {
