@@ -44,14 +44,13 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             RawUsageData = new HashSet<RawRuleUsage>();
             Sheets = new List<string>();
+            _ruleUsages = new HashSet<RuleUsage>();
         }
 
         public SessionResult(UnusedCssExtension extension)
+            : this()
         {
-            RawUsageData = new HashSet<RawRuleUsage>();
-            Sheets = new List<string>();
             _extension = extension;
-            _ruleUsages = new HashSet<RuleUsage>();
             _isResolved = 1;
         }
 
