@@ -316,6 +316,7 @@
     <Compile Include="BrowserLink\UnusedCss\UnusedCssMenu.cs" />
     <Compile Include="BrowserLink\UnusedCss\UsageRegistry.cs" />
     <Compile Include="BrowserLink\UploadHelper.cs" />
+    <Compile Include="Classifications\CSS\VariableClassifier.cs" />
     <Compile Include="Classifications\HTML\HtmlRegionTagger.cs" />
     <Compile Include="Classifications\JavaScript\JavaScriptArrayOutlining.cs">
       <SubType>Code</SubType>
@@ -343,6 +344,8 @@
     <Compile Include="Classifications\CSS\ModernizrClassifier.cs" />
     <Compile Include="Classifications\SVG\SvgContentTypeDefinition.cs" />
     <Compile Include="Commands\CommandExceptionFilter.cs" />
+    <Compile Include="Completion\CSS\CompletionProviders\VariableNameCompletionProvider.cs" />
+    <Compile Include="Completion\CSS\ContextProviders\VariableContextProvider.cs" />
     <Compile Include="Completion\HTML\InputIdAttributeCompletion.cs" />
     <Compile Include="Completion\Markdown\MarkdownCompletionFilter.cs" />
     <Compile Include="DropTargets\HtmlImageDrop.cs" />
@@ -502,6 +505,7 @@
     <Compile Include="SmartTags\HTML\HtmlRemoveParentSmartTag.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Validation\CSS\Filters\VariableCssErrorFilter.cs" />
     <Compile Include="Validation\CSS\Providers\MediaQuerySyntaxErrorTagProvider.cs" />
     <Compile Include="Validation\CSS\Providers\UnusedCssTagProvider.cs" />
     <Compile Include="Validation\HTML\BootstrapClassValidator.cs" />
