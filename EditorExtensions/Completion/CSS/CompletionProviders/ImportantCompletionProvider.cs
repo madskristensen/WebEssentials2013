@@ -17,7 +17,6 @@ namespace MadsKristensen.EditorExtensions
 
         public IEnumerable<ICssCompletionListEntry> GetListEntries(CssCompletionContext context)
         {
-            List<ICssCompletionListEntry> entries = new List<ICssCompletionListEntry>();
             Declaration dec = context.ContextItem.FindType<Declaration>();
             if (dec == null || dec.Colon == null || dec.Important != null || dec.Values.Count == 0)
                 yield break;
