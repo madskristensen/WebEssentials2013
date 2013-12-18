@@ -58,8 +58,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 {
                     var ruleUsage = new RuleUsage
                     {
-                        Rule = match,
-                        SourceLocations = new HashSet<SourceLocation>()
+                        Rule = match
                     };
 
                     ruleUsage.SourceLocations.UnionWith(locations);
@@ -96,8 +95,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 {
                     var ruleUsage = new RuleUsage
                     {
-                        Rule = match,
-                        SourceLocations = new HashSet<SourceLocation>()
+                        Rule = match
                     };
 
                     ruleUsage.SourceLocations.UnionWith(locations);
