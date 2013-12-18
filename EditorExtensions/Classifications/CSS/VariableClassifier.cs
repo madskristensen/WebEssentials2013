@@ -68,6 +68,7 @@ namespace MadsKristensen.EditorExtensions
                 var snapShotSpan = new SnapshotSpan(span.Snapshot, dec.PropertyName.Start, dec.PropertyName.Length);
                 var classSpan = new ClassificationSpan(snapShotSpan, _variableClassification);
                 spans.Add(classSpan);
+                break;
             }
 
             return spans;
