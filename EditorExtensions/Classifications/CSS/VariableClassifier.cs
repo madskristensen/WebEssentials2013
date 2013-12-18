@@ -63,7 +63,7 @@ namespace MadsKristensen.EditorExtensions
             int start = span.Start.Position;
             int end = span.End.Position;
 
-            foreach (Declaration dec in _cache.Where(d => d.PropertyName.Start >= start && d.PropertyName.AfterEnd <= end))
+            foreach (Declaration dec in _cache.Skip(_cache.FindInsertIndex(start, true)))
             {
                 var snapShotSpan = new SnapshotSpan(span.Snapshot, dec.PropertyName.Start, dec.PropertyName.Length);
                 var classSpan = new ClassificationSpan(snapShotSpan, _variableClassification);
