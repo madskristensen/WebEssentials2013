@@ -59,7 +59,6 @@ namespace MadsKristensen.EditorExtensions
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
         {
             List<ClassificationSpan> spans = new List<ClassificationSpan>();
-
             int start = span.Start.Position;
             int end = span.End.Position;
 
@@ -67,8 +66,11 @@ namespace MadsKristensen.EditorExtensions
             {
                 var snapShotSpan = new SnapshotSpan(span.Snapshot, dec.PropertyName.Start, dec.PropertyName.Length);
                 var classSpan = new ClassificationSpan(snapShotSpan, _variableClassification);
+
                 spans.Add(classSpan);
-                break;
+
+                if (dec.PropertyName.AfterEnd > end)
+                    break;
             }
 
             return spans;
