@@ -24,7 +24,8 @@ namespace MadsKristensen.EditorExtensions
             // I override the meaning of this parameter to
             // get the path so that I can find .jshintrc.
             if (!File.Exists(fileName))
-                throw new ArgumentException("The state parameter to Compile() must be the full path to the file being linted.", "filename");
+                throw new ArgumentException("The state parameter to Compile() must be the full path to the file being linted.", "fileName");
+
             if (_options == null)
             {
                 _options = new JsHintOptions();
