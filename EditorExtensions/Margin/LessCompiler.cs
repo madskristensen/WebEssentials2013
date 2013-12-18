@@ -125,7 +125,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (!match.Success)
             {
-                Logger.Log("Unparseable LESS error: " + error);
+                Logger.Log("LESS parse error: " + error);
                 return new CompilerError { Message = error };
             }
             return new CompilerError

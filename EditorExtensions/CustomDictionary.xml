@@ -19,11 +19,30 @@
       <Word>Htmlx</Word>
       <Word>Prev</Word>
       <Word>Svg</Word>
+      <Word>og</Word>
+      <Word>ogp</Word>
+      <Word>px</Word>
+      <Word>CoffeeScript</Word>
+      <Word>Markdown</Word>
+      <Word>IVsContainedLanguage</Word>
+      <Word>IVsContainedLanguageFactory</Word>
+      <Word>Schabse</Word>
+      <Word>SLaks</Word>
+      <Word>src</Word>
+      <Word>JsHint</Word>
+      <Word>woff</Word>
+      <Word>eot</Word>
+      <Word>ttf</Word>
+      <Word>otf</Word>
+      <Word>CheckDeeperQuote</Word>
+      <Word>ReadContent</Word>
+      <Word>BlockParser</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>
       <Term>TypeScript</Term>
       <Term>CodeName</Term>
+      <Term>JsHint</Term>
     </DiscreteExceptions>
   </Words>
   <Acronyms>
