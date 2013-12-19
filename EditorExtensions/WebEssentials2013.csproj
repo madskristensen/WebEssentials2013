@@ -335,6 +335,10 @@
     <Compile Include="Classifications\Markdown\MarkdownOutlineTagger.cs" />
     <Compile Include="Classifications\Markdown\MarkdownLanguageSupport.cs" />
     <Compile Include="Classifications\Markdown\MarkdownParser.cs" />
+    <Compile Include="Classifications\WebVTT\WebVttContentTypeDefinition.cs" />
+    <Compile Include="Classifications\WebVTT\WebVttClassificationTypes.cs" />
+    <Compile Include="Classifications\WebVTT\WebVttClassifier.cs" />
+    <Compile Include="Classifications\WebVTT\WebVttClassifierProvider.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassificationTypes.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifier.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifierProvider.cs" />
