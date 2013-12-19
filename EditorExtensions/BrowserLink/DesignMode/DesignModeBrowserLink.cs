@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Threading;
@@ -48,6 +49,7 @@ namespace MadsKristensen.EditorExtensions
             Browsers.Client(_connection).Invoke("setDesignMode");
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         [BrowserLinkCallback]
         public void UpdateSource(string innerHtml, string file, int position)
         {
@@ -108,6 +110,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         [BrowserLinkCallback]
         public void Undo()
         {
@@ -122,6 +125,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         [BrowserLinkCallback]
         public void Redo()
         {
@@ -136,6 +140,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         [BrowserLinkCallback]
         public void Save()
         {
