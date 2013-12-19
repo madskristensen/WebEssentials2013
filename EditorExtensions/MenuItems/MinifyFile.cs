@@ -115,6 +115,15 @@ namespace MadsKristensen.EditorExtensions
                     Settings.Save();
                 }
             }
+            else if (extension.Equals(".html", StringComparison.OrdinalIgnoreCase) && !WESettings.GetBoolean(WESettings.Keys.EnableHtmlMinification))
+            {
+                var result = MessageBox.Show(message, "Web Essentials", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    Settings.SetValue(WESettings.Keys.EnableHtmlMinification, true);
+                    Settings.Save();
+                }
+            }
         }
 
         public static string GetMinFileName(string path, string extension)
