@@ -36,6 +36,11 @@ namespace MadsKristensen.EditorExtensions
             OleMenuCommand menuCommandJs = new OleMenuCommand((s, e) => MinifyFile(".js"), commandJs);
             menuCommandJs.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".js"); };
             _mcs.AddCommand(menuCommandJs);
+
+            CommandID commandHtml = new CommandID(GuidList.guidMinifyCmdSet, (int)PkgCmdIDList.MinifyHtml);
+            OleMenuCommand menuCommandHtml = new OleMenuCommand((s, e) => MinifyFile(".html"), commandHtml);
+            menuCommandHtml.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".html"); };
+            _mcs.AddCommand(menuCommandHtml);
         }
 
         void BeforeQueryStatus(object sender, string extension)
@@ -72,9 +77,13 @@ namespace MadsKristensen.EditorExtensions
                     {
                         JavaScriptSaveListener.Minify(path, minPath, false);
                     }
-                    else
+                    else if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase))
                     {
                         CssSaveListener.Minify(path, minPath);
+                    }
+                    else if (extension.Equals(".html", StringComparison.OrdinalIgnoreCase))
+                    {
+                        HtmlSaveListener.Minify(path, minPath);
                     }
 
                     MarginBase.AddFileToProject(path, minPath);
@@ -144,7 +153,8 @@ namespace MadsKristensen.EditorExtensions
                 var settings = new HtmlMinificationSettings
                 {
                     RemoveOptionalEndTags = false,
-                    AttributeQuotesRemovalMode = HtmlAttributeQuotesRemovalMode.KeepQuotes
+                    AttributeQuotesRemovalMode = HtmlAttributeQuotesRemovalMode.KeepQuotes,
+                    RemoveRedundantAttributes = false,
                 };
 
                 var minifier = new HtmlMinifier(settings);

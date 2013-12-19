@@ -471,6 +471,15 @@
         </Strings>
       </Button>
 
+      <Button guid="guidMinifyCmdSet" id="cmdMinifyHtml" priority="0x0101" type="Button">
+        <Parent guid="guidSolutionExplorerCmdSet" id="MySubGroup"/>
+        <Icon guid="guidImages" id="bmpLogo"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Minify HTML file(s)</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guidBundleCmdSet" id="cmdBundleJs" priority="0x0101" type="Button">
         <Parent guid="guidSolutionExplorerCmdSet" id="MyBundleGroup"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -766,6 +775,7 @@
       <IDSymbol name="cmdMinifyJs" value="0x1052" />
       <IDSymbol name="cmdMinifySelection" value="0x1053" />
       <IDSymbol name="cmdSelectBrowsers" value="0x1055" />
+      <IDSymbol name="cmdMinifyHtml" value="0x1058" />
     </GuidSymbol>
 
     <GuidSymbol name="guidExtractCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e64}">      

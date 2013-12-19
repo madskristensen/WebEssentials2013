@@ -239,6 +239,7 @@ namespace MadsKristensen.EditorExtensions
             // HTML
             dic.Add(Keys.EnableEnterFormat, true);
             dic.Add(Keys.EnableAngularValidation, true);
+            dic.Add(Keys.EnableHtmlMinification, true);
 
             // LESS
             dic.Add(Keys.GenerateCssFileFromLess, true);

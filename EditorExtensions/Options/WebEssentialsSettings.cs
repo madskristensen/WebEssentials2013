@@ -15,6 +15,7 @@ namespace MadsKristensen.EditorExtensions
             // HTML
             public const string EnableEnterFormat = "EnableEnterFormat";
             public const string EnableAngularValidation = "EnableAngularValidation";
+            public const string EnableHtmlMinification = "HtmlEnableMinification";
 
             // LESS
             public const string GenerateCssFileFromLess = "LessGenerateCssFile";

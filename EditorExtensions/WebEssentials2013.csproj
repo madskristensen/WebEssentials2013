@@ -344,6 +344,7 @@
     <Compile Include="Classifications\CSS\ModernizrClassifier.cs" />
     <Compile Include="Classifications\SVG\SvgContentTypeDefinition.cs" />
     <Compile Include="Commands\CommandExceptionFilter.cs" />
+    <Compile Include="Commands\HTML\HtmlSaveListener.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\VariableNameCompletionProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\VariableContextProvider.cs" />
     <Compile Include="Completion\HTML\InputIdAttributeCompletion.cs" />

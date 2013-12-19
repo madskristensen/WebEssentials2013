@@ -39,6 +39,7 @@ namespace MadsKristensen.EditorExtensions
         public const uint CssIntellisenseSubMenu = 0x1031;
         public const uint MinifyCss = 0x1051;
         public const uint MinifyJs = 0x1052;
+        public const uint MinifyHtml = 0x1058;
         public const uint MinifySelection = 0x1053;
         public const uint ExtractSelection = 0x1054;
         public const uint SelectBrowsers = 0x1055;
