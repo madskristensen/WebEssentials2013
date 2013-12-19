@@ -43,82 +43,12 @@ namespace MadsKristensen.EditorExtensions
             if (item == null || !item.IsValid)
                 return;
 
-            ParseItem theOne = null;
-            ICssCompletionListEntry entry = null;
             ICssSchemaInstance schema = CssSchemaManager.SchemaManager.GetSchemaForItem(_rootSchema, item);
 
-            // Declaration
-            Declaration dec = item.FindType<Declaration>();
-            if (dec != null && dec.PropertyName != null && dec.PropertyName.ContainsRange(point.Value.Position, 1))
-            {
-                entry = schema.GetProperty(dec.PropertyName.Text);
-                theOne = dec.PropertyName;
-            }
-            else if (dec != null && dec.IsValid && dec.Values.TextStart <= point.Value.Position && dec.Values.TextAfterEnd >= point.Value.Position)
-            {
-                entry = schema.GetProperty(dec.PropertyName.Text);
-                if (entry != null)
-                {
-                    var list = schema.GetPropertyValues(entry.DisplayText);
-                    theOne = dec.StyleSheet.ItemFromRange(point.Value.Position, 0);
-                    entry = list.SingleOrDefault(r => r.DisplayText.Equals(theOne.Text, StringComparison.OrdinalIgnoreCase));
-                }
-            }
+            Tuple<ParseItem, ICssCompletionListEntry> tuple = GetEntriesAndPoint(item, point.Value, schema);
 
-            // Pseudo class
-            if (entry == null)
-            {
-                PseudoClassSelector pseudoClass = item.FindType<PseudoClassSelector>();
-                if (pseudoClass != null)
-                {
-                    entry = schema.GetPseudo(pseudoClass.Text);
-                    theOne = pseudoClass;
-                }
-            }
-
-            // Pseudo class function
-            if (entry == null)
-            {
-                PseudoClassFunctionSelector pseudoClassFunction = item.FindType<PseudoClassFunctionSelector>();
-                if (pseudoClassFunction != null)
-                {
-                    entry = schema.GetPseudo(pseudoClassFunction.Text);
-                    theOne = pseudoClassFunction;
-                }
-            }
-
-            // Pseudo element
-            if (entry == null)
-            {
-                PseudoElementSelector pseudoElement = item.FindType<PseudoElementSelector>();
-                if (pseudoElement != null)
-                {
-                    entry = schema.GetPseudo(pseudoElement.Text);
-                    theOne = pseudoElement;
-                }
-            }
-
-            // Pseudo element function
-            if (entry == null)
-            {
-                PseudoElementFunctionSelector pseudoElementFunction = item.FindType<PseudoElementFunctionSelector>();
-                if (pseudoElementFunction != null)
-                {
-                    entry = schema.GetPseudo(pseudoElementFunction.Text);
-                    theOne = pseudoElementFunction;
-                }
-            }
-
-            // @-directive
-            if (entry == null)
-            {
-                AtDirective atDirective = item.Parent as AtDirective;
-                if (atDirective != null && atDirective.Keyword != null)
-                {
-                    entry = schema.GetAtDirective("@" + atDirective.Keyword.Text);
-                    theOne = atDirective.Keyword;
-                }
-            }
+            ParseItem tipItem = tuple.Item1;
+            ICssCompletionListEntry entry = tuple.Item2;
 
             var ruleSet = item.FindType<RuleSet>();
 
@@ -128,34 +58,99 @@ namespace MadsKristensen.EditorExtensions
                 qiContent.Add(LessDocument.GetLessSelectorName(ruleSet));
             }
 
-            if (entry != null)
+            applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(tipItem.Start, tipItem.Length, SpanTrackingMode.EdgeNegative);
+
+            string syntax = entry.GetSyntax(schema.Version);
+            string b = entry.GetAttribute("browsers");
+
+            if (string.IsNullOrEmpty(b) && tipItem.Parent != null && tipItem.Parent is Declaration)
             {
-                applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(theOne.Start, theOne.Length, SpanTrackingMode.EdgeNegative);
-
-                string syntax = entry.GetSyntax(schema.Version);
-                string b = entry.GetAttribute("browsers");
-
-                if (string.IsNullOrEmpty(b) && theOne.Parent != null && theOne.Parent is Declaration)
-                {
-                    b = schema.GetProperty(((Declaration)theOne.Parent).PropertyName.Text).GetAttribute("browsers");
-                    if (string.IsNullOrEmpty(syntax))
-                        syntax = theOne.Text;
-                }
-
-                if (!string.IsNullOrEmpty(syntax))
-                {
-                    //var example = CreateExample(syntax);
-                    qiContent.Add("Example: " + syntax);
-                }
-
-                Dictionary<string, string> browsers = GetBrowsers(b);
-                qiContent.Add(CreateBrowserList(browsers));
+                b = schema.GetProperty(((Declaration)tipItem.Parent).PropertyName.Text).GetAttribute("browsers");
+                if (string.IsNullOrEmpty(syntax))
+                    syntax = tipItem.Text;
             }
+
+            if (!string.IsNullOrEmpty(syntax))
+            {
+                //var example = CreateExample(syntax);
+                qiContent.Add("Example: " + syntax);
+            }
+
+            Dictionary<string, string> browsers = GetBrowsers(b);
+            qiContent.Add(CreateBrowserList(browsers));
+        }
+
+        private static Tuple<ParseItem, ICssCompletionListEntry> GetEntriesAndPoint(ParseItem item, SnapshotPoint point, ICssSchemaInstance schema)
+        {
+            // Declaration
+            Declaration dec = item.FindType<Declaration>();
+
+            if (dec != null && dec.PropertyName != null && dec.PropertyName.ContainsRange(point.Position, 1))
+            {
+                return Tuple.Create<ParseItem, ICssCompletionListEntry>(dec.PropertyName, schema.GetProperty(dec.PropertyName.Text));
+            }
+
+            if (dec != null && dec.IsValid && dec.Values.TextStart <= point.Position && dec.Values.TextAfterEnd >= point.Position)
+            {
+                var entry = schema.GetProperty(dec.PropertyName.Text);
+
+                if (entry != null)
+                {
+                    var list = schema.GetPropertyValues(entry.DisplayText);
+                    var theOne = dec.StyleSheet.ItemFromRange(point.Position, 0);
+
+                    return Tuple.Create<ParseItem, ICssCompletionListEntry>(theOne,
+                    list.SingleOrDefault(r => r.DisplayText.Equals(theOne.Text, StringComparison.OrdinalIgnoreCase)));
+                }
+            }
+
+            // Pseudo class
+            PseudoClassSelector pseudoClass = item.FindType<PseudoClassSelector>();
+
+            if (pseudoClass != null)
+            {
+                return Tuple.Create<ParseItem, ICssCompletionListEntry>(pseudoClass, schema.GetPseudo(pseudoClass.Text));
+            }
+
+            // Pseudo class function
+            PseudoClassFunctionSelector pseudoClassFunction = item.FindType<PseudoClassFunctionSelector>();
+
+            if (pseudoClassFunction != null)
+            {
+                return Tuple.Create<ParseItem, ICssCompletionListEntry>(pseudoClassFunction, schema.GetPseudo(pseudoClassFunction.Text));
+            }
+
+            // Pseudo element
+            PseudoElementSelector pseudoElement = item.FindType<PseudoElementSelector>();
+
+            if (pseudoElement != null)
+            {
+                return Tuple.Create<ParseItem, ICssCompletionListEntry>(pseudoElement, schema.GetPseudo(pseudoElement.Text));
+            }
+
+            // Pseudo element function
+            PseudoElementFunctionSelector pseudoElementFunction = item.FindType<PseudoElementFunctionSelector>();
+
+            if (pseudoElementFunction != null)
+            {
+                return Tuple.Create<ParseItem, ICssCompletionListEntry>(pseudoElementFunction, schema.GetPseudo(pseudoElementFunction.Text));
+            }
+
+            // @-directive
+            AtDirective atDirective = item.Parent as AtDirective;
+
+            if (atDirective != null && atDirective.Keyword != null)
+            {
+                return Tuple.Create<ParseItem, ICssCompletionListEntry>(atDirective.Keyword, schema.GetAtDirective("@" + atDirective.Keyword.Text));
+            }
+
+            return null;
         }
 
         public static Dictionary<string, string> GetBrowsers(string browsersRaw)
         {
             Dictionary<string, string> dic = new Dictionary<string, string>();
+
             if (!string.IsNullOrEmpty(browsersRaw))
             {
                 string[] array = browsersRaw.Split(',');
