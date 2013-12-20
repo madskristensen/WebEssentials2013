@@ -16,18 +16,14 @@ namespace MadsKristensen.EditorExtensions.Completion.Markdown
     {
         public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer)
         {
-            return new MarkdownCompletionFilter(textBuffer);
+            return new MarkdownCompletionFilter();
         }
     }
 
     public class MarkdownCompletionFilter : ICompletionSource
     {
-        readonly ITextBuffer textBuffer;
-
-        public MarkdownCompletionFilter(ITextBuffer textBuffer)
-        {
-            this.textBuffer = textBuffer;
-        }
+        public MarkdownCompletionFilter()
+        { }
 
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {

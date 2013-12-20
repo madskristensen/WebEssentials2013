@@ -35,6 +35,7 @@ namespace MadsKristensen.EditorExtensions
             Logger.Log("LESS: Compiling " + Path.GetFileName(lessFilePath));
 
             var result = await LessCompiler.Compile(lessFilePath, cssFilename, Path.GetDirectoryName(lessFilePath));
+
             if (result.IsSuccess)
             {
                 OnCompilationDone(result.Result, result.FileName);

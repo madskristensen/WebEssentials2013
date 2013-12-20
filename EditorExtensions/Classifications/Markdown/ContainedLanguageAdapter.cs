@@ -195,7 +195,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         ///<summary>Creates a ContainedLanguage for the specified ProjectionBuffer, using an IVsIntellisenseProjectManager to initialize the language.</summary>
         ///<param name="projectionBuffer">The buffer to connect to the language service.</param>
         ///<param name="intellisenseGuid">The GUID of the IntellisenseProvider; used to create IVsIntellisenseProject.</param>
-        [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults"),
+        [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling"),
+         SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults"),
          SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public void AddIntellisenseProjectLanguage(LanguageProjectionBuffer projectionBuffer, Guid intellisenseGuid)
         {

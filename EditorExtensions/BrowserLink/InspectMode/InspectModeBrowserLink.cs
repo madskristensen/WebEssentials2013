@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.VisualStudio.Web.BrowserLink;
 
@@ -69,12 +70,14 @@ namespace MadsKristensen.EditorExtensions
         }
 
 
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         [BrowserLinkCallback]
         public void SetInspectMode()
         {
             _instance = this;
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         [BrowserLinkCallback]
         public void DisableInspectMode()
         {

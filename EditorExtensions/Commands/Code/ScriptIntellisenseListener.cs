@@ -76,8 +76,8 @@ namespace MadsKristensen.EditorExtensions
             if (!File.Exists(resultPath))
                 return;
 
-            IntellisenseWriter writer = new IntellisenseWriter();
-            writer.Write(list, resultPath);
+            IntellisenseWriter.Write(list, resultPath);
+
             var item = MarginBase.AddFileToProject(filePath, resultPath);
 
             if (extension.Equals(Ext.TypeScript, StringComparison.OrdinalIgnoreCase))
