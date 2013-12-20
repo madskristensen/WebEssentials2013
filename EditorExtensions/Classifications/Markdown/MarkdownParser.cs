@@ -148,7 +148,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             {
                 if (stream.IsAtLastCharacter()) return false;
 
-                if (stream.Position != 0 && stream.PrevChar != '\n')
+                if (stream.Position != 0 && stream.PrevChar != '\n' && stream.PrevChar != '\r')
                     throw new InvalidOperationException("BlockParser must be called at the first character in a block.");
                 using (var peek = Peek())
                 {
@@ -169,7 +169,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     }
                     if (!ReadContent())
                         return false;
-                    if (stream.Position != 0 && !stream.IsAtLastCharacter() && stream.PrevChar != '\n')
+                    if (stream.Position != 0 && !stream.IsAtLastCharacter() && stream.PrevChar != '\n' && stream.PrevChar != '\r')
                         throw new InvalidOperationException("ReadContent() must end at the first character in the next block.");
                     peek.Consume();
                     return true;
@@ -252,7 +252,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             ///<remarks>This method will not advance the stream.</remarks>
             private bool CheckDeeperQuote()
             {
-                if (stream.PrevChar != '\n')
+                if (stream.PrevChar != '\n' && stream.PrevChar != '\r')
                     throw new InvalidOperationException("CheckDeeperQuote() must be called at the first character in a line.");
 
                 using (Peek())
