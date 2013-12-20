@@ -7,17 +7,25 @@ namespace MadsKristensen.EditorExtensions
     public static class WebVttClassificationTypes
     {
         public const string Markup = "webvtt_markup";
+        public const string Name = "webvtt_name";
         public const string Statement = "webvtt_statement";
         public const string Time = "webvtt_Time";
+        public const string Comment = "webvtt_Comment";
 
         [Export, Name(WebVttClassificationTypes.Markup)]
         public static ClassificationTypeDefinition WebVttClassificationMarkup { get; set; }
+
+        [Export, Name(WebVttClassificationTypes.Name)]
+        public static ClassificationTypeDefinition WebVttClassificationName { get; set; }
 
         [Export, Name(WebVttClassificationTypes.Statement)]
         public static ClassificationTypeDefinition WebVttClassificationStatement { get; set; }
 
         [Export, Name(WebVttClassificationTypes.Time)]
         public static ClassificationTypeDefinition WebVttClassificationTime { get; set; }
+
+        [Export, Name(WebVttClassificationTypes.Comment)]
+        public static ClassificationTypeDefinition WebVttClassificationComment { get; set; }
     }
 
     [Export(typeof(EditorFormatDefinition))]
@@ -29,8 +37,24 @@ namespace MadsKristensen.EditorExtensions
     {
         public WebVttMarkupFormatDefinition()
         {
-            ForegroundColor = System.Windows.Media.Colors.Gray;
+            ForegroundColor = System.Windows.Media.Colors.SteelBlue;
+            IsBold = true;
             DisplayName = "WebVTT Markup";
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = WebVttClassificationTypes.Name)]
+    [Name(WebVttClassificationTypes.Name)]
+    [Order(After = Priority.Default)]
+    [UserVisible(true)]
+    internal sealed class WebVttNameFormatDefinition : ClassificationFormatDefinition
+    {
+        public WebVttNameFormatDefinition()
+        {
+            ForegroundColor = System.Windows.Media.Colors.Gray;
+            IsBold = true;
+            DisplayName = "WebVTT Name";
         }
     }
 
@@ -58,8 +82,23 @@ namespace MadsKristensen.EditorExtensions
     {
         public WebVttTimeFormatDefinition()
         {
-            ForegroundColor = System.Windows.Media.Colors.Purple;
+            ForegroundColor = System.Windows.Media.Colors.DarkOrange;
             DisplayName = "WebVTT Time";
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = WebVttClassificationTypes.Comment)]
+    [Name(WebVttClassificationTypes.Comment)]
+    [Order(After = Priority.Default)]
+    [UserVisible(true)]
+    internal sealed class WebVttCommentFormatDefinition : ClassificationFormatDefinition
+    {
+        public WebVttCommentFormatDefinition()
+        {
+            ForegroundColor = System.Windows.Media.Colors.Green;
+            IsItalic = true;
+            DisplayName = "WebVTT Comment";
         }
     }
 }
