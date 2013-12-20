@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions.Classifications.Markdown;
 using MadsKristensen.EditorExtensions.Helpers;
@@ -10,7 +11,20 @@ namespace WebEssentialsTests
     public class MarkdownParserTests
     {
         #region Helper Methods
+        static readonly Regex newline = new Regex("\r*\n");
         private static List<string> ParseCodeBlocks(string markdown)
+        {
+            var crlf = newline.Replace(markdown, "\r\n");
+            var lf = newline.Replace(markdown, "\n");
+            var cr = newline.Replace(markdown, "\r");
+
+            var result = RunParseCase(crlf);
+            RunParseCase(lf).Should().Equal(result, "LF should be the same as CRLF");
+            RunParseCase(cr).Should().Equal(result, "CR should be the same as CRLF");
+
+            return result;
+        }
+        private static List<string> RunParseCase(string markdown)
         {
             var retVal = new List<string>();
             var parser = new MarkdownParser(new TabAwareCharacterStream(markdown));

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions.Classifications.Markdown;
 using Microsoft.Html.Core;
@@ -21,6 +22,8 @@ namespace WebEssentialsTests
 
         #region Helper Methods
         private static Func<string, Tuple<string, string>> CreateCreator(string classificationType) { return source => Tuple.Create(classificationType, source); }
+
+        static readonly Regex newline = new Regex("\r*\n");
         private static List<Tuple<string, string>> Classify(string markdown, Span? subSpan = null)
         {
             if (subSpan == null)
@@ -37,13 +40,31 @@ namespace WebEssentialsTests
                 }
             }
 
+            var crlf = newline.Replace(markdown, "\r\n");
+            var lf = newline.Replace(markdown, "\n");
+            var cr = newline.Replace(markdown, "\r");
+
+            // Test newline equivalence on the full source
+            // string.  We cannot pass the subspan because
+            // newline replacements will move its indices.
+            // Also, this part is only to test the parser,
+            // which doesn't get subspans anyway.
+            var fullResult = RunParseCase(crlf);
+            RunParseCase(lf).Should().Equal(fullResult, "LF should be the same as CRLF");
+            RunParseCase(cr).Should().Equal(fullResult, "CR should be the same as CRLF");
+
+            return RunParseCase(markdown, subSpan);
+        }
+        private static List<Tuple<string, string>> RunParseCase(string markdown, Span? subSpan = null)
+        {
+
             var artifacts = new ArtifactCollection(new MarkdownCodeArtifactProcessor());
             artifacts.Build(markdown);
             var classifier = new MarkdownClassifier(artifacts, new MockClassificationTypeRegistry());
-            var results = classifier.GetClassificationSpans(new SnapshotSpan(new MockSnapshot(markdown), subSpan ?? new Span(0, markdown.Length)))
+            return classifier.GetClassificationSpans(new SnapshotSpan(new MockSnapshot(markdown), subSpan ?? new Span(0, markdown.Length)))
                              .Select(cs => Tuple.Create(cs.ClassificationType.Classification, markdown.Substring(cs.Span.Start, cs.Span.Length)))
                              .ToList();
-            return results;
+
         }
         #endregion
 

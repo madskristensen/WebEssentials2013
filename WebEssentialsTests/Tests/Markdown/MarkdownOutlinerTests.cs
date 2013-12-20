@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions.Classifications.Markdown;
 using Microsoft.Html.Core;
@@ -14,8 +15,17 @@ namespace WebEssentialsTests
     public class MarkdownOutlinerTests
     {
         #region Helper Methods
+        static readonly Regex newline = new Regex("\r*\n");
         private static void TestOutlines(string markdown, params Tuple<string, string[]>[] expectedOutlines)
         {
+            RunTestCase(newline.Replace(markdown, "\r\n"), expectedOutlines);
+            RunTestCase(newline.Replace(markdown, "\n"), expectedOutlines);
+            RunTestCase(newline.Replace(markdown, "\r"), expectedOutlines);
+        }
+
+        private static void RunTestCase(string markdown, Tuple<string, string[]>[] expectedOutlines)
+        {
+            markdown = newline.Replace(markdown, "\r\n");
             var snapshot = new MockSnapshot(markdown.Replace("{[", "").Replace("]}", ""));
 
             var expected = new List<TagSpan<IOutliningRegionTag>>();
