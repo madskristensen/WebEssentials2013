@@ -37,6 +37,7 @@
       <Word>CheckDeeperQuote</Word>
       <Word>ReadContent</Word>
       <Word>BlockParser</Word>
+      <Word>Vtt</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>
