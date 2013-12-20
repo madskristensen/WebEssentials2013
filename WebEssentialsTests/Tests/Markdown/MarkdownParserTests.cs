@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions.Classifications.Markdown;
 using MadsKristensen.EditorExtensions.Helpers;
@@ -10,7 +11,20 @@ namespace WebEssentialsTests
     public class MarkdownParserTests
     {
         #region Helper Methods
+        static readonly Regex newline = new Regex("\r*\n");
         private static List<string> ParseCodeBlocks(string markdown)
+        {
+            var crlf = newline.Replace(markdown, "\r\n");
+            var lf = newline.Replace(markdown, "\n");
+            var cr = newline.Replace(markdown, "\r");
+
+            var result = RunParseCase(crlf);
+            RunParseCase(lf).Should().Equal(result, "LF should be the same as CRLF");
+            RunParseCase(cr).Should().Equal(result, "CR should be the same as CRLF");
+
+            return result;
+        }
+        private static List<string> RunParseCase(string markdown)
         {
             var retVal = new List<string>();
             var parser = new MarkdownParser(new TabAwareCharacterStream(markdown));
@@ -80,7 +94,7 @@ Bye!").Should().Equal(new[] { "abc", "def" });
             //Bye!").Should().Equal(new[] { "abc", "def" });
             //ParseCodeBlocks(" 1. abc\n\n  \t  Code!").Should().Equal(new[] { "Code!" });
 
-            ParseCodeBlocks("Hi there!\n\n\tabc\nBye!").Should().Equal(new[] { "abc" });
+            ParseCodeBlocks("Hi there!\n\n\tabc\n\tdef\nBye!").Should().Equal(new[] { "abc", "def" });
             ParseCodeBlocks(@"Hi there!
     abc
 Bye!").Should().BeEmpty();
@@ -144,25 +158,50 @@ Bye!").Should().Equal(new[] { "abc" }, "Less-deep indent still counts");
             ParseCodeBlocks(" >     \t > abc").Should().Equal(new[] { "\t > abc" }, "five spaces should not affect subsequent tabs");
         }
 
-        [TestMethod]
-        public void TestFencedCodeBlocks()
-        {
-            ParseCodeBlocks(@"Hi there!
 
+        [TestMethod]
+        public void TestFencedCodeBlocks_OneLine()
+        {
+
+            ParseCodeBlocks(@"Hi there!
 ```
 abc
 ```
 Bye!").Should().Equal(new[] { "abc" });
-            ParseCodeBlocks(@"Hi there!
-~~~
+            ParseCodeBlocks("Hi there!\n\n```\nabc\n```\nBye!").Should().Equal(new[] { "abc" });
+            ParseCodeBlocks("Hi there!\r\n```\r\nabc\r\n```\r\nBye!").Should().Equal(new[] { "abc" }, "With CRLF");
+            ParseCodeBlocks("Hi there!\n```\nabc\n```\nBye!").Should().Equal(new[] { "abc" }, "Only with LF");
+        }
 
-~~~
-Bye!").Should().Equal(new[] { "" }, "Empty lines become empty artifacts");
-            ParseCodeBlocks(@"Hi there!
+        [TestMethod]
+        public void TestFencedCodeBlocks_TwoLines()
+        {
 
-~~~
-~~~
-Bye!").Should().BeEmpty("No artifacts are created if there are no blocks");
+            ParseCodeBlocks("Hi there!\r\n```\r\nabc\r\ndef\r\n```\r\nBye!").Should().Equal(new[] { "abc", "def" }, "With CRLF");
+            ParseCodeBlocks("Hi there!\n```\nabc\ndef\n```\nBye!").Should().Equal(new[] { "abc", "def" }, "With only LF");
+            ParseCodeBlocks("Hi there!\n```\r\nabc\rdef\n```\nBye!").Should().Equal(new[] { "abc", "def" }, "With mixed line endings");
+        }
+
+        [TestMethod]
+        public void TestFencedCodeBlocks_EmptyLinesBecomeEmptyArtifacts()
+        {
+
+            ParseCodeBlocks("Hi there!\r\n~~~\r\n\r\n~~~\r\nBye!").Should().Equal(new[] { "" }, "Empty lines become empty artifacts");
+            ParseCodeBlocks("Hi there!\n~~~\n\n~~~\nBye!").Should().Equal(new[] { "" }, "Empty lines become empty artifacts");
+        }
+
+        [TestMethod]
+        public void TestFencedCodeBlocks_NoArtifactsAreCreatedIfThereAreNoBlocks()
+        {
+            ParseCodeBlocks("Hi there!\r\n\r\n~~~\r\n~~~\r\nBye!").Should().BeEmpty("with CRLF");
+            ParseCodeBlocks("Hi there!\n\n~~~\n~~~\nBye!").Should().BeEmpty("with LF");
+            ParseCodeBlocks("Hi there!\n\n~~~\n~~~\r\nBye!").Should().BeEmpty("with mixed Lineendings");
+        }
+
+        [TestMethod]
+        public void TestFencedCodeBlocks_TrailingBlankLinesDoNotBreakAnything()
+        {
+
             ParseCodeBlocks(@"Hi there!
 
 ~~~
@@ -171,6 +210,13 @@ def
 ~~~
 
 Bye!").Should().Equal(new[] { "abc", "def" }, "Trailing blank lines don't break anything");
+        }
+
+        [TestMethod]
+        public void TestFencedCodeBlocks_AlternateFencesAndBlankLinesAreHandledCorrectly()
+        {
+
+
             ParseCodeBlocks(@"Hi there!
 
 ```
@@ -180,11 +226,24 @@ abc
 ~~~
 ```
 Bye!").Should().Equal(new[] { "abc", "", "", "~~~" }, "Alternate fences & blank lines are handled correctly");
+        }
+
+        [TestMethod]
+        public void TestFencedCodeBlocks_LeadingWhitespaceIsPreserverd()
+        {
+
+
             ParseCodeBlocks(@"Hi there!
 ```
     abc
 ```
 Bye!").Should().Equal(new[] { "    abc" }, "Leading whitespace is preserved");
+        }
+
+        [TestMethod]
+        public void TestFencedCodeBlocks_ClosingFenceCannotHaveContentFollowing()
+        {
+
 
             ParseCodeBlocks(@"Hi there!
 ```
@@ -192,18 +251,41 @@ abc
 ```   123
 ```
 Bye!").Should().Equal(new[] { "abc", "```   123" }, "Closing fence cannot have content following");
+        }
+
+        [TestMethod]
+        public void TestFencedCodeBlocks_ClosingFenceCanHaveUnlimitedWhitespaceFollowing()
+        {
+
             ParseCodeBlocks(@"Hi there!
 ```
 abc
 ```        
 ```
 Bye!").Should().Equal(new[] { "abc", "Bye!" }, "Closing fence can have unlimited whitespace following");
+        }
+
+        [TestMethod]
+        public void TestFencedCodeBlocks_LackOfSurroudingCharsDoesnotBreakAnything()
+        {
+
 
             ParseCodeBlocks(@"```
 abc
 ```").Should().Equal(new[] { "abc" }, "Lack of surrounding characters doesn't break anything");
+        }
+        [TestMethod]
+        public void TestFencedCodeBlocks_EndingFencesIsOptional()
+        {
+
+
             ParseCodeBlocks(@"```
 abc").Should().Equal(new[] { "abc" }, "Ending fence is optional");
+        }
+        [TestMethod]
+        public void TestFencedCodeBlocks_TrailingBlankLineWithoutFenceIsReported()
+        {
+
             ParseCodeBlocks(@"```
 abc
 ").Should().Equal(new[] { "abc", "" }, "Trailing blank line without fence is reported");

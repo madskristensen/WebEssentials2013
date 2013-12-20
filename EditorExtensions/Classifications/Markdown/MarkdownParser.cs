@@ -148,7 +148,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             {
                 if (stream.IsAtLastCharacter()) return false;
 
-                if (stream.Position != 0 && stream.PrevChar != '\n')
+                if (stream.Position != 0 && stream.PrevChar != '\n' && stream.PrevChar != '\r')
                     throw new InvalidOperationException("BlockParser must be called at the first character in a block.");
                 using (var peek = Peek())
                 {
@@ -169,7 +169,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     }
                     if (!ReadContent())
                         return false;
-                    if (stream.Position != 0 && !stream.IsAtLastCharacter() && stream.PrevChar != '\n')
+                    if (stream.Position != 0 && !stream.IsAtLastCharacter() && stream.PrevChar != '\n' && stream.PrevChar != '\r')
                         throw new InvalidOperationException("ReadContent() must end at the first character in the next block.");
                     peek.Consume();
                     return true;
@@ -184,7 +184,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             ///<returns>False if the block had ended (the stream will be up to the next block).</returns>
             protected bool MoveToNextContentChar()
             {
-                // TabAwareCharacterStream can go past the end of the stream,
+                // CharacterStream can go past the end of the stream,
                 // setting CurrentChar equal to '\0', and Position ==
                 // Length.  This state is not a content character; we
                 // stop at the last valid CurrentChar.
@@ -192,7 +192,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     BlockEnded = true;
                 if (BlockEnded)
                     return false;
-                stream.MoveToNextChar();
+                // If we are at a regular character, consume it first. If we're
+                // at a newline, run our separate newline handler for quotes.
+                if (!stream.IsAtNewLine())
+                    stream.MoveToNextChar();
                 // If we're still in the middle of a line, return the character
                 if (!TryConsumeNewLine())
                     return true;
@@ -252,7 +255,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             ///<remarks>This method will not advance the stream.</remarks>
             private bool CheckDeeperQuote()
             {
-                if (stream.PrevChar != '\n')
+                if (stream.PrevChar != '\n' && stream.PrevChar != '\r')
                     throw new InvalidOperationException("CheckDeeperQuote() must be called at the first character in a line.");
 
                 using (Peek())
@@ -286,7 +289,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
                     // If we've hit the end of the line, consume the current character and stop.
                     // (with the same logic in case we hit the end of the block too)
-                    if (stream.NextChar == '\r' || stream.NextChar == '\n' || stream.IsEndOfStream())
+                    if (stream.IsAtNewLine() || stream.NextChar == '\r' || stream.NextChar == '\n' || stream.IsEndOfStream())
                         hitLineEnd = !BlockEnded;
                     // If we hit the end of the block, stop.
 
@@ -295,7 +298,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         // If we have not consumed any characters, and
                         // we hit the end up the block without hitting
                         // a preceding newline first, do not return an
-                        // empty block.
+                        // empty line, since we actually simply got to
+                        // the end of this block earlier.
                         if (contentStart == contentEnd && !hitLineEnd)
                             return null;
                         break;
