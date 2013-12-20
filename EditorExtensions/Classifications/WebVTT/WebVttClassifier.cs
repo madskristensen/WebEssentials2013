@@ -9,7 +9,7 @@ namespace MadsKristensen.EditorExtensions
     public class WebVttClassifier : IClassifier
     {
         private IClassificationType _markup, _name, _statement, _time, _comment;
-        private static Regex _rxTime = new Regex(@"\d{1,}:\d{2}:\d{2}\.\d{3}", RegexOptions.Compiled);
+        private static Regex _rxTime = new Regex(@"\d{2}:\d{2}:\d{2}\.\d{3}(\s)+-->(\s)+()\d{2}:\d{2}:\d{2}\.\d{3}", RegexOptions.Compiled);
         private static Regex _rxMarkup = new Regex(@"<(/|)([^>/]+)>", RegexOptions.Compiled);
         private static Regex _rxName = new Regex(@"<v ([^>]+)>", RegexOptions.Compiled);
 
