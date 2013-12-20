@@ -169,11 +169,6 @@ abc
 ```
 Bye!").Should().Equal(new[] { "abc" });
             ParseCodeBlocks("Hi there!\n\n```\nabc\n```\nBye!").Should().Equal(new[] { "abc" });
-            ParseCodeBlocks(@"Hi there!
-~~~
-
-~~~
-Bye!").Should().Equal(new[] { "" }, "Empty lines become empty artifacts");
             ParseCodeBlocks("Hi there!\r\n```\r\nabc\r\n```\r\nBye!").Should().Equal(new[] { "abc" }, "With CRLF");
             ParseCodeBlocks("Hi there!\n```\nabc\n```\nBye!").Should().Equal(new[] { "abc" }, "Only with LF");
         }
@@ -182,9 +177,9 @@ Bye!").Should().Equal(new[] { "" }, "Empty lines become empty artifacts");
         public void TestFencedCodeBlocks_TwoLines()
         {
 
-            ParseCodeBlocks("Hi there!\r\n```\r\nabc\r\ncdef\r\n```\r\nBye!").Should().Equal(new[] { "abc", "cdef" }, "With CRLF");
-            ParseCodeBlocks("Hi there!\n```\nabccdef\n\n```\nBye!").Should().Equal(new[] { "abc", "cdef" }, "Only with LF");
-            ParseCodeBlocks("Hi there!\n```\r\nabccdef\n\n```\nBye!").Should().Equal(new[] { "abc", "cdef" }, "With mixed Lineendings");
+            ParseCodeBlocks("Hi there!\r\n```\r\nabc\r\ndef\r\n```\r\nBye!").Should().Equal(new[] { "abc", "def" }, "With CRLF");
+            ParseCodeBlocks("Hi there!\n```\nabc\ndef\n```\nBye!").Should().Equal(new[] { "abc", "def" }, "With only LF");
+            ParseCodeBlocks("Hi there!\n```\r\nabc\rdef\n```\nBye!").Should().Equal(new[] { "abc", "def" }, "With mixed line endings");
         }
 
         [TestMethod]
