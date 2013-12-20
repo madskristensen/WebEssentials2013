@@ -184,7 +184,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             ///<returns>False if the block had ended (the stream will be up to the next block).</returns>
             protected bool MoveToNextContentChar()
             {
-                // TabAwareCharacterStream can go past the end of the stream,
+                // CharacterStream can go past the end of the stream,
                 // setting CurrentChar equal to '\0', and Position ==
                 // Length.  This state is not a content character; we
                 // stop at the last valid CurrentChar.
@@ -192,7 +192,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                     BlockEnded = true;
                 if (BlockEnded)
                     return false;
-                stream.MoveToNextChar();
+                // If we are at a regular character, consume it first. If we're
+                // at a newline, run our separate newline handler for quotes.
+                if (!stream.IsAtNewLine())
+                    stream.MoveToNextChar();
                 // If we're still in the middle of a line, return the character
                 if (!TryConsumeNewLine())
                     return true;
@@ -295,7 +298,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         // If we have not consumed any characters, and
                         // we hit the end up the block without hitting
                         // a preceding newline first, do not return an
-                        // empty block.
+                        // empty line, since we actually simply got to
+                        // the end of this block earlier.
                         if (contentStart == contentEnd && !hitLineEnd)
                             return null;
                         break;
