@@ -286,7 +286,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 
                     // If we've hit the end of the line, consume the current character and stop.
                     // (with the same logic in case we hit the end of the block too)
-                    if (stream.NextChar == '\r' || stream.NextChar == '\n' || stream.IsEndOfStream())
+                    if (stream.IsAtNewLine() || stream.NextChar == '\r' || stream.NextChar == '\n' || stream.IsEndOfStream())
                         hitLineEnd = !BlockEnded;
                     // If we hit the end of the block, stop.
 

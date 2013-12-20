@@ -80,7 +80,7 @@ Bye!").Should().Equal(new[] { "abc", "def" });
             //Bye!").Should().Equal(new[] { "abc", "def" });
             //ParseCodeBlocks(" 1. abc\n\n  \t  Code!").Should().Equal(new[] { "Code!" });
 
-            ParseCodeBlocks("Hi there!\n\n\tabc\nBye!").Should().Equal(new[] { "abc" });
+            ParseCodeBlocks("Hi there!\n\n\tabc\n\tdef\nBye!").Should().Equal(new[] { "abc", "def" });
             ParseCodeBlocks(@"Hi there!
     abc
 Bye!").Should().BeEmpty();
@@ -153,6 +153,7 @@ Bye!").Should().Equal(new[] { "abc" }, "Less-deep indent still counts");
 abc
 ```
 Bye!").Should().Equal(new[] { "abc" });
+            ParseCodeBlocks("Hi there!\n\n```\nabc\n```\nBye!").Should().Equal(new[] { "abc" });
             ParseCodeBlocks(@"Hi there!
 ~~~
 
