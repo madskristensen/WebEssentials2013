@@ -46,9 +46,13 @@ namespace MadsKristensen.EditorExtensions
             ICssSchemaInstance schema = CssSchemaManager.SchemaManager.GetSchemaForItem(_rootSchema, item);
 
             Tuple<ParseItem, ICssCompletionListEntry> tuple = GetEntriesAndPoint(item, point.Value, schema);
+            if (tuple == null)
+                return;
 
             ParseItem tipItem = tuple.Item1;
             ICssCompletionListEntry entry = tuple.Item2;
+            if (tipItem == null || entry == null)
+                return;
 
             var ruleSet = item.FindType<RuleSet>();
 
