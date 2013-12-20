@@ -181,12 +181,27 @@ namespace MadsKristensen.EditorExtensions.Helpers
             shouldRevert = false;
         }
 
-        public void Dispose()
+        private void Dispose(bool disposing)
         {
             if (!shouldRevert) return;
-            Stream.Position = StartPosition;
-            Revert();
-            shouldRevert = false;
+
+            if (disposing)
+            {
+                Stream.Position = StartPosition;
+                Revert();
+                shouldRevert = false;
+            }
+        }
+
+        ~StreamPeeker()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         protected abstract void Revert();

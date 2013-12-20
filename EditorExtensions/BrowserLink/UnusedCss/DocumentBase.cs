@@ -56,6 +56,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             _watcher.Renamed -= ProxyRename;
 
             _watcher.Dispose();
+
+            GC.SuppressFinalize(this);
         }
 
         private void ProxyRename(object sender, RenamedEventArgs e)

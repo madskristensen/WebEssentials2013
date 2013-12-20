@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Linq;
@@ -42,6 +43,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
         readonly ReadOnlyCollection<StringCompletionSource> completionSources;
+
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
             var position = session.GetTriggerPoint(_buffer).GetPoint(_buffer.CurrentSnapshot);
@@ -98,7 +100,7 @@ namespace MadsKristensen.EditorExtensions
 
         public void Dispose()
         {
-
+            GC.SuppressFinalize(this);
         }
     }
 }

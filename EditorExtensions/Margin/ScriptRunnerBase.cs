@@ -75,6 +75,8 @@ namespace MadsKristensen.EditorExtensions
                 _browser = null;
                 _disposed = true;
             }
+
+            GC.SuppressFinalize(this);
         }
     }
 

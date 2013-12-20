@@ -51,20 +51,35 @@ namespace MadsKristensen.EditorExtensions
             get { return Volatile.Read(ref _suppressionCount) != 0; }
         }
 
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                ThreadPool.QueueUserWorkItem(s =>
+                {
+                    Thread.Sleep(_msAfterDisposeToWaitToRelease);
+                    Interlocked.Decrement(ref _suppressionCount);
+
+                    foreach (var connectionToExclude in _connectionsToExclude)
+                    {
+                        ConnectionsToExcludeLookup.AddOrUpdate(connectionToExclude, x => 0, (x, c) => c - 1);
+                    }
+
+                    SuppressAllBrowsers = _previousSuppressionState;
+                });
+
+            }
+        }
+
+        ~CssSyncSuppressionContext()
+        {
+            Dispose(false);
+        }
+
         public void Dispose()
         {
-            ThreadPool.QueueUserWorkItem(s =>
-            {
-                Thread.Sleep(_msAfterDisposeToWaitToRelease);
-                Interlocked.Decrement(ref _suppressionCount);
-
-                foreach (var connectionToExclude in _connectionsToExclude)
-                {
-                    ConnectionsToExcludeLookup.AddOrUpdate(connectionToExclude, x => 0, (x, c) => c - 1);
-                }
-
-                SuppressAllBrowsers = _previousSuppressionState;
-            });
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }
