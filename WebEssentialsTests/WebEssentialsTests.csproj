@@ -89,7 +89,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tests\Markdown\MarkdownOutlinerTests.cs" />
-    <Compile Include="Tests\Markdown\MarkdownParserTests.cs" />
+    <Compile Include="Tests\Markdown\MarkdownCodeBlockTests.cs" />
     <Compile Include="Tests\Markdown\TabAwareCharacterStreamTests.cs" />
     <Compile Include="Tests\Snapshot\MockSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -157,7 +157,9 @@
     <None Include="fixtures\coffee\source\test.coffee" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Tests\IntellisenceGeneration\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
