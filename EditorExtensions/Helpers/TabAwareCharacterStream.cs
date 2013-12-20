@@ -188,6 +188,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
             Revert();
             shouldRevert = false;
         }
+
         protected abstract void Revert();
     }
 }
