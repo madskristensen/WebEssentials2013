@@ -91,9 +91,13 @@ namespace MadsKristensen.EditorExtensions
                     {
                         JavaScriptSaveListener.Minify(path, minPath, false);
                     }
-                    else
+                    else if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase))
                     {
                         CssSaveListener.Minify(path, minPath);
+                    }
+                    else if(extension.Equals(".html", StringComparison.OrdinalIgnoreCase))
+                    {
+                        HtmlSaveListener.Minify(path, minPath);
                     }
                 }
             }

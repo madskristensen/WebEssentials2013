@@ -22,6 +22,7 @@ namespace MadsKristensen.EditorExtensions
     [Export(typeof(IWpfTextViewCreationListener))]
     [ContentType("CSS")]
     [ContentType("JavaScript")]
+    [ContentType("htmlx")]
     [ContentType("XML")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     internal class BundleFilesMenu : IWpfTextViewCreationListener
@@ -160,6 +161,11 @@ namespace MadsKristensen.EditorExtensions
             OleMenuCommand menuCommandJs = new OleMenuCommand((s, e) => CreateBundlefile(".js"), commandJs);
             menuCommandJs.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".js"); };
             _mcs.AddCommand(menuCommandJs);
+
+            CommandID commandHtml = new CommandID(GuidList.guidBundleCmdSet, (int)PkgCmdIDList.BundleHtml);
+            OleMenuCommand menuCommandHtml = new OleMenuCommand((s, e) => CreateBundlefile(".html"), commandHtml);
+            menuCommandHtml.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".html"); };
+            _mcs.AddCommand(menuCommandHtml);
         }
 
         private static void BeforeQueryStatus(object sender, string extension)
@@ -389,6 +395,19 @@ namespace MadsKristensen.EditorExtensions
 
                 if (WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping))
                     CssSaveListener.GzipFile(filePath, minPath, minContent);
+            }
+            else if (extension.Equals(".html", StringComparison.OrdinalIgnoreCase))
+            {
+                string minContent = MinifyFileMenu.MinifyString(extension, content);
+
+                ProjectHelpers.CheckOutFileFromSourceControl(minPath);
+
+                using (StreamWriter writer = new StreamWriter(minPath, false, new UTF8Encoding(true)))
+                {
+                    writer.Write(minContent);
+                }
+
+                MarginBase.AddFileToProject(filePath, minPath);
             }
         }
     }

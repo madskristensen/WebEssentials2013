@@ -496,6 +496,14 @@
         </Strings>
       </Button>
 
+      <Button guid="guidBundleCmdSet" id="cmdBundleHtml" priority="0x0101" type="Button">
+        <Parent guid="guidSolutionExplorerCmdSet" id="MyBundleGroup"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Create HTML bundle file</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guidBuildCmdSet" id="cmdBuildBundles" priority="0x0101" type="Button">
         <Parent guid="guidBuildCmdSet" id="MyBuildMenuGroup"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -508,7 +516,7 @@
         <Icon guid="guidImages" id="bmpLogo"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Re-minify all CSS/JS files</ButtonText>
+          <ButtonText>Re-minify all CSS/JS/HTML files</ButtonText>
         </Strings>
       </Button>
       <Button guid="guidBuildCmdSet" id="cmdBuildLess" priority="0x0103" type="Button">
@@ -802,6 +810,7 @@
       <IDSymbol name="cmdBundleCss" value="0x1071" />
       <IDSymbol name="cmdBundleJs" value="0x1072" />
       <IDSymbol name="cmdBundleTs" value="0x1073" />
+      <IDSymbol name="cmdBundleHtml" value="0x1074" />
     </GuidSymbol>
 
     <GuidSymbol name="htmlEditorCommandSet" value="{D7E8C5E1-BDB8-11D0-9C88-0000F8040A53}">
