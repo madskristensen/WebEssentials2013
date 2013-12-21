@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions
     {
         [Import]
         public IClassificationTypeRegistryService Registry { get; set; }
-        
+
         public IClassifier GetClassifier(ITextBuffer textBuffer)
         {
             return textBuffer.Properties.GetOrCreateSingletonProperty(() => new WebVttClassifier(Registry));

@@ -159,7 +159,10 @@ namespace MadsKristensen.EditorExtensions
         }
         #endregion
 
-        public void Dispose() { }
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
     ///<summary>Contains host-agnostic methods used to provide Node.js module completions.</summary>
     ///<remarks>This is a separate class so that it can be unit-tested without running any

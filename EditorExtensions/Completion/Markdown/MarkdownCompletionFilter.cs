@@ -64,6 +64,9 @@ namespace MadsKristensen.EditorExtensions.Completion.Markdown
             set.SelectionStatusChanged += handler;
         }
 
-        public void Dispose() { }
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
 }
