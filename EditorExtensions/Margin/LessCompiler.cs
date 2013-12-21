@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Helpers;
@@ -35,32 +36,51 @@ namespace MadsKristensen.EditorExtensions
                 CreateNoWindow = true,
                 Arguments = arguments,
                 UseShellExecute = false,
-                RedirectStandardError = true
+                RedirectStandardError = true,
+                RedirectStandardOutput = true
             };
 
-            using (var process = await ExecuteAsync(start))
+            var error = new StringBuilder();
+            using (var process = await ExecuteAsync(start, error))
             {
-                return ProcessResult(output, process, fileName, targetFileName);
+                return ProcessResult(output, process, error.ToString(), fileName, targetFileName);
             }
         }
 
-        private static Task<Process> ExecuteAsync(ProcessStartInfo startInfo)
+        private static Task<Process> ExecuteAsync(ProcessStartInfo startInfo, StringBuilder error)
         {
             var process = Process.Start(startInfo);
             var processTaskCompletionSource = new TaskCompletionSource<Process>();
 
+            //note: if we don't also read from the standard output, we don't receive the error output... ?
+            process.OutputDataReceived += (_, __) => { };
+            process.ErrorDataReceived += (sender, line) =>
+            {
+                error.AppendLine(line.Data);
+            };
+
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+
             process.EnableRaisingEvents = true;
-            process.Exited += (s, e) => processTaskCompletionSource.TrySetResult(process);
-            if (process.HasExited)
+            EventHandler exitHandler = (s, e) =>
+            {
+                // WaitForExit() ensures that the StandardError stream has been drained
+                process.WaitForExit();
                 processTaskCompletionSource.TrySetResult(process);
+            };
+
+            process.Exited += exitHandler;
+
+            if (process.HasExited) exitHandler(process, null);
             return processTaskCompletionSource.Task;
         }
 
-        private static CompilerResult ProcessResult(string output, Process process, string fileName, string targetFileName)
+        private static CompilerResult ProcessResult(string output, Process process, string errorText, string fileName, string targetFileName)
         {
             CompilerResult result = new CompilerResult(fileName);
 
-            ProcessResult(output, process, result);
+            ProcessResult(output, process, errorText, result);
 
             if (result.IsSuccess)
             {
@@ -96,10 +116,12 @@ namespace MadsKristensen.EditorExtensions
             return result;
         }
 
-        private static void ProcessResult(string outputFile, Process process, CompilerResult result)
+        private static void ProcessResult(string outputFile, Process process, string errorText, CompilerResult result)
         {
             if (!File.Exists(outputFile))
+            {
                 throw new FileNotFoundException("LESS compiled output not found", outputFile);
+            }
 
             if (process.ExitCode == 0)
             {
@@ -108,12 +130,7 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                using (StreamReader reader = process.StandardError)
-                {
-                    string error = reader.ReadToEnd();
-                    Debug.WriteLine("LessCompiler Error: " + error);
-                    result.Error = ParseError(error);
-                }
+                result.Error = ParseError(errorText.Replace("\r", ""));
             }
 
             File.Delete(outputFile);
