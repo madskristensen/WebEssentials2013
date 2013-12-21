@@ -46,7 +46,7 @@ namespace MadsKristensen.EditorExtensions
 
                 CreateTask(result.Error);
 
-                base.OnCompilationDone("ERROR:" + result.Error.Message, lessFilePath);
+                base.OnCompilationDone("ERROR: " + result.Error.Message, lessFilePath);
             }
         }
 
