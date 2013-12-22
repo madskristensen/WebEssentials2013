@@ -352,7 +352,7 @@ namespace MadsKristensen.EditorExtensions
                 ProjectHelpers.CheckOutFileFromSourceControl(bundlePath);
                 using (StreamWriter writer = new StreamWriter(bundlePath, false, new UTF8Encoding(true)))
                 {
-                    writer.Write(sb.ToString().Trim());
+                    writer.Write(sb.ToString());
                     Logger.Log("Web Essentials: Updating bundle: " + Path.GetFileName(bundlePath));
                 }
                 MarginBase.AddFileToProject(filePath, bundlePath);
