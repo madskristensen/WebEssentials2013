@@ -98,10 +98,12 @@ namespace MadsKristensen.EditorExtensions
 
         protected override string UpdateLessSourceMapUrls(string content, string oldFileName, string newFileName)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
-                return content;
-            dynamic jsonSourceMap = null;
             string sourceMapFilename = oldFileName + ".map";
+
+            if (!WESettings.GetBoolean(WESettings.Keys.LessSourceMaps) || !File.Exists(sourceMapFilename))
+                return content;
+
+            dynamic jsonSourceMap = null;
             // Read JSON map file and deserialize.
             string sourceMapContents = File.ReadAllText(sourceMapFilename);
 
@@ -114,19 +116,24 @@ namespace MadsKristensen.EditorExtensions
             string cssNetworkPath = FileHelpers.RelativePath(oldFileName, newFileName);
             string sourceMapRelativePath = FileHelpers.RelativePath(oldFileName, sourceMapFilename);
 
-            jsonSourceMap.sources = new List<dynamic>(jsonSourceMap.sources);
             jsonSourceMap.names = new List<dynamic>(jsonSourceMap.names);
+            jsonSourceMap.sources = FillSources(jsonSourceMap.sources, newFileName, projectRoot);
             jsonSourceMap.file = cssNetworkPath;
-
-            for (int i = 0; i < jsonSourceMap.sources.Count; ++i)
-            {
-                jsonSourceMap.sources[i] = FileHelpers.RelativePath(newFileName, projectRoot + jsonSourceMap.sources[i]);
-            }
 
             WriteFile(Json.Encode(jsonSourceMap), sourceMapFilename, File.Exists(sourceMapFilename), false);
 
             // Fixed sourceMappingURL comment in CSS file with network accessible path.
             return Regex.Replace(content, @"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", "/*# sourceMappingURL=" + sourceMapRelativePath + "*/");
+        }
+
+        private static List<dynamic> FillSources(List<dynamic> sources, string newFileName, string projectRoot)
+        {
+            for (int i = 0; i < sources.Count; ++i)
+            {
+                sources[i] = FileHelpers.RelativePath(newFileName, projectRoot + sources[i]);
+            }
+
+            return sources;
         }
     }
 }
