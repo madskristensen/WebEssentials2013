@@ -9,7 +9,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         [JsonProperty]
         public string Selector { get; set; }
         [JsonProperty]
-        public List<SourceLocation> SourceLocations { get; private set; }
+        public IEnumerable<SourceLocation> SourceLocations { get; private set; }
 
         public RawRuleUsage()
         {
