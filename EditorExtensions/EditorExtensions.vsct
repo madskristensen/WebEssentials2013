@@ -336,7 +336,7 @@
         <Icon guid="guidImages" id="bmpLogo"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>MinifySelection</CommandName>
+          <CommandName>Minify Selection</CommandName>
           <ButtonText>Minify selection</ButtonText>
         </Strings>
       </Button>
@@ -345,7 +345,7 @@
         <Parent guid="guidExtractCmdSet" id="MyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>ExtractToFile</CommandName>
+          <CommandName>Extract To File</CommandName>
           <ButtonText>Extract to file...</ButtonText>
         </Strings>
       </Button>
@@ -355,7 +355,7 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <CommandName>ExtractToVariable</CommandName>
+          <CommandName>Extract To Variable</CommandName>
           <ButtonText>Extract to variable...</ButtonText>
         </Strings>
       </Button>
@@ -365,7 +365,7 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <CommandName>ExtractToMixin</CommandName>
+          <CommandName>Extract To Mixin</CommandName>
           <ButtonText>Extract to mixin...</ButtonText>
         </Strings>
       </Button>
@@ -374,7 +374,7 @@
         <Parent guid="guidCssCmdSet" id="CssMinifyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>SelectBrowsers</CommandName>
+          <CommandName>Select Browsers</CommandName>
           <ButtonText>Select browsers...</ButtonText>
         </Strings>
       </Button>
@@ -508,7 +508,7 @@
         <Parent guid="guidBuildCmdSet" id="MyBuildMenuGroup"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Update all bundles</ButtonText>
+          <ButtonText>Update All Bundles</ButtonText>
         </Strings>
       </Button>
       <Button guid="guidBuildCmdSet" id="cmdBuildMinify" priority="0x0102" type="Button">
@@ -516,14 +516,14 @@
         <Icon guid="guidImages" id="bmpLogo"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Re-minify all CSS/JS/HTML files</ButtonText>
+          <ButtonText>Re-minify All CSS/JS/HTML Files</ButtonText>
         </Strings>
       </Button>
       <Button guid="guidBuildCmdSet" id="cmdBuildLess" priority="0x0103" type="Button">
         <Parent guid="guidBuildCmdSet" id="MyCompileMenuGroup"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Re-compile all LESS files</ButtonText>
+          <ButtonText>Re-compile All LESS Files</ButtonText>
         </Strings>
       </Button>
       <!--<Button guid="guidBuildCmdSet" id="cmdBuildTypeScript" priority="0x0104" type="Button">
@@ -537,7 +537,7 @@
         <Parent guid="guidBuildCmdSet" id="MyCompileMenuGroup"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Re-compile all CoffeeScript files</ButtonText>
+          <ButtonText>Re-compile All CoffeeScript Files</ButtonText>
         </Strings>
       </Button>
 
@@ -547,6 +547,7 @@
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
+          <CommandName>Surround With Tag</CommandName>
           <ButtonText>Surround with tag...</ButtonText>
         </Strings>
       </Button>
