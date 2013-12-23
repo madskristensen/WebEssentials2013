@@ -18,8 +18,7 @@ namespace WebEssentialsTests
         #region Helper Methods
         private static async Task<string> CompileLess(string fileName, string targetFilename = null)
         {
-            string siteMapPath = "/" + Path.GetDirectoryName(FileHelpers.RelativePath(BaseDirectory, fileName)).Replace("\\", "/");
-            var result = await LessCompiler.Compile(fileName, targetFilename, siteMapPath);
+            var result = await LessCompiler.Compile(fileName, targetFilename);
 
             if (result.IsSuccess)
             {

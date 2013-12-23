@@ -19,15 +19,14 @@ namespace MadsKristensen.EditorExtensions
         private static readonly string node = Path.Combine(webEssentialsNodeDir, @"node.exe");
         private static readonly Regex errorParser = new Regex(@"^(.+) in (.+) on line (\d+), column (\d+):$", RegexOptions.Multiline);
 
-        public static async Task<CompilerResult> Compile(string fileName, string targetFileName = null, string sourceMapRootPath = null)
+        public static async Task<CompilerResult> Compile(string fileName, string targetFileName = null)
         {
             string output = Path.GetTempFileName();
             string arguments = String.Format("--no-color --relative-urls \"{0}\" \"{1}\"", fileName, output);
-            string fileNameWithoutPath = Path.GetFileName(fileName);
-            string sourceMapArguments = (string.IsNullOrEmpty(sourceMapRootPath)) ? "" : String.Format("--source-map-rootpath=\"{0}\" ", sourceMapRootPath.Replace("\\", "/"));
 
             if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
-                arguments = String.Format("--no-color --relative-urls {0}--source-map=\"{1}.map\" \"{2}\" \"{3}\"", sourceMapArguments, fileNameWithoutPath, fileName, output);
+                arguments = String.Format("--no-color --relative-urls --source-map=\"{0}.map\" \"{1}\" \"{2}\"",
+                    targetFileName, fileName, output);
 
             ProcessStartInfo start = new ProcessStartInfo(String.Format("\"{0}\" \"{1}\"", (File.Exists(node)) ? node : "node", lessCompiler))
             {

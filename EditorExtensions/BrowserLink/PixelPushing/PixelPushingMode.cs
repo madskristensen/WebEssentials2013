@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 }
             }
         }
-        public static List<Regex> IgnoreList
+        public static IEnumerable<Regex> IgnoreList
         {
             get
             {

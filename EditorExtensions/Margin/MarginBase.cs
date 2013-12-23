@@ -254,11 +254,10 @@ namespace MadsKristensen.EditorExtensions
                     return string.Empty;
             }
 
-            bool fileExist = File.Exists(fileName);
-            bool fileWritten = false;
-
             ProjectHelpers.CheckOutFileFromSourceControl(fileName);
-            fileWritten = WriteFile(content, fileName, fileExist, fileWritten);
+
+            bool fileExist = File.Exists(fileName);
+            bool fileWritten = WriteFile(content, fileName, fileExist, false);
 
             if (!fileExist && fileWritten)
             {
@@ -268,16 +267,14 @@ namespace MadsKristensen.EditorExtensions
             return content;
         }
 
-        protected virtual string UpdateLessSourceMapUrls(string content, string oldFileName, string newFileName)
-        {
-            // If not overridden by derived, return content as is.
+        protected virtual string UpdateLessSourceMapUrls(string content, string sourceFileName, string compiledFileName)
+        {   // If not overridden by derived, return content as is.
             return content;
         }
 
         public static string GetCompiledFileName(string sourceFileName, string compiledExtension, string customFolder)
         {
-            string sourceExtension = Path.GetExtension(sourceFileName);
-            string compiledFileName = Path.GetFileName(sourceFileName).Replace(sourceExtension, compiledExtension);
+            string compiledFileName = Path.GetFileName(Path.ChangeExtension(sourceFileName, compiledExtension));
             string sourceDir = Path.GetDirectoryName(sourceFileName);
             string compiledDir;
             string rootDir = ProjectHelpers.GetRootFolder();

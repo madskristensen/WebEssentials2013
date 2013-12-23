@@ -21,13 +21,13 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public static bool IsAnyConnectionAlive { get { return ExtensionByConnection.Count > 0; } }
         public BrowserLinkConnection Connection { get { return _connection; } }
         public bool IsRecording { get; private set; }
-        public static List<string> IgnoreList
+        public static IEnumerable<string> IgnoreList
         {
             get
             {
                 var ignorePatterns = WESettings.GetString(WESettings.Keys.UnusedCss_IgnorePatterns) ?? "";
 
-                return ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
+                return ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim());
             }
         }
         private static List<string> IgnorePatternList

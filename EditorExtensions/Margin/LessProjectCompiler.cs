@@ -19,18 +19,14 @@ namespace MadsKristensen.EditorExtensions
 
         private static async Task Compile(Project project)
         {
-            string projectRoot = ProjectHelpers.GetRootFolder(project);
-            var files = Directory.EnumerateFiles(projectRoot, "*.less", SearchOption.AllDirectories).Where(CanCompile);
-            string fileBasePath = string.Empty;
+            var files = Directory.EnumerateFiles(ProjectHelpers.GetRootFolder(project), "*.less", SearchOption.AllDirectories).Where(CanCompile);
 
             if (!files.Any()) return;
-
-            fileBasePath = "/" + Path.GetDirectoryName(FileHelpers.RelativePath(projectRoot, files.First())).Replace("\\", "/");
 
             foreach (string file in files)
             {
                 string cssFileName = MarginBase.GetCompiledFileName(file, ".css", WESettings.GetString(WESettings.Keys.LessCompileToLocation));
-                var result = await LessCompiler.Compile(file, cssFileName, projectRoot + fileBasePath);
+                var result = await LessCompiler.Compile(file, cssFileName);
 
                 if (result.IsSuccess)
                     WriteResult(result, cssFileName);

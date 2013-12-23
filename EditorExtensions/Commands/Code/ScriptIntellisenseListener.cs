@@ -163,11 +163,11 @@ namespace MadsKristensen.EditorExtensions
 
         private static void ProcessClass(CodeClass cc, List<IntellisenseObject> list)
         {
-            var props = GetProperties(cc.Members, new HashSet<string>()).ToList();
+            var properties = GetProperties(cc.Members, new HashSet<string>()).ToList();
 
-            if (props.Any())
+            if (properties.Any())
             {
-                var intellisenseObject = new IntellisenseObject
+                var intellisenseObject = new IntellisenseObject(properties)
                 {
                     Namespace = GetNamespace(cc),
                     Name = cc.Name,
@@ -175,7 +175,6 @@ namespace MadsKristensen.EditorExtensions
                     Summary = GetSummary(cc),
                 };
 
-                intellisenseObject.Properties.AddRange(props);
                 list.Add(intellisenseObject);
             }
         }
