@@ -23,10 +23,11 @@ namespace MadsKristensen.EditorExtensions
         {
             string output = Path.GetTempFileName();
             string arguments = String.Format("--no-color --relative-urls \"{0}\" \"{1}\"", fileName, output);
+            string baseFolder = ProjectHelpers.GetRootFolder() ?? Path.GetDirectoryName(targetFileName);
 
             if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
-                arguments = String.Format("--no-color --relative-urls --source-map=\"{0}.map\" \"{1}\" \"{2}\"",
-                    targetFileName, fileName, output);
+                arguments = String.Format("--no-color --relative-urls --source-map-basepath=\"{0}\" --source-map=\"{1}.map\" \"{2}\" \"{3}\"",
+                    baseFolder.Replace("\\","/"), targetFileName, fileName, output);
 
             ProcessStartInfo start = new ProcessStartInfo(String.Format("\"{0}\" \"{1}\"", (File.Exists(node)) ? node : "node", lessCompiler))
             {

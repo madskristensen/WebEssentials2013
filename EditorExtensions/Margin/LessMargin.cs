@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.Helpers;
@@ -126,22 +127,11 @@ namespace MadsKristensen.EditorExtensions
             if (jsonSourceMap == null)
                 return null;
 
-            jsonSourceMap.sources = UpdateSourcePaths(new List<dynamic>(jsonSourceMap.sources), cssFileName, lessFileName);
+            jsonSourceMap.sources = ((IEnumerable<dynamic>)jsonSourceMap.sources).Select(s => FileHelpers.RelativePath(cssFileName, s));
             jsonSourceMap.names = new List<dynamic>(jsonSourceMap.names);
             jsonSourceMap.file = FileHelpers.RelativePath(lessFileName, cssFileName);
 
             return Json.Encode(jsonSourceMap);
-        }
-
-        private static List<dynamic> UpdateSourcePaths(List<dynamic> sources, string cssFileName, string lessFileName)
-        {
-            for (int i = 0; i < sources.Count; ++i)
-            {
-                sources[i] = FileHelpers.RelativePath(cssFileName,
-                    File.Exists(sources[i]) ? sources[i] : lessFileName);
-            }
-
-            return sources;
         }
 
         private static string UpdateSourceLinkInCssComment(string content, string sourceMapRelativePath)
