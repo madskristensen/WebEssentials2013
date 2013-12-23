@@ -52,13 +52,13 @@
 
 [$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.less\.css]
 [$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.less\.min.css]
-[$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.less\.min.less]
 
 // Minified CSS files
 [$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.css]
 "RelationType"=dword:00000001
 
 [$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.css\.min.css]
+[$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.css\.css.map]
 
 // Compiled CoffeeScript files
 [$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.coffee]
