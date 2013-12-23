@@ -384,6 +384,9 @@ namespace MadsKristensen.EditorExtensions
             {
                 string minContent = MinifyFileMenu.MinifyString(extension, content);
 
+                if (File.Exists(minPath) && File.ReadAllText(minPath) == minContent)
+                    return;
+
                 ProjectHelpers.CheckOutFileFromSourceControl(minPath);
 
                 using (StreamWriter writer = new StreamWriter(minPath, false, new UTF8Encoding(true)))
@@ -399,6 +402,9 @@ namespace MadsKristensen.EditorExtensions
             else if (extension.Equals(".html", StringComparison.OrdinalIgnoreCase))
             {
                 string minContent = MinifyFileMenu.MinifyString(extension, content);
+
+                if (File.Exists(minPath) && File.ReadAllText(minPath) == minContent)
+                    return;
 
                 ProjectHelpers.CheckOutFileFromSourceControl(minPath);
 
