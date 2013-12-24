@@ -311,7 +311,7 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>Gets the directory containing the project for the specified file.</summary>
         private static string GetProjectFolder(ProjectItem item)
         {
-            if (item == null || item.ContainingProject == null || string.IsNullOrEmpty(item.ContainingProject.FullName)) // Solution items
+            if (item == null || item.ContainingProject == null || item.ContainingProject.Collection == null || string.IsNullOrEmpty(item.ContainingProject.FullName)) // Solution items
                 return null;
 
             return GetRootFolder(item.ContainingProject);
