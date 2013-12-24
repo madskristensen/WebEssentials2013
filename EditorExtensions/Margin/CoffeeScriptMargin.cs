@@ -100,6 +100,7 @@ namespace MadsKristensen.EditorExtensions
             }
 
             Logger.Log("CoffeeScript: Compiling " + Path.GetFileName(Document.FilePath));
+
             _compiler.Compile(source, Document.FilePath);
         }
 
@@ -107,8 +108,14 @@ namespace MadsKristensen.EditorExtensions
         {
             if (e.Result.StartsWith("ERROR:", StringComparison.OrdinalIgnoreCase))
             {
+                Logger.Log("CoffeeScript: " + Path.GetFileName(Document.FilePath) + " compilation failed.");
+
                 CompilerError error = ParseError(e.Result);
                 CreateTask(error);
+            }
+            else
+            {
+                Logger.Log("CoffeeScript: " + Path.GetFileName(Document.FilePath) + " compiled.");
             }
 
             OnCompilationDone(e.Result, e.State);

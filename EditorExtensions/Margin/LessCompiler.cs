@@ -27,7 +27,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
                 arguments = String.Format("--no-color --relative-urls --source-map-basepath=\"{0}\" --source-map=\"{1}.map\" \"{2}\" \"{3}\"",
-                    baseFolder.Replace("\\","/"), targetFileName, fileName, output);
+                    baseFolder.Replace("\\", "/"), targetFileName, fileName, output);
 
             ProcessStartInfo start = new ProcessStartInfo(String.Format("\"{0}\" \"{1}\"", (File.Exists(node)) ? node : "node", lessCompiler))
             {
@@ -87,7 +87,7 @@ namespace MadsKristensen.EditorExtensions
                 // Inserts an empty row between each rule and replace two space indentation with 4 space indentation
                 result.Result = _endingCurlyBraces.Replace(_linesStartingWithTwoSpaces.Replace(result.Result.Trim(), "$1$2"), "$&\n");
 
-                var message = Path.GetFileName(fileName) + " compiled.";
+                var message = "LESS: " + Path.GetFileName(fileName) + " compiled.";
 
                 // If the caller wants us to renormalize URLs to a different filename, do so.
                 if (targetFileName != null && result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
@@ -102,7 +102,7 @@ namespace MadsKristensen.EditorExtensions
                     }
                     catch (Exception ex)
                     {
-                        message = "An error occurred while normalizing generated paths in " + fileName + "\r\n" + ex;
+                        message = "LESS: An error occurred while normalizing generated paths in " + fileName + "\r\n" + ex;
                     }
                 }
 
@@ -110,7 +110,7 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                Logger.Log(Path.GetFileName(fileName) + " compilation failed.");
+                Logger.Log("LESS: " + Path.GetFileName(fileName) + " compilation failed.");
             }
 
             return result;
