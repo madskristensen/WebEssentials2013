@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.Helpers;
 using EnvDTE;
@@ -22,10 +21,10 @@ namespace MadsKristensen.EditorExtensions
 
         protected override async void StartCompiler(string source)
         {
-            string lessFilePath = Document.FilePath;
-
             if (!CompileEnabled)
                 return;
+
+            string lessFilePath = Document.FilePath;
 
             string cssFilename = GetCompiledFileName(lessFilePath, ".css", CompileEnabled ? CompileToLocation : null);// Document.FilePath.Replace(".less", ".css");
 
@@ -37,7 +36,7 @@ namespace MadsKristensen.EditorExtensions
 
             Logger.Log("LESS: Compiling " + Path.GetFileName(lessFilePath));
 
-            var result = await LessCompiler.Compile(lessFilePath, cssFilename);
+            var result = await new LessCompiler().RunCompile(lessFilePath, cssFilename);
 
             if (result.IsSuccess)
             {
@@ -60,19 +59,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (WESettings.GetBoolean(WESettings.Keys.LessMinify) && !Path.GetFileName(fileName).StartsWith("_", StringComparison.Ordinal))
             {
-                string content = MinifyFileMenu.MinifyString(".css", source);
-                string minFile = GetCompiledFileName(fileName, ".min.css", CompileToLocation);// fileName.Replace(".less", ".min.css");
-                bool fileExist = File.Exists(minFile);
-
-                ProjectHelpers.CheckOutFileFromSourceControl(minFile);
-
-                using (StreamWriter writer = new StreamWriter(minFile, false, new UTF8Encoding(true)))
-                {
-                    writer.Write(content);
-                }
-
-                if (!fileExist)
-                    AddFileToProject(Document.FilePath, minFile);
+                FileHelpers.MinifyFile(fileName, source, ".css");
             }
         }
 

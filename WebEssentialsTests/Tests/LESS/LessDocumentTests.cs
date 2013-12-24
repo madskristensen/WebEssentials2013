@@ -23,7 +23,8 @@ namespace WebEssentialsTests
             {
                 File.WriteAllText(fileName, source);
 
-                var result = await LessCompiler.Compile(fileName);
+                var result = await new LessCompiler().RunCompile(fileName);
+
                 if (result.IsSuccess)
                     return result.Result;
                 else

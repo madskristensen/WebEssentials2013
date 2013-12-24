@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Helpers;
@@ -10,73 +9,34 @@ using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions
 {
-    public static class LessCompiler
+    public class LessCompiler : NodeExecutorBase
     {
         private static readonly Regex _endingCurlyBraces = new Regex(@"}\W*}|}", RegexOptions.Compiled);
         private static readonly Regex _linesStartingWithTwoSpaces = new Regex("(\n( *))", RegexOptions.Compiled);
-        private static readonly string webEssentialsNodeDir = Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\nodejs");
-        private static readonly string lessCompiler = Path.Combine(webEssentialsNodeDir, @"node_modules\less\bin\lessc");
-        private static readonly string node = Path.Combine(webEssentialsNodeDir, @"node.exe");
         private static readonly Regex errorParser = new Regex(@"^(.+) in (.+) on line (\d+), column (\d+):$", RegexOptions.Multiline);
 
-        public static async Task<CompilerResult> Compile(string fileName, string targetFileName = null)
+        protected override string Compiler
+        {
+            get { return @"node_modules\less\bin\lessc"; }
+        }
+
+        public override async Task<CompilerResult> RunCompile(string fileName, string targetFileName = null)
         {
             string output = Path.GetTempFileName();
             string arguments = String.Format("--no-color --relative-urls \"{0}\" \"{1}\"", fileName, output);
-            string baseFolder = ProjectHelpers.GetRootFolder() ?? Path.GetDirectoryName(targetFileName);
 
             if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
+            {
+                string baseFolder = ProjectHelpers.GetRootFolder() ?? Path.GetDirectoryName(targetFileName);
+
                 arguments = String.Format("--no-color --relative-urls --source-map-basepath=\"{0}\" --source-map=\"{1}.map\" \"{2}\" \"{3}\"",
                     baseFolder.Replace("\\", "/"), targetFileName, fileName, output);
-
-            ProcessStartInfo start = new ProcessStartInfo(String.Format("\"{0}\" \"{1}\"", (File.Exists(node)) ? node : "node", lessCompiler))
-            {
-                WindowStyle = ProcessWindowStyle.Hidden,
-                WorkingDirectory = Path.GetDirectoryName(fileName),
-                CreateNoWindow = true,
-                Arguments = arguments,
-                UseShellExecute = false,
-                RedirectStandardError = true,
-                RedirectStandardOutput = true
-            };
-
-            var error = new StringBuilder();
-            using (var process = await ExecuteAsync(start, error))
-            {
-                return ProcessResult(output, process, error.ToString(), fileName, targetFileName);
             }
+
+            return await base.Compile(fileName, targetFileName, arguments, output);
         }
 
-        private static Task<Process> ExecuteAsync(ProcessStartInfo startInfo, StringBuilder error)
-        {
-            var process = Process.Start(startInfo);
-            var processTaskCompletionSource = new TaskCompletionSource<Process>();
-
-            //note: if we don't also read from the standard output, we don't receive the error output... ?
-            process.OutputDataReceived += (_, __) => { };
-            process.ErrorDataReceived += (sender, line) =>
-            {
-                error.AppendLine(line.Data);
-            };
-
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-
-            process.EnableRaisingEvents = true;
-            EventHandler exitHandler = (s, e) =>
-            {
-                // WaitForExit() ensures that the StandardError stream has been drained
-                process.WaitForExit();
-                processTaskCompletionSource.TrySetResult(process);
-            };
-
-            process.Exited += exitHandler;
-
-            if (process.HasExited) exitHandler(process, null);
-            return processTaskCompletionSource.Task;
-        }
-
-        private static CompilerResult ProcessResult(string output, Process process, string errorText, string fileName, string targetFileName)
+        protected override CompilerResult ProcessResult(Process process, string errorText, string fileName, string targetFileName, string output)
         {
             CompilerResult result = new CompilerResult(fileName);
 

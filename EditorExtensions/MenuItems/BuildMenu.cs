@@ -6,6 +6,7 @@ using System.Linq;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
+using ThreadingTasks = System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -27,7 +28,7 @@ namespace MadsKristensen.EditorExtensions
             _mcs.AddCommand(menuBundles);
 
             CommandID cmdLess = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildLess);
-            OleMenuCommand menuLess = new OleMenuCommand((s, e) => BuildLess(), cmdLess);
+            OleMenuCommand menuLess = new OleMenuCommand(async (s, e) => await BuildLess(), cmdLess);
             _mcs.AddCommand(menuLess);
 
             //CommandID cmdTS = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildTypeScript);
@@ -39,17 +40,18 @@ namespace MadsKristensen.EditorExtensions
             _mcs.AddCommand(menuMinify);
 
             CommandID cmdCoffee = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildCoffeeScript);
-            OleMenuCommand menuCoffee = new OleMenuCommand((s, e) => BuildCoffeeScript(), cmdCoffee);
+            OleMenuCommand menuCoffee = new OleMenuCommand(async (s, e) => await BuildCoffeeScript(), cmdCoffee);
             _mcs.AddCommand(menuCoffee);
         }
 
-        public static void BuildCoffeeScript()
+        public async static ThreadingTasks.Task BuildCoffeeScript()
         {
-            foreach (Project project in ProjectHelpers.GetAllProjects())
+            var projectTasks = ProjectHelpers.GetAllProjects().Select(project =>
             {
-                using (CoffeeScriptMargin margin = new CoffeeScriptMargin())
-                    margin.CompileProject(project);
-            }
+                return new CoffeeScriptProjectCompiler().CompileProject(project);
+            });
+
+            await ThreadingTasks.Task.WhenAll(projectTasks.ToArray());
         }
 
         public static void UpdateBundleFiles()
@@ -59,12 +61,14 @@ namespace MadsKristensen.EditorExtensions
             //Logger.Log("Bundles updated");
         }
 
-        public static void BuildLess()
+        public async static ThreadingTasks.Task BuildLess()
         {
-            foreach (Project project in ProjectHelpers.GetAllProjects())
+            var projectTasks = ProjectHelpers.GetAllProjects().Select(project =>
             {
-                LessProjectCompiler.CompileProject(project);
-            }
+                return new LessProjectCompiler().CompileProject(project);
+            });
+
+            await ThreadingTasks.Task.WhenAll(projectTasks.ToArray());
         }
 
         //private void BuildTypeScript()

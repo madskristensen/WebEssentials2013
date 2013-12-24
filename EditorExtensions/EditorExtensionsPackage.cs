@@ -10,6 +10,7 @@ using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using ThreadingTask = System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -104,29 +105,28 @@ namespace MadsKristensen.EditorExtensions
            }), DispatcherPriority.ApplicationIdle, null);
         }
 
-        private void BuildEvents_OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
+        private async void BuildEvents_OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
         {
             if (Action != vsBuildAction.vsBuildActionClean)
-                System.Threading.Tasks.Task.Run(() =>
+                await ThreadingTask.Task.Run(async () =>
                 {
                     if (WESettings.GetBoolean(WESettings.Keys.LessCompileOnBuild))
-                        BuildMenu.BuildLess();
+                        await BuildMenu.BuildLess();
 
                     if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptCompileOnBuild))
-                        BuildMenu.BuildCoffeeScript();
+                        await BuildMenu.BuildCoffeeScript();
 
                     BuildMenu.UpdateBundleFiles();
 
                     if (WESettings.GetBoolean(WESettings.Keys.RunJsHintOnBuild))
                     {
-                        Dispatcher.CurrentDispatcher.BeginInvoke(
-                            new Action(() => JsHintProjectRunner.RunOnAllFilesInProject()), DispatcherPriority.ApplicationIdle, null);
+                        await Dispatcher.CurrentDispatcher.BeginInvoke(
+                                        new Action(() => JsHintProjectRunner.RunOnAllFilesInProject()),
+                                        DispatcherPriority.ApplicationIdle, null);
                     }
                 });
             else if (Action == vsBuildAction.vsBuildActionClean)
-            {
-                System.Threading.Tasks.Task.Run(() => JsHintRunner.Reset());
-            }
+                await ThreadingTask.Task.Run(() => JsHintRunner.Reset());
         }
 
         public static void ExecuteCommand(string commandName)
