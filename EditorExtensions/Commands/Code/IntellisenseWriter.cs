@@ -68,12 +68,12 @@ namespace MadsKristensen.EditorExtensions
 
                 foreach (var p in io.Properties)
                 {
-                    string type = p.Type.JavaScriptName + (p.Type.IsArray ? "[]" : "");
+                    string value = p.Type.JavaScriptName + (p.Type.IsArray ? "[]" : "");
                     var propertyName = CamelCasePropertyName(p.Name);
                     comment = p.Summary ?? "The " + propertyName + " property as defined in " + io.FullName;
                     comment = whitespaceTrimmer.Replace(comment, " ");
-                    sb.AppendLine("\t/// <field name=\"" + propertyName + "\" type=\"" + type + "\">" + SecurityElement.Escape(comment) + "</field>");
-                    sb.AppendLine("\tthis." + propertyName + " = " + p.Type.JavaScripLiteral + ";");
+                    sb.AppendLine("\t/// <field name=\"" + propertyName + "\" type=\"" + value + "\">" + SecurityElement.Escape(comment) + "</field>");
+                    sb.AppendLine("\tthis." + propertyName + " = new " + value + "();");
                 }
 
                 sb.AppendLine("};");
@@ -220,30 +220,6 @@ namespace MadsKristensen.EditorExtensions
             get { return GetTargetName(false); }
         }
 
-        public string JavaScripLiteral {
-            get
-            {
-                if (IsArray)
-                    return "[]";
-                switch (JavaScriptName) 
-                {
-                    case "Number":
-                        return "0";
-                    case "String":
-                        return "''";
-                    case "Boolean":
-                        return "false";
-                    case "Array":
-                        return "[]";
-                    case "Object":
-                        return "{ }";
-                    default:
-                        return "new " + JavaScriptName + "()";
-                }
-            }
-        }
-
-
         string GetTargetName(bool js)
         {
             var t = CodeName.ToLowerInvariant().TrimEnd('?');
@@ -274,6 +250,9 @@ namespace MadsKristensen.EditorExtensions
                 case "boolean":
                     return js ? "Boolean" : "boolean";
             }
+
+            if (t.Contains("system.collections") || t.Contains("[]") || t.Contains("array"))
+                return "Array";
 
             return js ? "Object" : "any";
         }
