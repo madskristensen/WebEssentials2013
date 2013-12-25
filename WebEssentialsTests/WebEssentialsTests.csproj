@@ -81,6 +81,9 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Tests\BootStrap\BootStrapValidationTests.cs" />
+    <Compile Include="Tests\CoffeeScript\IcedCoffeeScriptCompilationTests.cs" />
+    <Compile Include="Tests\CoffeeScript\CoffeeScriptCompilationTests.cs" />
+    <Compile Include="Tests\Extensions\Extensions.cs" />
     <Compile Include="Tests\LESS\LessCompilationTests.cs" />
     <Compile Include="Tests\LESS\LessDocumentTests.cs">
       <SubType>Code</SubType>
@@ -101,6 +104,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="fixtures\coffee\compiled\test.js" />
+    <Content Include="fixtures\iced\compiled\test.js" />
     <Content Include="fixtures\less\css\URLs.css" />
     <Content Include="fixtures\less\css\_Deep Inclusion.css" />
     <Content Include="fixtures\less\css\_Entry1.css" />
@@ -138,6 +143,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <Content Include="fixtures\less\URLs.css" />
+    <None Include="fixtures\iced\source\test.iced" />
     <None Include="fixtures\less\URLs.less" />
     <None Include="fixtures\less\sub1\deeper\_lib.less" />
     <None Include="fixtures\less\sub1\deeper\_Entry3.less" />
@@ -148,6 +154,7 @@
     <None Include="fixtures\module-resolution\foo" />
     <None Include="fixtures\module-resolution\packages\main-index\package.json" />
     <None Include="fixtures\module-resolution\packages\main\package.json" />
+    <None Include="fixtures\coffee\source\test.coffee" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

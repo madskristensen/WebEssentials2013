@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class CoffeeScriptCompiler : NodeExecutorBase
+    public class CoffeeScriptCompiler : NodeExecutorBase
     {
         private static readonly Regex _errorParsingPattern = new Regex(@".*\\(?<fileName>.*):(?<line>.\d):(?<column>.\d): error: (?<message>.*\n.*)", RegexOptions.Multiline);
 
