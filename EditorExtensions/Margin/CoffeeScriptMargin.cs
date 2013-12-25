@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions
 
             Logger.Log("CoffeeScript: Compiling " + Path.GetFileName(coffeeFilePath));
 
-            var result = await new CoffeeScriptCompiler().RunCompile(coffeeFilePath, fileName);
+            var result = await new CoffeeScriptCompiler().Compile(coffeeFilePath, fileName);
 
             if (result.IsSuccess)
             {

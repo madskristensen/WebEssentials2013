@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.CSS.Core;
 
@@ -13,108 +11,61 @@ namespace MadsKristensen.EditorExtensions
     {
         private static readonly Regex _endingCurlyBraces = new Regex(@"}\W*}|}", RegexOptions.Compiled);
         private static readonly Regex _linesStartingWithTwoSpaces = new Regex("(\n( *))", RegexOptions.Compiled);
-        private static readonly Regex errorParser = new Regex(@"^(.+) in (.+) on line (\d+), column (\d+):$", RegexOptions.Multiline);
+        private static readonly Regex _errorParsingPattern = new Regex(@"^(?<message>.+) in (?<fileName>.+) on line (?<line>\d+), column (?<column>\d+):$", RegexOptions.Multiline);
 
-        protected override string Compiler
+        protected override string ServiceName
+        {
+            get { return "LESS"; }
+        }
+        protected override string CompilerPath
         {
             get { return @"node_modules\less\bin\lessc"; }
         }
-
-        public override async Task<CompilerResult> RunCompile(string fileName, string targetFileName = null)
+        protected override Regex ErrorParsingPattern
         {
-            string output = Path.GetTempFileName();
-            string arguments = String.Format("--no-color --relative-urls \"{0}\" \"{1}\"", fileName, output);
+            get { return _errorParsingPattern; }
+        }
+
+        protected override void SetArguments(string sourceFileName, string targetFileName)
+        {
+            Arguments = String.Format(CultureInfo.CurrentCulture, "--no-color --relative-urls \"{0}\" \"{1}\"", sourceFileName, targetFileName);
 
             if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
             {
                 string baseFolder = ProjectHelpers.GetRootFolder() ?? Path.GetDirectoryName(targetFileName);
 
-                arguments = String.Format("--no-color --relative-urls --source-map-basepath=\"{0}\" --source-map=\"{1}.map\" \"{2}\" \"{3}\"",
-                    baseFolder.Replace("\\", "/"), targetFileName, fileName, output);
+                Arguments = String.Format(CultureInfo.CurrentCulture, "--no-color --relative-urls --source-map-basepath=\"{0}\" --source-map=\"{1}.map\" \"{2}\" \"{3}\"",
+                    baseFolder.Replace("\\", "/"), targetFileName, sourceFileName, targetFileName);
             }
-
-            return await base.Compile(fileName, targetFileName, arguments, output);
         }
 
-        protected override CompilerResult ProcessResult(Process process, string errorText, string fileName, string targetFileName, string output)
+        protected override string PostProcessResult(string resultMessage, string sourceFileName, string targetFileName)
         {
-            CompilerResult result = new CompilerResult(fileName);
+            // Inserts an empty row between each rule and replace two space indentation with 4 space indentation
+            resultMessage = _endingCurlyBraces.Replace(_linesStartingWithTwoSpaces.Replace(resultMessage.Trim(), "$1$2"), "$&\n");
 
-            ProcessResult(output, process, errorText, result);
+            var message = "LESS: " + Path.GetFileName(sourceFileName) + " compiled.";
 
-            if (result.IsSuccess)
+            // If the caller wants us to renormalize URLs to a different filename, do so.
+            if (targetFileName != null && resultMessage.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
             {
-                // Inserts an empty row between each rule and replace two space indentation with 4 space indentation
-                result.Result = _endingCurlyBraces.Replace(_linesStartingWithTwoSpaces.Replace(result.Result.Trim(), "$1$2"), "$&\n");
-
-                var message = "LESS: " + Path.GetFileName(fileName) + " compiled.";
-
-                // If the caller wants us to renormalize URLs to a different filename, do so.
-                if (targetFileName != null && result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
+                try
                 {
-                    try
-                    {
-                        result.Result = CssUrlNormalizer.NormalizeUrls(
-                            tree: new CssParser().Parse(result.Result, true),
-                            targetFile: targetFileName,
-                            oldBasePath: fileName
-                        );
-                    }
-                    catch (Exception ex)
-                    {
-                        message = "LESS: An error occurred while normalizing generated paths in " + fileName + "\r\n" + ex;
-                    }
+                    resultMessage = CssUrlNormalizer.NormalizeUrls(
+                        tree: new CssParser().Parse(resultMessage, true),
+                        targetFile: targetFileName,
+                        oldBasePath: sourceFileName
+                    );
                 }
-
-                Logger.Log(message);
-            }
-            else
-            {
-                Logger.Log("LESS: " + Path.GetFileName(fileName) + " compilation failed.");
-                Logger.Log("LESS: Error on line " + result.Error.Line + " at position " + result.Error.Column + ": " + result.Error.Message);
-            }
-
-            return result;
-        }
-
-        private static void ProcessResult(string outputFile, Process process, string errorText, CompilerResult result)
-        {
-            try
-            {
-                if (process.ExitCode == 0)
+                catch (Exception ex)
                 {
-                    result.Result = File.ReadAllText(outputFile);
-                    result.IsSuccess = true;
-                }
-                else
-                {
-                    result.Error = ParseError(errorText.Replace("\r", ""));
+                    message = "LESS: An error occurred while normalizing generated paths in " + sourceFileName + "\r\n" + ex;
                 }
             }
-            catch (FileNotFoundException missingFileException)
-            {
-                Logger.Log("LESS: " + Path.GetFileName(outputFile) + " compilation failed. " + missingFileException.Message);
-            }
 
-            File.Delete(outputFile);
-        }
+            Logger.Log(message);
 
-        private static CompilerError ParseError(string error)
-        {
-            var match = errorParser.Match(error);
-
-            if (!match.Success)
-            {
-                Logger.Log("LESS parse error: " + error);
-                return new CompilerError { Message = error };
-            }
-            return new CompilerError
-            {
-                Message = match.Groups[1].Value,
-                FileName = match.Groups[2].Value,
-                Line = int.Parse(match.Groups[3].Value, CultureInfo.CurrentCulture),
-                Column = int.Parse(match.Groups[4].Value, CultureInfo.CurrentCulture)
-            };
+            return resultMessage;
         }
     }
 }

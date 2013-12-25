@@ -18,12 +18,14 @@ namespace WebEssentialsTests
         #region Helper Methods
         private static async Task<string> CompileLess(string source)
         {
-            var fileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".less");
+            var lessFileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".less");
+            var cssFileName = Path.ChangeExtension(lessFileName, ".css");
+
             try
             {
-                File.WriteAllText(fileName, source);
+                File.WriteAllText(lessFileName, source);
 
-                var result = await new LessCompiler().RunCompile(fileName);
+                var result = await new LessCompiler().Compile(lessFileName, cssFileName);
 
                 if (result.IsSuccess)
                     return result.Result;
@@ -32,7 +34,8 @@ namespace WebEssentialsTests
             }
             finally
             {
-                File.Delete(fileName);
+                File.Delete(lessFileName);
+                File.Delete(cssFileName);
             }
         }
         #endregion
