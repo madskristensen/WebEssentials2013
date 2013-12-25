@@ -21,23 +21,23 @@ namespace MadsKristensen.EditorExtensions
             if (project != null && !string.IsNullOrEmpty(project.FullName))
             {
                 var folder = ProjectHelpers.GetRootFolder(project);
-                var files = Extensions.SelectMany(e => Directory.EnumerateFiles(folder, "*." + e, SearchOption.AllDirectories));
+                var sourceFiles = Extensions.SelectMany(e => Directory.EnumerateFiles(folder, "*." + e, SearchOption.AllDirectories));
 
-                await Compile(project, files);
+                await Compile(project, sourceFiles);
             }
         }
 
-        protected async Task Compile(Project project, IEnumerable<string> files)
+        protected async Task Compile(Project project, IEnumerable<string> sourceFiles)
         {
-            await Task.WhenAll(files.Select(async file =>
+            await Task.WhenAll(sourceFiles.Select(async sourceFile =>
             {
-                string fileName = MarginBase.GetCompiledFileName(file, CompileToExtension, CompileToLocation);
-                var result = await Compiler.RunCompile(file, fileName);
+                string compiledFile = MarginBase.GetCompiledFileName(sourceFile, CompileToExtension, CompileToLocation);
+                var result = await Compiler.RunCompile(sourceFile, compiledFile);
 
                 if (result.IsSuccess)
-                    FileHelpers.WriteResult(result, fileName, CompileToExtension);
+                    FileHelpers.WriteResult(result, compiledFile, CompileToExtension);
                 else
-                    Logger.Log(result.Error.Message ?? (String.Format(CultureInfo.CurrentCulture, "Error compiling {0} file: {1}", ServiceName, file)));
+                    Logger.Log(result.Error.Message ?? (String.Format(CultureInfo.CurrentCulture, "Error compiling {0} file: {1}", ServiceName, sourceFile)));
             }));
         }
     }
