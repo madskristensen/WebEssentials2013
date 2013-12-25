@@ -56,6 +56,18 @@ namespace MadsKristensen.EditorExtensions
                 FlattenNodeModules(@"resources\nodejs\node_modules\less\node_modules");
             }
 
+            if (!File.Exists(@"resources\nodejs\node_modules\.bin\iced.cmd"))
+            {
+                Log.LogMessage(MessageImportance.High, "npm install iced-coffee-script ...");
+                var output = new StringWriter();
+                int result = Exec(@"cmd", @"/c .\npm.cmd install iced-coffee-script", @"resources\nodejs", output, output);
+                if (result != 0)
+                {
+                    Log.LogError("npm error " + result + ": " + output.ToString().Trim());
+                }
+                FlattenNodeModules(@"resources\nodejs\node_modules\iced-coffee-script\node_modules");
+            }
+
             return true;
         }
 

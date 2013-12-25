@@ -43,7 +43,16 @@ namespace MadsKristensen.EditorExtensions
                 return true;
 
             // Check for Web Application projects.  See https://github.com/madskristensen/WebEssentials2013/pull/140#issuecomment-26679862
-            return project.Properties.Item("WebApplication.UseIISExpress") != null;
+            try
+            {
+                return project.Properties.Item("WebApplication.UseIISExpress") != null;
+            }
+            catch (ArgumentException argumentException)
+            {
+                Logger.Log("Not a Web Application: " + argumentException.Message);
+            }
+
+            return false;
         }
 
         ///<summary>Gets the base directory of a specific Project, or of the active project if no parameter is passed.</summary>

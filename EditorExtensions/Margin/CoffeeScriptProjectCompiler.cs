@@ -2,33 +2,33 @@
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class LessProjectCompiler : ProjectCompilerBase
+    internal class CoffeeScriptProjectCompiler : ProjectCompilerBase
     {
         protected override string ServiceName
         {
-            get { return "LESS"; }
+            get { return "CoffeeScript"; }
         }
 
         protected override string CompileToExtension
         {
-            get { return ".css"; }
+            get { return ".js"; }
         }
 
         protected override string CompileToLocation
         {
-            get { return WESettings.GetString(WESettings.Keys.LessCompileToLocation); }
+            get { return WESettings.GetString(WESettings.Keys.CoffeeScriptCompileToLocation); }
         }
 
         protected override NodeExecutorBase Compiler
         {
-            get { return new LessCompiler(); }
+            get { return new CoffeeScriptCompiler(); }
         }
 
         protected override IEnumerable<string> Extensions
         {
             get
             {
-                return new string[] { ".less" };
+                return new string[] { ".coffee", ".iced" };
             }
         }
     }

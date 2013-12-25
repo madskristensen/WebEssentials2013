@@ -357,6 +357,9 @@
     <Compile Include="Helpers\Disposable.cs" />
     <Compile Include="ExtensionMethods\Extensions.cs" />
     <Compile Include="Helpers\TabAwareCharacterStream.cs" />
+    <Compile Include="Margin\CoffeeScriptProjectCompiler.cs" />
+    <Compile Include="Margin\NodeExecutorBase.cs" />
+    <Compile Include="Margin\ProjectCompilerBase.cs" />
     <Compile Include="Margin\SvgMargin.cs" />
     <Compile Include="MenuItems\AddIntellisenseFile.cs" />
     <Compile Include="Commands\Code\IntellisenseWriter.cs" />
@@ -774,7 +777,6 @@
     <Resource Include="Resources\graph_atdir.png" />
     <Resource Include="Resources\graph_class.png" />
     <Resource Include="Resources\graph_parent.png" />
-    <EmbeddedResource Include="Resources\Scripts\IcedCoffeeScript-1.6.3-f.js" />
     <Resource Include="Resources\sort.png" />
     <None Include="Source.extension.vsixmanifest" />
     <Resource Include="Resources\vsgallery.png" />
@@ -874,6 +876,12 @@
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <Content Include="Resources\nodejs\node_modules\less\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
+        <IncludeInVSIX>true</IncludeInVSIX>
+      </Content>
+      <Content Include="Resources\nodejs\node.exe; Resources\nodejs\node_modules\iced-coffee-script\lib\**; Resources\nodejs\node_modules\iced-coffee-script\bin\**">
+        <IncludeInVSIX>true</IncludeInVSIX>
+      </Content>
+      <Content Include="Resources\nodejs\node_modules\iced-coffee-script\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
     </ItemGroup>
