@@ -288,7 +288,8 @@ namespace MadsKristensen.EditorExtensions
             return property.Name;
         }
 
-        private static string GetSummary(CodeProperty property) { return GetSummary(property.InfoLocation, property.DocComment, property.FullName); }
+        // External items throw an exception from the DocComment getter
+        private static string GetSummary(CodeProperty property) { return property.InfoLocation != vsCMInfoLocation.vsCMInfoLocationProject ? null : GetSummary(property.InfoLocation, property.DocComment, property.FullName); }
 
         private static string GetSummary(CodeClass property) { return GetSummary(property.InfoLocation, property.DocComment, property.FullName); }
 
