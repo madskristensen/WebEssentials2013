@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Xml.Linq;
 using EnvDTE;
@@ -51,22 +52,31 @@ namespace MadsKristensen.EditorExtensions
             Process(e.FilePath);
         }
 
-        public static void Process(string filePath)
+        public static Task<bool> Process(string filePath)
         {
             if (!File.Exists(filePath + Ext.JavaScript) && !File.Exists(filePath + Ext.TypeScript))
-                return;
+                return Task.FromResult(false);
 
-            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+            return Dispatcher.CurrentDispatcher.InvokeAsync(new Func<bool>(() =>
             {
                 var item = EditorExtensionsPackage.DTE.Solution.FindProjectItem(filePath);
-                var list = ProcessFile(item);
-
-                if (list != null)
+                List<IntellisenseObject> list = null;
+                try 
                 {
-                    AddScript(filePath, Ext.JavaScript, list);
-                    AddScript(filePath, Ext.TypeScript, list);
+                    list = ProcessFile(item);
+                } 
+                catch (Exception ex)
+                {
+                    Logger.Log("An error occurred while processing code in " + filePath + "\n" + ex
+                             + "\n\nPlease report this bug at https://github.com/madskristensen/WebEssentials2013/issues, and include the source of the file.");
                 }
-            }), DispatcherPriority.ApplicationIdle, null);
+
+                if (list == null)
+                    return false;
+                AddScript(filePath, Ext.JavaScript, list);
+                AddScript(filePath, Ext.TypeScript, list);
+                return true;
+            }), DispatcherPriority.ApplicationIdle).Task;
         }
 
         private static void AddScript(string filePath, string extension, List<IntellisenseObject> list)
