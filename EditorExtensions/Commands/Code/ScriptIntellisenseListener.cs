@@ -220,15 +220,16 @@ namespace MadsKristensen.EditorExtensions
 
         private static IntellisenseType GetType(CodeTypeRef codeTypeRef, HashSet<string> traversedTypes)
         {
+            // TODO: Is there a way to extract the CodeTypeRef for a generic parameter?
             var isArray = codeTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefArray;
             if (isArray && codeTypeRef.ElementType != null) codeTypeRef = codeTypeRef.ElementType;
+            bool isCollection = codeTypeRef.AsString.StartsWith("System.Collections", StringComparison.Ordinal);
 
             var cl = codeTypeRef.CodeType as CodeClass;
             var en = codeTypeRef.CodeType as CodeEnum;
             var isPrimitive = IsPrimitive(codeTypeRef);
-            var result = new IntellisenseType
-            {
-                IsArray = isArray,
+            var result = new IntellisenseType {
+                IsArray = isArray || isCollection,
                 CodeName = codeTypeRef.AsString,
                 ClientSideReferenceName =
                     codeTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType &&
@@ -239,7 +240,7 @@ namespace MadsKristensen.EditorExtensions
                     : null
             };
 
-            if (!isPrimitive && cl != null && !traversedTypes.Contains(codeTypeRef.CodeType.FullName))
+            if (!isPrimitive && cl != null && !traversedTypes.Contains(codeTypeRef.CodeType.FullName) && !isCollection)
             {
                 traversedTypes.Add(codeTypeRef.CodeType.FullName);
                 result.Shape = GetProperties(codeTypeRef.CodeType.Members, traversedTypes).ToList();

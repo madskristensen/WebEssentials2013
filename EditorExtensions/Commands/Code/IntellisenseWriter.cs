@@ -275,9 +275,6 @@ namespace MadsKristensen.EditorExtensions
                     return js ? "Boolean" : "boolean";
             }
 
-            if (t.Contains("system.collections") || t.Contains("[]") || t.Contains("array"))
-                return "Array";
-
             return js ? "Object" : "any";
         }
     }
