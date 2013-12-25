@@ -9,7 +9,7 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class CoffeeScriptCompiler : NodeExecutorBase
     {
-        private static readonly Regex errorParser = new Regex(@".*\\(.*):(.\d):(.\d): error: (.*\r.*)", RegexOptions.Multiline);
+        private static readonly Regex errorParser = new Regex(@".*\\(.*):(.\d):(.\d): error: (.*\n.*)", RegexOptions.Multiline);
 
         protected override string Compiler
         {
@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions
             string arguments = WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure) ?
                                                        "--bare " : "";
 
-            arguments += String.Format("--output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), fileName);
+            arguments += String.Format("--runtime inline --output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), fileName);
 
             return await base.Compile(fileName, targetFileName, arguments);
         }
@@ -40,6 +40,7 @@ namespace MadsKristensen.EditorExtensions
             else
             {
                 Logger.Log("CoffeeScript: " + Path.GetFileName(fileName) + " compilation failed.");
+                Logger.Log("CoffeeScript: Error on line " + result.Error.Line + " at position " + result.Error.Column + ": " + result.Error.Message);
             }
 
             return result;
@@ -47,19 +48,21 @@ namespace MadsKristensen.EditorExtensions
 
         private static void ProcessResult(string outputFile, Process process, string errorText, CompilerResult result)
         {
-            if (!File.Exists(outputFile))
+            try
             {
-                throw new FileNotFoundException("CoffeeScript compiled output not found", outputFile);
+                if (process.ExitCode == 0)
+                {
+                    result.Result = File.ReadAllText(outputFile);
+                    result.IsSuccess = true;
+                }
+                else
+                {
+                    result.Error = ParseError(errorText.Replace("\r", ""));
+                }
             }
-
-            if (process.ExitCode == 0)
+            catch (FileNotFoundException missingFileException)
             {
-                result.Result = File.ReadAllText(outputFile);
-                result.IsSuccess = true;
-            }
-            else
-            {
-                result.Error = ParseError(errorText.Replace("\r", ""));
+                Logger.Log("CoffeeScript: " + Path.GetFileName(outputFile) + " compilation failed. " + missingFileException.Message);
             }
         }
 

@@ -116,7 +116,7 @@ namespace MadsKristensen.EditorExtensions
 
             jsonSourceMap.sources = ((IEnumerable<dynamic>)jsonSourceMap.sources).Select(s => FileHelpers.RelativePath(cssFileName, s));
             jsonSourceMap.names = new List<dynamic>(jsonSourceMap.names);
-            jsonSourceMap.file = FileHelpers.RelativePath(lessFileName, cssFileName);
+            jsonSourceMap.file = Path.GetFileName(cssFileName);
 
             return Json.Encode(jsonSourceMap);
         }

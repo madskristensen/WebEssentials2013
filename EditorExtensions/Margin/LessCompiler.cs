@@ -71,6 +71,7 @@ namespace MadsKristensen.EditorExtensions
             else
             {
                 Logger.Log("LESS: " + Path.GetFileName(fileName) + " compilation failed.");
+                Logger.Log("LESS: Error on line " + result.Error.Line + " at position " + result.Error.Column + ": " + result.Error.Message);
             }
 
             return result;
@@ -78,19 +79,21 @@ namespace MadsKristensen.EditorExtensions
 
         private static void ProcessResult(string outputFile, Process process, string errorText, CompilerResult result)
         {
-            if (!File.Exists(outputFile))
+            try
             {
-                throw new FileNotFoundException("LESS compiled output not found", outputFile);
+                if (process.ExitCode == 0)
+                {
+                    result.Result = File.ReadAllText(outputFile);
+                    result.IsSuccess = true;
+                }
+                else
+                {
+                    result.Error = ParseError(errorText.Replace("\r", ""));
+                }
             }
-
-            if (process.ExitCode == 0)
+            catch (FileNotFoundException missingFileException)
             {
-                result.Result = File.ReadAllText(outputFile);
-                result.IsSuccess = true;
-            }
-            else
-            {
-                result.Error = ParseError(errorText.Replace("\r", ""));
+                Logger.Log("LESS: " + Path.GetFileName(outputFile) + " compilation failed. " + missingFileException.Message);
             }
 
             File.Delete(outputFile);
