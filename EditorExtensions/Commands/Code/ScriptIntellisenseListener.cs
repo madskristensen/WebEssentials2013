@@ -198,7 +198,8 @@ namespace MadsKristensen.EditorExtensions
                    {
                        Name = GetName(p),
                        Type = GetType(p.Type, traversedTypes),
-                       Summary = GetSummary(p)
+                       Summary = GetSummary(p),
+                       Attributes = GetAttributes(p.Attributes)
                    };
         }
 
@@ -316,6 +317,16 @@ namespace MadsKristensen.EditorExtensions
                 Logger.Log("Couldn't parse XML Doc Comment for " + fullName + ":\n" + ex);
                 return null;
             }
+        }
+
+        private static IList<IntellisenseAttribute> GetAttributes(CodeElements elements)
+        {
+            return elements.Cast<CodeElement>()
+                           .Select(a => new IntellisenseAttribute
+                           {
+                               Name = a.Name,
+                               Values = a.Children.OfType<CodeAttributeArgument>().ToDictionary(b => b.Name, b => b.Value.Substring(1, b.Value.Length - 2)) // Strip the leading & trailing quotes
+                           }).ToList();
         }
     }
 }
