@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
@@ -15,28 +12,6 @@ namespace WebEssentialsTests
     [TestClass]
     public class LessDocumentTests
     {
-        #region Helper Methods
-        private static async Task<string> CompileLess(string source)
-        {
-            var fileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".less");
-            try
-            {
-                File.WriteAllText(fileName, source);
-
-                var result = await new LessCompiler().RunCompile(fileName);
-
-                if (result.IsSuccess)
-                    return result.Result;
-                else
-                    throw new ExternalException(result.Error.Message);
-            }
-            finally
-            {
-                File.Delete(fileName);
-            }
-        }
-        #endregion
-
         [TestMethod]
         public async Task SelectorExpansionTest()
         {
@@ -236,8 +211,7 @@ a {
 
             foreach (var lessCode in testSources)
             {
-                var cssCode = await CompileLess(lessCode);
-
+                var cssCode = await new LessCompiler().CompileString(lessCode, ".less", ".css");
                 var lessDoc = new LessParser().Parse(lessCode, false);
                 var cssDoc = new CssParser().Parse(cssCode, false);
 

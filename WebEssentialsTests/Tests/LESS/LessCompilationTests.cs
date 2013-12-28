@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
@@ -14,14 +15,19 @@ namespace WebEssentialsTests
     {
         private static string originalPath;
         private static readonly string BaseDirectory = Path.GetDirectoryName(typeof(NodeModuleImportedTests).Assembly.Location);
+        private static readonly Regex _endingCurlyBraces = new Regex(@"}\W*}|}", RegexOptions.Compiled);
+        private static readonly Regex _linesStartingWithTwoSpaces = new Regex("(\n( *))", RegexOptions.Compiled);
 
         #region Helper Methods
-        private static async Task<string> CompileLess(string fileName, string targetFilename = null)
+        private static async Task<string> CompileLess(string fileName, string targetFileName)
         {
-            var result = await new LessCompiler().RunCompile(fileName, targetFilename);
+            var result = await new LessCompiler().Compile(fileName, targetFileName);
 
             if (result.IsSuccess)
             {
+                // Insert extra line-breaks between adjecent rule (to mimic the compiler's post-processing)
+                File.WriteAllText(targetFileName, _endingCurlyBraces.Replace(_linesStartingWithTwoSpaces.Replace(File.ReadAllText(targetFileName).Trim(), "$1$2"), "$&\n"));
+
                 return result.Result;
             }
             else
@@ -49,11 +55,12 @@ namespace WebEssentialsTests
         {
             foreach (var lessFilename in Directory.EnumerateFiles(Path.Combine(BaseDirectory, "fixtures/less"), "*.less", SearchOption.AllDirectories))
             {
-                var compiled = await CompileLess(lessFilename);
-                var expected = File.ReadAllText(Path.ChangeExtension(lessFilename, ".css"))
+                var compiledFile = Path.ChangeExtension(lessFilename, ".css");
+                var compiled = await CompileLess(lessFilename, compiledFile);
+                var expected = File.ReadAllText(compiledFile)
                                .Replace("\r", "");
 
-                compiled.Should().Be(expected);
+                compiled.Should().Be(expected.Trim());
             }
         }
 
@@ -62,7 +69,7 @@ namespace WebEssentialsTests
         {
             foreach (var lessFilename in Directory.EnumerateFiles(Path.Combine(BaseDirectory, "fixtures/less"), "*.less", SearchOption.AllDirectories))
             {
-                var expectedPath = Path.Combine(Path.GetDirectoryName(lessFilename), "css", Path.GetFileNameWithoutExtension(lessFilename) + ".css");
+                var expectedPath = Path.Combine(Path.GetDirectoryName(lessFilename), "css", Path.ChangeExtension(lessFilename, ".css"));
 
                 if (!File.Exists(expectedPath))
                     continue;

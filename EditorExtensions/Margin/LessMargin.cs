@@ -36,7 +36,7 @@ namespace MadsKristensen.EditorExtensions
 
             Logger.Log("LESS: Compiling " + Path.GetFileName(lessFilePath));
 
-            var result = await new LessCompiler().RunCompile(lessFilePath, cssFilename);
+            var result = await new LessCompiler().Compile(lessFilePath, cssFilename);
 
             if (result.IsSuccess)
             {
@@ -96,7 +96,7 @@ namespace MadsKristensen.EditorExtensions
             if (!File.Exists(sourceFileName))
                 return content;
 
-            var updatedFileContent = GetUpdatedSourceMapFileContent(sourceFileName, compiledFileName, sourceMapFilename);
+            var updatedFileContent = GetUpdatedSourceMapFileContent(compiledFileName, sourceMapFilename);
 
             if (updatedFileContent == null)
                 return content;
@@ -106,7 +106,7 @@ namespace MadsKristensen.EditorExtensions
             return UpdateSourceLinkInCssComment(content, FileHelpers.RelativePath(sourceMapFilename, sourceFileName));
         }
 
-        private static string GetUpdatedSourceMapFileContent(string lessFileName, string cssFileName, string sourceMapFilename)
+        private static string GetUpdatedSourceMapFileContent(string cssFileName, string sourceMapFilename)
         {
             // Read JSON map file and deserialize.
             dynamic jsonSourceMap = Json.Decode(File.ReadAllText(sourceMapFilename));
@@ -116,7 +116,7 @@ namespace MadsKristensen.EditorExtensions
 
             jsonSourceMap.sources = ((IEnumerable<dynamic>)jsonSourceMap.sources).Select(s => FileHelpers.RelativePath(cssFileName, s));
             jsonSourceMap.names = new List<dynamic>(jsonSourceMap.names);
-            jsonSourceMap.file = FileHelpers.RelativePath(lessFileName, cssFileName);
+            jsonSourceMap.file = Path.GetFileName(cssFileName);
 
             return Json.Encode(jsonSourceMap);
         }

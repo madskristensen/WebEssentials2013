@@ -1,84 +1,38 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class CoffeeScriptCompiler : NodeExecutorBase
+    public class CoffeeScriptCompiler : NodeExecutorBase
     {
-        private static readonly Regex errorParser = new Regex(@".*\\(.*):(.\d):(.\d): error: (.*\r.*)", RegexOptions.Multiline);
+        private static readonly Regex _errorParsingPattern = new Regex(@".*\\(?<fileName>.*):(?<line>.\d):(?<column>.\d): error: (?<message>.*\n.*)", RegexOptions.Multiline);
 
-        protected override string Compiler
+        protected override string ServiceName
+        {
+            get { return "CoffeeScript"; }
+        }
+        protected override string CompilerPath
         {
             get { return @"node_modules\iced-coffee-script\bin\coffee"; }
         }
-
-        public override async Task<CompilerResult> RunCompile(string fileName, string targetFileName = null)
+        protected override Regex ErrorParsingPattern
         {
-            string baseFolder = ProjectHelpers.GetRootFolder() ?? Path.GetDirectoryName(targetFileName);
-            string arguments = WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure) ?
-                                                       "--bare " : "";
-
-            arguments += String.Format("--output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), fileName);
-
-            return await base.Compile(fileName, targetFileName, arguments);
+            get { return _errorParsingPattern; }
         }
 
-        protected override CompilerResult ProcessResult(Process process, string errorText, string fileName, string targetFileName, string output = null)
+        protected override void SetArguments(string sourceFileName, string targetFileName)
         {
-            CompilerResult result = new CompilerResult(fileName);
-
-            ProcessResult(targetFileName, process, errorText, result);
-
-            if (result.IsSuccess)
-            {
-                Logger.Log("CoffeeScript: " + Path.GetFileName(fileName) + " compiled.");
-            }
-            else
-            {
-                Logger.Log("CoffeeScript: " + Path.GetFileName(fileName) + " compilation failed.");
-            }
-
-            return result;
+            Arguments = WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure) ? "--bare " : "";
+            Arguments += String.Format(CultureInfo.CurrentCulture, "--runtime inline --output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
         }
 
-        private static void ProcessResult(string outputFile, Process process, string errorText, CompilerResult result)
+        protected override string PostProcessResult(string resultMessage, string sourceFileName, string targetFileName)
         {
-            if (!File.Exists(outputFile))
-            {
-                throw new FileNotFoundException("CoffeeScript compiled output not found", outputFile);
-            }
+            Logger.Log("CoffeeScript: " + Path.GetFileName(sourceFileName) + " compiled.");
 
-            if (process.ExitCode == 0)
-            {
-                result.Result = File.ReadAllText(outputFile);
-                result.IsSuccess = true;
-            }
-            else
-            {
-                result.Error = ParseError(errorText.Replace("\r", ""));
-            }
-        }
-
-        private static CompilerError ParseError(string error)
-        {
-            var match = errorParser.Match(error);
-
-            if (!match.Success)
-            {
-                Logger.Log("CoffeeScript parse error: " + error);
-                return new CompilerError { Message = error };
-            }
-            return new CompilerError
-            {
-                FileName = match.Groups[1].Value,
-                Line = int.Parse(match.Groups[2].Value, CultureInfo.CurrentCulture),
-                Column = int.Parse(match.Groups[3].Value, CultureInfo.CurrentCulture),
-                Message = match.Groups[4].Value
-            };
+            return resultMessage;
         }
     }
 }
