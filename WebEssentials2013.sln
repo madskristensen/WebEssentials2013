@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENCE.txt = LICENCE.txt
 		MarkdownSharp.dll = MarkdownSharp.dll
 		README.md = README.md
+		Rebracer.xml = Rebracer.xml
 		WebEssentials2012logo.pdn = WebEssentials2012logo.pdn
 		ZenCoding.dll = ZenCoding.dll
 	EndProjectSection
