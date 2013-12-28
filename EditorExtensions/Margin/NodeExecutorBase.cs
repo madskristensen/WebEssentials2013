@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -10,8 +9,9 @@ namespace MadsKristensen.EditorExtensions
 {
     public abstract class NodeExecutorBase
     {
+        private string ErrorFileName;
         protected static readonly string WebEssentialsNodeDirectory = Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\nodejs");
-        protected static readonly string Node = Path.Combine(WebEssentialsNodeDirectory, @"node.exe");
+        protected static readonly string NodePath = (File.Exists(Path.Combine(WebEssentialsNodeDirectory, @"node.exe"))) ? Path.Combine(WebEssentialsNodeDirectory, @"node.exe") : "node";
 
         protected string Arguments { get; set; }
         protected abstract string ServiceName { get; }
@@ -22,22 +22,33 @@ namespace MadsKristensen.EditorExtensions
         {
             SetArguments(sourceFileName, targetFileName);
 
-            ProcessStartInfo start = new ProcessStartInfo(String.Format("\"{0}\" \"{1}\"", (File.Exists(Node)) ? Node : "node", Path.Combine(WebEssentialsNodeDirectory, CompilerPath)))
+            ErrorFileName = Path.Combine(WebEssentialsNodeDirectory, String.Format(CultureInfo.CurrentCulture, "error-{0}.log", Guid.NewGuid().ToString()));
+
+            var resultantArguments = string.Format("\"{0}\" \"{1}\"", NodePath, Path.Combine(WebEssentialsNodeDirectory, CompilerPath));
+
+            resultantArguments = string.Format("/c \"{0} {1} > \"{2}\" 2>&1\"", resultantArguments, Arguments, ErrorFileName);
+
+            ProcessStartInfo start = new ProcessStartInfo("cmd")
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
                 WorkingDirectory = Path.GetDirectoryName(sourceFileName),
-                CreateNoWindow = true,
-                Arguments = Arguments,
+                Arguments = resultantArguments,
                 UseShellExecute = false,
-                RedirectStandardError = true,
-                RedirectStandardOutput = true
+                CreateNoWindow = true
             };
 
-            var error = new StringBuilder();
-
-            using (var process = await start.ExecuteAsync(error))
+            using (var process = await start.ExecuteAsync())
             {
-                return ProcessResult(process, error.ToString(), sourceFileName, targetFileName);
+                string errorText = "";
+
+                if (File.Exists(ErrorFileName))
+                {
+                    errorText = File.ReadAllText(ErrorFileName);
+
+                    File.Delete(ErrorFileName);
+                }
+
+                return ProcessResult(process, errorText, sourceFileName, targetFileName);
             }
         }
 
@@ -92,8 +103,8 @@ namespace MadsKristensen.EditorExtensions
             {
                 FileName = match.Groups["fileName"].Value,
                 Message = match.Groups["message"].Value,
-                Column = int.Parse(match.Groups["line"].Value, CultureInfo.CurrentCulture),
-                Line = int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture)
+                Column = int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture),
+                Line = int.Parse(match.Groups["line"].Value, CultureInfo.CurrentCulture)
             };
         }
 
