@@ -51,6 +51,26 @@ namespace MadsKristensen.EditorExtensions
             return name[0].ToString(CultureInfo.CurrentCulture).ToLower(CultureInfo.CurrentCulture) + name.Substring(1);
         }
 
+        private static string JsonPropertyName(IntellisenseProperty property, string fallbackName)
+        {
+            var attribute = property.Attributes.FirstOrDefault(a => a.Name == "JsonProperty");
+
+            if (attribute != null)
+            {
+                if (attribute.Values.Count == 1 && attribute.Values.ContainsKey("")) // is the case you use the JsonProperty(string propertyName) attribute constructor
+                {
+                    return attribute.Values[""];
+                }
+
+                if (attribute.Values.ContainsKey("Name"))
+                {
+                    return attribute.Values["Name"];
+                }
+            }
+
+            return fallbackName;
+        }
+
         static readonly Regex whitespaceTrimmer = new Regex(@"^\s+|\s+$|\s*[\r\n]+\s*", RegexOptions.Compiled);
 
         private static void WriteJavaScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
@@ -68,12 +88,12 @@ namespace MadsKristensen.EditorExtensions
 
                 foreach (var p in io.Properties)
                 {
-                    string value = p.Type.JavaScriptName + (p.Type.IsArray ? "[]" : "");
-                    var propertyName = CamelCasePropertyName(p.Name);
+                    string type = p.Type.JavaScriptName + (p.Type.IsArray ? "[]" : "");
+                    var propertyName = JsonPropertyName(p, CamelCasePropertyName(p.Name));
                     comment = p.Summary ?? "The " + propertyName + " property as defined in " + io.FullName;
                     comment = whitespaceTrimmer.Replace(comment, " ");
-                    sb.AppendLine("\t/// <field name=\"" + propertyName + "\" type=\"" + value + "\">" + SecurityElement.Escape(comment) + "</field>");
-                    sb.AppendLine("\tthis." + propertyName + " = new " + value + "();");
+                    sb.AppendLine("\t/// <field name=\"" + propertyName + "\" type=\"" + type + "\">" + SecurityElement.Escape(comment) + "</field>");
+                    sb.AppendLine("\tthis." + propertyName + " = " + p.Type.JavaScripLiteral + ";");
                 }
 
                 sb.AppendLine("};");
@@ -96,7 +116,7 @@ namespace MadsKristensen.EditorExtensions
                         foreach (var p in io.Properties)
                         {
                             WriteTypeScriptComment(p, sb);
-                            sb.AppendLine("\t\t" + CamelCasePropertyName(p.Name) + ",");
+                            sb.AppendLine("\t\t" + JsonPropertyName(p, CamelCasePropertyName(p.Name) + ","));
                         }
                         sb.AppendLine("\t}");
                     }
@@ -125,7 +145,7 @@ namespace MadsKristensen.EditorExtensions
             foreach (var p in props)
             {
                 WriteTypeScriptComment(p, sb);
-                sb.AppendFormat("{0}\t{1}: ", prefix, CamelCasePropertyName(p.Name));
+                sb.AppendFormat("{0}\t{1}: ", prefix, JsonPropertyName(p, CamelCasePropertyName(p.Name)));
 
                 if (p.Type.IsPrimitive) sb.Append(p.Type.TypeScriptName);
                 else if (!string.IsNullOrEmpty(p.Type.ClientSideReferenceName)) sb.Append(p.Type.ClientSideReferenceName);
@@ -183,6 +203,13 @@ namespace MadsKristensen.EditorExtensions
         [SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods", Justification = "Unambiguous in this context.")]
         public IntellisenseType Type { get; set; }
         public string Summary { get; set; }
+        public IList<IntellisenseAttribute> Attributes { get; set; }
+    }
+
+    public class IntellisenseAttribute
+    {
+        public string Name { get; set; }
+        public Dictionary<string, string> Values { get; set; }
     }
 
     public class IntellisenseType
@@ -220,6 +247,31 @@ namespace MadsKristensen.EditorExtensions
             get { return GetTargetName(false); }
         }
 
+        public string JavaScripLiteral
+        {
+            get
+            {
+                if (IsArray)
+                    return "[]";
+                switch (JavaScriptName)
+                {
+                    case "Number":
+                        return "0";
+                    case "String":
+                        return "''";
+                    case "Boolean":
+                        return "false";
+                    case "Array":
+                        return "[]";
+                    case "Object":
+                        return "{ }";
+                    default:
+                        return "new " + JavaScriptName + "()";
+                }
+            }
+        }
+
+
         string GetTargetName(bool js)
         {
             var t = CodeName.ToLowerInvariant().TrimEnd('?');
@@ -250,9 +302,6 @@ namespace MadsKristensen.EditorExtensions
                 case "boolean":
                     return js ? "Boolean" : "boolean";
             }
-
-            if (t.Contains("system.collections") || t.Contains("[]") || t.Contains("array"))
-                return "Array";
 
             return js ? "Object" : "any";
         }
