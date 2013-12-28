@@ -123,10 +123,15 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                          using System.Data;
                          using System.IO;
                          using System.Linq;
+                         using System.Net;
+                         using System.Net.Http;
+                         using System.Net.Http.Formatting;
                          using System.Reflection;
                          using System.Text;
                          using System.Threading;
-                         using System.Threading.Tasks;";
+                         using System.Threading.Tasks;
+                         using System.Xml;
+                         using System.Xml.Linq;";
             }
         }
         public override IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
@@ -154,10 +159,15 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
                         Imports System.Data
                         Imports System.IO
                         Imports System.Linq
+                        Imports System.Net
+                        Imports System.Net.Http
+                        Imports System.Net.Http.Formatting
                         Imports System.Reflection
                         Imports System.Text
                         Imports System.Threading
-                        Imports System.Threading.Tasks";
+                        Imports System.Threading.Tasks
+                        Imports System.Xml
+                        Imports System.Xml.Linq";
             }
         }
         public override IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)

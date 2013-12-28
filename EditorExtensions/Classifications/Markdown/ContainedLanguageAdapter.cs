@@ -226,6 +226,8 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             project.AddAssemblyReference(typeof(object).Assembly.Location);
             project.AddAssemblyReference(typeof(Uri).Assembly.Location);
             project.AddAssemblyReference(typeof(Enumerable).Assembly.Location);
+            project.AddAssemblyReference(typeof(System.Net.Http.HttpClient).Assembly.Location);
+            project.AddAssemblyReference(typeof(System.Net.Http.Formatting.JsonMediaTypeFormatter).Assembly.Location);
             project.AddAssemblyReference(typeof(System.Xml.Linq.XElement).Assembly.Location);
             project.AddAssemblyReference(typeof(System.Web.HttpContextBase).Assembly.Location);
             project.AddAssemblyReference(typeof(System.Windows.Forms.Form).Assembly.Location);

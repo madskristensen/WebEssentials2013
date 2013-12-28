@@ -2,6 +2,7 @@
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 
@@ -22,12 +23,12 @@ namespace MadsKristensen.EditorExtensions
         public void SetupCommands()
         {
             CommandID JsId = new CommandID(GuidList.guidDiffCmdSet, (int)PkgCmdIDList.cmdJavaScriptIntellisense);
-            OleMenuCommand jsCommand = new OleMenuCommand((s, e) => ExecuteJavaScript(), JsId);
+            OleMenuCommand jsCommand = new OleMenuCommand((s, e) => Execute(".js"), JsId);
             jsCommand.BeforeQueryStatus += JavaScript_BeforeQueryStatus;
             _mcs.AddCommand(jsCommand);
 
             CommandID tsId = new CommandID(GuidList.guidDiffCmdSet, (int)PkgCmdIDList.cmdTypeScriptIntellisense);
-            OleMenuCommand tsCommand = new OleMenuCommand((s, e) => ExecuteTypeScript(), tsId);
+            OleMenuCommand tsCommand = new OleMenuCommand((s, e) => Execute(".d.ts"), tsId);
             tsCommand.BeforeQueryStatus += TypeScript_BeforeQueryStatus;
             _mcs.AddCommand(tsCommand);
         }
@@ -60,18 +61,14 @@ namespace MadsKristensen.EditorExtensions
             menuCommand.Enabled = !string.IsNullOrEmpty(_file) && !File.Exists(_file + ".d.ts");
         }
 
-        protected bool ExecuteJavaScript()
+        protected async Task<bool> Execute(string extension)
         {
-            File.WriteAllText(_file + ".js", string.Empty);
-            ScriptIntellisense.Process(_file);
-            return true;
-        }
-
-        protected bool ExecuteTypeScript()
-        {
-            File.WriteAllText(_file + ".d.ts", string.Empty);
-            ScriptIntellisense.Process(_file);
-            return true;
+            File.WriteAllText(_file + extension, string.Empty);
+            if (await ScriptIntellisense.Process(_file))
+                return true;
+            File.Delete(_file + extension);
+            Logger.ShowMessage("An error occurred while processing " + Path.GetFileName(_file) + ".\nNo script file was generated.  For more details, see the output window.");
+            return false;
         }
     }
 }

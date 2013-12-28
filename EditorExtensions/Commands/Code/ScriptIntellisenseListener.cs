@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Xml.Linq;
 using EnvDTE;
@@ -51,22 +52,31 @@ namespace MadsKristensen.EditorExtensions
             Process(e.FilePath);
         }
 
-        public static void Process(string filePath)
+        public static Task<bool> Process(string filePath)
         {
             if (!File.Exists(filePath + Ext.JavaScript) && !File.Exists(filePath + Ext.TypeScript))
-                return;
+                return Task.FromResult(false);
 
-            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+            return Dispatcher.CurrentDispatcher.InvokeAsync(new Func<bool>(() =>
             {
                 var item = EditorExtensionsPackage.DTE.Solution.FindProjectItem(filePath);
-                var list = ProcessFile(item);
-
-                if (list != null)
+                List<IntellisenseObject> list = null;
+                try 
                 {
-                    AddScript(filePath, Ext.JavaScript, list);
-                    AddScript(filePath, Ext.TypeScript, list);
+                    list = ProcessFile(item);
+                } 
+                catch (Exception ex)
+                {
+                    Logger.Log("An error occurred while processing code in " + filePath + "\n" + ex
+                             + "\n\nPlease report this bug at https://github.com/madskristensen/WebEssentials2013/issues, and include the source of the file.");
                 }
-            }), DispatcherPriority.ApplicationIdle, null);
+
+                if (list == null)
+                    return false;
+                AddScript(filePath, Ext.JavaScript, list);
+                AddScript(filePath, Ext.TypeScript, list);
+                return true;
+            }), DispatcherPriority.ApplicationIdle).Task;
         }
 
         private static void AddScript(string filePath, string extension, List<IntellisenseObject> list)
@@ -210,15 +220,16 @@ namespace MadsKristensen.EditorExtensions
 
         private static IntellisenseType GetType(CodeTypeRef codeTypeRef, HashSet<string> traversedTypes)
         {
+            // TODO: Is there a way to extract the CodeTypeRef for a generic parameter?
             var isArray = codeTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefArray;
             if (isArray && codeTypeRef.ElementType != null) codeTypeRef = codeTypeRef.ElementType;
+            bool isCollection = codeTypeRef.AsString.StartsWith("System.Collections", StringComparison.Ordinal);
 
             var cl = codeTypeRef.CodeType as CodeClass;
             var en = codeTypeRef.CodeType as CodeEnum;
             var isPrimitive = IsPrimitive(codeTypeRef);
-            var result = new IntellisenseType
-            {
-                IsArray = isArray,
+            var result = new IntellisenseType {
+                IsArray = isArray || isCollection,
                 CodeName = codeTypeRef.AsString,
                 ClientSideReferenceName =
                     codeTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType &&
@@ -229,7 +240,7 @@ namespace MadsKristensen.EditorExtensions
                     : null
             };
 
-            if (!isPrimitive && cl != null && !traversedTypes.Contains(codeTypeRef.CodeType.FullName))
+            if (!isPrimitive && cl != null && !traversedTypes.Contains(codeTypeRef.CodeType.FullName) && !isCollection)
             {
                 traversedTypes.Add(codeTypeRef.CodeType.FullName);
                 result.Shape = GetProperties(codeTypeRef.CodeType.Members, traversedTypes).ToList();
@@ -278,7 +289,8 @@ namespace MadsKristensen.EditorExtensions
             return property.Name;
         }
 
-        private static string GetSummary(CodeProperty property) { return GetSummary(property.InfoLocation, property.DocComment, property.FullName); }
+        // External items throw an exception from the DocComment getter
+        private static string GetSummary(CodeProperty property) { return property.InfoLocation != vsCMInfoLocation.vsCMInfoLocationProject ? null : GetSummary(property.InfoLocation, property.DocComment, property.FullName); }
 
         private static string GetSummary(CodeClass property) { return GetSummary(property.InfoLocation, property.DocComment, property.FullName); }
 
