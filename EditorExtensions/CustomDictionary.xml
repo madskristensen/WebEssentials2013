@@ -1,9 +1,10 @@
-﻿<?xml version="1.0" ?>
+<?xml version="1.0" ?>
 <Dictionary>
   <Words>
     <Recognized>
       <Word>Mads</Word>
       <Word>Kristensen</Word>
+      <Word>MadsKristensen</Word>
       <Word>Gzip</Word>
       <Word>Js</Word>
       <Word>Equiv</Word>
@@ -38,12 +39,15 @@
       <Word>ReadContent</Word>
       <Word>BlockParser</Word>
       <Word>Vtt</Word>
+      <Word>github</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>
       <Term>TypeScript</Term>
       <Term>CodeName</Term>
       <Term>JsHint</Term>
+      <Term>madskristensen</Term>
+      <Term>MadsKristensen</Term>
     </DiscreteExceptions>
   </Words>
   <Acronyms>
