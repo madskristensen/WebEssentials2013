@@ -62,6 +62,8 @@ namespace MadsKristensen.EditorExtensions
 
             Instance = this;
 
+            Settings.UpdateCache();
+
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (null != mcs)
             {
@@ -97,12 +99,12 @@ namespace MadsKristensen.EditorExtensions
 
             // Hook up event handlers
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
-           {
-               DTE.Events.BuildEvents.OnBuildDone += BuildEvents_OnBuildDone;
-               DTE.Events.SolutionEvents.Opened += delegate { Settings.UpdateCache(); Settings.UpdateStatusBar("applied"); };
-               DTE.Events.SolutionEvents.AfterClosing += delegate { DTE.StatusBar.Clear(); };
+            {
+                DTE.Events.BuildEvents.OnBuildDone += BuildEvents_OnBuildDone;
+                DTE.Events.SolutionEvents.Opened += delegate { Settings.UpdateCache(); Settings.UpdateStatusBar("applied"); };
+                DTE.Events.SolutionEvents.AfterClosing += delegate { DTE.StatusBar.Clear(); };
 
-           }), DispatcherPriority.ApplicationIdle, null);
+            }), DispatcherPriority.ApplicationIdle, null);
         }
 
         private async void BuildEvents_OnBuildDone(vsBuildScope Scope, vsBuildAction Action)

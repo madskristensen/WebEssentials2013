@@ -11,7 +11,7 @@ using Keys = MadsKristensen.EditorExtensions.WESettings.Keys;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class Settings
+    internal static class Settings
     {
         public const string _fileName = "WE2013-settings.xml";
         public const string _solutionFolder = "Solution Items";
@@ -20,11 +20,6 @@ namespace MadsKristensen.EditorExtensions
         private static bool _inProgress;
         private static object _syncFileRoot = new object();
         private static object _syncCacheRoot = new object();
-
-        public Settings()
-        {
-            UpdateCache();
-        }
 
         public static bool SolutionSettingsExist
         {
