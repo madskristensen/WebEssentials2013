@@ -241,6 +241,7 @@ namespace MadsKristensen.EditorExtensions
                     break;
 
                 case ".coffee":
+                case ".iced":
                 case ".ts":
                     fileName = GetCompiledFileName(currentFileName, ".js", CompileToLocation);
                     break;
