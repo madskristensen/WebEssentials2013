@@ -39,20 +39,20 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        protected override string PostProcessResult(string resultMessage, string sourceFileName, string targetFileName)
+        protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
             // Inserts an empty row between each rule and replace two space indentation with 4 space indentation
-            resultMessage = _endingCurlyBraces.Replace(_linesStartingWithTwoSpaces.Replace(resultMessage.Trim(), "$1$2"), "$&\n");
+            resultSource = _endingCurlyBraces.Replace(_linesStartingWithTwoSpaces.Replace(resultSource.Trim(), "$1$2"), "$&\n");
 
             var message = "LESS: " + Path.GetFileName(sourceFileName) + " compiled.";
 
             // If the caller wants us to renormalize URLs to a different filename, do so.
-            if (targetFileName != null && resultMessage.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
+            if (targetFileName != null && resultSource.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
             {
                 try
                 {
-                    resultMessage = CssUrlNormalizer.NormalizeUrls(
-                        tree: new CssParser().Parse(resultMessage, true),
+                    resultSource = CssUrlNormalizer.NormalizeUrls(
+                        tree: new CssParser().Parse(resultSource, true),
                         targetFile: targetFileName,
                         oldBasePath: sourceFileName
                     );
@@ -65,7 +65,7 @@ namespace MadsKristensen.EditorExtensions
 
             Logger.Log(message);
 
-            return resultMessage;
+            return resultSource;
         }
     }
 }

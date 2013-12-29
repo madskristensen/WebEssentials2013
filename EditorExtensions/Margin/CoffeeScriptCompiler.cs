@@ -35,11 +35,11 @@ namespace MadsKristensen.EditorExtensions
             Arguments += String.Format(CultureInfo.CurrentCulture, "--runtime inline --output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
         }
 
-        protected override string PostProcessResult(string resultMessage, string sourceFileName, string targetFileName)
+        protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
             Logger.Log("CoffeeScript: " + Path.GetFileName(sourceFileName) + " compiled.");
 
-            return resultMessage;
+            return resultSource;
         }
     }
 }
