@@ -251,7 +251,7 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.GenerateJsFileFromCoffeeScript, true);
             dic.Add(Keys.ShowCoffeeScriptPreviewWindow, true);
             dic.Add(Keys.CoffeeScriptEnableCompiler, true);
-            dic.Add(Keys.CoffeeScriptCompileToLocation, true);
+            dic.Add(Keys.CoffeeScriptCompileToLocation, string.Empty);
 
             // Markdown
             dic.Add(Keys.MarkdownShowPreviewWindow, true);

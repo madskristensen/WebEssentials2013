@@ -23,12 +23,12 @@ namespace MadsKristensen.EditorExtensions
         public void SetupCommands()
         {
             CommandID JsId = new CommandID(GuidList.guidDiffCmdSet, (int)PkgCmdIDList.cmdJavaScriptIntellisense);
-            OleMenuCommand jsCommand = new OleMenuCommand((s, e) => Execute(".js"), JsId);
+            OleMenuCommand jsCommand = new OleMenuCommand(async (s, e) => await Execute(".js"), JsId);
             jsCommand.BeforeQueryStatus += JavaScript_BeforeQueryStatus;
             _mcs.AddCommand(jsCommand);
 
             CommandID tsId = new CommandID(GuidList.guidDiffCmdSet, (int)PkgCmdIDList.cmdTypeScriptIntellisense);
-            OleMenuCommand tsCommand = new OleMenuCommand((s, e) => Execute(".d.ts"), tsId);
+            OleMenuCommand tsCommand = new OleMenuCommand(async (s, e) => await Execute(".d.ts"), tsId);
             tsCommand.BeforeQueryStatus += TypeScript_BeforeQueryStatus;
             _mcs.AddCommand(tsCommand);
         }

@@ -61,10 +61,10 @@ namespace MadsKristensen.EditorExtensions
             {
                 var item = EditorExtensionsPackage.DTE.Solution.FindProjectItem(filePath);
                 List<IntellisenseObject> list = null;
-                try 
+                try
                 {
                     list = ProcessFile(item);
-                } 
+                }
                 catch (Exception ex)
                 {
                     Logger.Log("An error occurred while processing code in " + filePath + "\n" + ex
@@ -229,7 +229,8 @@ namespace MadsKristensen.EditorExtensions
             var cl = codeTypeRef.CodeType as CodeClass;
             var en = codeTypeRef.CodeType as CodeEnum;
             var isPrimitive = IsPrimitive(codeTypeRef);
-            var result = new IntellisenseType {
+            var result = new IntellisenseType
+            {
                 IsArray = isArray || isCollection,
                 CodeName = codeTypeRef.AsString,
                 ClientSideReferenceName =
@@ -319,14 +320,14 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static IList<IntellisenseAttribute> GetAttributes(CodeElements elements)
+        private static IList<IntellisenseElement> GetAttributes(CodeElements elements)
         {
             return elements.Cast<CodeElement>()
-                           .Select(a => new IntellisenseAttribute
-                           {
-                               Name = a.Name,
-                               Values = a.Children.OfType<CodeAttributeArgument>().ToDictionary(b => b.Name, b => b.Value.Substring(1, b.Value.Length - 2)) // Strip the leading & trailing quotes
-                           }).ToList();
+                           .Select(a => new IntellisenseElement
+                           (
+                               name: a.Name,
+                               values: a.Children.OfType<CodeAttributeArgument>().ToDictionary(b => b.Name, b => b.Value.Substring(1, b.Value.Length - 2)) // Strip the leading & trailing quotes
+                           )).ToList();
         }
     }
 }

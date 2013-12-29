@@ -203,13 +203,19 @@ namespace MadsKristensen.EditorExtensions
         [SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods", Justification = "Unambiguous in this context.")]
         public IntellisenseType Type { get; set; }
         public string Summary { get; set; }
-        public IList<IntellisenseAttribute> Attributes { get; set; }
+        public IEnumerable<IntellisenseElement> Attributes { get; set; }
     }
 
-    public class IntellisenseAttribute
+    public class IntellisenseElement
     {
         public string Name { get; set; }
-        public Dictionary<string, string> Values { get; set; }
+        public Dictionary<string, string> Values { get; private set; }
+
+        public IntellisenseElement(string name, Dictionary<string, string> values)
+        {
+            Name = name;
+            Values = values;
+        }
     }
 
     public class IntellisenseType

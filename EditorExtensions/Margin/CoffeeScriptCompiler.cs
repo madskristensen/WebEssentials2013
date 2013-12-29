@@ -25,6 +25,13 @@ namespace MadsKristensen.EditorExtensions
         protected override void SetArguments(string sourceFileName, string targetFileName)
         {
             Arguments = WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure) ? "--bare " : "";
+
+            if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptSourceMaps))
+            {
+                Arguments += String.Format(CultureInfo.CurrentCulture, "--runtime inline --output \"{0}\" --map --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
+                return;
+            }
+
             Arguments += String.Format(CultureInfo.CurrentCulture, "--runtime inline --output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
         }
 

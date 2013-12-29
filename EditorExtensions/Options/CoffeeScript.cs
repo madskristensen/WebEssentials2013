@@ -17,6 +17,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.WrapCoffeeScriptClosure, WrapCoffeeScriptClosure);
             Settings.SetValue(WESettings.Keys.CoffeeScriptMinify, CoffeeScriptMinify);
             Settings.SetValue(WESettings.Keys.CoffeeScriptCompileOnBuild, CoffeeScriptCompileOnBuild);
+            Settings.SetValue(WESettings.Keys.CoffeeScriptSourceMaps, CoffeeScriptSourceMaps);
             Settings.SetValue(WESettings.Keys.CoffeeScriptEnableCompiler, CoffeeScriptEnableCompiler);
             Settings.SetValue(WESettings.Keys.CoffeeScriptCompileToLocation, CoffeeScriptCompileToLocation ?? string.Empty);
 
@@ -30,6 +31,7 @@ namespace MadsKristensen.EditorExtensions
             WrapCoffeeScriptClosure = WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure);
             CoffeeScriptMinify = WESettings.GetBoolean(WESettings.Keys.CoffeeScriptMinify);
             CoffeeScriptCompileOnBuild = WESettings.GetBoolean(WESettings.Keys.CoffeeScriptCompileOnBuild);
+            CoffeeScriptSourceMaps = WESettings.GetBoolean(WESettings.Keys.CoffeeScriptSourceMaps);
             CoffeeScriptEnableCompiler = WESettings.GetBoolean(WESettings.Keys.CoffeeScriptEnableCompiler);
             CoffeeScriptCompileToLocation = WESettings.GetString(WESettings.Keys.CoffeeScriptCompileToLocation);
         }
@@ -57,6 +59,11 @@ namespace MadsKristensen.EditorExtensions
         [Category("CoffeeScript")]
         [DefaultValue(true)]
         public bool CoffeeScriptMinify { get; set; }
+
+        [LocDisplayName("Generate source maps")]
+        [Description("Creates a source map when compiling the JavaScript file (file.js.map).")]
+        [Category("CoffeeScript")]
+        public bool CoffeeScriptSourceMaps { get; set; }
 
         [LocDisplayName("Compile on build")]
         [Description("Compiles all CoffeeScript files in the project that has a corresponding .js file.")]
