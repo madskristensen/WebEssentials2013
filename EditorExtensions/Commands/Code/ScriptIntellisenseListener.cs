@@ -198,8 +198,7 @@ namespace MadsKristensen.EditorExtensions
                    {
                        Name = GetName(p),
                        Type = GetType(p.Type, traversedTypes),
-                       Summary = GetSummary(p),
-                       Attributes = GetAttributes(p.Attributes)
+                       Summary = GetSummary(p)
                    };
         }
 
@@ -272,14 +271,24 @@ namespace MadsKristensen.EditorExtensions
             return false;
         }
 
+        // Maps attribute name to array of attribute properties to get resultant name from
+        private static readonly IReadOnlyDictionary<string, string[]> nameAttributes = new Dictionary<string, string[]>
+        {
+            { "DataMember", new [] { "Name" } },
+            { "JsonProperty", new [] { "", "PropertyName" } }
+        };
         private static string GetName(CodeProperty property)
         {
             foreach (CodeAttribute attr in property.Attributes)
             {
-                if (attr.Name != "DataMember" && !attr.Name.EndsWith(".DataMember", StringComparison.Ordinal))
+                var className = Path.GetExtension(attr.Name);
+                if (string.IsNullOrEmpty(className)) className = attr.Name;
+
+                string[] argumentNames;
+                if (!nameAttributes.TryGetValue(className, out argumentNames))
                     continue;
 
-                var value = attr.Children.OfType<CodeAttributeArgument>().FirstOrDefault(p => p.Name == "Name");
+                var value = attr.Children.OfType<CodeAttributeArgument>().FirstOrDefault(a => argumentNames.Contains(a.Name));
 
                 if (value == null)
                     break;
@@ -318,16 +327,6 @@ namespace MadsKristensen.EditorExtensions
                 Logger.Log("Couldn't parse XML Doc Comment for " + fullName + ":\n" + ex);
                 return null;
             }
-        }
-
-        private static IList<IntellisenseElement> GetAttributes(CodeElements elements)
-        {
-            return elements.Cast<CodeElement>()
-                           .Select(a => new IntellisenseElement
-                           (
-                               name: a.Name,
-                               values: a.Children.OfType<CodeAttributeArgument>().ToDictionary(b => b.Name, b => b.Value.Substring(1, b.Value.Length - 2)) // Strip the leading & trailing quotes
-                           )).ToList();
         }
     }
 }

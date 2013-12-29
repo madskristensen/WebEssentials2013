@@ -50,27 +50,7 @@ namespace MadsKristensen.EditorExtensions
             }
             return name[0].ToString(CultureInfo.CurrentCulture).ToLower(CultureInfo.CurrentCulture) + name.Substring(1);
         }
-
-        private static string JsonPropertyName(IntellisenseProperty property, string fallbackName)
-        {
-            var attribute = property.Attributes.FirstOrDefault(a => a.Name == "JsonProperty");
-
-            if (attribute != null)
-            {
-                if (attribute.Values.Count == 1 && attribute.Values.ContainsKey("")) // is the case you use the JsonProperty(string propertyName) attribute constructor
-                {
-                    return attribute.Values[""];
-                }
-
-                if (attribute.Values.ContainsKey("Name"))
-                {
-                    return attribute.Values["Name"];
-                }
-            }
-
-            return fallbackName;
-        }
-
+        
         static readonly Regex whitespaceTrimmer = new Regex(@"^\s+|\s+$|\s*[\r\n]+\s*", RegexOptions.Compiled);
 
         private static void WriteJavaScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
@@ -89,7 +69,7 @@ namespace MadsKristensen.EditorExtensions
                 foreach (var p in io.Properties)
                 {
                     string type = p.Type.JavaScriptName + (p.Type.IsArray ? "[]" : "");
-                    var propertyName = JsonPropertyName(p, CamelCasePropertyName(p.Name));
+                    var propertyName = CamelCasePropertyName(p.Name);
                     comment = p.Summary ?? "The " + propertyName + " property as defined in " + io.FullName;
                     comment = whitespaceTrimmer.Replace(comment, " ");
                     sb.AppendLine("\t/// <field name=\"" + propertyName + "\" type=\"" + type + "\">" + SecurityElement.Escape(comment) + "</field>");
@@ -116,7 +96,7 @@ namespace MadsKristensen.EditorExtensions
                         foreach (var p in io.Properties)
                         {
                             WriteTypeScriptComment(p, sb);
-                            sb.AppendLine("\t\t" + JsonPropertyName(p, CamelCasePropertyName(p.Name) + ","));
+                            sb.AppendLine("\t\t" + CamelCasePropertyName(p.Name) + ",");
                         }
                         sb.AppendLine("\t}");
                     }
@@ -145,7 +125,7 @@ namespace MadsKristensen.EditorExtensions
             foreach (var p in props)
             {
                 WriteTypeScriptComment(p, sb);
-                sb.AppendFormat("{0}\t{1}: ", prefix, JsonPropertyName(p, CamelCasePropertyName(p.Name)));
+                sb.AppendFormat("{0}\t{1}: ", prefix, CamelCasePropertyName(p.Name));
 
                 if (p.Type.IsPrimitive) sb.Append(p.Type.TypeScriptName);
                 else if (!string.IsNullOrEmpty(p.Type.ClientSideReferenceName)) sb.Append(p.Type.ClientSideReferenceName);
@@ -203,20 +183,8 @@ namespace MadsKristensen.EditorExtensions
         [SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods", Justification = "Unambiguous in this context.")]
         public IntellisenseType Type { get; set; }
         public string Summary { get; set; }
-        public IEnumerable<IntellisenseElement> Attributes { get; set; }
     }
 
-    public class IntellisenseElement
-    {
-        public string Name { get; set; }
-        public Dictionary<string, string> Values { get; private set; }
-
-        public IntellisenseElement(string name, Dictionary<string, string> values)
-        {
-            Name = name;
-            Values = values;
-        }
-    }
 
     public class IntellisenseType
     {

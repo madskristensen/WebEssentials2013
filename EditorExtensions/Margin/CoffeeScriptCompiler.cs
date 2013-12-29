@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace MadsKristensen.EditorExtensions
@@ -22,24 +23,24 @@ namespace MadsKristensen.EditorExtensions
             get { return _errorParsingPattern; }
         }
 
-        protected override void SetArguments(string sourceFileName, string targetFileName)
+        protected override string GetArguments(string sourceFileName, string targetFileName)
         {
-            Arguments = WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure) ? "--bare " : "";
+            var args = new StringBuilder();
+            if (WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure))
+                args.Append("--bare ");
 
             if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptSourceMaps))
-            {
-                Arguments += String.Format(CultureInfo.CurrentCulture, "--runtime inline --output \"{0}\" --map --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
-                return;
-            }
+                args.Append("--map ");
 
-            Arguments += String.Format(CultureInfo.CurrentCulture, "--runtime inline --output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
+            args.AppendFormat(CultureInfo.CurrentCulture, "--runtime inline --output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
+            return args.ToString();
         }
 
-        protected override string PostProcessResult(string resultMessage, string sourceFileName, string targetFileName)
+        protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
             Logger.Log("CoffeeScript: " + Path.GetFileName(sourceFileName) + " compiled.");
 
-            return resultMessage;
+            return resultSource;
         }
     }
 }
