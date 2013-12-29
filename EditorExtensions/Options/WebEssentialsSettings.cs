@@ -32,6 +32,7 @@ namespace MadsKristensen.EditorExtensions
             public const string CoffeeScriptMinify = "CoffeeScriptMinify";
             public const string WrapCoffeeScriptClosure = "CoffeeScriptWrapClosure";
             public const string CoffeeScriptCompileOnBuild = "CoffeeScriptCompileOnBuild";
+            public const string CoffeeScriptSourceMaps = "CoffeeScriptSourceMaps";
             public const string CoffeeScriptEnableCompiler = "CoffeeScriptEnableCompiler";
             public const string CoffeeScriptCompileToLocation = "CoffeeScriptCompileToLocation";
 

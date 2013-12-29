@@ -103,7 +103,7 @@ namespace MadsKristensen.EditorExtensions
 
             WriteFile(updatedFileContent, sourceMapFilename, true, false);
 
-            return UpdateSourceLinkInCssComment(content, FileHelpers.RelativePath(sourceMapFilename, sourceFileName));
+            return UpdateSourceLinkInCssComment(content, FileHelpers.RelativePath(sourceMapFilename, compiledFileName));
         }
 
         private static string GetUpdatedSourceMapFileContent(string cssFileName, string sourceMapFilename)

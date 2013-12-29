@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -9,9 +8,8 @@ namespace MadsKristensen.EditorExtensions
 {
     public abstract class NodeExecutorBase
     {
-        private string ErrorFileName;
         protected static readonly string WebEssentialsNodeDirectory = Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\nodejs");
-        protected static readonly string NodePath = (File.Exists(Path.Combine(WebEssentialsNodeDirectory, @"node.exe"))) ? Path.Combine(WebEssentialsNodeDirectory, @"node.exe") : "node";
+        protected static readonly string NodePath = Path.Combine(WebEssentialsNodeDirectory, @"node.exe");
 
         protected string Arguments { get; set; }
         protected abstract string ServiceName { get; }
@@ -22,7 +20,7 @@ namespace MadsKristensen.EditorExtensions
         {
             SetArguments(sourceFileName, targetFileName);
 
-            ErrorFileName = Path.Combine(WebEssentialsNodeDirectory, String.Format(CultureInfo.CurrentCulture, "error-{0}.log", Guid.NewGuid().ToString()));
+            var ErrorFileName = Path.GetTempFileName();
 
             var resultantArguments = string.Format("\"{0}\" \"{1}\"", NodePath, Path.Combine(WebEssentialsNodeDirectory, CompilerPath));
 
@@ -41,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 string errorText = "";
 
-                if (File.Exists(ErrorFileName))
+                if (File.Exists(ErrorFileName) && process.ExitCode != 0)
                 {
                     errorText = File.ReadAllText(ErrorFileName);
 
