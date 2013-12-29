@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.CSS.Core;
@@ -25,18 +26,20 @@ namespace MadsKristensen.EditorExtensions
         {
             get { return _errorParsingPattern; }
         }
-
-        protected override void SetArguments(string sourceFileName, string targetFileName)
+        protected override string GetArguments(string sourceFileName, string targetFileName)
         {
-            Arguments = String.Format(CultureInfo.CurrentCulture, "--no-color --relative-urls \"{0}\" \"{1}\"", sourceFileName, targetFileName);
+            var args = new StringBuilder("--no-color --relative-urls ");
 
             if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
             {
                 string baseFolder = ProjectHelpers.GetRootFolder() ?? Path.GetDirectoryName(targetFileName);
 
-                Arguments = String.Format(CultureInfo.CurrentCulture, "--no-color --relative-urls --source-map-basepath=\"{0}\" --source-map=\"{1}.map\" \"{2}\" \"{3}\"",
-                    baseFolder.Replace("\\", "/"), targetFileName, sourceFileName, targetFileName);
+                args.AppendFormat(CultureInfo.CurrentCulture, "--source-map-basepath=\"{0}\" --source-map=\"{1}.map\"",
+                    baseFolder.Replace("\\", "/"), targetFileName);
             }
+
+            args.AppendFormat(CultureInfo.CurrentCulture, "\"{0}\" \"{1}\"", sourceFileName, targetFileName);
+            return args.ToString();
         }
 
         protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)

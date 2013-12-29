@@ -11,26 +11,25 @@ namespace MadsKristensen.EditorExtensions
         protected static readonly string WebEssentialsNodeDirectory = Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\nodejs");
         protected static readonly string NodePath = Path.Combine(WebEssentialsNodeDirectory, @"node.exe");
 
-        protected string Arguments { get; set; }
         protected abstract string ServiceName { get; }
         protected abstract string CompilerPath { get; }
         protected abstract Regex ErrorParsingPattern { get; }
 
         public async Task<CompilerResult> Compile(string sourceFileName, string targetFileName)
         {
-            SetArguments(sourceFileName, targetFileName);
+            var scriptArgs = GetArguments(sourceFileName, targetFileName);
 
             var errorOutputFile = Path.GetTempFileName();
 
-            var resultantArguments = string.Format("\"{0}\" \"{1}\"", NodePath, Path.Combine(WebEssentialsNodeDirectory, CompilerPath));
+            var cmdArgs = string.Format("\"{0}\" \"{1}\"", NodePath, Path.Combine(WebEssentialsNodeDirectory, CompilerPath));
 
-            resultantArguments = string.Format("/c \"{0} {1} > \"{2}\" 2>&1\"", resultantArguments, Arguments, errorOutputFile);
+            cmdArgs = string.Format("/c \"{0} {1} > \"{2}\" 2>&1\"", cmdArgs, scriptArgs, errorOutputFile);
 
             ProcessStartInfo start = new ProcessStartInfo("cmd")
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
                 WorkingDirectory = Path.GetDirectoryName(sourceFileName),
-                Arguments = resultantArguments,
+                Arguments = cmdArgs,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
@@ -109,7 +108,7 @@ namespace MadsKristensen.EditorExtensions
             };
         }
 
-        protected abstract void SetArguments(string sourceFileName, string targetFileName);
+        protected abstract string GetArguments(string sourceFileName, string targetFileName);
 
         protected abstract string PostProcessResult(string resultSource, string sourceFileName, string targetFileName);
     }
