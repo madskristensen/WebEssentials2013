@@ -41,7 +41,7 @@ namespace MadsKristensen.EditorExtensions
                 .Replace("\r", "\\r")
                 .Replace("'", "\\'");
 
-            string script = ReadResourceFile("MadsKristensen.EditorExtensions.Resources.Scripts.jshint-2.1.4.js") +
+            string script = ReadResourceFile("MadsKristensen.EditorExtensions.Resources.Scripts.jshint-2.4.0.js") +
                             "var settings = " + (FindLocalSettings(fileName) ?? "{" + _defaultSettings + "}") + ";" +   // If this file has no .jshintrc, fall back to the configured settings
                             "var globals = settings.globals; delete settings.globals;" +  // .jshintrc files have an optional globals section, which becomes the third parameter.  (globals is not a valid option)
                             "JSHINT('" + source + "', settings, globals);" +

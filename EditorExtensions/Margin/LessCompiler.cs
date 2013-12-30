@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
             {
-                string baseFolder = ProjectHelpers.GetRootFolder() ?? Path.GetDirectoryName(targetFileName);
+                string baseFolder = ProjectHelpers.GetProjectFolder(targetFileName) ?? Path.GetDirectoryName(targetFileName);
 
                 args.AppendFormat(CultureInfo.CurrentCulture, "--source-map-basepath=\"{0}\" --source-map=\"{1}.map\"",
                     baseFolder.Replace("\\", "/"), targetFileName);

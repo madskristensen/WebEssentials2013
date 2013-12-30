@@ -332,9 +332,16 @@ namespace MadsKristensen.EditorExtensions
             if (string.IsNullOrEmpty(fileNameOrFolder))
                 return GetRootFolder();
 
-            ProjectItem item = EditorExtensionsPackage.DTE.Solution.FindProjectItem(fileNameOrFolder);
+            string projectFolder = null;
 
-            return GetProjectFolder(item);
+            try
+            {
+                ProjectItem item = EditorExtensionsPackage.DTE.Solution.FindProjectItem(fileNameOrFolder);
+                projectFolder = GetProjectFolder(item);
+            }
+            catch { }
+
+            return projectFolder;
         }
 
         ///<summary>Gets the the currently selected file(s) in the Solution Explorer.</summary>

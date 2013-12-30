@@ -766,7 +766,7 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Resource Include="Resources\extract.png" />
-    <EmbeddedResource Include="Resources\Scripts\jshint-2.1.4.js" />
+    <EmbeddedResource Include="Resources\Scripts\jshint-2.4.0.js" />
     <EmbeddedResource Include="Resources\Scripts\AngularController.js" />
     <Resource Include="Resources\delete.png" />
     <Resource Include="Resources\browserlink.png" />
