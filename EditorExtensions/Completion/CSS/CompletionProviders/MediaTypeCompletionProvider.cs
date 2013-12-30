@@ -43,8 +43,8 @@ namespace MadsKristensen.EditorExtensions
 
             if (item != query.MediaType || query.Operation == null)
             {
-                yield return new CompletionListEntry("not", 0, StandardGlyphGroup.GlyphGroupOperator);
-                yield return new CompletionListEntry("only", 0, StandardGlyphGroup.GlyphGroupOperator);
+                yield return new CompletionListEntry("not", 1, StandardGlyphGroup.GlyphGroupOperator);
+                yield return new CompletionListEntry("only", 1, StandardGlyphGroup.GlyphGroupOperator);
             }
         }
     }
