@@ -4,11 +4,11 @@ using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class CoffeeScriptMargin : MarginBase
+    internal class IcedCoffeeScriptMargin : MarginBase
     {
-        public const string MarginName = "CoffeeScriptMargin";
+        public const string MarginName = "IcedCoffeeScriptMargin";
 
-        public CoffeeScriptMargin(string contentType, string source, bool showMargin, ITextDocument document)
+        public IcedCoffeeScriptMargin(string contentType, string source, bool showMargin, ITextDocument document)
             : base(source, MarginName, contentType, showMargin, document)
         { }
 
@@ -17,19 +17,19 @@ namespace MadsKristensen.EditorExtensions
             if (!CompileEnabled)
                 return;
 
-            string coffeeFilePath = Document.FilePath;
+            string icdeCoffeeFilePath = Document.FilePath;
 
-            string jsFileName = GetCompiledFileName(coffeeFilePath, ".js", CompileToLocation);
+            string jsFileName = GetCompiledFileName(icdeCoffeeFilePath, ".js", CompileToLocation);
 
             if (IsFirstRun && File.Exists(jsFileName))
             {
-                OnCompilationDone(File.ReadAllText(jsFileName), coffeeFilePath);
+                OnCompilationDone(File.ReadAllText(jsFileName), icdeCoffeeFilePath);
                 return;
             }
 
-            Logger.Log("CoffeeScript: Compiling " + Path.GetFileName(coffeeFilePath));
+            Logger.Log("IcedCoffeeScript: Compiling " + Path.GetFileName(icdeCoffeeFilePath));
 
-            var result = await new CoffeeScriptCompiler().Compile(coffeeFilePath, jsFileName);
+            var result = await new IcedCoffeeScriptCompiler().Compile(icdeCoffeeFilePath, jsFileName);
 
             if (result.IsSuccess)
             {
@@ -37,11 +37,11 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                result.Error.Message = "CoffeeScript: " + result.Error.Message;
+                result.Error.Message = "IcedCoffeeScript: " + result.Error.Message;
 
                 CreateTask(result.Error);
 
-                base.OnCompilationDone("ERROR:" + result.Error.Message, coffeeFilePath);
+                base.OnCompilationDone("ERROR:" + result.Error.Message, icdeCoffeeFilePath);
             }
         }
 

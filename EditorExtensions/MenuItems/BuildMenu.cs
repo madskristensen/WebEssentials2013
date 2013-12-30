@@ -42,6 +42,10 @@ namespace MadsKristensen.EditorExtensions
             CommandID cmdCoffee = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildCoffeeScript);
             OleMenuCommand menuCoffee = new OleMenuCommand(async (s, e) => await BuildCoffeeScript(), cmdCoffee);
             _mcs.AddCommand(menuCoffee);
+
+            CommandID cmdIcedCoffee = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildIcedCoffeeScript);
+            OleMenuCommand menuIcedCoffee = new OleMenuCommand(async (s, e) => await BuildIcedCoffeeScript(), cmdIcedCoffee);
+            _mcs.AddCommand(menuIcedCoffee);
         }
 
         public async static ThreadingTasks.Task BuildCoffeeScript()
@@ -49,6 +53,16 @@ namespace MadsKristensen.EditorExtensions
             var projectTasks = ProjectHelpers.GetAllProjects().Select(project =>
             {
                 return new CoffeeScriptProjectCompiler().CompileProject(project);
+            });
+
+            await ThreadingTasks.Task.WhenAll(projectTasks.ToArray());
+        }
+
+        public async static ThreadingTasks.Task BuildIcedCoffeeScript()
+        {
+            var projectTasks = ProjectHelpers.GetAllProjects().Select(project =>
+            {
+                return new IcedCoffeeScriptProjectCompiler().CompileProject(project);
             });
 
             await ThreadingTasks.Task.WhenAll(projectTasks.ToArray());

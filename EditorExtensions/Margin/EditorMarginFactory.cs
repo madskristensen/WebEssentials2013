@@ -27,7 +27,7 @@ namespace MadsKristensen.EditorExtensions
         {
             { "LESS",           (source, document) => new LessMargin("CSS", source, WESettings.GetBoolean(WESettings.Keys.ShowLessPreviewWindow), document) },
             { "CoffeeScript",   (source, document) => new CoffeeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow), document) },
-            { "IcedCoffeeScript",   (source, document) => new CoffeeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow), document) },
+            { "IcedCoffeeScript",   (source, document) => new IcedCoffeeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow), document) },
             { "Markdown",       (source, document) => new MarkdownMargin("text", source, WESettings.GetBoolean(WESettings.Keys.MarkdownShowPreviewWindow), document) },
             { "Svg",            (source, document) => new SvgMargin("svg", source, WESettings.GetBoolean(WESettings.Keys.SvgShowPreviewWindow), document) }
         };

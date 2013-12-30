@@ -21,7 +21,7 @@ namespace WebEssentialsTests
                 if (!File.Exists(compiledFile))
                     continue;
 
-                var compiledCode = await new CoffeeScriptCompiler().CompileString(File.ReadAllText(icedFileName), ".iced", ".js");
+                var compiledCode = await new IcedCoffeeScriptCompiler().CompileString(File.ReadAllText(icedFileName), ".iced", ".js");
                 var expectedCode = File.ReadAllText(compiledFile)
                                .Replace("\r", "");
 

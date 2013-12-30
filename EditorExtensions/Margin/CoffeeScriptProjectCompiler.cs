@@ -28,7 +28,7 @@ namespace MadsKristensen.EditorExtensions
         {
             get
             {
-                return new string[] { ".coffee", ".iced" };
+                return new string[] { ".coffee" };
             }
         }
     }
