@@ -98,6 +98,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             //TODO: This needs to expand bundles, convert urls to local file names, and move from .min.css files to .css files where applicable
             //NOTE: Project parameter here is for the discovery of linked files, ones that might exist outside of the project structure
             var projectPath = project.Properties.Item("FullPath").Value.ToString();
+
+            if (!projectPath.EndsWith(Path.DirectorySeparatorChar + ""))
+            {
+                projectPath += Path.DirectorySeparatorChar;
+            }
+
             var projectUri = new Uri(projectPath, UriKind.Absolute);
 
             if (location == null)
@@ -216,13 +222,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 {
                     try
                     {
-                        var ignoreList = IgnoreList;
+                        var ignoreList = IgnoreList.ToList();
 
                         foreach (var logEntry in result)
                         {
                             var urlGrouped = logEntry.GroupBy(x => x.Url).ToList();
-                            var tasks = new Task[urlGrouped.Count];
-                            var index = 0;
+                            var tasks = new List<Task>();
 
                             foreach (var set in urlGrouped)
                             {
@@ -233,7 +238,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                                     continue;
                                 }
 
-                                tasks[index++] = UpdateSheetRulesAsync(file, set);
+                                tasks.Add(UpdateSheetRulesAsync(file, set));
                             }
 
                             await Task.WhenAll(tasks);
