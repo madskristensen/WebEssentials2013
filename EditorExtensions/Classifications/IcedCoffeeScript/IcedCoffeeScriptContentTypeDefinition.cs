@@ -4,14 +4,14 @@ using Microsoft.VisualStudio.Utilities;
 namespace MadsKristensen.EditorExtensions
 {
     /// <summary>
-    /// Exports the Iced CoffeeScript content type and file extension
+    /// Exports the IcedCoffeeScript content type and file extension
     /// </summary>
     public class IcedCoffeeScriptContentTypeDefinition
     {
         public const string IcedCoffeeScriptContentType = "IcedCoffeeScript";
 
         /// <summary>
-        /// Exports the WebVTT HTML content type
+        /// Exports the IcedCoffeeScript content type
         /// </summary>
         [Export(typeof(ContentTypeDefinition))]
         [Name(IcedCoffeeScriptContentType)]
