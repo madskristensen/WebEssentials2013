@@ -24,6 +24,7 @@ namespace MadsKristensen.EditorExtensions
         protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
             Logger.Log("IcedCoffeeScript: " + Path.GetFileName(sourceFileName) + " compiled.");
+            RenameMapFile(targetFileName);
 
             return resultSource;
         }

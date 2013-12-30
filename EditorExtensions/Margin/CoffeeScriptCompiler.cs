@@ -38,8 +38,22 @@ namespace MadsKristensen.EditorExtensions
         protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
             Logger.Log("CoffeeScript: " + Path.GetFileName(sourceFileName) + " compiled.");
+            RenameMapFile(targetFileName);
 
             return resultSource;
+        }
+
+        protected static void RenameMapFile(string jsFileName)
+        {
+            // Hack Remove if / when this issue is resolved: https://github.com/jashkenas/coffee-script/issues/3297
+            var oldSourceMapFile = Path.ChangeExtension(jsFileName, ".map");
+
+            if (File.Exists(oldSourceMapFile))
+            {
+                File.Copy(oldSourceMapFile, jsFileName + "map", true);
+                File.Delete(oldSourceMapFile);
+            }
+            // end-Hack
         }
     }
 }
