@@ -29,10 +29,6 @@ namespace MadsKristensen.EditorExtensions
             if (token.FindType<MediaExpression>() != null)
                 return null;
 
-            // Don't show completion for "and"
-            if (query.MediaType != null && query.MediaType != token && token != query.Operation)
-                return null;
-
             return new CssCompletionContext((CssCompletionContextType)612, token.Start, token.Length, null);
         }
     }
