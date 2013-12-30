@@ -360,7 +360,10 @@
     <Compile Include="Helpers\Disposable.cs" />
     <Compile Include="ExtensionMethods\Extensions.cs" />
     <Compile Include="Helpers\TabAwareCharacterStream.cs" />
+    <Compile Include="Margin\IcedCoffeeScriptProjectCompiler.cs" />
+    <Compile Include="Margin\IcedCoffeeScriptCompiler.cs" />
     <Compile Include="Margin\CoffeeScriptProjectCompiler.cs" />
+    <Compile Include="Margin\IcedCoffeeScriptMargin.cs" />
     <Compile Include="Margin\NodeExecutorBase.cs" />
     <Compile Include="Margin\ProjectCompilerBase.cs" />
     <Compile Include="Margin\SvgMargin.cs" />
@@ -879,6 +882,12 @@
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <Content Include="Resources\nodejs\node_modules\less\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
+        <IncludeInVSIX>true</IncludeInVSIX>
+      </Content>
+      <Content Include="Resources\nodejs\node.exe; Resources\nodejs\node_modules\coffee-script\lib\**; Resources\nodejs\node_modules\coffee-script\bin\**">
+        <IncludeInVSIX>true</IncludeInVSIX>
+      </Content>
+      <Content Include="Resources\nodejs\node_modules\coffee-script\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <Content Include="Resources\nodejs\node.exe; Resources\nodejs\node_modules\iced-coffee-script\lib\**; Resources\nodejs\node_modules\iced-coffee-script\bin\**">

@@ -50,7 +50,7 @@ namespace MadsKristensen.EditorExtensions
             }
             return name[0].ToString(CultureInfo.CurrentCulture).ToLower(CultureInfo.CurrentCulture) + name.Substring(1);
         }
-        
+
         static readonly Regex whitespaceTrimmer = new Regex(@"^\s+|\s+$|\s*[\r\n]+\s*", RegexOptions.Compiled);
 
         private static void WriteJavaScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)

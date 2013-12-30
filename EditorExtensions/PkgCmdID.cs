@@ -62,6 +62,7 @@ namespace MadsKristensen.EditorExtensions
         //public const uint cmdBuildTypeScript = 0x1085;
         public const uint cmdBuildMinify = 0x1086;
         public const uint cmdBuildCoffeeScript = 0x1087;
+        public const uint cmdBuildIcedCoffeeScript = 0x1088;
 
         //Unused CSS
         public const uint cmdUnusedCssSnapshotCommandId = 0x2100;
