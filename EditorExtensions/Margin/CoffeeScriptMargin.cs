@@ -19,17 +19,17 @@ namespace MadsKristensen.EditorExtensions
 
             string coffeeFilePath = Document.FilePath;
 
-            string fileName = GetCompiledFileName(coffeeFilePath, ".js", CompileToLocation);
+            string jsFileName = GetCompiledFileName(coffeeFilePath, ".js", CompileToLocation);
 
-            if (IsFirstRun && File.Exists(fileName))
+            if (IsFirstRun && File.Exists(jsFileName))
             {
-                OnCompilationDone(File.ReadAllText(fileName), coffeeFilePath);
+                OnCompilationDone(File.ReadAllText(jsFileName), coffeeFilePath);
                 return;
             }
 
             Logger.Log("CoffeeScript: Compiling " + Path.GetFileName(coffeeFilePath));
 
-            var result = await new CoffeeScriptCompiler().Compile(coffeeFilePath, fileName);
+            var result = await new CoffeeScriptCompiler().Compile(coffeeFilePath, jsFileName);
 
             if (result.IsSuccess)
             {
