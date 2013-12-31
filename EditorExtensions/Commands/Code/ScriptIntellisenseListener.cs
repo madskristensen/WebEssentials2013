@@ -59,8 +59,13 @@ namespace MadsKristensen.EditorExtensions
 
             return Dispatcher.CurrentDispatcher.InvokeAsync(new Func<bool>(() =>
             {
-                var item = EditorExtensionsPackage.DTE.Solution.FindProjectItem(filePath);
+                var item = ProjectHelpers.GetProjectItem(filePath);
+
+                if (item == null)
+                    return false;
+
                 List<IntellisenseObject> list = null;
+
                 try
                 {
                     list = ProcessFile(item);
@@ -73,8 +78,10 @@ namespace MadsKristensen.EditorExtensions
 
                 if (list == null)
                     return false;
+
                 AddScript(filePath, Ext.JavaScript, list);
                 AddScript(filePath, Ext.TypeScript, list);
+
                 return true;
             }), DispatcherPriority.ApplicationIdle).Task;
         }

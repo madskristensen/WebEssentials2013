@@ -23,8 +23,8 @@ namespace MadsKristensen.EditorExtensions
         {
             MediaExpression expr = (MediaExpression)item;
 
-            if (expr.MediaFeature != null && 
-                (position >= expr.Values.TextStart && position <= expr.Values.TextAfterEnd) || 
+            if (expr.MediaFeature != null &&
+                (position >= expr.Values.TextStart && position <= expr.Values.TextAfterEnd) ||
                 (expr.Colon != null && position >= expr.Colon.AfterEnd))
             {
                 return new CssCompletionContext((CssCompletionContextType)611, expr.Values.TextStart, expr.Values.TextLength, null);

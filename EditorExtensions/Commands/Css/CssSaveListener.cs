@@ -37,7 +37,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 string minFile = e.FilePath.Insert(e.FilePath.Length - 3, "min.");
 
-                if (File.Exists(minFile) && EditorExtensionsPackage.DTE.Solution.FindProjectItem(minFile) != null)
+                if (File.Exists(minFile) && ProjectHelpers.GetProjectItem(minFile) != null)
                 {
                     Task.Run(() =>
                     {

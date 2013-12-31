@@ -318,7 +318,7 @@ namespace MadsKristensen.EditorExtensions
             if (!File.Exists(fileName))
                 return null;
 
-            var item = EditorExtensionsPackage.DTE.Solution.FindProjectItem(parentFileName);
+            var item = ProjectHelpers.GetProjectItem(parentFileName);
 
             if (item != null && item.ContainingProject != null && !string.IsNullOrEmpty(item.ContainingProject.FullName))
             {

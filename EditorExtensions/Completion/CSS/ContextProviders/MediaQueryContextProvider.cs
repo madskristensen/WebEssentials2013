@@ -21,8 +21,6 @@ namespace MadsKristensen.EditorExtensions
 
         public CssCompletionContext GetCompletionContext(ParseItem item, int position)
         {
-            MediaQuery query = (MediaQuery)item;
-
             var token = item.StyleSheet.ItemBeforePosition(position);
 
             // Don't handle expressions. MediaFeatureContextProvider.cs does that
