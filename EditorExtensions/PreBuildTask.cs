@@ -44,43 +44,27 @@ namespace MadsKristensen.EditorExtensions
                 }
             }
 
-            if (!File.Exists(@"resources\nodejs\node_modules\.bin\lessc.cmd"))
-            {
-                Log.LogMessage(MessageImportance.High, "npm install less ...");
-                var output = new StringWriter();
-                int result = Exec(@"cmd", @"/c .\npm.cmd install less", @"resources\nodejs", output, output);
-                if (result != 0)
-                {
-                    Log.LogError("npm error " + result + ": " + output.ToString().Trim());
-                }
-                FlattenNodeModules(@"resources\nodejs\node_modules\less\node_modules");
-            }
-
-            if (!File.Exists(@"resources\nodejs\node_modules\.bin\coffee.cmd"))
-            {
-                Log.LogMessage(MessageImportance.High, "npm install coffee-script ...");
-                var output = new StringWriter();
-                int result = Exec(@"cmd", @"/c .\npm.cmd install coffee-script", @"resources\nodejs", output, output);
-                if (result != 0)
-                {
-                    Log.LogError("npm error " + result + ": " + output.ToString().Trim());
-                }
-                FlattenNodeModules(@"resources\nodejs\node_modules\coffee-script\node_modules");
-            }
-
-            if (!File.Exists(@"resources\nodejs\node_modules\.bin\iced.cmd"))
-            {
-                Log.LogMessage(MessageImportance.High, "npm install iced-coffee-script ...");
-                var output = new StringWriter();
-                int result = Exec(@"cmd", @"/c .\npm.cmd install iced-coffee-script", @"resources\nodejs", output, output);
-                if (result != 0)
-                {
-                    Log.LogError("npm error " + result + ": " + output.ToString().Trim());
-                }
-                FlattenNodeModules(@"resources\nodejs\node_modules\iced-coffee-script\node_modules");
-            }
+            InstallModule("lessc", "less");
+            InstallModule("coffee", "coffee-script");
+            InstallModule("iced", "iced-coffee-script");
 
             return true;
+        }
+
+        void InstallModule(string cmdName, string moduleName)
+        {
+            if (!File.Exists(@"resources\nodejs\node_modules\.bin\" + cmdName + ".cmd"))
+            {
+                Log.LogMessage(MessageImportance.High, "npm install " + moduleName + " ...");
+                var output = new StringWriter();
+                int result = Exec(@"cmd", @"/c .\npm.cmd install " + moduleName, @"resources\nodejs", output, output);
+                if (result != 0)
+                {
+                    Log.LogError("npm error " + result + ": " + output.ToString().Trim());
+                }
+                FlattenNodeModules(@"resources\nodejs\node_modules\" + moduleName + "\node_modules");
+            }
+
         }
 
         /// <summary>
