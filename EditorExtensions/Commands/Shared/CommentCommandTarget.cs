@@ -51,7 +51,14 @@ namespace MadsKristensen.EditorExtensions
         {
             foreach (string line in lines)
             {
-                sb.AppendLine(line.TrimStart(_symbol.ToCharArray()));
+                if (line.StartsWith(_symbol, StringComparison.Ordinal))
+                {
+                    sb.AppendLine(line.Substring(_symbol.Length));
+                }
+                else
+                {
+                    sb.AppendLine(line);
+                }
             }
         }
 
