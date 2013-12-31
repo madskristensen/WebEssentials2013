@@ -40,6 +40,7 @@ namespace MadsKristensen.EditorExtensions
                     return;
 
                 view.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(RobotsTxtClassifier), out classifier);
+                view.Properties.GetOrCreateSingletonProperty(() => new CommentCommandTarget(textViewAdapter, view, "#"));
 
                 if (classifier != null)
                 {
