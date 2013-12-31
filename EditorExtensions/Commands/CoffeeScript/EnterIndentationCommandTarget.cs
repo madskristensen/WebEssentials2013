@@ -27,11 +27,11 @@ namespace MadsKristensen.EditorExtensions
 
             if (match.Success)
             {
-                EditorExtensionsPackage.DTE.UndoContext.Open("Smart Indent");
-
-                TextView.TextBuffer.Insert(position, Environment.NewLine + match.Value);
-
-                EditorExtensionsPackage.DTE.UndoContext.Close();
+                using (EditorExtensionsPackage.UndoContext("Smart Indent"))
+                {
+                    TextView.TextBuffer.Insert(position, Environment.NewLine + match.Value);
+                }
+               
                 return true;
             }
             

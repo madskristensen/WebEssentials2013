@@ -20,6 +20,7 @@ namespace MadsKristensen.EditorExtensions
             var textView = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
 
             textView.Properties.GetOrCreateSingletonProperty(() => new EnterIndentation(textViewAdapter, textView));
+            textView.Properties.GetOrCreateSingletonProperty(() => new CommentCommandTarget(textViewAdapter, textView));
         }
     }
 
