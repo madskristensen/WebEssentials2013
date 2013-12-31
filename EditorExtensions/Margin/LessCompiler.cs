@@ -37,7 +37,7 @@ namespace MadsKristensen.EditorExtensions
                     baseFolder = ProjectHelpers.GetProjectFolder(targetFileName);
                 baseFolder = baseFolder ?? Path.GetDirectoryName(targetFileName);
 
-                args.AppendFormat(CultureInfo.CurrentCulture, "--source-map-basepath=\"{0}\" --source-map=\"{1}.map\"",
+                args.AppendFormat(CultureInfo.CurrentCulture, "--source-map-basepath=\"{0}\" --source-map=\"{1}.map\" ",
                     baseFolder.Replace("\\", "/"), targetFileName);
             }
 

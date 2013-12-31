@@ -93,7 +93,7 @@ namespace MadsKristensen.EditorExtensions
 
             string sourceMapFilename = compiledFileName + ".map";
 
-            if (!File.Exists(sourceFileName))
+            if (!File.Exists(sourceFileName) || !File.Exists(sourceMapFilename))
                 return content;
 
             var updatedFileContent = GetUpdatedSourceMapFileContent(compiledFileName, sourceMapFilename);
@@ -102,6 +102,7 @@ namespace MadsKristensen.EditorExtensions
                 return content;
 
             WriteFile(updatedFileContent, sourceMapFilename, true, false);
+            AddFileToProject(sourceFileName, sourceMapFilename);
 
             return UpdateSourceLinkInCssComment(content, FileHelpers.RelativePath(sourceMapFilename, compiledFileName));
         }
