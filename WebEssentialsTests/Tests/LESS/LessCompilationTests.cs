@@ -40,6 +40,7 @@ namespace WebEssentialsTests
         [ClassInitialize]
         public static void ObscureNode(TestContext context)
         {
+            NodeExecutorBase.InUnitTests = true;
             originalPath = Environment.GetEnvironmentVariable("PATH");
             Environment.SetEnvironmentVariable("PATH", originalPath.Replace(@";C:\Program Files\nodejs\", ""), EnvironmentVariableTarget.Process);
         }

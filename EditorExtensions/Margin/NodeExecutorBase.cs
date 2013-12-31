@@ -11,6 +11,9 @@ namespace MadsKristensen.EditorExtensions
         protected static readonly string WebEssentialsNodeDirectory = Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\nodejs");
         protected static readonly string NodePath = Path.Combine(WebEssentialsNodeDirectory, @"node.exe");
 
+        ///<summary>If set, the executor will not try to use the VS project system.</summary>
+        public static bool InUnitTests { get; set; }
+
         protected abstract string ServiceName { get; }
         protected abstract string CompilerPath { get; }
         protected abstract Regex ErrorParsingPattern { get; }
@@ -61,7 +64,8 @@ namespace MadsKristensen.EditorExtensions
             if (result.IsSuccess)
             {
                 result.Result = PostProcessResult(result.Result, sourceFileName, targetFileName);
-                MarginBase.AddFileToProject(sourceFileName, targetFileName);
+                if (!InUnitTests)
+                    MarginBase.AddFileToProject(sourceFileName, targetFileName);
             }
             else
             {

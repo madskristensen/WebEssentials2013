@@ -22,64 +22,69 @@ namespace MadsKristensen.EditorExtensions
             var webclient = new WebClient();
 
             Directory.CreateDirectory(@"resources\nodejs");
-            if (!File.Exists(@"resources\nodejs\node.exe"))
-            {
-                Log.LogMessage(MessageImportance.High, "Downloading nodejs ...");
-                webclient.DownloadFile("http://nodejs.org/dist/latest/node.exe", @"resources\nodejs\node.exe");
-            }
 
-            if (!File.Exists(@"resources\nodejs\node_modules\npm\bin\npm.cmd"))
-            {
-                Log.LogMessage(MessageImportance.High, "Downloading npm ...");
-                var npmZip = webclient.OpenRead("http://nodejs.org/dist/npm/npm-1.3.13.zip");
-                try
-                {
-                    ExtractZipWithOverwrite(npmZip, @"resources\nodejs");
-                }
-                catch
-                {
-                    // Make sure the next build doesn't see a half-installed npm
-                    Directory.Delete(@"resources\nodejs\node_modules\npm", true);
-                    throw;
-                }
-            }
+            // Since this is a synchronous job, I have
+            // no choice but to synchronously wait for
+            // the tasks to finish. However, the async
+            // still saves threads.
 
-            if (!File.Exists(@"resources\nodejs\node_modules\.bin\lessc.cmd"))
-            {
-                Log.LogMessage(MessageImportance.High, "npm install less ...");
-                var output = new StringWriter();
-                int result = Exec(@"cmd", @"/c .\npm.cmd install less", @"resources\nodejs", output, output);
-                if (result != 0)
-                {
-                    Log.LogError("npm error " + result + ": " + output.ToString().Trim());
-                }
-                FlattenNodeModules(@"resources\nodejs\node_modules\less\node_modules");
-            }
+            Task.WaitAll(
+                DownloadNodeAsync(),
+                DownloadNpmAsync()
+            );
 
-            if (!File.Exists(@"resources\nodejs\node_modules\.bin\coffee.cmd"))
-            {
-                Log.LogMessage(MessageImportance.High, "npm install coffee-script ...");
-                var output = new StringWriter();
-                int result = Exec(@"cmd", @"/c .\npm.cmd install coffee-script", @"resources\nodejs", output, output);
-                if (result != 0)
-                {
-                    Log.LogError("npm error " + result + ": " + output.ToString().Trim());
-                }
-                FlattenNodeModules(@"resources\nodejs\node_modules\coffee-script\node_modules");
-            }
+            return Task.WhenAll(
+                InstallModuleAsync("lessc", "less"),
+                InstallModuleAsync("coffee", "coffee-script"),
+                InstallModuleAsync("iced", "iced-coffee-script")
+            ).Result.All(b => b);
+        }
 
-            if (!File.Exists(@"resources\nodejs\node_modules\.bin\iced.cmd"))
-            {
-                Log.LogMessage(MessageImportance.High, "npm install iced-coffee-script ...");
-                var output = new StringWriter();
-                int result = Exec(@"cmd", @"/c .\npm.cmd install iced-coffee-script", @"resources\nodejs", output, output);
-                if (result != 0)
-                {
-                    Log.LogError("npm error " + result + ": " + output.ToString().Trim());
-                }
-                FlattenNodeModules(@"resources\nodejs\node_modules\iced-coffee-script\node_modules");
-            }
+        Task DownloadNodeAsync()
+        {
+            if (File.Exists(@"resources\nodejs\node.exe"))
+                return Task.FromResult<object>(null);
+            Log.LogMessage(MessageImportance.High, "Downloading nodejs ...");
+            return new WebClient().DownloadFileTaskAsync("http://nodejs.org/dist/latest/node.exe", @"resources\nodejs\node.exe");
+        }
+        async Task DownloadNpmAsync()
+        {
+            if (File.Exists(@"resources\nodejs\node_modules\npm\bin\npm.cmd"))
+                return;
+            Log.LogMessage(MessageImportance.High, "Downloading npm ...");
 
+            var npmZip = await new WebClient().OpenReadTaskAsync("http://nodejs.org/dist/npm/npm-1.3.13.zip");
+            try
+            {
+                ExtractZipWithOverwrite(npmZip, @"resources\nodejs");
+            }
+            catch
+            {
+                // Make sure the next build doesn't see a half-installed npm
+                Directory.Delete(@"resources\nodejs\node_modules\npm", true);
+                throw;
+            }
+        }
+        async Task<bool> InstallModuleAsync(string cmdName, string moduleName)
+        {
+            if (File.Exists(@"resources\nodejs\node_modules\.bin\" + cmdName + ".cmd"))
+                return true;
+
+            Log.LogMessage(MessageImportance.High, "npm install " + moduleName + " ...");
+            var output = new StringWriter();
+            int result = await ExecAsync(@"cmd", @"/c .\npm.cmd install " + moduleName, @"resources\nodejs", output, output);
+            if (result != 0)
+            {
+                Log.LogError("npm error " + result + ": " + output.ToString().Trim());
+                return false;
+            }
+            // If the package has any dependencies, flatten them.
+            // If there are dependent modules, but they failed to
+            // install show an error.  I'm too lazy to add a JSON
+            // parser (how do I add a reference in a pre-build?);
+            // this should be good enough.
+            if (File.ReadAllText(@"resources\nodejs\node_modules\" + moduleName + @"\package.json").Contains(@"""dependencies"":"))
+                FlattenNodeModules(@"resources\nodejs\node_modules\" + moduleName + @"\node_modules");
             return true;
         }
 
@@ -111,8 +116,8 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        /// <summary>Invokes a command-line process.</summary>
-        static int Exec(string filename, string args, string workingDirectory = null, TextWriter stdout = null, TextWriter stderr = null)
+        /// <summary>Invokes a command-line process asynchronously.</summary>
+        static Task<int> ExecAsync(string filename, string args, string workingDirectory = null, TextWriter stdout = null, TextWriter stderr = null)
         {
             stdout = stdout ?? TextWriter.Null;
             stderr = stderr ?? TextWriter.Null;
@@ -142,8 +147,16 @@ namespace MadsKristensen.EditorExtensions
             p.Start();
             p.BeginErrorReadLine();
             p.BeginOutputReadLine();
-            p.WaitForExit();
-            return p.ExitCode;
+            var processTaskCompletionSource = new TaskCompletionSource<int>();
+
+            p.EnableRaisingEvents = true;
+            p.Exited += (s, e) =>
+            {
+                p.WaitForExit();
+                processTaskCompletionSource.TrySetResult(p.ExitCode);
+            };
+
+            return processTaskCompletionSource.Task;
         }
 
         void ExtractZipWithOverwrite(Stream sourceZip, string destinationDirectoryName)

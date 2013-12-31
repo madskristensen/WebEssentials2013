@@ -12,6 +12,8 @@ namespace WebEssentialsTests
     [TestClass]
     public class LessDocumentTests
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext c) { NodeExecutorBase.InUnitTests = true; }
         [TestMethod]
         public async Task SelectorExpansionTest()
         {
@@ -108,9 +110,9 @@ a {
     .qux & {
       display: inline;
     }
-	.qux& {
-	  display: inline-block;
-	}
+    .qux& {
+      display: inline-block;
+    }
     .qux & .biz {
       display: none;
     }
