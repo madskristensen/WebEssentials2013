@@ -102,7 +102,7 @@ namespace MadsKristensen.EditorExtensions
                 return content;
 
             WriteFile(updatedFileContent, sourceMapFilename, true, false);
-            AddFileToProject(sourceFileName, sourceMapFilename);
+            AddFileToProject(compiledFileName, sourceMapFilename);
 
             return UpdateSourceLinkInCssComment(content, FileHelpers.RelativePath(compiledFileName, sourceMapFilename));
         }
