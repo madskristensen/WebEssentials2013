@@ -99,7 +99,7 @@ namespace MadsKristensen.EditorExtensions
                 file.EndsWith(".intellisense.js", StringComparison.OrdinalIgnoreCase) ||
                 file.Contains("-vsdoc.js") ||
                 !File.Exists(file) ||
-                EditorExtensionsPackage.DTE.Solution.FindProjectItem(file) == null)
+                ProjectHelpers.GetProjectItem(file) == null)
             {
                 return true;
             }

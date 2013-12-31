@@ -241,7 +241,7 @@ namespace MadsKristensen.EditorExtensions
 
         internal static bool CanCompile(string fileName, string compileToExtension)
         {
-            if (EditorExtensionsPackage.DTE.Solution.FindProjectItem(fileName) == null)
+            if (ProjectHelpers.GetProjectItem(fileName) == null)
                 return false;
 
             if (Path.GetFileName(fileName).StartsWith("_", StringComparison.Ordinal))

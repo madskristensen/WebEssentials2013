@@ -61,7 +61,7 @@ namespace MadsKristensen.EditorExtensions
             yield return new CompletionListEntry("monochrome");
             yield return new CompletionListEntry("max-monochrome");
             yield return new CompletionListEntry("min-monochrome");
-            
+
             // Internet Explorer
             yield return new CompletionListEntry("-ms-high-contrast");
 

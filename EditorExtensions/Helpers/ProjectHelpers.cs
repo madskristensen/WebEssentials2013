@@ -158,7 +158,7 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>Converts a relative URL to an absolute path on disk, as resolved from the specified file.</summary>
         public static string ToAbsoluteFilePath(string relativeUrl, string relativeToFile)
         {
-            var file = EditorExtensionsPackage.DTE.Solution.FindProjectItem(relativeToFile);
+            var file = ProjectHelpers.GetProjectItem(relativeToFile);
             if (file == null || file.Properties == null)
                 return ToAbsoluteFilePath(relativeUrl, GetRootFolder(), Path.GetDirectoryName(relativeToFile));
             return ToAbsoluteFilePath(relativeUrl, file);
@@ -332,14 +332,11 @@ namespace MadsKristensen.EditorExtensions
             if (string.IsNullOrEmpty(fileNameOrFolder))
                 return GetRootFolder();
 
+            ProjectItem item = ProjectHelpers.GetProjectItem(fileNameOrFolder);
             string projectFolder = null;
 
-            try
-            {
-                ProjectItem item = EditorExtensionsPackage.DTE.Solution.FindProjectItem(fileNameOrFolder);
+            if (item != null)
                 projectFolder = GetProjectFolder(item);
-            }
-            catch { }
 
             return projectFolder;
         }
@@ -381,11 +378,10 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>Gets the Project containing the specified file.</summary>
         public static Project GetProject(string item)
         {
-            var projectItem = EditorExtensionsPackage.DTE.Solution.FindProjectItem(item);
+            var projectItem = ProjectHelpers.GetProjectItem(item);
+
             if (projectItem == null)
-            {
                 return null;
-            }
 
             return projectItem.ContainingProject;
         }
@@ -400,6 +396,20 @@ namespace MadsKristensen.EditorExtensions
             }
 
             return null;
+        }
+
+        internal static ProjectItem GetProjectItem(string fileName)
+        {
+            try
+            {
+                return EditorExtensionsPackage.DTE.Solution.FindProjectItem(fileName);
+            }
+            catch(Exception exception)
+            {
+                Logger.Log(exception.Message);
+
+                return null;
+            }
         }
     }
 }

@@ -99,7 +99,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             //NOTE: Project parameter here is for the discovery of linked files, ones that might exist outside of the project structure
             var projectPath = project.Properties.Item("FullPath").Value.ToString();
 
-            if (!projectPath.EndsWith(Path.DirectorySeparatorChar + ""))
+            if (!projectPath.EndsWith(Path.DirectorySeparatorChar + "", StringComparison.OrdinalIgnoreCase))
             {
                 projectPath += Path.DirectorySeparatorChar;
             }

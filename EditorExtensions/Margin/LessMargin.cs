@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions
 
             string lessFilePath = Document.FilePath;
 
-            string cssFilename = GetCompiledFileName(lessFilePath, ".css", CompileEnabled ? CompileToLocation : null);// Document.FilePath.Replace(".less", ".css");
+            string cssFilename = GetCompiledFileName(lessFilePath, ".css", CompileEnabled ? CompileToLocation : null);
 
             if (IsFirstRun && File.Exists(cssFilename))
             {
@@ -104,7 +104,7 @@ namespace MadsKristensen.EditorExtensions
             WriteFile(updatedFileContent, sourceMapFilename, true, false);
             AddFileToProject(sourceFileName, sourceMapFilename);
 
-            return UpdateSourceLinkInCssComment(content, FileHelpers.RelativePath(sourceMapFilename, compiledFileName));
+            return UpdateSourceLinkInCssComment(content, FileHelpers.RelativePath(compiledFileName, sourceMapFilename));
         }
 
         private static string GetUpdatedSourceMapFileContent(string cssFileName, string sourceMapFilename)

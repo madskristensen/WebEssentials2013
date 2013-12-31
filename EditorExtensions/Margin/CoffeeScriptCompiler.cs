@@ -40,28 +40,33 @@ namespace MadsKristensen.EditorExtensions
         protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
             Logger.Log("CoffeeScript: " + Path.GetFileName(sourceFileName) + " compiled.");
-            RenameMapFile(targetFileName);
+            ProcessMapFile(targetFileName);
 
             return resultSource;
         }
 
-        protected static void RenameMapFile(string jsFileName)
+        protected static void ProcessMapFile(string jsFileName)
         {
-            // Hack Remove if / when this issue is resolved: https://github.com/jashkenas/coffee-script/issues/3297
+            var sourceMapFile = jsFileName + ".map";
+
+            /*if (!File.Exists(sourceMapFile)) // To be uncommented when following issue is resolved.
+                return;*/
+
+            // Hack: Remove if / when this issue is resolved: https://github.com/jashkenas/coffee-script/issues/3297
             var oldSourceMapFile = Path.ChangeExtension(jsFileName, ".map");
 
-            if (File.Exists(oldSourceMapFile))
-            {
-                File.Copy(oldSourceMapFile, jsFileName + ".map", true);
-                File.Delete(oldSourceMapFile);
-            }
+            if (!File.Exists(oldSourceMapFile))
+                return;
+
+            File.Copy(oldSourceMapFile, sourceMapFile, true);
+            File.Delete(oldSourceMapFile);
             // end-Hack
 
             if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptSourceMaps))
             {
                 Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
                 {
-                    MarginBase.AddFileToProject(jsFileName, jsFileName + ".map");
+                    MarginBase.AddFileToProject(jsFileName, sourceMapFile);
                 }), DispatcherPriority.ApplicationIdle, null);
             }
         }
