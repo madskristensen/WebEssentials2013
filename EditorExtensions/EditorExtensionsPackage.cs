@@ -131,7 +131,7 @@ namespace MadsKristensen.EditorExtensions
                 await ThreadingTask.Task.Run(() => JsHintRunner.Reset());
         }
 
-        public static void ExecuteCommand(string commandName)
+        public static void ExecuteCommand(string commandName, string commandArgs = "")
         {
             var command = EditorExtensionsPackage.DTE.Commands.Item(commandName);
 
@@ -139,7 +139,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 try
                 {
-                    EditorExtensionsPackage.DTE.ExecuteCommand(commandName);
+                    EditorExtensionsPackage.DTE.ExecuteCommand(commandName, commandArgs);
                 }
                 catch
                 { }
