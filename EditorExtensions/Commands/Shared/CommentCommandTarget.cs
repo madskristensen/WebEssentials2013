@@ -9,14 +9,18 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class CommentCommandTarget : CommandTargetBase
     {
-        public CommentCommandTarget(IVsTextView adapter, IWpfTextView textView)
+        private string _symbol;
+
+        public CommentCommandTarget(IVsTextView adapter, IWpfTextView textView, string commentSymbol)
             : base(adapter, textView, typeof(VSConstants.VSStd2KCmdID).GUID, 136, 137)
-        { }
+        {
+            _symbol = commentSymbol;
+        }
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             StringBuilder sb = new StringBuilder();
-            SnapshotSpan span = GetSpan();            
+            SnapshotSpan span = GetSpan();
             string[] lines = span.GetText().Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
             switch (commandId)
@@ -39,7 +43,7 @@ namespace MadsKristensen.EditorExtensions
         {
             foreach (string line in lines)
             {
-                sb.AppendLine("#" + line);
+                sb.AppendLine(_symbol + line);
             }
         }
 
@@ -47,7 +51,7 @@ namespace MadsKristensen.EditorExtensions
         {
             foreach (string line in lines)
             {
-                sb.AppendLine(line.TrimStart('#'));
+                sb.AppendLine(line.TrimStart(_symbol.ToCharArray()));
             }
         }
 
