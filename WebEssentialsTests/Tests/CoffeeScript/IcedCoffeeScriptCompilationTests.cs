@@ -9,6 +9,9 @@ namespace WebEssentialsTests
     [TestClass]
     public class IcedCoffeeScriptCompilationTests
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext c) { NodeExecutorBase.InUnitTests = true; }
+
         private static readonly string BaseDirectory = Path.GetDirectoryName(typeof(NodeModuleImportedTests).Assembly.Location);
 
         [TestMethod]
