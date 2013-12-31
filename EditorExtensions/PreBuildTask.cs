@@ -22,32 +22,17 @@ namespace MadsKristensen.EditorExtensions
             var webclient = new WebClient();
 
             Directory.CreateDirectory(@"resources\nodejs");
-            if (!File.Exists(@"resources\nodejs\node.exe"))
-            {
-                Log.LogMessage(MessageImportance.High, "Downloading nodejs ...");
-                webclient.DownloadFile("http://nodejs.org/dist/latest/node.exe", @"resources\nodejs\node.exe");
-            }
-
-            if (!File.Exists(@"resources\nodejs\node_modules\npm\bin\npm.cmd"))
-            {
-                Log.LogMessage(MessageImportance.High, "Downloading npm ...");
-                var npmZip = webclient.OpenRead("http://nodejs.org/dist/npm/npm-1.3.13.zip");
-                try
-                {
-                    ExtractZipWithOverwrite(npmZip, @"resources\nodejs");
-                }
-                catch
-                {
-                    // Make sure the next build doesn't see a half-installed npm
-                    Directory.Delete(@"resources\nodejs\node_modules\npm", true);
-                    throw;
-                }
-            }
 
             // Since this is a synchronous job, I have
             // no choice but to synchronously wait for
             // the tasks to finish. However, the async
             // still saves threads.
+
+            Task.WaitAll(
+                DownloadNodeAsync(),
+                DownloadNpmAsync()
+            );
+
             return Task.WhenAll(
                 InstallModuleAsync("lessc", "less"),
                 InstallModuleAsync("coffee", "coffee-script"),
@@ -55,6 +40,31 @@ namespace MadsKristensen.EditorExtensions
             ).Result.All(b => b);
         }
 
+        Task DownloadNodeAsync()
+        {
+            if (File.Exists(@"resources\nodejs\node.exe"))
+                return Task.FromResult<object>(null);
+            Log.LogMessage(MessageImportance.High, "Downloading nodejs ...");
+            return new WebClient().DownloadFileTaskAsync("http://nodejs.org/dist/latest/node.exe", @"resources\nodejs\node.exe");
+        }
+        async Task DownloadNpmAsync()
+        {
+            if (File.Exists(@"resources\nodejs\node_modules\npm\bin\npm.cmd"))
+                return;
+            Log.LogMessage(MessageImportance.High, "Downloading npm ...");
+
+            var npmZip = await new WebClient().OpenReadTaskAsync("http://nodejs.org/dist/npm/npm-1.3.13.zip");
+            try
+            {
+                ExtractZipWithOverwrite(npmZip, @"resources\nodejs");
+            }
+            catch
+            {
+                // Make sure the next build doesn't see a half-installed npm
+                Directory.Delete(@"resources\nodejs\node_modules\npm", true);
+                throw;
+            }
+        }
         async Task<bool> InstallModuleAsync(string cmdName, string moduleName)
         {
             if (File.Exists(@"resources\nodejs\node_modules\.bin\" + cmdName + ".cmd"))
