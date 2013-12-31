@@ -1,7 +1,9 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -50,10 +52,18 @@ namespace MadsKristensen.EditorExtensions
 
             if (File.Exists(oldSourceMapFile))
             {
-                File.Copy(oldSourceMapFile, jsFileName + "map", true);
+                File.Copy(oldSourceMapFile, jsFileName + ".map", true);
                 File.Delete(oldSourceMapFile);
             }
             // end-Hack
+
+            if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptSourceMaps))
+            {
+                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+                {
+                    MarginBase.AddFileToProject(jsFileName, jsFileName + ".map");
+                }), DispatcherPriority.ApplicationIdle, null);
+            }
         }
     }
 }
