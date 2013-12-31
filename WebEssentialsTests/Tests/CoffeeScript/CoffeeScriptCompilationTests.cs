@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
@@ -25,10 +27,13 @@ namespace WebEssentialsTests
                     continue;
 
                 var compiledCode = await new CoffeeScriptCompiler().CompileString(File.ReadAllText(coffeeFileName), ".coffee", ".js");
-                var expectedCode = File.ReadAllText(compiledFile)
-                               .Replace("\r", "");
 
-                compiledCode.Should().Be(expectedCode);
+                // Skip the version header, so we don't need
+                // to update the expecation for CS releases.
+                var compiledLines = compiledCode.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).Skip(1);
+                var expectedLines = File.ReadLines(compiledFile).Skip(1).Where(s => !string.IsNullOrEmpty(s));
+
+                compiledLines.Should().Equal(expectedLines);
             }
         }
     }
