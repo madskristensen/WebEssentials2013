@@ -61,6 +61,7 @@ namespace MadsKristensen.EditorExtensions
             if (result.IsSuccess)
             {
                 result.Result = PostProcessResult(result.Result, sourceFileName, targetFileName);
+                MarginBase.AddFileToProject(sourceFileName, targetFileName);
             }
             else
             {
