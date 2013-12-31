@@ -64,7 +64,7 @@ namespace MadsKristensen.EditorExtensions
         {
             TokenItem token = (TokenItem)item;
 
-            if (!token.IsValid || token.TokenType != CssTokenType.Identifier || token.FindType<Declaration>() == null)
+            if (!token.IsValid || token.TokenType != CssTokenType.Identifier || token.FindType<Declaration>() == null || !(item.StyleSheet is LessStyleSheet))
                 yield break;
 
             var color = Color.FromName(token.Text);
