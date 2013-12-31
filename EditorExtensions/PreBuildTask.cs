@@ -44,27 +44,38 @@ namespace MadsKristensen.EditorExtensions
                 }
             }
 
-            InstallModule("lessc", "less");
-            InstallModule("coffee", "coffee-script");
-            InstallModule("iced", "iced-coffee-script");
-
-            return true;
+            // Since this is a synchronous job, I have
+            // no choice but to synchronously wait for
+            // the tasks to finish. However, the async
+            // still saves threads.
+            return Task.WhenAll(
+                InstallModuleAsync("lessc", "less"),
+                InstallModuleAsync("coffee", "coffee-script"),
+                InstallModuleAsync("iced", "iced-coffee-script")
+            ).Result.All(b => b);
         }
 
-        void InstallModule(string cmdName, string moduleName)
+        async Task<bool> InstallModuleAsync(string cmdName, string moduleName)
         {
-            if (!File.Exists(@"resources\nodejs\node_modules\.bin\" + cmdName + ".cmd"))
-            {
-                Log.LogMessage(MessageImportance.High, "npm install " + moduleName + " ...");
-                var output = new StringWriter();
-                int result = Exec(@"cmd", @"/c .\npm.cmd install " + moduleName, @"resources\nodejs", output, output);
-                if (result != 0)
-                {
-                    Log.LogError("npm error " + result + ": " + output.ToString().Trim());
-                }
-                FlattenNodeModules(@"resources\nodejs\node_modules\" + moduleName + "\node_modules");
-            }
+            if (File.Exists(@"resources\nodejs\node_modules\.bin\" + cmdName + ".cmd"))
+                return true;
 
+            Log.LogMessage(MessageImportance.High, "npm install " + moduleName + " ...");
+            var output = new StringWriter();
+            int result = await ExecAsync(@"cmd", @"/c .\npm.cmd install " + moduleName, @"resources\nodejs", output, output);
+            if (result != 0)
+            {
+                Log.LogError("npm error " + result + ": " + output.ToString().Trim());
+                return false;
+            }
+            // If the package has any dependencies, flatten them.
+            // If there are dependent modules, but they failed to
+            // install show an error.  I'm too lazy to add a JSON
+            // parser (how do I add a reference in a pre-build?);
+            // this should be good enough.
+            if (File.ReadAllText(@"resources\nodejs\node_modules\" + moduleName + @"\package.json").Contains(@"""dependencies"":"))
+                FlattenNodeModules(@"resources\nodejs\node_modules\" + moduleName + @"\node_modules");
+            return true;
         }
 
         /// <summary>
@@ -95,8 +106,8 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        /// <summary>Invokes a command-line process.</summary>
-        static int Exec(string filename, string args, string workingDirectory = null, TextWriter stdout = null, TextWriter stderr = null)
+        /// <summary>Invokes a command-line process asynchronously.</summary>
+        static Task<int> ExecAsync(string filename, string args, string workingDirectory = null, TextWriter stdout = null, TextWriter stderr = null)
         {
             stdout = stdout ?? TextWriter.Null;
             stderr = stderr ?? TextWriter.Null;
@@ -126,8 +137,16 @@ namespace MadsKristensen.EditorExtensions
             p.Start();
             p.BeginErrorReadLine();
             p.BeginOutputReadLine();
-            p.WaitForExit();
-            return p.ExitCode;
+            var processTaskCompletionSource = new TaskCompletionSource<int>();
+
+            p.EnableRaisingEvents = true;
+            p.Exited += (s, e) =>
+            {
+                p.WaitForExit();
+                processTaskCompletionSource.TrySetResult(p.ExitCode);
+            };
+
+            return processTaskCompletionSource.Task;
         }
 
         void ExtractZipWithOverwrite(Stream sourceZip, string destinationDirectoryName)

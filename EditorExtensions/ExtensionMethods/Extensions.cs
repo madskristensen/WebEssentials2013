@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
             return input.All(digit => char.IsDigit(digit) || digit.Equals('.'));
         }
 
-        ///<summary>Execute process asyncronously.</summary>
+        ///<summary>Execute process asynchronously.</summary>
         public static Task<Process> ExecuteAsync(this ProcessStartInfo startInfo)
         {
             var process = Process.Start(startInfo);
