@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
@@ -9,6 +11,30 @@ namespace MadsKristensen.EditorExtensions
         public JsHintOptions()
         {
             Settings.Updated += delegate { LoadSettingsFromStorage(); };
+        }
+
+        protected override void OnDeactivate(CancelEventArgs e)
+        {
+            var error = GetIgnoreLisErrors(IgnoreFiles);
+            if (!string.IsNullOrEmpty(error))
+                MessageBox.Show(error, "Web Essentials", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            base.OnDeactivate(e);
+        }
+
+        string GetIgnoreLisErrors(string source)
+        {
+            foreach (var pattern in source.Split(';'))
+            {
+                try
+                {
+                    new Regex(pattern);
+                }
+                catch (Exception ex)
+                {
+                    return "The entry '" + pattern + "' in the Ignore Files list is not a valid regex and will be skipped.\n\n" + ex.Message;
+                }
+            }
+            return null;
         }
 
         public override void SaveSettingsToStorage()
