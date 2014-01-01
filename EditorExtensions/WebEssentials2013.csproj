@@ -785,6 +785,7 @@
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -803,7 +804,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Resources\Images.png" />
+    <None Include="Resources\Images\Images.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="BrowserLink\CssSync\CssSyncBrowserLink.js" />
@@ -818,32 +819,32 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Resource Include="Resources\numbers.png" />
+    <Resource Include="Resources\Images\numbers.png" />
     <Content Include="registry.pkgdef">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Resource Include="Resources\extract.png" />
+    <Resource Include="Resources\Images\extract.png" />
     <EmbeddedResource Include="Resources\Scripts\jshint-2.4.0.js" />
     <EmbeddedResource Include="Resources\Scripts\AngularController.js" />
-    <Resource Include="Resources\delete.png" />
-    <Resource Include="Resources\browserlink.png" />
-    <Resource Include="Resources\node_module.png" />
-    <Resource Include="Resources\jsfile.png" />
-    <Resource Include="Resources\jsonfile.png" />
-    <None Include="Resources\Browser Pause Button.png" />
-    <None Include="Resources\Browser Record Button.png" />
+    <Resource Include="Resources\Images\delete.png" />
+    <Resource Include="Resources\Images\browserlink.png" />
+    <Resource Include="Resources\Images\node_module.png" />
+    <Resource Include="Resources\Images\jsfile.png" />
+    <Resource Include="Resources\Images\jsonfile.png" />
+    <None Include="Resources\Images\Browser Pause Button.png" />
+    <None Include="Resources\Images\Browser Record Button.png" />
     <Content Include="Resources\nodejs\node.exe" />
     <Content Include="Resources\Scripts\es5-shim.min.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Resource Include="Resources\graph_id.png" />
-    <Resource Include="Resources\graph_atdir.png" />
-    <Resource Include="Resources\graph_class.png" />
-    <Resource Include="Resources\graph_parent.png" />
-    <Resource Include="Resources\sort.png" />
+    <Resource Include="Resources\Images\graph_id.png" />
+    <Resource Include="Resources\Images\graph_atdir.png" />
+    <Resource Include="Resources\Images\graph_class.png" />
+    <Resource Include="Resources\Images\graph_parent.png" />
+    <Resource Include="Resources\Images\sort.png" />
     <None Include="Source.extension.vsixmanifest" />
-    <Resource Include="Resources\vsgallery.png" />
+    <Resource Include="Resources\Images\vsgallery.png" />
     <Content Include="Schemas\css-we-settings.xml">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -854,29 +855,29 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Resource Include="Resources\Browsers\s.png" />
-    <Resource Include="Resources\warning.png" />
-    <Resource Include="Resources\palette.png" />
-    <Resource Include="Resources\skull.png" />
-    <Resource Include="Resources\embed.png" />
-    <Resource Include="Resources\nopreview.png" />
-    <Resource Include="Resources\cross_browser.png" />
-    <Resource Include="Resources\no_skull.png" />
-    <Resource Include="Resources\alphabatize.png" />
-    <Resource Include="Resources\Browsers\ie.png" />
-    <Resource Include="Resources\Browsers\o.png" />
-    <Resource Include="Resources\Browsers\c.png" />
-    <Resource Include="Resources\Browsers\ff.png" />
-    <Resource Include="Resources\Browsers\c_gray.png" />
-    <Resource Include="Resources\Browsers\ff_gray.png" />
-    <Resource Include="Resources\Browsers\ie_gray.png" />
-    <Resource Include="Resources\Browsers\o_gray.png" />
-    <Resource Include="Resources\Browsers\s_gray.png" />
+    <Resource Include="Resources\Images\Browsers\s.png" />
+    <Resource Include="Resources\Images\warning.png" />
+    <Resource Include="Resources\Images\palette.png" />
+    <Resource Include="Resources\Images\skull.png" />
+    <Resource Include="Resources\Images\embed.png" />
+    <Resource Include="Resources\Images\nopreview.png" />
+    <Resource Include="Resources\Images\cross_browser.png" />
+    <Resource Include="Resources\Images\no_skull.png" />
+    <Resource Include="Resources\Images\alphabatize.png" />
+    <Resource Include="Resources\Images\Browsers\ie.png" />
+    <Resource Include="Resources\Images\Browsers\o.png" />
+    <Resource Include="Resources\Images\Browsers\c.png" />
+    <Resource Include="Resources\Images\Browsers\ff.png" />
+    <Resource Include="Resources\Images\Browsers\c_gray.png" />
+    <Resource Include="Resources\Images\Browsers\ff_gray.png" />
+    <Resource Include="Resources\Images\Browsers\ie_gray.png" />
+    <Resource Include="Resources\Images\Browsers\o_gray.png" />
+    <Resource Include="Resources\Images\Browsers\s_gray.png" />
     <Content Include="License.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\Package.ico" />
+    <Content Include="Resources\Images\Package.ico" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

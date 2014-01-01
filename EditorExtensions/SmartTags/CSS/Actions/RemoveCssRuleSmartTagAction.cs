@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Actions
 
             if (Icon == null)
             {
-                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/delete.png", UriKind.RelativeOrAbsolute));
+                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/delete.png", UriKind.RelativeOrAbsolute));
             }
         }
 

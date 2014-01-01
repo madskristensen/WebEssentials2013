@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (Icon == null)
             {
-                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/palette.png", UriKind.RelativeOrAbsolute));
+                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/palette.png", UriKind.RelativeOrAbsolute));
             }
 
             _displayText = "Convert to " + GetColorString(_format, _colorModel);

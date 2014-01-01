@@ -616,9 +616,9 @@
     </Buttons>
 
     <Bitmaps>
-      <Bitmap guid="guidImages" href="Resources\Images.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpLogo, bmpMinify"/>
-      <Bitmap guid="guidNumbers" href="Resources\numbers.png" usedList="pic1, pic2, pic3, pic4"/>
-      <Bitmap guid="guidBrowserLink" href="Resources\browserlink.png" usedList="bmpRecord, bmpPause"/>
+      <Bitmap guid="guidImages" href="Resources\Images\Images.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpLogo, bmpMinify"/>
+      <Bitmap guid="guidNumbers" href="Resources\Images\numbers.png" usedList="pic1, pic2, pic3, pic4"/>
+      <Bitmap guid="guidBrowserLink" href="Resources\Images\browserlink.png" usedList="bmpRecord, bmpPause"/>
     </Bitmaps>
   </Commands>
 
