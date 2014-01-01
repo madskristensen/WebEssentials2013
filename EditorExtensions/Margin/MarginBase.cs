@@ -244,6 +244,7 @@ namespace MadsKristensen.EditorExtensions
                 case ".iced":
                 case ".ts":
                     fileName = GetCompiledFileName(currentFileName, ".js", CompileToLocation);
+                    content = UpdateLessSourceMapUrls(content, currentFileName, fileName);
                     break;
 
                 case ".md":
