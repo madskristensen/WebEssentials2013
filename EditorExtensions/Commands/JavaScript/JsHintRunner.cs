@@ -127,20 +127,38 @@ namespace MadsKristensen.EditorExtensions
 
         private static bool MustIgnore(string name)
         {
-            if (_ignoreRegex.IsMatch(name))
+            if (_builtInIgnoreRegex.IsMatch(name))
                 return true;
 
-            string ignoreFiles = WESettings.GetString(WESettings.Keys.JsHint_ignoreFiles);
+            if (_parsedUserIgnoreList != WESettings.GetString(WESettings.Keys.JsHint_ignoreFiles))
+                ParseUserIgnoreList();
 
-            if (string.IsNullOrEmpty(ignoreFiles))
-                return false;
-
-            string[] custom = ignoreFiles.Split(';');
-
-            return custom.Any(c => Regex.IsMatch(name, c.Trim(), RegexOptions.IgnoreCase));
+            return _userIgnoreRegexes.Any(r => r.IsMatch(name));
         }
 
-        private static Regex _ignoreRegex = new Regex("(" + String.Join(")|(", new[] {
+        static string _parsedUserIgnoreList;
+        static IReadOnlyCollection<Regex> _userIgnoreRegexes = new Regex[0];
+        static void ParseUserIgnoreList()
+        {
+            _parsedUserIgnoreList = WESettings.GetString(WESettings.Keys.JsHint_ignoreFiles);
+            _userIgnoreRegexes = _parsedUserIgnoreList.Split(';')
+                .Select(s =>
+            {
+                s = s.Trim();
+                if (s.Length == 0) return null;
+                try
+                {
+                    return new Regex(s, RegexOptions.IgnoreCase);
+                }
+                catch (Exception ex)
+                {
+                    Logger.ShowMessage("Skipping invalid regex '" + s + "' in JSHint ignore patterns.\nPlease fix that in Web Essentials Options.\n\n" + ex.Message);
+                    return null;
+                }
+            }).Where(r => r != null).ToList();
+        }
+
+        private static Regex _builtInIgnoreRegex = new Regex("(" + String.Join(")|(", new[] {
             @"_references\.js",
             @"amplify\.js",
             @"angular\.js",
