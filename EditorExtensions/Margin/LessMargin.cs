@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions
     public class LessMargin : MarginBase
     {
         public const string MarginName = "LessMargin";
-        private static readonly Regex _sourceMapinCSS = new Regex(@"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", RegexOptions.Multiline);
+        private static readonly Regex _sourceMapInCss = new Regex(@"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", RegexOptions.Multiline);
 
         public LessMargin(string contentType, string source, bool showMargin, ITextDocument document)
             : base(source, MarginName, contentType, showMargin, document)
@@ -88,12 +88,12 @@ namespace MadsKristensen.EditorExtensions
 
         protected override string UpdateLessSourceMapUrls(string content, string sourceFileName, string compiledFileName)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
+            if (!WESettings.GetBoolean(WESettings.Keys.LessSourceMaps) || !File.Exists(compiledFileName))
                 return content;
 
             string sourceMapFilename = compiledFileName + ".map";
 
-            if (!File.Exists(sourceFileName) || !File.Exists(sourceMapFilename))
+            if (!File.Exists(sourceMapFilename))
                 return content;
 
             var updatedFileContent = GetUpdatedSourceMapFileContent(compiledFileName, sourceMapFilename);
@@ -123,9 +123,9 @@ namespace MadsKristensen.EditorExtensions
         }
 
         private static string UpdateSourceLinkInCssComment(string content, string sourceMapRelativePath)
-        {   // Fixed sourceMappingURL comment in CSS file with network accessible path.
-            return _sourceMapinCSS.Replace(content,
-                String.Format(CultureInfo.CurrentCulture, "/*# sourceMappingURL={0} */", sourceMapRelativePath));
+        {   // Fix sourceMappingURL comment in CSS file with network accessible path.
+            return _sourceMapInCss.Replace(content,
+                string.Format(CultureInfo.CurrentCulture, "/*# sourceMappingURL={0} */", sourceMapRelativePath));
         }
     }
 }

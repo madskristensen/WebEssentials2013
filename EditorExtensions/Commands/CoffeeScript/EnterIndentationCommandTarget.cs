@@ -31,10 +31,10 @@ namespace MadsKristensen.EditorExtensions
                 {
                     TextView.TextBuffer.Insert(position, Environment.NewLine + match.Value);
                 }
-               
+
                 return true;
             }
-            
+
             return false;
         }
 

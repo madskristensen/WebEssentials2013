@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.Shell;
@@ -15,13 +16,16 @@ namespace MadsKristensen.EditorExtensions
 
         protected override void OnDeactivate(CancelEventArgs e)
         {
-            var error = GetIgnoreLisErrors(IgnoreFiles);
+            var error = GetIgnoreListErrors(IgnoreFiles);
+
             if (!string.IsNullOrEmpty(error))
                 MessageBox.Show(error, "Web Essentials", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
             base.OnDeactivate(e);
         }
 
-        string GetIgnoreLisErrors(string source)
+        [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "System.Text.RegularExpressions.Regex")]
+        private static string GetIgnoreListErrors(string source)
         {
             foreach (var pattern in source.Split(';'))
             {
@@ -34,6 +38,7 @@ namespace MadsKristensen.EditorExtensions
                     return "The entry '" + pattern + "' in the Ignore Files list is not a valid regex and will be skipped.\n\n" + ex.Message;
                 }
             }
+
             return null;
         }
 

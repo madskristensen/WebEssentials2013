@@ -69,7 +69,7 @@ namespace MadsKristensen.EditorExtensions
                 TextView.TextBuffer.Replace(span.Span, text.Trim());
             }
         }
-        
+
         private SnapshotSpan GetSpan()
         {
             var sel = TextView.Selection.StreamSelectionSpan;
