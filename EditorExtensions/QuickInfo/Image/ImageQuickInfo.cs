@@ -126,7 +126,7 @@ namespace MadsKristensen.EditorExtensions
 
         static T Freeze<T>(T obj) where T : Freezable { obj.Freeze(); return obj; }
 
-        static readonly BitmapFrame noPreview = Freeze(BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/nopreview.png")));
+        static readonly BitmapFrame noPreview = Freeze(BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/nopreview.png")));
         public static void AddImageContent(IList<object> qiContent, string url)
         {
             BitmapSource source;

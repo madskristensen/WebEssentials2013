@@ -404,7 +404,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 return EditorExtensionsPackage.DTE.Solution.FindProjectItem(fileName);
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 Logger.Log(exception.Message);
 

@@ -226,12 +226,12 @@ namespace MadsKristensen.EditorExtensions
                 if (!browsers.ContainsKey(name) && !browsers.ContainsKey("all"))
                 {
                     image.Opacity = 0.4;
-                    image.Source = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Browsers/" + name + "_gray.png", UriKind.RelativeOrAbsolute));
+                    image.Source = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/Browsers/" + name + "_gray.png", UriKind.RelativeOrAbsolute));
                 }
                 else
                 {
                     block.Text = browsers.ContainsKey("all") ? string.Empty : browsers[name];
-                    image.Source = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Browsers/" + name + ".png", UriKind.RelativeOrAbsolute));
+                    image.Source = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/Browsers/" + name + ".png", UriKind.RelativeOrAbsolute));
                 }
 
                 if (block.Text != "all")

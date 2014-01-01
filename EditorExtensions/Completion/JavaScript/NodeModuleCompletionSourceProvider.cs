@@ -77,7 +77,7 @@ namespace MadsKristensen.EditorExtensions
         static readonly Regex parentTraversalRegex = new Regex(@"^(\.\./)+$");
         static readonly ImageSource folderIcon = GlyphService.GetGlyph(StandardGlyphGroup.GlyphOpenFolder, StandardGlyphItem.GlyphItemPublic);
         #region Root-level completions
-        static ImageSource moduleIcon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/node_module.png", UriKind.RelativeOrAbsolute));
+        static ImageSource moduleIcon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/node_module.png", UriKind.RelativeOrAbsolute));
         static readonly Intel.Completion parentFolder = new Intel.Completion("../", "../", "Prefix to access files in the parent directory", folderIcon, "Folder");
         static readonly ReadOnlyCollection<Intel.Completion> dotCompletions = new ReadOnlyCollection<Intel.Completion>(new[]{
             new Intel.Completion("./", "./", "Prefix to access files in the current directory", folderIcon, "Folder"),
@@ -124,7 +124,7 @@ namespace MadsKristensen.EditorExtensions
         #region Directory-level completions
         static readonly IReadOnlyDictionary<string, ImageSource> fileIcons = new Dictionary<string, ImageSource>(StringComparer.OrdinalIgnoreCase)
         {
-            { ".js",    BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/jsfile.png", UriKind.RelativeOrAbsolute)) },
+            { ".js",    BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/jsfile.png", UriKind.RelativeOrAbsolute)) },
             { ".json",  GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupJSharpNamespace, StandardGlyphItem.GlyphItemPublic) },
             { ".node",  GlyphService.GetGlyph(StandardGlyphGroup.GlyphLibrary, StandardGlyphItem.GlyphItemPublic) }
         };

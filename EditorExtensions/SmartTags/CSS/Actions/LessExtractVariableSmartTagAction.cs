@@ -19,7 +19,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (Icon == null)
             {
-                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/extract.png", UriKind.RelativeOrAbsolute));
+                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/extract.png", UriKind.RelativeOrAbsolute));
             }
         }
 

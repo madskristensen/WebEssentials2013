@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Globalization;
+using System.IO;
+using System.Text.RegularExpressions;
 using EnvDTE;
 using Microsoft.VisualStudio.Text;
 
@@ -7,9 +10,18 @@ namespace MadsKristensen.EditorExtensions
     internal class CoffeeScriptMargin : MarginBase
     {
         public const string MarginName = "CoffeeScriptMargin";
+        private static NodeExecutorBase _compiler = new CoffeeScriptCompiler();
+        private static readonly Regex _sourceMapInJs = new Regex(@"\/\*\n.*=(.*)\n\*\/", RegexOptions.Multiline);
+
+        protected virtual string ServiceName { get { return "CoffeeScript"; } }
+        protected virtual NodeExecutorBase Compiler { get { return _compiler; } }
 
         public CoffeeScriptMargin(string contentType, string source, bool showMargin, ITextDocument document)
             : base(source, MarginName, contentType, showMargin, document)
+        { }
+
+        protected CoffeeScriptMargin(string contentType, string source, bool showMargin, ITextDocument document, string marginName)
+            : base(source, marginName, contentType, showMargin, document)
         { }
 
         protected override async void StartCompiler(string source)
@@ -17,19 +29,19 @@ namespace MadsKristensen.EditorExtensions
             if (!CompileEnabled)
                 return;
 
-            string coffeeFilePath = Document.FilePath;
+            string sourceFilePath = Document.FilePath;
 
-            string jsFileName = GetCompiledFileName(coffeeFilePath, ".js", CompileToLocation);
+            string jsFileName = GetCompiledFileName(sourceFilePath, ".js", CompileToLocation);
 
             if (IsFirstRun && File.Exists(jsFileName))
             {
-                OnCompilationDone(File.ReadAllText(jsFileName), coffeeFilePath);
+                OnCompilationDone(File.ReadAllText(jsFileName), sourceFilePath);
                 return;
             }
 
-            Logger.Log("CoffeeScript: Compiling " + Path.GetFileName(coffeeFilePath));
+            Logger.Log(ServiceName + ": Compiling " + Path.GetFileName(sourceFilePath));
 
-            var result = await new CoffeeScriptCompiler().Compile(coffeeFilePath, jsFileName);
+            var result = await Compiler.Compile(sourceFilePath, jsFileName);
 
             if (result.IsSuccess)
             {
@@ -37,11 +49,11 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                result.Error.Message = "CoffeeScript: " + result.Error.Message;
+                result.Error.Message = ServiceName + ": " + result.Error.Message;
 
                 CreateTask(result.Error);
 
-                base.OnCompilationDone("ERROR:" + result.Error.Message, coffeeFilePath);
+                base.OnCompilationDone("ERROR:" + result.Error.Message, sourceFilePath);
             }
         }
 
@@ -74,6 +86,24 @@ namespace MadsKristensen.EditorExtensions
         protected override bool CanWriteToDisk(string source)
         {
             return !string.IsNullOrWhiteSpace(source);
+        }
+
+        protected override string UpdateLessSourceMapUrls(string content, string sourceFileName, string compiledFileName)
+        {
+            if (!WESettings.GetBoolean(WESettings.Keys.LessSourceMaps) || !File.Exists(compiledFileName))
+                return content;
+
+            string sourceMapFilename = compiledFileName + ".map";
+
+            if (!File.Exists(sourceMapFilename))
+                return content;
+
+
+            string sourceMapRelativePath = FileHelpers.RelativePath(compiledFileName, sourceMapFilename);
+
+            // Fix sourceMappingURL comment in JS file with network accessible path.
+            return _sourceMapInJs.Replace(content,
+                string.Format(CultureInfo.CurrentCulture, @"/*{1}//@ sourceMappingURL={0}{1}*/", sourceMapRelativePath, Environment.NewLine));
         }
     }
 }
