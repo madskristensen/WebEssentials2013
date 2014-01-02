@@ -17,7 +17,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
         [HostType("VS IDE")]
         public void Init()
         {
-            item = VSTest.GetTestSolution().FindProjectItem("CollectionModel.cs");
+            item = VSHost.TestSolution.FindProjectItem("CollectionModel.cs");
             theObject = IntellisenseParser.ProcessFile(item).First();
         }
 

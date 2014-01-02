@@ -33,7 +33,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration.TestHelper
             Execute.Assertion
                 .ForCondition(property != null)
                 .BecauseOf(reason, reasonArgs)
-                .FailWith("the IntellisenseObject has no property {0} {reason}", propertyName);
+                .FailWith("Expected IntellisenseObject to have property {0}{reason}", propertyName);
 
             return new AndConstraint<IntellisensePropertyAssertions>(new IntellisensePropertyAssertions(property));
         }
@@ -48,7 +48,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration.TestHelper
         {
             Execute.Assertion.ForCondition(Subject.Name == expected)
                 .BecauseOf(reason, reasonArgs)
-                .FailWith("The name of the IntellisenseObject should be {0} but is {1} {reason}", expected, Subject.Name);
+                .FailWith("Expected IntellisenseObject to be named {0} but found {1}{reason}", expected, Subject.Name);
 
             return new AndConstraint<IntellisenseObjectsAssertions>(this);
         }

@@ -87,28 +87,28 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Tests\BootStrap\BootStrapValidationTests.cs" />
+    <Compile Include="Tests\Bootstrap\BootstrapValidationTests.cs" />
     <Compile Include="Tests\CoffeeScript\IcedCoffeeScriptCompilationTests.cs" />
     <Compile Include="Tests\CoffeeScript\CoffeeScriptCompilationTests.cs" />
-    <Compile Include="Tests\Extensions\Extensions.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Tests\IntellisenseGeneration\TestHelper\IntellisenseObjectsAssertionsExtensions.cs" />
     <Compile Include="Tests\IntellisenseGeneration\Parsing_CollectionModel_Tests.cs" />
     <Compile Include="Tests\IntellisenseGeneration\Parsing_SimpleClass_Tests.cs" />
     <Compile Include="Tests\IntellisenseGeneration\TestHelper\IntellisenseObjectsAssertions.cs" />
     <Compile Include="Tests\IntellisenseGeneration\TestHelper\IntellisensePropertyAssertions.cs" />
-    <Compile Include="Tests\LESS\LessCompilationTests.cs" />
-    <Compile Include="Tests\LESS\LessDocumentTests.cs">
+    <Compile Include="Tests\Less\LessCompilationTests.cs" />
+    <Compile Include="Tests\Less\LessDocumentTests.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tests\Markdown\MarkdownOutlinerTests.cs" />
     <Compile Include="Tests\Markdown\MarkdownCodeBlockTests.cs" />
     <Compile Include="Tests\Markdown\TabAwareCharacterStreamTests.cs" />
-    <Compile Include="Tests\Snapshot\MockSnapshot.cs" />
+    <Compile Include="Tests\MockSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tests\Node\NodeModuleImportedTests.cs" />
-    <Compile Include="Tests\Node\NodeModuleCompletionTests.cs" />
+    <Compile Include="Tests\NodeModules\NodeModuleImportedTests.cs" />
+    <Compile Include="Tests\NodeModules\NodeModuleCompletionTests.cs" />
     <Compile Include="Tests\Markdown\MarkdownClassifierTests.cs" />
-    <Compile Include="VSTest.cs" />
+    <Compile Include="VSHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EditorExtensions\WebEssentials2013.csproj">
