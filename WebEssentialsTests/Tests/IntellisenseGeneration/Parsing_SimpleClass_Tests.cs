@@ -1,26 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.AccessControl;
+﻿using System.Linq;
 using EnvDTE;
-using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WebEssentialsTests.Tests.IntellisenseGeneration;
+using WebEssentialsTests.Tests.IntellisenseGeneration.TestHelper;
 
 namespace WebEssentialsTests.Tests.IntellisenceGeneration
 {
-    public static class IntellisenseTestExtensions
-    {
-        public static bool HasProperty(this IntellisenseObject o, string propertyName)
-        {
-            return o.Properties.Any(p => p.Name == propertyName);
-        }
-
-        public static IntellisenseProperty GetProperty(this IntellisenseObject o, string propertyName)
-        {
-            return o.Properties.Single(p => p.Name == propertyName);
-        }
-    }
-
     [TestClass]
     public class Parsing_SimpleClass_Tests
     {
@@ -47,22 +33,23 @@ namespace WebEssentialsTests.Tests.IntellisenceGeneration
         [HostType("VS IDE")]
         public void Simple_Name_is_Simple()
         {
-            theObject.Name.Should().Equals("Simple");
+            theObject.Should().NameIs("Simple");
         }
 
         [TestMethod]
         [HostType("VS IDE")]
         public void Simple_has_properties()
         {
-            theObject.HasProperty("AString").Should().BeTrue();
-            theObject.HasProperty("ABool").Should().BeTrue();
-            theObject.HasProperty("AnInt").Should().BeTrue();
+            theObject.Should().HasProperty("AString");
+            theObject.Should().HasProperty("ABool");
+            theObject.Should().HasProperty("AnInt");
         }
 
         [TestMethod()]
         [HostType("VS IDE")]
         [Ignore]
-        public void Run_this_if_you_want_to_configure_your_hive_like_enabling_or_disabling_some_addins_in_special_webEssentials()
+        public void
+            Run_this_if_you_want_to_configure_your_hive_like_enabling_or_disabling_some_addins_in_special_webEssentials()
         {
             System.Threading.Thread.Sleep(1000*60*20);
         }

@@ -59,6 +59,7 @@
     <Reference Include="Microsoft.VisualStudio.Text.Data, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Text.Logic, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Text.UI, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Web.Extensions">
       <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Languages\Microsoft.VisualStudio.Web.Extensions.dll</HintPath>
     </Reference>
@@ -90,7 +91,11 @@
     <Compile Include="Tests\CoffeeScript\IcedCoffeeScriptCompilationTests.cs" />
     <Compile Include="Tests\CoffeeScript\CoffeeScriptCompilationTests.cs" />
     <Compile Include="Tests\Extensions\Extensions.cs" />
-    <Compile Include="Tests\IntellisenceGeneration\Parsing_SimpleClass_Tests.cs" />
+    <Compile Include="Tests\IntellisenseGeneration\TestHelper\IntellisenseObjectsAssertionsExtensions.cs" />
+    <Compile Include="Tests\IntellisenseGeneration\Parsing_CollectionModel_Tests.cs" />
+    <Compile Include="Tests\IntellisenseGeneration\Parsing_SimpleClass_Tests.cs" />
+    <Compile Include="Tests\IntellisenseGeneration\TestHelper\IntellisenseObjectsAssertions.cs" />
+    <Compile Include="Tests\IntellisenseGeneration\TestHelper\IntellisensePropertyAssertions.cs" />
     <Compile Include="Tests\LESS\LessCompilationTests.cs" />
     <Compile Include="Tests\LESS\LessDocumentTests.cs">
       <SubType>Code</SubType>

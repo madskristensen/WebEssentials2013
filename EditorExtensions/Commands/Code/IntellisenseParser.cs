@@ -1,17 +1,90 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Threading;
 using System.Xml.Linq;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
-    public static class IntellisenseParser
+    [Export(typeof(IWpfTextViewCreationListener))]
+    [ContentType("CSharp")]
+    [ContentType("VisualBasic")]
+    [TextViewRole(PredefinedTextViewRoles.Document)]
+    public class IntellisenseParser : IWpfTextViewCreationListener
     {
-        private const string DefaultModuleName = "server";
-        private const string ModuleNameAttributeName = "TypeScriptModule";
+        public const string DefaultModuleName = "server";
+        public const string ModuleNameAttributeName = "TypeScriptModule";
+
+        internal static class Ext
+        {
+            public const string JavaScript = ".js";
+            public const string TypeScript = ".d.ts";
+        }
+
+        [Import]
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+
+        private ITextDocument _document;
+
+        public void TextViewCreated(IWpfTextView textView)
+        {
+            if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out _document))
+            {
+                _document.FileActionOccurred += document_FileActionOccurred;
+            }
+        }
+
+        private void document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
+        {
+            ITextDocument document = (ITextDocument)sender;
+
+            if (document.TextBuffer == null || e.FileActionType != FileActionTypes.ContentSavedToDisk)
+                return;
+
+            Process(e.FilePath);
+        }
+
+        public static Task<bool> Process(string filePath)
+        {
+            if (!File.Exists(filePath + Ext.JavaScript) && !File.Exists(filePath + Ext.TypeScript))
+                return Task.FromResult(false);
+
+            return Dispatcher.CurrentDispatcher.InvokeAsync(new Func<bool>(() =>
+            {
+                var item = ProjectHelpers.GetProjectItem(filePath);
+
+                if (item == null)
+                    return false;
+
+                List<IntellisenseObject> list = null;
+
+                try
+                {
+                    list = ProcessFile(item);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log("An error occurred while processing code in " + filePath + "\n" + ex
+                             + "\n\nPlease report this bug at https://github.com/madskristensen/WebEssentials2013/issues, and include the source of the file.");
+                }
+
+                if (list == null)
+                    return false;
+
+                AddScript(filePath, Ext.JavaScript, list);
+                AddScript(filePath, Ext.TypeScript, list);
+
+                return true;
+            }), DispatcherPriority.ApplicationIdle).Task;
+        }
 
         private static void AddScript(string filePath, string extension, List<IntellisenseObject> list)
         {
@@ -32,18 +105,18 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public static List<IntellisenseObject> ProcessFile(ProjectItem item)
+        internal static List<IntellisenseObject> ProcessFile(ProjectItem item)
         {
             if (item.FileCodeModel == null)
                 return null;
 
-            var list = new List<IntellisenseObject>();
+            List<IntellisenseObject> list = new List<IntellisenseObject>();
 
             foreach (CodeElement element in item.FileCodeModel.CodeElements)
             {
                 if (element.Kind == vsCMElement.vsCMElementNamespace)
                 {
-                    var cn = (CodeNamespace)element;
+                    CodeNamespace cn = (CodeNamespace)element;
                     foreach (CodeElement member in cn.Members)
                     {
                         if (ShouldProcess(member))
@@ -76,13 +149,13 @@ namespace MadsKristensen.EditorExtensions
         private static bool ShouldProcess(CodeElement member)
         {
             return
-                member.Kind == vsCMElement.vsCMElementClass
-                || member.Kind == vsCMElement.vsCMElementEnum;
+                    member.Kind == vsCMElement.vsCMElementClass
+                    || member.Kind == vsCMElement.vsCMElementEnum;
         }
 
         private static void ProcessEnum(CodeEnum element, List<IntellisenseObject> list)
         {
-            var data = new IntellisenseObject
+            IntellisenseObject data = new IntellisenseObject
             {
                 Name = element.Name,
                 IsEnum = element.Kind == vsCMElement.vsCMElementEnum,
@@ -93,7 +166,7 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (var codeEnum in element.Members.OfType<CodeElement>())
             {
-                var prop = new IntellisenseProperty
+                var prop = new IntellisenseProperty()
                 {
                     Name = codeEnum.Name,
                 };
@@ -123,83 +196,117 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static IEnumerable<IntellisenseProperty> GetProperties(CodeElements props,
-            HashSet<string> traversedTypes)
+        private static IEnumerable<IntellisenseProperty> GetProperties(CodeElements props, HashSet<string> traversedTypes)
         {
             return from p in props.OfType<CodeProperty>()
-                where p.Attributes.Cast<CodeAttribute>().All(a => a.Name != "IgnoreDataMember")
-                where p.Getter != null && !p.Getter.IsShared && p.Getter.Access == vsCMAccess.vsCMAccessPublic
-                select new IntellisenseProperty
-                {
-                    Name = GetName(p),
-                    Type = GetType(p.Type, traversedTypes),
-                    Summary = GetSummary(p)
-                };
+                   where !p.Attributes.Cast<CodeAttribute>().Any(a => a.Name == "IgnoreDataMember")
+                   where p.Getter != null && !p.Getter.IsShared && p.Getter.Access == vsCMAccess.vsCMAccessPublic
+                   select new IntellisenseProperty()
+                   {
+                       Name = GetName(p),
+                       Type = GetType(p.Parent, p.Type, traversedTypes),
+                       Summary = GetSummary(p)
+                   };
         }
 
-        private static string GetNamespace(CodeClass e)
-        {
-            return GetNamespace(e.Attributes);
-        }
-
-        private static string GetNamespace(CodeEnum e)
-        {
-            return GetNamespace(e.Attributes);
-        }
+        private static string GetNamespace(CodeClass e) { return GetNamespace(e.Attributes); }
+        private static string GetNamespace(CodeEnum e) { return GetNamespace(e.Attributes); }
 
         private static string GetNamespace(CodeElements attrs)
         {
             if (attrs == null) return DefaultModuleName;
             var namespaceFromAttr = from a in attrs.Cast<CodeAttribute2>()
-                where a.Name.EndsWith(ModuleNameAttributeName, StringComparison.OrdinalIgnoreCase)
-                from arg in a.Arguments.Cast<CodeAttributeArgument>()
-                let v = (arg.Value ?? "").Trim('\"')
-                where !String.IsNullOrWhiteSpace(v)
-                select v;
+                                    where a.Name.EndsWith(ModuleNameAttributeName, StringComparison.OrdinalIgnoreCase)
+                                    from arg in a.Arguments.Cast<CodeAttributeArgument>()
+                                    let v = (arg.Value ?? "").Trim('\"')
+                                    where !string.IsNullOrWhiteSpace(v)
+                                    select v;
 
             return namespaceFromAttr.FirstOrDefault() ?? DefaultModuleName;
         }
 
-        private static IntellisenseType GetType(CodeTypeRef codeTypeRef, HashSet<string> traversedTypes)
+        private static IntellisenseType GetType(CodeClass rootElement, CodeTypeRef codeTypeRef, HashSet<string> traversedTypes)
         {
-            // TODO: Is there a way to extract the CodeTypeRef for a generic parameter?
             var isArray = codeTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefArray;
-            if (isArray && codeTypeRef.ElementType != null) codeTypeRef = codeTypeRef.ElementType;
-            bool isCollection = codeTypeRef.AsString.StartsWith("System.Collections", StringComparison.Ordinal);
+            var isCollection = codeTypeRef.AsString.StartsWith("System.Collections", StringComparison.Ordinal);
 
-            var cl = codeTypeRef.CodeType as CodeClass;
-            var en = codeTypeRef.CodeType as CodeEnum;
-            var isPrimitive = IsPrimitive(codeTypeRef);
+            var effectiveTypeRef = codeTypeRef;
+            if (isArray && codeTypeRef.ElementType != null) effectiveTypeRef = effectiveTypeRef.ElementType;
+            else if (isCollection) effectiveTypeRef = TryToGuessGenericArgument(rootElement, effectiveTypeRef);
+
+            var codeClass = effectiveTypeRef.CodeType as CodeClass2;
+            var codeEnum = effectiveTypeRef.CodeType as CodeEnum;
+            var isPrimitive = IsPrimitive(effectiveTypeRef);
+
             var result = new IntellisenseType
             {
                 IsArray = isArray || isCollection,
-                CodeName = codeTypeRef.AsString,
+                CodeName = effectiveTypeRef.AsString,
                 ClientSideReferenceName =
-                    codeTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType &&
-                    codeTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject
-                        ? (cl != null && HasIntellisense(cl.ProjectItem, Ext.TypeScript)
-                            ? (GetNamespace(cl) + "." + cl.Name)
-                            : null) ??
-                          (en != null && HasIntellisense(en.ProjectItem, Ext.TypeScript)
-                              ? (GetNamespace(en) + "." + en.Name)
-                              : null)
-                        : null
+                    effectiveTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType &&
+                    effectiveTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject
+                    ?
+                        (codeClass != null && HasIntellisense(codeClass.ProjectItem, Ext.TypeScript) ? (GetNamespace(codeClass) + "." + codeClass.Name) : null) ??
+                        (codeEnum != null && HasIntellisense(codeEnum.ProjectItem, Ext.TypeScript) ? (GetNamespace(codeEnum) + "." + codeEnum.Name) : null)
+                    : null
             };
 
-            if (!isPrimitive && cl != null && !traversedTypes.Contains(codeTypeRef.CodeType.FullName) && !isCollection)
+            if (!isPrimitive && codeClass != null && !traversedTypes.Contains(effectiveTypeRef.CodeType.FullName) && !isCollection)
             {
-                traversedTypes.Add(codeTypeRef.CodeType.FullName);
-                result.Shape = GetProperties(codeTypeRef.CodeType.Members, traversedTypes).ToList();
-                traversedTypes.Remove(codeTypeRef.CodeType.FullName);
+                traversedTypes.Add(effectiveTypeRef.CodeType.FullName);
+                result.Shape = GetProperties(effectiveTypeRef.CodeType.Members, traversedTypes).ToList();
+                traversedTypes.Remove(effectiveTypeRef.CodeType.FullName);
             }
 
             return result;
         }
 
+        private static CodeTypeRef TryToGuessGenericArgument(CodeClass rootElement, CodeTypeRef codeTypeRef)
+        {
+            var codeTypeRef2 = codeTypeRef as CodeTypeRef2;
+            if (codeTypeRef2 == null || !codeTypeRef2.IsGeneric) return codeTypeRef;
+
+            // There is no way to extract generic parameter as CodeTypeRef or something similar
+            // (see http://social.msdn.microsoft.com/Forums/vstudio/en-US/09504bdc-2b81-405a-a2f7-158fb721ee90/envdte-envdte80-codetyperef2-and-generic-types?forum=vsx)
+            // but we can make it work at least for some simple case with the following heuristic:
+            //  1) get the argument's local name by parsing the type reference's full text
+            //  2) if it's a known primitive (i.e. string, int, etc.), return that
+            //  3) otherwise, guess that it's a type from the same namespace and same project,
+            //     and use the project CodeModel to retrieve it by full name
+            //  4) if CodeModel returns null - well, bad luck, don't have any more guesses
+            var typeNameAsInCode = codeTypeRef2.AsString.Split('<', '>').ElementAtOrDefault(1) ?? "";
+            var projCodeModel = rootElement.ProjectItem.ContainingProject.CodeModel;
+            var codeType = projCodeModel.CodeTypeFromFullName(TryToGuessFullName(typeNameAsInCode));
+
+            if (codeType != null) return projCodeModel.CreateCodeTypeRef(codeType);
+            return codeTypeRef;
+        }
+
+        private static readonly Dictionary<string, Type> _knownPrimitiveTypes = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase) {
+            { "string", typeof( string ) },
+            { "int", typeof( int ) },
+            { "long", typeof( long ) },
+            { "short", typeof( short ) },
+            { "byte", typeof( byte ) },
+            { "uint", typeof( uint ) },
+            { "ulong", typeof( ulong ) },
+            { "ushort", typeof( ushort ) },
+            { "sbyte", typeof( sbyte ) },
+            { "float", typeof( float ) },
+            { "double", typeof( double ) },
+            { "decimal", typeof( decimal ) },
+        };
+
+        private static string TryToGuessFullName(string typeName)
+        {
+            Type primitiveType;
+            if (_knownPrimitiveTypes.TryGetValue(typeName, out primitiveType)) return primitiveType.FullName;
+            else return typeName;
+        }
+
         private static bool IsPrimitive(CodeTypeRef codeTypeRef)
         {
-            if (codeTypeRef.TypeKind != vsCMTypeRef.vsCMTypeRefOther &&
-                codeTypeRef.TypeKind != vsCMTypeRef.vsCMTypeRefCodeType)
+            if (codeTypeRef.TypeKind != vsCMTypeRef.vsCMTypeRefOther && codeTypeRef.TypeKind != vsCMTypeRef.vsCMTypeRefCodeType)
                 return true;
 
             if (codeTypeRef.AsString.EndsWith("DateTime", StringComparison.Ordinal))
@@ -220,10 +327,9 @@ namespace MadsKristensen.EditorExtensions
         // Maps attribute name to array of attribute properties to get resultant name from
         private static readonly IReadOnlyDictionary<string, string[]> nameAttributes = new Dictionary<string, string[]>
         {
-            {"DataMember", new[] {"Name"}},
-            {"JsonProperty", new[] {"", "PropertyName"}}
+            { "DataMember", new [] { "Name" } },
+            { "JsonProperty", new [] { "", "PropertyName" } }
         };
-
         private static string GetName(CodeProperty property)
         {
             foreach (CodeAttribute attr in property.Attributes)
@@ -235,8 +341,7 @@ namespace MadsKristensen.EditorExtensions
                 if (!nameAttributes.TryGetValue(className, out argumentNames))
                     continue;
 
-                var value =
-                    attr.Children.OfType<CodeAttributeArgument>().FirstOrDefault(a => argumentNames.Contains(a.Name));
+                var value = attr.Children.OfType<CodeAttributeArgument>().FirstOrDefault(a => argumentNames.Contains(a.Name));
 
                 if (value == null)
                     break;
@@ -249,35 +354,24 @@ namespace MadsKristensen.EditorExtensions
         }
 
         // External items throw an exception from the DocComment getter
-        private static string GetSummary(CodeProperty property)
-        {
-            return property.InfoLocation != vsCMInfoLocation.vsCMInfoLocationProject
-                ? null
-                : GetSummary(property.InfoLocation, property.DocComment, property.FullName);
-        }
+        private static string GetSummary(CodeProperty property) { return property.InfoLocation != vsCMInfoLocation.vsCMInfoLocationProject ? null : GetSummary(property.InfoLocation, property.DocComment, property.FullName); }
 
-        private static string GetSummary(CodeClass property)
-        {
-            return GetSummary(property.InfoLocation, property.DocComment, property.FullName);
-        }
+        private static string GetSummary(CodeClass property) { return GetSummary(property.InfoLocation, property.DocComment, property.FullName); }
 
-        private static string GetSummary(CodeEnum property)
-        {
-            return GetSummary(property.InfoLocation, property.DocComment, property.FullName);
-        }
+        private static string GetSummary(CodeEnum property) { return GetSummary(property.InfoLocation, property.DocComment, property.FullName); }
 
         private static string GetSummary(vsCMInfoLocation location, string comment, string fullName)
         {
-            if (location != vsCMInfoLocation.vsCMInfoLocationProject || String.IsNullOrWhiteSpace(comment))
+            if (location != vsCMInfoLocation.vsCMInfoLocationProject || string.IsNullOrWhiteSpace(comment))
                 return null;
 
             try
             {
                 string summary = XElement.Parse(comment)
-                    .Descendants("summary")
-                    .Select(x => x.Value)
-                    .FirstOrDefault();
-                if (!String.IsNullOrEmpty(summary)) summary = summary.Trim();
+                               .Descendants("summary")
+                               .Select(x => x.Value)
+                               .FirstOrDefault();
+                if (!string.IsNullOrEmpty(summary)) summary = summary.Trim();
 
                 return summary;
             }
@@ -286,12 +380,6 @@ namespace MadsKristensen.EditorExtensions
                 Logger.Log("Couldn't parse XML Doc Comment for " + fullName + ":\n" + ex);
                 return null;
             }
-        }
-
-        internal static class Ext
-        {
-            public const string JavaScript = ".js";
-            public const string TypeScript = ".d.ts";
         }
     }
 }

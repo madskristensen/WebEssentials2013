@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Generation\CollectionModel.cs" />
     <Compile Include="Generation\Simple.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

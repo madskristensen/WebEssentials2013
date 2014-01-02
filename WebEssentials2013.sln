@@ -30,6 +30,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{6A26D6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib", "TestProjects\Lib\Lib.csproj", "{9B43DABC-6854-427D-A995-4B2A90A31442}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegerationTestProjects", "IntegerationTestProjects", "{9D3D4232-3784-491C-9C87-A3E99755DE4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,5 +53,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9B43DABC-6854-427D-A995-4B2A90A31442} = {9D3D4232-3784-491C-9C87-A3E99755DE4E}
 	EndGlobalSection
 EndGlobal
