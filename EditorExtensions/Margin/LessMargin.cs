@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Web.Helpers;
 using EnvDTE;
 using Microsoft.VisualStudio.Text;
 
@@ -13,7 +8,6 @@ namespace MadsKristensen.EditorExtensions
     public class LessMargin : MarginBase
     {
         public const string MarginName = "LessMargin";
-        private static readonly Regex _sourceMapInCss = new Regex(@"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", RegexOptions.Multiline);
 
         public LessMargin(string contentType, string source, bool showMargin, ITextDocument document)
             : base(source, MarginName, contentType, showMargin, document)
@@ -84,48 +78,6 @@ namespace MadsKristensen.EditorExtensions
             //StyleSheet stylesheet = parser.Parse(source, false);
 
             return true;// !string.IsNullOrWhiteSpace(stylesheet.Text);
-        }
-
-        protected override string UpdateLessSourceMapUrls(string content, string sourceFileName, string compiledFileName)
-        {
-            if (!WESettings.GetBoolean(WESettings.Keys.LessSourceMaps) || !File.Exists(compiledFileName))
-                return content;
-
-            string sourceMapFilename = compiledFileName + ".map";
-
-            if (!File.Exists(sourceMapFilename))
-                return content;
-
-            var updatedFileContent = GetUpdatedSourceMapFileContent(compiledFileName, sourceMapFilename);
-
-            if (updatedFileContent == null)
-                return content;
-
-            WriteFile(updatedFileContent, sourceMapFilename, true, false);
-            AddFileToProject(compiledFileName, sourceMapFilename);
-
-            return UpdateSourceLinkInCssComment(content, FileHelpers.RelativePath(compiledFileName, sourceMapFilename));
-        }
-
-        private static string GetUpdatedSourceMapFileContent(string cssFileName, string sourceMapFilename)
-        {
-            // Read JSON map file and deserialize.
-            dynamic jsonSourceMap = Json.Decode(File.ReadAllText(sourceMapFilename));
-
-            if (jsonSourceMap == null)
-                return null;
-
-            jsonSourceMap.sources = ((IEnumerable<dynamic>)jsonSourceMap.sources).Select(s => FileHelpers.RelativePath(cssFileName, s));
-            jsonSourceMap.names = new List<dynamic>(jsonSourceMap.names);
-            jsonSourceMap.file = Path.GetFileName(cssFileName);
-
-            return Json.Encode(jsonSourceMap);
-        }
-
-        private static string UpdateSourceLinkInCssComment(string content, string sourceMapRelativePath)
-        {   // Fix sourceMappingURL comment in CSS file with network accessible path.
-            return _sourceMapInCss.Replace(content,
-                string.Format(CultureInfo.CurrentCulture, "/*# sourceMappingURL={0} */", sourceMapRelativePath));
         }
     }
 }

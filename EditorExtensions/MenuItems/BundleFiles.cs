@@ -354,7 +354,8 @@ namespace MadsKristensen.EditorExtensions
                     writer.Write(sb.ToString());
                     Logger.Log("Web Essentials: Updating bundle: " + Path.GetFileName(bundlePath));
                 }
-                MarginBase.AddFileToProject(filePath, bundlePath);
+
+                FileHelpers.AddFileToProject(filePath, bundlePath);
             }
 
             if (bundleNode.Attributes["minify"] != null || bundleNode.Attributes["minify"].InnerText == "true")
@@ -370,14 +371,14 @@ namespace MadsKristensen.EditorExtensions
             if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase))
             {
                 JavaScriptSaveListener.Minify(bundlePath, minPath, true);
-                MarginBase.AddFileToProject(filePath, minPath);
+                FileHelpers.AddFileToProject(filePath, minPath);
 
                 if (WESettings.GetBoolean(WESettings.Keys.GenerateJavaScriptSourceMaps))
                 {
-                    MarginBase.AddFileToProject(filePath, minPath + ".map");
+                    FileHelpers.AddFileToProject(filePath, minPath + ".map");
                 }
 
-                MarginBase.AddFileToProject(filePath, minPath + ".gzip");
+                FileHelpers.AddFileToProject(filePath, minPath + ".gzip");
             }
             else if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase))
             {
@@ -393,7 +394,7 @@ namespace MadsKristensen.EditorExtensions
                     writer.Write(minContent);
                 }
 
-                MarginBase.AddFileToProject(filePath, minPath);
+                FileHelpers.AddFileToProject(filePath, minPath);
 
                 if (WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping))
                     CssSaveListener.GzipFile(filePath, minPath, minContent);
@@ -412,7 +413,7 @@ namespace MadsKristensen.EditorExtensions
                     writer.Write(minContent);
                 }
 
-                MarginBase.AddFileToProject(filePath, minPath);
+                FileHelpers.AddFileToProject(filePath, minPath);
             }
         }
     }

@@ -41,6 +41,9 @@
       <Word>BlockParser</Word>
       <Word>Vtt</Word>
       <Word>github</Word>
+      <Word>mkd</Word>
+      <Word>mkdn</Word>
+      <Word>mdwn</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>

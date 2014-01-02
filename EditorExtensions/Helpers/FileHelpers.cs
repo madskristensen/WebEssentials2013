@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -306,9 +307,55 @@ namespace MadsKristensen.EditorExtensions
                     }
 
                     if (!fileExist)
-                        MarginBase.AddFileToProject(sourceFileName, minFile);
+                        AddFileToProject(sourceFileName, minFile);
                 }
             }
+        }
+
+        internal static bool WriteFile(string content, string fileName)
+        {
+            bool fileWritten = false;
+
+            try
+            {
+                if (File.Exists(fileName))
+                {
+                    using (StreamWriter writer = new StreamWriter(fileName, false, new UTF8Encoding(true)))
+                    {
+                        writer.Write(content);
+                        fileWritten = true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.ShowMessage("Could not write to " + Path.GetFileName(fileName) +
+                                    Environment.NewLine + ex.Message);
+            }
+
+            return fileWritten;
+        }
+
+        public static ProjectItem AddFileToProject(string parentFileName, string fileName)
+        {
+            if (!File.Exists(fileName))
+                return null;
+
+            var item = ProjectHelpers.GetProjectItem(parentFileName);
+
+            if (item != null && item.ContainingProject != null && !string.IsNullOrEmpty(item.ContainingProject.FullName))
+            {
+                if (item.ContainingProject.GetType().Name != "OAProject" && item.ProjectItems != null && Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
+                {   // WAP
+                    return item.ProjectItems.AddFromFile(fileName);
+                }
+                else
+                {   // Website
+                    return item.ContainingProject.ProjectItems.AddFromFile(fileName);
+                }
+            }
+
+            return null;
         }
     }
 }

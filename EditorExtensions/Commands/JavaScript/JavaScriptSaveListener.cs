@@ -98,7 +98,7 @@ namespace MadsKristensen.EditorExtensions
 
                 if (!isBundle)
                 {
-                    MarginBase.AddFileToProject(file, mapPath);
+                    FileHelpers.AddFileToProject(file, mapPath);
                 }
             }
         }

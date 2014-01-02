@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -237,14 +236,12 @@ namespace MadsKristensen.EditorExtensions
             {
                 case ".less":
                     fileName = GetCompiledFileName(currentFileName, ".css", CompileToLocation);
-                    content = UpdateLessSourceMapUrls(content, currentFileName, fileName);
                     break;
 
                 case ".coffee":
                 case ".iced":
                 case ".ts":
                     fileName = GetCompiledFileName(currentFileName, ".js", CompileToLocation);
-                    content = UpdateLessSourceMapUrls(content, currentFileName, fileName);
                     break;
 
                 case ".md":
@@ -259,18 +256,13 @@ namespace MadsKristensen.EditorExtensions
             ProjectHelpers.CheckOutFileFromSourceControl(fileName);
 
             bool fileExist = File.Exists(fileName);
-            bool fileWritten = WriteFile(content, fileName, fileExist, false);
+            bool fileWritten = CanWriteToDisk(content) && FileHelpers.WriteFile(content, fileName);
 
             if (!fileExist && fileWritten)
             {
-                AddFileToProject(currentFileName, fileName);
+                FileHelpers.AddFileToProject(currentFileName, fileName);
             }
 
-            return content;
-        }
-
-        protected virtual string UpdateLessSourceMapUrls(string content, string sourceFileName, string compiledFileName)
-        {   // If not overridden by derived, return content as is.
             return content;
         }
 
@@ -312,59 +304,6 @@ namespace MadsKristensen.EditorExtensions
             }
 
             return Path.Combine(sourceDir, compiledFileName);
-        }
-
-        public static ProjectItem AddFileToProject(string parentFileName, string fileName)
-        {
-            if (!File.Exists(fileName))
-                return null;
-
-            var item = ProjectHelpers.GetProjectItem(parentFileName);
-
-            if (item != null && item.ContainingProject != null && !string.IsNullOrEmpty(item.ContainingProject.FullName))
-            {
-                if (item.ContainingProject.GetType().Name != "OAProject" && item.ProjectItems != null && Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
-                {   // WAP
-                    return item.ProjectItems.AddFromFile(fileName);
-                }
-                else
-                {   // Website
-                    return item.ContainingProject.ProjectItems.AddFromFile(fileName);
-                }
-            }
-
-            return null;
-        }
-
-        protected bool WriteFile(string content, string fileName, bool fileExist, bool fileWritten)
-        {
-            try
-            {
-                if (fileExist || (!fileExist && CanWriteToDisk(content)))
-                {
-                    using (StreamWriter writer = new StreamWriter(fileName, false, new UTF8Encoding(true)))
-                    {
-                        writer.Write(content);
-                        fileWritten = true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                var error = new CompilerError
-                {
-                    FileName = Document.FilePath,
-                    Column = 0,
-                    Line = 0,
-                    Message = "Could not write to " + Path.GetFileName(fileName)
-                };
-
-                CreateTask(error);
-
-                Logger.Log(ex);
-            }
-
-            return fileWritten;
         }
 
         protected void CreateTask(CompilerError error)

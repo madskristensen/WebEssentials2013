@@ -95,7 +95,7 @@ namespace MadsKristensen.EditorExtensions
 
             IntellisenseWriter.Write(list, resultPath);
 
-            var item = MarginBase.AddFileToProject(filePath, resultPath);
+            var item = FileHelpers.AddFileToProject(filePath, resultPath);
 
             if (extension.Equals(Ext.TypeScript, StringComparison.OrdinalIgnoreCase))
                 item.Properties.Item("ItemType").Value = "TypeScriptCompile";
