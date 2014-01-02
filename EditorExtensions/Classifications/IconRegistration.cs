@@ -27,6 +27,9 @@ namespace MadsKristensen.EditorExtensions
 
                     // Fonts
                     WriteKey(classes, "Font.ico", ".wof", ".woff", ".eot");
+
+                    // Git
+                    WriteKey(classes, "Git.ico", ".gitignore", ".gitattributes");
                 }
             }
         }
