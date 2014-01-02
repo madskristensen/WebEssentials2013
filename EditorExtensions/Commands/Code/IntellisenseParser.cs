@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions
     {
         private const string DefaultModuleName = "server";
         private const string ModuleNameAttributeName = "TypeScriptModule";
-        
+
         private static void AddScript(string filePath, string extension, List<IntellisenseObject> list)
         {
             string resultPath = filePath + extension;
@@ -43,7 +43,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (element.Kind == vsCMElement.vsCMElementNamespace)
                 {
-                    var cn = (CodeNamespace) element;
+                    var cn = (CodeNamespace)element;
                     foreach (CodeElement member in cn.Members)
                     {
                         if (ShouldProcess(member))
@@ -65,11 +65,11 @@ namespace MadsKristensen.EditorExtensions
         {
             if (element.Kind == vsCMElement.vsCMElementEnum)
             {
-                ProcessEnum((CodeEnum) element, list);
+                ProcessEnum((CodeEnum)element, list);
             }
             else if (element.Kind == vsCMElement.vsCMElementClass)
             {
-                ProcessClass((CodeClass) element, list);
+                ProcessClass((CodeClass)element, list);
             }
         }
 
