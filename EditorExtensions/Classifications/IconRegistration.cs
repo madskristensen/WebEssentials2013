@@ -21,6 +21,9 @@ namespace MadsKristensen.EditorExtensions
 
                     // WebVTT
                     WriteKey(classes, "WebVTT.ico", ".vtt");
+
+                    // Bundles
+                    WriteKey(classes, "Bundle.ico", ".bundle");
                 }
             }
         }

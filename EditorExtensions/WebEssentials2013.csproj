@@ -724,6 +724,9 @@
     <Compile Include="Validation\HTML\ItemTypeValidator.cs" />
     <Compile Include="Validation\LESS\Providers\ImportOnceErrorTagProvider.cs" />
     <None Include="PreBuildTask.cs" />
+    <Content Include="Resources\Icons\Bundle.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\Icons\WebVTT.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
