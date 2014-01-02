@@ -14,28 +14,26 @@ namespace MadsKristensen.EditorExtensions
                 if (classes != null)
                 {
                     // IcedCoffeeScript
-                    WriteKey(classes, ".iced", "CoffeeScript.ico");
+                    WriteKey(classes, "CoffeeScript.ico", ".iced");
 
                     // Markdown
-                    WriteKey(classes, ".md", "Markdown.ico");
-                    WriteKey(classes, ".mdown", "Markdown.ico");
-                    WriteKey(classes, ".markdown", "Markdown.ico");
-                    WriteKey(classes, ".mkd", "Markdown.ico");
-                    WriteKey(classes, ".mkdn", "Markdown.ico");
-                    WriteKey(classes, ".mdwn", "Markdown.ico");
+                    WriteKey(classes, "Markdown.ico", ".md", ".mdown", ".markdown", ".mkd", ".mkdn", ".mdwn");
 
                     // WebVTT
-                    WriteKey(classes, ".vtt", "WebVTT.ico");
+                    WriteKey(classes, "WebVTT.ico", ".vtt");
                 }
             }
         }
 
-        private static void WriteKey(RegistryKey classes, string extension, string iconName)
+        private static void WriteKey(RegistryKey classes, string iconName, params string[] extensions)
         {
-            using (RegistryKey iced = classes.CreateSubKey(extension + "\\DefaultIcon"))
+            foreach (string extension in extensions)
             {
-                iced.SetValue(string.Empty, _folder + iconName);
-            }
+                using (RegistryKey iced = classes.CreateSubKey(extension + "\\DefaultIcon"))
+                {
+                    iced.SetValue(string.Empty, _folder + iconName);
+                }
+            }            
         }
 
         private static string GetFolder()
