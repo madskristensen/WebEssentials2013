@@ -9,11 +9,20 @@
 @="{9bbfd173-9770-47dc-b191-651b7ff493cd}"
 [$RootKey$\Languages\File Extensions\.markdown]
 @="{9bbfd173-9770-47dc-b191-651b7ff493cd}"
+[$RootKey$\Languages\File Extensions\.mkd]
+@="{9bbfd173-9770-47dc-b191-651b7ff493cd}"
+[$RootKey$\Languages\File Extensions\.mkdn]
+@="{9bbfd173-9770-47dc-b191-651b7ff493cd}"
+[$RootKey$\Languages\File Extensions\.mdwn]
+@="{9bbfd173-9770-47dc-b191-651b7ff493cd}"
 
 [$RootKey$\Editors\{40d31677-cbc0-4297-a9ef-89d907823a98}\Extensions]
 "md"=dword:32
 "mdown"=dword:32
 "markdown"=dword:32
+"mkd"=dword:32
+"mkdn"=dword:32
+"mdwn"=dword:32
 
 // CSS bundles
 //[$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.css.bundle]
