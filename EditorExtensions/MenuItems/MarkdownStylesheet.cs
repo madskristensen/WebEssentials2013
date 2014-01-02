@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Design;
+using System.IO;
 using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
@@ -24,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
 
-            menuCommand.Enabled = string.IsNullOrEmpty(MarkdownMargin.GetStylesheet());
+            menuCommand.Enabled = !File.Exists(MarkdownMargin.GetCustomStylesheetFilePath());
         }
 
         private static void AddStylesheet()

@@ -73,20 +73,21 @@ namespace MadsKristensen.EditorExtensions
 
         public static string GetStylesheet()
         {
-            string folder = ProjectHelpers.GetSolutionFolderPath();
+            string file = GetCustomStylesheetFilePath();
 
-            if (!string.IsNullOrEmpty(folder))
+            if (File.Exists(file))
             {
-                string file = Path.Combine(folder, _stylesheet);
-
-                if (File.Exists(file))
-                {
-                    string linkFormat = "<link rel=\"stylesheet\" href=\"{0}\" />";
-                    return string.Format(CultureInfo.CurrentCulture, linkFormat, file);
-                }
+                string linkFormat = "<link rel=\"stylesheet\" href=\"{0}\" />";
+                return string.Format(CultureInfo.CurrentCulture, linkFormat, file);
             }
 
             return "<style>body{font: 1.1em 'Century Gothic'}</style>";
+        }
+
+        public static string GetCustomStylesheetFilePath()
+        {
+            string folder = ProjectHelpers.GetSolutionFolderPath();
+            return Path.Combine(folder, _stylesheet);
         }
 
         public static void CreateStylesheet()
