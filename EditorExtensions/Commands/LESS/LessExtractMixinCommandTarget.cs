@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions
     internal class LessExtractMixinCommandTarget : CommandTargetBase
     {
         public LessExtractMixinCommandTarget(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidExtractCmdSet, PkgCmdIDList.ExtractMixin)
+            : base(adapter, textView, CommandGuids.guidExtractCmdSet, CommandId.ExtractMixin)
         {
         }
 

@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions
         private ITextBuffer _buffer;
 
         public SurroundWith(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidFormattingCmdSet, PkgCmdIDList.SurroundWith)
+            : base(adapter, textView, CommandGuids.guidFormattingCmdSet, CommandId.SurroundWith)
         {
             _view = textView;
             _buffer = textView.TextBuffer;

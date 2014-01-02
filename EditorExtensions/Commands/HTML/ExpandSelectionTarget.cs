@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions
         private ITextBuffer _buffer;
 
         public ExpandSelection(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidFormattingCmdSet, PkgCmdIDList.ExpandSelection)
+            : base(adapter, textView, CommandGuids.guidFormattingCmdSet, CommandId.ExpandSelection)
         {
             _view = textView;
             _buffer = textView.TextBuffer;

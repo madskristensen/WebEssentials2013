@@ -15,18 +15,18 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public void SetupCommands()
         {
-            var commandId = new CommandID(GuidList.guidUnusedCssCmdSet, (int)PkgCmdIDList.UnusedCssReset);
+            var commandId = new CommandID(CommandGuids.guidUnusedCssCmdSet, (int)CommandId.UnusedCssReset);
             var resetCommand = new OleMenuCommand(ResetUsageData, EmptyChangeHandler, ResetUsageDataBeforeQueryStatus, commandId);
 
             _mcs.AddCommand(resetCommand);
 
-            commandId = new CommandID(GuidList.guidUnusedCssCmdSet, (int)PkgCmdIDList.UnusedCssRecordAll);
+            commandId = new CommandID(CommandGuids.guidUnusedCssCmdSet, (int)CommandId.UnusedCssRecordAll);
 
             var recordAllCommand = new OleMenuCommand(RecordAll, EmptyChangeHandler, RecordAllBeforeQueryStatus, commandId);
 
             _mcs.AddCommand(recordAllCommand);
 
-            commandId = new CommandID(GuidList.guidUnusedCssCmdSet, (int)PkgCmdIDList.UnusedCssStopRecordAll);
+            commandId = new CommandID(CommandGuids.guidUnusedCssCmdSet, (int)CommandId.UnusedCssStopRecordAll);
 
             var stopRecordAllCommand = new OleMenuCommand(StopRecordAll, EmptyChangeHandler, StopRecordAllBeforeQueryStatus, commandId);
 

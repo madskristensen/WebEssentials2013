@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions
         private DTE2 _dte;
 
         public CssSelectBrowsers(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidMinifyCmdSet, PkgCmdIDList.SelectBrowsers)
+            : base(adapter, textView, CommandGuids.guidMinifyCmdSet, CommandId.SelectBrowsers)
         {
             _dte = EditorExtensionsPackage.DTE;
         }

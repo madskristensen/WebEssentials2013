@@ -9,7 +9,7 @@ namespace MadsKristensen.EditorExtensions
     internal class RemoveEmptyLines : CommandTargetBase
     {
         public RemoveEmptyLines(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidEditorLinesCmdSet, PkgCmdIDList.RemoveEmptyLines)
+            : base(adapter, textView, CommandGuids.guidEditorLinesCmdSet, CommandId.RemoveEmptyLines)
         {
         }
 

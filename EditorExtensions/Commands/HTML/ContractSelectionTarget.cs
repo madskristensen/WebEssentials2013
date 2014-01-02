@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions
         private ITextBuffer _buffer;
 
         public ContractSelection(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidFormattingCmdSet, PkgCmdIDList.ContractSelection)
+            : base(adapter, textView, CommandGuids.guidFormattingCmdSet, CommandId.ContractSelection)
         {
             _view = textView;
             _buffer = textView.TextBuffer;

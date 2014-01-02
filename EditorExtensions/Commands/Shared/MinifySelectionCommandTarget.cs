@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions
         private DTE2 _dte;
 
         public MinifySelection(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidMinifyCmdSet, PkgCmdIDList.MinifySelection)
+            : base(adapter, textView, CommandGuids.guidMinifyCmdSet, CommandId.MinifySelection)
         {
             _dte = EditorExtensionsPackage.DTE;
         }

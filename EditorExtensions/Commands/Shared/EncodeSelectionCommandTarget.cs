@@ -10,38 +10,38 @@ namespace MadsKristensen.EditorExtensions
     internal class EncodeSelection : CommandTargetBase
     {
         private DTE2 _dte;
-        private static PkgCmdIDList[] _commandIds = {
-            PkgCmdIDList.HtmlEncode,
-            PkgCmdIDList.HtmlDecode,
-            PkgCmdIDList.AttrEncode,
-            PkgCmdIDList.UrlEncode,
-            PkgCmdIDList.UrlDecode,
-            PkgCmdIDList.JsEncode,
+        private static CommandId[] _commandIds = {
+            CommandId.HtmlEncode,
+            CommandId.HtmlDecode,
+            CommandId.AttrEncode,
+            CommandId.UrlEncode,
+            CommandId.UrlDecode,
+            CommandId.JsEncode,
         };
 
         private delegate string Replacement(string original);
 
         public EncodeSelection(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidEditorExtensionsCmdSet, _commandIds)
+            : base(adapter, textView, CommandGuids.guidEditorExtensionsCmdSet, _commandIds)
         {
             _dte = EditorExtensionsPackage.DTE;
         }
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            switch ((PkgCmdIDList)commandId)
+            switch ((CommandId)commandId)
             {
-                case PkgCmdIDList.HtmlEncode:
+                case CommandId.HtmlEncode:
                     return Replace(HttpUtility.HtmlEncode);
-                case PkgCmdIDList.HtmlDecode:
+                case CommandId.HtmlDecode:
                     return Replace(HttpUtility.HtmlDecode);
-                case PkgCmdIDList.AttrEncode:
+                case CommandId.AttrEncode:
                     return Replace(HttpUtility.HtmlAttributeEncode);
-                case PkgCmdIDList.UrlEncode:
+                case CommandId.UrlEncode:
                     return Replace(HttpUtility.UrlEncode);
-                case PkgCmdIDList.UrlDecode:
+                case CommandId.UrlDecode:
                     return Replace(HttpUtility.UrlDecode);
-                case PkgCmdIDList.JsEncode:
+                case CommandId.JsEncode:
                     return Replace(HttpUtility.JavaScriptStringEncode);
             }
 

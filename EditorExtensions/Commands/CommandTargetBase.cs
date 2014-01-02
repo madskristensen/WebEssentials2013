@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions
         public Guid CommandGroup { get; set; }
         public ReadOnlyCollection<uint> CommandIds { get; private set; }
 
-        public CommandTargetBase(IVsTextView adapter, IWpfTextView textView, Guid commandGroup, params PkgCmdIDList[] commandIds) : this(adapter, textView, commandGroup, Array.ConvertAll(commandIds, c => (uint)c)) { }
+        public CommandTargetBase(IVsTextView adapter, IWpfTextView textView, Guid commandGroup, params CommandId[] commandIds) : this(adapter, textView, commandGroup, Array.ConvertAll(commandIds, c => (uint)c)) { }
         public CommandTargetBase(IVsTextView adapter, IWpfTextView textView, Guid commandGroup, params uint[] commandIds)
         {
             this.CommandGroup = commandGroup;

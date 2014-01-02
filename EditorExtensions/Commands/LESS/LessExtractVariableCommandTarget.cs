@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions
     {
 
         public LessExtractVariableCommandTarget(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidExtractCmdSet, PkgCmdIDList.ExtractVariable)
+            : base(adapter, textView, CommandGuids.guidExtractCmdSet, CommandId.ExtractVariable)
         {
         }
 

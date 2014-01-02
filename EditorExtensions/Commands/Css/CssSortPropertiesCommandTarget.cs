@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions
     internal class CssSortProperties : CommandTargetBase
     {
         public CssSortProperties(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidCssCmdSet, PkgCmdIDList.SortCssProperties)
+            : base(adapter, textView, CommandGuids.guidCssCmdSet, CommandId.SortCssProperties)
         {
         }
 

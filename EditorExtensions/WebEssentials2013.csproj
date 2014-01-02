@@ -709,7 +709,6 @@
     <Compile Include="SmartTags\CSS\Providers\SelectorHackSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\Providers\ReverseEmbedSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\Providers\EmbedSmartTagProvider.cs" />
-    <Compile Include="Guids.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -717,7 +716,7 @@
     </Compile>
     <Compile Include="EditorExtensionsPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PkgCmdID.cs" />
+    <Compile Include="CommandConstants.cs" />
     <Compile Include="SmartTags\CSS\CssSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\CssSmartTag.cs" />
     <Compile Include="SmartTags\CSS\Actions\EmbedSmartTagAction.cs" />

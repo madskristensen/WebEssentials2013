@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions
     internal class SortSelectedLines : CommandTargetBase
     {
         public SortSelectedLines(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidEditorLinesCmdSet, PkgCmdIDList.SortAsc, PkgCmdIDList.SortDesc)
+            : base(adapter, textView, CommandGuids.guidEditorLinesCmdSet, CommandId.SortAsc, CommandId.SortDesc)
         {
         }
 
@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions
             if (lines.Length == 0)
                 return false;
 
-            string result = SortLines((PkgCmdIDList)commandId, lines);
+            string result = SortLines((CommandId)commandId, lines);
 
             using (EditorExtensionsPackage.UndoContext(("Sort Selected Lines")))
                 TextView.TextBuffer.Replace(span.Span, result);
@@ -30,9 +30,9 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-        private static string SortLines(PkgCmdIDList commandId, IEnumerable<string> lines)
+        private static string SortLines(CommandId commandId, IEnumerable<string> lines)
         {
-            if (commandId == PkgCmdIDList.SortAsc)
+            if (commandId == CommandId.SortAsc)
                 lines = lines.OrderBy(t => t);
             else
                 lines = lines.OrderByDescending(t => t);

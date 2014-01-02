@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions
     internal class RemoveDuplicateLines : CommandTargetBase
     {
         public RemoveDuplicateLines(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidEditorLinesCmdSet, PkgCmdIDList.RemoveDuplicateLines)
+            : base(adapter, textView, CommandGuids.guidEditorLinesCmdSet, CommandId.RemoveDuplicateLines)
         {
         }
 
