@@ -64,7 +64,7 @@ namespace MadsKristensen.EditorExtensions
         protected async Task<bool> Execute(string extension)
         {
             File.WriteAllText(_file + extension, string.Empty);
-            if (await ScriptIntellisense.Process(_file))
+            if (await ScriptIntellisenseListener.Process(_file))
                 return true;
             File.Delete(_file + extension);
             Logger.ShowMessage("An error occurred while processing " + Path.GetFileName(_file) + ".\nNo script file was generated.  For more details, see the output window.");
