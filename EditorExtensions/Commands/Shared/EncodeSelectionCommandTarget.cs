@@ -11,12 +11,12 @@ namespace MadsKristensen.EditorExtensions
     {
         private DTE2 _dte;
         private static PkgCmdIDList[] _commandIds = {
-            PkgCmdIDList.htmlEncode,
-            PkgCmdIDList.htmlDecode,
-            PkgCmdIDList.attrEncode,
-            PkgCmdIDList.urlEncode,
-            PkgCmdIDList.urlDecode,
-            PkgCmdIDList.jsEncode,
+            PkgCmdIDList.HtmlEncode,
+            PkgCmdIDList.HtmlDecode,
+            PkgCmdIDList.AttrEncode,
+            PkgCmdIDList.UrlEncode,
+            PkgCmdIDList.UrlDecode,
+            PkgCmdIDList.JsEncode,
         };
 
         private delegate string Replacement(string original);
@@ -31,17 +31,17 @@ namespace MadsKristensen.EditorExtensions
         {
             switch ((PkgCmdIDList)commandId)
             {
-                case PkgCmdIDList.htmlEncode:
+                case PkgCmdIDList.HtmlEncode:
                     return Replace(HttpUtility.HtmlEncode);
-                case PkgCmdIDList.htmlDecode:
+                case PkgCmdIDList.HtmlDecode:
                     return Replace(HttpUtility.HtmlDecode);
-                case PkgCmdIDList.attrEncode:
+                case PkgCmdIDList.AttrEncode:
                     return Replace(HttpUtility.HtmlAttributeEncode);
-                case PkgCmdIDList.urlEncode:
+                case PkgCmdIDList.UrlEncode:
                     return Replace(HttpUtility.UrlEncode);
-                case PkgCmdIDList.urlDecode:
+                case PkgCmdIDList.UrlDecode:
                     return Replace(HttpUtility.UrlDecode);
-                case PkgCmdIDList.jsEncode:
+                case PkgCmdIDList.JsEncode:
                     return Replace(HttpUtility.JavaScriptStringEncode);
             }
 

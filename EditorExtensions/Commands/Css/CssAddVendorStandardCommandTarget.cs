@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
     internal class CssAddMissingVendor : CommandTargetBase
     {
         public CssAddMissingVendor(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidCssCmdSet, PkgCmdIDList.addMissingVendor)
+            : base(adapter, textView, GuidList.guidCssCmdSet, PkgCmdIDList.AddMissingVendor)
         {
         }
 

@@ -23,11 +23,11 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            CommandID cmdBundles = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildBundles);
+            CommandID cmdBundles = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.BuildBundles);
             OleMenuCommand menuBundles = new OleMenuCommand((s, e) => UpdateBundleFiles(), cmdBundles);
             _mcs.AddCommand(menuBundles);
 
-            CommandID cmdLess = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildLess);
+            CommandID cmdLess = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.BuildLess);
             OleMenuCommand menuLess = new OleMenuCommand(async (s, e) => await BuildLess(), cmdLess);
             _mcs.AddCommand(menuLess);
 
@@ -35,15 +35,15 @@ namespace MadsKristensen.EditorExtensions
             //OleMenuCommand menuTS = new OleMenuCommand((s, e) => BuildTypeScript(), cmdTS);
             //_mcs.AddCommand(menuTS);
 
-            CommandID cmdMinify = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildMinify);
+            CommandID cmdMinify = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.BuildMinify);
             OleMenuCommand menuMinify = new OleMenuCommand((s, e) => Minify(), cmdMinify);
             _mcs.AddCommand(menuMinify);
 
-            CommandID cmdCoffee = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildCoffeeScript);
+            CommandID cmdCoffee = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.BuildCoffeeScript);
             OleMenuCommand menuCoffee = new OleMenuCommand(async (s, e) => await BuildCoffeeScript(), cmdCoffee);
             _mcs.AddCommand(menuCoffee);
 
-            CommandID cmdIcedCoffee = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildIcedCoffeeScript);
+            CommandID cmdIcedCoffee = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.BuildIcedCoffeeScript);
             OleMenuCommand menuIcedCoffee = new OleMenuCommand(async (s, e) => await BuildIcedCoffeeScript(), cmdIcedCoffee);
             _mcs.AddCommand(menuIcedCoffee);
         }

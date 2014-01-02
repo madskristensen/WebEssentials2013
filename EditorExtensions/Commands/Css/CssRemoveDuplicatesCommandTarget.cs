@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
     {
 
         public CssRemoveDuplicates(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidCssCmdSet, PkgCmdIDList.cssRemoveDuplicates)
+            : base(adapter, textView, GuidList.guidCssCmdSet, PkgCmdIDList.CssRemoveDuplicates)
         {
         }
 

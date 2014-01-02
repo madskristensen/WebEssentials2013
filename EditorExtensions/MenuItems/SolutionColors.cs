@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            CommandID commandSol = new CommandID(GuidList.guidDiffCmdSet, (int)PkgCmdIDList.cmdSolutionColors);
+            CommandID commandSol = new CommandID(GuidList.guidDiffCmdSet, (int)PkgCmdIDList.CreateSolutionColorPalete);
             OleMenuCommand menuCommandSol = new OleMenuCommand((s, e) => ApplySolutionSettings(), commandSol);
             menuCommandSol.BeforeQueryStatus += SolutionBeforeQueryStatus;
             _mcs.AddCommand(menuCommandSol);

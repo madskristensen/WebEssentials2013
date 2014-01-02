@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions
     {
 
         public CssAddMissingStandard(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidCssCmdSet, PkgCmdIDList.addMissingStandard)
+            : base(adapter, textView, GuidList.guidCssCmdSet, PkgCmdIDList.AddMissingStandard)
         {
         }
 

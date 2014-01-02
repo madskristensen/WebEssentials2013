@@ -25,14 +25,14 @@ namespace MadsKristensen.EditorExtensions
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public void SetupCommands()
         {
-            SetupCommand(PkgCmdIDList.titleCaseTransform, new Replacement(x => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(x)));
-            SetupCommand(PkgCmdIDList.reverseTransform, new Replacement(x => new string(x.Reverse().ToArray())));
-            SetupCommand(PkgCmdIDList.normalizeTransform, new Replacement(x => RemoveDiacritics(x)));
-            SetupCommand(PkgCmdIDList.md5Transform, new Replacement(x => Hash(x, new MD5CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha1Transform, new Replacement(x => Hash(x, new SHA1CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha256Transform, new Replacement(x => Hash(x, new SHA256CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha384Transform, new Replacement(x => Hash(x, new SHA384CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha512Transform, new Replacement(x => Hash(x, new SHA512CryptoServiceProvider())));
+            SetupCommand(PkgCmdIDList.TitleCaseTransform, new Replacement(x => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(x)));
+            SetupCommand(PkgCmdIDList.ReverseTransform, new Replacement(x => new string(x.Reverse().ToArray())));
+            SetupCommand(PkgCmdIDList.NormalizeTransform, new Replacement(x => RemoveDiacritics(x)));
+            SetupCommand(PkgCmdIDList.MD5Transform, new Replacement(x => Hash(x, new MD5CryptoServiceProvider())));
+            SetupCommand(PkgCmdIDList.SHA1Transform, new Replacement(x => Hash(x, new SHA1CryptoServiceProvider())));
+            SetupCommand(PkgCmdIDList.SHA256Transform, new Replacement(x => Hash(x, new SHA256CryptoServiceProvider())));
+            SetupCommand(PkgCmdIDList.SHA384Transform, new Replacement(x => Hash(x, new SHA384CryptoServiceProvider())));
+            SetupCommand(PkgCmdIDList.SHA512Transform, new Replacement(x => Hash(x, new SHA512CryptoServiceProvider())));
         }
 
         public static string RemoveDiacritics(string s)

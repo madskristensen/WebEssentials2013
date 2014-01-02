@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            CommandID commandId = new CommandID(GuidList.guidDiffCmdSet, (int)PkgCmdIDList.cmdDiff);
+            CommandID commandId = new CommandID(GuidList.guidDiffCmdSet, (int)PkgCmdIDList.RunDiff);
             OleMenuCommand menuCommand = new OleMenuCommand((s, e) => PerformDiff(), commandId);
             menuCommand.BeforeQueryStatus += BeforeQueryStatus;
             _mcs.AddCommand(menuCommand);
