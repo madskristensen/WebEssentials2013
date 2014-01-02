@@ -208,7 +208,7 @@ namespace MadsKristensen.EditorExtensions
                     if (string.IsNullOrEmpty(bundleFile))
                         return;
 
-                    if (!bundleFile.EndsWith(_ext, StringComparison.OrdinalIgnoreCase))
+                    if (!bundleFile.EndsWith(extension + _ext, StringComparison.OrdinalIgnoreCase))
                         bundleFile += extension + _ext;
 
                     string bundlePath = Path.Combine(dir, bundleFile);
@@ -219,14 +219,13 @@ namespace MadsKristensen.EditorExtensions
                     }
                     else
                     {
-                        Dispatcher.CurrentDispatcher.BeginInvoke(
-                            new Action(() => WriteFile(bundlePath, items, bundleFile.Replace(_ext, string.Empty))),
+                        Dispatcher.CurrentDispatcher.BeginInvoke(         // Remove the final ".bundle" extension.
+                            new Action(() => WriteFile(bundlePath, items, Path.ChangeExtension(bundleFile, null))),
                         DispatcherPriority.ApplicationIdle, null);
                     }
                 }
             }
         }
-
         private static void WriteFile(string filePath, IEnumerable<ProjectItem> files, string output)
         {
             string projectRoot = ProjectHelpers.GetProjectFolder(files.ElementAt(0).FileNames[1]);
@@ -366,7 +365,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static void WriteMinFile(string filePath, string bundlePath, string content, string extension)
         {
-            string minPath = bundlePath.Replace(Path.GetExtension(bundlePath), ".min" + Path.GetExtension(bundlePath));
+            string minPath = Path.ChangeExtension(bundlePath, ".min" + Path.GetExtension(bundlePath));
 
             if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase))
             {
