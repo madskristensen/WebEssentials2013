@@ -24,6 +24,9 @@ namespace MadsKristensen.EditorExtensions
 
                     // Bundles
                     WriteKey(classes, "Bundle.ico", ".bundle");
+
+                    // Fonts
+                    WriteKey(classes, "Font.ico", ".wof", ".woff", ".eot");
                 }
             }
         }

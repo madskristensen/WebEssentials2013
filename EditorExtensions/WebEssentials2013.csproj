@@ -727,6 +727,9 @@
     <Content Include="Resources\Icons\Bundle.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\Icons\Font.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\Icons\WebVTT.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
