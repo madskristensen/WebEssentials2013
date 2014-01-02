@@ -14,27 +14,27 @@ namespace MadsKristensen.EditorExtensions
                 if (classes != null)
                 {
                     // IcedCoffeeScript
-                    WriteKey(classes, "CoffeeScript.ico", ".iced");
+                    AddIcon(classes, "CoffeeScript.ico", ".iced");
 
                     // Markdown
-                    WriteKey(classes, "Markdown.ico", ".md", ".mdown", ".markdown", ".mkd", ".mkdn", ".mdwn");
+                    AddIcon(classes, "Markdown.ico", ".md", ".mdown", ".markdown", ".mkd", ".mkdn", ".mdwn");
 
                     // WebVTT
-                    WriteKey(classes, "WebVTT.ico", ".vtt");
+                    AddIcon(classes, "WebVTT.ico", ".vtt");
 
                     // Bundles
-                    WriteKey(classes, "Bundle.ico", ".bundle");
+                    AddIcon(classes, "Bundle.ico", ".bundle");
 
                     // Fonts
-                    WriteKey(classes, "Font.ico", ".wof", ".woff", ".eot");
+                    AddIcon(classes, "Font.ico", ".wof", ".woff", ".eot");
 
                     // Git
-                    WriteKey(classes, "Git.ico", ".gitignore", ".gitattributes");
+                    AddIcon(classes, "Git.ico", ".gitignore", ".gitattributes");
                 }
             }
         }
 
-        private static void WriteKey(RegistryKey classes, string iconName, params string[] extensions)
+        private static void AddIcon(RegistryKey classes, string iconName, params string[] extensions)
         {
             foreach (string extension in extensions)
             {
