@@ -15,7 +15,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration.TestHelper
 
         protected override string Context
         {
-            get { return "WebEssentials IntellisenseObject"; }
+            get { return "WebEssentials IntellisenseProperty"; }
         }
 
         public AndConstraint<IntellisensePropertyAssertions> IsArray(string reason, params object[] reasonArgs)
@@ -23,7 +23,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration.TestHelper
             Execute.Assertion
                 .ForCondition(Subject.Type.IsArray)
                 .BecauseOf(reason, reasonArgs)
-                .FailWith("{0} is not an array", Subject.Name);
+                .FailWith("Expected {0} to be an array{reason}", Subject.Name);
             return new AndConstraint<IntellisensePropertyAssertions>(this);
         }
 
@@ -33,7 +33,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration.TestHelper
             Execute.Assertion
                 .ForCondition(Subject.Type.JavaScriptName == expected)
                 .BecauseOf(reason, reasonArgs)
-                .FailWith("the JavaScriptName is {0} but should be {1}", Subject.Type.JavaScriptName, expected);
+                .FailWith("Expected {0} to have JavaScriptName {1}{reason}, but found {2}", Subject.Name, expected, Subject.Type.JavaScriptName);
             return new AndConstraint<IntellisensePropertyAssertions>(this);
         }
 
@@ -43,7 +43,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration.TestHelper
             Execute.Assertion
                 .ForCondition(Subject.Type.TypeScriptName == expected)
                 .BecauseOf(reason, reasonArgs)
-                .FailWith("the TypeScriptName is {0} but should be {1}", Subject.Type.TypeScriptName, expected);
+                .FailWith("Expected {0} to have TypeScriptName {1}{reason}, but found {2}", Subject.Name, expected, Subject.Type.TypeScriptName);
             return new AndConstraint<IntellisensePropertyAssertions>(this);
         }
 
