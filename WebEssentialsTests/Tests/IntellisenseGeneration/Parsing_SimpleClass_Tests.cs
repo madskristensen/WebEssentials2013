@@ -2,10 +2,9 @@
 using EnvDTE;
 using MadsKristensen.EditorExtensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebEssentialsTests.Tests.IntellisenseGeneration;
 using WebEssentialsTests.Tests.IntellisenseGeneration.TestHelper;
 
-namespace WebEssentialsTests.Tests.IntellisenceGeneration
+namespace WebEssentialsTests.Tests.IntellisenseGeneration
 {
     [TestClass]
     public class Parsing_SimpleClass_Tests
