@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Threading;
 using Microsoft.VisualStudio;
@@ -14,12 +15,13 @@ namespace MadsKristensen.EditorExtensions
         protected readonly IWpfTextView TextView;
 
         public Guid CommandGroup { get; set; }
-        public uint[] CommandIds { get; set; }
+        public ReadOnlyCollection<uint> CommandIds { get; private set; }
 
+        public CommandTargetBase(IVsTextView adapter, IWpfTextView textView, Guid commandGroup, params PkgCmdIDList[] commandIds) : this(adapter, textView, commandGroup, Array.ConvertAll(commandIds, c => (uint)c)) { }
         public CommandTargetBase(IVsTextView adapter, IWpfTextView textView, Guid commandGroup, params uint[] commandIds)
         {
             this.CommandGroup = commandGroup;
-            this.CommandIds = commandIds;
+            this.CommandIds = new ReadOnlyCollection<uint>(commandIds);
             this.TextView = textView;
 
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>

@@ -1,76 +1,76 @@
 ﻿
 namespace MadsKristensen.EditorExtensions
 {
-    static class PkgCmdIDList
+    enum PkgCmdIDList
     {
-        public const uint myCommand = 0x100;
-        public const uint htmlEncode = 0x102;
-        public const uint htmlDecode = 0x103;
-        public const uint urlEncode = 0x106;
-        public const uint urlDecode = 0x107;
-        public const uint jsEncode = 0x108;
-        public const uint attrEncode = 0x109;
-        public const uint titleCaseTransform = 0x115;
-        public const uint reverseTransform = 0x116;
-        public const uint normalizeTransform = 0x118;
-        public const uint md5Transform = 0x120;
-        public const uint sha1Transform = 0x121;
-        public const uint sha256Transform = 0x122;
-        public const uint sha384Transform = 0x123;
-        public const uint sha512Transform = 0x124;
-        public const uint sortCssProperties = 0x125;
-        public const uint addMissingVendor = 0x127;
-        public const uint addMissingStandard = 0x128;
-        public const uint cssRemoveDuplicates = 0x129;
-        public const uint cssHideUnsupported = 0x1033;
-        public const uint cssHideInheritInitial = 0x1035;
-        public const uint addNewFeature = 0x334;
-        public const uint SurroundWith = 0x334;
-        public const uint ExpandSelection = 0x335;
-        public const uint ContractSelection = 0x336;
-        public const uint cmdDiff = 0x1041;
-        public const uint cmdJsHint = 0x1042;
-        public const uint cmdProjectSettings = 0x1043;
-        public const uint cmdSolutionSettings = 0x1044;
-        public const uint cmdSolutionColors = 0x1045;
-        public const uint cmdMarkdownStylesheet = 0x1046;
-        public const uint cmdJavaScriptIntellisense = 0x1047;
-        public const uint cmdTypeScriptIntellisense = 0x1048;
-        public const uint CssIntellisenseSubMenu = 0x1031;
-        public const uint MinifyCss = 0x1051;
-        public const uint MinifyJs = 0x1052;
-        public const uint MinifyHtml = 0x1058;
-        public const uint MinifySelection = 0x1053;
-        public const uint ExtractSelection = 0x1054;
-        public const uint SelectBrowsers = 0x1055;
-        public const uint ExtractVariable = 0x1056;
-        public const uint ExtractMixin = 0x1057;
-        public const uint BundleCss = 0x1071;
-        public const uint BundleJs = 0x1072;
-        public const uint BundleHtml = 0x1074;
-        public const uint ReferenceJs = 0x333;
+        myCommand = 0x100,
+        htmlEncode = 0x102,
+        htmlDecode = 0x103,
+        urlEncode = 0x106,
+        urlDecode = 0x107,
+        jsEncode = 0x108,
+        attrEncode = 0x109,
+        titleCaseTransform = 0x115,
+        reverseTransform = 0x116,
+        normalizeTransform = 0x118,
+        md5Transform = 0x120,
+        sha1Transform = 0x121,
+        sha256Transform = 0x122,
+        sha384Transform = 0x123,
+        sha512Transform = 0x124,
+        sortCssProperties = 0x125,
+        addMissingVendor = 0x127,
+        addMissingStandard = 0x128,
+        cssRemoveDuplicates = 0x129,
+        cssHideUnsupported = 0x1033,
+        cssHideInheritInitial = 0x1035,
+        addNewFeature = 0x334,
+        SurroundWith = 0x334,
+        ExpandSelection = 0x335,
+        ContractSelection = 0x336,
+        cmdDiff = 0x1041,
+        cmdJsHint = 0x1042,
+        cmdProjectSettings = 0x1043,
+        cmdSolutionSettings = 0x1044,
+        cmdSolutionColors = 0x1045,
+        cmdMarkdownStylesheet = 0x1046,
+        cmdJavaScriptIntellisense = 0x1047,
+        cmdTypeScriptIntellisense = 0x1048,
+        CssIntellisenseSubMenu = 0x1031,
+        MinifyCss = 0x1051,
+        MinifyJs = 0x1052,
+        MinifyHtml = 0x1058,
+        MinifySelection = 0x1053,
+        ExtractSelection = 0x1054,
+        SelectBrowsers = 0x1055,
+        ExtractVariable = 0x1056,
+        ExtractMixin = 0x1057,
+        BundleCss = 0x1071,
+        BundleJs = 0x1072,
+        BundleHtml = 0x1074,
+        ReferenceJs = 0x333,
 
         // Lines
-        public const uint SortAsc = 0x0003;
-        public const uint SortDesc = 0x0004;
-        public const uint RemoveDuplicateLines = 0x0005;
-        public const uint RemoveEmptyLines = 0x0007;
+        SortAsc = 0x0003,
+        SortDesc = 0x0004,
+        RemoveDuplicateLines = 0x0005,
+        RemoveEmptyLines = 0x0007,
 
         // Build
-        public const uint cmdBuildBundles = 0x1083;
-        public const uint cmdBuildLess = 0x1084;
-        //public const uint cmdBuildTypeScript = 0x1085;
-        public const uint cmdBuildMinify = 0x1086;
-        public const uint cmdBuildCoffeeScript = 0x1087;
-        public const uint cmdBuildIcedCoffeeScript = 0x1088;
+        cmdBuildBundles = 0x1083,
+        cmdBuildLess = 0x1084,
+        // cmdBuildTypeScript = 0x1085,
+        cmdBuildMinify = 0x1086,
+        cmdBuildCoffeeScript = 0x1087,
+        cmdBuildIcedCoffeeScript = 0x1088,
 
         //Unused CSS
-        public const uint cmdUnusedCssSnapshotCommandId = 0x2100;
-        public const uint cmdUnusedCssResetCommandId = 0x2101;
-        public const uint cmdUnusedCssRecordAllCommandId = 0x2102;
-        public const uint cmdUnusedCssStopRecordAllCommandId = 0x2103;
+        cmdUnusedCssSnapshotCommandId = 0x2100,
+        cmdUnusedCssResetCommandId = 0x2101,
+        cmdUnusedCssRecordAllCommandId = 0x2102,
+        cmdUnusedCssStopRecordAllCommandId = 0x2103,
 
         //Pixel Pushing
-        public const uint cmdPixelPushingToggleCommandId = 0x2200;
-    };
+        cmdPixelPushingToggleCommandId = 0x2200
+    }
 }

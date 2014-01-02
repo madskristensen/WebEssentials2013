@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions
             if (lines.Length == 0)
                 return false;
 
-            string result = SortLines(commandId, lines);
+            string result = SortLines((PkgCmdIDList)commandId, lines);
 
             using (EditorExtensionsPackage.UndoContext(("Sort Selected Lines")))
                 TextView.TextBuffer.Replace(span.Span, result);
@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-        private static string SortLines(uint commandId, IEnumerable<string> lines)
+        private static string SortLines(PkgCmdIDList commandId, IEnumerable<string> lines)
         {
             if (commandId == PkgCmdIDList.SortAsc)
                 lines = lines.OrderBy(t => t);

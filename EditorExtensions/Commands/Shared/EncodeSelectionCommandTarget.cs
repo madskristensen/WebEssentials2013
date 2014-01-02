@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions
     internal class EncodeSelection : CommandTargetBase
     {
         private DTE2 _dte;
-        private static uint[] _commandIds = new uint[] {
+        private static PkgCmdIDList[] _commandIds = {
             PkgCmdIDList.htmlEncode,
             PkgCmdIDList.htmlDecode,
             PkgCmdIDList.attrEncode,
@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            switch (commandId)
+            switch ((PkgCmdIDList)commandId)
             {
                 case PkgCmdIDList.htmlEncode:
                     return Replace(HttpUtility.HtmlEncode);
@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
                     return Replace(HttpUtility.JavaScriptStringEncode);
             }
 
-            return true;
+            return false;
         }
 
         private bool Replace(Replacement callback)

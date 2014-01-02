@@ -67,7 +67,7 @@ namespace MadsKristensen.EditorExtensions
             return sb.ToString();
         }
 
-        private void SetupCommand(uint command, Replacement callback)
+        private void SetupCommand(PkgCmdIDList command, Replacement callback)
         {
             CommandID commandId = new CommandID(GuidList.guidEditorExtensionsCmdSet, (int)command);
             OleMenuCommand menuCommand = new OleMenuCommand((s, e) => Replace(callback), commandId);
