@@ -204,7 +204,7 @@ namespace MadsKristensen.EditorExtensions
                    select new IntellisenseProperty()
                    {
                        Name = GetName(p),
-                       Type = GetType(p.Type, traversedTypes),
+                       Type = GetType(p.Parent, p.Type, traversedTypes),
                        Summary = GetSummary(p)
                    };
         }
@@ -225,37 +225,83 @@ namespace MadsKristensen.EditorExtensions
             return namespaceFromAttr.FirstOrDefault() ?? DefaultModuleName;
         }
 
-        private static IntellisenseType GetType(CodeTypeRef codeTypeRef, HashSet<string> traversedTypes)
+        private static IntellisenseType GetType(CodeClass rootElement, CodeTypeRef codeTypeRef, HashSet<string> traversedTypes)
         {
-            // TODO: Is there a way to extract the CodeTypeRef for a generic parameter?
             var isArray = codeTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefArray;
-            if (isArray && codeTypeRef.ElementType != null) codeTypeRef = codeTypeRef.ElementType;
-            bool isCollection = codeTypeRef.AsString.StartsWith("System.Collections", StringComparison.Ordinal);
+            var isCollection = codeTypeRef.AsString.StartsWith("System.Collections", StringComparison.Ordinal);
 
-            var cl = codeTypeRef.CodeType as CodeClass;
-            var en = codeTypeRef.CodeType as CodeEnum;
-            var isPrimitive = IsPrimitive(codeTypeRef);
+            var effectiveTypeRef = codeTypeRef;
+            if (isArray && codeTypeRef.ElementType != null) effectiveTypeRef = effectiveTypeRef.ElementType;
+            else if (isCollection) effectiveTypeRef = TryToGuessGenericArgument(rootElement, effectiveTypeRef);
+
+            var codeClass = effectiveTypeRef.CodeType as CodeClass2;
+            var codeEnum = effectiveTypeRef.CodeType as CodeEnum;
+            var isPrimitive = IsPrimitive(effectiveTypeRef);
+
             var result = new IntellisenseType
             {
                 IsArray = isArray || isCollection,
-                CodeName = codeTypeRef.AsString,
+                CodeName = effectiveTypeRef.AsString,
                 ClientSideReferenceName =
-                    codeTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType &&
-                    codeTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject
+                    effectiveTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType &&
+                    effectiveTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject
                     ?
-                        (cl != null && HasIntellisense(cl.ProjectItem, Ext.TypeScript) ? (GetNamespace(cl) + "." + cl.Name) : null) ??
-                        (en != null && HasIntellisense(en.ProjectItem, Ext.TypeScript) ? (GetNamespace(en) + "." + en.Name) : null)
+                        (codeClass != null && HasIntellisense(codeClass.ProjectItem, Ext.TypeScript) ? (GetNamespace(codeClass) + "." + codeClass.Name) : null) ??
+                        (codeEnum != null && HasIntellisense(codeEnum.ProjectItem, Ext.TypeScript) ? (GetNamespace(codeEnum) + "." + codeEnum.Name) : null)
                     : null
             };
 
-            if (!isPrimitive && cl != null && !traversedTypes.Contains(codeTypeRef.CodeType.FullName) && !isCollection)
+            if (!isPrimitive && codeClass != null && !traversedTypes.Contains(effectiveTypeRef.CodeType.FullName) && !isCollection)
             {
-                traversedTypes.Add(codeTypeRef.CodeType.FullName);
-                result.Shape = GetProperties(codeTypeRef.CodeType.Members, traversedTypes).ToList();
-                traversedTypes.Remove(codeTypeRef.CodeType.FullName);
+                traversedTypes.Add(effectiveTypeRef.CodeType.FullName);
+                result.Shape = GetProperties(effectiveTypeRef.CodeType.Members, traversedTypes).ToList();
+                traversedTypes.Remove(effectiveTypeRef.CodeType.FullName);
             }
 
             return result;
+        }
+
+        private static CodeTypeRef TryToGuessGenericArgument(CodeClass rootElement, CodeTypeRef codeTypeRef)
+        {
+            var codeTypeRef2 = codeTypeRef as CodeTypeRef2;
+            if (codeTypeRef2 == null || !codeTypeRef2.IsGeneric) return codeTypeRef;
+
+            // There is no way to extract generic parameter as CodeTypeRef or something similar
+            // (see http://social.msdn.microsoft.com/Forums/vstudio/en-US/09504bdc-2b81-405a-a2f7-158fb721ee90/envdte-envdte80-codetyperef2-and-generic-types?forum=vsx)
+            // but we can make it work at least for some simple case with the following heuristic:
+            //  1) get the argument's local name by parsing the type reference's full text
+            //  2) if it's a known primitive (i.e. string, int, etc.), return that
+            //  3) otherwise, guess that it's a type from the same namespace and same project,
+            //     and use the project CodeModel to retrieve it by full name
+            //  4) if CodeModel returns null - well, bad luck, don't have any more guesses
+            var typeNameAsInCode = codeTypeRef2.AsString.Split('<', '>').ElementAtOrDefault(1) ?? "";
+            var projCodeModel = rootElement.ProjectItem.ContainingProject.CodeModel;
+            var codeType = projCodeModel.CodeTypeFromFullName(TryToGuessFullName(typeNameAsInCode));
+
+            if (codeType != null) return projCodeModel.CreateCodeTypeRef(codeType);
+            return codeTypeRef;
+        }
+
+        private static readonly Dictionary<string, Type> _knownPrimitiveTypes = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase) {
+            { "string", typeof( string ) },
+            { "int", typeof( int ) },
+            { "long", typeof( long ) },
+            { "short", typeof( short ) },
+            { "byte", typeof( byte ) },
+            { "uint", typeof( uint ) },
+            { "ulong", typeof( ulong ) },
+            { "ushort", typeof( ushort ) },
+            { "sbyte", typeof( sbyte ) },
+            { "float", typeof( float ) },
+            { "double", typeof( double ) },
+            { "decimal", typeof( decimal ) },
+        };
+
+        private static string TryToGuessFullName(string typeName)
+        {
+            Type primitiveType;
+            if (_knownPrimitiveTypes.TryGetValue(typeName, out primitiveType)) return primitiveType.FullName;
+            else return typeName;
         }
 
         private static bool IsPrimitive(CodeTypeRef codeTypeRef)
