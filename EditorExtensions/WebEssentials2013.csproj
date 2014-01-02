@@ -596,7 +596,7 @@
     <Compile Include="ExtensionMethods\AtDirectiveExtensions.cs" />
     <Compile Include="ExtensionMethods\IVsExtensions.cs" />
     <Compile Include="Helpers\Css\CssItemAggregator.cs" />
-    <Compile Include="Logger.cs" />
+    <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Compilers\CoffeeScript\CoffeeScriptCompiler.cs" />
     <Compile Include="Helpers\FileHelpers.cs" />
     <Compile Include="Compilers\CompilerError.cs" />
@@ -746,6 +746,14 @@
     <Content Include="Resources\Icons\Markdown.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\Images\preview.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Images\WebEssentials2012logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Snippets\snippets.pkgdef">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -795,9 +803,6 @@
     <Content Include="Snippets\CSS\Web Essentials\media query windows snap view.snippet">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <None Include="WebMarkupMin.Configuration.xsd">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
@@ -812,7 +817,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <EmbeddedResource Include="BrowserLink\UnusedCss\UnusedCss.js" />
     <EmbeddedResource Include="BrowserLink\PixelPushing\PixelPushingModeBrowserLink.js" />
     <EmbeddedResource Include="BrowserLink\Menu\MenuBrowserLink.js" />
@@ -838,10 +842,6 @@
     <EmbeddedResource Include="BrowserLink\DesignMode\DesignModeBrowserLink.js" />
     <EmbeddedResource Include="BrowserLink\BestPractices\BestPracticesBrowserLink.js" />
     <CodeAnalysisDictionary Include="CustomDictionary.xml" />
-    <Content Include="preview.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Resource Include="Resources\Images\numbers.png" />
     <Content Include="registry.pkgdef">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -872,10 +872,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Schemas\WE-Palette.css">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="WebEssentials2012logo.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Resource Include="Resources\Images\Browsers\s.png" />

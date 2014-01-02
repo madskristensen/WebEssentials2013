@@ -8,8 +8,8 @@
     <License>License.txt</License>
     <GettingStartedGuide>http://vswebessentials.com/changelog</GettingStartedGuide>
     <ReleaseNotes>http://vswebessentials.com/changelog</ReleaseNotes>
-    <Icon>WebEssentials2012logo.png</Icon>
-    <PreviewImage>preview.png</PreviewImage>
+    <Icon>Resources/Images/WebEssentials2012logo.png</Icon>
+    <PreviewImage>Resources/Images/preview.png</PreviewImage>
     <Tags>css, javascript, html, less, coffeescript, json</Tags>
   </Metadata>
   <Installation InstalledByMsi="false">
