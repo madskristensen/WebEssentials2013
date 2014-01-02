@@ -95,7 +95,7 @@ namespace MadsKristensen.EditorExtensions
 
             IntellisenseWriter.Write(list, resultPath);
 
-            var item = MarginBase.AddFileToProject(filePath, resultPath);
+            var item = ProjectHelpers.AddFileToProject(filePath, resultPath);
 
             if (extension.Equals(Ext.TypeScript, StringComparison.OrdinalIgnoreCase))
                 item.Properties.Item("ItemType").Value = "TypeScriptCompile";
@@ -282,7 +282,7 @@ namespace MadsKristensen.EditorExtensions
             return codeTypeRef;
         }
 
-        private static readonly Dictionary<string, Type> _knownPrimitiveTypes = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase) {
+        private static readonly Dictionary<string, Type> _knownPrimitiveTypes = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase) {
             { "string", typeof( string ) },
             { "int", typeof( int ) },
             { "long", typeof( long ) },

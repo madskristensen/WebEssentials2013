@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -307,7 +306,7 @@ namespace MadsKristensen.EditorExtensions
                     }
 
                     if (!fileExist)
-                        AddFileToProject(sourceFileName, minFile);
+                        ProjectHelpers.AddFileToProject(sourceFileName, minFile);
                 }
             }
         }
@@ -334,28 +333,6 @@ namespace MadsKristensen.EditorExtensions
             }
 
             return fileWritten;
-        }
-
-        public static ProjectItem AddFileToProject(string parentFileName, string fileName)
-        {
-            if (!File.Exists(fileName))
-                return null;
-
-            var item = ProjectHelpers.GetProjectItem(parentFileName);
-
-            if (item != null && item.ContainingProject != null && !string.IsNullOrEmpty(item.ContainingProject.FullName))
-            {
-                if (item.ContainingProject.GetType().Name != "OAProject" && item.ProjectItems != null && Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
-                {   // WAP
-                    return item.ProjectItems.AddFromFile(fileName);
-                }
-                else
-                {   // Website
-                    return item.ContainingProject.ProjectItems.AddFromFile(fileName);
-                }
-            }
-
-            return null;
         }
     }
 }

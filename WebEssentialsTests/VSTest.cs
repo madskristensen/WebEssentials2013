@@ -13,7 +13,7 @@ namespace WebEssentialsTests
 
         private static Solution OpenSolution()
         {
-            var path = typeof (VSTest).Assembly.Location;
+            var path = typeof(VSTest).Assembly.Location;
             Path.GetDirectoryName(path);
             var solution = VsIdeTestHostContext.Dte.Solution;
             var fileName = Path.GetFullPath(Path.Combine(path, "..\\..\\..\\..\\TestProjects", "TestProjects.sln"));

@@ -50,7 +50,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
         public void
             Run_this_if_you_want_to_configure_your_hive_like_enabling_or_disabling_some_addins_in_special_webEssentials()
         {
-            System.Threading.Thread.Sleep(1000*60*20);
+            System.Threading.Thread.Sleep(1000 * 60 * 20);
         }
     }
 }

@@ -78,7 +78,7 @@ namespace MadsKristensen.EditorExtensions
             byte[] gzipContent = Compress(content);
             File.WriteAllBytes(gzipFile, gzipContent);
             ProjectHelpers.AddFileToActiveProject(gzipFile);
-            FileHelpers.AddFileToProject(file, gzipFile);
+            ProjectHelpers.AddFileToProject(file, gzipFile);
         }
 
         public static byte[] Compress(string text)

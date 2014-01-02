@@ -65,7 +65,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 result.Result = PostProcessResult(result.Result, sourceFileName, targetFileName);
                 if (!InUnitTests)
-                    FileHelpers.AddFileToProject(sourceFileName, targetFileName);
+                    ProjectHelpers.AddFileToProject(sourceFileName, targetFileName);
             }
             else
             {

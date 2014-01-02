@@ -51,13 +51,13 @@ namespace WebEssentialsTests
         [TestMethod]
         public void TestIndentedCodeBlocks()
         {
-            ParseCodeBlocks("Hi there!\r\n\r\n    abc\r\nBye!").Should().Equal(new[] {"abc"});
+            ParseCodeBlocks("Hi there!\r\n\r\n    abc\r\nBye!").Should().Equal(new[] { "abc" });
         }
         [TestMethod]
         public void TestIndentedCodeBlocks_EmptyLinesBecomeEmptyArtifacts()
         {
 
-        ParseCodeBlocks(@"Hi there!
+            ParseCodeBlocks(@"Hi there!
 
     
 Bye!").Should().Equal(new[] { "" }, "Empty lines become empty artifacts");
@@ -107,7 +107,7 @@ Bye!").Should().Equal(new[] { "abc", "def" });
         //    Not code!
         //Bye!").Should().Equal(new[] { "abc", "def" });
         //ParseCodeBlocks(" 1. abc\n\n  \t  Code!").Should().Equal(new[] { "Code!" });
-        
+
         [TestMethod]
         public void TestIndentedCodeBlocks_TwoLines()
         {
@@ -171,7 +171,7 @@ Bye!").Should().Equal(new[] { "abc", " def", "ghi" }, "Quoted blank line counts 
 
 >>>>     abc
 Bye!").Should().Equal(new[] { "abc" });
-          }
+        }
 
         [TestMethod]
         public void TestQuotedIndentedCodeBlocks_MissingBlankLine()
@@ -180,7 +180,7 @@ Bye!").Should().Equal(new[] { "abc" });
 >>>> I'm in a quote!
 >>>>     > abc
 Bye!").Should().BeEmpty("Missing blank line");
-          }
+        }
 
         [TestMethod]
         public void TestQuotedIndentedCodeBlocks_DeeperIdentCountsAsBlockBoundary()
@@ -189,7 +189,7 @@ Bye!").Should().BeEmpty("Missing blank line");
 >>>> I'm in a quote!
 >>>>>     > abc
 Bye!").Should().Equal(new[] { "> abc" }, "Deeper indent counts as block boundary");
-         }
+        }
 
         [TestMethod]
         public void TestQuotedIndentedCodeBlocks_LessDeppIdentStillCounts()
@@ -199,14 +199,14 @@ Bye!").Should().Equal(new[] { "> abc" }, "Deeper indent counts as block boundary
 >     abc
 Bye!").Should().Equal(new[] { "abc" }, "Less-deep indent still counts");
 
-          }
+        }
 
         [TestMethod]
         public void TestQuotedIndentedCodeBlocks_SimpleQuote()
         {
             ParseCodeBlocks(@"
 >     abc").Should().Equal(new[] { "abc" });
-          }
+        }
 
         [TestMethod]
         public void TestQuotedIndentedCodeBlocks()

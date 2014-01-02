@@ -67,7 +67,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
                 {
-                    FileHelpers.AddFileToProject(jsFileName, sourceMapFile);
+                    ProjectHelpers.AddFileToProject(jsFileName, sourceMapFile);
                 }), DispatcherPriority.ApplicationIdle, null);
             }
         }
