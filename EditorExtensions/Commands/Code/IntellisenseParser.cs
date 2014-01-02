@@ -20,8 +20,8 @@ namespace MadsKristensen.EditorExtensions
     [TextViewRole(PredefinedTextViewRoles.Document)]
     public class IntellisenseParser : IWpfTextViewCreationListener
     {
-        public const string DefaultModuleName = "server";
-        public const string ModuleNameAttributeName = "TypeScriptModule";
+        private const string DefaultModuleName = "server";
+        private const string ModuleNameAttributeName = "TypeScriptModule";
 
         internal static class Ext
         {
@@ -52,7 +52,7 @@ namespace MadsKristensen.EditorExtensions
             Process(e.FilePath);
         }
 
-        public static Task<bool> Process(string filePath)
+        private static Task<bool> Process(string filePath)
         {
             if (!File.Exists(filePath + Ext.JavaScript) && !File.Exists(filePath + Ext.TypeScript))
                 return Task.FromResult(false);
@@ -86,7 +86,7 @@ namespace MadsKristensen.EditorExtensions
             }), DispatcherPriority.ApplicationIdle).Task;
         }
 
-        private static void AddScript(string filePath, string extension, List<IntellisenseObject> list)
+        private static void AddScript(string filePath, string extension, IEnumerable<IntellisenseObject> list)
         {
             string resultPath = filePath + extension;
 
@@ -166,7 +166,7 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (var codeEnum in element.Members.OfType<CodeElement>())
             {
-                var prop = new IntellisenseProperty()
+                var prop = new IntellisenseProperty
                 {
                     Name = codeEnum.Name,
                 };
@@ -201,7 +201,7 @@ namespace MadsKristensen.EditorExtensions
             return from p in props.OfType<CodeProperty>()
                    where !p.Attributes.Cast<CodeAttribute>().Any(a => a.Name == "IgnoreDataMember")
                    where p.Getter != null && !p.Getter.IsShared && p.Getter.Access == vsCMAccess.vsCMAccessPublic
-                   select new IntellisenseProperty()
+                   select new IntellisenseProperty
                    {
                        Name = GetName(p),
                        Type = GetType(p.Parent, p.Type, traversedTypes),

@@ -28,9 +28,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{6A26D6
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib", "TestProjects\Lib\Lib.csproj", "{9B43DABC-6854-427D-A995-4B2A90A31442}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTestProjects", "IntegrationTestProjects", "{236BFFB8-186E-49D4-804F-0A9B3698C68A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTestProjects", "IntegrationTestProjects", "{9D3D4232-3784-491C-9C87-A3E99755DE4E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib", "TestProjects\Lib\Lib.csproj", "{9B43DABC-6854-427D-A995-4B2A90A31442}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +56,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{9B43DABC-6854-427D-A995-4B2A90A31442} = {9D3D4232-3784-491C-9C87-A3E99755DE4E}
+		{9B43DABC-6854-427D-A995-4B2A90A31442} = {236BFFB8-186E-49D4-804F-0A9B3698C68A}
 	EndGlobalSection
 EndGlobal
