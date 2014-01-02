@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using Microsoft.CSS.Core;
@@ -54,7 +55,8 @@ namespace WebEssentialsTests
         [TestMethod]
         public async Task PathCompilationTest()
         {
-            foreach (var lessFilename in Directory.EnumerateFiles(Path.Combine(BaseDirectory, "fixtures/less"), "*.less", SearchOption.AllDirectories))
+            var combine = Path.Combine(BaseDirectory, "fixtures\\less");
+            foreach (var lessFilename in Directory.EnumerateFiles(combine, "*.less", SearchOption.AllDirectories))
             {
                 var compiledFile = Path.ChangeExtension(lessFilename, ".css");
                 var compiled = await CompileLess(lessFilename, compiledFile);
@@ -68,7 +70,7 @@ namespace WebEssentialsTests
         [TestMethod]
         public async Task PathNormalizationTest()
         {
-            foreach (var lessFilename in Directory.EnumerateFiles(Path.Combine(BaseDirectory, "fixtures/less"), "*.less", SearchOption.AllDirectories))
+            foreach (var lessFilename in Directory.EnumerateFiles(Path.Combine(BaseDirectory, "fixtures\\less"), "*.less", SearchOption.AllDirectories))
             {
                 var expectedPath = Path.Combine(Path.GetDirectoryName(lessFilename), "css", Path.ChangeExtension(lessFilename, ".css"));
 

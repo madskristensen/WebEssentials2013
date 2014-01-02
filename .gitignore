@@ -219,4 +219,4 @@ pip-log.txt
 EditorExtensions/Resources/nodejs/
 
 # MergeTools
-.orig
+*.orig

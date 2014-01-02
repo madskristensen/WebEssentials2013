@@ -354,6 +354,10 @@
     <Compile Include="Commands\WebVTT\WebVttCreationListener.cs" />
     <Compile Include="Commands\Shared\CommentCommandTarget.cs" />
     <Compile Include="Commands\CoffeeScript\EnterIndentationCommandTarget.cs" />
+    <Compile Include="Commands\Code\IntellisenseObject.cs" />
+    <Compile Include="Commands\Code\IntellisenseParser.cs" />
+    <Compile Include="Commands\Code\IntellisenseProperty.cs" />
+    <Compile Include="Commands\Code\IntellisenseType.cs" />
     <Compile Include="Commands\CommandExceptionFilter.cs" />
     <Compile Include="Commands\HTML\HtmlSaveListener.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\MediaTypeCompletionProvider.cs" />

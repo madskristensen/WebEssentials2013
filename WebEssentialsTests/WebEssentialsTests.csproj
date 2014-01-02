@@ -37,6 +37,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
     <Reference Include="FluentAssertions">
       <HintPath>..\packages\FluentAssertions.2.1.0.0\lib\net45\FluentAssertions.dll</HintPath>
     </Reference>
@@ -50,6 +53,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Html.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Text.Data, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -58,12 +62,15 @@
     <Reference Include="Microsoft.VisualStudio.Web.Extensions">
       <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Languages\Microsoft.VisualStudio.Web.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VSSDK.TestHostFramework, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VSSDK.UnitTestLibrary, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Web.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>../../../../../../../Program%20Files%20(x86)/Microsoft%20Visual%20Studio%2012.0/Common7/IDE//CommonExtensions/Microsoft/Web/Editor/Microsoft.Web.Core.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Web.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -84,6 +91,7 @@
     <Compile Include="Tests\CoffeeScript\IcedCoffeeScriptCompilationTests.cs" />
     <Compile Include="Tests\CoffeeScript\CoffeeScriptCompilationTests.cs" />
     <Compile Include="Tests\Extensions\Extensions.cs" />
+    <Compile Include="Tests\IntellisenceGeneration\Parsing_SimpleClass_Tests.cs" />
     <Compile Include="Tests\LESS\LessCompilationTests.cs" />
     <Compile Include="Tests\LESS\LessDocumentTests.cs">
       <SubType>Code</SubType>
@@ -96,6 +104,7 @@
     <Compile Include="Tests\Node\NodeModuleImportedTests.cs" />
     <Compile Include="Tests\Node\NodeModuleCompletionTests.cs" />
     <Compile Include="Tests\Markdown\MarkdownClassifierTests.cs" />
+    <Compile Include="VSTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EditorExtensions\WebEssentials2013.csproj">
@@ -157,9 +166,7 @@
     <None Include="fixtures\coffee\source\test.coffee" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Tests\IntellisenceGeneration\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

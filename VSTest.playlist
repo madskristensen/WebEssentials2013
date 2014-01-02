@@ -1,0 +1,1 @@
+<Playlist Version="1.0"><Add Test="WebEssentialsTests.VSTestTest.VSTest_CanOpenSolution" /><Add Test="WebEssentialsTests.VSTestTest.VSTest_CanFindProjectItem" /></Playlist>
