@@ -86,7 +86,7 @@ namespace MadsKristensen.EditorExtensions
                         HtmlSaveListener.Minify(path, minPath);
                     }
 
-                    MarginBase.AddFileToProject(path, minPath);
+                    FileHelpers.AddFileToProject(path, minPath);
                 }
             }
 

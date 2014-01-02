@@ -10,6 +10,7 @@ namespace MadsKristensen.EditorExtensions
     public class CoffeeScriptCompiler : NodeExecutorBase
     {
         private static readonly Regex _errorParsingPattern = new Regex(@".*\\(?<fileName>.*):(?<line>.\d*):(?<column>.\d*): error: (?<message>.*\n.*)", RegexOptions.Multiline);
+        private static readonly Regex _sourceMapInJs = new Regex(@"\/\*\n.*=(.*)\n\*\/", RegexOptions.Multiline);
 
         protected override string ServiceName
         {
@@ -39,13 +40,13 @@ namespace MadsKristensen.EditorExtensions
 
         protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
-            Logger.Log("CoffeeScript: " + Path.GetFileName(sourceFileName) + " compiled.");
+            Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
             ProcessMapFile(targetFileName);
 
-            return resultSource;
+            return UpdateSourceMapUrls(resultSource, targetFileName);
         }
 
-        protected static void ProcessMapFile(string jsFileName)
+        private static void ProcessMapFile(string jsFileName)
         {
             var sourceMapFile = jsFileName + ".map";
 
@@ -66,9 +67,27 @@ namespace MadsKristensen.EditorExtensions
             {
                 Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
                 {
-                    MarginBase.AddFileToProject(jsFileName, sourceMapFile);
+                    FileHelpers.AddFileToProject(jsFileName, sourceMapFile);
                 }), DispatcherPriority.ApplicationIdle, null);
             }
+        }
+
+        private static string UpdateSourceMapUrls(string content, string compiledFileName)
+        {
+            if (!WESettings.GetBoolean(WESettings.Keys.LessSourceMaps) || !File.Exists(compiledFileName))
+                return content;
+
+            string sourceMapFilename = compiledFileName + ".map";
+
+            if (!File.Exists(sourceMapFilename))
+                return content;
+
+
+            string sourceMapRelativePath = FileHelpers.RelativePath(compiledFileName, sourceMapFilename);
+
+            // Fix sourceMappingURL comment in JS file with network accessible path.
+            return _sourceMapInJs.Replace(content,
+                string.Format(CultureInfo.CurrentCulture, @"/*{1}//@ sourceMappingURL={0}{1}*/", sourceMapRelativePath, Environment.NewLine));
         }
     }
 }

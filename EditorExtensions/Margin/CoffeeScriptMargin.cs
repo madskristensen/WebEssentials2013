@@ -1,7 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.IO;
-using System.Text.RegularExpressions;
+﻿using System.IO;
 using EnvDTE;
 using Microsoft.VisualStudio.Text;
 
@@ -11,7 +8,6 @@ namespace MadsKristensen.EditorExtensions
     {
         public const string MarginName = "CoffeeScriptMargin";
         private static NodeExecutorBase _compiler = new CoffeeScriptCompiler();
-        private static readonly Regex _sourceMapInJs = new Regex(@"\/\*\n.*=(.*)\n\*\/", RegexOptions.Multiline);
 
         protected virtual string ServiceName { get { return "CoffeeScript"; } }
         protected virtual NodeExecutorBase Compiler { get { return _compiler; } }
@@ -86,24 +82,6 @@ namespace MadsKristensen.EditorExtensions
         protected override bool CanWriteToDisk(string source)
         {
             return !string.IsNullOrWhiteSpace(source);
-        }
-
-        protected override string UpdateLessSourceMapUrls(string content, string sourceFileName, string compiledFileName)
-        {
-            if (!WESettings.GetBoolean(WESettings.Keys.LessSourceMaps) || !File.Exists(compiledFileName))
-                return content;
-
-            string sourceMapFilename = compiledFileName + ".map";
-
-            if (!File.Exists(sourceMapFilename))
-                return content;
-
-
-            string sourceMapRelativePath = FileHelpers.RelativePath(compiledFileName, sourceMapFilename);
-
-            // Fix sourceMappingURL comment in JS file with network accessible path.
-            return _sourceMapInJs.Replace(content,
-                string.Format(CultureInfo.CurrentCulture, @"/*{1}//@ sourceMappingURL={0}{1}*/", sourceMapRelativePath, Environment.NewLine));
         }
     }
 }

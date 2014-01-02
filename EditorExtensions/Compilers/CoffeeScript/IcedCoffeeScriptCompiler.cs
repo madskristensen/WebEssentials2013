@@ -1,5 +1,4 @@
-﻿using System.IO;
-
+﻿
 namespace MadsKristensen.EditorExtensions
 {
     public class IcedCoffeeScriptCompiler : CoffeeScriptCompiler
@@ -16,14 +15,6 @@ namespace MadsKristensen.EditorExtensions
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
             return "--runtime inline " + base.GetArguments(sourceFileName, targetFileName);
-        }
-
-        protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
-        {
-            Logger.Log("IcedCoffeeScript: " + Path.GetFileName(sourceFileName) + " compiled.");
-            ProcessMapFile(targetFileName);
-
-            return resultSource;
         }
     }
 }
