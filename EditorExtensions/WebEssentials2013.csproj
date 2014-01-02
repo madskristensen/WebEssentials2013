@@ -513,6 +513,7 @@
     <Compile Include="Options\UnusedCssOptions.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Classifications\IconRegistration.cs" />
     <Compile Include="SmartTags\CSS\Actions\RemoveCssRuleSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Providers\RemoveCssRuleSmartTagProvider.cs" />
     <Compile Include="SmartTags\HTML\Base64DecodeSmartTag.cs" />
@@ -723,6 +724,15 @@
     <Compile Include="Validation\HTML\ItemTypeValidator.cs" />
     <Compile Include="Validation\LESS\Providers\ImportOnceErrorTagProvider.cs" />
     <None Include="PreBuildTask.cs" />
+    <Content Include="Resources\Icons\WebVTT.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Icons\CoffeeScript.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Icons\Markdown.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Snippets\snippets.pkgdef">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

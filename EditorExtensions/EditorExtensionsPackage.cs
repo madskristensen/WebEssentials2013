@@ -97,6 +97,8 @@ namespace MadsKristensen.EditorExtensions
                 transform.SetupCommands();
             }
 
+            IconRegistration.RegisterIcons();
+
             // Hook up event handlers
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
