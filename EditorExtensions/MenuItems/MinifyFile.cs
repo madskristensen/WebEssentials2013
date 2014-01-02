@@ -86,7 +86,7 @@ namespace MadsKristensen.EditorExtensions
                         HtmlSaveListener.Minify(path, minPath);
                     }
 
-                    FileHelpers.AddFileToProject(path, minPath);
+                    ProjectHelpers.AddFileToProject(path, minPath);
                 }
             }
 

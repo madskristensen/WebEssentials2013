@@ -42,12 +42,12 @@ namespace MadsKristensen.EditorExtensions
                 {
                     iced.SetValue(string.Empty, _folder + iconName);
                 }
-            }            
+            }
         }
 
         private static string GetFolder()
         {
-            string directory =Path.GetDirectoryName( typeof(IconRegistration).Assembly.Location);
+            string directory = Path.GetDirectoryName(typeof(IconRegistration).Assembly.Location);
             return Path.Combine(directory, "Resources\\Icons\\");
         }
     }

@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions
 
                 try
                 {
-                     list = IntellisenseParser.ProcessFile(item);
+                    list = IntellisenseParser.ProcessFile(item);
                 }
                 catch (Exception ex)
                 {
@@ -82,7 +82,7 @@ namespace MadsKristensen.EditorExtensions
 
             IntellisenseWriter.Write(list, resultPath);
 
-            var item = FileHelpers.AddFileToProject(filePath, resultPath);
+            var item = ProjectHelpers.AddFileToProject(filePath, resultPath);
 
             if (extension.Equals(IntellisenseParser.Ext.TypeScript, StringComparison.OrdinalIgnoreCase))
                 item.Properties.Item("ItemType").Value = "TypeScriptCompile";

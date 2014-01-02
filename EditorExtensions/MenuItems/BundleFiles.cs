@@ -355,7 +355,7 @@ namespace MadsKristensen.EditorExtensions
                     Logger.Log("Web Essentials: Updating bundle: " + Path.GetFileName(bundlePath));
                 }
 
-                FileHelpers.AddFileToProject(filePath, bundlePath);
+                ProjectHelpers.AddFileToProject(filePath, bundlePath);
             }
 
             if (bundleNode.Attributes["minify"] != null || bundleNode.Attributes["minify"].InnerText == "true")
@@ -371,14 +371,14 @@ namespace MadsKristensen.EditorExtensions
             if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase))
             {
                 JavaScriptSaveListener.Minify(bundlePath, minPath, true);
-                FileHelpers.AddFileToProject(filePath, minPath);
+                ProjectHelpers.AddFileToProject(filePath, minPath);
 
                 if (WESettings.GetBoolean(WESettings.Keys.GenerateJavaScriptSourceMaps))
                 {
-                    FileHelpers.AddFileToProject(filePath, minPath + ".map");
+                    ProjectHelpers.AddFileToProject(filePath, minPath + ".map");
                 }
 
-                FileHelpers.AddFileToProject(filePath, minPath + ".gzip");
+                ProjectHelpers.AddFileToProject(filePath, minPath + ".gzip");
             }
             else if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase))
             {
@@ -394,7 +394,7 @@ namespace MadsKristensen.EditorExtensions
                     writer.Write(minContent);
                 }
 
-                FileHelpers.AddFileToProject(filePath, minPath);
+                ProjectHelpers.AddFileToProject(filePath, minPath);
 
                 if (WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping))
                     CssSaveListener.GzipFile(filePath, minPath, minContent);
@@ -413,7 +413,7 @@ namespace MadsKristensen.EditorExtensions
                     writer.Write(minContent);
                 }
 
-                FileHelpers.AddFileToProject(filePath, minPath);
+                ProjectHelpers.AddFileToProject(filePath, minPath);
             }
         }
     }

@@ -260,7 +260,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (!fileExist && fileWritten)
             {
-                FileHelpers.AddFileToProject(currentFileName, fileName);
+                ProjectHelpers.AddFileToProject(currentFileName, fileName);
             }
 
             return content;
