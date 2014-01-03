@@ -17,8 +17,8 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
         [HostType("VS IDE")]
         public void Init()
         {
-            item = VSHost.TestSolution.FindProjectItem("Simple.cs");
-            theObject = IntellisenseParser.ProcessFile(item).First();
+            _item = VSHost.TestSolution.FindProjectItem("Simple.cs");
+            _theObject = IntellisenseParser.ProcessFile(_item).First();
         }
 
         [TestMethod]

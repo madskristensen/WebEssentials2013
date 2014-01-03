@@ -90,7 +90,6 @@
     <Compile Include="Tests\Bootstrap\BootstrapValidationTests.cs" />
     <Compile Include="Tests\CoffeeScript\IcedCoffeeScriptCompilationTests.cs" />
     <Compile Include="Tests\CoffeeScript\CoffeeScriptCompilationTests.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="Tests\Extensions\Extensions.cs" />
     <Compile Include="Tests\IntellisenseGeneration\IntellisenseTypeTests.cs" />
     <Compile Include="Tests\IntellisenseGeneration\Parsing_SimpleClass_Tests.cs" />

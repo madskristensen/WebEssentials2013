@@ -17,7 +17,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
         [HostType("VS IDE")]
         public void Init()
         {
-            _item = VSTest.GetTestSolution().FindProjectItem("SimpleNullable.cs");
+            _item = VSHost.TestSolution.FindProjectItem("SimpleNullable.cs");
             _theObject = IntellisenseParser.ProcessFile(_item).First();
         }
 
