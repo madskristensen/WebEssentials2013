@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions
                 var folder = ProjectHelpers.GetRootFolder(project);
                 var sourceFiles = Extensions.SelectMany(e => Directory.EnumerateFiles(folder, "*." + e, SearchOption.AllDirectories));
 
-                await Compile(project, sourceFiles);
+                await Compile(sourceFiles);
             }
         }
 
