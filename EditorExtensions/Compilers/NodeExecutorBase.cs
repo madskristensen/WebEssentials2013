@@ -8,8 +8,8 @@ namespace MadsKristensen.EditorExtensions
 {
     public abstract class NodeExecutorBase
     {
-        protected static readonly string WebEssentialsNodeDirectory = Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\nodejs");
-        protected static readonly string NodePath = Path.Combine(WebEssentialsNodeDirectory, @"node.exe");
+        protected static readonly string WebEssentialsResourceDirectory = Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources");
+        private static readonly string NodePath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node.exe");
 
         ///<summary>If set, the executor will not try to use the VS project system.</summary>
         public static bool InUnitTests { get; set; }
@@ -24,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
 
             var errorOutputFile = Path.GetTempFileName();
 
-            var cmdArgs = string.Format("\"{0}\" \"{1}\"", NodePath, Path.Combine(WebEssentialsNodeDirectory, CompilerPath));
+            var cmdArgs = string.Format("\"{0}\" \"{1}\"", NodePath, CompilerPath);
 
             cmdArgs = string.Format("/c \"{0} {1} > \"{2}\" 2>&1\"", cmdArgs, scriptArgs, errorOutputFile);
 

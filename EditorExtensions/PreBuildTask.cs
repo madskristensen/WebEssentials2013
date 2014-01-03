@@ -35,6 +35,7 @@ namespace MadsKristensen.EditorExtensions
 
             return Task.WhenAll(
                 InstallModuleAsync("lessc", "less"),
+                InstallModuleAsync("jshint", "jshint"),
                 InstallModuleAsync("coffee", "coffee-script"),
                 InstallModuleAsync("iced", "iced-coffee-script")
             ).Result.All(b => b);

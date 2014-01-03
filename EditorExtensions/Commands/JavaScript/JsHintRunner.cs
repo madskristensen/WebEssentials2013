@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Web.Script.Serialization;
-using System.Windows.Threading;
+using System.Web.Helpers;
 using EnvDTE;
 using MadsKristensen.EditorExtensions.Commands.JavaScript;
 using MadsKristensen.EditorExtensions.Helpers;
@@ -53,29 +52,53 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public void RunCompiler()
+        public async void RunCompiler()
         {
             if (_isDisposed)
                 return;
+
             if (ShouldIgnore(_fileName))
             {
                 // In case this file was added to JSHintIgnore after it was opened, clear the existing errors.
                 _provider.Tasks.Clear();
                 return;
             }
+
             EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: Running JSHint...";
-            JsHintCompiler lint = new JsHintCompiler(Dispatcher.CurrentDispatcher);
 
-            System.Threading.Tasks.Task.Run(() =>
+            CompilerResult result = await new JsHintCompiler().Compile(_fileName, GetConfigurationFilePath());
+
+            ReadResult(result.Error.Message, _fileName);
+        }
+
+        private string GetConfigurationFilePath()
+        {
+            return FindLocalSettings(_fileName) ?? GetGlobalSettings();
+        }
+
+        private static string GetGlobalSettings()
+        {
+            string jsHintRc = Path.Combine(Settings.GetWebEssentialsSettingsFolder(), ".jshintrc");
+
+            if (!File.Exists(jsHintRc))
+                File.Copy(Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\Settings Backup\.jshintrc")
+                        , jsHintRc);
+
+            return jsHintRc;
+        }
+
+        private static string FindLocalSettings(string sourcePath)
+        {
+            string dir = Path.GetDirectoryName(sourcePath);
+
+            while (!File.Exists(Path.Combine(dir, ".jshintrc")))
             {
-                using (StreamReader reader = new StreamReader(_fileName))
-                {
-                    string content = reader.ReadToEnd();
+                dir = Path.GetDirectoryName(dir);
+                if (String.IsNullOrEmpty(dir))
+                    return null;
+            }
 
-                    lint.Completed += LintCompletedHandler;
-                    lint.Compile(content, _fileName);
-                }
-            });
+            return Path.Combine(dir, ".jshintrc");
         }
 
         public static void Reset()
@@ -105,6 +128,7 @@ namespace MadsKristensen.EditorExtensions
             }
 
             var ignoreFile = FindLocalIgnore(file);
+
             if (ignoreFile != null && ignoreListCache.Get(ignoreFile).IsIgnored(file))
                 return true;
 
@@ -115,12 +139,14 @@ namespace MadsKristensen.EditorExtensions
         private static string FindLocalIgnore(string sourcePath)
         {
             string dir = Path.GetDirectoryName(sourcePath);
+
             while (!File.Exists(Path.Combine(dir, ".jshintignore")))
             {
                 dir = Path.GetDirectoryName(dir);
                 if (String.IsNullOrEmpty(dir))
                     return null;
             }
+
             return Path.Combine(dir, ".jshintignore");
         }
 
@@ -192,37 +218,18 @@ namespace MadsKristensen.EditorExtensions
             @"zepto\.js",
         }) + ")", RegexOptions.IgnoreCase);
 
-        private void LintCompletedHandler(object sender, CompilerEventArgs e)
-        {
-            using (JsHintCompiler lint = (JsHintCompiler)sender)
-            {
-                if (!_isDisposed)
-                {
-                    System.Threading.Tasks.Task.Run(() =>
-                    {
-                        ReadResult(e);
-                    });
-                }
-
-                lint.Completed -= LintCompletedHandler;
-            }
-
-            EditorExtensionsPackage.DTE.StatusBar.Clear();
-        }
-
-        private void ReadResult(CompilerEventArgs e)
+        private void ReadResult(string result, string fileName)
         {
             try
             {
-                JavaScriptSerializer serializer = new JavaScriptSerializer();
-                Result[] results = serializer.Deserialize<Result[]>(e.Result);
+                JsHintResult[] results = Json.Decode<JsHintResult[]>(result);
 
                 _provider.SuspendRefresh();
                 _provider.Tasks.Clear();
 
-                foreach (Result error in results.Where(r => r != null))
+                foreach (JsHintResult error in results.Where(r => r != null))
                 {
-                    ErrorTask task = CreateTask(e.State, error);
+                    ErrorTask task = CreateTask(fileName, error);
                     _provider.Tasks.Add(task);
                 }
 
@@ -238,12 +245,12 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private ErrorTask CreateTask(string data, Result error)
+        private ErrorTask CreateTask(string data, JsHintResult error)
         {
             ErrorTask task = new ErrorTask()
             {
-                Line = error.line,
-                Column = error.character,
+                Line = error.Line,
+                Column = error.Column,
                 ErrorCategory = GetOutputLocation(),
                 Category = TaskCategory.Html,
                 Document = data,
@@ -270,13 +277,14 @@ namespace MadsKristensen.EditorExtensions
             return TaskErrorCategory.Message;
         }
 
-        private static string GetErrorMessage(Result error)
+        private static string GetErrorMessage(JsHintResult error)
         {
-            string raw = error.raw;
-            if (raw == "Missing radix parameter.")
-                raw = "When using the parseInt function, remember to specify the radix parameter. Example: parseInt('3', 10)";
+            string message = error.Message;
 
-            return "JSHint (r10): " + raw.Replace("{a}", error.a).Replace("{b}", error.b);
+            if (message == "Missing radix parameter.")
+                message = "When using the parseInt function, remember to specify the radix parameter. Example: parseInt('3', 10)";
+
+            return message;
         }
 
         private void task_Navigate(object sender, EventArgs e)

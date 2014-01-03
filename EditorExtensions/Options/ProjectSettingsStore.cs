@@ -211,6 +211,13 @@ namespace MadsKristensen.EditorExtensions
 
         private static string GetUserFilePath()
         {
+            string folder = GetWebEssentialsSettingsFolder();
+
+            return Path.Combine(folder, _fileName);
+        }
+
+        public static string GetWebEssentialsSettingsFolder()
+        {
             string user = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             string folder = Path.Combine(user, "Web Essentials");
 
@@ -219,7 +226,7 @@ namespace MadsKristensen.EditorExtensions
                 Directory.CreateDirectory(folder);
             }
 
-            return Path.Combine(folder, _fileName);
+            return folder;
         }
 
         private static SortedDictionary<string, object> DefaultSettings()
