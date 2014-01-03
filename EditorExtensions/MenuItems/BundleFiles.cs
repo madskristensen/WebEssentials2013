@@ -346,27 +346,28 @@ namespace MadsKristensen.EditorExtensions
                 sb.AppendLine(source);
             }
 
-            if (!File.Exists(bundlePath) || File.ReadAllText(bundlePath) != sb.ToString())
+            bool bundleChanged = File.Exists(bundlePath) && File.ReadAllText(bundlePath) == sb.ToString();
+            if (bundleChanged)
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(bundlePath);
-                using (StreamWriter writer = new StreamWriter(bundlePath, false, new UTF8Encoding(true)))
-                {
-                    writer.Write(sb.ToString());
-                    Logger.Log("Web Essentials: Updating bundle: " + Path.GetFileName(bundlePath));
-                }
-
-                ProjectHelpers.AddFileToProject(filePath, bundlePath);
+                File.WriteAllText(bundlePath, sb.ToString(), new UTF8Encoding(true));
+                Logger.Log("Web Essentials: Updated bundle: " + Path.GetFileName(bundlePath));
             }
+
+            ProjectHelpers.AddFileToProject(filePath, bundlePath);
 
             if (bundleNode.Attributes["minify"] != null || bundleNode.Attributes["minify"].InnerText == "true")
             {
-                WriteMinFile(filePath, bundlePath, sb.ToString(), extension);
+                WriteMinFile(filePath, bundlePath, sb.ToString(), extension, bundleChanged);
             }
         }
 
-        private static void WriteMinFile(string filePath, string bundlePath, string content, string extension)
+        private static void WriteMinFile(string filePath, string bundlePath, string content, string extension, bool bundleChanged)
         {
             string minPath = Path.ChangeExtension(bundlePath, ".min" + Path.GetExtension(bundlePath));
+            // If the bundle didn't change, don't re-minify, unless the user just enabled minification.
+            if (!bundleChanged && File.Exists(minPath))
+                return;
 
             if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase))
             {
@@ -384,16 +385,8 @@ namespace MadsKristensen.EditorExtensions
             {
                 string minContent = MinifyFileMenu.MinifyString(extension, content);
 
-                if (File.Exists(minPath) && File.ReadAllText(minPath) == minContent)
-                    return;
-
                 ProjectHelpers.CheckOutFileFromSourceControl(minPath);
-
-                using (StreamWriter writer = new StreamWriter(minPath, false, new UTF8Encoding(true)))
-                {
-                    writer.Write(minContent);
-                }
-
+                File.WriteAllText(minPath, minContent, new UTF8Encoding(true));
                 ProjectHelpers.AddFileToProject(filePath, minPath);
 
                 if (WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping))
@@ -403,16 +396,8 @@ namespace MadsKristensen.EditorExtensions
             {
                 string minContent = MinifyFileMenu.MinifyString(extension, content);
 
-                if (File.Exists(minPath) && File.ReadAllText(minPath) == minContent)
-                    return;
-
                 ProjectHelpers.CheckOutFileFromSourceControl(minPath);
-
-                using (StreamWriter writer = new StreamWriter(minPath, false, new UTF8Encoding(true)))
-                {
-                    writer.Write(minContent);
-                }
-
+                File.WriteAllText(minPath, minContent, new UTF8Encoding(true));
                 ProjectHelpers.AddFileToProject(filePath, minPath);
             }
         }
