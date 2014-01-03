@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions
     [ContentType("LESS")]
     [ContentType("CoffeeScript")]
     [ContentType(IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType)]
-    //[ContentType("TypeScript")]
+    [ContentType("TypeScript")]
     [ContentType("Markdown")]
     [ContentType(SvgContentTypeDefinition.SvgContentType)]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
@@ -25,11 +25,12 @@ namespace MadsKristensen.EditorExtensions
 
         static readonly Dictionary<string, Func<string, ITextDocument, IWpfTextViewMargin>> marginFactories = new Dictionary<string, Func<string, ITextDocument, IWpfTextViewMargin>>(StringComparer.OrdinalIgnoreCase)
         {
-            { "LESS",           (source, document) => new LessMargin("CSS", source, WESettings.GetBoolean(WESettings.Keys.ShowLessPreviewWindow), document) },
-            { "CoffeeScript",   (source, document) => new CoffeeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow), document) },
-            { "IcedCoffeeScript",   (source, document) => new IcedCoffeeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow), document) },
-            { "Markdown",       (source, document) => new MarkdownMargin("text", source, WESettings.GetBoolean(WESettings.Keys.MarkdownShowPreviewWindow), document) },
-            { "Svg",            (source, document) => new SvgMargin("svg", source, WESettings.GetBoolean(WESettings.Keys.SvgShowPreviewWindow), document) }
+            { "LESS",              (source, document) => new LessMargin("CSS", source, WESettings.GetBoolean(WESettings.Keys.ShowLessPreviewWindow), document) },
+            { "CoffeeScript",      (source, document) => new CoffeeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow), document) },
+            { "IcedCoffeeScript",  (source, document) => new IcedCoffeeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow), document) },
+            { "TypeScript",        (source, document) => new TypeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowTypeScriptPreviewWindow), document) },
+            { "Markdown",          (source, document) => new MarkdownMargin("text", source, WESettings.GetBoolean(WESettings.Keys.MarkdownShowPreviewWindow), document) },
+            { "Svg",               (source, document) => new SvgMargin("svg", source, WESettings.GetBoolean(WESettings.Keys.SvgShowPreviewWindow), document) }
         };
 
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)

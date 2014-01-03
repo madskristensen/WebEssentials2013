@@ -380,6 +380,7 @@
     <Compile Include="Compilers\NodeExecutorBase.cs" />
     <Compile Include="Compilers\ProjectCompilerBase.cs" />
     <Compile Include="Margin\SvgMargin.cs" />
+    <Compile Include="Margin\TypeScriptMargin.cs" />
     <Compile Include="MenuItems\AddIntellisenseFile.cs" />
     <Compile Include="Commands\Code\IntellisenseWriter.cs" />
     <Compile Include="Commands\Code\ScriptIntellisenseListener.cs" />
@@ -512,6 +513,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Options\Markdown.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Options\TypeScript.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Options\UnusedCssOptions.cs">

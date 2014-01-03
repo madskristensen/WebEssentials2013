@@ -242,6 +242,9 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.LessMinify, true);
             dic.Add(Keys.LessEnableCompiler, true);
 
+            // TypeScript
+            dic.Add(Keys.ShowTypeScriptPreviewWindow, true);
+
             // CoffeeScript
             dic.Add(Keys.GenerateJsFileFromCoffeeScript, true);
             dic.Add(Keys.ShowCoffeeScriptPreviewWindow, true);

@@ -26,6 +26,9 @@ namespace MadsKristensen.EditorExtensions
             public const string LessEnableCompiler = "LessEnableCompiler";
             public const string LessCompileToLocation = "LessCompileToLocation";
 
+            // TypeScript
+            public const string ShowTypeScriptPreviewWindow = "TypeScriptShowPreviewWindow";
+
             // CoffeeScript
             public const string GenerateJsFileFromCoffeeScript = "CoffeeScriptGenerateJsFile";
             public const string ShowCoffeeScriptPreviewWindow = "CoffeeScriptShowPreviewWindow";
