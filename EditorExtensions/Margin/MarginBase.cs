@@ -231,7 +231,6 @@ namespace MadsKristensen.EditorExtensions
 
         protected string WriteCompiledFile(string content, string currentFileName)
         {
-            string extension = Path.GetExtension(currentFileName);
             string fileName = null;
 
             switch (Document.TextBuffer.ContentType.TypeName)
