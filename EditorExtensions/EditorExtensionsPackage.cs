@@ -16,7 +16,7 @@ namespace MadsKristensen.EditorExtensions
 {
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
-    [Guid(GuidList.guidEditorExtensionsPkgString)]
+    [Guid(CommandGuids.guidEditorExtensionsPkgString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
     [ProvideOptionPage(typeof(GeneralOptions), "Web Essentials", "General", 101, 101, true, new[] { "ZenCoding", "Mustache", "Handlebars", "Comments", "Bundling", "Bundle" })]
@@ -150,7 +150,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void HandleMenuVisibility(OleMenuCommandService mcs)
         {
-            CommandID commandId = new CommandID(GuidList.guidCssIntellisenseCmdSet, (int)PkgCmdIDList.CssIntellisenseSubMenu);
+            CommandID commandId = new CommandID(CommandGuids.guidCssIntellisenseCmdSet, (int)CommandId.CssIntellisenseSubMenu);
             OleMenuCommand menuCommand = new OleMenuCommand((s, e) => { }, commandId);
             menuCommand.BeforeQueryStatus += menuCommand_BeforeQueryStatus;
 

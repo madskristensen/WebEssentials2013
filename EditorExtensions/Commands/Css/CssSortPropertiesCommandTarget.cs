@@ -11,11 +11,11 @@ namespace MadsKristensen.EditorExtensions
     internal class CssSortProperties : CommandTargetBase
     {
         public CssSortProperties(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidCssCmdSet, PkgCmdIDList.sortCssProperties)
+            : base(adapter, textView, CommandGuids.guidCssCmdSet, CommandId.SortCssProperties)
         {
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var point = TextView.GetSelection("css");
             if (point == null) return false;

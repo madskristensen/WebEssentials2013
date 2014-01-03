@@ -27,17 +27,17 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            CommandID commandCss = new CommandID(GuidList.guidMinifyCmdSet, (int)PkgCmdIDList.MinifyCss);
+            CommandID commandCss = new CommandID(CommandGuids.guidMinifyCmdSet, (int)CommandId.MinifyCss);
             OleMenuCommand menuCommandCss = new OleMenuCommand((s, e) => MinifyFile(".css"), commandCss);
             menuCommandCss.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".css"); };
             _mcs.AddCommand(menuCommandCss);
 
-            CommandID commandJs = new CommandID(GuidList.guidMinifyCmdSet, (int)PkgCmdIDList.MinifyJs);
+            CommandID commandJs = new CommandID(CommandGuids.guidMinifyCmdSet, (int)CommandId.MinifyJs);
             OleMenuCommand menuCommandJs = new OleMenuCommand((s, e) => MinifyFile(".js"), commandJs);
             menuCommandJs.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".js"); };
             _mcs.AddCommand(menuCommandJs);
 
-            CommandID commandHtml = new CommandID(GuidList.guidMinifyCmdSet, (int)PkgCmdIDList.MinifyHtml);
+            CommandID commandHtml = new CommandID(CommandGuids.guidMinifyCmdSet, (int)CommandId.MinifyHtml);
             OleMenuCommand menuCommandHtml = new OleMenuCommand((s, e) => MinifyFile(".html"), commandHtml);
             menuCommandHtml.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".html"); };
             _mcs.AddCommand(menuCommandHtml);

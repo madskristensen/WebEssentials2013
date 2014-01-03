@@ -17,11 +17,11 @@ namespace MadsKristensen.EditorExtensions
     {
 
         public CssAddMissingStandard(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidCssCmdSet, PkgCmdIDList.addMissingStandard)
+            : base(adapter, textView, CommandGuids.guidCssCmdSet, CommandId.AddMissingStandard)
         {
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var point = TextView.GetSelection("css");
             if (point == null) return false;

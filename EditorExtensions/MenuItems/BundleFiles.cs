@@ -152,17 +152,17 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            CommandID commandCss = new CommandID(GuidList.guidBundleCmdSet, (int)PkgCmdIDList.BundleCss);
+            CommandID commandCss = new CommandID(CommandGuids.guidBundleCmdSet, (int)CommandId.BundleCss);
             OleMenuCommand menuCommandCss = new OleMenuCommand((s, e) => CreateBundlefile(".css"), commandCss);
             menuCommandCss.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".css"); };
             _mcs.AddCommand(menuCommandCss);
 
-            CommandID commandJs = new CommandID(GuidList.guidBundleCmdSet, (int)PkgCmdIDList.BundleJs);
+            CommandID commandJs = new CommandID(CommandGuids.guidBundleCmdSet, (int)CommandId.BundleJs);
             OleMenuCommand menuCommandJs = new OleMenuCommand((s, e) => CreateBundlefile(".js"), commandJs);
             menuCommandJs.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".js"); };
             _mcs.AddCommand(menuCommandJs);
 
-            CommandID commandHtml = new CommandID(GuidList.guidBundleCmdSet, (int)PkgCmdIDList.BundleHtml);
+            CommandID commandHtml = new CommandID(CommandGuids.guidBundleCmdSet, (int)CommandId.BundleHtml);
             OleMenuCommand menuCommandHtml = new OleMenuCommand((s, e) => CreateBundlefile(".html"), commandHtml);
             menuCommandHtml.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".html"); };
             _mcs.AddCommand(menuCommandHtml);

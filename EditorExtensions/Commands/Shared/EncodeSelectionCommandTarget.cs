@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using EnvDTE;
 using EnvDTE80;
@@ -10,42 +12,26 @@ namespace MadsKristensen.EditorExtensions
     internal class EncodeSelection : CommandTargetBase
     {
         private DTE2 _dte;
-        private static uint[] _commandIds = new uint[] {
-            PkgCmdIDList.htmlEncode,
-            PkgCmdIDList.htmlDecode,
-            PkgCmdIDList.attrEncode,
-            PkgCmdIDList.urlEncode,
-            PkgCmdIDList.urlDecode,
-            PkgCmdIDList.jsEncode,
+        private static readonly IReadOnlyDictionary<CommandId, Replacement> _commands = new Dictionary<CommandId, Replacement> {
+            { CommandId.HtmlEncode, HttpUtility.HtmlEncode },
+            { CommandId.HtmlDecode, HttpUtility.HtmlDecode },
+            { CommandId.AttrEncode, HttpUtility.HtmlAttributeEncode },
+            { CommandId.UrlEncode,  HttpUtility.UrlEncode },
+            { CommandId.UrlDecode,  HttpUtility.UrlDecode },
+            { CommandId.JsEncode,   HttpUtility.JavaScriptStringEncode }
         };
 
         private delegate string Replacement(string original);
 
         public EncodeSelection(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidEditorExtensionsCmdSet, _commandIds)
+            : base(adapter, textView, CommandGuids.guidEditorExtensionsCmdSet, _commands.Keys.ToArray())
         {
             _dte = EditorExtensionsPackage.DTE;
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            switch (commandId)
-            {
-                case PkgCmdIDList.htmlEncode:
-                    return Replace(HttpUtility.HtmlEncode);
-                case PkgCmdIDList.htmlDecode:
-                    return Replace(HttpUtility.HtmlDecode);
-                case PkgCmdIDList.attrEncode:
-                    return Replace(HttpUtility.HtmlAttributeEncode);
-                case PkgCmdIDList.urlEncode:
-                    return Replace(HttpUtility.UrlEncode);
-                case PkgCmdIDList.urlDecode:
-                    return Replace(HttpUtility.UrlDecode);
-                case PkgCmdIDList.jsEncode:
-                    return Replace(HttpUtility.JavaScriptStringEncode);
-            }
-
-            return true;
+            return Replace(_commands[commandId]);
         }
 
         private bool Replace(Replacement callback)

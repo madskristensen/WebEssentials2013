@@ -20,14 +20,14 @@ namespace MadsKristensen.EditorExtensions
         private static Regex _quotes = new Regex("(=\"()\")", RegexOptions.IgnoreCase);
 
         public ZenCoding(IVsTextView adapter, IWpfTextView textView, ICompletionBroker broker)
-            : base(adapter, textView, typeof(VSConstants.VSStd2KCmdID).GUID, 4, 5)
+            : base(adapter, textView, typeof(VSConstants.VSStd2KCmdID).GUID, (uint)VSConstants.VSStd2KCmdID.TAB, (uint)VSConstants.VSStd2KCmdID.BACKTAB)
         {
             _broker = broker;
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if (commandId == 4 && !_broker.IsCompletionActive(TextView))
+            if ((VSConstants.VSStd2KCmdID)commandId == VSConstants.VSStd2KCmdID.TAB && !_broker.IsCompletionActive(TextView))
             {
                 if (InvokeZenCoding())
                 {

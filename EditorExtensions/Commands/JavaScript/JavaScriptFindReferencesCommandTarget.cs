@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions
             _navigator = navigator.GetTextStructureNavigator(textView.TextBuffer);
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             SnapshotPoint? point = TextView.Caret.Position.Point.GetPoint(TextView.TextBuffer, PositionAffinity.Predecessor);
 

@@ -17,19 +17,19 @@ namespace MadsKristensen.EditorExtensions
             _symbol = commentSymbol;
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             StringBuilder sb = new StringBuilder();
             SnapshotSpan span = GetSpan();
             string[] lines = span.GetText().Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
-            switch (commandId)
+            switch ((VSConstants.VSStd2KCmdID)commandId)
             {
-                case (uint)VSConstants.VSStd2KCmdID.COMMENT_BLOCK:
+                case VSConstants.VSStd2KCmdID.COMMENT_BLOCK:
                     Comment(sb, lines);
                     break;
 
-                case (uint)VSConstants.VSStd2KCmdID.UNCOMMENT_BLOCK:
+                case VSConstants.VSStd2KCmdID.UNCOMMENT_BLOCK:
                     Uncomment(sb, lines);
                     break;
             }

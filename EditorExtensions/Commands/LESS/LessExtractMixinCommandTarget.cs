@@ -10,11 +10,11 @@ namespace MadsKristensen.EditorExtensions
     internal class LessExtractMixinCommandTarget : CommandTargetBase
     {
         public LessExtractMixinCommandTarget(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidExtractCmdSet, PkgCmdIDList.ExtractMixin)
+            : base(adapter, textView, CommandGuids.guidExtractCmdSet, CommandId.ExtractMixin)
         {
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var point = TextView.GetSelection("LESS");
             if (point == null)

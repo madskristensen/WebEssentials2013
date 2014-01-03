@@ -14,13 +14,13 @@ namespace MadsKristensen.EditorExtensions
         private ITextBuffer _buffer;
 
         public ExpandSelection(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidFormattingCmdSet, PkgCmdIDList.ExpandSelection)
+            : base(adapter, textView, CommandGuids.guidFormattingCmdSet, CommandId.ExpandSelection)
         {
             _view = textView;
             _buffer = textView.TextBuffer;
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             HtmlEditorDocument document = HtmlEditorDocument.FromTextView(_view);
             var tree = document.HtmlEditorTree;

@@ -10,11 +10,11 @@ namespace MadsKristensen.EditorExtensions
     internal class RemoveDuplicateLines : CommandTargetBase
     {
         public RemoveDuplicateLines(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidEditorLinesCmdSet, PkgCmdIDList.RemoveDuplicateLines)
+            : base(adapter, textView, CommandGuids.guidEditorLinesCmdSet, CommandId.RemoveDuplicateLines)
         {
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var span = GetSpan();
             var lines = span.GetText().Split(new[] { Environment.NewLine }, StringSplitOptions.None);

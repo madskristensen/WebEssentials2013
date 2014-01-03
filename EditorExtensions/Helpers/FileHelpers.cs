@@ -119,7 +119,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 case "jpg":
                 case "jpeg":
-                    return "image/jpeg" + extension;
+                    return "image/jpeg";
                 case "svg":
                     return "image/svg+xml";
                 case "png":

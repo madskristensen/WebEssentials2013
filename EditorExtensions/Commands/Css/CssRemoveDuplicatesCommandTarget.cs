@@ -15,11 +15,11 @@ namespace MadsKristensen.EditorExtensions
     {
 
         public CssRemoveDuplicates(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidCssCmdSet, PkgCmdIDList.cssRemoveDuplicates)
+            : base(adapter, textView, CommandGuids.guidCssCmdSet, CommandId.CssRemoveDuplicates)
         {
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var point = TextView.GetSelection("CSS");
             if (point == null)

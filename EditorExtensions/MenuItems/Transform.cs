@@ -25,14 +25,14 @@ namespace MadsKristensen.EditorExtensions
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public void SetupCommands()
         {
-            SetupCommand(PkgCmdIDList.titleCaseTransform, new Replacement(x => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(x)));
-            SetupCommand(PkgCmdIDList.reverseTransform, new Replacement(x => new string(x.Reverse().ToArray())));
-            SetupCommand(PkgCmdIDList.normalizeTransform, new Replacement(x => RemoveDiacritics(x)));
-            SetupCommand(PkgCmdIDList.md5Transform, new Replacement(x => Hash(x, new MD5CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha1Transform, new Replacement(x => Hash(x, new SHA1CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha256Transform, new Replacement(x => Hash(x, new SHA256CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha384Transform, new Replacement(x => Hash(x, new SHA384CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha512Transform, new Replacement(x => Hash(x, new SHA512CryptoServiceProvider())));
+            SetupCommand(CommandId.TitleCaseTransform, new Replacement(x => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(x)));
+            SetupCommand(CommandId.ReverseTransform, new Replacement(x => new string(x.Reverse().ToArray())));
+            SetupCommand(CommandId.NormalizeTransform, new Replacement(x => RemoveDiacritics(x)));
+            SetupCommand(CommandId.MD5Transform, new Replacement(x => Hash(x, new MD5CryptoServiceProvider())));
+            SetupCommand(CommandId.SHA1Transform, new Replacement(x => Hash(x, new SHA1CryptoServiceProvider())));
+            SetupCommand(CommandId.SHA256Transform, new Replacement(x => Hash(x, new SHA256CryptoServiceProvider())));
+            SetupCommand(CommandId.SHA384Transform, new Replacement(x => Hash(x, new SHA384CryptoServiceProvider())));
+            SetupCommand(CommandId.SHA512Transform, new Replacement(x => Hash(x, new SHA512CryptoServiceProvider())));
         }
 
         public static string RemoveDiacritics(string s)
@@ -67,9 +67,9 @@ namespace MadsKristensen.EditorExtensions
             return sb.ToString();
         }
 
-        private void SetupCommand(uint command, Replacement callback)
+        private void SetupCommand(CommandId command, Replacement callback)
         {
-            CommandID commandId = new CommandID(GuidList.guidEditorExtensionsCmdSet, (int)command);
+            CommandID commandId = new CommandID(CommandGuids.guidEditorExtensionsCmdSet, (int)command);
             OleMenuCommand menuCommand = new OleMenuCommand((s, e) => Replace(callback), commandId);
 
             menuCommand.BeforeQueryStatus += (s, e) =>

@@ -9,11 +9,11 @@ namespace MadsKristensen.EditorExtensions
     internal class RemoveEmptyLines : CommandTargetBase
     {
         public RemoveEmptyLines(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidEditorLinesCmdSet, PkgCmdIDList.RemoveEmptyLines)
+            : base(adapter, textView, CommandGuids.guidEditorLinesCmdSet, CommandId.RemoveEmptyLines)
         {
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var span = GetSpan();
             var lines = span.GetText().Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);

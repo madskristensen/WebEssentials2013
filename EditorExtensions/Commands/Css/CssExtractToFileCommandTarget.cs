@@ -16,12 +16,12 @@ namespace MadsKristensen.EditorExtensions
         private List<string> _possible = new List<string>() { ".CSS", ".LESS", ".JS", ".TS" };
 
         public CssExtractToFile(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidExtractCmdSet, PkgCmdIDList.ExtractSelection)
+            : base(adapter, textView, CommandGuids.guidExtractCmdSet, CommandId.ExtractSelection)
         {
             _dte = EditorExtensionsPackage.DTE;
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             if (TextView == null)
                 return false;
