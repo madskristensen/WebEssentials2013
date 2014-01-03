@@ -46,7 +46,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public override void MinifyFile(string fileName, string source)
+        protected override void MinifyFile(string fileName, string source)
         {
             if (!CompileEnabled)
                 return;

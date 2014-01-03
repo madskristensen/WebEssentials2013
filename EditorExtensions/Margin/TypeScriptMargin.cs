@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
         {
             SetupWatcher();
         }
-        
+
         protected override void StartCompiler(string source)
         {
             if (IsFirstRun)
@@ -80,7 +80,7 @@ namespace MadsKristensen.EditorExtensions
             base.Dispose(disposing);
         }
 
-        public override void MinifyFile(string fileName, string source)
+        protected override void MinifyFile(string fileName, string source)
         {
             // Nothing to minify
         }
