@@ -81,7 +81,7 @@
         label.innerHTML = text;
         label.title = tooltip;
         label.style.fontWeight = "normal";
-        label.for = id;
+        label.htmlFor = id;
 
         item.checked = function (value) {
             if (typeof (value) === typeof (undefined)) {
