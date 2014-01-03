@@ -27,9 +27,9 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        protected async Task Compile(Project project, IEnumerable<string> sourceFiles)
+        protected Task Compile(IEnumerable<string> sourceFiles)
         {
-            await Task.WhenAll(sourceFiles.Select(async sourceFile =>
+            return Task.WhenAll(sourceFiles.Select(async sourceFile =>
             {
                 string compiledFile = MarginBase.GetCompiledFileName(sourceFile, CompileToExtension, CompileToLocation);
                 var result = await Compiler.Compile(sourceFile, compiledFile);
