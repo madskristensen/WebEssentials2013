@@ -30,6 +30,9 @@ namespace MadsKristensen.EditorExtensions
 
                     // Git
                     AddIcon(classes, "Git.ico", ".gitignore", ".gitattributes");
+
+                    // Generic script
+                    AddIcon(classes, "GenericScript.ico", ".appcache");
                 }
             }
         }

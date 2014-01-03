@@ -318,6 +318,10 @@
     <Compile Include="BrowserLink\UnusedCss\UnusedCssMenu.cs" />
     <Compile Include="BrowserLink\UnusedCss\UsageRegistry.cs" />
     <Compile Include="BrowserLink\UploadHelper.cs" />
+    <Compile Include="Classifications\AppCache\AppCacheClassificationTypes.cs" />
+    <Compile Include="Classifications\AppCache\AppCacheClassifier.cs" />
+    <Compile Include="Classifications\AppCache\AppCacheClassifierProvider.cs" />
+    <Compile Include="Classifications\AppCache\AppCacheContentTypeDefinition.cs" />
     <Compile Include="Classifications\CSS\VariableClassifier.cs" />
     <Compile Include="Classifications\HTML\HtmlRegionTagger.cs" />
     <Compile Include="Classifications\IcedCoffeeScript\IcedCoffeeScriptContentTypeDefinition.cs" />
@@ -350,6 +354,7 @@
     <Compile Include="Classifications\Markdown\MarkdownContentTypeDefinition.cs" />
     <Compile Include="Classifications\CSS\ModernizrClassifier.cs" />
     <Compile Include="Classifications\SVG\SvgContentTypeDefinition.cs" />
+    <Compile Include="Commands\AppCache\AppCacheCreationListener.cs" />
     <Compile Include="Commands\CoffeeScript\CoffeeScriptCreationListener.cs" />
     <Compile Include="Commands\WebVTT\WebVttCreationListener.cs" />
     <Compile Include="Commands\Shared\CommentCommandTarget.cs" />
@@ -735,6 +740,9 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\Icons\Font.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Icons\GenericScript.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\Icons\Git.ico">
