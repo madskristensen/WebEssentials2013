@@ -11,17 +11,17 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
         [TestMethod]
         public void JavaScriptType_for_int16_is_Number()
         {
-            new IntellisenseType {CodeName = "Int16"}.JavaScriptName.Should().Be("Number");
+            new IntellisenseType { CodeName = "Int16" }.JavaScriptName.Should().Be("Number");
         }
         [TestMethod]
         public void JavaScriptType_for_int32_is_Number()
         {
-            new IntellisenseType {CodeName = "Int32"}.JavaScriptName.Should().Be("Number");
+            new IntellisenseType { CodeName = "Int32" }.JavaScriptName.Should().Be("Number");
         }
         [TestMethod]
         public void JavaScriptType_for_int64_is_Number()
         {
-            new IntellisenseType {CodeName = "Int64"}.JavaScriptName.Should().Be("Number");
+            new IntellisenseType { CodeName = "Int64" }.JavaScriptName.Should().Be("Number");
         }
         [TestMethod]
         public void JavaScriptType_for_short_is_Number()
@@ -68,7 +68,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
         [TestMethod]
         public void TypeScriptType_for_int16_is_Number()
         {
-            new IntellisenseType {CodeName = "Int16"}.TypeScriptName.Should().Be("number");
+            new IntellisenseType { CodeName = "Int16" }.TypeScriptName.Should().Be("number");
         }
         [TestMethod]
         public void TypeScriptType_for_int32_is_Number()

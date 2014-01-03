@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions
         {
             ShowTypeScriptPreviewWindow = WESettings.GetBoolean(WESettings.Keys.ShowTypeScriptPreviewWindow);
         }
-        
+
         [LocDisplayName("Show preview pane")]
         [Description("Shows the preview pane when editing a TypeScript file.")]
         [Category("TypeScript")]
