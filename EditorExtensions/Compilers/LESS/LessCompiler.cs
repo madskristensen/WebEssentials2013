@@ -53,6 +53,7 @@ namespace MadsKristensen.EditorExtensions
         {
             // Inserts an empty row between each rule and replace two space indentation with 4 space indentation
             resultSource = _endingCurlyBraces.Replace(_linesStartingWithTwoSpaces.Replace(resultSource.Trim(), "$1$2"), "$&\n");
+            resultSource = UpdateSourceMapUrls(resultSource, targetFileName);
 
             var message = "LESS: " + Path.GetFileName(sourceFileName) + " compiled.";
 
@@ -66,8 +67,6 @@ namespace MadsKristensen.EditorExtensions
                         targetFile: targetFileName,
                         oldBasePath: sourceFileName
                     );
-
-                    resultSource = UpdateSourceMapUrls(resultSource, targetFileName);
                 }
                 catch (Exception ex)
                 {

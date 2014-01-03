@@ -425,7 +425,7 @@ namespace MadsKristensen.EditorExtensions
                 {   // WAP
                     return item.ProjectItems.AddFromFile(fileName);
                 }
-                else
+                else if (Path.GetFullPath(fileName).StartsWith(GetRootFolder(item.ContainingProject), StringComparison.OrdinalIgnoreCase))
                 {   // Website
                     return item.ContainingProject.ProjectItems.AddFromFile(fileName);
                 }

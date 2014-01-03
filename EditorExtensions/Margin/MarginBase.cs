@@ -6,12 +6,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using EnvDTE;
-using MadsKristensen.EditorExtensions.Classifications.Markdown;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -205,12 +203,14 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (isSuccess)
                 {
-                    if (!IsFirstRun)
+                    if (!IsFirstRun && IsSaveFileEnabled)
                     {
-                        if (IsSaveFileEnabled)
-                            result = WriteCompiledFile(result, state);
+                        string targetFileName = GetTargetFileName(state, CompileToLocation);
 
-                        MinifyFile(state, result);
+                        WriteCompiledFile(result, state, targetFileName);
+
+                        if (!string.IsNullOrEmpty(targetFileName))
+                            MinifyFile(targetFileName, result);
                     }
 
                     // Moved after the WriteCompiledFile method to 
@@ -227,43 +227,42 @@ namespace MadsKristensen.EditorExtensions
             }), DispatcherPriority.Normal, null);
         }
 
-        public abstract void MinifyFile(string fileName, string source);
-
-        protected string WriteCompiledFile(string content, string currentFileName)
+        private static string GetTargetFileName(string sourceFileName, string CompileToLocation)
         {
-            string fileName = null;
-
-            switch (Document.TextBuffer.ContentType.TypeName)
+            switch (Path.GetExtension(sourceFileName).ToLowerInvariant())
             {
-                case LessContentTypeDefinition.LessContentType:
-                    fileName = GetCompiledFileName(currentFileName, ".css", CompileToLocation);
-                    break;
+                case ".less":
+                    return GetCompiledFileName(sourceFileName, ".css", CompileToLocation);
 
-                case CoffeeContentTypeDefinition.CoffeeContentType:
-                case IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType:
-                case "TypeScript":
-                    fileName = GetCompiledFileName(currentFileName, ".js", CompileToLocation);
-                    break;
+                case ".coffee":
+                case ".iced":
+                case ".ts":
+                    return GetCompiledFileName(sourceFileName, ".js", CompileToLocation);
 
-                case MarkdownContentTypeDefinition.MarkdownContentType:
-                    fileName = GetCompiledFileName(currentFileName, ".html", CompileToLocation);
-                    break;
+                case ".md":
+                case ".mdown":
+                case ".markdown":
+                case ".mkd":
+                case ".mkdn":
+                case ".mdwn":
+                    return GetCompiledFileName(sourceFileName, ".html", CompileToLocation);
 
                 default: // For the Diff view
-                    return string.Empty;
+                    return null;
             }
+        }
 
-            ProjectHelpers.CheckOutFileFromSourceControl(fileName);
+        protected abstract void MinifyFile(string fileName, string source);
 
-            bool fileExist = File.Exists(fileName);
-            bool fileWritten = CanWriteToDisk(content) && FileHelpers.WriteFile(content, fileName);
-
-            if (!fileExist && fileWritten)
+        private void WriteCompiledFile(string content, string currentFileName, string fileName)
+        {
+            if (!File.Exists(fileName)
+             && ProjectHelpers.CheckOutFileFromSourceControl(fileName)
+             && CanWriteToDisk(content)
+             && FileHelpers.WriteFile(content, fileName))
             {
                 ProjectHelpers.AddFileToProject(currentFileName, fileName);
             }
-
-            return content;
         }
 
         public static string GetCompiledFileName(string sourceFileName, string compiledExtension, string customFolder)

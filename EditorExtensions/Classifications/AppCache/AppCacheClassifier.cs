@@ -7,7 +7,7 @@ namespace MadsKristensen.EditorExtensions
 {
     public class AppCacheClassifier : IClassifier
     {
-        private IClassificationType _keyword,  _comment;
+        private IClassificationType _keyword, _comment;
         private static List<string> _idents = new List<string>() { "CACHE MANIFEST", "CACHE:", "NETWORK:", "FALLBACK:" };
 
         public AppCacheClassifier(IClassificationTypeRegistryService registry)
@@ -24,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
 
             // Comment
             int index = text.IndexOf('#');
-            
+
             if (index > -1)
             {
                 SnapshotSpan comment = new SnapshotSpan(span.Snapshot, span.Start + index, span.Length - index);

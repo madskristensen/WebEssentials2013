@@ -64,7 +64,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.Save();
         }
 
-        public override void MinifyFile(string fileName, string source)
+        protected override void MinifyFile(string fileName, string source)
         {
             // Nothing to minify
         }
