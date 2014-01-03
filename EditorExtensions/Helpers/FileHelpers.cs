@@ -315,21 +315,18 @@ namespace MadsKristensen.EditorExtensions
         {
             bool fileWritten = false;
 
+            if (!File.Exists(fileName))
+                return false;
+
             try
             {
-                if (File.Exists(fileName))
-                {
-                    using (StreamWriter writer = new StreamWriter(fileName, false, new UTF8Encoding(true)))
-                    {
-                        writer.Write(content);
-                        fileWritten = true;
-                    }
-                }
+                File.WriteAllText(fileName, content, new UTF8Encoding(true));
+                fileWritten = true;
             }
             catch (Exception ex)
             {
-                Logger.ShowMessage("Could not write to " + Path.GetFileName(fileName) +
-                                    Environment.NewLine + ex.Message);
+                Logger.ShowMessage("Could not write to " + Path.GetFileName(fileName)
+                                 + Environment.NewLine + ex.Message);
             }
 
             return fileWritten;
