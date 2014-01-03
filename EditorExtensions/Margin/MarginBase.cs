@@ -6,10 +6,12 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using EnvDTE;
+using MadsKristensen.EditorExtensions.Classifications.Markdown;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -232,24 +234,19 @@ namespace MadsKristensen.EditorExtensions
             string extension = Path.GetExtension(currentFileName);
             string fileName = null;
 
-            switch (extension.ToLowerInvariant())
+            switch (Document.TextBuffer.ContentType.TypeName)
             {
-                case ".less":
+                case LessContentTypeDefinition.LessContentType:
                     fileName = GetCompiledFileName(currentFileName, ".css", CompileToLocation);
                     break;
 
-                case ".coffee":
-                case ".iced":
-                case ".ts":
+                case CoffeeContentTypeDefinition.CoffeeContentType:
+                case IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType:
+                case "TypeScript":
                     fileName = GetCompiledFileName(currentFileName, ".js", CompileToLocation);
                     break;
 
-                case ".md":
-                case ".mdown":
-                case ".markdown":
-                case ".mkd":
-                case ".mkdn":
-                case ".mdwn":
+                case MarkdownContentTypeDefinition.MarkdownContentType:
                     fileName = GetCompiledFileName(currentFileName, ".html", CompileToLocation);
                     break;
 
