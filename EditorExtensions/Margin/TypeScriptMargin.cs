@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
         {
             SetupWatcher();
         }
-
+        
         protected override void StartCompiler(string source)
         {
             if (IsFirstRun)
@@ -65,6 +65,19 @@ namespace MadsKristensen.EditorExtensions
                 OnCompilationDone("// Not compiled to disk yet", jsFile);
                 _isReady = false;
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && _watcher != null)
+            {
+                _watcher.Created -= FileTouched;
+                _watcher.Changed -= FileTouched;
+                _watcher.Dispose();
+                _watcher = null;
+            }
+
+            base.Dispose(disposing);
         }
 
         public override void MinifyFile(string fileName, string source)
