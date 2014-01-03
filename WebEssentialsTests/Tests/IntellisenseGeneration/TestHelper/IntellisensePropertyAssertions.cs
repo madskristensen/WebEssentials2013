@@ -27,6 +27,15 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration.TestHelper
             return new AndConstraint<IntellisensePropertyAssertions>(this);
         }
 
+        public AndConstraint<IntellisensePropertyAssertions> IsNotAnArray(string reason, params object[] reasonArgs)
+        {
+            Execute.Assertion
+                .ForCondition(!Subject.Type.IsArray)
+                .BecauseOf(reason, reasonArgs)
+                .FailWith("Expected {0} not to be an array{reason}", Subject.Name);
+            return new AndConstraint<IntellisensePropertyAssertions>(this);
+        }
+
         public AndConstraint<IntellisensePropertyAssertions> JavaScriptNameIs(string expected, string reason,
             params object[] reasonArgs)
         {
@@ -52,6 +61,10 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration.TestHelper
             return IsArray(string.Empty);
         }
 
+        public AndConstraint<IntellisensePropertyAssertions> IsNotAnArray()
+        {
+            return IsNotAnArray(string.Empty);
+        }
         public AndConstraint<IntellisensePropertyAssertions> JavaScriptNameIs(string expected)
         {
             return JavaScriptNameIs(expected, string.Empty);

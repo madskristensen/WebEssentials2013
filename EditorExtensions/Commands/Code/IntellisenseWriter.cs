@@ -50,7 +50,7 @@ namespace MadsKristensen.EditorExtensions
             return name[0].ToString(CultureInfo.CurrentCulture).ToLower(CultureInfo.CurrentCulture) + name.Substring(1);
         }
 
-        static readonly Regex whitespaceTrimmer = new Regex(@"^\s+|\s+$|\s*[\r\n]+\s*", RegexOptions.Compiled);
+        private static readonly Regex whitespaceTrimmer = new Regex(@"^\s+|\s+$|\s*[\r\n]+\s*", RegexOptions.Compiled);
 
         private static void WriteJavaScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
         {
@@ -71,7 +71,8 @@ namespace MadsKristensen.EditorExtensions
                     var propertyName = CamelCasePropertyName(p.Name);
                     comment = p.Summary ?? "The " + propertyName + " property as defined in " + io.FullName;
                     comment = whitespaceTrimmer.Replace(comment, " ");
-                    sb.AppendLine("\t/// <field name=\"" + propertyName + "\" type=\"" + type + "\">" + SecurityElement.Escape(comment) + "</field>");
+                    sb.AppendLine("\t/// <field name=\"" + propertyName + "\" type=\"" + type + "\">" +
+                                  SecurityElement.Escape(comment) + "</field>");
                     sb.AppendLine("\tthis." + propertyName + " = " + p.Type.JavaScripLiteral + ";");
                 }
 
@@ -88,7 +89,8 @@ namespace MadsKristensen.EditorExtensions
 
                 foreach (IntellisenseObject io in ns)
                 {
-                    if (!string.IsNullOrEmpty(io.Summary)) sb.AppendLine("\t/** " + whitespaceTrimmer.Replace(io.Summary, "") + " */");
+                    if (!string.IsNullOrEmpty(io.Summary))
+                        sb.AppendLine("\t/** " + whitespaceTrimmer.Replace(io.Summary, "") + " */");
                     if (io.IsEnum)
                     {
                         sb.AppendLine("\tenum " + CamelCaseClassName(io.Name) + " {");
@@ -117,7 +119,8 @@ namespace MadsKristensen.EditorExtensions
             sb.AppendLine("\t\t/** " + whitespaceTrimmer.Replace(p.Summary, "") + " */");
         }
 
-        private static void WriteTSInterfaceDefinition(StringBuilder sb, string prefix, IEnumerable<IntellisenseProperty> props)
+        private static void WriteTSInterfaceDefinition(StringBuilder sb, string prefix,
+            IEnumerable<IntellisenseProperty> props)
         {
             sb.AppendLine("{");
 
@@ -126,8 +129,7 @@ namespace MadsKristensen.EditorExtensions
                 WriteTypeScriptComment(p, sb);
                 sb.AppendFormat("{0}\t{1}: ", prefix, CamelCasePropertyName(p.Name));
 
-                if (p.Type.IsPrimitive) sb.Append(p.Type.TypeScriptName);
-                else if (!string.IsNullOrEmpty(p.Type.ClientSideReferenceName)) sb.Append(p.Type.ClientSideReferenceName);
+                if (p.Type.IsKnownType) sb.Append(p.Type.TypeScriptName);
                 else
                 {
                     if (p.Type.Shape == null) sb.Append("any");

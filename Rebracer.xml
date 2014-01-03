@@ -9,7 +9,12 @@
   <ToolsOptions>
     <ToolsOptionsCategory name="Environment">
       <ToolsOptionsSubCategory name="TaskList">
-        <PropertyValue name="CommentTokens" ArrayType="VT_VARIANT" ArrayElementCount="4"><PropertyValue name="0">TODO:2</PropertyValue><PropertyValue name="1">HACK:2</PropertyValue><PropertyValue name="2">UNDONE:2</PropertyValue><PropertyValue name="3">UnresolvedMergeConflict:3</PropertyValue></PropertyValue>
+        <PropertyValue name="CommentTokens" ArrayType="VT_VARIANT" ArrayElementCount="4">
+          <PropertyValue name="0">TODO:2</PropertyValue>
+          <PropertyValue name="1">HACK:2</PropertyValue>
+          <PropertyValue name="2">UNDONE:2</PropertyValue>
+          <PropertyValue name="3">UnresolvedMergeConflict:3</PropertyValue>
+        </PropertyValue>
         <PropertyValue name="ConfirmTaskDeletion">true</PropertyValue>
         <PropertyValue name="DontShowFilePaths">true</PropertyValue>
         <PropertyValue name="WarnOnAddingHiddenItem">false</PropertyValue>
@@ -149,14 +154,14 @@
         <PropertyValue name="InsertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis">false</PropertyValue>
         <PropertyValue name="InsertSpaceAfterSemicolonInForStatements">true</PropertyValue>
         <PropertyValue name="InsertSpaceBeforeAndAfterBinaryOperators">true</PropertyValue>
-        <PropertyValue name="OnlyUseTaborEnterToCommit">false</PropertyValue>
+        <PropertyValue name="OnlyUseTaborEnterToCommit">true</PropertyValue>
         <PropertyValue name="PlaceOpenBraceOnNewLineForControlBlocks">false</PropertyValue>
         <PropertyValue name="PlaceOpenBraceOnNewLineForFunctions">false</PropertyValue>
         <PropertyValue name="ShowErrorsAsWarnings">true</PropertyValue>
         <PropertyValue name="ShowSyntaxErrors">true</PropertyValue>
       </ToolsOptionsSubCategory>
       <ToolsOptionsSubCategory name="C/C++ Specific">
-        <PropertyValue name="AddSemicolonForClassTypes">false</PropertyValue>
+        <PropertyValue name="AddSemicolonForClassTypes">true</PropertyValue>
         <PropertyValue name="AlignParameters">false</PropertyValue>
         <PropertyValue name="AlwaysUseFallbackLocation">false</PropertyValue>
         <PropertyValue name="AutoFormatOnBraceCompletion">true</PropertyValue>
@@ -167,8 +172,8 @@
         <PropertyValue name="AutomaticOutliningOfPragmaRegions">true</PropertyValue>
         <PropertyValue name="AutomaticOutliningOfStatementBlocks">false</PropertyValue>
         <PropertyValue name="ColorizeInactiveBlocksDifferently">true</PropertyValue>
-        <PropertyValue name="CompleteParensInRawString">false</PropertyValue>
-        <PropertyValue name="CompleteSlashStar">false</PropertyValue>
+        <PropertyValue name="CompleteParensInRawString">true</PropertyValue>
+        <PropertyValue name="CompleteSlashStar">true</PropertyValue>
         <PropertyValue name="DisableAggressiveMemberList">false</PropertyValue>
         <PropertyValue name="DisableDatabase">false</PropertyValue>
         <PropertyValue name="DisableDatabaseAutoUpdates">false</PropertyValue>
@@ -185,19 +190,19 @@
         <PropertyValue name="DisableMemberListKeywords">false</PropertyValue>
         <PropertyValue name="DisablePreLoadNavigateToCache">false</PropertyValue>
         <PropertyValue name="DisableReferenceHighlighting">false</PropertyValue>
-        <PropertyValue name="DisableReferencesResolving">true</PropertyValue>
+        <PropertyValue name="DisableReferencesResolving">false</PropertyValue>
         <PropertyValue name="DisableSemanticColoring">false</PropertyValue>
         <PropertyValue name="DisableSquiggles">false</PropertyValue>
         <PropertyValue name="DoNotWarnIfFallbackLocationUsed">false</PropertyValue>
         <PropertyValue name="EnableLogging">false</PropertyValue>
         <PropertyValue name="EnableQuickInfoToolTips">true</PropertyValue>
         <PropertyValue name="EnterOutliningModeWhenFilesOpen">true</PropertyValue>
-        <PropertyValue name="EnumerateCommentTasks">false</PropertyValue>
+        <PropertyValue name="EnumerateCommentTasks">true</PropertyValue>
         <PropertyValue name="FallbackLocation"></PropertyValue>
         <PropertyValue name="GroupBrackets">true</PropertyValue>
         <PropertyValue name="HideUnconfirmedReferencesResults">false</PropertyValue>
         <PropertyValue name="HighlightMatchingTokens">true</PropertyValue>
-        <PropertyValue name="InactiveCodeOpacityPercent">65</PropertyValue>
+        <PropertyValue name="InactiveCodeOpacityPercent">55</PropertyValue>
         <PropertyValue name="IndentAccessSpecifiers">false</PropertyValue>
         <PropertyValue name="IndentBlockContents">true</PropertyValue>
         <PropertyValue name="IndentBraces">false</PropertyValue>

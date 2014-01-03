@@ -40,8 +40,35 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Generation\CollectionModel.cs" />
+    <Compile Include="Generation\SimpleNullable.cs" />
     <Compile Include="Generation\Simple.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Generation\Simple.cs.js">
+      <DependentUpon>Simple.cs</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="Generation\CollectionModel.cs.d.ts">
+      <DependentUpon>CollectionModel.cs</DependentUpon>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Generation\Simple.cs.d.ts">
+      <DependentUpon>Simple.cs</DependentUpon>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Generation\SimpleNullable.cs.d.ts">
+      <DependentUpon>SimpleNullable.cs</DependentUpon>
+    </TypeScriptCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Generation\SimpleNullable.cs.js">
+      <DependentUpon>SimpleNullable.cs</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Generation\CollectionModel.cs.js">
+      <DependentUpon>CollectionModel.cs</DependentUpon>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
