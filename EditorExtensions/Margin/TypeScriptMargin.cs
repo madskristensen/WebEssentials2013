@@ -7,14 +7,12 @@ namespace MadsKristensen.EditorExtensions
     internal class TypeScriptMargin : MarginBase
     {
         public const string MarginName = "TypeScriptMargin";
-        private string _fileName;
         private bool _isReady;
         private FileSystemWatcher _watcher;
 
         public TypeScriptMargin(string contentType, string source, bool showMargin, ITextDocument document)
-            : base(source, MarginName, contentType, showMargin, document)
+            : base(source, MarginName, contentType, showMargin && !document.FilePath.EndsWith(".d.ts", StringComparison.OrdinalIgnoreCase), document)
         {
-            _fileName = document.FilePath;
             SetupWatcher();
         }
 
@@ -22,14 +20,14 @@ namespace MadsKristensen.EditorExtensions
         {
             if (IsFirstRun)
             {
-                string file = Path.ChangeExtension(_fileName, ".js");
+                string file = Path.ChangeExtension(Document.FilePath, ".js");
                 UpdateMargin(file);
             }
         }
 
         private void SetupWatcher()
         {
-            string file = Path.ChangeExtension(_fileName, ".js");
+            string file = Path.ChangeExtension(Document.FilePath, ".js");
 
             _watcher = new FileSystemWatcher();
             _watcher.Path = Path.GetDirectoryName(file);
@@ -54,12 +52,7 @@ namespace MadsKristensen.EditorExtensions
                 return;
             }
 
-            if (Document.FilePath.EndsWith(".d.ts", StringComparison.OrdinalIgnoreCase))
-            {
-                OnCompilationDone("// Preview not available for *.d.ts files", jsFile);
-                _isReady = false;
-            }
-            else if (File.Exists(jsFile))
+            if (File.Exists(jsFile))
             {
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
