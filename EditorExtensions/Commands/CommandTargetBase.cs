@@ -33,13 +33,13 @@ namespace MadsKristensen.EditorExtensions
         }
 
         protected abstract bool IsEnabled();
-        protected abstract bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
+        protected abstract bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if (pguidCmdGroup == this.CommandGroup && this.CommandIds.Contains(nCmdID))
+            if (pguidCmdGroup == CommandGroup && CommandIds.Contains(nCmdID))
             {
-                bool result = Execute(nCmdID, nCmdexecopt, pvaIn, pvaOut);
+                bool result = Execute((CommandId)nCmdID, nCmdexecopt, pvaIn, pvaOut);
 
                 if (result)
                 {

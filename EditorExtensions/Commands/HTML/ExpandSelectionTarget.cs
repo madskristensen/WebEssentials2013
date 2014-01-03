@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions
             _buffer = textView.TextBuffer;
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             HtmlEditorDocument document = HtmlEditorDocument.FromTextView(_view);
             var tree = document.HtmlEditorTree;
