@@ -245,7 +245,11 @@ namespace MadsKristensen.EditorExtensions
                     break;
 
                 case ".md":
+                case ".mdown":
                 case ".markdown":
+                case ".mkd":
+                case ".mkdn":
+                case ".mdwn":
                     fileName = GetCompiledFileName(currentFileName, ".html", CompileToLocation);
                     break;
 
