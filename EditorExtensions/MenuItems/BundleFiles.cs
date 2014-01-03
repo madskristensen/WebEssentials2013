@@ -346,7 +346,7 @@ namespace MadsKristensen.EditorExtensions
                 sb.AppendLine(source);
             }
 
-            bool bundleChanged = File.Exists(bundlePath) && File.ReadAllText(bundlePath) == sb.ToString();
+            bool bundleChanged = !File.Exists(bundlePath) || File.ReadAllText(bundlePath) != sb.ToString();
             if (bundleChanged)
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(bundlePath);
@@ -356,7 +356,7 @@ namespace MadsKristensen.EditorExtensions
 
             ProjectHelpers.AddFileToProject(filePath, bundlePath);
 
-            if (bundleNode.Attributes["minify"] != null || bundleNode.Attributes["minify"].InnerText == "true")
+            if (bundleNode.Attributes["minify"] != null && bundleNode.Attributes["minify"].InnerText == "true")
             {
                 WriteMinFile(filePath, bundlePath, sb.ToString(), extension, bundleChanged);
             }
