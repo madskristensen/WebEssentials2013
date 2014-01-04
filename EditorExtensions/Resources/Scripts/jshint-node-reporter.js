@@ -9,9 +9,10 @@ module.exports = {
 
             messageItems.push(
                                   {
-                                       Line: parseInt(error.line, 10)
-                                     , Column: parseInt(error.character, 10)
-                                     , Message: error.reason
+                                      Line: parseInt(error.line, 10)
+                                    , Column: parseInt(error.character, 10)
+                                    , Message: error.reason
+                                    , Code: error.code
                                   }
                              );
         });
