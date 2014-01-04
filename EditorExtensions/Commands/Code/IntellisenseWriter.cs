@@ -81,7 +81,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static void WriteTypeScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
+        internal static void WriteTypeScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
         {
             foreach (var ns in objects.GroupBy(o => o.Namespace))
             {
