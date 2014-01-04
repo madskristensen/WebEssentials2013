@@ -103,6 +103,10 @@
         <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EDIT"/>
       </Group>
 
+      <Group guid="guidDiffCmdSet" id="MarkdownGroup" priority="0x0009">
+        <Parent guid="guidSolutionExplorerCmdSet" id="MySubMenuGroup"/>
+      </Group>
+
       <Group guid="guidDiffCmdSet" id="MyMenuGroup" priority="0x0010">
         <Parent guid="guidSolutionExplorerCmdSet" id="MySubMenuGroup"/>
       </Group>
@@ -379,22 +383,6 @@
         </Strings>
       </Button>
 
-      <!--<Button guid="guidWcfToolsCmdSet" id="cmdPasteJsonAsClasses" priority="0x0100" type="Button">
-        <Parent guid="guidSHLMainMenu" id="IDG_VS_EDIT_PASTE" />
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>Paste JSON As Classes</ButtonText>
-        </Strings>
-      </Button>-->
-
-      <!--<Button guid="guidDiffCmdSet" id="cmdProjectSettings" priority="0x0100" type="Button">
-        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>Create Project Settings</ButtonText>
-        </Strings>
-      </Button>-->
-
       <Button guid="guidDiffCmdSet" id="cmdSolutionSettings" priority="0x0101" type="Button">
         <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -411,11 +399,19 @@
         </Strings>
       </Button>
 
-      <Button guid="guidDiffCmdSet" id="cmdMarkdownStylesheet" priority="0x0103" type="Button">
-        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+      <Button guid="guidDiffCmdSet" id="cmdMarkdownStylesheet" priority="0x0101" type="Button">
+        <Parent guid="guidDiffCmdSet" id="MarkdownGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Create Markdown stylesheet</ButtonText>
+          <ButtonText>Add Markdown solution stylesheet</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidDiffCmdSet" id="cmdMarkdownCompile" priority="0x0102" type="Button">
+        <Parent guid="guidDiffCmdSet" id="MarkdownGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Compile Markdown to HTML</ButtonText>
         </Strings>
       </Button>
 
@@ -776,6 +772,8 @@
       <IDSymbol name="cmdMarkdownStylesheet" value="0x1046" />
       <IDSymbol name="cmdJavaScriptIntellisense" value="0x1047" />
       <IDSymbol name="cmdTypeScriptIntellisense" value="0x1048" />
+      <IDSymbol name="MarkdownGroup" value="0x1049" />
+      <IDSymbol name="cmdMarkdownCompile" value="0x1039" />
     </GuidSymbol>
 
     <GuidSymbol name="guidMinifyCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e61}">

@@ -256,8 +256,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void WriteCompiledFile(string content, string currentFileName, string fileName)
         {
-            if (!File.Exists(fileName)
-             && ProjectHelpers.CheckOutFileFromSourceControl(fileName)
+            if (ProjectHelpers.CheckOutFileFromSourceControl(fileName)
              && CanWriteToDisk(content)
              && FileHelpers.WriteFile(content, fileName))
             {

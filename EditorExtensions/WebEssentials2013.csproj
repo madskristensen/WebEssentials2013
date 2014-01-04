@@ -619,7 +619,7 @@
     <Compile Include="Margin\EditorMarginFactory.cs" />
     <Compile Include="MenuItems\BundleFiles.cs" />
     <Compile Include="MenuItems\BuildMenu.cs" />
-    <Compile Include="MenuItems\MarkdownStylesheet.cs" />
+    <Compile Include="MenuItems\Markdown.cs" />
     <Compile Include="MenuItems\SolutionColors.cs" />
     <Compile Include="MenuItems\ProjectSettings.cs" />
     <Compile Include="MenuItems\JsHint.cs" />

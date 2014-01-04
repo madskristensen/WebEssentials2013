@@ -22,28 +22,12 @@ namespace MadsKristensen.EditorExtensions
 
         public MarkdownMargin(string contentType, string source, bool showMargin, ITextDocument document)
             : base(source, MarginName, contentType, showMargin, document)
-        {
-        }
-
-        private void InitializeCompiler()
-        {
-            if (_compiler == null)
-            {
-                MarkdownSharp.MarkdownOptions options = new MarkdownSharp.MarkdownOptions();
-                options.AutoHyperlink = AutoHyperlinks;
-                options.LinkEmails = LinkEmails;
-                options.AutoNewLines = AutoNewLines;
-                options.EmptyElementSuffix = GenerateXHTML ? "/>" : ">";
-                options.EncodeProblemUrlCharacters = EncodeProblemUrlCharacters;
-                options.StrictBoldItalic = StrictBoldItalic;
-
-                _compiler = new Markdown(options);
-            }
-        }
+        { }
 
         protected override void StartCompiler(string source)
         {
-            InitializeCompiler();
+            if (_compiler == null)
+                _compiler = CreateCompiler();
 
             string result = _compiler.Transform(source);
 
@@ -69,6 +53,19 @@ namespace MadsKristensen.EditorExtensions
             {
                 OnCompilationDone(result.Trim(), Document.FilePath);
             }
+        }
+
+        public static Markdown CreateCompiler()
+        {
+            MarkdownSharp.MarkdownOptions options = new MarkdownSharp.MarkdownOptions();
+            options.AutoHyperlink = AutoHyperlinks;
+            options.LinkEmails = LinkEmails;
+            options.AutoNewLines = AutoNewLines;
+            options.EmptyElementSuffix = GenerateXHTML ? "/>" : ">";
+            options.EncodeProblemUrlCharacters = EncodeProblemUrlCharacters;
+            options.StrictBoldItalic = StrictBoldItalic;
+
+            return new Markdown(options);
         }
 
         public static string GetStylesheet()
@@ -152,7 +149,10 @@ namespace MadsKristensen.EditorExtensions
 
         protected override void MinifyFile(string fileName, string source)
         {
-            // Nothing to minify
+            if (WESettings.GetBoolean(WESettings.Keys.EnableHtmlMinification))
+            {
+                FileHelpers.MinifyFile(fileName, source, ".html");
+            }
         }
 
         public override bool IsSaveFileEnabled

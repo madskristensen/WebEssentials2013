@@ -64,6 +64,7 @@ namespace MadsKristensen.EditorExtensions
         CreateMarkdownStylesheet = 0x1046,
         CreateJavaScriptIntellisenseFile = 0x1047,
         CreateTypeScriptIntellisenseFile = 0x1048,
+        MarkdownCompile = 0x1039,
         CssIntellisenseSubMenu = 0x1031,
         MinifyCss = 0x1051,
         MinifyJs = 0x1052,
