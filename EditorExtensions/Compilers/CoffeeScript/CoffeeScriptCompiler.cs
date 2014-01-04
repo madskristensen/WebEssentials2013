@@ -9,6 +9,7 @@ namespace MadsKristensen.EditorExtensions
 {
     public class CoffeeScriptCompiler : NodeExecutorBase
     {
+        private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node_modules\coffee-script\bin\coffee");
         private static readonly Regex _errorParsingPattern = new Regex(@".*\\(?<fileName>.*):(?<line>.\d*):(?<column>.\d*): error: (?<message>.*\n.*)", RegexOptions.Multiline);
         private static readonly Regex _sourceMapInJs = new Regex(@"\/\*\n.*=(.*)\n\*\/", RegexOptions.Multiline);
 
@@ -18,7 +19,7 @@ namespace MadsKristensen.EditorExtensions
         }
         protected override string CompilerPath
         {
-            get { return @"node_modules\coffee-script\bin\coffee"; }
+            get { return _compilerPath; }
         }
         protected override Regex ErrorParsingPattern
         {

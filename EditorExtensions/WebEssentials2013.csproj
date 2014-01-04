@@ -365,6 +365,8 @@
     <Compile Include="Commands\Code\IntellisenseType.cs" />
     <Compile Include="Commands\CommandExceptionFilter.cs" />
     <Compile Include="Commands\HTML\HtmlSaveListener.cs" />
+    <Compile Include="Compilers\JsHint\JsHintCompiler.cs" />
+    <Compile Include="Compilers\JsHint\JsHintResult.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\MediaTypeCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\MediaValueCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\MediaCompletionProvider.cs" />
@@ -414,9 +416,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Commands\JavaScript\JavaScriptSaveListener.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Commands\JavaScript\JsHintCompiler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Commands\JavaScript\JsHintProjectRunner.cs">
@@ -612,7 +611,6 @@
     <Compile Include="Compilers\CompilerResult.cs" />
     <Compile Include="Margin\MarkdownMargin.cs" />
     <Compile Include="Compilers\LESS\LessProjectCompiler.cs" />
-    <Compile Include="Compilers\ScriptRunnerBase.cs" />
     <Compile Include="Compilers\LESS\LessCompiler.cs" />
     <Compile Include="Helpers\OptionHelpers.cs" />
     <Compile Include="Margin\CoffeeScriptMargin.cs" />
@@ -859,7 +857,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Resource Include="Resources\Images\extract.png" />
-    <EmbeddedResource Include="Resources\Scripts\jshint-2.4.0.js" />
     <EmbeddedResource Include="Resources\Scripts\AngularController.js" />
     <Resource Include="Resources\Images\delete.png" />
     <Resource Include="Resources\Images\browserlink.png" />
@@ -868,8 +865,16 @@
     <Resource Include="Resources\Images\jsonfile.png" />
     <None Include="Resources\Images\Browser Pause Button.png" />
     <None Include="Resources\Images\Browser Record Button.png" />
-    <Content Include="Resources\nodejs\node.exe" />
+    <Content Include="Resources\nodejs\node.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Settings Backup\.jshintrc">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\Scripts\es5-shim.min.js">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Scripts\jshint-node-reporter.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Resource Include="Resources\Images\graph_id.png" />
@@ -967,22 +972,25 @@
     <MadsKristensen.EditorExtensions.PreBuildTask />
     <!-- Include newly downloaded files now ... -->
     <ItemGroup>
-      <Content Include="Resources\nodejs\node.exe; Resources\nodejs\node_modules\less\lib\**; Resources\nodejs\node_modules\less\bin\**">
+      <Content Include="Resources\nodejs\node_modules\less\lib\**; Resources\nodejs\node_modules\less\bin\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <Content Include="Resources\nodejs\node_modules\less\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\node.exe; Resources\nodejs\node_modules\coffee-script\lib\**; Resources\nodejs\node_modules\coffee-script\bin\**">
+      <Content Include="Resources\nodejs\node_modules\coffee-script\lib\**; Resources\nodejs\node_modules\coffee-script\bin\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <Content Include="Resources\nodejs\node_modules\coffee-script\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\node.exe; Resources\nodejs\node_modules\iced-coffee-script\lib\**; Resources\nodejs\node_modules\iced-coffee-script\bin\**">
+      <Content Include="Resources\nodejs\node_modules\iced-coffee-script\lib\**; Resources\nodejs\node_modules\iced-coffee-script\bin\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <Content Include="Resources\nodejs\node_modules\iced-coffee-script\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
+        <IncludeInVSIX>true</IncludeInVSIX>
+      </Content>
+      <Content Include="Resources\nodejs\node_modules\jshint\**;" Exclude="README.md; **\test\**; **\tst\**; **\tests\**; **\examples\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
     </ItemGroup>
