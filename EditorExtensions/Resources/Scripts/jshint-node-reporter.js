@@ -7,12 +7,14 @@ module.exports = {
         res.forEach(function (result) {
             var error = result.error;
 
+            if (error.reason === "Missing radix parameter.")
+                error.reason = "When using the parseInt function, remember to specify the radix parameter. Example: parseInt('3', 10)";
+
             messageItems.push(
                                   {
                                       Line: parseInt(error.line, 10)
                                     , Column: parseInt(error.character, 10)
-                                    , Message: error.reason
-                                    , Code: error.code
+                                    , Message: "JsHint (" + error.code + "): " + error.reason
                                     , FileName: result.file
                                   }
                              );
