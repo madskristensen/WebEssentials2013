@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions;
@@ -22,7 +23,7 @@ namespace WebEssentialsTests
                 if (result.IsSuccess)
                     return result.Result;
                 else
-                    throw new ExternalException(result.Error.Message);
+                    throw new ExternalException(result.Errors.First().Message);
             }
             finally
             {

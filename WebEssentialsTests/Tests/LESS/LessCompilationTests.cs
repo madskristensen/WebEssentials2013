@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace WebEssentialsTests
             }
             else
             {
-                throw new ExternalException(result.Error.Message);
+                throw new ExternalException(result.Errors.First().Message);
             }
         }
         #endregion
