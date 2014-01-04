@@ -127,14 +127,14 @@ namespace MadsKristensen.EditorExtensions
                 return true;
             }
 
-            // Ignore files nested under other files such as bundle or TypeScript output
             ProjectItem item = ProjectHelpers.GetProjectItem(file);
 
             if (item == null)
                 return true;
 
+            // Ignore files nested under other files such as bundle or TypeScript output
             ProjectItem parent = item.Collection.Parent as ProjectItem;
-            if (parent != null && !Directory.Exists(parent.FileNames[1]))
+            if (parent != null && !Directory.Exists(parent.FileNames[1]) || File.Exists(item.FileNames[1] + ".bundle"))
                 return true;
 
             var ignoreFile = FindLocalIgnore(file);
