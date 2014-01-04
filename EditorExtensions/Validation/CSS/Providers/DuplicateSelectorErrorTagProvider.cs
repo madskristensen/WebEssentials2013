@@ -41,7 +41,7 @@ namespace MadsKristensen.EditorExtensions
                     dupe = cache[i];
                     break;
                 }
-            }            
+            }
 
             if (dupe != null)
             {
@@ -68,18 +68,12 @@ namespace MadsKristensen.EditorExtensions
             return string.Concat(selectorsText);
         }
 
-        private static int GetSelectorLength(RuleSet rule)
-        {
-            var selector = rule.Selectors.Last();
-            return selector.AfterEnd - rule.Start;
-        }
-
         public IEnumerable<Type> ItemTypes
         {
             get { return new[] { typeof(RuleSet) }; }
         }
 
-        private List<RuleResult> BuildCache(RuleSet rule)
+        private static List<RuleResult> BuildCache(RuleSet rule)
         {
             var visitor = new CssItemCollector<RuleSet>();
             rule.Parent.Accept(visitor);

@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Web.BrowserLink;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -37,7 +37,6 @@ namespace MadsKristensen.EditorExtensions
     public class BestPractices : BrowserLinkExtension
     {
         private Dictionary<string, ErrorTask> _tasks = new Dictionary<string, ErrorTask>();
-        private RulesFactory _factory = new RulesFactory();
 
         public ErrorListProvider ErrorList { get; private set; }
         public BrowserLinkConnection Connection { get; private set; }
@@ -57,7 +56,7 @@ namespace MadsKristensen.EditorExtensions
         [BrowserLinkCallback]
         public void Error(string id, bool success, string data)
         {
-            IRule rule = _factory.FindRule(id, data, this);
+            IRule rule = RulesFactory.FindRule(id, data, this);
 
             if (rule != null)
             {
@@ -99,7 +98,6 @@ namespace MadsKristensen.EditorExtensions
                 AddHierarchyItem(task);
 
                 task.Navigate += rule.Navigate;
-
                 _tasks[id] = task;
             }
         }

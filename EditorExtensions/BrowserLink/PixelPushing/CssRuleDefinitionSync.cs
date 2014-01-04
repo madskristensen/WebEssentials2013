@@ -13,17 +13,19 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
         private static Dictionary<string, string> ProduceKeyValuePairsFromRuleSet(RuleSet ruleSet)
         {
             var dict = new Dictionary<string, string>();
+
             foreach (var declaration in ruleSet.Block.Children.OfType<Declaration>())
             {
                 dict[declaration.PropertyName.Text] = declaration.StyleSheet.Text.Substring(declaration.Values.TextStart, declaration.Values.TextLength);
             }
+
             return dict;
         }
 
         private static void MoveCursorToEdit(Window window, IRange range, int offset = 0)
         {
             var selection = window.Document.Selection as TextSelection;
-            
+
             if (selection != null)
             {
                 try
@@ -31,6 +33,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                     var buffer = ProjectHelpers.GetCurentTextBuffer();
                     int line;
                     int column;
+
                     buffer.GetLineColumnFromPosition(range.Start, out line, out column);
                     selection.GotoLine(line + 1 + offset);
                 }
@@ -45,11 +48,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             return (window, edit) =>
             {
                 var decl = rule.Block.Children.OfType<Declaration>().LastOrDefault(x => x.PropertyName.Text == item);
+
                 if (decl != null)
                 {
                     MoveCursorToEdit(window, decl);
-
                     edit.Delete(decl.Start, decl.Length);
+
                     var pos = decl.Start;
 
                     while (string.IsNullOrWhiteSpace(edit.Snapshot.GetText(--pos, 1)))
@@ -65,6 +69,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             return (window, edit) =>
             {
                 var decl = rule.Block.Children.OfType<Declaration>().LastOrDefault(x => x.PropertyName.Text == propertyName);
+
                 if (decl != null)
                 {
                     MoveCursorToEdit(window, decl);
@@ -80,47 +85,49 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             return (window, edit) =>
             {
                 var openingBrace = rule.Block.Children.First();
+
                 MoveCursorToEdit(window, openingBrace, 1);
+
                 var startPosition = openingBrace.Start + openingBrace.Length; //Just after opening brace
                 var newDeclarationText = propertyName + ":" + newValue + ";";
+
                 edit.Insert(startPosition, newDeclarationText);
             };
         }
 
         class SyncAction : IEquatable<SyncAction>
         {
+            public RuleSet Rule { get; private set; }
+            public string PropertyName { get; private set; }
+            public string NewValue { get; set; }
+            public CssDeltaAction ActionKind { get; set; }
+            public CssRuleBlockSyncAction Action { get; set; }
+            public int ApproximatePosition { get; set; }
+
             private SyncAction(RuleSet rule, string propertyName)
             {
                 Rule = rule;
                 PropertyName = propertyName;
             }
 
-            public RuleSet Rule { get; private set; }
-
-            public string PropertyName { get; private set; }
-
-            public string NewValue { get; set; }
-
-            public CssDeltaAction ActionKind { get; set; }
-
-            public CssRuleBlockSyncAction Action { get; set; }
-
-            public int ApproximatePosition { get; set; }
-
             public SyncAction ToDelete()
             {
                 ActionKind = CssDeltaAction.Delete;
+
                 var decl = Rule.Block.Children.OfType<Declaration>().FirstOrDefault(x => x.PropertyName.Text == PropertyName);
 
                 if (decl == null)
                 {
                     ApproximatePosition = -1;
                     Action = (window, edit) => { };
+
                     return this;
                 }
 
                 ApproximatePosition = decl.Start;
+
                 Action = CreateDeleteAction(Rule, PropertyName);
+
                 return this;
             }
 
@@ -137,6 +144,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 ActionKind = CssDeltaAction.Update;
                 NewValue = newValue ?? NewValue;
                 Action = CreateUpdateAction(Rule, PropertyName, NewValue);
+
                 return this;
             }
 
@@ -146,6 +154,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 ActionKind = CssDeltaAction.Add;
                 NewValue = newValue ?? NewValue;
                 Action = CreateAddAction(Rule, PropertyName, NewValue);
+
                 return this;
             }
 
@@ -153,6 +162,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             {
                 ActionKind = CssDeltaAction.NoOp;
                 Action = (window, edit) => { };
+
                 return this;
             }
 
@@ -186,9 +196,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 return ActionKind.GetHashCode() ^ PropertyName.GetHashCode();
             }
 
-            public static SyncAction NoOp(RuleSet rule,string propertyName)
+            public static SyncAction NoOp(RuleSet rule, string propertyName)
             {
-                return new SyncAction(rule,propertyName).ToNoOp();
+                return new SyncAction(rule, propertyName).ToNoOp();
             }
         }
 
@@ -224,6 +234,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             foreach (var group in grouped)
             {
                 var contents = group.ToList();
+
                 if (contents.Count == 1)
                 {
                     result.Add(contents[0]);
@@ -232,6 +243,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 {
                     var distinct = contents.Distinct().ToList();
                     var lookup = distinct.ToDictionary(x => x.ActionKind);
+
                     if (lookup.ContainsKey(CssDeltaAction.Delete))
                     {
                         if (lookup.ContainsKey(CssDeltaAction.Add))
@@ -381,6 +393,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             var priorityDiff = ReconcileExistingRuleWithDiff(existingRule, oldToNewDiff);
             var combined = priorityDiff.Union(oldToNewDiff);
             var simplified = SimplifySyncActions(combined);
+
             return OrderAndExtractSyncActions(simplified);
         }
 

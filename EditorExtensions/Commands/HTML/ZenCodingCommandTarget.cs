@@ -1,13 +1,13 @@
-﻿using Microsoft.VisualStudio;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Threading;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Windows.Threading;
 using ZenCoding;
 
 namespace MadsKristensen.EditorExtensions
@@ -20,14 +20,14 @@ namespace MadsKristensen.EditorExtensions
         private static Regex _quotes = new Regex("(=\"()\")", RegexOptions.IgnoreCase);
 
         public ZenCoding(IVsTextView adapter, IWpfTextView textView, ICompletionBroker broker)
-            : base(adapter, textView, typeof(VSConstants.VSStd2KCmdID).GUID, 4, 5)
+            : base(adapter, textView, typeof(VSConstants.VSStd2KCmdID).GUID, (uint)VSConstants.VSStd2KCmdID.TAB, (uint)VSConstants.VSStd2KCmdID.BACKTAB)
         {
             _broker = broker;
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if (commandId == 4 && !_broker.IsCompletionActive(TextView))
+            if ((VSConstants.VSStd2KCmdID)commandId == VSConstants.VSStd2KCmdID.TAB && !_broker.IsCompletionActive(TextView))
             {
                 if (InvokeZenCoding())
                 {
@@ -52,17 +52,19 @@ namespace MadsKristensen.EditorExtensions
 
             if (!string.IsNullOrEmpty(result))
             {
-                EditorExtensionsPackage.DTE.UndoContext.Open("ZenCoding");
+                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+                {
+                    using (EditorExtensionsPackage.UndoContext("ZenCoding"))
+                    {
+                        ITextSelection selection = UpdateTextBuffer(zenSpan, result);
 
-                ITextSelection selection = UpdateTextBuffer(zenSpan, result);
-                Span newSpan = new Span(zenSpan.Start, selection.SelectedSpans[0].Length);
+                        EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
 
-                selection.Clear();
-
-                EditorExtensionsPackage.DTE.UndoContext.Close();
-
-                Dispatcher.CurrentDispatcher.BeginInvoke(
-                    new Action(() => SetCaret(newSpan, false)), DispatcherPriority.Normal, null);
+                        Span newSpan = new Span(zenSpan.Start, selection.SelectedSpans[0].Length);
+                        selection.Clear();
+                        SetCaret(newSpan, false);
+                    }
+                }), DispatcherPriority.ApplicationIdle, null);
 
                 return true;
             }
@@ -177,7 +179,7 @@ namespace MadsKristensen.EditorExtensions
             SnapshotSpan snapshot = new SnapshotSpan(point, result.Length);
             TextView.Selection.Select(snapshot, false);
 
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+            //EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
 
             return TextView.Selection;
         }
@@ -198,7 +200,7 @@ namespace MadsKristensen.EditorExtensions
 
                 if (result.Length > 0 && !text.Contains("<") && !char.IsWhiteSpace(result.Last()))
                 {
-                    return new Span(line.Start.Position + text.IndexOf(result), result.Length);
+                    return new Span(line.Start.Position + text.IndexOf(result, StringComparison.OrdinalIgnoreCase), result.Length);
                 }
             }
 

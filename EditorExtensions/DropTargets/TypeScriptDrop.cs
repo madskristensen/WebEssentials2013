@@ -1,10 +1,11 @@
-﻿using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Editor.DragDrop;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Globalization;
 using System.IO;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Editor.DragDrop;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -37,7 +38,7 @@ namespace MadsKristensen.EditorExtensions
         {
             string reference = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, _imageFilename);
 
-            if (reference.StartsWith("http://localhost:"))
+            if (reference.StartsWith("http://localhost:", StringComparison.OrdinalIgnoreCase))
             {
                 int index = reference.IndexOf('/', 24);
                 if (index > -1)
@@ -45,7 +46,7 @@ namespace MadsKristensen.EditorExtensions
             }
 
             reference = reference.Trim('/');
-            string comment = string.Format(_background, reference);
+            string comment = string.Format(CultureInfo.CurrentCulture, _background, reference);
 
             _view.TextBuffer.Insert(0, comment + Environment.NewLine);
 

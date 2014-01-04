@@ -1,12 +1,12 @@
-﻿using Microsoft.Ajax.Utilities;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Ajax.Utilities;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -15,13 +15,14 @@ namespace MadsKristensen.EditorExtensions
     [TextViewRole(PredefinedTextViewRoles.Document)]
     public class JavaScriptSaveListener : IWpfTextViewCreationListener
     {
+        [Import]
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+
         private ITextDocument _document;
 
         public void TextViewCreated(IWpfTextView textView)
         {
-            textView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out _document);
-
-            if (_document != null)
+            if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out _document))
             {
                 _document.FileActionOccurred += document_FileActionOccurred;
             }
@@ -51,7 +52,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static void Minify(string sourceFile, string minFile, bool isBundle)
         {
-            if (sourceFile.EndsWith(".min.js"))
+            if (sourceFile.EndsWith(".min.js", StringComparison.OrdinalIgnoreCase))
                 return;
 
             try
@@ -97,7 +98,7 @@ namespace MadsKristensen.EditorExtensions
 
                 if (!isBundle)
                 {
-                    MarginBase.AddFileToProject(file, mapPath);
+                    ProjectHelpers.AddFileToProject(file, mapPath);
                 }
             }
         }
@@ -118,7 +119,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (WESettings.GetBoolean(WESettings.Keys.GenerateJavaScriptSourceMaps))
             {
-                content += Environment.NewLine + "//# sourceMappingURL=" + Path.GetFileName(minFile) + ".map";
+                content += "\r\n/*\r\n//# sourceMappingURL=" + Path.GetFileName(minFile) + ".map\r\n*/";
             }
 
             ProjectHelpers.CheckOutFileFromSourceControl(minFile);

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
 using Microsoft.Web.Editor;
 
@@ -12,16 +12,14 @@ namespace MadsKristensen.EditorExtensions
     internal class ColorConverterSmartTagAction : CssSmartTagActionBase
     {
         private ITrackingSpan _span;
-        private ParseItem _item;
         private ColorFormat _format;
         private string _displayText;
         private ColorModel _colorModel;
         private static string[] _colorNames = Enum.GetNames(typeof(System.Drawing.KnownColor));
 
-        public ColorConverterSmartTagAction(ITrackingSpan span, ParseItem item, ColorModel colorModel, ColorFormat format)
+        public ColorConverterSmartTagAction(ITrackingSpan span, ColorModel colorModel, ColorFormat format)
         {
             _span = span;
-            _item = item;
 
             if (format == ColorFormat.RgbHex6)
                 format = ColorFormat.RgbHex3;
@@ -32,32 +30,31 @@ namespace MadsKristensen.EditorExtensions
 
             if (Icon == null)
             {
-                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/palette.png", UriKind.RelativeOrAbsolute));
+                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/palette.png", UriKind.RelativeOrAbsolute));
             }
 
-            _displayText = "Convert to " + GetColorString();
+            _displayText = "Convert to " + GetColorString(_format, _colorModel);
         }
 
-        private string GetColorString()
+        private static string GetColorString(ColorFormat format, ColorModel model)
         {
-            switch (_format)
+            switch (format)
             {
                 case ColorFormat.Name:
-                    return GetNamedColor(_colorModel.Color);
+                    return GetNamedColor(model.Color);
 
                 case ColorFormat.Hsl:
-                    return FormatHslColor(_colorModel); //ColorFormatter.FormatColorAs(_colorModel, ColorFormat.Hsl);
+                    return FormatHslColor(model); //ColorFormatter.FormatColorAs(_colorModel, ColorFormat.Hsl);
 
                 case ColorFormat.Rgb:
                 case ColorFormat.RgbHex3:
                 case ColorFormat.RgbHex6:
-                    return ColorFormatter.FormatColor(_colorModel, _format);
+                    return ColorFormatter.FormatColor(model, format);
 
                 default:
-                    throw new InvalidEnumArgumentException("format", (int)_format, typeof(ColorFormat));
+                    throw new InvalidEnumArgumentException("format", (int)format, typeof(ColorFormat));
             }
         }
-
 
         public override string DisplayText
         {
@@ -66,7 +63,7 @@ namespace MadsKristensen.EditorExtensions
 
         public override void Invoke()
         {
-            _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), GetColorString());
+            _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), GetColorString(_format, _colorModel));
         }
 
         #region Fixed Hsl conversion
@@ -108,7 +105,7 @@ namespace MadsKristensen.EditorExtensions
         }
         #endregion
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
+        [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase")]
         public static string GetNamedColor(Color color)
         {
             foreach (string name in _colorNames)
@@ -118,7 +115,6 @@ namespace MadsKristensen.EditorExtensions
                 {
                     return known.Name.ToLowerInvariant();
                 }
-
             }
 
             return null;

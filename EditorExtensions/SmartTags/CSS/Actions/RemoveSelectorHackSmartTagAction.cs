@@ -19,7 +19,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (Icon == null)
             {
-                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/no_skull.png", UriKind.RelativeOrAbsolute));
+                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/no_skull.png", UriKind.RelativeOrAbsolute));
             }
         }
 
@@ -30,9 +30,8 @@ namespace MadsKristensen.EditorExtensions
 
         public override void Invoke()
         {
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), _selector.Text.Substring(_hack.Length));
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+                _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), _selector.Text.Substring(_hack.Length));
         }
     }
 }

@@ -1,12 +1,13 @@
-﻿using Microsoft.CSS.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
+using System.Windows.Controls;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -44,9 +45,24 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (url.UrlString.Text.IndexOf("base64,") > -1 && buffer.CurrentSnapshot.Length >= url.UrlString.AfterEnd)
                 {
-                    var image = ImageQuickInfo.CreateImage(url.UrlString.Text.Trim('"', '\''));
+                    var items = new List<object>();
+                    ImageQuickInfo.AddImageContent(items, url.UrlString.Text.Trim('"', '\''));
+
+                    // Replace any TextBuffers into strings for the tooltip to display.
+                    // This works because base64 images are loaded synchronously, so we
+                    // can compute the size before returning.  If they do change, we'll
+                    // need to replace them with TextBlocks & handle the Changed event.
+                    for (int i = 0; i < items.Count; i++)
+                    {
+                        var tipBuffer = items[i] as ITextBuffer;
+                        if (tipBuffer == null)
+                            continue;
+                        items[i] = tipBuffer.CurrentSnapshot.GetText();
+                    }
+                    var content = new ItemsControl { ItemsSource = items };
+
                     var span = new SnapshotSpan(new SnapshotPoint(buffer.CurrentSnapshot, url.UrlString.Start), url.UrlString.Length);
-                    var tag = new OutliningRegionTag(true, true, url.UrlString.Length + " characters", image);
+                    var tag = new OutliningRegionTag(true, true, url.UrlString.Length + " characters", content);
                     yield return new TagSpan<IOutliningRegionTag>(span, tag);
                 }
             }
@@ -69,7 +85,7 @@ namespace MadsKristensen.EditorExtensions
             return _tree != null;
         }
 
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged 
+        public event EventHandler<SnapshotSpanEventArgs> TagsChanged
         {
             add { }
             remove { }

@@ -1,16 +1,11 @@
-﻿using Microsoft.CSS.Editor;
+﻿using System;
+using System.Runtime.InteropServices;
+using System.Windows.Threading;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Utilities;
-using System;
-using System.ComponentModel.Composition;
-using System.Runtime.InteropServices;
-using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -18,12 +13,10 @@ namespace MadsKristensen.EditorExtensions
     {
         private ITextView _textView;
         private IOleCommandTarget _nextCommandTarget;
-        private ICompletionBroker _broker;
 
-        public RetriggerTarget(IVsTextView adapter, ITextView textView, ICompletionBroker broker)
+        public RetriggerTarget(IVsTextView adapter, ITextView textView)
         {
             _textView = textView;
-            _broker = broker;
             ErrorHandler.ThrowOnFailure(adapter.AddCommandFilter(this, out _nextCommandTarget));
         }
 

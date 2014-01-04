@@ -10,6 +10,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     {
         private static readonly ConcurrentDictionary<string, IDocument> DocumentLookup = new ConcurrentDictionary<string, IDocument>();
 
+        public static IEnumerable<IDocument> AllDocuments
+        {
+            get { return DocumentLookup.Values; }
+        }
+
         private static Func<string, bool, IDocument> GetFactory(string fullPath)
         {
             var extension = (Path.GetExtension(fullPath) ?? "").ToUpperInvariant();
@@ -65,11 +70,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return doc;
         }
 
-        public static IEnumerable<IDocument> AllDocuments
-        {
-            get { return DocumentLookup.Values; }
-        }
-
         public static void Clear()
         {
             var currentValues = DocumentLookup.Values.ToList();
@@ -81,7 +81,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 {
                     value.Dispose();
                 }
-                catch(ObjectDisposedException)
+                catch (ObjectDisposedException)
                 {
                 }
             }

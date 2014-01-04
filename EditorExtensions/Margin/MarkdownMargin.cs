@@ -1,14 +1,15 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using MarkdownSharp;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using EnvDTE;
+using EnvDTE80;
+using MarkdownSharp;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -28,8 +29,13 @@ namespace MadsKristensen.EditorExtensions
         {
             if (_compiler == null)
             {
-                MarkdownOptions options = new MarkdownOptions();
-                options.AutoHyperlink = true;
+                MarkdownSharp.MarkdownOptions options = new MarkdownSharp.MarkdownOptions();
+                options.AutoHyperlink = AutoHyperlinks;
+                options.LinkEmails = LinkEmails;
+                options.AutoNewLines = AutoNewLines;
+                options.EmptyElementSuffix = GenerateXHTML ? "/>" : ">";
+                options.EncodeProblemUrlCharacters = EncodeProblemUrlCharacters;
+                options.StrictBoldItalic = StrictBoldItalic;
 
                 _compiler = new Markdown(options);
             }
@@ -41,30 +47,47 @@ namespace MadsKristensen.EditorExtensions
 
             string result = _compiler.Transform(source);
 
-            string html = "<html><head><meta charset=\"utf-8\" />" +
-                          GetStylesheet() +
-                          "</head>" +
-                          "<body>" + result + "</body></html>";
+            if (_browser != null)
+            {
+                string html =
+                    String.Format(CultureInfo.InvariantCulture, @"<!DOCTYPE html>
+                                    <html lang=""en"" xmlns=""http://www.w3.org/1999/xhtml"">
+                                    <head>
+                                        <meta charset=""utf-8"" />
+                                        <title>Markdown Preview</title>
+                                        {0}
+                                    </head>
+                                    <body>{1}</body></html>", GetStylesheet(), result);
 
-            _browser.NavigateToString(html);
+                _browser.NavigateToString(html);
+            }
+
+            // NOTE: Markdown files are always compiled for the Preview window.
+            //       But, only saved to disk when the CompileEnabled flag is true.
+            //       That is why the following if statement is not wrapping this whole method.
+            if (CompileEnabled)
+            {
+                OnCompilationDone(result.Trim(), Document.FilePath);
+            }
         }
 
         public static string GetStylesheet()
         {
-            string folder = ProjectHelpers.GetSolutionFolderPath();
+            string file = GetCustomStylesheetFilePath();
 
-            if (!string.IsNullOrEmpty(folder))
+            if (File.Exists(file))
             {
-                string file = Path.Combine(folder, _stylesheet);
-
-                if (File.Exists(file))
-                {
-                    string linkFormat = "<link rel=\"stylesheet\" href=\"{0}\" />";
-                    return string.Format(linkFormat, file);
-                }
+                string linkFormat = "<link rel=\"stylesheet\" href=\"{0}\" />";
+                return string.Format(CultureInfo.CurrentCulture, linkFormat, file);
             }
 
             return "<style>body{font: 1.1em 'Century Gothic'}</style>";
+        }
+
+        public static string GetCustomStylesheetFilePath()
+        {
+            string folder = ProjectHelpers.GetSolutionFolderPath();
+            return Path.Combine(folder, _stylesheet);
         }
 
         public static void CreateStylesheet()
@@ -127,24 +150,59 @@ namespace MadsKristensen.EditorExtensions
             Settings.Save();
         }
 
-        public override void MinifyFile(string fileName, string source)
+        protected override void MinifyFile(string fileName, string source)
         {
             // Nothing to minify
         }
 
-        public override bool UseCompiledFolder
-        {
-            get { return false; }
-        }
-
         public override bool IsSaveFileEnabled
         {
-            get { return false; }
+            get { return true; }
         }
 
         protected override bool CanWriteToDisk(string source)
         {
-            return false;
+            return true;
+        }
+
+        public override bool CompileEnabled
+        {
+            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownEnableCompiler); }
+        }
+
+        public override string CompileToLocation
+        {
+            get { return WESettings.GetString(WESettings.Keys.MarkdownCompileToLocation); }
+        }
+
+        public static bool AutoHyperlinks
+        {
+            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownAutoHyperlinks); }
+        }
+
+        public static bool LinkEmails
+        {
+            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownLinkEmails); }
+        }
+
+        public static bool AutoNewLines
+        {
+            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownAutoNewLine); }
+        }
+
+        public static bool GenerateXHTML
+        {
+            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownGenerateXHTML); }
+        }
+
+        public static bool EncodeProblemUrlCharacters
+        {
+            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownEncodeProblemUrlCharacters); }
+        }
+
+        public static bool StrictBoldItalic
+        {
+            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownStrictBoldItalic); }
         }
     }
 }

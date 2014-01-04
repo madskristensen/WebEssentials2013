@@ -1,22 +1,24 @@
-﻿using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
+﻿using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions.Options
 {
     [Export(typeof(IWpfTextViewCreationListener))]
     [ContentType("XML")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    internal class ProjectSettingsTextViewListener : IWpfTextViewCreationListener
+    public class ProjectSettingsTextViewListener : IWpfTextViewCreationListener
     {
+        [Import]
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+
         public void TextViewCreated(IWpfTextView textView)
         {
             ITextDocument document;
-            textView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
-
-            if (document != null)
+            if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
             {
                 document.FileActionOccurred += document_FileActionOccurred;
             }
@@ -24,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.Options
 
         private void document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
-            if (e.FileActionType == FileActionTypes.ContentSavedToDisk && e.FilePath.EndsWith(Settings._fileName))
+            if (e.FileActionType == FileActionTypes.ContentSavedToDisk && e.FilePath.EndsWith(Settings._fileName, StringComparison.OrdinalIgnoreCase))
             {
                 Task.Run(() =>
                 {

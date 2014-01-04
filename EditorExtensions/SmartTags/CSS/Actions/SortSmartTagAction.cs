@@ -1,9 +1,9 @@
-﻿using CssSorter;
+﻿using System;
+using System.Windows.Media.Imaging;
+using CssSorter;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using System;
-using System.Windows.Media.Imaging;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (Icon == null)
             {
-                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/sort.png", UriKind.RelativeOrAbsolute));
+                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/sort.png", UriKind.RelativeOrAbsolute));
             }
         }
 
@@ -45,16 +45,14 @@ namespace MadsKristensen.EditorExtensions
             {
                 result = sorter.SortStyleSheet(_rule.Text);
             }
-            //var declarations = _rule.Block.Declarations.OrderBy(d => d.PropertyName, new DeclarationComparer());
-            var position = _view.Caret.Position.BufferPosition.Position;
+            var position = _view.Caret.Position.BufferPosition;
 
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-
-            _span.TextBuffer.Replace(ruleSpan, result);// string.Concat(declarations.Select(d => d.Text)));
-            _view.Caret.MoveTo(new SnapshotPoint(_span.TextBuffer.CurrentSnapshot, position));
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            {
+                _span.TextBuffer.Replace(ruleSpan, result);
+                _view.Caret.MoveTo(new SnapshotPoint(position.Snapshot.TextBuffer.CurrentSnapshot, position));
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+            }
         }
     }
 

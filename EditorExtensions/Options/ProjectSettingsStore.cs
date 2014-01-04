@@ -1,17 +1,17 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using EnvDTE;
+using EnvDTE80;
 using Keys = MadsKristensen.EditorExtensions.WESettings.Keys;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class Settings
+    internal static class Settings
     {
         public const string _fileName = "WE2013-settings.xml";
         public const string _solutionFolder = "Solution Items";
@@ -21,17 +21,10 @@ namespace MadsKristensen.EditorExtensions
         private static object _syncFileRoot = new object();
         private static object _syncCacheRoot = new object();
 
-        public Settings()
-        {
-            UpdateCache();
-        }
-
         public static bool SolutionSettingsExist
         {
             get { return File.Exists(GetSolutionFilePath()); }
         }
-
-        public static float Version { get; private set; }
 
         public static object GetValue(string propertyName)
         {
@@ -107,17 +100,6 @@ namespace MadsKristensen.EditorExtensions
 
                         if (settingsNode != null)
                         {
-                            XmlAttribute versionAttr = settingsNode.Attributes["version"];
-                            if (versionAttr != null)
-                            {
-                                float version;
-
-                                if (float.TryParse(versionAttr.InnerText, out version))
-                                {
-                                    Version = version;
-                                }
-                            }
-
                             lock (_syncCacheRoot)
                             {
                                 _cache.Clear();
@@ -245,26 +227,48 @@ namespace MadsKristensen.EditorExtensions
             var dic = new SortedDictionary<string, object>();
 
             // Misc
-            dic.Add(Keys.EnableEnterFormat, true);
             dic.Add(Keys.EnableBrowserLinkMenu, true);
+            dic.Add(Keys.BrowserLink_ShowMenu, true);
+            dic.Add(Keys.SvgShowPreviewWindow, true);
 
-            
+            // HTML
+            dic.Add(Keys.EnableEnterFormat, true);
+            dic.Add(Keys.EnableAngularValidation, true);
+            dic.Add(Keys.EnableHtmlMinification, true);
+
             // LESS
             dic.Add(Keys.GenerateCssFileFromLess, true);
             dic.Add(Keys.ShowLessPreviewWindow, true);
             dic.Add(Keys.LessMinify, true);
+            dic.Add(Keys.LessEnableCompiler, true);
 
+            // TypeScript
+            dic.Add(Keys.ShowTypeScriptPreviewWindow, true);
 
             // CoffeeScript
             dic.Add(Keys.GenerateJsFileFromCoffeeScript, true);
             dic.Add(Keys.ShowCoffeeScriptPreviewWindow, true);
+            dic.Add(Keys.CoffeeScriptEnableCompiler, true);
+            dic.Add(Keys.CoffeeScriptCompileToLocation, string.Empty);
+
+            // Markdown
+            dic.Add(Keys.MarkdownShowPreviewWindow, true);
+            dic.Add(Keys.MarkdownEnableCompiler, true);
+            dic.Add(Keys.MarkdownCompileToLocation, true);
+
+            dic.Add(Keys.MarkdownAutoHyperlinks, true);
+            dic.Add(Keys.MarkdownLinkEmails, true);
+            dic.Add(Keys.MarkdownAutoNewLine, true);
+            dic.Add(Keys.MarkdownGenerateXHTML, true);
+            dic.Add(Keys.MarkdownEncodeProblemUrlCharacters, true);
+            dic.Add(Keys.MarkdownStrictBoldItalic, true);
 
             // CSS
             dic.Add(Keys.CssErrorLocation, (int)Keys.ErrorLocation.Messages);
             dic.Add(Keys.SyncVendorValues, true);
             dic.Add(Keys.ShowUnsupported, true);
 
-            //JSHint
+            // JSHint
             dic.Add(Keys.EnableJsHint, true);
             dic.Add(Keys.JsHintErrorLocation, (int)Keys.FullErrorLocation.Messages);
             dic.Add(Keys.JsHint_bitwise, true);
@@ -283,18 +287,16 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.JsHint_unused, true);
             dic.Add(Keys.JsHint_ignoreFiles, "kendo.*; globalize.*");
 
-            // MISC
+            // Misc
             dic.Add(Keys.ShowBrowserTooltip, true);
             dic.Add(Keys.WrapCoffeeScriptClosure, true);
 
             // Minification
             dic.Add(Keys.EnableCssMinification, true);
             dic.Add(Keys.EnableJsMinification, true);
-
-            // Minification
             dic.Add(Keys.CoffeeScriptMinify, true);
-           
 
+            // Source Maps
             dic.Add(Keys.GenerateJavaScriptSourceMaps, true);
 
             // Unused CSS
@@ -304,6 +306,9 @@ namespace MadsKristensen.EditorExtensions
             //Pixel Pushing mode
             dic.Add(Keys.PixelPushing_OnByDefault, true);
 
+            // Code Generation
+            dic.Add(Keys.JavaScriptCamelCaseClassNames, false);
+            dic.Add(Keys.JavaScriptCamelCasePropertyNames, false);
             return dic;
         }
 

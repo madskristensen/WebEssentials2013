@@ -1,7 +1,6 @@
-﻿using Microsoft.CSS.Editor;
+﻿using System.ComponentModel;
 using Microsoft.CSS.Editor.Schemas;
 using Microsoft.VisualStudio.Shell;
-using System.ComponentModel;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -25,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.ShowBrowserTooltip, ShowBrowserTooltip);
             Settings.SetValue(WESettings.Keys.ValidateZeroUnit, ValidateZeroUnit);
             Settings.SetValue(WESettings.Keys.ValidateVendorSpecifics, ValidateVendorSpecifics);
-            Settings.SetValue(WESettings.Keys.EnableSpeedTyping, EnableSpeedTyping);
+            Settings.SetValue(WESettings.Keys.CssPreserveRelativePathsOnMinify, CssPreserveRelativePathsOnMinify);
 
             OnChanged();
             Settings.Save();
@@ -45,28 +44,28 @@ namespace MadsKristensen.EditorExtensions
             ShowBrowserTooltip = WESettings.GetBoolean(WESettings.Keys.ShowBrowserTooltip);
             ValidateZeroUnit = WESettings.GetBoolean(WESettings.Keys.ValidateZeroUnit);
             ValidateVendorSpecifics = WESettings.GetBoolean(WESettings.Keys.ValidateVendorSpecifics);
-            EnableSpeedTyping = WESettings.GetBoolean(WESettings.Keys.EnableSpeedTyping);
+            CssPreserveRelativePathsOnMinify = WESettings.GetBoolean(WESettings.Keys.CssPreserveRelativePathsOnMinify);
         }
 
-        protected void OnChanged()
+        private static void OnChanged()
         {
             CssSchemaManager.SchemaManager.ReloadSchemas();
         }
-                
+
         [LocDisplayName("Minify CSS files on save")]
         [Description("When a .css file (foo.css) is saved and a minified version (foo.min.css) exist, the minified file will be updated. Right-click any .css file to generate .min.css file")]
         [Category("Misc")]
         public bool EnableCssMinification { get; set; }
 
+        [LocDisplayName("Preserve original relative paths in CSS files on minify")]
+        [Description("Deal manually with '../' relative paths. Useful, when resources (e.g. images) are within 'deploy folder', but corresponding css in other developement folder.")]
+        [Category("Misc")]
+        public bool CssPreserveRelativePathsOnMinify { get; set; }
+
         [LocDisplayName("Gzip minified CSS files on save")]
         [Description("When a .css file (foo.css) is saved and a minified version (foo.min.css) exist, a gzipped version of the file will be created.")]
         [Category("Misc")]
         public bool EnableGzipping { get; set; }
-        
-        [LocDisplayName("Enable Speed Typing")]
-        [Description("Speed Typing makes it easier to write CSS by eliminating the need to type curlies, colons and semi-colons.")]
-        [Category("Misc")]
-        public bool EnableSpeedTyping { get; set; }
 
         [LocDisplayName("Disallow universal selector")]
         [Description("Disallows the universal selector (*).")]

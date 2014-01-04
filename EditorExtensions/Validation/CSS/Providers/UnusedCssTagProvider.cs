@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using EnvDTE100;
+using System.Globalization;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
@@ -41,7 +40,7 @@ namespace MadsKristensen.EditorExtensions
 
             return new UnusedCssTag
             {
-                ToolTipContent = string.Format("No usages of the CSS selector '{0}' have been found.", rule.DisplaySelectorName),
+                ToolTipContent = string.Format(CultureInfo.CurrentCulture, "No usages of the CSS selector '{0}' have been found.", rule.DisplaySelectorName),
                 ErrorType = "compiler warning",
                 Span = ss,
             };
@@ -76,7 +75,7 @@ namespace MadsKristensen.EditorExtensions
             }
 
             doc.Reparse(_buffer.CurrentSnapshot.GetText());
-            UsageRegistry.Resync();
+            UsageRegistry.Resynchronize();
         }
 
         private void OnTagsChanged()
@@ -125,7 +124,7 @@ namespace MadsKristensen.EditorExtensions
                 return new ITagSpan<UnusedCssTag>[0];
             }
 
-            var result = new List<ITagSpan<IErrorTag>>(); 
+            var result = new List<ITagSpan<IErrorTag>>();
 
             using (AmbientRuleContext.GetOrCreate())
             {

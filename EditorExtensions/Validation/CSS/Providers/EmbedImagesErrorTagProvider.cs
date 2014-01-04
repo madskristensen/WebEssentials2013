@@ -1,9 +1,10 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Globalization;
 using System.IO;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -19,8 +20,8 @@ namespace MadsKristensen.EditorExtensions
             if (!WESettings.GetBoolean(WESettings.Keys.ValidateEmbedImages) || !url.IsValid || url.UrlString.Text.Contains("base64,") || context == null)
                 return ItemCheckResult.Continue;
 
-            string fileName = ImageQuickInfo.GetFileName(url.UrlString.Text);
-            if (fileName.Contains("://"))
+            string fileName = ImageQuickInfo.GetFullUrl(url.UrlString.Text, EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+            if (string.IsNullOrEmpty(fileName) || fileName.Contains("://"))
                 return ItemCheckResult.Continue;
 
             FileInfo file = new FileInfo(fileName);
@@ -30,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
                 Declaration dec = url.FindType<Declaration>();
                 if (dec != null && dec.PropertyName != null && dec.PropertyName.Text[0] != '*' && dec.PropertyName.Text[0] != '_')
                 {
-                    string error = string.Format(Resources.PerformanceEmbedImageAsDataUri, file.Length);
+                    string error = string.Format(CultureInfo.CurrentCulture, Resources.PerformanceEmbedImageAsDataUri, file.Length);
                     context.AddError(new SimpleErrorTag(url.UrlString, error));
                 }
             }

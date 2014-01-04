@@ -7,10 +7,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     {
         [JsonProperty("sourcePath")]
         public string FileName { get; set; }
-
         [JsonProperty("startPosition")]
         public int Offset { get; set; }
-
         [JsonProperty("length")]
         public int Length { get; set; }
 
@@ -22,7 +20,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public override bool Equals(object obj)
         {
             return Equals(obj as SourceLocation);
-        }    
+        }
 
         public override int GetHashCode()
         {

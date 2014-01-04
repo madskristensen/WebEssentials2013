@@ -1,32 +1,28 @@
-﻿using EnvDTE80;
+﻿using System;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class LessExtractMixinCommandTarget : CommandTargetBase
     {
-        private DTE2 _dte;
-
         public LessExtractMixinCommandTarget(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidExtractCmdSet, PkgCmdIDList.ExtractMixin)
+            : base(adapter, textView, CommandGuids.guidExtractCmdSet, CommandId.ExtractMixin)
         {
-            _dte = EditorExtensionsPackage.DTE;
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if (TextView == null)
+            var point = TextView.GetSelection("LESS");
+            if (point == null)
                 return false;
 
-            CssEditorDocument document = CssEditorDocument.FromTextBuffer(TextView.TextBuffer);
-
-            int position = TextView.Caret.Position.BufferPosition.Position;
-            ParseItem item = document.Tree.StyleSheet.ItemBeforePosition(position);
+            var buffer = point.Value.Snapshot.TextBuffer;
+            var doc = CssEditorDocument.FromTextBuffer(buffer);
+            ParseItem item = doc.StyleSheet.ItemBeforePosition(point.Value);
 
             ParseItem rule = LessExtractVariableCommandTarget.FindParent(item);
             int mixinStart = rule.Start;
@@ -34,18 +30,18 @@ namespace MadsKristensen.EditorExtensions
 
             if (!string.IsNullOrEmpty(name))
             {
-                EditorExtensionsPackage.DTE.UndoContext.Open("Extract to mixin");
+                using (EditorExtensionsPackage.UndoContext(("Extract to mixin")))
+                {
+                    string text = TextView.Selection.SelectedSpans[0].GetText();
+                    buffer.Insert(rule.Start, "." + name + "() {" + Environment.NewLine + text + Environment.NewLine + "}" + Environment.NewLine + Environment.NewLine);
 
-                var selection = TextView.Selection.SelectedSpans[0];
-                string text = selection.GetText();
-                TextView.TextBuffer.Replace(selection.Span, "." + name + "();");
-                TextView.TextBuffer.Insert(rule.Start, "." + name + "() {" + Environment.NewLine + text + Environment.NewLine + "}" + Environment.NewLine + Environment.NewLine);
+                    var selection = TextView.Selection.SelectedSpans[0];
+                    TextView.TextBuffer.Replace(selection.Span, "." + name + "();");
 
-                TextView.Selection.Select(new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, mixinStart, 1), false);
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-                TextView.Selection.Clear();
-
-                EditorExtensionsPackage.DTE.UndoContext.Close();
+                    TextView.Selection.Select(new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, mixinStart, 1), false);
+                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                    TextView.Selection.Clear();
+                }
 
                 return true;
             }
@@ -55,7 +51,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool IsEnabled()
         {
-            return TextView.Selection.SelectedSpans[0].Length > 0;
+            return TextView.Selection.SelectedSpans[0].Length > 0 && TextView.GetSelection("LESS") != null;
         }
     }
 }

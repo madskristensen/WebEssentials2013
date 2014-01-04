@@ -1,11 +1,12 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
+using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
+using ThreadingTasks = System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -22,34 +23,49 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            CommandID cmdBundles = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildBundles);
+            CommandID cmdBundles = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildBundles);
             OleMenuCommand menuBundles = new OleMenuCommand((s, e) => UpdateBundleFiles(), cmdBundles);
             _mcs.AddCommand(menuBundles);
 
-            CommandID cmdLess = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildLess);
-            OleMenuCommand menuLess = new OleMenuCommand((s, e) => BuildLess(), cmdLess);
+            CommandID cmdLess = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildLess);
+            OleMenuCommand menuLess = new OleMenuCommand(async (s, e) => await BuildLess(), cmdLess);
             _mcs.AddCommand(menuLess);
 
             //CommandID cmdTS = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildTypeScript);
             //OleMenuCommand menuTS = new OleMenuCommand((s, e) => BuildTypeScript(), cmdTS);
             //_mcs.AddCommand(menuTS);
 
-            CommandID cmdMinify = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildMinify);
+            CommandID cmdMinify = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildMinify);
             OleMenuCommand menuMinify = new OleMenuCommand((s, e) => Minify(), cmdMinify);
             _mcs.AddCommand(menuMinify);
 
-            CommandID cmdCoffee = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildCoffeeScript);
-            OleMenuCommand menuCoffee = new OleMenuCommand((s, e) => BuildCoffeeScript(), cmdCoffee);
+            CommandID cmdCoffee = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildCoffeeScript);
+            OleMenuCommand menuCoffee = new OleMenuCommand(async (s, e) => await BuildCoffeeScript(), cmdCoffee);
             _mcs.AddCommand(menuCoffee);
+
+            CommandID cmdIcedCoffee = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildIcedCoffeeScript);
+            OleMenuCommand menuIcedCoffee = new OleMenuCommand(async (s, e) => await BuildIcedCoffeeScript(), cmdIcedCoffee);
+            _mcs.AddCommand(menuIcedCoffee);
         }
 
-        public static void BuildCoffeeScript()
+        public async static ThreadingTasks.Task BuildCoffeeScript()
         {
-            foreach (Project project in ProjectHelpers.GetAllProjects())
+            var projectTasks = ProjectHelpers.GetAllProjects().Select(project =>
             {
-                using (CoffeeScriptMargin margin = new CoffeeScriptMargin())
-                    margin.CompileProject(project);
-            }
+                return new CoffeeScriptProjectCompiler().CompileProject(project);
+            });
+
+            await ThreadingTasks.Task.WhenAll(projectTasks.ToArray());
+        }
+
+        public async static ThreadingTasks.Task BuildIcedCoffeeScript()
+        {
+            var projectTasks = ProjectHelpers.GetAllProjects().Select(project =>
+            {
+                return new IcedCoffeeScriptProjectCompiler().CompileProject(project);
+            });
+
+            await ThreadingTasks.Task.WhenAll(projectTasks.ToArray());
         }
 
         public static void UpdateBundleFiles()
@@ -59,12 +75,14 @@ namespace MadsKristensen.EditorExtensions
             //Logger.Log("Bundles updated");
         }
 
-        public static void BuildLess()
+        public async static ThreadingTasks.Task BuildLess()
         {
-            foreach (Project project in ProjectHelpers.GetAllProjects())
+            var projectTasks = ProjectHelpers.GetAllProjects().Select(project =>
             {
-                LessProjectCompiler.CompileProject(project);
-            }
+                return new LessProjectCompiler().CompileProject(project);
+            });
+
+            await ThreadingTasks.Task.WhenAll(projectTasks.ToArray());
         }
 
         //private void BuildTypeScript()
@@ -75,7 +93,7 @@ namespace MadsKristensen.EditorExtensions
         //    }
         //}
 
-        private void Minify()
+        private static void Minify()
         {
             _dte.StatusBar.Text = "Web Essentials: Minifying files...";
             var files = GetFiles();
@@ -91,9 +109,13 @@ namespace MadsKristensen.EditorExtensions
                     {
                         JavaScriptSaveListener.Minify(path, minPath, false);
                     }
-                    else
+                    else if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase))
                     {
                         CssSaveListener.Minify(path, minPath);
+                    }
+                    else if (extension.Equals(".html", StringComparison.OrdinalIgnoreCase))
+                    {
+                        HtmlSaveListener.Minify(path, minPath);
                     }
                 }
             }
@@ -101,7 +123,7 @@ namespace MadsKristensen.EditorExtensions
             _dte.StatusBar.Text = "Web Essentials: Files minified";
         }
 
-        private IEnumerable<string> GetFiles()
+        private static IEnumerable<string> GetFiles()
         {
             foreach (Project project in ProjectHelpers.GetAllProjects())
             {

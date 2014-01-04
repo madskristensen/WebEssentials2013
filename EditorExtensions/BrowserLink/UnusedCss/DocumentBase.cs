@@ -1,9 +1,9 @@
-﻿using Microsoft.CSS.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -15,45 +15,49 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private string _lastParsedText;
         private readonly object _parseSync = new object();
 
+        public object ParseSync
+        {
+            get { return _parseSync; }
+        }
+        public IEnumerable<IStylingRule> Rules { get; private set; }
+        public bool IsProcessingUnusedCssRules { get; set; }
+        public string FileName { get { return _file; } }
+
         protected DocumentBase(string file)
         {
             _file = file;
+
             var path = Path.GetDirectoryName(file);
+
             _localFileName = (Path.GetFileName(file) ?? "").ToLowerInvariant();
 
-            _watcher = new FileSystemWatcher
-            {
-                Path = path,
-                Filter = _localFileName,
-                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.DirectoryName
-            };
-
+            _watcher = new FileSystemWatcher();
+            _watcher.Path = path;
+            _watcher.Filter = _localFileName;
+            _watcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.DirectoryName;
             _watcher.Changed += Reparse;
             _watcher.Renamed += ProxyRename;
             _watcher.Created += Reparse;
             _watcher.Deleted += CleanUpWarnings;
             _watcher.EnableRaisingEvents = true;
+
             Reparse();
         }
 
         private void CleanUpWarnings(object sender, FileSystemEventArgs e)
         {
             DocumentFactory.UnregisterDocument(this);
-            UsageRegistry.Resync();
+            UsageRegistry.Resynchronize();
         }
-
-        public object ParseSync
-        {
-            get { return _parseSync; }
-        }
-
-        public IEnumerable<IStylingRule> Rules { get; private set; }
 
         public void Dispose()
         {
             _watcher.Changed -= Reparse;
             _watcher.Renamed -= ProxyRename;
+
             _watcher.Dispose();
+
+            GC.SuppressFinalize(this);
         }
 
         private void ProxyRename(object sender, RenamedEventArgs e)
@@ -63,10 +67,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 Reparse();
             }
         }
-
-        public bool IsProcessingUnusedCssRules { get; set; }
-        
-        public string FileName { get { return _file; } }
 
         private async void Reparse(object sender, FileSystemEventArgs e)
         {
@@ -83,7 +83,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 try
                 {
                     var text = File.ReadAllText(_file);
+
                     Reparse(text);
+
                     break;
                 }
                 catch (IOException)
@@ -92,7 +94,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 await Task.Delay(100);
             }
 
-            await UsageRegistry.ResyncAsync();
+            await UsageRegistry.ResynchronizeAsync();
 
             if (IsProcessingUnusedCssRules)
             {
@@ -128,6 +130,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
                 var parser = CreateParser();
                 var parseResult = parser.Parse(text, false);
+
                 Rules = new CssItemAggregator<IStylingRule>(true) { (RuleSet rs) => CssRule.From(_file, text, rs, this) }
                     .Crawl(parseResult)
                     .Where(x => x != null)

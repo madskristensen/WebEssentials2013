@@ -1,156 +1,77 @@
-﻿using Microsoft.VisualStudio.Text;
-using System;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Windows.Threading;
+﻿using System.IO;
+using EnvDTE;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
-    class CoffeeScriptMargin : MarginBase
+    internal class CoffeeScriptMargin : MarginBase
     {
         public const string MarginName = "CoffeeScriptMargin";
-        private CoffeeScriptCompiler _compiler;
-        private int _projectFileCount, _projectFileStep;
+        private static NodeExecutorBase _compiler = new CoffeeScriptCompiler();
+
+        protected virtual string ServiceName { get { return "CoffeeScript"; } }
+        protected virtual NodeExecutorBase Compiler { get { return _compiler; } }
 
         public CoffeeScriptMargin(string contentType, string source, bool showMargin, ITextDocument document)
             : base(source, MarginName, contentType, showMargin, document)
-        {
-            _compiler = new CoffeeScriptCompiler(Dispatcher);
-            _compiler.Completed += _compiler_Completed; //+= (s, e) => { OnCompilationDone(e.Result, e.State); };
-        }
+        { }
 
-        public CoffeeScriptMargin()
-        {
-            // Used for project compilation
-        }
+        protected CoffeeScriptMargin(string contentType, string source, bool showMargin, ITextDocument document, string marginName)
+            : base(source, marginName, contentType, showMargin, document)
+        { }
 
-        public void CompileProject(EnvDTE.Project project)
+        protected override async void StartCompiler(string source)
         {
-            if (string.IsNullOrEmpty(project.FullName))
+            if (!CompileEnabled)
                 return;
 
-            Logger.Log("Compiling CoffeeScript...");
-            _projectFileCount = 0;
+            string sourceFilePath = Document.FilePath;
 
-            try
+            string jsFileName = GetCompiledFileName(sourceFilePath, ".js", CompileToLocation);
+
+            if (IsFirstRun && File.Exists(jsFileName))
             {
-                string dir = ProjectHelpers.GetRootFolder(project);
-                if (string.IsNullOrEmpty(dir))
-                    return;
-
-                var files = Directory.GetFiles(dir, "*.coffee", SearchOption.AllDirectories);
-
-                foreach (string file in files)
-                {
-                    string jsFile = GetCompiledFileName(file, ".js", UseCompiledFolder);
-
-                    if (EditorExtensionsPackage.DTE.Solution.FindProjectItem(file) != null &&
-                        File.Exists(jsFile))
-                    {
-                        _projectFileCount++;
-
-                        CoffeeScriptCompiler compiler = new CoffeeScriptCompiler(Dispatcher.CurrentDispatcher);
-                        compiler.Completed += compiler_Completed;
-                        compiler.Compile(File.ReadAllText(file), file);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(ex);
-            }
-        }
-
-        void compiler_Completed(object sender, CompilerEventArgs e)
-        {
-            _projectFileStep++;
-            string file = GetCompiledFileName(e.State, ".js", UseCompiledFolder);
-
-            ProjectHelpers.CheckOutFileFromSourceControl(file);
-
-            using (StreamWriter writer = new StreamWriter(file, false, new UTF8Encoding(true)))
-            {
-                writer.Write(e.Result);
-            }
-
-            MinifyFile(e.State, e.Result);
-
-            if (_projectFileStep == _projectFileCount)
-                Logger.Log("CoffeeScript compiled");
-            ((IDisposable)sender).Dispose();
-        }
-
-        protected override void StartCompiler(string source)
-        {
-            string fileName = GetCompiledFileName(Document.FilePath, ".js", UseCompiledFolder);//Document.FilePath.Replace(".coffee", ".js");
-
-            if (IsFirstRun && File.Exists(fileName))
-            {
-                OnCompilationDone(File.ReadAllText(fileName), Document.FilePath);
+                OnCompilationDone(File.ReadAllText(jsFileName), sourceFilePath);
                 return;
             }
 
-            Logger.Log("CoffeeScript: Compiling " + Path.GetFileName(Document.FilePath));
-            _compiler.Compile(source, Document.FilePath);
-        }
+            Logger.Log(ServiceName + ": Compiling " + Path.GetFileName(sourceFilePath));
 
-        private void _compiler_Completed(object sender, CompilerEventArgs e)
-        {
-            if (e.Result.StartsWith("ERROR:", StringComparison.OrdinalIgnoreCase))
+            var result = await Compiler.Compile(sourceFilePath, jsFileName);
+
+            if (result.IsSuccess)
             {
-                CompilerError error = ParseError(e.Result);
-                CreateTask(error);
+                OnCompilationDone(result.Result, result.FileName);
             }
-
-            OnCompilationDone(e.Result, e.State);
-        }
-
-        private CompilerError ParseError(string error)
-        {
-            string message = error.Replace("ERROR:", string.Empty).Replace("Error:", string.Empty);
-            int line = 0, column = 0;
-
-            Match match = Regex.Match(message, @"^(\d{1,})[:](\d{1,})");
-            if (match.Success)
+            else
             {
-                int.TryParse(match.Groups[1].Value, out line);
-                int.TryParse(match.Groups[2].Value, out column);
+                result.Error.Message = ServiceName + ": " + result.Error.Message;
+
+                CreateTask(result.Error);
+
+                base.OnCompilationDone("ERROR:" + result.Error.Message, sourceFilePath);
             }
-
-            CompilerError result = new CompilerError()
-            {
-                Message = "CoffeeScript: " + message,
-                FileName = Document.FilePath,
-                Line = line,
-                Column = column
-            };
-
-            return result;
         }
 
-        public override void MinifyFile(string fileName, string source)
+        protected override void MinifyFile(string fileName, string source)
         {
+            if (!CompileEnabled)
+                return;
+
             if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptMinify))
             {
-                string content = MinifyFileMenu.MinifyString(".js", source);
-                string minFile = GetCompiledFileName(fileName, ".min.js", UseCompiledFolder);//fileName.Replace(".coffee", ".min.js");
-                bool fileExist = File.Exists(minFile);
-
-                ProjectHelpers.CheckOutFileFromSourceControl(minFile);
-                using (StreamWriter writer = new StreamWriter(minFile, false, new UTF8Encoding(true)))
-                {
-                    writer.Write(content);
-                }
-
-                if (!fileExist)
-                    AddFileToProject(fileName, minFile);
+                FileHelpers.MinifyFile(fileName, source, ".js");
             }
         }
 
-        public override bool UseCompiledFolder
+        public override bool CompileEnabled
         {
-            get { return WESettings.GetBoolean(WESettings.Keys.CoffeeScriptCompileToFolder); }
+            get { return WESettings.GetBoolean(WESettings.Keys.CoffeeScriptEnableCompiler); }
+        }
+
+        public override string CompileToLocation
+        {
+            get { return WESettings.GetString(WESettings.Keys.CoffeeScriptCompileToLocation); }
         }
 
         public override bool IsSaveFileEnabled
@@ -164,11 +85,3 @@ namespace MadsKristensen.EditorExtensions
         }
     }
 }
-
-//static class Iced
-//{
-//    [Export]
-//    [FileExtension(".iced")]
-//    [ContentType("CoffeeScript")]
-//    internal static FileExtensionToContentTypeDefinition IcedFileExtensionDefinition;
-//}

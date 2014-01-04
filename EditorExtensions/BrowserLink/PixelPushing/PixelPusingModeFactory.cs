@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.Web.BrowserLink;
 namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 {
     [Export(typeof(IBrowserLinkExtensionFactory))]
-    public class PixelPusingModeFactory : IBrowserLinkExtensionFactory
+    public class PixelPushingModeFactory : IBrowserLinkExtensionFactory
     {
         public BrowserLinkExtension CreateExtensionInstance(BrowserLinkConnection connection)
         {

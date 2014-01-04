@@ -1,13 +1,12 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using Microsoft.Ajax.Utilities;
-using Microsoft.VisualStudio.Shell;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using EnvDTE80;
+using Microsoft.Ajax.Utilities;
+using Microsoft.VisualStudio.Shell;
 using WebMarkupMin.Core;
 using WebMarkupMin.Core.Minifiers;
 using WebMarkupMin.Core.Settings;
@@ -28,18 +27,21 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            CommandID commandCss = new CommandID(GuidList.guidMinifyCmdSet, (int)PkgCmdIDList.MinifyCss);
+            CommandID commandCss = new CommandID(CommandGuids.guidMinifyCmdSet, (int)CommandId.MinifyCss);
             OleMenuCommand menuCommandCss = new OleMenuCommand((s, e) => MinifyFile(".css"), commandCss);
             menuCommandCss.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".css"); };
             _mcs.AddCommand(menuCommandCss);
 
-            CommandID commandJs = new CommandID(GuidList.guidMinifyCmdSet, (int)PkgCmdIDList.MinifyJs);
+            CommandID commandJs = new CommandID(CommandGuids.guidMinifyCmdSet, (int)CommandId.MinifyJs);
             OleMenuCommand menuCommandJs = new OleMenuCommand((s, e) => MinifyFile(".js"), commandJs);
             menuCommandJs.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".js"); };
             _mcs.AddCommand(menuCommandJs);
-        }
 
-        private readonly string[] _supported = new[] { "CSS", "JAVASCRIPT" };
+            CommandID commandHtml = new CommandID(CommandGuids.guidMinifyCmdSet, (int)CommandId.MinifyHtml);
+            OleMenuCommand menuCommandHtml = new OleMenuCommand((s, e) => MinifyFile(".html"), commandHtml);
+            menuCommandHtml.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".html"); };
+            _mcs.AddCommand(menuCommandHtml);
+        }
 
         void BeforeQueryStatus(object sender, string extension)
         {
@@ -51,7 +53,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 string minFile = GetMinFileName(path, extension);
 
-                if (!path.EndsWith(".min" + extension) && !File.Exists(minFile))
+                if (!path.EndsWith(".min" + extension, StringComparison.OrdinalIgnoreCase) && !File.Exists(minFile))
                 {
                     enabled = true;
                     break;
@@ -69,27 +71,31 @@ namespace MadsKristensen.EditorExtensions
             {
                 string minPath = GetMinFileName(path, extension);
 
-                if (!path.EndsWith(".min" + extension) && !File.Exists(minPath) && _dte.Solution.FindProjectItem(path) != null)
+                if (!path.EndsWith(".min" + extension, StringComparison.OrdinalIgnoreCase) && !File.Exists(minPath) && _dte.Solution.FindProjectItem(path) != null)
                 {
                     if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase))
                     {
                         JavaScriptSaveListener.Minify(path, minPath, false);
                     }
-                    else
+                    else if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase))
                     {
                         CssSaveListener.Minify(path, minPath);
                     }
+                    else if (extension.Equals(".html", StringComparison.OrdinalIgnoreCase))
+                    {
+                        HtmlSaveListener.Minify(path, minPath);
+                    }
 
-                    MarginBase.AddFileToProject(path, minPath);
+                    ProjectHelpers.AddFileToProject(path, minPath);
                 }
             }
 
             EnableSync(extension);
         }
 
-        private void EnableSync(string extension)
+        private static void EnableSync(string extension)
         {
-            string message = string.Format("Do you also want to enable automatic minification when the source file changes?", extension);
+            string message = "Do you also want to enable automatic minification when the source file changes?";
 
             if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase) && !WESettings.GetBoolean(WESettings.Keys.EnableCssMinification))
             {
@@ -106,6 +112,15 @@ namespace MadsKristensen.EditorExtensions
                 if (result == MessageBoxResult.Yes)
                 {
                     Settings.SetValue(WESettings.Keys.EnableJsMinification, true);
+                    Settings.Save();
+                }
+            }
+            else if (extension.Equals(".html", StringComparison.OrdinalIgnoreCase) && !WESettings.GetBoolean(WESettings.Keys.EnableHtmlMinification))
+            {
+                var result = MessageBox.Show(message, "Web Essentials", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    Settings.SetValue(WESettings.Keys.EnableHtmlMinification, true);
                     Settings.Save();
                 }
             }
@@ -142,16 +157,18 @@ namespace MadsKristensen.EditorExtensions
 
                 return minifier.MinifyJavaScript(content, settings);
             }
-            else if (_htmlExt.Contains(extension.ToLowerInvariant())){
+            else if (_htmlExt.Contains(extension.ToLowerInvariant()))
+            {
                 var settings = new HtmlMinificationSettings
                 {
                     RemoveOptionalEndTags = false,
-                    AttributeQuotesRemovalMode = HtmlAttributeQuotesRemovalMode.KeepQuotes
+                    AttributeQuotesRemovalMode = HtmlAttributeQuotesRemovalMode.KeepQuotes,
+                    RemoveRedundantAttributes = false,
                 };
 
                 var minifier = new HtmlMinifier(settings);
                 MarkupMinificationResult result = minifier.Minify(content, generateStatistics: true);
-                
+
                 if (result.Errors.Count == 0)
                 {
                     EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: HTML minified by " + result.Statistics.SavedInPercent + "%";
@@ -159,7 +176,8 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: Cannot minify the current selection";
+                    EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: Cannot minify the current selection.  See Output Window for details.";
+                    Logger.ShowMessage("Cannot minify the selection:\r\n\r\n" + String.Join(Environment.NewLine, result.Errors.Select(e => e.Message)));
                     return content;
                 }
             }

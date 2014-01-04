@@ -1,18 +1,19 @@
-﻿using EnvDTE;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using EnvDTE;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
+    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     public abstract class MarginBase : DockPanel, IWpfTextViewMargin
     {
         private bool _isDisposed = false;
@@ -61,7 +62,8 @@ namespace MadsKristensen.EditorExtensions
         }
 
         public abstract bool IsSaveFileEnabled { get; }
-        public abstract bool UseCompiledFolder { get; }
+        public abstract bool CompileEnabled { get; }
+        public abstract string CompileToLocation { get; }
         protected ITextDocument Document { get; set; }
 
         private void Initialize(string contentType, string source)
@@ -71,7 +73,7 @@ namespace MadsKristensen.EditorExtensions
             StartCompiler(source);
         }
 
-        private IWpfTextViewHost CreateTextViewHost(string contentType)
+        private static IWpfTextViewHost CreateTextViewHost(string contentType)
         {
             var componentModel = ProjectHelpers.GetComponentModel();
             var service = componentModel.GetService<IContentTypeRegistryService>();
@@ -195,21 +197,25 @@ namespace MadsKristensen.EditorExtensions
 
         protected void OnCompilationDone(string result, string state)
         {
-            bool isSuccess = !result.StartsWith("ERROR:");
+            bool isSuccess = !result.StartsWith("ERROR:", StringComparison.Ordinal);
 
             _dispatcher.BeginInvoke(new Action(() =>
             {
                 if (isSuccess)
                 {
-                    SetText(result);
-
-                    if (!IsFirstRun)
+                    if (!IsFirstRun && IsSaveFileEnabled)
                     {
-                        if (IsSaveFileEnabled)
-                            WriteCompiledFile(result, state);
+                        string targetFileName = GetTargetFileName(state, CompileToLocation);
 
-                        MinifyFile(state, result);
+                        WriteCompiledFile(result, state, targetFileName);
+
+                        if (!string.IsNullOrEmpty(targetFileName))
+                            MinifyFile(targetFileName, result);
                     }
+
+                    // Moved after the WriteCompiledFile method to 
+                    // get the updated source map in CSS file comment.
+                    SetText(result);
                 }
                 else
                 {
@@ -221,49 +227,72 @@ namespace MadsKristensen.EditorExtensions
             }), DispatcherPriority.Normal, null);
         }
 
-        public abstract void MinifyFile(string fileName, string source);
-
-        protected void WriteCompiledFile(string content, string currentFileName)
+        private static string GetTargetFileName(string sourceFileName, string CompileToLocation)
         {
-            string extension = Path.GetExtension(currentFileName);
-            string fileName = null;
-
-            switch (extension.ToLowerInvariant())
+            switch (Path.GetExtension(sourceFileName).ToLowerInvariant())
             {
                 case ".less":
-                    fileName = GetCompiledFileName(currentFileName, ".css", UseCompiledFolder);
-                    break;
+                    return GetCompiledFileName(sourceFileName, ".css", CompileToLocation);
 
                 case ".coffee":
+                case ".iced":
                 case ".ts":
-                    fileName = GetCompiledFileName(currentFileName, ".js", UseCompiledFolder);
-                    break;
+                    return GetCompiledFileName(sourceFileName, ".js", CompileToLocation);
+
+                case ".md":
+                case ".mdown":
+                case ".markdown":
+                case ".mkd":
+                case ".mkdn":
+                case ".mdwn":
+                    return GetCompiledFileName(sourceFileName, ".html", CompileToLocation);
 
                 default: // For the Diff view
-                    return;
-            }
-
-            bool fileExist = File.Exists(fileName);
-            bool fileWritten = false;
-
-            ProjectHelpers.CheckOutFileFromSourceControl(fileName);
-            fileWritten = WriteFile(content, fileName, fileExist, fileWritten);
-
-            if (!fileExist && fileWritten)
-            {
-                AddFileToProject(currentFileName, fileName);
+                    return null;
             }
         }
 
-        public static string GetCompiledFileName(string sourceFileName, string compiledExtension, bool useFolder)
-        {
-            string sourceExtension = Path.GetExtension(sourceFileName);
-            string compiledFileName = Path.GetFileName(sourceFileName).Replace(sourceExtension, compiledExtension);
-            string sourceDir = Path.GetDirectoryName(sourceFileName);
+        protected abstract void MinifyFile(string fileName, string source);
 
-            if (useFolder)
+        private void WriteCompiledFile(string content, string currentFileName, string fileName)
+        {
+            if (!File.Exists(fileName)
+             && ProjectHelpers.CheckOutFileFromSourceControl(fileName)
+             && CanWriteToDisk(content)
+             && FileHelpers.WriteFile(content, fileName))
             {
-                string compiledDir = Path.Combine(sourceDir, compiledExtension.Replace(".min.", string.Empty).Replace(".", string.Empty));
+                ProjectHelpers.AddFileToProject(currentFileName, fileName);
+            }
+        }
+
+        public static string GetCompiledFileName(string sourceFileName, string compiledExtension, string customFolder)
+        {
+            string compiledFileName = Path.GetFileName(Path.ChangeExtension(sourceFileName, compiledExtension));
+            string sourceDir = Path.GetDirectoryName(sourceFileName);
+            string compiledDir;
+            string rootDir = ProjectHelpers.GetRootFolder();
+
+            if (rootDir == null || rootDir.Length == 0)
+            {
+                // Assuming a project is not loaded..
+                return Path.Combine(sourceDir, compiledFileName);
+            }
+
+            if (!string.IsNullOrEmpty(customFolder) &&
+                !customFolder.Equals("false", StringComparison.OrdinalIgnoreCase) &&
+                !customFolder.Equals("true", StringComparison.OrdinalIgnoreCase))
+            {
+                if (customFolder.StartsWith("~/", StringComparison.OrdinalIgnoreCase) || customFolder.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Output path starts at the project root..
+                    compiledDir = Path.Combine(rootDir, customFolder.Substring(customFolder.StartsWith("~/", StringComparison.OrdinalIgnoreCase) ? 2 : 1));
+                }
+                else
+                {
+                    // Output path is a relative path..
+                    // NOTE: if the output path doesn't exist, it will be created below.
+                    compiledDir = new DirectoryInfo(Path.Combine(sourceDir, customFolder)).FullName;
+                }
 
                 if (!Directory.Exists(compiledDir))
                 {
@@ -274,58 +303,6 @@ namespace MadsKristensen.EditorExtensions
             }
 
             return Path.Combine(sourceDir, compiledFileName);
-        }
-
-        public static void AddFileToProject(string parentFileName, string fileName)
-        {
-            if (!File.Exists(fileName))
-                return;
-
-            var item = EditorExtensionsPackage.DTE.Solution.FindProjectItem(parentFileName);
-
-            if (item != null && item.ContainingProject != null && !string.IsNullOrEmpty(item.ContainingProject.FullName))
-            {
-                if (item.ProjectItems != null && Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
-                {
-                    // WAP
-                    item.ProjectItems.AddFromFile(fileName);
-                }
-                else
-                {   // Website
-                    item.ContainingProject.ProjectItems.AddFromFile(fileName);
-                }
-            }
-        }
-
-        private bool WriteFile(string content, string fileName, bool fileExist, bool fileWritten)
-        {
-            try
-            {
-                if (fileExist || (!fileExist && CanWriteToDisk(content)))
-                {
-                    using (StreamWriter writer = new StreamWriter(fileName, false, new UTF8Encoding(true)))
-                    {
-                        writer.Write(content);
-                        fileWritten = true;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                var error = new CompilerError
-                {
-                    FileName = Document.FilePath,
-                    Column = 0,
-                    Line = 0,
-                    Message = "Could not write to " + Path.GetFileName(fileName)
-                };
-
-                CreateTask(error);
-
-                Logger.Log(ex);
-            }
-
-            return fileWritten;
         }
 
         protected void CreateTask(CompilerError error)

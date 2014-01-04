@@ -1,10 +1,10 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.Linq;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions
             if (!WESettings.GetBoolean(WESettings.Keys.ValidateOverQualifiedSelector) || !sel.IsValid || context == null)
                 return ItemCheckResult.Continue;
 
-            var idPart = sel.SimpleSelectors.Skip(1).FirstOrDefault(s => s.Text.StartsWith("#"));
+            var idPart = sel.SimpleSelectors.Skip(1).FirstOrDefault(s => s.Text.StartsWith("#", StringComparison.Ordinal));
             if (idPart != null)
             {
                 string remove = sel.Text.Substring(0, idPart.Start - sel.Start).TrimEnd();  // Remove the whitespace before the final part

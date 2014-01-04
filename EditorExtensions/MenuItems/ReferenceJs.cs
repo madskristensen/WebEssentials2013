@@ -1,29 +1,25 @@
-﻿using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class ReferenceJsMenu
     {
-        private DTE2 _dte;
         private OleMenuCommandService _mcs;
         private string _referencesJsPath;
 
-        public ReferenceJsMenu(DTE2 dte, OleMenuCommandService mcs)
+        public ReferenceJsMenu(OleMenuCommandService mcs)
         {
-            _dte = dte;
             _mcs = mcs;
         }
 
         public void SetupCommands()
         {
-            CommandID commandId = new CommandID(GuidList.guidEditorExtensionsCmdSet, (int)PkgCmdIDList.ReferenceJs);
+            CommandID commandId = new CommandID(CommandGuids.guidEditorExtensionsCmdSet, (int)CommandId.ReferenceJs);
             OleMenuCommand menuCommand = new OleMenuCommand((s, e) => Execute(), commandId);
             menuCommand.BeforeQueryStatus += menuCommand_BeforeQueryStatus;
             _mcs.AddCommand(menuCommand);
@@ -37,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
             var projects = ProjectHelpers.GetSelectedProjects().ToList();
             if (projects.Count == 1)
             {
-                if (!projects[0].IsWebProject()) 
+                if (!projects[0].IsWebProject())
                     return;
                 _referencesJsPath = Path.Combine(ProjectHelpers.GetRootFolder(projects[0]), @"Scripts\_references.js");
             }
@@ -75,7 +71,7 @@ namespace MadsKristensen.EditorExtensions
             }
             catch (IOException)
             {
-                System.Windows.Forms.MessageBox.Show("Can't write to the folder");
+                Logger.ShowMessage("Can't write to the folder: " + _referencesJsPath);
             }
         }
     }

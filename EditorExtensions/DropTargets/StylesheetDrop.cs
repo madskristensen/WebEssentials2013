@@ -1,11 +1,12 @@
-﻿using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Editor.DragDrop;
-using Microsoft.VisualStudio.Utilities;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Globalization;
 using System.IO;
 using System.Web;
-using System;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Editor.DragDrop;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -41,7 +42,7 @@ namespace MadsKristensen.EditorExtensions
         {
             string reference = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, _filename);
 
-            if (reference.StartsWith("http://localhost:"))
+            if (reference.StartsWith("http://localhost:", StringComparison.OrdinalIgnoreCase))
             {
                 int index = reference.IndexOf('/', 24);
                 if (index > -1)
@@ -50,7 +51,7 @@ namespace MadsKristensen.EditorExtensions
             reference = HttpUtility.UrlPathEncode(reference);
 
             string import = Path.GetExtension(_filename).Equals(".less", StringComparison.OrdinalIgnoreCase) ? _lessImport : _cssImport;
-            _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(import, reference));
+            _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(CultureInfo.CurrentCulture, import, reference));
 
             return DragDropPointerEffects.Copy;
         }

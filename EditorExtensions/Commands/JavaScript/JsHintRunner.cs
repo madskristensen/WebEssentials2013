@@ -1,27 +1,28 @@
-﻿using EnvDTE;
-using Microsoft.VisualStudio.Shell;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using System.Windows.Threading;
+using EnvDTE;
 using MadsKristensen.EditorExtensions.Commands.JavaScript;
 using MadsKristensen.EditorExtensions.Helpers;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class JsHintRunner : IDisposable
     {
         private readonly ErrorListProvider _provider;
-        private readonly static Dictionary<string, ErrorListProvider> _providers = new Dictionary<string, ErrorListProvider>();
+        private readonly static Dictionary<string, ErrorListProvider> _providers = InitializeResources();
         private readonly string _fileName;
         private bool _isDisposed;
 
-        static JsHintRunner()
+        static Dictionary<string, ErrorListProvider> InitializeResources()
         {
             EditorExtensionsPackage.DTE.Events.SolutionEvents.AfterClosing += SolutionEvents_AfterClosing;
+            return new Dictionary<string, ErrorListProvider>();
         }
 
         static void SolutionEvents_AfterClosing()
@@ -41,7 +42,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private void Clean()
+        private static void Clean()
         {
             var nonExisting = _providers.Keys.FirstOrDefault(k => !File.Exists(k));
             if (!string.IsNullOrEmpty(nonExisting))
@@ -93,12 +94,12 @@ namespace MadsKristensen.EditorExtensions
         public static bool ShouldIgnore(string file)
         {
             if (!Path.GetExtension(file).Equals(".js", StringComparison.OrdinalIgnoreCase) ||
-                file.EndsWith(".min.js") ||
-                file.EndsWith(".debug.js") ||
-                file.EndsWith(".intellisense.js") ||
+                file.EndsWith(".min.js", StringComparison.OrdinalIgnoreCase) ||
+                file.EndsWith(".debug.js", StringComparison.OrdinalIgnoreCase) ||
+                file.EndsWith(".intellisense.js", StringComparison.OrdinalIgnoreCase) ||
                 file.Contains("-vsdoc.js") ||
                 !File.Exists(file) ||
-                EditorExtensionsPackage.DTE.Solution.FindProjectItem(file) == null)
+                ProjectHelpers.GetProjectItem(file) == null)
             {
                 return true;
             }
@@ -126,20 +127,38 @@ namespace MadsKristensen.EditorExtensions
 
         private static bool MustIgnore(string name)
         {
-            if (_ignoreRegex.IsMatch(name))
+            if (_builtInIgnoreRegex.IsMatch(name))
                 return true;
 
-            string ignoreFiles = WESettings.GetString(WESettings.Keys.JsHint_ignoreFiles);
+            if (_parsedUserIgnoreList != WESettings.GetString(WESettings.Keys.JsHint_ignoreFiles))
+                ParseUserIgnoreList();
 
-            if (string.IsNullOrEmpty(ignoreFiles))
-                return false;
-
-            string[] custom = ignoreFiles.Split(';');
-
-            return custom.Any(c => Regex.IsMatch(name, c.Trim(), RegexOptions.IgnoreCase));
+            return _userIgnoreRegexes.Any(r => r.IsMatch(name));
         }
 
-        private static Regex _ignoreRegex = new Regex("(" + String.Join(")|(", new[] {
+        static string _parsedUserIgnoreList;
+        static IReadOnlyCollection<Regex> _userIgnoreRegexes = new Regex[0];
+        static void ParseUserIgnoreList()
+        {
+            _parsedUserIgnoreList = WESettings.GetString(WESettings.Keys.JsHint_ignoreFiles);
+            _userIgnoreRegexes = _parsedUserIgnoreList.Split(';')
+                .Select(s =>
+            {
+                s = s.Trim();
+                if (s.Length == 0) return null;
+                try
+                {
+                    return new Regex(s, RegexOptions.IgnoreCase);
+                }
+                catch (Exception ex)
+                {
+                    Logger.ShowMessage("Skipping invalid regex '" + s + "' in JSHint ignore patterns.\nPlease fix that in Web Essentials Options.\n\n" + ex.Message);
+                    return null;
+                }
+            }).Where(r => r != null).ToList();
+        }
+
+        private static Regex _builtInIgnoreRegex = new Regex("(" + String.Join(")|(", new[] {
             @"_references\.js",
             @"amplify\.js",
             @"angular\.js",
@@ -251,7 +270,7 @@ namespace MadsKristensen.EditorExtensions
             return TaskErrorCategory.Message;
         }
 
-        private string GetErrorMessage(Result error)
+        private static string GetErrorMessage(Result error)
         {
             string raw = error.raw;
             if (raw == "Missing radix parameter.")

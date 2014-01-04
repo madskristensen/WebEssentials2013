@@ -1,25 +1,19 @@
-﻿using EnvDTE80;
+﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class RemoveEmptyLines : CommandTargetBase
     {
-        private DTE2 _dte;
-
         public RemoveEmptyLines(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidEditorLinesCmdSet, PkgCmdIDList.RemoveEmptyLines)
+            : base(adapter, textView, CommandGuids.guidEditorLinesCmdSet, CommandId.RemoveEmptyLines)
         {
-            _dte = EditorExtensionsPackage.DTE;
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var span = GetSpan();
             var lines = span.GetText().Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
@@ -29,14 +23,13 @@ namespace MadsKristensen.EditorExtensions
 
             string result = RemoveLines(lines);
 
-            _dte.UndoContext.Open("Remove Empty Lines");
-            TextView.TextBuffer.Replace(span.Span, result);
-            _dte.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext(("Remove Empty Lines")))
+                TextView.TextBuffer.Replace(span.Span, result);
 
             return true;
         }
 
-        private string RemoveLines(string[] lines)
+        private static string RemoveLines(string[] lines)
         {
             return string.Join(Environment.NewLine, lines.Where(s => !string.IsNullOrWhiteSpace(s)));
         }

@@ -1,10 +1,9 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.CSS.Editor.Intellisense;
-using Microsoft.CSS.Editor.Schemas;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CSS.Core;
+using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.CSS.Editor.Schemas;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -14,14 +13,14 @@ namespace MadsKristensen.EditorExtensions
         {
             return directive.Keyword.Text[0] == '-';
         }
-              
+
 
         public static bool TryGetStandardPropertyName(this AtDirective directive, out string standardName, ICssSchemaInstance schema)
         {
             standardName = null;
 
             string propText = directive.Keyword.Text;
-            string prefix = VendorHelpers.GetPrefixes(schema).SingleOrDefault(p => propText.IndexOf(p, StringComparison.Ordinal) == 0);
+            string prefix = VendorHelpers.GetPrefixes(schema).SingleOrDefault(p => propText.StartsWith(p, StringComparison.Ordinal));
             if (prefix != null)
             {
                 standardName = propText.Substring(prefix.Length);
@@ -42,8 +41,6 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (!visitorRules.Items.Any(d => d.Keyword != null && "@" + d.Keyword.Text == item))
                     yield return item;
-                //if (!rule.Declarations.Any(d => d.PropertyName != null && d.PropertyName.Text == item))
-                //    yield return item;
             }
         }
 
@@ -55,9 +52,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 ICssCompletionListEntry entry = schema.GetAtDirective("@" + prefix + text);
                 if (entry != null)
-                {
                     yield return entry.DisplayText;
-                }
             }
         }
     }

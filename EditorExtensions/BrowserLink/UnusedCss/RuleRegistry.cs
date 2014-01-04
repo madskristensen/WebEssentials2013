@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -6,6 +7,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public static class RuleRegistry
     {
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public static IReadOnlyCollection<IStylingRule> GetAllRules()
         {
             //This lookup needs to be Project -> Browser -> Page (but page -> sheets should be tracked internally by the extension)
@@ -19,6 +21,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 if (store != null)
                 {
                     store.IsProcessingUnusedCssRules = true;
+
                     var rules = store.Rules;
 
                     if (rules != null)
@@ -35,6 +38,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return allRules;
         }
 
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public static Task<IReadOnlyCollection<IStylingRule>> GetAllRulesAsync()
         {
             return Task.Factory.StartNew(() => AmbientRuleContext.GetAllRules());
@@ -52,11 +56,13 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
                 foreach (var match in allRules.Where(x => x.IsMatch(selector)))
                 {
-                    result.Add(new RuleUsage
+                    var ruleUsage = new RuleUsage
                     {
-                        SourceLocations = locations,
                         Rule = match
-                    });
+                    };
+
+                    ruleUsage.SourceLocations.UnionWith(locations);
+                    result.Add(ruleUsage);
                 }
             }
 
@@ -87,11 +93,13 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
                 foreach (var match in allRules.Where(x => x.IsMatch(selector)))
                 {
-                    result.Add(new RuleUsage
+                    var ruleUsage = new RuleUsage
                     {
-                        SourceLocations = locations,
                         Rule = match
-                    });
+                    };
+
+                    ruleUsage.SourceLocations.UnionWith(locations);
+                    result.Add(ruleUsage);
                 }
             }
 

@@ -1,9 +1,10 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
+﻿using System;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Windows.Forms;
+using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -20,7 +21,7 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            CommandID commandSol = new CommandID(GuidList.guidDiffCmdSet, (int)PkgCmdIDList.cmdSolutionSettings);
+            CommandID commandSol = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.CreateSolutionSettings);
             OleMenuCommand menuCommandSol = new OleMenuCommand((s, e) => ApplySolutionSettings(), commandSol);
             menuCommandSol.BeforeQueryStatus += SolutionBeforeQueryStatus;
             _mcs.AddCommand(menuCommandSol);
@@ -41,14 +42,14 @@ namespace MadsKristensen.EditorExtensions
             menuCommand.Enabled = !settingsExist;
         }
 
-        private void ApplySolutionSettings()
+        private static void ApplySolutionSettings()
         {
             Settings.CreateSolutionSettings();
         }
 
-        private void ItemRenamed(ProjectItem ProjectItem, string OldName)
+        private static void ItemRenamed(ProjectItem ProjectItem, string OldName)
         {
-            if (OldName.EndsWith(Settings._fileName) || ProjectItem.Name == Settings._fileName)
+            if (OldName.EndsWith(Settings._fileName, StringComparison.OrdinalIgnoreCase) || ProjectItem.Name == Settings._fileName)
                 Settings.UpdateCache();
         }
 

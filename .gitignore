@@ -18,7 +18,7 @@ local.properties
 
 # External tool builders
 .externalToolBuilders/
-#packages/
+packages/
 
 # Locally stored "Eclipse launch configurations"
 *.launch
@@ -105,8 +105,8 @@ _TeamCity*
 *.dotCover
 
 # NCrunch
-*.ncrunch*
 .*crunch*.local.xml
+_NCrunch*
 
 # Installshield output folder
 [Ee]xpress/
@@ -140,6 +140,7 @@ csx
 AppPackages/
 
 # Others
+*.ide
 sql/
 *.Cache
 ClientBin/
@@ -216,3 +217,5 @@ pip-log.txt
 # nodejs resources
 EditorExtensions/Resources/nodejs/
 
+# MergeTools
+*.orig

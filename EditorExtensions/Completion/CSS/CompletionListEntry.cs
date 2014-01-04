@@ -1,18 +1,20 @@
 ﻿using System;
 using Microsoft.CSS.Editor;
+using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using Microsoft.CSS.Editor.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class CompletionListEntry : ICssCompletionListEntry
     {
         private string _name;
+        private StandardGlyphGroup _glyph;
 
-        public CompletionListEntry(string name, int sortingPriority = 0)
+        public CompletionListEntry(string name, int sortingPriority = 0, StandardGlyphGroup glyph = StandardGlyphGroup.GlyphGroupEnumMember)
         {
             _name = name;
+            _glyph = glyph;
             SortingPriority = sortingPriority;
         }
 
@@ -30,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
 
         public StandardGlyphGroup StandardGlyph
         {
-            get { return StandardGlyphGroup.GlyphGroupEnumMember; }
+            get { return _glyph; }
         }
 
         public string GetAttribute(string name)

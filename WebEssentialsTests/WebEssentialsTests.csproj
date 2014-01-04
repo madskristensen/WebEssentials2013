@@ -16,6 +16,8 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,14 +37,42 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="FluentAssertions">
+      <HintPath>..\packages\FluentAssertions.2.1.0.0\lib\net45\FluentAssertions.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSS.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Html.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>../../../../../../../Program%20Files%20(x86)/Microsoft%20Visual%20Studio%2012.0/Common7/IDE//CommonExtensions/Microsoft/Web/Editor/Microsoft.Html.Core.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Html.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Html.Editor, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Html.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Text.Data, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Text.Logic, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Text.UI, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Web.Extensions">
       <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Languages\Microsoft.VisualStudio.Web.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VSSDK.TestHostFramework, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VSSDK.UnitTestLibrary, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Web.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>../../../../../../../Program%20Files%20(x86)/Microsoft%20Visual%20Studio%2012.0/Common7/IDE//CommonExtensions/Microsoft/Web/Editor/Microsoft.Web.Core.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Web.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -57,13 +87,30 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="LessCompilationTests.cs" />
-    <Compile Include="LessDocumentTests.cs">
+    <Compile Include="Tests\Bootstrap\BootstrapValidationTests.cs" />
+    <Compile Include="Tests\CoffeeScript\IcedCoffeeScriptCompilationTests.cs" />
+    <Compile Include="Tests\CoffeeScript\CoffeeScriptCompilationTests.cs" />
+    <Compile Include="Tests\Extensions\Extensions.cs" />
+    <Compile Include="Tests\IntellisenseGeneration\IntellisenseTypeTests.cs" />
+    <Compile Include="Tests\IntellisenseGeneration\Parsing_SimpleClass_Tests.cs" />
+    <Compile Include="Tests\IntellisenseGeneration\TestHelper\IntellisenseObjectsAssertionsExtensions.cs" />
+    <Compile Include="Tests\IntellisenseGeneration\Parsing_CollectionModel_Tests.cs" />
+    <Compile Include="Tests\IntellisenseGeneration\Parsing_SimpleNullable_Tests.cs" />
+    <Compile Include="Tests\IntellisenseGeneration\TestHelper\IntellisenseObjectsAssertions.cs" />
+    <Compile Include="Tests\IntellisenseGeneration\TestHelper\IntellisensePropertyAssertions.cs" />
+    <Compile Include="Tests\Less\LessCompilationTests.cs" />
+    <Compile Include="Tests\Less\LessDocumentTests.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Tests\Markdown\MarkdownOutlinerTests.cs" />
+    <Compile Include="Tests\Markdown\MarkdownCodeBlockTests.cs" />
+    <Compile Include="Tests\Markdown\TabAwareCharacterStreamTests.cs" />
+    <Compile Include="Tests\MockSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="NodeModuleImportedTests.cs" />
-    <Compile Include="NodeModuleCompletionTests.cs" />
+    <Compile Include="Tests\NodeModules\NodeModuleImportedTests.cs" />
+    <Compile Include="Tests\NodeModules\NodeModuleCompletionTests.cs" />
+    <Compile Include="Tests\Markdown\MarkdownClassifierTests.cs" />
+    <Compile Include="VSHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EditorExtensions\WebEssentials2013.csproj">
@@ -72,7 +119,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="fixtures\coffee\compiled\test.js" />
+    <Content Include="fixtures\iced\compiled\test.js" />
     <Content Include="fixtures\less\css\URLs.css" />
+    <Content Include="fixtures\less\css\_Deep Inclusion.css" />
+    <Content Include="fixtures\less\css\_Entry1.css" />
+    <Content Include="fixtures\less\sub1\css\_Entry2.css" />
+    <Content Include="fixtures\less\sub1\deeper\css\_Entry3.css" />
+    <Content Include="fixtures\less\sub1\deeper\css\_lib.css" />
     <Content Include="fixtures\less\sub1\deeper\_lib.css" />
     <Content Include="fixtures\less\sub1\deeper\_Entry3.css" />
     <Content Include="fixtures\less\sub1\_Entry2.css" />
@@ -104,6 +158,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <Content Include="fixtures\less\URLs.css" />
+    <None Include="fixtures\iced\source\test.iced" />
     <None Include="fixtures\less\URLs.less" />
     <None Include="fixtures\less\sub1\deeper\_lib.less" />
     <None Include="fixtures\less\sub1\deeper\_Entry3.less" />
@@ -114,6 +169,8 @@
     <None Include="fixtures\module-resolution\foo" />
     <None Include="fixtures\module-resolution\packages\main-index\package.json" />
     <None Include="fixtures\module-resolution\packages\main\package.json" />
+    <None Include="fixtures\coffee\source\test.coffee" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Choose>
@@ -145,14 +202,19 @@
       rem Needed to run LESS compiler JS
       xcopy /y /s /d "$(SolutionDir)EditorExtensions\Resources\Scripts\*" "$(TargetDir)Resources\Scripts\" &gt;nul
       xcopy /y /s /d "$(SolutionDir)EditorExtensions\Resources\nodejs\*" "$(TargetDir)Resources\nodejs\" &gt;nul
-      xcopy /y /s /d "$(ProjectDir)fixtures\*" "$(TargetDir)fixtures\" &gt;nul
+      (robocopy /mir /e /ns /nc /nfl /ndl /np /njh /njs "$(ProjectDir)fixtures" "$(TargetDir)fixtures") ^&amp; IF %ERRORLEVEL% LEQ 1 exit 0
     </PostBuildEvent>
   </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
   </Target>
-  -->
+  
+  Finally found it, but we don't need it after robocopy
+  <Target Name="BeforeClean">
+    <RemoveDir Directories="$(TargetDir)fixtures\" />
+  </Target>-->
 </Project>

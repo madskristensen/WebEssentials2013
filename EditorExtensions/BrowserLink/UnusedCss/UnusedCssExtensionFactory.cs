@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.Web.BrowserLink;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.IO;
+using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -19,6 +19,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 if (stream == null)
                 {
                     Logger.Log("Could not get script for extension " + typeof(UnusedCssExtension));
+
                     return "";
                 }
 

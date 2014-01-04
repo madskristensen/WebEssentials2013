@@ -1,24 +1,20 @@
-﻿using EnvDTE80;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class SortSelectedLines : CommandTargetBase
     {
-        private DTE2 _dte;
-
         public SortSelectedLines(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidEditorLinesCmdSet, PkgCmdIDList.SortAsc, PkgCmdIDList.SortDesc)
+            : base(adapter, textView, CommandGuids.guidEditorLinesCmdSet, CommandId.SortAsc, CommandId.SortDesc)
         {
-            _dte = EditorExtensionsPackage.DTE;
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var span = GetSpan();
             var lines = span.GetText().Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
@@ -26,18 +22,17 @@ namespace MadsKristensen.EditorExtensions
             if (lines.Length == 0)
                 return false;
 
-            string result = SortLines(commandId, lines);
+            string result = SortLines((CommandId)commandId, lines);
 
-            _dte.UndoContext.Open("Sort Selected Lines");
-            TextView.TextBuffer.Replace(span.Span, result);
-            _dte.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext(("Sort Selected Lines")))
+                TextView.TextBuffer.Replace(span.Span, result);
 
             return true;
         }
 
-        private static string SortLines(uint commandId, IEnumerable<string> lines)
+        private static string SortLines(CommandId commandId, IEnumerable<string> lines)
         {
-            if (commandId == PkgCmdIDList.SortAsc)
+            if (commandId == CommandId.SortAsc)
                 lines = lines.OrderBy(t => t);
             else
                 lines = lines.OrderByDescending(t => t);

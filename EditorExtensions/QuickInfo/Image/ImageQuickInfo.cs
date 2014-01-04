@@ -1,13 +1,17 @@
-﻿using Microsoft.CSS.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Web;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Forms;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
-using System.Web;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -15,7 +19,6 @@ namespace MadsKristensen.EditorExtensions
     {
         private ITextBuffer _buffer;
         private CssTree _tree;
-        private static List<string> _imageExtensions = new List<string>() { ".png", ".jpg", "gif", ".jpeg", ".bmp", ".tif", ".tiff" };
 
         public ImageQuickInfo(ITextBuffer subjectBuffer)
         {
@@ -39,20 +42,16 @@ namespace MadsKristensen.EditorExtensions
 
             UrlItem urlItem = item.FindType<UrlItem>();
 
-            if (urlItem != null && urlItem.UrlString != null && urlItem.UrlString.IsValid)
-            {
-                string url = GetFileName(urlItem.UrlString.Text.Trim('\'', '"'));
-                if (!string.IsNullOrEmpty(url))
-                {
-                    applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(point.Value.Position, 1, SpanTrackingMode.EdgeNegative);
-                    var image = CreateImage(url);
-                    if (image != null && image.Source != null)
-                    {
-                        qiContent.Add(image);
-                        qiContent.Add(Math.Round(image.Source.Width) + "x" + Math.Round(image.Source.Height));
-                    }
-                }
-            }
+            if (urlItem == null || urlItem.UrlString == null || !urlItem.UrlString.IsValid)
+                return;
+
+            string url = GetFullUrl(urlItem.UrlString.Text.Trim('\'', '"'), _buffer);
+            if (string.IsNullOrEmpty(url))
+                return;
+
+            applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(point.Value.Position, 1, SpanTrackingMode.EdgeNegative);
+
+            AddImageContent(qiContent, url);
         }
 
         /// <summary>
@@ -76,84 +75,116 @@ namespace MadsKristensen.EditorExtensions
             return _tree != null;
         }
 
-        public static string GetFileName(string text)
+        public static string GetFullUrl(string text, ITextBuffer sourceBuffer)
         {
-            if (!string.IsNullOrEmpty(text))
+            return GetFullUrl(text, sourceBuffer.GetFileName() ?? EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+        }
+        public static string GetFullUrl(string text, string sourceFilename)
+        {
+            if (string.IsNullOrEmpty(text))
+                return null;
+
+            text = text.Trim(new[] { '\'', '"' });
+
+            if (text.StartsWith("//", StringComparison.Ordinal))
+                text = "http:" + text;
+
+            if (text.Contains("://") || text.StartsWith("data:", StringComparison.Ordinal))
+                return text;
+
+            if (String.IsNullOrEmpty(sourceFilename))
+                return null;
+
+            text = HttpUtility.UrlDecode(text);
+            return ProjectHelpers.ToAbsoluteFilePath(text, sourceFilename);
+        }
+
+        private static BitmapFrame LoadImage(string url)
+        {
+            try
             {
-                if (text.StartsWith("data:", StringComparison.Ordinal))
-                    return text;
-
-                string imageUrl = text.Trim(new[] { '\'', '"' });
-                //if (!_imageExtensions.Contains(Path.GetExtension(imageUrl)))
-                //    return null;
-                
-                string filePath = string.Empty;
-
-                if (text.StartsWith("//", StringComparison.Ordinal))
-                    text = "http:" + text;
-
-                if (text.StartsWith("http://", StringComparison.Ordinal) || text.Contains(";base64,"))
+                if (url.StartsWith("data:", StringComparison.Ordinal))
                 {
-                    return text;
-                }
-                else if (imageUrl.StartsWith("/", StringComparison.Ordinal))
-                {
-                    imageUrl = HttpUtility.UrlDecode(imageUrl);
-                    
-                    string root = ProjectHelpers.GetProjectFolder(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
-                    if (root.Contains("://"))
-                        return root + imageUrl;
-                    
-                    if (!string.IsNullOrEmpty(root))
-                        filePath = ProjectHelpers.ToAbsoluteFilePathFromActiveFile(imageUrl);// new FileInfo(root).Directory + imageUrl;
-                }
-                else if (EditorExtensionsPackage.DTE.ActiveDocument != null)
-                {
-                    imageUrl = HttpUtility.UrlDecode(imageUrl);
-                    FileInfo fi = new FileInfo(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
-                    DirectoryInfo dir = fi.Directory;
-                    while (imageUrl.Contains("../"))
+                    int index = url.IndexOf("base64,", StringComparison.Ordinal) + 7;
+                    byte[] imageBytes = Convert.FromBase64String(url.Substring(index));
+
+                    using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
                     {
-                        imageUrl = imageUrl.Remove(imageUrl.IndexOf("../", StringComparison.Ordinal), 3);
-                        dir = dir.Parent;
+                        // Must cache OnLoad before the stream is disposed
+                        return BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                     }
-
-                    filePath = Path.Combine(dir.FullName, imageUrl.Replace("/", "\\"));
                 }
-
-                return File.Exists(filePath) ? filePath : "pack://application:,,,/WebEssentials2013;component/Resources/nopreview.png";
+                else if (url.Contains("://") || File.Exists(url))
+                {
+                    return BitmapFrame.Create(new Uri(url));
+                }
             }
+            catch { }
 
             return null;
         }
 
-        public static Image CreateImage(string file)
+        static T Freeze<T>(T obj) where T : Freezable { obj.Freeze(); return obj; }
+
+        static readonly BitmapFrame noPreview = Freeze(BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/nopreview.png")));
+        public static void AddImageContent(IList<object> qiContent, string url)
         {
+            BitmapSource source;
             try
             {
-                var image = new Image();
-
-                if (file.StartsWith("data:", StringComparison.Ordinal))
-                {
-                    int index = file.IndexOf("base64,", StringComparison.Ordinal) + 7;
-                    byte[] imageBytes = Convert.FromBase64String(file.Substring(index));
-                    
-                    using (MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length))
-                    {
-                        image.Source = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-                    }
-                }
-                else if (File.Exists(file))
-                {
-                    image.Source = BitmapFrame.Create(new Uri(file), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-                }
-
-                return image;
+                source = LoadImage(url);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null;
+                qiContent.Add(new Image { Source = noPreview });
+                qiContent.Add(ex.Message);
+                return;
             }
+
+            if (source == null)
+            {
+                qiContent.Add(new Image { Source = noPreview });
+                qiContent.Add("Couldn't locate " + url);
+                return;
+            }
+
+            // HWNDs are always 32-bit.
+            // https://twitter.com/Schabse/status/406159104697049088
+            // http://msdn.microsoft.com/en-us/library/aa384203.aspx
+            var screen = Screen.FromHandle(new IntPtr(EditorExtensionsPackage.DTE.ActiveWindow.HWnd));
+            Image image = new Image
+            {
+                Source = source,
+                MaxWidth = screen.WorkingArea.Width / 2,
+                MaxHeight = screen.WorkingArea.Height / 2,
+                Stretch = Stretch.Uniform,
+                StretchDirection = StretchDirection.DownOnly
+            };
+            qiContent.Add(image);
+
+            // Use a TextBuffer to show dynamic text with
+            // the correct default styling. The presenter
+            // uses the same technique to show strings in
+            // QuickInfoItemView.CreateTextBuffer().
+            // Base64Tagger assumes that text from base64
+            // images will never change. If that changes,
+            // you must change that to handle changes.
+            var size = WebEditor.ExportProvider.GetExport<ITextBufferFactoryService>().Value.CreateTextBuffer();
+            size.SetText("Loading...");
+
+            source.OnDownloaded(() => size.SetText(Math.Round(source.Width) + "×" + Math.Round(source.Height)));
+            if (source.IsDownloading)
+            {
+                EventHandler<ExceptionEventArgs> failure = (s, e) =>
+                {
+                    image.Source = noPreview;
+                    size.SetText("Couldn't load image: " + e.ErrorException.Message);
+                };
+                source.DecodeFailed += failure;
+                source.DownloadFailed += failure;
+            }
+
+            qiContent.Add(size);
         }
 
         public void Dispose()

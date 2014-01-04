@@ -1,12 +1,12 @@
-﻿using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Threading;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -31,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
         ITextBuffer buffer;
         ITextSnapshot snapshot;
         List<Region> regions;
-        private static Regex regex = new Regex(@"\/\/\#region(.*)?", RegexOptions.Compiled);
+        private static Regex regex = new Regex(@"\/\/\ ?\#region(.*)?", RegexOptions.Compiled);
 
         public RegionTagger(ITextBuffer buffer)
         {
@@ -202,7 +202,6 @@ namespace MadsKristensen.EditorExtensions
 
             if (changeStart <= changeEnd)
             {
-                ITextSnapshot snap = this.snapshot;
                 if (this.TagsChanged != null)
                     this.TagsChanged(this, new SnapshotSpanEventArgs(
                         new SnapshotSpan(this.snapshot, Span.FromBounds(changeStart, changeEnd))));

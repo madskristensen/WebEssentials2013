@@ -10,10 +10,10 @@ namespace MadsKristensen.EditorExtensions
     [Export(typeof(IIntellisenseControllerProvider))]
     [Name("Font QuickInfo Controller")]
     [ContentType("css")]
-    internal class FontQuickInfoControllerProvider : IIntellisenseControllerProvider
+    public class FontQuickInfoControllerProvider : IIntellisenseControllerProvider
     {
         [Import]
-        internal IQuickInfoBroker QuickInfoBroker { get; set; }
+        public IQuickInfoBroker QuickInfoBroker { get; set; }
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers)
         {

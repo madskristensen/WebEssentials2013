@@ -15,11 +15,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
         public void SetupCommands()
         {
-            var commandId = new CommandID(GuidList.guidPixelPushingCmdSet, (int) PkgCmdIDList.cmdPixelPushingToggleCommandId);
+            var commandId = new CommandID(CommandGuids.guidPixelPushingCmdSet, (int)CommandId.PixelPushingToggle);
             var toggleCommand = new OleMenuCommand(TogglePixelPushingMode, EmptyChangeHandler, TogglePixelPushingModeBeforeQueryStatus, commandId)
             {
                 Checked = true
             };
+
             _mcs.AddCommand(toggleCommand);
         }
 
@@ -30,12 +31,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
         private static void TogglePixelPushingModeBeforeQueryStatus(object sender, EventArgs e)
         {
             var menuCommand = (OleMenuCommand)sender;
+
             menuCommand.Checked = PixelPushingMode.IsPixelPushingModeEnabled;
         }
 
         private static void TogglePixelPushingMode(object sender, EventArgs e)
         {
             PixelPushingMode.IsPixelPushingModeEnabled = !PixelPushingMode.IsPixelPushingModeEnabled;
+
             PixelPushingMode.All(x => x.SetMode());
         }
     }

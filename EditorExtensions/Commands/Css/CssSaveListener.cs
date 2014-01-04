@@ -1,12 +1,12 @@
-﻿using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -15,13 +15,14 @@ namespace MadsKristensen.EditorExtensions
     [TextViewRole(PredefinedTextViewRoles.Document)]
     public class CssSaveListener : IWpfTextViewCreationListener
     {
+        [Import]
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+
         private ITextDocument _document;
 
         public void TextViewCreated(IWpfTextView textView)
         {
-            textView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out _document);
-
-            if (_document != null)
+            if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out _document))
             {
                 _document.FileActionOccurred += document_FileActionOccurred;
             }
@@ -32,11 +33,11 @@ namespace MadsKristensen.EditorExtensions
             if (!WESettings.GetBoolean(WESettings.Keys.EnableCssMinification))
                 return;
 
-            if (e.FileActionType == FileActionTypes.ContentSavedToDisk && e.FilePath.EndsWith(".css"))
+            if (e.FileActionType == FileActionTypes.ContentSavedToDisk && e.FilePath.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
             {
                 string minFile = e.FilePath.Insert(e.FilePath.Length - 3, "min.");
 
-                if (File.Exists(minFile) && EditorExtensionsPackage.DTE.Solution.FindProjectItem(minFile) != null)
+                if (File.Exists(minFile) && ProjectHelpers.GetProjectItem(minFile) != null)
                 {
                     Task.Run(() =>
                     {
@@ -48,7 +49,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static void Minify(string file, string minFile)
         {
-            if (file.EndsWith(".min.css"))
+            if (file.EndsWith(".min.css", StringComparison.OrdinalIgnoreCase))
                 return;
 
             try
@@ -77,7 +78,7 @@ namespace MadsKristensen.EditorExtensions
             byte[] gzipContent = Compress(content);
             File.WriteAllBytes(gzipFile, gzipContent);
             ProjectHelpers.AddFileToActiveProject(gzipFile);
-            MarginBase.AddFileToProject(file, gzipFile);
+            ProjectHelpers.AddFileToProject(file, gzipFile);
         }
 
         public static byte[] Compress(string text)

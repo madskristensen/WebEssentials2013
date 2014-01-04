@@ -33,19 +33,22 @@ namespace MadsKristensen.EditorExtensions
         : ITagger<IntraTextAdornmentTag>
         where TAdornment : UIElement
     {
-        protected readonly IWpfTextView view;
+        protected readonly ITextBuffer buffer;
         private Dictionary<SnapshotSpan, TAdornment> adornmentCache = new Dictionary<SnapshotSpan, TAdornment>();
         protected ITextSnapshot snapshot { get; private set; }
+        protected readonly ITextView view;
         private readonly List<SnapshotSpan> invalidatedSpans = new List<SnapshotSpan>();
         private bool _isProcessing;
+        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
-        protected IntraTextAdornmentTagger(IWpfTextView view)
+        protected IntraTextAdornmentTagger(ITextView view, ITextBuffer buffer)
         {
+            this.buffer = buffer;
             this.view = view;
-            this.snapshot = view.TextBuffer.CurrentSnapshot;
+            this.snapshot = buffer.CurrentSnapshot;
 
             //this.view.LayoutChanged += HandleLayoutChanged;
-            this.view.TextBuffer.Changed += HandleBufferChanged;
+            this.buffer.Changed += HandleBufferChanged;
         }
 
         /// <param name="span">The span of text that this adornment will elide.</param>
@@ -74,6 +77,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 _isProcessing = true;
                 var editedSpans = args.Changes.Select(change => new SnapshotSpan(args.After, change.NewSpan)).ToList();
+
                 InvalidateSpans(editedSpans);
             }
 
@@ -91,17 +95,20 @@ namespace MadsKristensen.EditorExtensions
                 this.invalidatedSpans.AddRange(spans);
 
                 if (wasEmpty && this.invalidatedSpans.Count > 0)
-                    this.view.VisualElement.Dispatcher.BeginInvoke(new Action(AsyncUpdate));
+                    ((IWpfTextView)this.view).VisualElement.Dispatcher.BeginInvoke(new Action(AsyncUpdate));
             }
         }
 
         private void AsyncUpdate()
         {
+            List<SnapshotSpan> translatedSpans;
+            SnapshotPoint start, end;
+
             // Store the snapshot that we're now current with and send an event
             // for the text that has changed.
-            if (this.snapshot != this.view.TextBuffer.CurrentSnapshot)
+            if (this.snapshot != this.buffer.CurrentSnapshot)
             {
-                this.snapshot = this.view.TextBuffer.CurrentSnapshot;
+                this.snapshot = this.buffer.CurrentSnapshot;
 
                 Dictionary<SnapshotSpan, TAdornment> translatedAdornmentCache = new Dictionary<SnapshotSpan, TAdornment>();
 
@@ -115,7 +122,6 @@ namespace MadsKristensen.EditorExtensions
                 this.adornmentCache = translatedAdornmentCache;
             }
 
-            List<SnapshotSpan> translatedSpans;
             lock (this.invalidatedSpans)
             {
                 translatedSpans = this.invalidatedSpans.Select(s => s.TranslateTo(this.snapshot, SpanTrackingMode.EdgeInclusive)).ToList();
@@ -125,8 +131,8 @@ namespace MadsKristensen.EditorExtensions
             if (translatedSpans.Count == 0)
                 return;
 
-            var start = translatedSpans.Select(span => span.Start).Min();
-            var end = translatedSpans.Select(span => span.End).Max();
+            start = translatedSpans.Select(span => span.Start).Min();
+            end = translatedSpans.Select(span => span.End).Max();
 
             RaiseTagsChanged(new SnapshotSpan(start, end));
         }
@@ -137,6 +143,7 @@ namespace MadsKristensen.EditorExtensions
         protected void RaiseTagsChanged(SnapshotSpan span)
         {
             var handler = this.TagsChanged;
+
             if (handler != null)
                 handler(this, new SnapshotSpanEventArgs(span));
         }
@@ -145,9 +152,7 @@ namespace MadsKristensen.EditorExtensions
         {
             if (!_isProcessing)
             {
-                _isProcessing = true;
                 SnapshotSpan visibleSpan = this.view.TextViewLines.FormattedSpan;
-
                 // Filter out the adornments that are no longer visible.
                 HashSet<SnapshotSpan> toRemove = new HashSet<SnapshotSpan>(
                     from keyValuePair
@@ -155,13 +160,14 @@ namespace MadsKristensen.EditorExtensions
                     where !keyValuePair.Key.TranslateTo(visibleSpan.Snapshot, SpanTrackingMode.EdgeExclusive).IntersectsWith(visibleSpan)
                     select keyValuePair.Key);
 
+                _isProcessing = true;
+
                 foreach (var span in toRemove)
                     this.adornmentCache.Remove(span);
             }
 
             _isProcessing = false;
         }
-
 
         // Produces tags on the snapshot that the tag consumer asked for.
         public virtual IEnumerable<ITagSpan<IntraTextAdornmentTag>> GetTags(NormalizedSnapshotSpanCollection spans)
@@ -172,17 +178,16 @@ namespace MadsKristensen.EditorExtensions
             // Translate the request to the snapshot that this tagger is current with.
 
             ITextSnapshot requestedSnapshot = spans[0].Snapshot;
-
             var translatedSpans = new NormalizedSnapshotSpanCollection(spans.Select(span => span.TranslateTo(this.snapshot, SpanTrackingMode.EdgeExclusive)));
-
             // Grab the adornments.
             var tags = GetAdornmentTagsOnSnapshot(translatedSpans).GetEnumerator();
+
             while (tags.MoveNext())
             {
                 var current = tags.Current;
                 SnapshotSpan span = current.Span.TranslateTo(requestedSnapshot, SpanTrackingMode.EdgeExclusive);
-
                 IntraTextAdornmentTag tag = new IntraTextAdornmentTag(current.Tag.Adornment, current.Tag.RemovalCallback, current.Tag.Affinity);
+
                 yield return new TagSpan<IntraTextAdornmentTag>(span, tag);
             }
         }
@@ -194,7 +199,6 @@ namespace MadsKristensen.EditorExtensions
                 yield break;
 
             ITextSnapshot snapshot = spans[0].Snapshot;
-
             // Since WPF UI objects have state (like mouse hover or animation) and are relatively expensive to create and lay out,
             // this code tries to reuse controls as much as possible.
             // The controls are stored in this.adornmentCache between the calls.
@@ -202,6 +206,7 @@ namespace MadsKristensen.EditorExtensions
             // Mark which adornments fall inside the requested spans with Keep=false
             // so that they can be removed from the cache if they no longer correspond to data tags.
             HashSet<SnapshotSpan> toRemove = new HashSet<SnapshotSpan>();
+
             foreach (var ar in this.adornmentCache)
                 if (spans.IntersectsWith(new NormalizedSnapshotSpanCollection(ar.Key)))
                     toRemove.Add(ar.Key);
@@ -213,6 +218,7 @@ namespace MadsKristensen.EditorExtensions
                 SnapshotSpan snapshotSpan = spanDataPair.Item1;
                 PositionAffinity? affinity = spanDataPair.Item2;
                 TData adornmentData = spanDataPair.Item3;
+
                 if (this.adornmentCache.TryGetValue(snapshotSpan, out adornment))
                 {
                     if (UpdateAdornment(adornment, adornmentData))
@@ -245,8 +251,6 @@ namespace MadsKristensen.EditorExtensions
                 this.adornmentCache.Remove(snapshotSpan);
         }
 
-        public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
-
         private class Comparer : IEqualityComparer<Tuple<SnapshotSpan, PositionAffinity?, TData>>
         {
             public bool Equals(Tuple<SnapshotSpan, PositionAffinity?, TData> x, Tuple<SnapshotSpan, PositionAffinity?, TData> y)
@@ -255,6 +259,7 @@ namespace MadsKristensen.EditorExtensions
                     return true;
                 if (x == null || y == null)
                     return false;
+
                 return x.Item1.Equals(y.Item1);
             }
 

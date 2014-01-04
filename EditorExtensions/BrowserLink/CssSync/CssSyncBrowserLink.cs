@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.Web.BrowserLink;
+﻿using System;
 using System.ComponentModel.Composition;
-using System.IO;
-using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -37,6 +37,7 @@ namespace MadsKristensen.EditorExtensions
     public class CssSync : BrowserLinkExtension
     {
         private FileSystemWatcher _fsw;
+        private DateTime _lastPushed = DateTime.Now;
 
         public override void OnConnected(BrowserLinkConnection connection)
         {
@@ -77,19 +78,17 @@ namespace MadsKristensen.EditorExtensions
             _fsw.EnableRaisingEvents = true;
         }
 
-        private DateTime _lastPushed = DateTime.Now;
-
         private void RefreshStyles(object sender, FileSystemEventArgs e)
         {
             if (DateTime.Now - _lastPushed < TimeSpan.FromMilliseconds(500))
                 return;
 
-            if (!CssSyncSuppressionContext.IsSuppressed && e.FullPath.EndsWith(".css"))
+            if (!CssSyncSuppressionContext.IsSuppressed && e.FullPath.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
             {
                 Browsers.All.Invoke("refresh", Path.GetFileName(e.FullPath));
                 _lastPushed = DateTime.Now;
             }
-            else if (e.FullPath.EndsWith(".css") && !CssSyncSuppressionContext.SuppressAllBrowsers)
+            else if (e.FullPath.EndsWith(".css", StringComparison.OrdinalIgnoreCase) && !CssSyncSuppressionContext.SuppressAllBrowsers)
             {
                 Browsers.AllExcept(CssSyncSuppressionContext.ConnectionsToExclude.ToArray()).Invoke("refresh", Path.GetFileName(e.FullPath));
                 _lastPushed = DateTime.Now;

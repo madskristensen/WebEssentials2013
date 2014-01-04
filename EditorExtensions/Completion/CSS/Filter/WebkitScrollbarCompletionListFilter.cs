@@ -2,9 +2,8 @@
 using System.Collections.Specialized;
 using System.ComponentModel.Composition;
 using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.VisualStudio.Utilities;
 using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -34,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
 
             ParseItem prev = context.ContextItem.PreviousSibling;
             bool hasScrollbar = false;
-            
+
             if (prev != null)
             {
                 hasScrollbar = prev.Text.Contains(":-webkit-resizer") || prev.Text.Contains(":-webkit-scrollbar");

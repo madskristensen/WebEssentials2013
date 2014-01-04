@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -49,7 +50,7 @@ namespace MadsKristensen.EditorExtensions
             // Bytes shouldn't have decimal places
             string format = i == 0 ? "{0} {1}" : "{0:0.00} {1}";
 
-            return String.Format(format, result, suffixes[i]);
+            return String.Format(CultureInfo.CurrentCulture, format, result, suffixes[i]);
         }
         public bool AllowQuotedString
         {

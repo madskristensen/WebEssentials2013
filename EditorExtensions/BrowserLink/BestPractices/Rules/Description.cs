@@ -1,13 +1,10 @@
-﻿using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
-using System;
+﻿using System;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -47,14 +44,14 @@ namespace MadsKristensen.EditorExtensions
                     return;
 
                 string html = File.ReadAllText(_file);
-                int index = html.IndexOf("</head>");
+                int index = html.IndexOf("</head>", StringComparison.OrdinalIgnoreCase);
 
                 if (index > -1)
                 {
                     EditorExtensionsPackage.DTE.ItemOperations.OpenFile(_file);
                     _extension.ErrorList.Tasks.Remove(task);
-
                     AddMetaTag(index);
+
                     return;
                 }
             }
@@ -67,16 +64,15 @@ namespace MadsKristensen.EditorExtensions
                 var view = ProjectHelpers.GetCurentTextView();
                 var buffer = view.TextBuffer;
 
-                EditorExtensionsPackage.DTE.UndoContext.Open("Adding <meta> description");
+                using (EditorExtensionsPackage.UndoContext("Adding <meta> description"))
+                {
+                    buffer.Insert(index, "<meta name=\"description\" content=\"The description of my page\" />" + Environment.NewLine);
+                    view.Caret.MoveTo(new SnapshotPoint(buffer.CurrentSnapshot, index + 34 + 26));
+                    view.Selection.Select(new SnapshotSpan(buffer.CurrentSnapshot, 34 + index, 26), false);
+                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                }
 
-                buffer.Insert(index, "<meta name=\"description\" content=\"The description of my page\" />" + Environment.NewLine);
-                view.Caret.MoveTo(new SnapshotPoint(buffer.CurrentSnapshot, index + 34 + 26));
-                view.Selection.Select(new SnapshotSpan(buffer.CurrentSnapshot, 34 + index, 26), false);
-                EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatSelection");
-
-                EditorExtensionsPackage.DTE.UndoContext.Close();
                 EditorExtensionsPackage.DTE.ActiveDocument.Save();
-
                 view.ViewScroller.EnsureSpanVisible(new SnapshotSpan(buffer.CurrentSnapshot, index, 1), EnsureSpanVisibleOptions.AlwaysCenter);
 
             }), DispatcherPriority.ApplicationIdle, null);

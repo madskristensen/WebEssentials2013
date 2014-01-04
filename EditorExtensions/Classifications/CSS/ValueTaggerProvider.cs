@@ -17,8 +17,6 @@ namespace MadsKristensen.EditorExtensions
     [TagType(typeof(TextMarkerTag))]
     internal class VendorTaggerProvider : IViewTaggerProvider
     {
-        [Import]
-        internal IClassifierAggregatorService AggregatorFactory = null;
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
@@ -27,13 +25,7 @@ namespace MadsKristensen.EditorExtensions
                 return null;
             }
 
-            if (textView.TextBuffer != buffer)
-            {
-                return null;
-            }
-
-            Func<ITagger<T>> sc = delegate() { return new VendorTagger(textView, buffer, this) as ITagger<T>; };
-            return buffer.Properties.GetOrCreateSingletonProperty<ITagger<T>>(sc);
+            return buffer.Properties.GetOrCreateSingletonProperty(() => new VendorTagger(textView, buffer)) as ITagger<T>;
         }
     }
 
@@ -42,18 +34,14 @@ namespace MadsKristensen.EditorExtensions
         ITextView View { get; set; }
         ITextBuffer Buffer { get; set; }
         SnapshotPoint? CurrentChar { get; set; }
-        VendorTaggerProvider Provider { get; set; }
-        readonly IClassifier _classifier;
-        private VendorClassifier _vendorClassifier;
+        private readonly VendorClassifier _vendorClassifier;
         private bool _pendingUpdate = false;
 
-        internal VendorTagger(ITextView view, ITextBuffer buffer, VendorTaggerProvider provider)
+        internal VendorTagger(ITextView view, ITextBuffer buffer)
         {
             View = view;
             Buffer = buffer;
             CurrentChar = null;
-            Provider = provider;
-            _classifier = provider.AggregatorFactory.GetClassifier(buffer);
             buffer.Properties.TryGetProperty(typeof(VendorClassifier), out _vendorClassifier);
 
             View.Caret.PositionChanged += CaretPositionChanged;
@@ -116,7 +104,7 @@ namespace MadsKristensen.EditorExtensions
                 currentChar = currentChar.TranslateTo(spans[0].Snapshot, PointTrackingMode.Positive);
             }
 
-            var allTags = _vendorClassifier.GetClassificationSpans(spans[0]).Where(s => s.ClassificationType.Classification == ClassificationTypes._value);
+            var allTags = _vendorClassifier.GetClassificationSpans(spans[0]).Where(s => s.ClassificationType.Classification == VendorClassificationTypes.Value);
             foreach (var tagSpan in allTags)
             {
                 if (tagSpan.Span.Contains(currentChar))
@@ -124,7 +112,7 @@ namespace MadsKristensen.EditorExtensions
                     Declaration dec = _vendorClassifier.Cache.FirstOrDefault(e => currentChar.Position > e.Start && currentChar.Position < e.AfterEnd);
                     if (dec != null && dec.PropertyName.Text.Length > 0 && !dec.IsVendorSpecific())
                     {
-                        foreach (Declaration vendor in _vendorClassifier.Cache.Where(d => d.Parent == dec.Parent && _vendorClassifier.GetStandardName(d) == dec.PropertyName.Text))
+                        foreach (Declaration vendor in _vendorClassifier.Cache.Where(d => d.Parent == dec.Parent && VendorClassifier.GetStandardName(d) == dec.PropertyName.Text))
                         {
                             // Manage quotes for -ms-filter
                             string value = Buffer.CurrentSnapshot.GetText(vendor.Colon.AfterEnd, vendor.AfterEnd - vendor.Colon.AfterEnd);

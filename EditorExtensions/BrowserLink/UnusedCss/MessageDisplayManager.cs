@@ -1,17 +1,15 @@
-﻿using EnvDTE;
-using Microsoft.VisualStudio.Shell;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EnvDTE;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public static class MessageDisplayManager
     {
         private static IEnumerable<Task> _currentDisplayData;
-
         private static IUsageDataSource _lastSource;
-
         private static Project _lastProject;
         private static Uri _lastUri;
 
@@ -44,7 +42,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public static MessageDisplaySource DisplaySource { get; set; }
         public static void ShowWarningsFor(Uri uri, Project project, IUsageDataSource browserSource)
         {
-            using (ErrorList.GetUpdateSuspensionContext())
+            using (ErrorList.UpdateSuspensionContext)
             {
                 if (_currentDisplayData != null)
                 {
@@ -61,6 +59,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 if (_lastSource == null || _lastProject == null)
                 {
                     _currentDisplayData = null;
+
                     return;
                 }
 
@@ -72,15 +71,19 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                     {
                         case MessageDisplaySource.Project:
                             _currentDisplayData = UsageRegistry.GetWarnings(_lastProject).ToList();
+
                             break;
                         case MessageDisplaySource.Url:
                             _currentDisplayData = UsageRegistry.GetWarnings(_lastUri).ToList();
+
                             break;
                         case MessageDisplaySource.Browser:
                             _currentDisplayData = _lastSource.GetWarnings().ToList();
+
                             break;
                         default:
                             _currentDisplayData = null;
+
                             return;
                     }
 

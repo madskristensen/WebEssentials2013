@@ -1,7 +1,7 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.Windows.Media.Imaging;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -19,23 +19,21 @@ namespace MadsKristensen.EditorExtensions
 
             if (Icon == null)
             {
-                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/warning.png", UriKind.RelativeOrAbsolute));
+                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/warning.png", UriKind.RelativeOrAbsolute));
             }
         }
 
         public override string DisplayText
         {
-            get { return Resources.OverQualifiedSmartTagActionName  ; }
+            get { return Resources.OverQualifiedSmartTagActionName; }
         }
 
         public override void Invoke()
         {
             Span ruleSpan = new Span(_selector.Start, _index);
 
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            _span.TextBuffer.Delete(ruleSpan);
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+                _span.TextBuffer.Delete(ruleSpan);
         }
     }
-
 }

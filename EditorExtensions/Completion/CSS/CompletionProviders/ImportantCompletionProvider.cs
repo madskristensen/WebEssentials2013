@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
 using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.VisualStudio.Utilities;
 using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -19,7 +17,6 @@ namespace MadsKristensen.EditorExtensions
 
         public IEnumerable<ICssCompletionListEntry> GetListEntries(CssCompletionContext context)
         {
-            List<ICssCompletionListEntry> entries = new List<ICssCompletionListEntry>();
             Declaration dec = context.ContextItem.FindType<Declaration>();
             if (dec == null || dec.Colon == null || dec.Important != null || dec.Values.Count == 0)
                 yield break;

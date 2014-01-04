@@ -1,7 +1,7 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.Windows.Media.Imaging;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Actions
 {
@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Actions
 
             if (Icon == null)
             {
-                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/delete.png", UriKind.RelativeOrAbsolute));
+                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/delete.png", UriKind.RelativeOrAbsolute));
             }
         }
 
@@ -28,16 +28,16 @@ namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Actions
 
         public override void Invoke()
         {
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            var snapshot = _span.TextBuffer.CurrentSnapshot;
-            var position = _rule.Start + _rule.Length;
-            var start = CalculateDeletionStartFromStartPosition(snapshot, _rule.Start);
-            var end = CalculateDeletionEndFromRuleEndPosition(snapshot, position);
-            var length = end - start;
-            var ss = new SnapshotSpan(snapshot, start, length);
-            _span.TextBuffer.Delete(ss);
-
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            {
+                var snapshot = _span.TextBuffer.CurrentSnapshot;
+                var position = _rule.Start + _rule.Length;
+                var start = CalculateDeletionStartFromStartPosition(snapshot, _rule.Start);
+                var end = CalculateDeletionEndFromRuleEndPosition(snapshot, position);
+                var length = end - start;
+                var ss = new SnapshotSpan(snapshot, start, length);
+                _span.TextBuffer.Delete(ss);
+            }
         }
 
         private static int CalculateDeletionStartFromStartPosition(ITextSnapshot snapshot, int startPosition)
@@ -61,7 +61,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Actions
                         --position;
                         continue;
                     }
-                    
+
                     ++position;
                 }
 
@@ -88,7 +88,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.CSS.Actions
                             committedPosition = ++position;
                             continue;
                         }
-                        
+
                         if (string.IsNullOrWhiteSpace(text))
                         {
                             ++position;

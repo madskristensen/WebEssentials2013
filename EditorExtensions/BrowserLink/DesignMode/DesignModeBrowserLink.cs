@@ -1,13 +1,14 @@
-﻿using Microsoft.Html.Core;
-using Microsoft.Html.Editor;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Web.BrowserLink;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Threading;
+using Microsoft.Html.Core;
+using Microsoft.Html.Editor;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -19,28 +20,28 @@ namespace MadsKristensen.EditorExtensions
             return new DesignMode();
         }
 
-        public  string GetScript()
+        public string GetScript()
         {
-                using (Stream stream = GetType().Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.BrowserLink.DesignMode.DesignModeBrowserLink.js"))
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
-         }
+            using (Stream stream = GetType().Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.BrowserLink.DesignMode.DesignModeBrowserLink.js"))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
+        }
     }
 
     public class DesignMode : BrowserLinkExtension
     {
         BrowserLinkConnection _connection;
 
-        public override void OnConnected(BrowserLinkConnection connection)
-        {
-            _connection = connection;
-        }
-
         public override IEnumerable<BrowserLinkAction> Actions
         {
             get { yield return new BrowserLinkAction("Design Mode", SetDesignMode); }
+        }
+
+        public override void OnConnected(BrowserLinkConnection connection)
+        {
+            _connection = connection;
         }
 
         private void SetDesignMode(BrowserLinkAction action)
@@ -48,6 +49,7 @@ namespace MadsKristensen.EditorExtensions
             Browsers.Client(_connection).Invoke("setDesignMode");
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         [BrowserLinkCallback]
         public void UpdateSource(string innerHtml, string file, int position)
         {
@@ -57,11 +59,10 @@ namespace MadsKristensen.EditorExtensions
             {
                 var view = ProjectHelpers.GetCurentTextView();
                 var html = HtmlEditorDocument.FromTextView(view);
-
-                view.Selection.Clear();
                 ElementNode element;
                 AttributeNode attribute;
 
+                view.Selection.Clear();
                 html.HtmlEditorTree.GetPositionElement(position + 1, out element, out attribute);
 
                 // HTML element
@@ -80,10 +81,12 @@ namespace MadsKristensen.EditorExtensions
                 {
                     //@Html.ActionLink("Application name", "Index", "Home", null, new { @class = "brand" })
                     Span span = new Span(position, 100);
+
                     if (position + 100 < html.TextBuffer.CurrentSnapshot.Length)
                     {
                         string text = html.TextBuffer.CurrentSnapshot.GetText(span);
                         var result = Regex.Replace(text, @"^html.actionlink\(""([^""]+)""", "Html.ActionLink(\"" + innerHtml + "\"", RegexOptions.IgnoreCase);
+
                         UpdateBuffer(result, html, span);
                     }
                 }
@@ -93,22 +96,21 @@ namespace MadsKristensen.EditorExtensions
 
         private static void UpdateBuffer(string innerHTML, HtmlEditorDocument html, Span span)
         {
-            try
+            using (EditorExtensionsPackage.UndoContext("Design Mode changes"))
             {
-                EditorExtensionsPackage.DTE.UndoContext.Open("Design Mode changes");
-                html.TextBuffer.Replace(span, innerHTML);
-                EditorExtensionsPackage.DTE.ActiveDocument.Save();
-            }
-            catch
-            {
-                // Do nothing
-            }
-            finally
-            {
-                EditorExtensionsPackage.DTE.UndoContext.Close();
+                try
+                {
+                    html.TextBuffer.Replace(span, innerHTML);
+                    EditorExtensionsPackage.DTE.ActiveDocument.Save();
+                }
+                catch
+                {
+                    // Do nothing
+                }
             }
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         [BrowserLinkCallback]
         public void Undo()
         {
@@ -123,6 +125,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         [BrowserLinkCallback]
         public void Redo()
         {
@@ -137,6 +140,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         [BrowserLinkCallback]
         public void Save()
         {

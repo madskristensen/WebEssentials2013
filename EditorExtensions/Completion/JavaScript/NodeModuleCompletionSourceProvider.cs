@@ -1,9 +1,4 @@
-﻿using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
@@ -12,6 +7,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
+using Newtonsoft.Json.Linq;
 using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
@@ -22,16 +22,15 @@ namespace MadsKristensen.EditorExtensions
     Name("NodeJsCompletion")]
     public class NodeModuleCompletionSourceProvider : ICompletionSourceProvider
     {
-        public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer)
+        public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer)
         {
-            return buffer.Properties.GetOrCreateSingletonProperty(() => new NodeModuleCompletionSource(buffer)) as ICompletionSource;
+            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new NodeModuleCompletionSource(textBuffer)) as ICompletionSource;
         }
     }
 
     public class NodeModuleCompletionSource : ICompletionSource
     {
         private ITextBuffer _buffer;
-        private static ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphXmlItem, StandardGlyphItem.GlyphItemPublic);
 
         public NodeModuleCompletionSource(ITextBuffer buffer)
         {
@@ -40,8 +39,9 @@ namespace MadsKristensen.EditorExtensions
 
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
-            int position = session.TextView.Caret.Position.BufferPosition.Position;
-            var line = _buffer.CurrentSnapshot.Lines.SingleOrDefault(l => l.Start <= position && l.End >= position);
+            var position = session.GetTriggerPoint(_buffer).GetPoint(_buffer.CurrentSnapshot);
+            var line = position.GetContainingLine();
+
             if (line == null) return;
 
             int linePos = position - line.Start.Position;
@@ -56,7 +56,12 @@ namespace MadsKristensen.EditorExtensions
             if (String.IsNullOrWhiteSpace(info.Item1))
                 results = GetRootCompletions(baseFolder);
             else
+            {
                 results = GetRelativeCompletions(NodeModuleService.ResolvePath(baseFolder, info.Item1));
+                // Show completions for ../../
+                if (parentTraversalRegex.IsMatch(info.Item1))
+                    results = new[] { parentFolder }.Concat(results);
+            }
 
             var trackingSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(info.Item2.Start + line.Start, info.Item2.Length, SpanTrackingMode.EdgeInclusive);
             completionSets.Add(new CompletionSet(
@@ -69,12 +74,14 @@ namespace MadsKristensen.EditorExtensions
 
         }
 
+        static readonly Regex parentTraversalRegex = new Regex(@"^(\.\./)+$");
         static readonly ImageSource folderIcon = GlyphService.GetGlyph(StandardGlyphGroup.GlyphOpenFolder, StandardGlyphItem.GlyphItemPublic);
         #region Root-level completions
-        static ImageSource moduleIcon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/node_module.png", UriKind.RelativeOrAbsolute));
+        static ImageSource moduleIcon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/node_module.png", UriKind.RelativeOrAbsolute));
+        static readonly Intel.Completion parentFolder = new Intel.Completion("../", "../", "Prefix to access files in the parent directory", folderIcon, "Folder");
         static readonly ReadOnlyCollection<Intel.Completion> dotCompletions = new ReadOnlyCollection<Intel.Completion>(new[]{
             new Intel.Completion("./", "./", "Prefix to access files in the current directory", folderIcon, "Folder"),
-            new Intel.Completion("../", "../", "Prefix to access files in the parent directory", folderIcon, "Folder")
+            parentFolder
         });
 
         // Gathered from `require('<tab><tab>` on Node v0.10.15.
@@ -117,7 +124,7 @@ namespace MadsKristensen.EditorExtensions
         #region Directory-level completions
         static readonly IReadOnlyDictionary<string, ImageSource> fileIcons = new Dictionary<string, ImageSource>(StringComparer.OrdinalIgnoreCase)
         {
-            { ".js",    BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/jsfile.png", UriKind.RelativeOrAbsolute)) },
+            { ".js",    BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/jsfile.png", UriKind.RelativeOrAbsolute)) },
             { ".json",  GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupJSharpNamespace, StandardGlyphItem.GlyphItemPublic) },
             { ".node",  GlyphService.GetGlyph(StandardGlyphGroup.GlyphLibrary, StandardGlyphItem.GlyphItemPublic) }
         };
@@ -152,7 +159,10 @@ namespace MadsKristensen.EditorExtensions
         }
         #endregion
 
-        public void Dispose() { }
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
     }
     ///<summary>Contains host-agnostic methods used to provide Node.js module completions.</summary>
     ///<remarks>This is a separate class so that it can be unit-tested without running any

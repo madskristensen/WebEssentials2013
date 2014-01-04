@@ -1,33 +1,30 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
+using System.Globalization;
 using System.IO;
-using System.Windows.Forms;
 using System.Windows.Media.Imaging;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class UpdateEmbedSmartTagAction : CssSmartTagActionBase
     {
         private ITrackingSpan _span;
-        private UrlItem _url;
         private string _path;
 
-        public UpdateEmbedSmartTagAction(ITrackingSpan span, UrlItem url, string path)
+        public UpdateEmbedSmartTagAction(ITrackingSpan span, string path)
         {
             _span = span;
-            _url = url;
             _path = path;
 
             if (Icon == null)
             {
-                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/embed.png", UriKind.RelativeOrAbsolute));
+                Icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/embed.png", UriKind.RelativeOrAbsolute));
             }
         }
 
         public override string DisplayText
         {
-            get { return string.Format(Resources.UpdateEmbedSmartTagActionName, _path); }
+            get { return string.Format(CultureInfo.CurrentCulture, Resources.UpdateEmbedSmartTagActionName, _path); }
         }
 
         public override void Invoke()
@@ -47,20 +44,18 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                MessageBox.Show("'" + _path + "' could not be resolved.", "File not found", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "'{0}' could not be resolved.", _path), "Web Essentials: File not found");
             }
         }
 
         private void InsertEmbedString(ITextSnapshot snapshot, string dataUri)
         {
-            EditorExtensionsPackage.DTE.UndoContext.Open(DisplayText);
-            Declaration dec = _url.FindType<Declaration>();
-
-            _span.TextBuffer.Replace(_span.GetSpan(snapshot), dataUri);
-
-            EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-            EditorExtensionsPackage.ExecuteCommand("Edit.CollapsetoDefinitions");
-            EditorExtensionsPackage.DTE.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            {
+                _span.TextBuffer.Replace(_span.GetSpan(snapshot), dataUri);
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                EditorExtensionsPackage.ExecuteCommand("Edit.CollapsetoDefinitions");
+            }
         }
     }
 }

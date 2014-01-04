@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Globalization;
 using System.IO;
 using System.Web;
 using Microsoft.VisualStudio.Text.Editor;
@@ -47,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
             }
             reference = HttpUtility.UrlPathEncode(reference);
 
-            _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(_background, reference));
+            _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(CultureInfo.CurrentCulture, _background, reference));
 
             return DragDropPointerEffects.Copy;
         }

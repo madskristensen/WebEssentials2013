@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio;
+﻿using System;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text.Editor;
-using System;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     case (uint)VSConstants.VSStd2KCmdID.FORMATSELECTION:
                     case (uint)VSConstants.VSStd2KCmdID.FORMATDOCUMENT:
-                        if (_textView.TextBuffer.ContentType.IsOfType("SCSS"))
+                        if (_textView.GetSelection("SCSS").HasValue)
                         {
                             return VSConstants.S_OK;
                         }

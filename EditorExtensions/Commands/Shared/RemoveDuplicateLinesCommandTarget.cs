@@ -1,24 +1,20 @@
-﻿using EnvDTE80;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class RemoveDuplicateLines : CommandTargetBase
     {
-        private DTE2 _dte;
-
         public RemoveDuplicateLines(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidEditorLinesCmdSet, PkgCmdIDList.RemoveDuplicateLines)
+            : base(adapter, textView, CommandGuids.guidEditorLinesCmdSet, CommandId.RemoveDuplicateLines)
         {
-            _dte = EditorExtensionsPackage.DTE;
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var span = GetSpan();
             var lines = span.GetText().Split(new[] { Environment.NewLine }, StringSplitOptions.None);
@@ -28,9 +24,8 @@ namespace MadsKristensen.EditorExtensions
 
             string result = RemoveDuplicates(lines);
 
-            _dte.UndoContext.Open("Remove Duplicate Lines");
-            TextView.TextBuffer.Replace(span.Span, result);
-            _dte.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext(("Remove Duplicate Lines")))
+                TextView.TextBuffer.Replace(span.Span, result);
 
             return true;
         }

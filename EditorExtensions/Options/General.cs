@@ -1,5 +1,5 @@
-﻿using Microsoft.VisualStudio.Shell;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -13,8 +13,9 @@ namespace MadsKristensen.EditorExtensions
         public override void SaveSettingsToStorage()
         {
             Settings.SetValue(WESettings.Keys.KeepImportantComments, KeepImportantComments);
-            Settings.SetValue(WESettings.Keys.EnableEnterFormat, EnableEnterFormat);
             Settings.SetValue(WESettings.Keys.EnableBrowserLinkMenu, EnableBrowserLinkMenu);
+            Settings.SetValue(WESettings.Keys.AllMessagesToOutputWindow, AllMessagesToOutputWindow);
+            Settings.SetValue(WESettings.Keys.SvgShowPreviewWindow, SvgShowPreviewWindow);
 
             Settings.Save();
         }
@@ -22,8 +23,9 @@ namespace MadsKristensen.EditorExtensions
         public override void LoadSettingsFromStorage()
         {
             KeepImportantComments = WESettings.GetBoolean(WESettings.Keys.KeepImportantComments);
-            EnableEnterFormat = WESettings.GetBoolean(WESettings.Keys.EnableEnterFormat);
             EnableBrowserLinkMenu = WESettings.GetBoolean(WESettings.Keys.EnableBrowserLinkMenu);
+            AllMessagesToOutputWindow = WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow);
+            SvgShowPreviewWindow = WESettings.GetBoolean(WESettings.Keys.SvgShowPreviewWindow);
         }
 
         // MISC
@@ -32,14 +34,19 @@ namespace MadsKristensen.EditorExtensions
         [Category("Minification")]
         public bool KeepImportantComments { get; set; }
 
-        [LocDisplayName("Auto-format HTML on Enter")]
-        [Description("Automatically format HTML documents when pressing Enter.")]
-        [Category("HTML")]
-        public bool EnableEnterFormat { get; set; }
-
         [LocDisplayName("Enable Browser Link menu")]
         [Description("Enable the menu that shows up in the browser. Requires restart.")]
         [Category("Browser Link")]
         public bool EnableBrowserLinkMenu { get; set; }
+
+        [LocDisplayName("Redirect Messages to Output Window")]
+        [Description("Redirect messages/notifications to output window.")]
+        [Category("Messages")]
+        public bool AllMessagesToOutputWindow { get; set; }
+
+        [LocDisplayName("Show preview window")]
+        [Description("Shows the preview window when editing an SVG file.")]
+        [Category("SVG")]
+        public bool SvgShowPreviewWindow { get; set; }
     }
 }

@@ -1,4 +1,10 @@
-﻿using EnvDTE;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using EnvDTE;
 using EnvDTE80;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
@@ -7,12 +13,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -69,11 +69,11 @@ namespace MadsKristensen.EditorExtensions
             {
                 CssEditorDocument document = CssEditorDocument.FromTextBuffer(textView.TextBuffer);
                 ParseItem item = document.Tree.StyleSheet.ItemAfterPosition(contextSpan.Start);
-                Declaration dec = item.FindType<Declaration>();
+                Declaration declaration = item.FindType<Declaration>();
 
-                if (dec != null)
+                if (declaration != null)
                 {
-                    return GetApplicableColors(dec.PropertyName.Text);
+                    return GetApplicableColors();
                 }
             }
 
@@ -111,7 +111,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static IEnumerable<ColorModel> GetApplicableColors(string propertyName)
+        private static IEnumerable<ColorModel> GetApplicableColors()
         {
             List<ParseItem> items = new List<ParseItem>();
             //bool hasCustomItems = false;

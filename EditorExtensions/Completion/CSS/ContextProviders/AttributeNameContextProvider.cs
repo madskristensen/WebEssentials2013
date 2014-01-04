@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.VisualStudio.Utilities;
 using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -33,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
                 start = attr.AttributeName.Start;
                 length = attr.AttributeName.Length;
             }
-            
+
             return new CssCompletionContext((CssCompletionContextType)605, start, length, null);
         }
     }

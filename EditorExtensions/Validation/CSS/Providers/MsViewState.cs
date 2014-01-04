@@ -1,8 +1,8 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -19,7 +19,7 @@ namespace MadsKristensen.EditorExtensions
                 return ItemCheckResult.Continue;
 
             int index = media.Text.IndexOf("-ms-view-state", StringComparison.OrdinalIgnoreCase);
-            
+
             if (index > -1)
             {
                 var property = item.StyleSheet.ItemAfterPosition(media.Start + index);
@@ -31,9 +31,9 @@ namespace MadsKristensen.EditorExtensions
             return ItemCheckResult.Continue;
         }
 
-        private bool IsWindowsWebApp()
+        private static bool IsWindowsWebApp()
         {
-            // Add logic to determine if the current project is WWA
+            // TODO: Add logic to determine if the current project is WWA
             return true;
         }
 

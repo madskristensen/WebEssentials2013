@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -10,12 +10,14 @@ namespace MadsKristensen.EditorExtensions
         private IClassificationType _keyword, _comment;
         private bool _isRobotsTxt = false;
         private TextType _textType;
-        public static HashSet<string> _valid = new HashSet<string>() { "user-agent", "disallow", "sitemap", "crawl-delay", "host" };
+        private static readonly HashSet<string> _valid = new HashSet<string>() { "user-agent", "disallow", "sitemap", "crawl-delay", "host" };
+
+        public static HashSet<string> Valid { get { return _valid; } }
 
         public RobotsTxtClassifier(IClassificationTypeRegistryService registry)
         {
-            _keyword = registry.GetClassificationType(RobotsTxtClassificationTypes.RobotsTxtKeyword);
-            _comment = registry.GetClassificationType(RobotsTxtClassificationTypes.RobotsTxtComment);
+            _keyword = registry.GetClassificationType(RobotsTxtClassificationTypes.Keyword);
+            _comment = registry.GetClassificationType(RobotsTxtClassificationTypes.Comment);
         }
 
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
@@ -25,7 +27,7 @@ namespace MadsKristensen.EditorExtensions
                 return list;
 
             string text = span.GetText();
-            int index = text.IndexOf("#");
+            int index = text.IndexOf("#", StringComparison.Ordinal);
 
             if (index > -1)
             {
@@ -35,12 +37,12 @@ namespace MadsKristensen.EditorExtensions
 
             if (_textType != TextType.Robots)
                 return list;
-            
+
             if (index == -1 || index > 0)
             {
                 string[] args = text.Split(':');
-                
-                if (args.Length >= 2 && _valid.Contains(args[0].Trim().ToLowerInvariant()))
+
+                if (args.Length >= 2 && Valid.Contains(args[0].Trim().ToLowerInvariant()))
                 {
                     var result = new SnapshotSpan(span.Snapshot, span.Start, args[0].Length);
                     list.Add(new ClassificationSpan(result, _keyword));
@@ -50,12 +52,12 @@ namespace MadsKristensen.EditorExtensions
             return list;
         }
 
-        public void RaiseClassificationChanged(SnapshotSpan span, TextType type)
+        public void OnClassificationChanged(SnapshotSpan span, TextType type)
         {
             _isRobotsTxt = true;
             _textType = type;
             var handler = this.ClassificationChanged;
-            
+
             if (handler != null)
                 handler(this, new ClassificationChangedEventArgs(span));
         }

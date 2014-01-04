@@ -36,6 +36,8 @@
     <StartProgram>$(DevEnvDir)\devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Exp</StartArguments>
     <ZipPackageCompressionLevel>Normal</ZipPackageCompressionLevel>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>Source.extension.vsixmanifest</ApplicationManifest>
@@ -84,9 +86,9 @@
     <CopyVsixExtensionLocation>bin/release/new folder</CopyVsixExtensionLocation>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AjaxMin, Version=5.2.5021.15808, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+    <Reference Include="AjaxMin, Version=5.6.5100.19196, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AjaxMin.5.2.5021.15814\lib\net40\AjaxMin.dll</HintPath>
+      <HintPath>..\packages\AjaxMin.5.6.5100.19204\lib\net40\AjaxMin.dll</HintPath>
     </Reference>
     <Reference Include="CssSorter">
       <HintPath>..\CssSorter.dll</HintPath>
@@ -95,6 +97,7 @@
       <HintPath>..\MarkdownSharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.JScript" />
     <Reference Include="Microsoft.VisualStudio.JSLS" />
     <Reference Include="Microsoft.VisualStudio.Language.StandardClassification" />
     <Reference Include="Microsoft.CSS.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -113,6 +116,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Html.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.12.0" />
+    <Reference Include="Microsoft.VisualStudio.Html.Package" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -172,17 +177,20 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebMarkupMin.Core, Version=0.8.11.0, Culture=neutral, PublicKeyToken=99472178d266584b, processorArchitecture=MSIL">
+    <Reference Include="WebMarkupMin.Core, Version=0.8.13.0, Culture=neutral, PublicKeyToken=99472178d266584b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebMarkupMin.Core.0.8.11\lib\net40\WebMarkupMin.Core.dll</HintPath>
+      <HintPath>..\packages\WebMarkupMin.Core.0.8.13\lib\net40\WebMarkupMin.Core.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="ZenCoding, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -310,7 +318,13 @@
     <Compile Include="BrowserLink\UnusedCss\UnusedCssMenu.cs" />
     <Compile Include="BrowserLink\UnusedCss\UsageRegistry.cs" />
     <Compile Include="BrowserLink\UploadHelper.cs" />
+    <Compile Include="Classifications\AppCache\AppCacheClassificationTypes.cs" />
+    <Compile Include="Classifications\AppCache\AppCacheClassifier.cs" />
+    <Compile Include="Classifications\AppCache\AppCacheClassifierProvider.cs" />
+    <Compile Include="Classifications\AppCache\AppCacheContentTypeDefinition.cs" />
+    <Compile Include="Classifications\CSS\VariableClassifier.cs" />
     <Compile Include="Classifications\HTML\HtmlRegionTagger.cs" />
+    <Compile Include="Classifications\IcedCoffeeScript\IcedCoffeeScriptContentTypeDefinition.cs" />
     <Compile Include="Classifications\JavaScript\JavaScriptArrayOutlining.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -320,6 +334,18 @@
     <Compile Include="Classifications\JavaScript\JavaScriptRegionTagger.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Classifications\Markdown\BufferGenerator.cs" />
+    <Compile Include="Classifications\Markdown\CodeArtifactProcessor.cs" />
+    <Compile Include="Classifications\Markdown\CodeLanguageEmbedders.cs" />
+    <Compile Include="Classifications\Markdown\ContainedLanguageAdapter.cs" />
+    <Compile Include="Classifications\Markdown\ContentTypeHandler.cs" />
+    <Compile Include="Classifications\Markdown\MarkdownOutlineTagger.cs" />
+    <Compile Include="Classifications\Markdown\MarkdownLanguageSupport.cs" />
+    <Compile Include="Classifications\Markdown\MarkdownParser.cs" />
+    <Compile Include="Classifications\WebVTT\WebVttContentTypeDefinition.cs" />
+    <Compile Include="Classifications\WebVTT\WebVttClassificationTypes.cs" />
+    <Compile Include="Classifications\WebVTT\WebVttClassifier.cs" />
+    <Compile Include="Classifications\WebVTT\WebVttClassifierProvider.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassificationTypes.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifier.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifierProvider.cs" />
@@ -327,6 +353,42 @@
     <Compile Include="Classifications\Markdown\MarkdownClassifier.cs" />
     <Compile Include="Classifications\Markdown\MarkdownContentTypeDefinition.cs" />
     <Compile Include="Classifications\CSS\ModernizrClassifier.cs" />
+    <Compile Include="Classifications\SVG\SvgContentTypeDefinition.cs" />
+    <Compile Include="Commands\AppCache\AppCacheCreationListener.cs" />
+    <Compile Include="Commands\CoffeeScript\CoffeeScriptCreationListener.cs" />
+    <Compile Include="Commands\WebVTT\WebVttCreationListener.cs" />
+    <Compile Include="Commands\Shared\CommentCommandTarget.cs" />
+    <Compile Include="Commands\CoffeeScript\EnterIndentationCommandTarget.cs" />
+    <Compile Include="Commands\Code\IntellisenseObject.cs" />
+    <Compile Include="Commands\Code\IntellisenseParser.cs" />
+    <Compile Include="Commands\Code\IntellisenseProperty.cs" />
+    <Compile Include="Commands\Code\IntellisenseType.cs" />
+    <Compile Include="Commands\CommandExceptionFilter.cs" />
+    <Compile Include="Commands\HTML\HtmlSaveListener.cs" />
+    <Compile Include="Completion\CSS\CompletionProviders\MediaTypeCompletionProvider.cs" />
+    <Compile Include="Completion\CSS\CompletionProviders\MediaValueCompletionProvider.cs" />
+    <Compile Include="Completion\CSS\CompletionProviders\MediaCompletionProvider.cs" />
+    <Compile Include="Completion\CSS\CompletionProviders\VariableNameCompletionProvider.cs" />
+    <Compile Include="Completion\CSS\ContextProviders\MediaQueryContextProvider.cs" />
+    <Compile Include="Completion\CSS\ContextProviders\MediaFeatureContextProvider.cs" />
+    <Compile Include="Completion\CSS\ContextProviders\VariableContextProvider.cs" />
+    <Compile Include="Completion\HTML\InputIdAttributeCompletion.cs" />
+    <Compile Include="Completion\Markdown\MarkdownCompletionFilter.cs" />
+    <Compile Include="DropTargets\HtmlImageDrop.cs" />
+    <Compile Include="Helpers\Disposable.cs" />
+    <Compile Include="ExtensionMethods\Extensions.cs" />
+    <Compile Include="Helpers\TabAwareCharacterStream.cs" />
+    <Compile Include="Compilers\CoffeeScript\IcedCoffeeScriptProjectCompiler.cs" />
+    <Compile Include="Compilers\CoffeeScript\IcedCoffeeScriptCompiler.cs" />
+    <Compile Include="Compilers\CoffeeScript\CoffeeScriptProjectCompiler.cs" />
+    <Compile Include="Margin\IcedCoffeeScriptMargin.cs" />
+    <Compile Include="Compilers\NodeExecutorBase.cs" />
+    <Compile Include="Compilers\ProjectCompilerBase.cs" />
+    <Compile Include="Margin\SvgMargin.cs" />
+    <Compile Include="Margin\TypeScriptMargin.cs" />
+    <Compile Include="MenuItems\AddIntellisenseFile.cs" />
+    <Compile Include="Commands\Code\IntellisenseWriter.cs" />
+    <Compile Include="Commands\Code\ScriptIntellisenseListener.cs" />
     <Compile Include="Commands\CommandTargetBase.cs" />
     <Compile Include="Commands\Css\CssSelectBrowsers.cs" />
     <Compile Include="Commands\Css\CssFormatCommandTarget.cs" />
@@ -438,20 +500,36 @@
     <Compile Include="DropTargets\FontDrop.cs" />
     <Compile Include="DropTargets\ImageDrop.cs" />
     <Compile Include="DropTargets\TypeScriptDrop.cs" />
-    <Compile Include="Helpers\CssExtensions.cs" />
-    <Compile Include="Helpers\CssUrlNormalizer.cs" />
+    <Compile Include="ExtensionMethods\CssExtensions.cs" />
+    <Compile Include="Helpers\Css\CssTreeWatcher.cs" />
+    <Compile Include="Helpers\Css\CssUrlNormalizer.cs" />
     <Compile Include="Helpers\FileCache.cs" />
+    <Compile Include="ExtensionMethods\HtmlExtensions.cs" />
     <Compile Include="Helpers\NodeModuleService.cs" />
-    <Compile Include="Helpers\StyleSheetHelpers.cs" />
+    <Compile Include="Helpers\Css\StyleSheetHelpers.cs" />
     <Compile Include="Helpers\WindowHelpers.cs" />
     <Compile Include="MenuItems\ReferenceJs.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineTag.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineProvider.cs" />
+    <Compile Include="Options\CodeGeneration.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Options\Html.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Options\Markdown.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Options\TypeScript.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Options\UnusedCssOptions.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Classifications\IconRegistration.cs" />
     <Compile Include="SmartTags\CSS\Actions\RemoveCssRuleSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Providers\RemoveCssRuleSmartTagProvider.cs" />
+    <Compile Include="SmartTags\HTML\Base64DecodeSmartTag.cs" />
     <Compile Include="SmartTags\HTML\ExtractToFileSmartTag.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -464,7 +542,11 @@
     <Compile Include="SmartTags\HTML\HtmlRemoveParentSmartTag.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Validation\CSS\Filters\VariableCssErrorFilter.cs" />
+    <Compile Include="Validation\CSS\Providers\MediaQuerySyntaxErrorTagProvider.cs" />
     <Compile Include="Validation\CSS\Providers\UnusedCssTagProvider.cs" />
+    <Compile Include="Validation\HTML\BootstrapClassValidator.cs" />
+    <Compile Include="Validation\HTML\AngularMissingAppValidator.cs" />
     <Compile Include="Validation\LESS\Filters\LessAmpersandCssErrorFilter.cs" />
     <Compile Include="Validation\LESS\Filters\LessExtendCssErrorFilter.cs" />
     <Compile Include="Validation\CSS\Providers\ColorValuesInRangeErrorTagProvider.cs">
@@ -522,17 +604,16 @@
     <Compile Include="Validation\CSS\Filters\MsKeyframesCssErrorFilter.cs" />
     <Compile Include="ExtensionMethods\AtDirectiveExtensions.cs" />
     <Compile Include="ExtensionMethods\IVsExtensions.cs" />
-    <Compile Include="ExtensionMethods\PseudoExtensions.cs" />
-    <Compile Include="Helpers\CssItemAggregator.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="Margin\CoffeeScriptCompiler.cs" />
+    <Compile Include="Helpers\Css\CssItemAggregator.cs" />
+    <Compile Include="Helpers\Logger.cs" />
+    <Compile Include="Compilers\CoffeeScript\CoffeeScriptCompiler.cs" />
     <Compile Include="Helpers\FileHelpers.cs" />
-    <Compile Include="Margin\CompilerError.cs" />
-    <Compile Include="Margin\CompilerResult.cs" />
+    <Compile Include="Compilers\CompilerError.cs" />
+    <Compile Include="Compilers\CompilerResult.cs" />
     <Compile Include="Margin\MarkdownMargin.cs" />
-    <Compile Include="Margin\LessProjectCompiler.cs" />
-    <Compile Include="Margin\ScriptRunnerBase.cs" />
-    <Compile Include="Margin\LessCompiler.cs" />
+    <Compile Include="Compilers\LESS\LessProjectCompiler.cs" />
+    <Compile Include="Compilers\ScriptRunnerBase.cs" />
+    <Compile Include="Compilers\LESS\LessCompiler.cs" />
     <Compile Include="Helpers\OptionHelpers.cs" />
     <Compile Include="Margin\CoffeeScriptMargin.cs" />
     <Compile Include="Margin\MarginBase.cs" />
@@ -601,7 +682,6 @@
     <Compile Include="Schemas\XmlColorPaletteProvider.cs" />
     <Compile Include="SmartTags\CSS\Actions\LessExtractVariableSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\SortSmartTagAction.cs" />
-    <Compile Include="SmartTags\CSS\Actions\MissingPseudoSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\UpdateEmbedSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\MissingStandardDirectiveSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\VendorDirectiveSmartTagAction.cs" />
@@ -614,7 +694,7 @@
     <Compile Include="ExtensionMethods\ColorModelExtensions.cs" />
     <Compile Include="ExtensionMethods\DeclarationExtensions.cs" />
     <Compile Include="Helpers\ProjectHelpers.cs" />
-    <Compile Include="Helpers\VendorHelpers.cs" />
+    <Compile Include="Helpers\Css\VendorHelpers.cs" />
     <Compile Include="QuickInfo\Image\ImageQuickInfo.cs" />
     <Compile Include="QuickInfo\Image\ImageQuickInfoControllerProvider.cs" />
     <Compile Include="QuickInfo\Image\ImageQuickInfoController.cs" />
@@ -629,7 +709,6 @@
     <Compile Include="SmartTags\CSS\CssSmartTagActionBase.cs" />
     <Compile Include="SmartTags\CSS\ICssSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\Providers\ColorConverterSmartTagProvider.cs" />
-    <Compile Include="SmartTags\CSS\Providers\MissingPseudoSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\Providers\UpdateEmbedSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\Providers\MissingStandardDirectiveSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\Providers\MissingVendorDirectiveSmartTagProvider.cs" />
@@ -639,7 +718,6 @@
     <Compile Include="SmartTags\CSS\Providers\SelectorHackSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\Providers\ReverseEmbedSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\Providers\EmbedSmartTagProvider.cs" />
-    <Compile Include="Guids.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -647,17 +725,95 @@
     </Compile>
     <Compile Include="EditorExtensionsPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PkgCmdID.cs" />
+    <Compile Include="CommandConstants.cs" />
     <Compile Include="SmartTags\CSS\CssSmartTagProvider.cs" />
     <Compile Include="SmartTags\CSS\CssSmartTag.cs" />
     <Compile Include="SmartTags\CSS\Actions\EmbedSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\CssSmartTagger.cs" />
-    <Compile Include="Helpers\CssItemCollector.cs" />
+    <Compile Include="Helpers\Css\CssItemCollector.cs" />
     <Compile Include="Options\WebEssentialsSettings.cs" />
     <Compile Include="Validation\HTML\OpenGraphPrefixValidator.cs" />
     <Compile Include="Validation\HTML\ItemTypeValidator.cs" />
     <Compile Include="Validation\LESS\Providers\ImportOnceErrorTagProvider.cs" />
     <None Include="PreBuildTask.cs" />
+    <Content Include="Resources\Icons\Bundle.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Icons\Font.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Icons\GenericScript.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Icons\Git.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Icons\WebVTT.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Icons\CoffeeScript.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Icons\Markdown.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Images\preview.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Images\WebEssentials2012logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\snippets.pkgdef">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\CSS\Web Essentials\media query desktop laptop.snippet">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\CSS\Web Essentials\media query ipad landscape.snippet">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\CSS\Web Essentials\media query ipad portrait.snippet">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\CSS\Web Essentials\media query ipad.snippet">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\CSS\Web Essentials\media query iphone 4 landscape.snippet">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\CSS\Web Essentials\media query iphone 4 portrait.snippet">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\CSS\Web Essentials\media query iphone 4.snippet">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\CSS\Web Essentials\media query iphone 5 landscape.snippet">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\CSS\Web Essentials\media query iphone 5 portrait.snippet">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\CSS\Web Essentials\media query iphone 5.snippet">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\CSS\Web Essentials\media query large screen.snippet">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\CSS\Web Essentials\media query smartphone landscape.snippet">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\CSS\Web Essentials\media query smartphone portrait.snippet">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\CSS\Web Essentials\media query smartphone.snippet">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Snippets\CSS\Web Essentials\media query windows snap view.snippet">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
@@ -668,18 +824,15 @@
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <EmbeddedResource Include="BrowserLink\UnusedCss\UnusedCss.js" />
     <EmbeddedResource Include="BrowserLink\PixelPushing\PixelPushingModeBrowserLink.js" />
     <EmbeddedResource Include="BrowserLink\Menu\MenuBrowserLink.js" />
     <Content Include="Classifications\RobotsTxt\robots.txt" />
     <None Include="Classifications\Markdown\Sample.md" />
-    <None Include="WebMarkupMin.Configuration.xsd">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <VSCTCompile Include="EditorExtensions.vsct">
@@ -689,7 +842,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Resources\Images.png" />
+    <None Include="Resources\Images\Images.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="BrowserLink\CssSync\CssSyncBrowserLink.js" />
@@ -700,70 +853,61 @@
     <EmbeddedResource Include="BrowserLink\DesignMode\DesignModeBrowserLink.js" />
     <EmbeddedResource Include="BrowserLink\BestPractices\BestPracticesBrowserLink.js" />
     <CodeAnalysisDictionary Include="CustomDictionary.xml" />
-    <Content Include="preview.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Resource Include="Resources\numbers.png" />
+    <Resource Include="Resources\Images\numbers.png" />
     <Content Include="registry.pkgdef">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Resource Include="Resources\extract.png" />
-    <EmbeddedResource Include="Resources\Scripts\jshint-2.1.4.js" />
+    <Resource Include="Resources\Images\extract.png" />
+    <EmbeddedResource Include="Resources\Scripts\jshint-2.4.0.js" />
     <EmbeddedResource Include="Resources\Scripts\AngularController.js" />
-    <Resource Include="Resources\delete.png" />
-    <Resource Include="Resources\browserlink.png" />
-    <Resource Include="Resources\node_module.png" />
-    <Resource Include="Resources\jsfile.png" />
-    <Resource Include="Resources\jsonfile.png" />
-    <None Include="Resources\Browser Pause Button.png" />
-    <None Include="Resources\Browser Record Button.png" />
+    <Resource Include="Resources\Images\delete.png" />
+    <Resource Include="Resources\Images\browserlink.png" />
+    <Resource Include="Resources\Images\node_module.png" />
+    <Resource Include="Resources\Images\jsfile.png" />
+    <Resource Include="Resources\Images\jsonfile.png" />
+    <None Include="Resources\Images\Browser Pause Button.png" />
+    <None Include="Resources\Images\Browser Record Button.png" />
     <Content Include="Resources\nodejs\node.exe" />
     <Content Include="Resources\Scripts\es5-shim.min.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Resource Include="Resources\graph_id.png" />
-    <Resource Include="Resources\graph_atdir.png" />
-    <Resource Include="Resources\graph_class.png" />
-    <Resource Include="Resources\graph_parent.png" />
-    <EmbeddedResource Include="Resources\Scripts\IcedCoffeeScript-1.6.3-f.js" />
-    <Resource Include="Resources\sort.png" />
+    <Resource Include="Resources\Images\graph_id.png" />
+    <Resource Include="Resources\Images\graph_atdir.png" />
+    <Resource Include="Resources\Images\graph_class.png" />
+    <Resource Include="Resources\Images\graph_parent.png" />
+    <Resource Include="Resources\Images\sort.png" />
     <None Include="Source.extension.vsixmanifest" />
-    <Resource Include="Resources\vsgallery.png" />
+    <Resource Include="Resources\Images\vsgallery.png" />
     <Content Include="Schemas\css-we-settings.xml">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Schemas\WE-Palette.css">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="WebEssentials2012logo.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Resource Include="Resources\Browsers\s.png" />
-    <Resource Include="Resources\warning.png" />
-    <Resource Include="Resources\palette.png" />
-    <Resource Include="Resources\skull.png" />
-    <Resource Include="Resources\embed.png" />
-    <Resource Include="Resources\nopreview.png" />
-    <Resource Include="Resources\cross_browser.png" />
-    <Resource Include="Resources\no_skull.png" />
-    <Resource Include="Resources\alphabatize.png" />
-    <Resource Include="Resources\Browsers\ie.png" />
-    <Resource Include="Resources\Browsers\o.png" />
-    <Resource Include="Resources\Browsers\c.png" />
-    <Resource Include="Resources\Browsers\ff.png" />
-    <Resource Include="Resources\Browsers\c_gray.png" />
-    <Resource Include="Resources\Browsers\ff_gray.png" />
-    <Resource Include="Resources\Browsers\ie_gray.png" />
-    <Resource Include="Resources\Browsers\o_gray.png" />
-    <Resource Include="Resources\Browsers\s_gray.png" />
+    <Resource Include="Resources\Images\Browsers\s.png" />
+    <Resource Include="Resources\Images\warning.png" />
+    <Resource Include="Resources\Images\palette.png" />
+    <Resource Include="Resources\Images\skull.png" />
+    <Resource Include="Resources\Images\embed.png" />
+    <Resource Include="Resources\Images\nopreview.png" />
+    <Resource Include="Resources\Images\cross_browser.png" />
+    <Resource Include="Resources\Images\no_skull.png" />
+    <Resource Include="Resources\Images\alphabatize.png" />
+    <Resource Include="Resources\Images\Browsers\ie.png" />
+    <Resource Include="Resources\Images\Browsers\o.png" />
+    <Resource Include="Resources\Images\Browsers\c.png" />
+    <Resource Include="Resources\Images\Browsers\ff.png" />
+    <Resource Include="Resources\Images\Browsers\c_gray.png" />
+    <Resource Include="Resources\Images\Browsers\ff_gray.png" />
+    <Resource Include="Resources\Images\Browsers\ie_gray.png" />
+    <Resource Include="Resources\Images\Browsers\o_gray.png" />
+    <Resource Include="Resources\Images\Browsers\s_gray.png" />
     <Content Include="License.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\Package.ico" />
+    <Content Include="Resources\Images\Package.ico" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -823,12 +967,25 @@
     <MadsKristensen.EditorExtensions.PreBuildTask />
     <!-- Include newly downloaded files now ... -->
     <ItemGroup>
-      <Content Include="Resources\nodejs\node.exe; Resources\nodejs\node_modules\.bin\lessc.cmd; Resources\nodejs\node_modules\less\lib\**; Resources\nodejs\node_modules\less\bin\**">
+      <Content Include="Resources\nodejs\node.exe; Resources\nodejs\node_modules\less\lib\**; Resources\nodejs\node_modules\less\bin\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <Content Include="Resources\nodejs\node_modules\less\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
+      <Content Include="Resources\nodejs\node.exe; Resources\nodejs\node_modules\coffee-script\lib\**; Resources\nodejs\node_modules\coffee-script\bin\**">
+        <IncludeInVSIX>true</IncludeInVSIX>
+      </Content>
+      <Content Include="Resources\nodejs\node_modules\coffee-script\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
+        <IncludeInVSIX>true</IncludeInVSIX>
+      </Content>
+      <Content Include="Resources\nodejs\node.exe; Resources\nodejs\node_modules\iced-coffee-script\lib\**; Resources\nodejs\node_modules\iced-coffee-script\bin\**">
+        <IncludeInVSIX>true</IncludeInVSIX>
+      </Content>
+      <Content Include="Resources\nodejs\node_modules\iced-coffee-script\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
+        <IncludeInVSIX>true</IncludeInVSIX>
+      </Content>
     </ItemGroup>
   </Target>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>

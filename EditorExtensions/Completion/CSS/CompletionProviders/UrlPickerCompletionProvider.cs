@@ -4,9 +4,8 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Windows.Threading;
 using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.VisualStudio.Utilities;
 using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -14,7 +13,6 @@ namespace MadsKristensen.EditorExtensions
     [Name("UrlPickerCompletionProvider")]
     internal class UrlPickerCompletionProvider : ICssCompletionListProvider, ICssCompletionCommitListener
     {
-        private static List<string> _imageExtensions = new List<string>() { "", ".png", ".jpg", "gif", ".svg", ".jpeg", ".bmp", ".tif", ".tiff" };
         public CssCompletionContextType ContextType
         {
             get { return (CssCompletionContextType)604; }
@@ -25,9 +23,11 @@ namespace MadsKristensen.EditorExtensions
             UrlItem urlItem = (UrlItem)context.ContextItem;
 
             string url = urlItem.UrlString != null ? urlItem.UrlString.Text : string.Empty;
+            if (url.StartsWith("http") || url.Contains("//") || url.Contains(";base64,"))
+                yield break;
             string directory = GetDirectory(url);
 
-            if (url.StartsWith("http") || url.Contains("//") || url.Contains(";base64,") || !Directory.Exists(directory))
+            if (!Directory.Exists(directory))
                 yield break;
 
             foreach (FileSystemInfo item in new DirectoryInfo(directory).EnumerateFileSystemInfos())

@@ -1,4 +1,30 @@
-﻿// CSS bundles
+﻿// Markdown files (use HTMLX editor)
+// See https://twitter.com/Schabse/status/390280700043472896 and http://blogs.msdn.com/b/noahric/archive/2010/03/01/new-extension-css-is-less.aspx
+// {cf49ec7d-92b1-4bbd-9254-9cc13978e82e} is the entire new package.
+// {9bbfd173-9770-47dc-b191-651b7ff493cd} is the Language Service to provide a ContentType for the extension.
+// {40d31677-cbc0-4297-a9ef-89d907823a98} is the primary HtmlEditorFactory.
+[$RootKey$\Languages\File Extensions\.md]
+@="{9bbfd173-9770-47dc-b191-651b7ff493cd}"
+[$RootKey$\Languages\File Extensions\.mdown]
+@="{9bbfd173-9770-47dc-b191-651b7ff493cd}"
+[$RootKey$\Languages\File Extensions\.markdown]
+@="{9bbfd173-9770-47dc-b191-651b7ff493cd}"
+[$RootKey$\Languages\File Extensions\.mkd]
+@="{9bbfd173-9770-47dc-b191-651b7ff493cd}"
+[$RootKey$\Languages\File Extensions\.mkdn]
+@="{9bbfd173-9770-47dc-b191-651b7ff493cd}"
+[$RootKey$\Languages\File Extensions\.mdwn]
+@="{9bbfd173-9770-47dc-b191-651b7ff493cd}"
+
+[$RootKey$\Editors\{40d31677-cbc0-4297-a9ef-89d907823a98}\Extensions]
+"md"=dword:32
+"mdown"=dword:32
+"markdown"=dword:32
+"mkd"=dword:32
+"mkdn"=dword:32
+"mdwn"=dword:32
+
+// CSS bundles
 //[$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.css.bundle]
 //"RelationType"=dword:00000001
 
@@ -19,6 +45,7 @@
 
 [$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.js\.intellisense.js]
 [$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.js\.debug.js]
+[$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.js\.js.map]
 [$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.js\.min.js]
 [$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.js\.min.js.map]
 
@@ -41,6 +68,7 @@
 "RelationType"=dword:00000001
 
 [$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.css\.min.css]
+[$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.css\.css.map]
 
 // Compiled CoffeeScript files
 [$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.coffee]
@@ -48,3 +76,9 @@
 
 //[$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.coffee\.js]
 //[$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.coffee\.min.js]
+
+// Minified HTML files
+[$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.html]
+"RelationType"=dword:00000001
+
+[$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.html\.min.html]

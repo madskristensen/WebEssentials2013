@@ -1,13 +1,9 @@
-﻿using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
-using System;
+﻿using System;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -47,7 +43,7 @@ namespace MadsKristensen.EditorExtensions
                     return;
 
                 string html = File.ReadAllText(_file);
-                int index = html.IndexOf("</head>");
+                int index = html.IndexOf("</head>", StringComparison.OrdinalIgnoreCase);
 
                 if (index > -1)
                 {
@@ -67,14 +63,14 @@ namespace MadsKristensen.EditorExtensions
                 var view = ProjectHelpers.GetCurentTextView();
                 var buffer = view.TextBuffer;
 
-                EditorExtensionsPackage.DTE.UndoContext.Open("Adding <meta> viewport");
+                using (EditorExtensionsPackage.UndoContext("Adding <meta> viewport"))
+                {
+                    buffer.Insert(index, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />" + Environment.NewLine);
+                    view.Caret.MoveTo(new SnapshotPoint(buffer.CurrentSnapshot, index + 31 + 37));
+                    view.Selection.Select(new SnapshotSpan(buffer.CurrentSnapshot, 31 + index, 37), false);
+                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                }
 
-                buffer.Insert(index, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />" + Environment.NewLine);
-                view.Caret.MoveTo(new SnapshotPoint(buffer.CurrentSnapshot, index + 31 + 37));
-                view.Selection.Select(new SnapshotSpan(buffer.CurrentSnapshot, 31 + index, 37), false);
-                EditorExtensionsPackage.DTE.ExecuteCommand("Edit.FormatSelection");
-
-                EditorExtensionsPackage.DTE.UndoContext.Close();
                 EditorExtensionsPackage.DTE.ActiveDocument.Save();
 
             }), DispatcherPriority.ApplicationIdle, null);

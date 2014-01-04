@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
         {
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var path = FindReferencedPath();
             if (path == null)
@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions
 
             string referencedPath;
 
-            if (path.StartsWith("~/"))
+            if (path.StartsWith("~/", StringComparison.Ordinal))
                 referencedPath = Path.Combine(ProjectHelpers.GetProjectFolder(TextView.TextBuffer.GetFileName()), path.Substring(2));
             else
                 referencedPath = Path.Combine(Path.GetDirectoryName(TextView.TextBuffer.GetFileName()), path);
@@ -43,11 +43,13 @@ namespace MadsKristensen.EditorExtensions
         static readonly Regex regex = new Regex(@"///\s*<reference\s+path=(['""])(?<path>[^'""]+)\1(\s*/>)?");
         private string FindReferencedPath()
         {
-            int position = TextView.Caret.Position.BufferPosition.Position;
-            var line = TextView.TextBuffer.CurrentSnapshot.Lines.SingleOrDefault(l => l.Start <= position && l.End >= position);
+            var position = TextView.Caret.Position.BufferPosition;
+            var line = position.GetContainingLine();
             int linePos = position - line.Start.Position;
 
-            var match = regex.Matches(line.GetText()).Cast<Match>().FirstOrDefault(m => m.Index <= linePos && m.Index + m.Length >= linePos);
+            var match = regex.Matches(line.GetText())
+                             .Cast<Match>()
+                             .FirstOrDefault(m => m.Index <= linePos && m.Index + m.Length >= linePos);
             if (match == null) return null;
 
             return match.Groups["path"].Value;

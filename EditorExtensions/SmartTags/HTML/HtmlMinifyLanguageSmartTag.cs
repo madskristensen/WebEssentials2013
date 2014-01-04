@@ -1,4 +1,6 @@
-﻿using Microsoft.Html.Core;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor.SmartTags;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -6,8 +8,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Core;
 using Microsoft.Web.Editor;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
+using Microsoft.Web.Editor.Extensions.Text;
 
 namespace MadsKristensen.EditorExtensions.SmartTags
 {
@@ -57,15 +58,8 @@ namespace MadsKristensen.EditorExtensions.SmartTags
                 string ext = element.IsScriptBlock() ? ".js" : ".css";
                 string result = MinifyFileMenu.MinifyString(ext, text);
 
-                EditorExtensionsPackage.DTE.UndoContext.Open(this.DisplayText);
-
-                using (var edit = textBuffer.CreateEdit())
-                {
-                    edit.Replace(range.Start, range.Length, result);
-                    edit.Apply();
-                }
-                
-                EditorExtensionsPackage.DTE.UndoContext.Close();
+                using (EditorExtensionsPackage.UndoContext((this.DisplayText)))
+                    textBuffer.Replace(range.ToSpan(), result);
             }
         }
     }

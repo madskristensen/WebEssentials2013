@@ -8,9 +8,13 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     {
         [JsonProperty]
         public string Selector { get; set; }
-
         [JsonProperty]
-        public List<SourceLocation> SourceLocations { get; set; }
+        public IEnumerable<SourceLocation> SourceLocations { get; private set; }
+
+        public RawRuleUsage()
+        {
+            SourceLocations = new List<SourceLocation>();
+        }
 
         public bool Equals(RawRuleUsage other)
         {

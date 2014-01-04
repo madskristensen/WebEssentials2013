@@ -1,4 +1,12 @@
-﻿using Microsoft.VisualStudio;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Language.StandardClassification;
@@ -9,13 +17,6 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
@@ -62,12 +63,21 @@ namespace MadsKristensen.EditorExtensions
         }
 
         ///<summary>Attempts to figure out whether the JSLS language service has been installed yet.</summary>
+        [SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "Microsoft.VisualStudio.OLE.Interop.IOleCommandTarget.QueryStatus(System.Guid@,System.UInt32,Microsoft.VisualStudio.OLE.Interop.OLECMD[],System.IntPtr)")]
         static bool IsJSLSInstalled(IOleCommandTarget next)
         {
             Guid cmdGroup = VSConstants.VSStd2K;
             var cmds = new[] { new OLECMD { cmdID = (uint)VSConstants.VSStd2KCmdID.AUTOCOMPLETE } };
-            ErrorHandler.ThrowOnFailure(next.QueryStatus(ref cmdGroup, 1, cmds, IntPtr.Zero));
-            return cmds[0].cmdf == 3;
+
+            try
+            {
+                next.QueryStatus(ref cmdGroup, 1, cmds, IntPtr.Zero);
+                return cmds[0].cmdf == 3;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 
@@ -89,7 +99,7 @@ namespace MadsKristensen.EditorExtensions
         public ICompletionBroker Broker { get; private set; }
         public IOleCommandTarget Next { get; set; }
 
-        private char GetTypeChar(IntPtr pvaIn)
+        private static char GetTypeChar(IntPtr pvaIn)
         {
             return (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
         }
@@ -103,6 +113,7 @@ namespace MadsKristensen.EditorExtensions
                     .Select(s => s.Tag.ClassificationType);
         }
 
+        [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             if (pguidCmdGroup != VSConstants.VSStd2K)
@@ -137,13 +148,13 @@ namespace MadsKristensen.EditorExtensions
                         closedCompletion = _currentSession != null;
                         var c = Complete(force: false, dontAdvance: true);
                         // If the completion inserted a quote, don't add another one
-                        handled = c != null && c.InsertionText.EndsWith(ch.ToString());
+                        handled = c != null && c.InsertionText.EndsWith(ch.ToString(), StringComparison.Ordinal);
                     }
                     else if (ch == '/')
                     {
                         var c = Complete(force: false, dontAdvance: true);
                         // If the completion inserted a slash, don't add another one.
-                        handled = c != null && c.InsertionText.EndsWith("/");
+                        handled = c != null && c.InsertionText.EndsWith("/", StringComparison.Ordinal);
                         // We will re-open completion after handling the keypress, to
                         // show completions for this folder.
                     }
@@ -230,27 +241,34 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
+                var positionNullable = _currentSession.GetTriggerPoint(TextView.TextBuffer.CurrentSnapshot);
                 var completion = _currentSession.SelectedCompletionSet.SelectionStatus.Completion;
+
+                // After this line, _currentSession will be null.  Do not use it.
                 _currentSession.Commit();
 
-                if (TextView.Caret.Position.BufferPosition.Position == TextView.TextBuffer.CurrentSnapshot.Length)
+                if (positionNullable == null)
+                    return null;
+                var position = positionNullable.Value;
+
+                if (position.Position == TextView.TextBuffer.CurrentSnapshot.Length)
                     return completion;  // If the cursor is at the end of the document, don't choke
 
                 // If applicable, move the cursor to the end of the function call.
                 // Unless the user is in completing a deeper Node.js require path,
                 // in which case we should stay inside the string.
-                if (dontAdvance || completion.InsertionText.EndsWith("/"))
+                if (dontAdvance || completion.InsertionText.EndsWith("/", StringComparison.Ordinal))
                     return completion;
 
                 // If the user completed a Node require path (which won't have any
                 // quotes in the completion, move past any existing closing quote.
                 // Other completions will include the closing quote themselves, so
                 // we don't need to move 
-                if (!completion.InsertionText.EndsWith("'") && !completion.InsertionText.EndsWith("\"")
-                    && (TextView.Caret.Position.BufferPosition.GetChar() == '"' || TextView.Caret.Position.BufferPosition.GetChar() == '\''))
+                if (!completion.InsertionText.EndsWith("'", StringComparison.Ordinal) && !completion.InsertionText.EndsWith("\"", StringComparison.Ordinal)
+                    && (position.GetChar() == '"' || position.GetChar() == '\''))
                     TextView.Caret.MoveToNextCaretPosition();
                 // In either case, if there is a closing parenthesis, move past it
-                var prevChar = (TextView.Caret.Position.BufferPosition - 1).GetChar();
+                var prevChar = position.GetChar();
                 if ((prevChar == '"' || prevChar == '\'')
                  && TextView.Caret.Position.BufferPosition.GetChar() == ')')
                     TextView.Caret.MoveToNextCaretPosition();

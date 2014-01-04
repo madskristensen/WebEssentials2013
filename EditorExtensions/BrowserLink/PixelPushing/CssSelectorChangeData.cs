@@ -7,16 +7,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
     {
         [JsonProperty]
         public string Url { get; set; }
-
         [JsonProperty]
         public int RuleIndex { get; set; }
-
         [JsonProperty]
         public string NewValue { get; set; }
-        
         [JsonProperty]
         public string OldValue { get; set; }
-
         [JsonProperty]
         public string Rule { get; set; }
 

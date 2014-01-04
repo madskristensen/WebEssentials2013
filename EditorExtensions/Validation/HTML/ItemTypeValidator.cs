@@ -1,11 +1,12 @@
-﻿using Microsoft.Html.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Globalization;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Validation.Validators;
 using Microsoft.Html.Validation;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
 
 namespace MadsKristensen.EditorExtensions.Validation.Html
 {
@@ -28,10 +29,10 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
                 var attr = element.Attributes[i];
 
                 if (attr.Name == "itemtype" && attr.HasValue() && !attr.Value.Contains("@"))
-                {                    
+                {
                     if (!Uri.IsWellFormedUriString(attr.Value, UriKind.Absolute))
                     {
-                        results.AddAttributeError(element, "The value of itemtype must be an absolute URI", HtmlValidationErrorLocation.AttributeValue, i);
+                        results.AddAttributeError(element, String.Format(CultureInfo.CurrentCulture, "The value of {0} must be an absolute URI", attr.Name), HtmlValidationErrorLocation.AttributeValue, i);
                         break;
                     }
                 }

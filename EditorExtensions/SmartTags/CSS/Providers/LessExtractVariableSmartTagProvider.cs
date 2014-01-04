@@ -1,13 +1,13 @@
-﻿using Microsoft.CSS.Core;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Drawing;
+using Microsoft.CSS.Core;
 using Microsoft.Less.Core;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Drawing;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -64,7 +64,7 @@ namespace MadsKristensen.EditorExtensions
         {
             TokenItem token = (TokenItem)item;
 
-            if (!token.IsValid || token.TokenType != CssTokenType.Identifier || token.FindType<Declaration>() == null)
+            if (!token.IsValid || token.TokenType != CssTokenType.Identifier || token.FindType<Declaration>() == null || !(item.StyleSheet is LessStyleSheet))
                 yield break;
 
             var color = Color.FromName(token.Text);

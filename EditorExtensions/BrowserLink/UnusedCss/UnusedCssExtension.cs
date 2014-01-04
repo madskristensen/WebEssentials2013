@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -12,31 +13,27 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     {
         private static readonly ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>> BrowserLocationContinuationActions = new ConcurrentDictionary<string, ConcurrentDictionary<string, Action<UnusedCssExtension>>>();
         private static readonly ConcurrentDictionary<BrowserLinkConnection, UnusedCssExtension> ExtensionByConnection = new ConcurrentDictionary<BrowserLinkConnection, UnusedCssExtension>();
-        private static readonly HashSet<string> ValidSheetUrls = new HashSet<string>();
+        private static readonly HashSet<string> validSheetUrls = new HashSet<string>();
         private readonly BrowserLinkConnection _connection;
         private readonly IList<Guid> _operationsInProgress = new List<Guid>();
         private readonly UploadHelper _uploadHelper;
 
-        public UnusedCssExtension(BrowserLinkConnection connection)
-        {
-            ExtensionByConnection[connection] = this;
-            _uploadHelper = new UploadHelper();
-            _connection = connection;
-            UnusedCssOptions.SettingsUpdated += InstallIgnorePatterns;
-        }
-
-        public static List<string> IgnoreList
+        public static bool IsAnyConnectionAlive { get { return ExtensionByConnection.Count > 0; } }
+        public BrowserLinkConnection Connection { get { return _connection; } }
+        public bool IsRecording { get; private set; }
+        public static IEnumerable<string> IgnoreList
         {
             get
             {
                 var ignorePatterns = WESettings.GetString(WESettings.Keys.UnusedCss_IgnorePatterns) ?? "";
 
-                return ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
+                return ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim());
             }
         }
-
-        public static bool IsAnyConnectionAlive { get { return ExtensionByConnection.Count > 0; } }
-
+        private static List<string> IgnorePatternList
+        {
+            get { return IgnoreList.Select(FilePatternToRegex).ToList(); }
+        }
         public override IEnumerable<BrowserLinkAction> Actions
         {
             get
@@ -45,27 +42,28 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
         }
 
+        public UnusedCssExtension(BrowserLinkConnection connection)
+        {
+            ExtensionByConnection[connection] = this;
+            _uploadHelper = new UploadHelper();
+            _connection = connection;
+
+            UnusedCssOptions.SettingsUpdated += InstallIgnorePatterns;
+        }
+
         private void ToggleRecordingModeAction(BrowserLinkAction obj)
         {
             ToggleRecordingMode();
         }
 
-        public BrowserLinkConnection Connection { get { return _connection; } }
-
-        public bool IsRecording { get; private set; }
-
-        private static List<string> IgnorePatternList
-        {
-            get { return IgnoreList.Select(FilePatternToRegex).ToList(); }
-        }
-
+        [SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public static IEnumerable<string> GetValidSheetUrls()
         {
             HashSet<string> set;
 
-            lock (ValidSheetUrls)
+            lock (validSheetUrls)
             {
-                set = new HashSet<string>(ValidSheetUrls);
+                set = new HashSet<string>(validSheetUrls);
             }
 
             return set;
@@ -134,10 +132,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public void GetIgnoreList()
         {
             Browsers.Client(_connection).Invoke("installIgnorePatterns", IgnorePatternList);
+
             //Apply any deferred actions
             //NOTE: There should be some kind of check here to determine whether or not this is a new session for the browser (as the user may have closed the window during the recording session and opened a new browser)
             var appBag = BrowserLocationContinuationActions.GetOrAdd(_connection.AppName, n => new ConcurrentDictionary<string, Action<UnusedCssExtension>>());
             Action<UnusedCssExtension> act;
+
             if (appBag.TryRemove(_connection.Project.UniqueName, out act))
             {
                 act(this);
@@ -174,7 +174,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             UnusedCssExtension extension;
+
             ExtensionByConnection.TryRemove(connection, out extension);
+
             UnusedCssOptions.SettingsUpdated -= InstallIgnorePatterns;
         }
 
@@ -182,7 +184,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         public void SnapshotPage()
         {
             var opId = Guid.NewGuid();
-            
+
             lock (_operationsInProgress)
             {
                 _operationsInProgress.Add(opId);
@@ -216,6 +218,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         internal static void All(Action<UnusedCssExtension> method)
         {
             MessageDisplayManager.DisplaySource = MessageDisplaySource.Project;
+
             foreach (var extension in ExtensionByConnection.Values)
             {
                 method(extension);
@@ -306,7 +309,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                         }
 
                         locationUri = new Uri(lessFile, UriKind.Relative);
+
                         Uri.TryCreate(projectUri, locationUri, out realLocation);
+
                         filePath = realLocation.LocalPath;
                     }
                 }
@@ -323,17 +328,17 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             var sheets = GetFiles(sheetUrls).Select(x => x.ToLowerInvariant());
 
-            lock (ValidSheetUrls)
+            lock (validSheetUrls)
             {
-                ValidSheetUrls.UnionWith(sheets);
+                validSheetUrls.UnionWith(sheets);
             }
         }
 
         private void InstallIgnorePatterns(object sender, EventArgs e)
         {
-            lock (ValidSheetUrls)
+            lock (validSheetUrls)
             {
-                ValidSheetUrls.Clear();
+                validSheetUrls.Clear();
             }
 
             UsageRegistry.Reset();

@@ -1,8 +1,8 @@
-﻿using Microsoft.VisualStudio.Web.BrowserLink;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -32,6 +32,7 @@ namespace MadsKristensen.EditorExtensions
         public override void OnConnected(BrowserLinkConnection connection)
         {
             _connection = connection;
+
             DisableInspectMode();
         }
 
@@ -51,6 +52,7 @@ namespace MadsKristensen.EditorExtensions
         private void InitiateInspectMode(BrowserLinkAction ction)
         {
             Browsers.Client(_connection).Invoke("setInspectMode", true);
+
             _instance = this;
         }
 
@@ -68,12 +70,14 @@ namespace MadsKristensen.EditorExtensions
         }
 
 
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         [BrowserLinkCallback]
         public void SetInspectMode()
         {
             _instance = this;
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         [BrowserLinkCallback]
         public void DisableInspectMode()
         {

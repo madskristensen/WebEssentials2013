@@ -1,24 +1,36 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.20919.2
+VisualStudioVersion = 12.0.20930.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{140A15DE-0F66-4377-BB52-BC24C7FC46E9}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		EditorExtensions\CodeAnalysis.ruleset = EditorExtensions\CodeAnalysis.ruleset
 		CssSorter.dll = CssSorter.dll
-		LICENCE.txt = LICENCE.txt
+		LICENSE.txt = LICENSE.txt
 		MarkdownSharp.dll = MarkdownSharp.dll
 		README.md = README.md
+		Rebracer.xml = Rebracer.xml
 		WebEssentials2012logo.pdn = WebEssentials2012logo.pdn
+		WebEssentialsTests.UnitTests.testsettings = WebEssentialsTests.UnitTests.testsettings
 		ZenCoding.dll = ZenCoding.dll
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEssentials2013", "EditorExtensions\WebEssentials2013.csproj", "{10D05BC1-CDEE-4D14-B88F-F91C0BDC7861}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEssentialsChromeExtension", "WebEssentialsChromeExtension\WebEssentialsChromeExtension.csproj", "{9D141603-1A9D-4EEC-82D8-C473EA436839}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEssentialsTests", "WebEssentialsTests\WebEssentialsTests.csproj", "{E05B0E57-CF56-4513-9D24-18B6EE7C3712}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{6A26D63B-3436-438D-8F27-C42E100B2254}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTestProjects", "IntegrationTestProjects", "{236BFFB8-186E-49D4-804F-0A9B3698C68A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib", "TestProjects\Lib\Lib.csproj", "{9B43DABC-6854-427D-A995-4B2A90A31442}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,16 +42,19 @@ Global
 		{10D05BC1-CDEE-4D14-B88F-F91C0BDC7861}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{10D05BC1-CDEE-4D14-B88F-F91C0BDC7861}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{10D05BC1-CDEE-4D14-B88F-F91C0BDC7861}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9D141603-1A9D-4EEC-82D8-C473EA436839}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9D141603-1A9D-4EEC-82D8-C473EA436839}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9D141603-1A9D-4EEC-82D8-C473EA436839}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9D141603-1A9D-4EEC-82D8-C473EA436839}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E05B0E57-CF56-4513-9D24-18B6EE7C3712}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E05B0E57-CF56-4513-9D24-18B6EE7C3712}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E05B0E57-CF56-4513-9D24-18B6EE7C3712}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E05B0E57-CF56-4513-9D24-18B6EE7C3712}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B43DABC-6854-427D-A995-4B2A90A31442}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B43DABC-6854-427D-A995-4B2A90A31442}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B43DABC-6854-427D-A995-4B2A90A31442}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B43DABC-6854-427D-A995-4B2A90A31442}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9B43DABC-6854-427D-A995-4B2A90A31442} = {236BFFB8-186E-49D4-804F-0A9B3698C68A}
 	EndGlobalSection
 EndGlobal

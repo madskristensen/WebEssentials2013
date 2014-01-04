@@ -1,11 +1,12 @@
-﻿using EnvDTE;
-using EnvDTE80;
-using Microsoft.VisualStudio.Shell;
-using System.ComponentModel.Design;
+﻿using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using EnvDTE;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -21,16 +22,17 @@ namespace MadsKristensen.EditorExtensions
             _mcs = mcs;
         }
 
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public void SetupCommands()
         {
-            SetupCommand(PkgCmdIDList.titleCaseTransform, new Replacement(x => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(x)));
-            SetupCommand(PkgCmdIDList.reverseTransform, new Replacement(x => new string(x.Reverse().ToArray())));
-            SetupCommand(PkgCmdIDList.normalizeTransform, new Replacement(x => RemoveDiacritics(x)));
-            SetupCommand(PkgCmdIDList.md5Transform, new Replacement(x => Hash(x, new MD5CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha1Transform, new Replacement(x => Hash(x, new SHA1CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha256Transform, new Replacement(x => Hash(x, new SHA256CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha384Transform, new Replacement(x => Hash(x, new SHA384CryptoServiceProvider())));
-            SetupCommand(PkgCmdIDList.sha512Transform, new Replacement(x => Hash(x, new SHA512CryptoServiceProvider())));
+            SetupCommand(CommandId.TitleCaseTransform, new Replacement(x => CultureInfo.InvariantCulture.TextInfo.ToTitleCase(x)));
+            SetupCommand(CommandId.ReverseTransform, new Replacement(x => new string(x.Reverse().ToArray())));
+            SetupCommand(CommandId.NormalizeTransform, new Replacement(x => RemoveDiacritics(x)));
+            SetupCommand(CommandId.MD5Transform, new Replacement(x => Hash(x, new MD5CryptoServiceProvider())));
+            SetupCommand(CommandId.SHA1Transform, new Replacement(x => Hash(x, new SHA1CryptoServiceProvider())));
+            SetupCommand(CommandId.SHA256Transform, new Replacement(x => Hash(x, new SHA256CryptoServiceProvider())));
+            SetupCommand(CommandId.SHA384Transform, new Replacement(x => Hash(x, new SHA384CryptoServiceProvider())));
+            SetupCommand(CommandId.SHA512Transform, new Replacement(x => Hash(x, new SHA512CryptoServiceProvider())));
         }
 
         public static string RemoveDiacritics(string s)
@@ -52,27 +54,32 @@ namespace MadsKristensen.EditorExtensions
 
         private static string Hash(string original, HashAlgorithm algorithm)
         {
-            byte[] hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(original));            
+            byte[] hash = algorithm.ComputeHash(Encoding.UTF8.GetBytes(original));
             algorithm.Dispose();
 
             StringBuilder sb = new StringBuilder();
-            
+
             foreach (byte b in hash)
             {
-                sb.Append(b.ToString("x2").ToLowerInvariant());
+                sb.Append(b.ToString("x2", CultureInfo.InvariantCulture).ToLowerInvariant());
             }
 
             return sb.ToString();
         }
 
-        private void SetupCommand(uint command, Replacement callback)
+        private void SetupCommand(CommandId command, Replacement callback)
         {
-            CommandID commandId = new CommandID(GuidList.guidEditorExtensionsCmdSet, (int)command);
+            CommandID commandId = new CommandID(CommandGuids.guidEditorExtensionsCmdSet, (int)command);
             OleMenuCommand menuCommand = new OleMenuCommand((s, e) => Replace(callback), commandId);
 
             menuCommand.BeforeQueryStatus += (s, e) =>
             {
-                string selection = GetTextDocument().Selection.Text;
+                var document = GetTextDocument();
+
+                if (document == null)
+                    return;
+
+                string selection = document.Selection.Text;
                 menuCommand.Enabled = selection.Length > 0 && callback(selection) != selection;
             };
 
@@ -81,17 +88,23 @@ namespace MadsKristensen.EditorExtensions
 
         private TextDocument GetTextDocument()
         {
-            return _dte.ActiveDocument.Object("TextDocument") as TextDocument;
+            if (_dte.ActiveDocument != null)
+                return _dte.ActiveDocument.Object("TextDocument") as TextDocument;
+
+            return null;
         }
 
         private void Replace(Replacement callback)
         {
             TextDocument document = GetTextDocument();
+
+            if (document == null)
+                return;
+
             string replacement = callback(document.Selection.Text);
 
-            _dte.UndoContext.Open(callback.Method.Name);
-            document.Selection.Insert(replacement, 0);
-            _dte.UndoContext.Close();
+            using (EditorExtensionsPackage.UndoContext((callback.Method.Name)))
+                document.Selection.Insert(replacement, 0);
         }
     }
 }

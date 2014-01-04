@@ -2,15 +2,16 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Microsoft.CSS.Editor;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal sealed class ColorAdornment : Border
     {
-        internal ColorAdornment(ColorTag colorTag, IWpfTextView view)
+        private static SolidColorBrush _borderColor = OptionHelpers.BackgroundColor.Invert().ToBrush();
+
+        internal ColorAdornment(ColorTag colorTag, ITextView view)
         {
             this.Padding = new Thickness(0);
             this.BorderThickness = new Thickness(1);
@@ -23,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
             Update(colorTag);
         }
 
-        private static void ColorAdornmentMouseUp(IWpfTextView view)
+        private static void ColorAdornmentMouseUp(ITextView view)
         {
             try
             {
@@ -36,6 +37,7 @@ namespace MadsKristensen.EditorExtensions
         internal void Update(ColorTag colorTag)
         {
             this.Background = new SolidColorBrush(colorTag.Color);
+
             if (!HasContrastToBackground(colorTag.Color))
             {
                 this.BorderThickness = new Thickness(1);
@@ -47,8 +49,6 @@ namespace MadsKristensen.EditorExtensions
                 this.BorderBrush = this.Background;
             }
         }
-
-        private static SolidColorBrush _borderColor = OptionHelpers.BackgroundColor.Invert().ToBrush();
 
         private static bool HasContrastToBackground(Color color)
         {

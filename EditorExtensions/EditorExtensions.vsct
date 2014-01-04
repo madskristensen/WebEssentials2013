@@ -336,7 +336,7 @@
         <Icon guid="guidImages" id="bmpLogo"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>MinifySelection</CommandName>
+          <CommandName>Minify Selection</CommandName>
           <ButtonText>Minify selection</ButtonText>
         </Strings>
       </Button>
@@ -345,7 +345,7 @@
         <Parent guid="guidExtractCmdSet" id="MyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>ExtractToFile</CommandName>
+          <CommandName>Extract To File</CommandName>
           <ButtonText>Extract to file...</ButtonText>
         </Strings>
       </Button>
@@ -355,7 +355,7 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <CommandName>ExtractToVariable</CommandName>
+          <CommandName>Extract To Variable</CommandName>
           <ButtonText>Extract to variable...</ButtonText>
         </Strings>
       </Button>
@@ -365,7 +365,7 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <CommandName>ExtractToMixin</CommandName>
+          <CommandName>Extract To Mixin</CommandName>
           <ButtonText>Extract to mixin...</ButtonText>
         </Strings>
       </Button>
@@ -374,7 +374,7 @@
         <Parent guid="guidCssCmdSet" id="CssMinifyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <CommandName>SelectBrowsers</CommandName>
+          <CommandName>Select Browsers</CommandName>
           <ButtonText>Select browsers...</ButtonText>
         </Strings>
       </Button>
@@ -433,7 +433,25 @@
         <Strings>
           <ButtonText>Run JSHint</ButtonText>
         </Strings>
-      </Button>      
+      </Button>
+
+      <Button guid="guidDiffCmdSet" id="cmdJavaScriptIntellisense" priority="0x0106" type="Button">
+        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Create JavaScript Intellisense file</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidDiffCmdSet" id="cmdTypeScriptIntellisense" priority="0x0106" type="Button">
+        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Create TypeScript Intellisense file</ButtonText>
+        </Strings>
+      </Button>
 
       <Button guid="guidMinifyCmdSet" id="cmdMinifyCss" priority="0x0101" type="Button">
         <Parent guid="guidSolutionExplorerCmdSet" id="MySubGroup"/>
@@ -453,6 +471,15 @@
         </Strings>
       </Button>
 
+      <Button guid="guidMinifyCmdSet" id="cmdMinifyHtml" priority="0x0101" type="Button">
+        <Parent guid="guidSolutionExplorerCmdSet" id="MySubGroup"/>
+        <Icon guid="guidImages" id="bmpLogo"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Minify HTML file(s)</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guidBundleCmdSet" id="cmdBundleJs" priority="0x0101" type="Button">
         <Parent guid="guidSolutionExplorerCmdSet" id="MyBundleGroup"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -469,11 +496,19 @@
         </Strings>
       </Button>
 
+      <Button guid="guidBundleCmdSet" id="cmdBundleHtml" priority="0x0101" type="Button">
+        <Parent guid="guidSolutionExplorerCmdSet" id="MyBundleGroup"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Create HTML bundle file</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guidBuildCmdSet" id="cmdBuildBundles" priority="0x0101" type="Button">
         <Parent guid="guidBuildCmdSet" id="MyBuildMenuGroup"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Update all bundles</ButtonText>
+          <ButtonText>Update All Bundles</ButtonText>
         </Strings>
       </Button>
       <Button guid="guidBuildCmdSet" id="cmdBuildMinify" priority="0x0102" type="Button">
@@ -481,14 +516,14 @@
         <Icon guid="guidImages" id="bmpLogo"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Re-minify all CSS/JS files</ButtonText>
+          <ButtonText>Re-minify All CSS/JS/HTML Files</ButtonText>
         </Strings>
       </Button>
       <Button guid="guidBuildCmdSet" id="cmdBuildLess" priority="0x0103" type="Button">
         <Parent guid="guidBuildCmdSet" id="MyCompileMenuGroup"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Re-compile all LESS files</ButtonText>
+          <ButtonText>Re-compile All LESS Files</ButtonText>
         </Strings>
       </Button>
       <!--<Button guid="guidBuildCmdSet" id="cmdBuildTypeScript" priority="0x0104" type="Button">
@@ -502,7 +537,7 @@
         <Parent guid="guidBuildCmdSet" id="MyCompileMenuGroup"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Re-compile all CoffeeScript files</ButtonText>
+          <ButtonText>Re-compile All CoffeeScript Files</ButtonText>
         </Strings>
       </Button>
 
@@ -512,6 +547,7 @@
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
+          <CommandName>Surround With Tag</CommandName>
           <ButtonText>Surround with tag...</ButtonText>
         </Strings>
       </Button>
@@ -580,9 +616,9 @@
     </Buttons>
 
     <Bitmaps>
-      <Bitmap guid="guidImages" href="Resources\Images.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpLogo, bmpMinify"/>
-      <Bitmap guid="guidNumbers" href="Resources\numbers.png" usedList="pic1, pic2, pic3, pic4"/>
-      <Bitmap guid="guidBrowserLink" href="Resources\browserlink.png" usedList="bmpRecord, bmpPause"/>
+      <Bitmap guid="guidImages" href="Resources\Images\Images.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpLogo, bmpMinify"/>
+      <Bitmap guid="guidNumbers" href="Resources\Images\numbers.png" usedList="pic1, pic2, pic3, pic4"/>
+      <Bitmap guid="guidBrowserLink" href="Resources\Images\browserlink.png" usedList="bmpRecord, bmpPause"/>
     </Bitmaps>
   </Commands>
 
@@ -738,6 +774,8 @@
       <IDSymbol name="cmdSolutionSettings" value="0x1044" />
       <IDSymbol name="cmdSolutionColors" value="0x1045" />
       <IDSymbol name="cmdMarkdownStylesheet" value="0x1046" />
+      <IDSymbol name="cmdJavaScriptIntellisense" value="0x1047" />
+      <IDSymbol name="cmdTypeScriptIntellisense" value="0x1048" />
     </GuidSymbol>
 
     <GuidSymbol name="guidMinifyCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e61}">
@@ -746,6 +784,7 @@
       <IDSymbol name="cmdMinifyJs" value="0x1052" />
       <IDSymbol name="cmdMinifySelection" value="0x1053" />
       <IDSymbol name="cmdSelectBrowsers" value="0x1055" />
+      <IDSymbol name="cmdMinifyHtml" value="0x1058" />
     </GuidSymbol>
 
     <GuidSymbol name="guidExtractCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e64}">      
@@ -772,6 +811,7 @@
       <IDSymbol name="cmdBundleCss" value="0x1071" />
       <IDSymbol name="cmdBundleJs" value="0x1072" />
       <IDSymbol name="cmdBundleTs" value="0x1073" />
+      <IDSymbol name="cmdBundleHtml" value="0x1074" />
     </GuidSymbol>
 
     <GuidSymbol name="htmlEditorCommandSet" value="{D7E8C5E1-BDB8-11D0-9C88-0000F8040A53}">

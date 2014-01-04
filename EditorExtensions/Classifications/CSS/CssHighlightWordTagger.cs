@@ -1,38 +1,35 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Operations;
-using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using Microsoft.CSS.Core;
+using Microsoft.CSS.Editor;
 using Microsoft.Less.Core;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Operations;
+using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(IViewTaggerProvider))]
     [ContentType("CSS")]
     [TagType(typeof(TextMarkerTag))]
-    internal class CssHighlightWordTaggerProvider : IViewTaggerProvider
+    public class CssHighlightWordTaggerProvider : IViewTaggerProvider
     {
         [Import]
-        internal ITextSearchService TextSearchService { get; set; }
+        public ITextSearchService TextSearchService { get; set; }
 
         [Import]
-        internal ITextStructureNavigatorSelectorService TextStructureNavigatorSelector { get; set; }
+        public ITextStructureNavigatorSelectorService TextStructureNavigatorSelector { get; set; }
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
-            if (textView.TextBuffer != buffer)
-                return null;
+            ITextStructureNavigator textStructureNavigator = TextStructureNavigatorSelector.GetTextStructureNavigator(textView.TextBuffer);
 
-            ITextStructureNavigator textStructureNavigator = TextStructureNavigatorSelector.GetTextStructureNavigator(buffer);
-            
             return buffer.Properties.GetOrCreateSingletonProperty(() => new CssHighlightWordTagger(textView, buffer, TextSearchService, textStructureNavigator)) as ITagger<T>;
         }
     }
@@ -52,7 +49,6 @@ namespace MadsKristensen.EditorExtensions
         SnapshotSpan? _currentWord { get; set; }
         SnapshotPoint _requestedPoint { get; set; }
         object _syncLock = new object();
-        private CssTree _tree;
 
         public CssHighlightWordTagger(ITextView view, ITextBuffer sourceBuffer, ITextSearchService textSearchService, ITextStructureNavigator textStructureNavigator)
         {
@@ -87,10 +83,11 @@ namespace MadsKristensen.EditorExtensions
         {
             SnapshotPoint? point = caretPosition.Point.GetPoint(_buffer, caretPosition.Affinity);
 
-            if (!point.HasValue || !EnsureInitialized())
+            if (!point.HasValue)
                 return;
 
-            ParseItem item = _tree.StyleSheet.ItemBeforePosition(point.Value.Position);
+            var doc = CssEditorDocument.FromTextBuffer(_buffer);
+            ParseItem item = doc.StyleSheet.ItemBeforePosition(point.Value.Position);
             if (item == null)
                 return;
 
@@ -209,23 +206,6 @@ namespace MadsKristensen.EditorExtensions
             {
                 yield return new TagSpan<HighlightWordTag>(span, new HighlightWordTag());
             }
-        }
-
-        private bool EnsureInitialized()
-        {
-            if (_tree == null)
-            {
-                try
-                {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(_buffer);
-                    _tree = document.Tree;
-                }
-                catch (ArgumentNullException)
-                {
-                }
-            }
-
-            return _tree != null;
         }
     }
 }

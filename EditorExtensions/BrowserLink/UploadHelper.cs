@@ -1,11 +1,7 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink
 {
@@ -14,9 +10,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink
         private class Operation
         {
             private readonly string[] _chunks;
-
             private int _numberOfChunksReceived;
-
             private readonly int _chunkCount;
 
             public Operation(int chunkCount)
@@ -28,12 +22,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink
             public bool SetPart(int chunkNumber, string chunkContents)
             {
                 _chunks[chunkNumber] = chunkContents;
+
                 return Interlocked.Increment(ref _numberOfChunksReceived) == _chunkCount;
             }
 
             public TResult Read<TResult>()
             {
                 var str = string.Join("", _chunks);
+
                 return JsonConvert.DeserializeObject<TResult>(str);
             }
         }
@@ -47,17 +43,21 @@ namespace MadsKristensen.EditorExtensions.BrowserLink
             if (operation.SetPart(chunkNumber, chunkContents))
             {
                 result = operation.Read<TResult>();
+
                 _operationSet.TryRemove(operationId, out operation);
+
                 return true;
             }
 
             result = default(TResult);
+
             return false;
         }
 
         public void CancelOperation(Guid operationId)
         {
             Operation current;
+
             _operationSet.TryRemove(operationId, out current);
         }
 

@@ -1,94 +1,79 @@
-﻿using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Windows.Threading;
+using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal static class ModernizrClassificationTypes
+    public static class ModernizrClassificationType
     {
-        internal const string _modernizr = "modernizr";
+        public const string Name = "modernizr";
 
-        [Export, Name(ModernizrClassificationTypes._modernizr), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal static ClassificationTypeDefinition ModernizrClassificationType = null;
+        [Export, Name(ModernizrClassificationType.Name)]
+        public static ClassificationTypeDefinition Definition { get; set; }
     }
 
     [Export(typeof(IClassifierProvider))]
     [ContentType("css")]
-    internal sealed class ModernizrClassifierProvider : IClassifierProvider
+    public sealed class ModernizrClassifierProvider : IClassifierProvider
     {
-        [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IClassificationTypeRegistryService Registry { get; set; }
+        [Import]
+        public IClassificationTypeRegistryService Registry { get; set; }
 
-        public IClassifier GetClassifier(ITextBuffer buffer)
+        public IClassifier GetClassifier(ITextBuffer textBuffer)
         {
-            return buffer.Properties.GetOrCreateSingletonProperty<ModernizrClassifier>(() => { return new ModernizrClassifier(Registry, buffer); });
+            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new ModernizrClassifier(Registry, textBuffer));
         }
     }
 
     internal sealed class ModernizrClassifier : IClassifier
     {
-        private IClassificationTypeRegistryService _registry;
-        private ITextBuffer _buffer;
-        private CssTree _tree;
-        internal SortedRangeList<SimpleSelector> Cache = new SortedRangeList<SimpleSelector>();
-        private IClassificationType _modernizrClassification;
+        private readonly IClassificationTypeRegistryService _registry;
+        private readonly ITextBuffer _buffer;
+        private readonly CssTreeWatcher _tree;
+        private readonly SortedRangeList<SimpleSelector> _cache = new SortedRangeList<SimpleSelector>();
+        private readonly IClassificationType _modernizrClassification;
+
+        public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged
+        {
+            add { }
+            remove { }
+        }
 
         internal ModernizrClassifier(IClassificationTypeRegistryService registry, ITextBuffer buffer)
         {
             _registry = registry;
             _buffer = buffer;
-            _modernizrClassification = _registry.GetClassificationType(ModernizrClassificationTypes._modernizr);
+            _modernizrClassification = _registry.GetClassificationType(ModernizrClassificationType.Name);
+
+            _tree = CssTreeWatcher.ForBuffer(_buffer);
+            _tree.TreeUpdated += TreeUpdated;
+            _tree.ItemsChanged += TreeItemsChanged;
+            UpdateCache(_tree.StyleSheet);
         }
 
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
         {
             List<ClassificationSpan> spans = new List<ClassificationSpan>();
 
-            if (!EnsureInitialized())
-                return spans;
-
-            foreach (SimpleSelector selector in Cache)
+            foreach (SimpleSelector selector in _cache)
             {
                 int start = span.Start.Position;
                 int end = span.End.Position;
 
                 if (selector.Start >= start && selector.AfterEnd <= end)
                 {
-                   var snapShotSpan = new SnapshotSpan(span.Snapshot, selector.Start, selector.Length);
-                   var classSpan = new ClassificationSpan(snapShotSpan, _modernizrClassification);
-                   spans.Add(classSpan); 
-                }                 
+                    var snapShotSpan = new SnapshotSpan(span.Snapshot, selector.Start, selector.Length);
+                    var classSpan = new ClassificationSpan(snapShotSpan, _modernizrClassification);
+                    spans.Add(classSpan);
+                }
             }
 
             return spans;
-        }
-
-        public bool EnsureInitialized()
-        {
-            if (_tree == null && WebEditor.Host != null)
-            {
-                try
-                {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(_buffer);
-                    _tree = document.Tree;
-                    _tree.TreeUpdated += TreeUpdated;
-                    _tree.ItemsChanged += TreeItemsChanged;
-                    UpdateCache(_tree.StyleSheet);
-                }
-                catch (ArgumentNullException)
-                {
-                }
-            }
-
-            return _tree != null;
         }
 
         private void UpdateCache(ParseItem item)
@@ -102,15 +87,15 @@ namespace MadsKristensen.EditorExtensions
 
                 if (ModernizrProvider.IsModernizr(text))
                 {
-                    if (!Cache.Contains(ss))
-                        Cache.Add(ss);
+                    if (!_cache.Contains(ss))
+                        _cache.Add(ss);
                 }
             }
         }
 
         private void TreeUpdated(object sender, CssTreeUpdateEventArgs e)
         {
-            Cache.Clear();
+            _cache.Clear();
             UpdateCache(e.Tree.StyleSheet);
         }
 
@@ -118,10 +103,10 @@ namespace MadsKristensen.EditorExtensions
         {
             foreach (ParseItem item in e.DeletedItems)
             {
-                var matches = Cache.Where(s => s.Start >= item.Start && s.AfterEnd <= item.AfterEnd);
+                var matches = _cache.Where(s => s.Start >= item.Start && s.AfterEnd <= item.AfterEnd);
                 foreach (var match in matches.Reverse())
                 {
-                    Cache.Remove(match);
+                    _cache.Remove(match);
                 }
             }
 
@@ -130,24 +115,12 @@ namespace MadsKristensen.EditorExtensions
                 UpdateCache(item);
             }
         }
-
-        public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;
-
-        public void RaiseClassificationChanged(SnapshotSpan span)
-        {
-            var handler = this.ClassificationChanged;
-            if (handler != null)
-            {
-                Dispatcher.CurrentDispatcher.BeginInvoke(
-                    new Action(() => handler(this, new ClassificationChangedEventArgs(span))), DispatcherPriority.ApplicationIdle);
-            }
-        }
     }
 
     [Export(typeof(EditorFormatDefinition))]
     [UserVisible(true)]
-    [ClassificationType(ClassificationTypeNames = ModernizrClassificationTypes._modernizr)]
-    [Name(ModernizrClassificationTypes._modernizr)]
+    [ClassificationType(ClassificationTypeNames = ModernizrClassificationType.Name)]
+    [Name(ModernizrClassificationType.Name)]
     [Order(After = Priority.Default)]
     internal sealed class ModernizrFormatDefinition : ClassificationFormatDefinition
     {

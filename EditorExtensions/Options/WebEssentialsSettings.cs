@@ -5,26 +5,54 @@ namespace MadsKristensen.EditorExtensions
     {
         public static class Keys
         {
+            public const string JavaScriptCamelCasePropertyNames = "JavaScriptCamelCasePropertyNames";
+            public const string JavaScriptCamelCaseClassNames = "JavaScriptCamelCaseClassNames";
             // General
             public const string KeepImportantComments = "KeepImportantComments";
-            public const string EnableEnterFormat = "EnableEnterFormat";
             public const string EnableBrowserLinkMenu = "EnableBrowserLinkMenu";
+            public const string AllMessagesToOutputWindow = "AllMessagesToOutputWindow";
+
+            // HTML
+            public const string EnableEnterFormat = "EnableEnterFormat";
+            public const string EnableAngularValidation = "EnableAngularValidation";
+            public const string EnableHtmlMinification = "HtmlEnableMinification";
 
             // LESS
             public const string GenerateCssFileFromLess = "LessGenerateCssFile";
             public const string ShowLessPreviewWindow = "LessShowPreviewWindow";
             public const string LessMinify = "LessMinify";
             public const string LessCompileOnBuild = "LessCompileOnBuild";
-            public const string LessCompileToFolder = "LessCompileToFolder";
             public const string LessSourceMaps = "LessSourceMaps";
+            public const string LessEnableCompiler = "LessEnableCompiler";
+            public const string LessCompileToLocation = "LessCompileToLocation";
+
+            // TypeScript
+            public const string ShowTypeScriptPreviewWindow = "TypeScriptShowPreviewWindow";
 
             // CoffeeScript
             public const string GenerateJsFileFromCoffeeScript = "CoffeeScriptGenerateJsFile";
             public const string ShowCoffeeScriptPreviewWindow = "CoffeeScriptShowPreviewWindow";
             public const string CoffeeScriptMinify = "CoffeeScriptMinify";
             public const string WrapCoffeeScriptClosure = "CoffeeScriptWrapClosure";
-            public const string CoffeeScriptCompileToFolder = "CoffeeScriptCompileToFolder";
             public const string CoffeeScriptCompileOnBuild = "CoffeeScriptCompileOnBuild";
+            public const string CoffeeScriptSourceMaps = "CoffeeScriptSourceMaps";
+            public const string CoffeeScriptEnableCompiler = "CoffeeScriptEnableCompiler";
+            public const string CoffeeScriptCompileToLocation = "CoffeeScriptCompileToLocation";
+
+            // Markdown
+            public const string MarkdownShowPreviewWindow = "MarkdownShowPreviewWindow";
+            public const string MarkdownEnableCompiler = "MarkdownEnableCompiler";
+            public const string MarkdownCompileToLocation = "MarkdownCompileToLocation";
+
+            public const string MarkdownAutoHyperlinks = "MarkdownAutoHyperlinks";
+            public const string MarkdownLinkEmails = "MarkdownLinkEmails";
+            public const string MarkdownAutoNewLine = "MarkdownAutoNewLine";
+            public const string MarkdownGenerateXHTML = "MarkdownGenerateXHTML";
+            public const string MarkdownEncodeProblemUrlCharacters = "MarkdownEncodeProblemUrlCharacters";
+            public const string MarkdownStrictBoldItalic = "MarkdownStrictBoldItalic";
+
+            // SVG
+            public const string SvgShowPreviewWindow = "SvgShowPreviewWindow";
 
             // CSS
             public const string ValidateStarSelector = "CssValidateStarSelector";
@@ -38,14 +66,14 @@ namespace MadsKristensen.EditorExtensions
             public const string EnableCssMinification = "CssEnableMinification";
             public const string ValidateZeroUnit = "CssValidateZeroUnit";
             public const string ValidateVendorSpecifics = "ValidateVendorSpecifics";
-            public const string EnableSpeedTyping = "EnableSpeedTyping";
             public const string CssEnableGzipping = "CssEnableGzipping";
+            public const string CssPreserveRelativePathsOnMinify = "CssPreserveRelativePathsOnMinify";
 
             // JavaScript
             public const string EnableJsMinification = "JavaScriptEnableMinification";
             public const string GenerateJavaScriptSourceMaps = "JavaScriptGenerateSourceMaps";
             public const string JavaScriptEnableGzipping = "JavaScriptEnableGzipping";
-            
+
             // JSHint
             public const string EnableJsHint = "JsHintEnable";
             public const string JsHint_ignoreFiles = "JsHint_ignoreFiles";
@@ -133,13 +161,6 @@ namespace MadsKristensen.EditorExtensions
                 Warnings = 1,
                 Messages = 2,
             }
-        }
-
-        private static Settings _projectStore;
-
-        static WESettings()
-        {
-            _projectStore = new Settings();
         }
 
         public static bool GetBoolean(string propertyName)

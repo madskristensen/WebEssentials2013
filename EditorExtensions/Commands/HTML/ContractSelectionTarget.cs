@@ -1,11 +1,10 @@
-﻿using Microsoft.Html.Core;
+﻿using System;
+using System.Linq;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -15,13 +14,13 @@ namespace MadsKristensen.EditorExtensions
         private ITextBuffer _buffer;
 
         public ContractSelection(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidFormattingCmdSet, PkgCmdIDList.ContractSelection)
+            : base(adapter, textView, CommandGuids.guidFormattingCmdSet, CommandId.ContractSelection)
         {
             _view = textView;
             _buffer = textView.TextBuffer;
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             HtmlEditorDocument document = HtmlEditorDocument.FromTextView(_view);
             var tree = document.HtmlEditorTree;
@@ -36,7 +35,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (tag == null)
                 return false;
-            
+
             if (tag.EndTag != null && tag.StartTag.Start == start && tag.EndTag.End == end)
             {
                 Select(tag.InnerRange.Start, tag.InnerRange.Length);

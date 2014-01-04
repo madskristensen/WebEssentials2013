@@ -1,11 +1,11 @@
-﻿using Microsoft.CSS.Core;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.Html.Schemas;
 using Microsoft.Html.Schemas.Model;
 using Microsoft.VisualStudio.Utilities;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -39,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
             return new List<ICssCompletionListEntry>();
         }
 
-        private IEnumerable<ICssCompletionListEntry> KnownTagName(IHtmlSchema schema, string tagName, string attrName)
+        private static IEnumerable<ICssCompletionListEntry> KnownTagName(IHtmlSchema schema, string tagName, string attrName)
         {
             var element = schema.GetElementInfo(tagName);
 

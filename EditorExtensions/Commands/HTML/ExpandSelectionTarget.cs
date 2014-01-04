@@ -1,11 +1,10 @@
-﻿using Microsoft.Html.Core;
+﻿using System;
+using System.Linq;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -15,13 +14,13 @@ namespace MadsKristensen.EditorExtensions
         private ITextBuffer _buffer;
 
         public ExpandSelection(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, GuidList.guidFormattingCmdSet, PkgCmdIDList.ExpandSelection)
+            : base(adapter, textView, CommandGuids.guidFormattingCmdSet, CommandId.ExpandSelection)
         {
             _view = textView;
             _buffer = textView.TextBuffer;
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             HtmlEditorDocument document = HtmlEditorDocument.FromTextView(_view);
             var tree = document.HtmlEditorTree;
@@ -44,20 +43,20 @@ namespace MadsKristensen.EditorExtensions
             else if (tag.Children.Count > 1 && tag.Children[0].Start == start && tag.Children.Last().End == end)
             {
                 Select(tag.InnerRange.Start, tag.InnerRange.Length);
-            } 
-            else if (tag.EndTag != null && tag.Children.Count> 1 && tag.StartTag.Start < start && tag.EndTag.End > end)
-            {                
+            }
+            else if (tag.EndTag != null && tag.Children.Count > 1 && tag.StartTag.Start < start && tag.EndTag.End > end)
+            {
                 Select(tag.Children[0].Start, tag.Children.Last().End - tag.Children[0].Start);
-            } 
+            }
             else if (tag.EndTag != null && tag.StartTag.Start < start && tag.EndTag.End > end)
             {
                 Select(tag.InnerRange.Start, tag.InnerRange.Length);
-            }            
+            }
             else if (tag.IsSelfClosing() && tag.Start < start && tag.End > end)
             {
                 Select(tag.Start, tag.OuterRange.Length);
             }
-            else if (tag.Parent  != null)
+            else if (tag.Parent != null)
             {
                 Select(tag.Parent.Start, tag.Parent.OuterRange.Length);
             }

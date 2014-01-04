@@ -1,13 +1,12 @@
-﻿using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
-using Microsoft.Web.Editor.Intellisense;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Windows.Media;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor.Intellisense;
 using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
@@ -21,16 +20,15 @@ namespace MadsKristensen.EditorExtensions
         [Import]
         private ICssNameCache _classNames = null;
 
-        public ICompletionSource TryCreateCompletionSource(ITextBuffer buffer)
+        public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer)
         {
-            return buffer.Properties.GetOrCreateSingletonProperty(() => new JavaScriptCompletionSource(buffer, _classNames)) as ICompletionSource;
+            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new JavaScriptCompletionSource(textBuffer, _classNames)) as ICompletionSource;
         }
     }
 
     public class JavaScriptCompletionSource : ICompletionSource
     {
         private ITextBuffer _buffer;
-        private static ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphXmlItem, StandardGlyphItem.GlyphItemPublic);
 
         public JavaScriptCompletionSource(ITextBuffer buffer, ICssNameCache classNames)
         {
@@ -45,10 +43,11 @@ namespace MadsKristensen.EditorExtensions
         }
 
         readonly ReadOnlyCollection<StringCompletionSource> completionSources;
+
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
-            int position = session.TextView.Caret.Position.BufferPosition.Position;
-            var line = _buffer.CurrentSnapshot.Lines.SingleOrDefault(l => l.Start <= position && l.End >= position);
+            var position = session.GetTriggerPoint(_buffer).GetPoint(_buffer.CurrentSnapshot);
+            var line = position.GetContainingLine();
 
             if (line == null)
                 return;
@@ -58,14 +57,15 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (var source in completionSources)
             {
-                var span = source.GetInvocationSpan(text, linePosition);
+                var span = source.GetInvocationSpan(text, linePosition, position);
                 if (span == null) continue;
+
 
                 var trackingSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(span.Value.Start + line.Start, span.Value.Length, SpanTrackingMode.EdgeInclusive);
                 completionSets.Add(new StringCompletionSet(
                     source.GetType().Name,
                     trackingSpan,
-                    source.GetEntries(quoteChar: text[span.Value.Start], caret: session.TextView.Caret.Position.BufferPosition)
+                    source.GetEntries(quote: text[span.Value.Start], caret: session.TextView.Caret.Position.BufferPosition)
                 ));
             }
             // TODO: Merge & resort all sets?  Will StringCompletionSource handle other entries?
@@ -100,7 +100,7 @@ namespace MadsKristensen.EditorExtensions
 
         public void Dispose()
         {
-
+            GC.SuppressFinalize(this);
         }
     }
 }

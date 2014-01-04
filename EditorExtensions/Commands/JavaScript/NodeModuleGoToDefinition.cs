@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
         {
         }
 
-        protected override bool Execute(uint commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var path = FindRequirePath();
             if (path == null)
@@ -35,14 +35,16 @@ namespace MadsKristensen.EditorExtensions
         }
 
 
-        static readonly Regex regex = new Regex(@"\brequire\s*\(\s*(['""])(?<path>[^""]+)\1\)?");
+        static readonly Regex regex = new Regex(@"\brequire\s*\(\s*(['""])(?<path>[^""']+)\1\)?");
         private string FindRequirePath()
         {
-            int position = TextView.Caret.Position.BufferPosition.Position;
-            var line = TextView.TextBuffer.CurrentSnapshot.Lines.SingleOrDefault(l => l.Start <= position && l.End >= position);
+            var position = TextView.Caret.Position.BufferPosition;
+            var line = position.GetContainingLine();
             int linePos = position - line.Start.Position;
 
-            var match = regex.Matches(line.GetText()).Cast<Match>().FirstOrDefault(m => m.Index <= linePos && m.Index + m.Length >= linePos);
+            var match = regex.Matches(line.GetText())
+                             .Cast<Match>()
+                             .FirstOrDefault(m => m.Index <= linePos && m.Index + m.Length >= linePos);
             if (match == null) return null;
 
             return match.Groups["path"].Value;

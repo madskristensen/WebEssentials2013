@@ -1,15 +1,14 @@
-﻿using Microsoft.CSS.Editor;
-using Microsoft.CSS.Editor.Schemas;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
-using System;
+﻿using System;
 using System.ComponentModel.Composition;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Xml;
+using Microsoft.CSS.Editor.Schemas;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -21,9 +20,6 @@ namespace MadsKristensen.EditorExtensions
         private static string _path = Path.Combine(WebEditor.Host.UserFolder, @"schemas\css");
         private static DateTime _lastRequest;
         private const int _days = 1;
-
-        public void SetupLanguageServices(ITextView textView, ITextBuffer textBuffer)
-        { }
 
         public void OnTextBufferDisposed(ITextBuffer textBuffer)
         { }
@@ -100,7 +96,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static XmlDocument DownloadXml()
         {
-            string url = "http://realworldvalidator.com/api?date=" + _lastRequest.AddDays(-7).ToString("yyyy-MM-dd");
+            string url = "http://realworldvalidator.com/api?date=" + _lastRequest.AddDays(-7).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             XmlDocument doc = new XmlDocument();
 
             try

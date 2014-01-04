@@ -1,31 +1,28 @@
-﻿using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
-using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
-using Microsoft.CSS.Editor.Intellisense;
-using Microsoft.CSS.Editor.Schemas;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+using Microsoft.CSS.Core;
+using Microsoft.CSS.Editor;
+using Microsoft.CSS.Editor.Intellisense;
+using Microsoft.CSS.Editor.Schemas;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class DeclarationQuickInfo : IQuickInfoSource
     {
-        private DeclarationQuickInfoSourceProvider _provider;
         private ITextBuffer _buffer;
-        private CssTree _tree;
         private static readonly string[] browserAbbr = new[] { "C", "FF", "IE", "O", "S" };
         private ICssSchemaInstance _rootSchema;
 
-        public DeclarationQuickInfo(DeclarationQuickInfoSourceProvider provider, ITextBuffer buffer)
+        public DeclarationQuickInfo(ITextBuffer buffer)
         {
-            _provider = provider;
             _buffer = buffer;
             _rootSchema = CssSchemaManager.SchemaManager.GetSchemaRootForBuffer(buffer);
         }
@@ -34,93 +31,28 @@ namespace MadsKristensen.EditorExtensions
         {
             applicableToSpan = null;
 
-            if (!EnsureTreeInitialized() || session == null || qiContent == null || qiContent.Count > 0 || !WESettings.GetBoolean(WESettings.Keys.ShowBrowserTooltip))
+            if (session == null || qiContent == null || qiContent.Count > 0 || !WESettings.GetBoolean(WESettings.Keys.ShowBrowserTooltip))
                 return;
 
             SnapshotPoint? point = session.GetTriggerPoint(_buffer.CurrentSnapshot);
             if (!point.HasValue)
                 return;
 
-            ParseItem item = _tree.StyleSheet.ItemBeforePosition(point.Value.Position);
+            var tree = CssEditorDocument.FromTextBuffer(_buffer);
+            ParseItem item = tree.StyleSheet.ItemBeforePosition(point.Value.Position);
             if (item == null || !item.IsValid)
                 return;
 
-            ParseItem theOne = null;
-            ICssCompletionListEntry entry = null;
             ICssSchemaInstance schema = CssSchemaManager.SchemaManager.GetSchemaForItem(_rootSchema, item);
 
-            // Declaration
-            Declaration dec = item.FindType<Declaration>();
-            if (dec != null && dec.PropertyName != null && dec.PropertyName.ContainsRange(point.Value.Position, 1))
-            {
-                entry = schema.GetProperty(dec.PropertyName.Text);
-                theOne = dec.PropertyName;
-            }
-            else if (dec != null && dec.IsValid && dec.Values.TextStart <= point.Value.Position && dec.Values.TextAfterEnd >= point.Value.Position)
-            {
-                entry = schema.GetProperty(dec.PropertyName.Text);
-                if (entry != null)
-                {
-                    var list = schema.GetPropertyValues(entry.DisplayText);
-                    theOne = dec.StyleSheet.ItemFromRange(point.Value.Position, 0);
-                    entry = list.SingleOrDefault(r => r.DisplayText.Equals(theOne.Text, StringComparison.OrdinalIgnoreCase));
-                }
-            }
+            Tuple<ParseItem, ICssCompletionListEntry> tuple = GetEntriesAndPoint(item, point.Value, schema);
+            if (tuple == null)
+                return;
 
-            // Pseudo class
-            if (entry == null)
-            {
-                PseudoClassSelector pseudoClass = item.FindType<PseudoClassSelector>();
-                if (pseudoClass != null)
-                {
-                    entry = schema.GetPseudo(pseudoClass.Text);
-                    theOne = pseudoClass;
-                }
-            }
-
-            // Pseudo class function
-            if (entry == null)
-            {
-                PseudoClassFunctionSelector pseudoClassFunction = item.FindType<PseudoClassFunctionSelector>();
-                if (pseudoClassFunction != null)
-                {
-                    entry = schema.GetPseudo(pseudoClassFunction.Text);
-                    theOne = pseudoClassFunction;
-                }
-            }
-
-            // Pseudo element
-            if (entry == null)
-            {
-                PseudoElementSelector pseudoElement = item.FindType<PseudoElementSelector>();
-                if (pseudoElement != null)
-                {
-                    entry = schema.GetPseudo(pseudoElement.Text);
-                    theOne = pseudoElement;
-                }
-            }
-
-            // Pseudo element function
-            if (entry == null)
-            {
-                PseudoElementFunctionSelector pseudoElementFunction = item.FindType<PseudoElementFunctionSelector>();
-                if (pseudoElementFunction != null)
-                {
-                    entry = schema.GetPseudo(pseudoElementFunction.Text);
-                    theOne = pseudoElementFunction;
-                }
-            }
-
-            // @-directive
-            if (entry == null)
-            {
-                AtDirective atDirective = item.Parent as AtDirective;
-                if (atDirective != null && atDirective.Keyword != null)
-                {
-                    entry = schema.GetAtDirective("@" + atDirective.Keyword.Text);
-                    theOne = atDirective.Keyword;
-                }
-            }
+            ParseItem tipItem = tuple.Item1;
+            ICssCompletionListEntry entry = tuple.Item2;
+            if (tipItem == null || entry == null)
+                return;
 
             var ruleSet = item.FindType<RuleSet>();
 
@@ -130,34 +62,99 @@ namespace MadsKristensen.EditorExtensions
                 qiContent.Add(LessDocument.GetLessSelectorName(ruleSet));
             }
 
-            if (entry != null)
+            applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(tipItem.Start, tipItem.Length, SpanTrackingMode.EdgeNegative);
+
+            string syntax = entry.GetSyntax(schema.Version);
+            string b = entry.GetAttribute("browsers");
+
+            if (string.IsNullOrEmpty(b) && tipItem.Parent != null && tipItem.Parent is Declaration)
             {
-                applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(theOne.Start, theOne.Length, SpanTrackingMode.EdgeNegative);
-
-                string syntax = entry.GetSyntax(schema.Version);
-                string b = entry.GetAttribute("browsers");
-
-                if (string.IsNullOrEmpty(b) && theOne.Parent != null && theOne.Parent is Declaration)
-                {
-                    b = schema.GetProperty(((Declaration)theOne.Parent).PropertyName.Text).GetAttribute("browsers");
-                    if (string.IsNullOrEmpty(syntax))
-                        syntax = theOne.Text;
-                }
-
-                if (!string.IsNullOrEmpty(syntax))
-                {
-                    //var example = CreateExample(syntax);
-                    qiContent.Add("Example: " + syntax);
-                }
-
-                Dictionary<string, string> browsers = GetBrowsers(b);
-                qiContent.Add(CreateBrowserList(browsers));
+                b = schema.GetProperty(((Declaration)tipItem.Parent).PropertyName.Text).GetAttribute("browsers");
+                if (string.IsNullOrEmpty(syntax))
+                    syntax = tipItem.Text;
             }
+
+            if (!string.IsNullOrEmpty(syntax))
+            {
+                //var example = CreateExample(syntax);
+                qiContent.Add("Example: " + syntax);
+            }
+
+            Dictionary<string, string> browsers = GetBrowsers(b);
+            qiContent.Add(CreateBrowserList(browsers));
+        }
+
+        private static Tuple<ParseItem, ICssCompletionListEntry> GetEntriesAndPoint(ParseItem item, SnapshotPoint point, ICssSchemaInstance schema)
+        {
+            // Declaration
+            Declaration dec = item.FindType<Declaration>();
+
+            if (dec != null && dec.PropertyName != null && dec.PropertyName.ContainsRange(point.Position, 1))
+            {
+                return Tuple.Create<ParseItem, ICssCompletionListEntry>(dec.PropertyName, schema.GetProperty(dec.PropertyName.Text));
+            }
+
+            if (dec != null && dec.IsValid && dec.Values.TextStart <= point.Position && dec.Values.TextAfterEnd >= point.Position)
+            {
+                var entry = schema.GetProperty(dec.PropertyName.Text);
+
+                if (entry != null)
+                {
+                    var list = schema.GetPropertyValues(entry.DisplayText);
+                    var theOne = dec.StyleSheet.ItemFromRange(point.Position, 0);
+
+                    return Tuple.Create<ParseItem, ICssCompletionListEntry>(theOne,
+                    list.SingleOrDefault(r => r.DisplayText.Equals(theOne.Text, StringComparison.OrdinalIgnoreCase)));
+                }
+            }
+
+            // Pseudo class
+            PseudoClassSelector pseudoClass = item.FindType<PseudoClassSelector>();
+
+            if (pseudoClass != null)
+            {
+                return Tuple.Create<ParseItem, ICssCompletionListEntry>(pseudoClass, schema.GetPseudo(pseudoClass.Text));
+            }
+
+            // Pseudo class function
+            PseudoClassFunctionSelector pseudoClassFunction = item.FindType<PseudoClassFunctionSelector>();
+
+            if (pseudoClassFunction != null)
+            {
+                return Tuple.Create<ParseItem, ICssCompletionListEntry>(pseudoClassFunction, schema.GetPseudo(pseudoClassFunction.Text));
+            }
+
+            // Pseudo element
+            PseudoElementSelector pseudoElement = item.FindType<PseudoElementSelector>();
+
+            if (pseudoElement != null)
+            {
+                return Tuple.Create<ParseItem, ICssCompletionListEntry>(pseudoElement, schema.GetPseudo(pseudoElement.Text));
+            }
+
+            // Pseudo element function
+            PseudoElementFunctionSelector pseudoElementFunction = item.FindType<PseudoElementFunctionSelector>();
+
+            if (pseudoElementFunction != null)
+            {
+                return Tuple.Create<ParseItem, ICssCompletionListEntry>(pseudoElementFunction, schema.GetPseudo(pseudoElementFunction.Text));
+            }
+
+            // @-directive
+            AtDirective atDirective = item.Parent as AtDirective;
+
+            if (atDirective != null && atDirective.Keyword != null)
+            {
+                return Tuple.Create<ParseItem, ICssCompletionListEntry>(atDirective.Keyword, schema.GetAtDirective("@" + atDirective.Keyword.Text));
+            }
+
+            return null;
         }
 
         public static Dictionary<string, string> GetBrowsers(string browsersRaw)
         {
             Dictionary<string, string> dic = new Dictionary<string, string>();
+
             if (!string.IsNullOrEmpty(browsersRaw))
             {
                 string[] array = browsersRaw.Split(',');
@@ -200,28 +197,6 @@ namespace MadsKristensen.EditorExtensions
             return new KeyValuePair<string, string>(name, value);
         }
 
-        //private static UIElement CreateExample(string example)
-        //{
-        //    StackPanel panel = new StackPanel();
-        //    panel.Orientation = Orientation.Horizontal;
-        //    panel.Margin = new Thickness(0, 0, 0, 5);
-
-        //    TextBlock label = new TextBlock();
-        //    label.Text = "Example: ";
-        //    label.FontWeight = FontWeights.Bold;
-        //    label.FontSize = 11;
-        //    label.FontFamily = new FontFamily("Consolas");
-        //    panel.Children.Add(label);
-
-        //    TextBlock value = new TextBlock();
-        //    value.Text = example;
-        //    value.FontSize = 11;
-        //    value.FontFamily = new FontFamily("Consolas");
-        //    panel.Children.Add(value);
-
-        //    return panel;
-        //}
-
         private static UIElement CreateBrowserList(Dictionary<string, string> browsers)
         {
             StackPanel panel = new System.Windows.Controls.StackPanel();
@@ -251,12 +226,12 @@ namespace MadsKristensen.EditorExtensions
                 if (!browsers.ContainsKey(name) && !browsers.ContainsKey("all"))
                 {
                     image.Opacity = 0.4;
-                    image.Source = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Browsers/" + name + "_gray.png", UriKind.RelativeOrAbsolute));
+                    image.Source = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/Browsers/" + name + "_gray.png", UriKind.RelativeOrAbsolute));
                 }
                 else
                 {
                     block.Text = browsers.ContainsKey("all") ? string.Empty : browsers[name];
-                    image.Source = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Browsers/" + name + ".png", UriKind.RelativeOrAbsolute));
+                    image.Source = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/Browsers/" + name + ".png", UriKind.RelativeOrAbsolute));
                 }
 
                 if (block.Text != "all")
@@ -266,27 +241,6 @@ namespace MadsKristensen.EditorExtensions
             }
 
             return panel;
-        }
-
-        /// <summary>
-        /// This must be delayed so that the TextViewConnectionListener
-        /// has a chance to initialize the WebEditor host.
-        /// </summary>
-        public bool EnsureTreeInitialized()
-        {
-            if (_tree == null)// && WebEditor.GetHost(CssContentTypeDefinition.CssContentType) != null)
-            {
-                try
-                {
-                    CssEditorDocument document = CssEditorDocument.FromTextBuffer(_buffer);
-                    _tree = document.Tree;
-                }
-                catch (Exception)
-                {
-                }
-            }
-
-            return _tree != null;
         }
 
         private bool m_isDisposed;

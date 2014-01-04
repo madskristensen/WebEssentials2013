@@ -9,36 +9,54 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
     public class SessionResult : IUsageDataSource, IResolutionRequiredDataSource
     {
+        private HashSet<RuleUsage> _ruleUsages;
+        private int _isResolved;
+        private UnusedCssExtension _extension;
+
+        [JsonProperty]
+        public HashSet<RawRuleUsage> RawUsageData { get; private set; }
+        [JsonProperty]
+        public bool Continue { get; set; }
+        [JsonProperty]
+        public IEnumerable<string> Sheets { get; private set; }
+
+        public IEnumerable<IStylingRule> AllRules
+        {
+            get
+            {
+                ThrowIfNotResolved();
+
+                return AmbientRuleContext.GetAllRules();
+            }
+        }
+
+        public IEnumerable<RuleUsage> GetRuleUsages()
+        {
+            return _ruleUsages;
+        }
+
+        public IEnumerable<IStylingRule> GetUnusedRules()
+        {
+            return AllRules.Except(_ruleUsages.Select(x => x.Rule)).Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
+        }
+
         public SessionResult()
         {
+            RawUsageData = new HashSet<RawRuleUsage>();
+            Sheets = new List<string>();
+            _ruleUsages = new HashSet<RuleUsage>();
         }
 
         public SessionResult(UnusedCssExtension extension)
+            : this()
         {
-            RawUsageData = new HashSet<RawRuleUsage>();
             _extension = extension;
-            _ruleUsages = new HashSet<RuleUsage>();
             _isResolved = 1;
         }
 
-        [JsonProperty]
-        public HashSet<RawRuleUsage> RawUsageData { get; set; }
-
-        [JsonProperty]
-        public bool Continue { get; set; }
-
-        [JsonProperty]
-        public List<string> Sheets { get; set; } 
-
-        private HashSet<RuleUsage> _ruleUsages;
-
-        private int _isResolved;
-
-        private UnusedCssExtension _extension;
-
         private void ThrowIfNotResolved()
         {
-            if(Volatile.Read(ref _isResolved) == 0)
+            if (Volatile.Read(ref _isResolved) == 0)
             {
                 throw new InvalidOperationException("Data source must be resolved first");
             }
@@ -55,20 +73,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             _ruleUsages = await RuleRegistry.ResolveAsync(RawUsageData);
         }
 
-        public IEnumerable<IStylingRule> GetAllRules()
-        {
-            ThrowIfNotResolved();
-            return AmbientRuleContext.GetAllRules();
-        }
-
-        public IEnumerable<IStylingRule> GetUnusedRules()
-        {
-            return GetAllRules().Except(_ruleUsages.Select(x => x.Rule)).Where(x => !UsageRegistry.IsAProtectedClass(x)).ToList();
-        }
-        
         private IEnumerable<Task> GetWarnings(string formatString)
         {
             var orderedRules = GetUnusedRules().OrderBy(x => x.File).ThenBy(x => x.Line).ThenBy(x => x.Column);
+
             return orderedRules.Select(x => x.ProduceErrorListTask(TaskErrorCategory.Warning, _extension.Connection.Project, formatString));
         }
 
@@ -77,16 +85,11 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             return GetWarnings("Unused CSS rule \"{1}\" in " + _extension.Connection.AppName);
         }
 
-        public IEnumerable<RuleUsage> GetRuleUsages()
-        {
-            return _ruleUsages;
-        }
-    
         public IEnumerable<Task> GetWarnings(Uri uri)
         {
             return GetWarnings("Unused CSS rule \"{1}\" in " + _extension.Connection.AppName + " on page " + (uri ?? _extension.Connection.Url));
         }
-        
+
         public async System.Threading.Tasks.Task ResyncAsync()
         {
             _ruleUsages = await RuleRegistry.ResolveAsync(RawUsageData);
