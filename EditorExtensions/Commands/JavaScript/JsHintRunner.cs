@@ -122,11 +122,20 @@ namespace MadsKristensen.EditorExtensions
                 file.EndsWith(".debug.js", StringComparison.OrdinalIgnoreCase) ||
                 file.EndsWith(".intellisense.js", StringComparison.OrdinalIgnoreCase) ||
                 file.Contains("-vsdoc.js") ||
-                !File.Exists(file) ||
-                ProjectHelpers.GetProjectItem(file) == null)
+                !File.Exists(file))
             {
                 return true;
             }
+
+            // Ignore files nested under other files such as bundle or TypeScript output
+            ProjectItem item = ProjectHelpers.GetProjectItem(file);
+
+            if (item == null)
+                return true;
+
+            ProjectItem parent = item.Collection.Parent as ProjectItem;
+            if (parent != null && !Directory.Exists(parent.FileNames[1]))
+                return true;
 
             var ignoreFile = FindLocalIgnore(file);
 
@@ -210,6 +219,7 @@ namespace MadsKristensen.EditorExtensions
             @"prototype\.js ",
             @"qunit-([0-9a-z\.]+)\.js",
             @"require\.js",
+            @"respond\.js",
             @"sammy\.js",
             @"scriptaculous\.js ",
             @"swfobject\.js",
