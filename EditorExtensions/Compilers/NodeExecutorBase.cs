@@ -19,7 +19,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected abstract string ServiceName { get; }
         protected abstract string CompilerPath { get; }
-        protected abstract Regex ErrorParsingPattern { get; }
+        protected virtual Regex ErrorParsingPattern { get { return null; } }
         protected virtual Func<string, IEnumerable<CompilerError>> ParseErrors { get { return ParseErrorsWithRegex; } }
 
         public async Task<CompilerResult> Compile(string sourceFileName, string targetFileName)
@@ -127,9 +127,9 @@ namespace MadsKristensen.EditorExtensions
             if (!match.Success)
             {
                 Logger.Log(ServiceName + " parse error: " + error);
-                return new CompilerError[] { new CompilerError { Message = error } };
+                return new[] { new CompilerError { Message = error } };
             }
-            return new CompilerError[]
+            return new[]
             {
                 new CompilerError
                 {

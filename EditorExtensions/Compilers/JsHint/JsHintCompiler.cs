@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -12,7 +11,6 @@ namespace MadsKristensen.EditorExtensions
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node_modules\jshint\bin\jshint");
         // JsHint Reported is located in Resources\Scripts\ directory. Read more at http://www.jshint.com/docs/reporters/
         private static readonly string _jsHintReporter = Path.Combine(WebEssentialsResourceDirectory, @"Scripts\jshint-node-reporter.js");
-        private static readonly Regex _errorParsingPattern = new Regex(@"^/s", RegexOptions.Multiline);
 
         protected override string ServiceName
         {
@@ -21,10 +19,6 @@ namespace MadsKristensen.EditorExtensions
         protected override string CompilerPath
         {
             get { return _compilerPath; }
-        }
-        protected override Regex ErrorParsingPattern
-        {
-            get { return _errorParsingPattern; }
         }
         protected override Func<string, IEnumerable<CompilerError>> ParseErrors
         {
