@@ -1,8 +1,11 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web.Helpers;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -17,6 +20,7 @@ namespace MadsKristensen.EditorExtensions
         protected abstract string ServiceName { get; }
         protected abstract string CompilerPath { get; }
         protected abstract Regex ErrorParsingPattern { get; }
+        protected virtual Func<string, IEnumerable<CompilerError>> ParseError { get { return ParseErrorWithRegex; } }
 
         public async Task<CompilerResult> Compile(string sourceFileName, string targetFileName)
         {
@@ -95,21 +99,37 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private CompilerError ParseError(string error)
+        protected IEnumerable<CompilerError> ParseErrorWithJson(string error)
+        {
+            if (string.IsNullOrEmpty(error))
+                return null;
+
+            JsHintResult[] results = Json.Decode<JsHintResult[]>(error);
+
+            if (results.Length == 0)
+                Logger.Log(ServiceName + " parse error: " + error);
+
+            return results;
+        }
+
+        protected IEnumerable<CompilerError> ParseErrorWithRegex(string error)
         {
             var match = ErrorParsingPattern.Match(error);
 
             if (!match.Success)
             {
                 Logger.Log(ServiceName + " parse error: " + error);
-                return new CompilerError { Message = error };
+                return new CompilerError[] { new CompilerError { Message = error } };
             }
-            return new CompilerError
+            return new CompilerError[]
             {
-                FileName = match.Groups["fileName"].Value,
-                Message = match.Groups["message"].Value,
-                Column = int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture),
-                Line = int.Parse(match.Groups["line"].Value, CultureInfo.CurrentCulture)
+                new CompilerError
+                {
+                    FileName = match.Groups["fileName"].Value,
+                    Message = match.Groups["message"].Value,
+                    Column = int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture),
+                    Line = int.Parse(match.Groups["line"].Value, CultureInfo.CurrentCulture)
+                }
             };
         }
 

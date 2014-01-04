@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Web.Helpers;
 using EnvDTE;
 using MadsKristensen.EditorExtensions.Commands.JavaScript;
 using MadsKristensen.EditorExtensions.Helpers;
@@ -70,8 +69,7 @@ namespace MadsKristensen.EditorExtensions
 
             // Hack to select result from Error: 
             // See https://github.com/madskristensen/WebEssentials2013/issues/392#issuecomment-31566419
-            ReadResult(result.Error == null ? null : result.Error.Message
-                    , _fileName);
+            ReadResult(result.Error);
         }
 
         private string GetConfigurationFilePath()
@@ -221,21 +219,19 @@ namespace MadsKristensen.EditorExtensions
             @"zepto\.js",
         }) + ")", RegexOptions.IgnoreCase);
 
-        private void ReadResult(string result, string fileName)
+        private void ReadResult(IEnumerable<CompilerError> results)
         {
-            if (result == null)
+            if (results == null)
                 return;
 
             try
             {
-                JsHintResult[] results = Json.Decode<JsHintResult[]>(result);
-
                 _provider.SuspendRefresh();
                 _provider.Tasks.Clear();
 
                 foreach (JsHintResult error in results.Where(r => r != null))
                 {
-                    ErrorTask task = CreateTask(fileName, error);
+                    ErrorTask task = CreateTask(error);
                     _provider.Tasks.Add(task);
                 }
 
@@ -251,7 +247,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private ErrorTask CreateTask(string data, JsHintResult error)
+        private ErrorTask CreateTask(JsHintResult error)
         {
             ErrorTask task = new ErrorTask()
             {
@@ -259,7 +255,7 @@ namespace MadsKristensen.EditorExtensions
                 Column = error.Column,
                 ErrorCategory = GetOutputLocation(),
                 Category = TaskCategory.Html,
-                Document = data,
+                Document = error.FileName,
                 Priority = TaskPriority.Low,
                 Text = GetErrorMessage(error),
             };

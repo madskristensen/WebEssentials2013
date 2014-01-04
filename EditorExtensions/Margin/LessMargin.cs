@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using EnvDTE;
 using Microsoft.VisualStudio.Text;
 
@@ -38,11 +39,11 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                result.Error.Message = "LESS: " + result.Error.Message;
+                result.Error.First().Message = "LESS: " + result.Error.First().Message;
 
-                CreateTask(result.Error);
+                CreateTask(result.Error.First());
 
-                base.OnCompilationDone("ERROR:" + result.Error.Message, lessFilePath);
+                base.OnCompilationDone("ERROR:" + result.Error.First().Message, lessFilePath);
             }
         }
 

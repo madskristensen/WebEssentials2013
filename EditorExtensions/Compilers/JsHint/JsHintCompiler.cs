@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -25,6 +26,7 @@ namespace MadsKristensen.EditorExtensions
         {
             get { return _errorParsingPattern; }
         }
+        protected override Func<string, IEnumerable<CompilerError>> ParseError { get { return ParseErrorWithJson; } }
 
         [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration"
                        , MessageId = "1#"

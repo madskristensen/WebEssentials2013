@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using EnvDTE;
 using Microsoft.VisualStudio.Text;
 
@@ -45,11 +46,11 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                result.Error.Message = ServiceName + ": " + result.Error.Message;
+                result.Error.First().Message = ServiceName + ": " + result.Error.First().Message;
 
-                CreateTask(result.Error);
+                CreateTask(result.Error.First());
 
-                base.OnCompilationDone("ERROR:" + result.Error.Message, sourceFilePath);
+                base.OnCompilationDone("ERROR:" + result.Error.First().Message, sourceFilePath);
             }
         }
 

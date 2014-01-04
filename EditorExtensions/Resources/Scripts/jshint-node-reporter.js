@@ -13,6 +13,7 @@ module.exports = {
                                     , Column: parseInt(error.character, 10)
                                     , Message: error.reason
                                     , Code: error.code
+                                    , FileName: result.file
                                   }
                              );
         });
