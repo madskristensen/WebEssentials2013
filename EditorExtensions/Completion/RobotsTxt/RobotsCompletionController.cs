@@ -39,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
                 return;
 
             TextType type = RobotsTxtClassifierProvider.GetTextType(document.FilePath);
-            if (type == TextType.Unsupported)
+            if (type != TextType.Robots)
                 return;
 
             CommandFilter filter = new CommandFilter(view, CompletionBroker);
