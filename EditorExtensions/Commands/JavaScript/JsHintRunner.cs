@@ -69,7 +69,7 @@ namespace MadsKristensen.EditorExtensions
 
             // Hack to select result from Error: 
             // See https://github.com/madskristensen/WebEssentials2013/issues/392#issuecomment-31566419
-            ReadResult(result.Error);
+            ReadResult(result.Errors);
         }
 
         private string GetConfigurationFilePath()

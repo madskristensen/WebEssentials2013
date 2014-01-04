@@ -33,7 +33,7 @@ namespace WebEssentialsTests
             }
             else
             {
-                throw new ExternalException(result.Error.First().Message);
+                throw new ExternalException(result.Errors.First().Message);
             }
         }
         #endregion

@@ -12,6 +12,6 @@ namespace MadsKristensen.EditorExtensions
         public bool IsSuccess { get; set; }
         public string FileName { get; set; }
         public string Result { get; set; }
-        public IEnumerable<CompilerError> Error { get; set; }
+        public IEnumerable<CompilerError> Errors { get; set; }
     }
 }

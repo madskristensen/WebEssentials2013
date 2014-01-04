@@ -26,7 +26,10 @@ namespace MadsKristensen.EditorExtensions
         {
             get { return _errorParsingPattern; }
         }
-        protected override Func<string, IEnumerable<CompilerError>> ParseError { get { return ParseErrorWithJson; } }
+        protected override Func<string, IEnumerable<CompilerError>> ParseErrors
+        {
+            get { return ParseErrorsWithJson; }
+        }
 
         [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration"
                        , MessageId = "1#"

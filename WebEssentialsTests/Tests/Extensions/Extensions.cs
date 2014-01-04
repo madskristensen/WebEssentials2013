@@ -23,7 +23,7 @@ namespace WebEssentialsTests
                 if (result.IsSuccess)
                     return result.Result;
                 else
-                    throw new ExternalException(result.Error.First().Message);
+                    throw new ExternalException(result.Errors.First().Message);
             }
             finally
             {

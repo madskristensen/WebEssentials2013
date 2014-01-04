@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions
         protected abstract string ServiceName { get; }
         protected abstract string CompilerPath { get; }
         protected abstract Regex ErrorParsingPattern { get; }
-        protected virtual Func<string, IEnumerable<CompilerError>> ParseError { get { return ParseErrorWithRegex; } }
+        protected virtual Func<string, IEnumerable<CompilerError>> ParseErrors { get { return ParseErrorsWithRegex; } }
 
         public async Task<CompilerResult> Compile(string sourceFileName, string targetFileName)
         {
@@ -90,7 +90,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    result.Error = ParseError(errorText.Replace("\r", ""));
+                    result.Errors = ParseErrors(errorText.Replace("\r", ""));
                 }
             }
             catch (FileNotFoundException missingFileException)
@@ -99,7 +99,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        protected IEnumerable<CompilerError> ParseErrorWithJson(string error)
+        protected IEnumerable<CompilerError> ParseErrorsWithJson(string error)
         {
             if (string.IsNullOrEmpty(error))
                 return null;
@@ -112,7 +112,7 @@ namespace MadsKristensen.EditorExtensions
             return results;
         }
 
-        protected IEnumerable<CompilerError> ParseErrorWithRegex(string error)
+        protected IEnumerable<CompilerError> ParseErrorsWithRegex(string error)
         {
             var match = ErrorParsingPattern.Match(error);
 

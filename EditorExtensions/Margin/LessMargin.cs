@@ -39,11 +39,11 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                result.Error.First().Message = "LESS: " + result.Error.First().Message;
+                result.Errors.First().Message = "LESS: " + result.Errors.First().Message;
 
-                CreateTask(result.Error.First());
+                CreateTask(result.Errors.First());
 
-                base.OnCompilationDone("ERROR:" + result.Error.First().Message, lessFilePath);
+                base.OnCompilationDone("ERROR:" + result.Errors.First().Message, lessFilePath);
             }
         }
 

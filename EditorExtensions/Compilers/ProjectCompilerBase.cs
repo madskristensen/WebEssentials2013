@@ -37,7 +37,7 @@ namespace MadsKristensen.EditorExtensions
                 if (result.IsSuccess)
                     FileHelpers.WriteResult(result, compiledFile, CompileToExtension);
                 else
-                    Logger.Log(result.Error.First().Message ?? (String.Format(CultureInfo.CurrentCulture, "Error compiling {0} file: {1}", ServiceName, sourceFile)));
+                    Logger.Log(result.Errors.First().Message ?? (String.Format(CultureInfo.CurrentCulture, "Error compiling {0} file: {1}", ServiceName, sourceFile)));
             }));
         }
     }

@@ -46,11 +46,11 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                result.Error.First().Message = ServiceName + ": " + result.Error.First().Message;
+                result.Errors.First().Message = ServiceName + ": " + result.Errors.First().Message;
 
-                CreateTask(result.Error.First());
+                CreateTask(result.Errors.First());
 
-                base.OnCompilationDone("ERROR:" + result.Error.First().Message, sourceFilePath);
+                base.OnCompilationDone("ERROR:" + result.Errors.First().Message, sourceFilePath);
             }
         }
 
