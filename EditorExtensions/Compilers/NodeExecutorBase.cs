@@ -104,7 +104,7 @@ namespace MadsKristensen.EditorExtensions
             if (string.IsNullOrEmpty(error))
                 return null;
 
-            JsHintResult[] results = Json.Decode<JsHintResult[]>(error);
+            CompilerError[] results = Json.Decode<CompilerError[]>(error);
 
             if (results.Length == 0)
                 Logger.Log(ServiceName + " parse error: " + error);

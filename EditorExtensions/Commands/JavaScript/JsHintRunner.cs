@@ -229,7 +229,7 @@ namespace MadsKristensen.EditorExtensions
                 _provider.SuspendRefresh();
                 _provider.Tasks.Clear();
 
-                foreach (JsHintResult error in results.Where(r => r != null))
+                foreach (CompilerError error in results.Where(r => r != null))
                 {
                     ErrorTask task = CreateTask(error);
                     _provider.Tasks.Add(task);
@@ -247,7 +247,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private ErrorTask CreateTask(JsHintResult error)
+        private ErrorTask CreateTask(CompilerError error)
         {
             ErrorTask task = new ErrorTask()
             {
@@ -257,7 +257,7 @@ namespace MadsKristensen.EditorExtensions
                 Category = TaskCategory.Html,
                 Document = error.FileName,
                 Priority = TaskPriority.Low,
-                Text = GetErrorMessage(error),
+                Text = error.Message,
             };
 
             task.AddHierarchyItem();
@@ -277,16 +277,6 @@ namespace MadsKristensen.EditorExtensions
                 return TaskErrorCategory.Warning;
 
             return TaskErrorCategory.Message;
-        }
-
-        private static string GetErrorMessage(JsHintResult error)
-        {
-            string message = error.Message;
-
-            if (message == "Missing radix parameter.")
-                message = "When using the parseInt function, remember to specify the radix parameter. Example: parseInt('3', 10)";
-
-            return "JsHint (" + error.Code + "): " + message;
         }
 
         private void task_Navigate(object sender, EventArgs e)

@@ -366,7 +366,6 @@
     <Compile Include="Commands\CommandExceptionFilter.cs" />
     <Compile Include="Commands\HTML\HtmlSaveListener.cs" />
     <Compile Include="Compilers\JsHint\JsHintCompiler.cs" />
-    <Compile Include="Compilers\JsHint\JsHintResult.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\MediaTypeCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\MediaValueCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\MediaCompletionProvider.cs" />
