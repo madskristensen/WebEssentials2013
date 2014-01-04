@@ -67,6 +67,8 @@ namespace MadsKristensen.EditorExtensions
 
             CompilerResult result = await new JsHintCompiler().Compile(_fileName, GetConfigurationFilePath());
 
+            EditorExtensionsPackage.DTE.StatusBar.Clear();
+
             // Hack to select result from Error: 
             // See https://github.com/madskristensen/WebEssentials2013/issues/392#issuecomment-31566419
             ReadResult(result.Errors);
