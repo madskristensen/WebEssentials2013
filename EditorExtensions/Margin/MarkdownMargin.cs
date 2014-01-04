@@ -149,7 +149,8 @@ namespace MadsKristensen.EditorExtensions
 
         protected override void MinifyFile(string fileName, string source)
         {
-            if (WESettings.GetBoolean(WESettings.Keys.EnableHtmlMinification))
+            if (WESettings.GetBoolean(WESettings.Keys.EnableHtmlMinification)
+                && File.Exists(Path.ChangeExtension(fileName, ".min.html")))
             {
                 FileHelpers.MinifyFile(fileName, source, ".html");
             }
