@@ -17,6 +17,7 @@ namespace MadsKristensen.EditorExtensions
         public const string guidEditorLinesCmdSetString = "e396b698-e00e-444b-9f5f-3dcb1ef74e67";
         public const string guidUnusedCssCmdSetString = "47BA41E6-C7AB-49F1-984A-30E672AFF9FC";
         public const string guidPixelPushingCmdSetString = "EE755B3C-F6ED-414B-86BA-1AADB7DAE216";
+        public const string guidTopMenuString = "{30947ebe-9147-45f9-96cf-401bfc671a01}";
 
         public static readonly Guid guidEditorExtensionsCmdSet = new Guid(guidEditorExtensionsCmdSetString);
         public static readonly Guid guidCssCmdSet = new Guid(guidCssCmdSetString);
@@ -30,10 +31,12 @@ namespace MadsKristensen.EditorExtensions
         public static readonly Guid guidEditorLinesCmdSet = new Guid(guidEditorLinesCmdSetString);
         public static readonly Guid guidUnusedCssCmdSet = new Guid(guidUnusedCssCmdSetString);
         public static readonly Guid guidPixelPushingCmdSet = new Guid(guidPixelPushingCmdSetString);
+        public static readonly Guid guidTopMenu = new Guid(guidTopMenuString);
     }
 
     enum CommandId
     {
+        TopMenu = 0x3001,
         HtmlEncode = 0x102,
         HtmlDecode = 0x103,
         UrlEncode = 0x106,

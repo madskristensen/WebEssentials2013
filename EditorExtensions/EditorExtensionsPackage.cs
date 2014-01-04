@@ -34,6 +34,7 @@ namespace MadsKristensen.EditorExtensions
     {
         private static DTE2 _dte;
         private static IVsRegisterPriorityCommandTarget _pct;
+        private OleMenuCommand _topMenu;
 
         internal static DTE2 DTE
         {
@@ -104,8 +105,8 @@ namespace MadsKristensen.EditorExtensions
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
                 DTE.Events.BuildEvents.OnBuildDone += BuildEvents_OnBuildDone;
-                DTE.Events.SolutionEvents.Opened += delegate { Settings.UpdateCache(); Settings.UpdateStatusBar("applied"); };
-                DTE.Events.SolutionEvents.AfterClosing += delegate { DTE.StatusBar.Clear(); };
+                DTE.Events.SolutionEvents.Opened += delegate { Settings.UpdateCache(); Settings.UpdateStatusBar("applied"); ShowTopMenu(); };
+                DTE.Events.SolutionEvents.AfterClosing += delegate { DTE.StatusBar.Clear(); ShowTopMenu(); };
 
             }), DispatcherPriority.ApplicationIdle, null);
         }
@@ -154,8 +155,16 @@ namespace MadsKristensen.EditorExtensions
             CommandID commandId = new CommandID(CommandGuids.guidCssIntellisenseCmdSet, (int)CommandId.CssIntellisenseSubMenu);
             OleMenuCommand menuCommand = new OleMenuCommand((s, e) => { }, commandId);
             menuCommand.BeforeQueryStatus += menuCommand_BeforeQueryStatus;
-
             mcs.AddCommand(menuCommand);
+  
+            CommandID cmdTopMenu = new CommandID(CommandGuids.guidTopMenu, (int)CommandId.TopMenu);
+            _topMenu = new OleMenuCommand((s, e) => { }, cmdTopMenu);
+            mcs.AddCommand(_topMenu);
+        }
+
+        private void ShowTopMenu()
+        {
+            _topMenu.Visible = _dte.Solution != null && !string.IsNullOrEmpty(_dte.Solution.FullName);
         }
 
         private readonly string[] _supported = new[] { "CSS", "LESS", "SCSS", "JAVASCRIPT", "PROJECTION", "TYPESCRIPT", "MARKDOWN" };

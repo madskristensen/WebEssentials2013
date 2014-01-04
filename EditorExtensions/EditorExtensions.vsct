@@ -6,6 +6,14 @@
 
   <Commands package="guidEditorExtensionsPkg">
     <Menus>
+      <Menu guid="guidTopMenu" id="TopMenu" priority="0x700" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Web Essentials</ButtonText>
+        </Strings>
+      </Menu>
       <Menu guid="guidEditorExtensionsCmdSet" id="SubMenu" priority="0x001" type="Menu">
         <Parent guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" />
         <Strings>
@@ -34,13 +42,6 @@
           <CommandName>Web Essentials</CommandName>
         </Strings>
       </Menu>
-      <Menu guid="guidBuildCmdSet" id="MySubMenuGroup" priority="0x202" type="Menu">
-        <Parent guid="guidBuildCmdSet" id="MyMenuGroup" />
-        <Strings>
-          <ButtonText>Web Essentials</ButtonText>
-          <CommandName>Web Essentials</CommandName>
-        </Strings>
-      </Menu>
       <Menu guid="guidEditorLinesCmdSet" id="LinesMenu" priority="0x201" type="Menu">
         <Parent guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -51,16 +52,16 @@
     </Menus>
 
     <Groups>
-      <Group guid="guidBuildCmdSet" id="MyMenuGroup" priority="0x0302">
-        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_BUILD"/>
+      <Group guid="guidBuildCmdSet" id="MyBuildMenuGroup" priority="0x0002">
+        <Parent guid="guidTopMenu" id="TopMenu"/>
       </Group>
 
-      <Group guid="guidBuildCmdSet" id="MyBuildMenuGroup" priority="0x0002">
-        <Parent guid="guidBuildCmdSet" id="MySubMenuGroup"/>
+      <Group guid="guidTopMenu" id="SolutionSubMenuGroup" priority="0x0002">
+        <Parent guid="guidTopMenu" id="TopMenu"/>
       </Group>
 
       <Group guid="guidBuildCmdSet" id="MyCompileMenuGroup" priority="0x0003">
-        <Parent guid="guidBuildCmdSet" id="MySubMenuGroup"/>
+        <Parent guid="guidTopMenu" id="TopMenu"/>
       </Group>
       
       <Group guid="guidEditorExtensionsCmdSet" id="HtmlEncodingMenuGroup" priority="0x0002">
@@ -100,7 +101,7 @@
       </Group>
 
       <Group guid="guidFormattingCmdSet" id="FormattingGroup" priority="0x0500">
-        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EDIT"/>
+        <Parent guid="guidTopMenu" id="TopMenu"/>
       </Group>
 
       <Group guid="guidDiffCmdSet" id="MarkdownGroup" priority="0x0009">
@@ -132,19 +133,15 @@
       </Group>
 
       <Group guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" priority="0x0002">
-        <Parent guid="guidEditorExtensionsCmdSet" id="MyMenuGroup" />
+        <Parent guid="guidTopMenu" id="TopMenu" />
       </Group>
 
       <Group guid="guidEditorLinesCmdSet" id="LinesMenuGroup" priority="0x0002">
         <Parent guid="guidEditorLinesCmdSet" id="LinesMenu"/>
       </Group>
-
-      <!--<Group guid="guidUnusedCssCmdSet" id="UnusedCssExtensionGroup" priority="0x0600">
-        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
-      </Group>-->
     </Groups>
 
-    <Buttons>
+    <Buttons>      
       <Button guid="guidEditorExtensionsCmdSet" id="cmdidHtmlEncode" priority="0x0101" type="Button">
         <Parent guid="guidEditorExtensionsCmdSet" id="HtmlEncodingMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -384,7 +381,7 @@
       </Button>
 
       <Button guid="guidDiffCmdSet" id="cmdSolutionSettings" priority="0x0101" type="Button">
-        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+        <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Create solution settings</ButtonText>
@@ -392,7 +389,7 @@
       </Button>
 
       <Button guid="guidDiffCmdSet" id="cmdSolutionColors" priority="0x0102" type="Button">
-        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+        <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Create color palette</ButtonText>
@@ -400,7 +397,7 @@
       </Button>
 
       <Button guid="guidDiffCmdSet" id="cmdMarkdownStylesheet" priority="0x0101" type="Button">
-        <Parent guid="guidDiffCmdSet" id="MarkdownGroup" />
+        <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Add Markdown solution stylesheet</ButtonText>
@@ -522,13 +519,7 @@
           <ButtonText>Re-compile All LESS Files</ButtonText>
         </Strings>
       </Button>
-      <!--<Button guid="guidBuildCmdSet" id="cmdBuildTypeScript" priority="0x0104" type="Button">
-        <Parent guid="guidBuildCmdSet" id="MyCompileMenuGroup"/>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>Re-compile all TypesScript files</ButtonText>
-        </Strings>
-      </Button>-->
+      
       <Button guid="guidBuildCmdSet" id="cmdBuildCoffeeScript" priority="0x0105" type="Button">
         <Parent guid="guidBuildCmdSet" id="MyCompileMenuGroup"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -630,7 +621,6 @@
 
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildBundles" mod1="Shift Alt" key1="I" editor="guidVSStd97"/>
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildLess" mod1="Shift Alt" key1="Y" editor="guidVSStd97"/>
-    <!--<KeyBinding guid="guidBuildCmdSet" id="cmdBuildTypeScript" mod1="Shift Alt" key1="Q" editor="guidVSStd97"/>-->
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildMinify" mod1="Shift Alt" key1="F" editor="guidVSStd97"/>
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildCoffeeScript" mod1="Shift Alt" key1="Z" editor="guidVSStd97"/>
     <KeyBinding guid="guidFormattingCmdSet" id="SurroundWith" mod1="Shift Alt" key1="W" editor="guidVSStd97"/>
@@ -644,9 +634,6 @@
   <CommandPlacements>
     <!-- Editor Lines start-->
     <CommandPlacement guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" priority="0x0300">
-      <Parent guid="guidSHLMainMenu" id="IDG_VS_CODEWIN_TEXTEDIT"/>
-    </CommandPlacement>
-    <CommandPlacement guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" priority="0x0300">
       <Parent guid="jsEditorCommandSet" id="jsContextMenu"/>
     </CommandPlacement>
     <CommandPlacement guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" priority="0x0300">
@@ -657,9 +644,6 @@
     </CommandPlacement>
     <CommandPlacement guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" priority="0x0300">
       <Parent guid="htmlEditorCommandSetLibra" id="htmlContextMenuLibra"/>
-    </CommandPlacement>
-    <CommandPlacement guid="guidEditorLinesCmdSet" id="LinesTopMenuGroup" priority="0x0600">
-      <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EDIT"/>
     </CommandPlacement>
     <!-- Editor Lines end-->
 
@@ -697,6 +681,13 @@
 
   <Symbols>
     <GuidSymbol name="guidEditorExtensionsPkg" value="{5fb7364d-2e8c-44a4-95eb-2a382e30fec8}" />
+    
+    <GuidSymbol name="guidTopMenu" value="{30947ebe-9147-45f9-96cf-401bfc671a01}">
+      <IDSymbol name="TopMenu" value="0x3001" />
+      <IDSymbol name="TopMenuGroup" value="0x3002" />
+      <IDSymbol name="SolutionSubMenuGroup" value="0x3003" />
+    </GuidSymbol>
+    
     <GuidSymbol name="guidEditorExtensionsCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e41}">
       <IDSymbol name="MyMenuGroup" value="0x1020" />
       <IDSymbol name="cmdidHtmlEncode" value="0x0102" />
@@ -736,7 +727,6 @@
 
     <GuidSymbol name="guidCssCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e50}">
       <IDSymbol name="MyMenuGroup" value="0x1020" />
-      <!--<IDSymbol name="CssSubMenu" value="0x1021" />-->
       <IDSymbol name="CssSubMenuGroup" value="0x1022" />
       <IDSymbol name="cmdidCssSortProperties" value="0x0125"/>
       <IDSymbol name="CssIntellisenseSubMenu" value="0x0126"/>
@@ -749,10 +739,7 @@
     <GuidSymbol name="guidCssIntellisenseCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e51}">
       <IDSymbol name="MyMenuGroup" value="0x1030" />
       <IDSymbol name="CssIntellisenseSubMenu" value="0x1031" />
-      <!--<IDSymbol name="CssIntellisenseSubMenuGroup" value="0x1032" />-->
-      <!--<IDSymbol name="cmdidCssIntellisenseHideUnsupported" value="0x1033"/>-->
       <IDSymbol name="cmdidGetInsertOptionsList" value="0x1034"/>
-      <!--<IDSymbol name="cmdidCssIntellisenseHideInheritInitial" value="0x1035"/>-->
     </GuidSymbol>
 
     <GuidSymbol name="guidSolutionExplorerCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e62}">
@@ -793,12 +780,9 @@
     </GuidSymbol>
 
     <GuidSymbol name="guidBuildCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e65}">
-      <IDSymbol name="MyMenuGroup" value="0x1080" />
-      <IDSymbol name="MySubMenuGroup" value="0x1081" />
       <IDSymbol name="MyBuildMenuGroup" value="0x1082" />
       <IDSymbol name="cmdBuildBundles" value="0x1083" />
       <IDSymbol name="cmdBuildLess" value="0x1084" />
-      <!--<IDSymbol name="cmdBuildTypeScript" value="0x1085" />-->
       <IDSymbol name="cmdBuildMinify" value="0x1086" />
       <IDSymbol name="cmdBuildCoffeeScript" value="0x1087" />
       <IDSymbol name="MyCompileMenuGroup" value="0x1088" />
@@ -840,12 +824,7 @@
       <IDSymbol name="jsContextMenu" value="0x040d"/>
       <!-- 52 in hex is 0x0034 -->
     </GuidSymbol>
-
-    <!--<GuidSymbol name="guidWcfToolsCmdSet" value="{1446a66d-7e3e-40ce-808e-89a7202d050d}">
-      <IDSymbol name="MyMenuGroup" value="0x1020" />
-      <IDSymbol name="cmdPasteJsonAsClasses" value="0x334" />
-    </GuidSymbol>-->
-
+    
     <GuidSymbol name="guidUnusedCssCmdSet" value="{47BA41E6-C7AB-49F1-984A-30E672AFF9FC}">
       <IDSymbol name="UnusedCssExtensionGroup" value="0x2020" />
       <IDSymbol name="UnusedCssSnapshotCommandId" value="0x2100" />
