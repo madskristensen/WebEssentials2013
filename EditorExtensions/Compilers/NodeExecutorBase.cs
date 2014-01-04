@@ -104,12 +104,20 @@ namespace MadsKristensen.EditorExtensions
             if (string.IsNullOrEmpty(error))
                 return null;
 
-            CompilerError[] results = Json.Decode<CompilerError[]>(error);
+            try
+            {
+                CompilerError[] results = Json.Decode<CompilerError[]>(error);
 
-            if (results.Length == 0)
+                if (results.Length == 0)
+                    Logger.Log(ServiceName + " parse error: " + error);
+
+                return results;
+            }
+            catch (ArgumentException)
+            {
                 Logger.Log(ServiceName + " parse error: " + error);
-
-            return results;
+                return new[] { new CompilerError() { Message = error } };
+            }
         }
 
         protected IEnumerable<CompilerError> ParseErrorsWithRegex(string error)
