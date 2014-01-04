@@ -289,25 +289,22 @@ namespace MadsKristensen.EditorExtensions
 
         internal static void MinifyFile(string sourceFileName, string source, string compileToExtension)
         {
-            if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptMinify))
+            string content = MinifyFileMenu.MinifyString(compileToExtension, source);
+            string minFile = MarginBase.GetCompiledFileName(sourceFileName, ".min" + compileToExtension, WESettings.GetString(WESettings.Keys.CoffeeScriptCompileToLocation));
+            bool fileExist = File.Exists(minFile);
+            string old = fileExist ? File.ReadAllText(minFile) : string.Empty;
+
+            if (old != content)
             {
-                string content = MinifyFileMenu.MinifyString(compileToExtension, source);
-                string minFile = MarginBase.GetCompiledFileName(sourceFileName, ".min" + compileToExtension, WESettings.GetString(WESettings.Keys.CoffeeScriptCompileToLocation));
-                bool fileExist = File.Exists(minFile);
-                string old = fileExist ? File.ReadAllText(minFile) : string.Empty;
+                ProjectHelpers.CheckOutFileFromSourceControl(minFile);
 
-                if (old != content)
+                using (StreamWriter writer = new StreamWriter(minFile, false, new UTF8Encoding(true)))
                 {
-                    ProjectHelpers.CheckOutFileFromSourceControl(minFile);
-
-                    using (StreamWriter writer = new StreamWriter(minFile, false, new UTF8Encoding(true)))
-                    {
-                        writer.Write(content);
-                    }
-
-                    if (!fileExist)
-                        ProjectHelpers.AddFileToProject(sourceFileName, minFile);
+                    writer.Write(content);
                 }
+
+                if (!fileExist)
+                    ProjectHelpers.AddFileToProject(sourceFileName, minFile);
             }
         }
 
