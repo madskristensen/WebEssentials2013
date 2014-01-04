@@ -68,7 +68,10 @@ namespace MadsKristensen.EditorExtensions
 
             CompilerResult result = await new JsHintCompiler().Compile(_fileName, GetConfigurationFilePath());
 
-            ReadResult(result.Error.Message, _fileName);
+            // Hack to select result from Error: 
+            // See https://github.com/madskristensen/WebEssentials2013/issues/392#issuecomment-31566419
+            ReadResult(result.Error == null ? null : result.Error.Message
+                    , _fileName);
         }
 
         private string GetConfigurationFilePath()
@@ -220,6 +223,9 @@ namespace MadsKristensen.EditorExtensions
 
         private void ReadResult(string result, string fileName)
         {
+            if (result == null)
+                return;
+
             try
             {
                 JsHintResult[] results = Json.Decode<JsHintResult[]>(result);
@@ -284,7 +290,7 @@ namespace MadsKristensen.EditorExtensions
             if (message == "Missing radix parameter.")
                 message = "When using the parseInt function, remember to specify the radix parameter. Example: parseInt('3', 10)";
 
-            return message;
+            return "JsHint (" + error.Code + "): " + message;
         }
 
         private void task_Navigate(object sender, EventArgs e)

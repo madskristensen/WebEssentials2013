@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.ComponentModel.Design;
 using System.IO;
+using System.Linq;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 
@@ -58,7 +58,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     string result = compiler.Transform(File.ReadAllText(path));
                     string htmlFile = Path.ChangeExtension(path, ".html");
-                    
+
                     File.WriteAllText(htmlFile, result);
                     ProjectHelpers.AddFileToProject(path, htmlFile);
                 }
