@@ -8,10 +8,11 @@ using Microsoft.VisualStudio.Utilities;
 namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(IWpfTextViewMarginProvider))]
-    [Name(LessMargin.MarginName)]
+    [Name("MarginFactory")]
     [Order(After = PredefinedMarginNames.RightControl)]
     [MarginContainer(PredefinedMarginNames.Right)]
     [ContentType("LESS")]
+    [ContentType("SASS")]
     [ContentType("CoffeeScript")]
     [ContentType(IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType)]
     [ContentType("TypeScript")]
@@ -26,6 +27,7 @@ namespace MadsKristensen.EditorExtensions
         static readonly Dictionary<string, Func<string, ITextDocument, IWpfTextViewMargin>> marginFactories = new Dictionary<string, Func<string, ITextDocument, IWpfTextViewMargin>>(StringComparer.OrdinalIgnoreCase)
         {
             { "LESS",              (source, document) => new LessMargin("CSS", source, WESettings.GetBoolean(WESettings.Keys.ShowLessPreviewWindow), document) },
+            { "SASS",              (source, document) => new SassMargin("CSS", source, WESettings.GetBoolean(WESettings.Keys.ShowSassPreviewWindow), document) },
             { "CoffeeScript",      (source, document) => new CoffeeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow), document) },
             { "IcedCoffeeScript",  (source, document) => new IcedCoffeeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow), document) },
             { "TypeScript",        (source, document) => new TypeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowTypeScriptPreviewWindow), document) },

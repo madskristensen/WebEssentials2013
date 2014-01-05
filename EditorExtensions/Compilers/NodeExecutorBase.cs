@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions
 {
     public abstract class NodeExecutorBase
     {
-        protected static readonly string WebEssentialsResourceDirectory = Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources");
+        protected static readonly string WebEssentialsResourceDirectory = Path.Combine(Path.GetDirectoryName(typeof(NodeExecutorBase).Assembly.Location), @"Resources");
         private static readonly string NodePath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node.exe");
 
         ///<summary>If set, the executor will not try to use the VS project system.</summary>

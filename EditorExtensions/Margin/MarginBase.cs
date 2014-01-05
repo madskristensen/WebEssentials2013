@@ -235,6 +235,9 @@ namespace MadsKristensen.EditorExtensions
                 case ".less":
                     return GetCompiledFileName(sourceFileName, ".css", CompileToLocation);
 
+                case ".scss":
+                    return GetCompiledFileName(sourceFileName, ".css", CompileToLocation);
+
                 case ".coffee":
                 case ".iced":
                 case ".ts":
