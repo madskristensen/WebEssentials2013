@@ -18,7 +18,7 @@ namespace WebEssentialsTests
                 .FailWith(
                     "Expected Code \r\n{2} \r\nhas {0} lines but \r\n{3}\r\n has {1} lines, empty lines don't count",
                     expectedLines.Length,
-                    lines.Length, 
+                    lines.Length,
                     string.Join(Environment.NewLine, expectedLines),
                     string.Join(Environment.NewLine, lines)
                     );
@@ -37,7 +37,7 @@ namespace WebEssentialsTests
 
         private static string[] TrimLines(string toString)
         {
-            string[] lines = toString.Split(new[] {Environment.NewLine, "\n"}, StringSplitOptions.RemoveEmptyEntries);
+            string[] lines = toString.Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
             return lines.Select(t => t.Trim()).Where(trimmedLine => !string.IsNullOrWhiteSpace(trimmedLine)).ToArray();
         }

@@ -218,7 +218,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
         [TestMethod]
         public void JavaScriptLiteral_for_Date()
         {
-            new IntellisenseType { CodeName = "DateTime"}.JavaScripLiteral.Should().Be("new Date()");
+            new IntellisenseType { CodeName = "DateTime" }.JavaScripLiteral.Should().Be("new Date()");
         }
     }
 }

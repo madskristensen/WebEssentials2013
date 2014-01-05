@@ -108,7 +108,7 @@
     <Compile Include="Tests\Markdown\MarkdownOutlinerTests.cs" />
     <Compile Include="Tests\Markdown\MarkdownCodeBlockTests.cs" />
     <Compile Include="Tests\Markdown\TabAwareCharacterStreamTests.cs" />
-    <Compile Include="Tests\MockSnapshot.cs" />
+    <Compile Include="Tests\Shared\MockSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\NodeModules\NodeModuleImportedTests.cs" />
     <Compile Include="Tests\NodeModules\NodeModuleCompletionTests.cs" />
