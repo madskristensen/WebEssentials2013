@@ -6,7 +6,7 @@ using System.Linq;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
-using ThreadingTasks = System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -44,55 +44,36 @@ namespace MadsKristensen.EditorExtensions
             _mcs.AddCommand(menuCoffee);
         }
 
-        public async static ThreadingTasks.Task BuildCoffeeScript()
+        public async static Task BuildCoffeeScript()
         {
             EditorExtensionsPackage.DTE.StatusBar.Text = "Compiling CofeeScript...";
 
-            var projects = ProjectHelpers.GetAllProjects();
-            var coffee = projects.Select(project =>
-            {
-                return new CoffeeScriptProjectCompiler().CompileProject(project);
-            });
-
-            var iced = projects.Select(project =>
-            {
-                return new IcedCoffeeScriptProjectCompiler().CompileProject(project);
-            });
-
-            List<ThreadingTasks.Task> list = new List<ThreadingTasks.Task>();
-            list.AddRange(coffee);
-            list.AddRange(iced);
-
-            await ThreadingTasks.Task.WhenAll(list);
+            var compilers = new[] { new CoffeeScriptProjectCompiler(), new IcedCoffeeScriptProjectCompiler() };
+            await Task.WhenAll(
+                ProjectHelpers.GetAllProjects()
+                              .SelectMany(p => compilers.Select(c => c.CompileProject(p)))
+            );
 
             EditorExtensionsPackage.DTE.StatusBar.Clear();
         }
 
-        public async static ThreadingTasks.Task BuildLess()
+        public async static Task BuildLess()
         {
             EditorExtensionsPackage.DTE.StatusBar.Text = "Compiling LESS...";
-
-            var projectTasks = ProjectHelpers.GetAllProjects().Select(project =>
-            {
-                return new LessProjectCompiler().CompileProject(project);
-            });
-
-            await ThreadingTasks.Task.WhenAll(projectTasks.ToArray());
-
+            await Task.WhenAll(
+                ProjectHelpers.GetAllProjects()
+                              .Select(new LessProjectCompiler().CompileProject)
+            );
             EditorExtensionsPackage.DTE.StatusBar.Clear();
         }
 
-        public async static ThreadingTasks.Task BuildSass()
+        public async static Task BuildSass()
         {
             EditorExtensionsPackage.DTE.StatusBar.Text = "Compiling SASS...";
-
-            var projectTasks = ProjectHelpers.GetAllProjects().Select(project =>
-            {
-                return new SassProjectCompiler().CompileProject(project);
-            });
-
-            await ThreadingTasks.Task.WhenAll(projectTasks.ToArray());
-
+            await Task.WhenAll(
+                ProjectHelpers.GetAllProjects()
+                              .Select(new SassProjectCompiler().CompileProject)
+            );
             EditorExtensionsPackage.DTE.StatusBar.Clear();
         }
 
@@ -165,8 +146,6 @@ namespace MadsKristensen.EditorExtensions
                     }
                 }
             }
-
-            yield break;
         }
     }
 }

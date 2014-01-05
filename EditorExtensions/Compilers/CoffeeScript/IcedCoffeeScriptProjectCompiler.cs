@@ -16,10 +16,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override IEnumerable<string> Extensions
         {
-            get
-            {
-                return new string[] { ".iced" };
-            }
+            get { yield return ".iced"; }
         }
     }
 }
