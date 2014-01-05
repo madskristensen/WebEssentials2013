@@ -13,7 +13,6 @@ namespace MadsKristensen.EditorExtensions
         public override void SaveSettingsToStorage()
         {
             Settings.SetValue(WESettings.Keys.KeepImportantComments, KeepImportantComments);
-            Settings.SetValue(WESettings.Keys.EnableBrowserLinkMenu, EnableBrowserLinkMenu);
             Settings.SetValue(WESettings.Keys.AllMessagesToOutputWindow, AllMessagesToOutputWindow);
             Settings.SetValue(WESettings.Keys.SvgShowPreviewWindow, SvgShowPreviewWindow);
 
@@ -23,7 +22,6 @@ namespace MadsKristensen.EditorExtensions
         public override void LoadSettingsFromStorage()
         {
             KeepImportantComments = WESettings.GetBoolean(WESettings.Keys.KeepImportantComments);
-            EnableBrowserLinkMenu = WESettings.GetBoolean(WESettings.Keys.EnableBrowserLinkMenu);
             AllMessagesToOutputWindow = WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow);
             SvgShowPreviewWindow = WESettings.GetBoolean(WESettings.Keys.SvgShowPreviewWindow);
         }
@@ -33,11 +31,6 @@ namespace MadsKristensen.EditorExtensions
         [Description("Don't strip important comments when minifying JS and CSS. Important comments follows this pattern: /*! text */")]
         [Category("Minification")]
         public bool KeepImportantComments { get; set; }
-
-        [LocDisplayName("Enable Browser Link menu")]
-        [Description("Enable the menu that shows up in the browser. Requires restart.")]
-        [Category("Browser Link")]
-        public bool EnableBrowserLinkMenu { get; set; }
 
         [LocDisplayName("Redirect Messages to Output Window")]
         [Description("Redirect messages/notifications to output window.")]

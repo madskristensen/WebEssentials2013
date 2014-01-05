@@ -522,7 +522,7 @@
     <Compile Include="Options\TypeScript.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\UnusedCssOptions.cs">
+    <Compile Include="Options\BrowserLinkOptions.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Classifications\IconRegistration.cs" />

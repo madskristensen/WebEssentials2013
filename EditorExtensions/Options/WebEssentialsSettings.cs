@@ -8,8 +8,7 @@ namespace MadsKristensen.EditorExtensions
             public const string JavaScriptCamelCasePropertyNames = "JavaScriptCamelCasePropertyNames";
             public const string JavaScriptCamelCaseClassNames = "JavaScriptCamelCaseClassNames";
             // General
-            public const string KeepImportantComments = "KeepImportantComments";
-            public const string EnableBrowserLinkMenu = "EnableBrowserLinkMenu";
+            public const string KeepImportantComments = "KeepImportantComments";            
             public const string AllMessagesToOutputWindow = "AllMessagesToOutputWindow";
 
             // HTML
@@ -140,9 +139,9 @@ namespace MadsKristensen.EditorExtensions
             public const string JsHint_worker = "JsHint_worker";
             public const string JsHint_wsh = "JsHint_wsh";
 
-            //Unused Css
+            // Browser Link
             public const string UnusedCss_IgnorePatterns = "UnusedCss_IgnorePatterns";
-            public const string UnusedCss_IgnoreRemoteFiles = "UnusedCss_IgnoreRemoteFiles";
+            public const string EnableBrowserLinkMenu = "EnableBrowserLinkMenu";
 
             //Pixel Pushing mode
             public const string PixelPushing_OnByDefault = "PixelPushing_OnByDefault";

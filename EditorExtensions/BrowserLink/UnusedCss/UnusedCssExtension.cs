@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             _uploadHelper = new UploadHelper();
             _connection = connection;
 
-            UnusedCssOptions.SettingsUpdated += InstallIgnorePatterns;
+            BrowserLinkOptions.SettingsUpdated += InstallIgnorePatterns;
         }
 
         private void ToggleRecordingModeAction(BrowserLinkAction obj)
@@ -177,7 +177,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             ExtensionByConnection.TryRemove(connection, out extension);
 
-            UnusedCssOptions.SettingsUpdated -= InstallIgnorePatterns;
+            BrowserLinkOptions.SettingsUpdated -= InstallIgnorePatterns;
         }
 
         [BrowserLinkCallback]
