@@ -65,7 +65,7 @@ namespace MadsKristensen.EditorExtensions
 
             EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: Running JSHint...";
 
-            CompilerResult result = await new JsHintCompiler().Compile(_fileName, GetConfigurationFilePath());
+            CompilerResult result = await new JsHintCompiler().Check(_fileName);
 
             EditorExtensionsPackage.DTE.StatusBar.Clear();
 
@@ -74,35 +74,6 @@ namespace MadsKristensen.EditorExtensions
             ReadResult(result.Errors);
         }
 
-        private string GetConfigurationFilePath()
-        {
-            return FindLocalSettings(_fileName) ?? GetGlobalSettings();
-        }
-
-        private static string GetGlobalSettings()
-        {
-            string jsHintRc = Path.Combine(Settings.GetWebEssentialsSettingsFolder(), ".jshintrc");
-
-            if (!File.Exists(jsHintRc))
-                File.Copy(Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\Settings Backup\.jshintrc")
-                        , jsHintRc);
-
-            return jsHintRc;
-        }
-
-        private static string FindLocalSettings(string sourcePath)
-        {
-            string dir = Path.GetDirectoryName(sourcePath);
-
-            while (!File.Exists(Path.Combine(dir, ".jshintrc")))
-            {
-                dir = Path.GetDirectoryName(dir);
-                if (String.IsNullOrEmpty(dir))
-                    return null;
-            }
-
-            return Path.Combine(dir, ".jshintrc");
-        }
 
         public static void Reset()
         {
