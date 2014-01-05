@@ -8,7 +8,7 @@ namespace MadsKristensen.EditorExtensions
             public const string JavaScriptCamelCasePropertyNames = "JavaScriptCamelCasePropertyNames";
             public const string JavaScriptCamelCaseClassNames = "JavaScriptCamelCaseClassNames";
             // General
-            public const string KeepImportantComments = "KeepImportantComments";            
+            public const string KeepImportantComments = "KeepImportantComments";
             public const string AllMessagesToOutputWindow = "AllMessagesToOutputWindow";
 
             // HTML
@@ -24,6 +24,15 @@ namespace MadsKristensen.EditorExtensions
             public const string LessSourceMaps = "LessSourceMaps";
             public const string LessEnableCompiler = "LessEnableCompiler";
             public const string LessCompileToLocation = "LessCompileToLocation";
+
+            // SASS
+            public const string GenerateCssFileFromSass = "SassGenerateCssFile";
+            public const string ShowSassPreviewWindow = "SassShowPreviewWindow";
+            public const string SassMinify = "SassMinify";
+            public const string SassCompileOnBuild = "SassCompileOnBuild";
+            public const string SassSourceMaps = "SassSourceMaps";
+            public const string SassEnableCompiler = "SassEnableCompiler";
+            public const string SassCompileToLocation = "SassCompileToLocation";
 
             // TypeScript
             public const string ShowTypeScriptPreviewWindow = "TypeScriptShowPreviewWindow";

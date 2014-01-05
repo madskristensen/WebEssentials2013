@@ -367,6 +367,9 @@
     <Compile Include="Commands\CommandExceptionFilter.cs" />
     <Compile Include="Commands\HTML\HtmlSaveListener.cs" />
     <Compile Include="Compilers\JsHint\JsHintCompiler.cs" />
+    <Compile Include="Compilers\LESS\LessCompiler.cs" />
+    <Compile Include="Compilers\SASS\SassProjectCompiler.cs" />
+    <Compile Include="Compilers\SASS\SassCompiler.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\MediaTypeCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\MediaValueCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\MediaCompletionProvider.cs" />
@@ -386,6 +389,7 @@
     <Compile Include="Margin\IcedCoffeeScriptMargin.cs" />
     <Compile Include="Compilers\NodeExecutorBase.cs" />
     <Compile Include="Compilers\ProjectCompilerBase.cs" />
+    <Compile Include="Margin\SassMargin.cs" />
     <Compile Include="Margin\SvgMargin.cs" />
     <Compile Include="Margin\TypeScriptMargin.cs" />
     <Compile Include="MenuItems\AddIntellisenseFile.cs" />
@@ -611,7 +615,6 @@
     <Compile Include="Compilers\CompilerResult.cs" />
     <Compile Include="Margin\MarkdownMargin.cs" />
     <Compile Include="Compilers\LESS\LessProjectCompiler.cs" />
-    <Compile Include="Compilers\LESS\LessCompiler.cs" />
     <Compile Include="Helpers\OptionHelpers.cs" />
     <Compile Include="Margin\CoffeeScriptMargin.cs" />
     <Compile Include="Margin\MarginBase.cs" />
@@ -988,6 +991,12 @@
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <Content Include="Resources\nodejs\node_modules\iced-coffee-script\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
+        <IncludeInVSIX>true</IncludeInVSIX>
+      </Content>
+      <Content Include="Resources\nodejs\node_modules\node-sass\sass.js; Resources\nodejs\node_modules\node-sass\lib\**; Resources\nodejs\node_modules\node-sass\bin\**" Exclude="**\linux*\**; **\darwin*\**">
+        <IncludeInVSIX>true</IncludeInVSIX>
+      </Content>
+      <Content Include="Resources\nodejs\node_modules\node-sass\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <Content Include="Resources\nodejs\node_modules\jshint\**;" Exclude="README.md; **\test\**; **\tst\**; **\tests\**; **\examples\**">

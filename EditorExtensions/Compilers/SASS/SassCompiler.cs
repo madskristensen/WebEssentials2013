@@ -11,9 +11,9 @@ using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions
 {
-    public class LessCompiler : NodeExecutorBase
+    public class SassCompiler : NodeExecutorBase
     {
-        private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node_modules\less\bin\lessc");
+        private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node_modules\node-sass\bin\node-sass");
         private static readonly Regex _endingCurlyBraces = new Regex(@"}\W*}|}", RegexOptions.Compiled);
         private static readonly Regex _linesStartingWithTwoSpaces = new Regex("(\n( *))", RegexOptions.Compiled);
         private static readonly Regex _errorParsingPattern = new Regex(@"^(?<message>.+) in (?<fileName>.+) on line (?<line>\d+), column (?<column>\d+):$", RegexOptions.Multiline);
@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override string ServiceName
         {
-            get { return "LESS"; }
+            get { return "SASS"; }
         }
         protected override string CompilerPath
         {
@@ -35,15 +35,9 @@ namespace MadsKristensen.EditorExtensions
         {
             var args = new StringBuilder("--no-color --relative-urls ");
 
-            if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
+            if (WESettings.GetBoolean(WESettings.Keys.SassSourceMaps) && !InUnitTests)
             {
-                string baseFolder = null;
-                if (!InUnitTests)
-                    baseFolder = ProjectHelpers.GetProjectFolder(targetFileName);
-                baseFolder = baseFolder ?? Path.GetDirectoryName(targetFileName);
-
-                args.AppendFormat(CultureInfo.CurrentCulture, "--source-map-basepath=\"{0}\" --source-map=\"{1}.map\" ",
-                    baseFolder.Replace("\\", "/"), targetFileName);
+                args.Append("--source-comments=map");
             }
 
             args.AppendFormat(CultureInfo.CurrentCulture, "\"{0}\" \"{1}\"", sourceFileName, targetFileName);
@@ -57,7 +51,7 @@ namespace MadsKristensen.EditorExtensions
             resultSource = _endingCurlyBraces.Replace(_linesStartingWithTwoSpaces.Replace(resultSource.Trim(), "$1$2"), "$&\n");
             resultSource = UpdateSourceMapUrls(resultSource, targetFileName);
 
-            var message = "LESS: " + Path.GetFileName(sourceFileName) + " compiled.";
+            var message = "SASS: " + Path.GetFileName(sourceFileName) + " compiled.";
 
             // If the caller wants us to renormalize URLs to a different filename, do so.
             if (targetFileName != null && resultSource.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
@@ -72,7 +66,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 catch (Exception ex)
                 {
-                    message = "LESS: An error occurred while normalizing generated paths in " + sourceFileName + "\r\n" + ex;
+                    message = "SASS: An error occurred while normalizing generated paths in " + sourceFileName + "\r\n" + ex;
                 }
             }
 
@@ -83,7 +77,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static string UpdateSourceMapUrls(string content, string compiledFileName)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.LessSourceMaps) || !File.Exists(compiledFileName))
+            if (!WESettings.GetBoolean(WESettings.Keys.SassSourceMaps) || !File.Exists(compiledFileName))
                 return content;
 
             string sourceMapFilename = compiledFileName + ".map";
