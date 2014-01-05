@@ -25,7 +25,8 @@ namespace MadsKristensen.EditorExtensions
         {
             var textView = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
 
-            textView.Properties.GetOrCreateSingletonProperty<ZenCoding>(() => new ZenCoding(textViewAdapter, textView, CompletionBroker));
+            textView.Properties.GetOrCreateSingletonProperty(() => new ZenCoding(textViewAdapter, textView, CompletionBroker));
+            textView.Properties.GetOrCreateSingletonProperty(() => new PasteImage(textViewAdapter, textView, "<img src=\"{0}\" alt=\"\" />"));
 
             textView.MouseHover += textView_MouseHover;
             textView.Closed += textView_Closed;
