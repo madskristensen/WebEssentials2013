@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
 
         public Task<CompilerResult> Check(string sourcePath)
         {
-            return Compile(sourcePath, FindLocalSettings(sourcePath) ?? GetGlobalSettings());
+            return Compile(sourcePath, null);
         }
 
         private static string FindLocalSettings(string sourcePath)
@@ -54,13 +54,10 @@ namespace MadsKristensen.EditorExtensions
             get { return ParseErrorsWithJson; }
         }
 
-        [SuppressMessage("Microsoft.Naming", "CA1725:ParameterNamesShouldMatchBaseDeclaration"
-                       , MessageId = "1#"
-                       , Justification = "Read more on this feature request on Connect https://connect.microsoft.com/VisualStudio/feedback/details/812838/parameter-name-aliases-in-c")]
-        protected override string GetArguments(string sourceFileName, string configurationFileName)
+        protected override string GetArguments(string sourceFileName, string targetFileName)
         {
             return String.Format(CultureInfo.CurrentCulture, "--config \"{0}\" --reporter \"{1}\" \"{2}\""
-                               , configurationFileName
+                               , FindLocalSettings(sourceFileName) ?? GetGlobalSettings()
                                , _jsHintReporter
                                , sourceFileName);
         }
