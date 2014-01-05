@@ -4,6 +4,7 @@
   <PreloadReferencedAssemblies>false</PreloadReferencedAssemblies>
   <AllowDynamicCodeContractChecking>true</AllowDynamicCodeContractChecking>
   <AllowStaticCodeContractChecking>false</AllowStaticCodeContractChecking>
+  <AllowCodeAnalysis>false</AllowCodeAnalysis>
   <IgnoreThisComponentCompletely>false</IgnoreThisComponentCompletely>
   <RunPreBuildEvents>false</RunPreBuildEvents>
   <RunPostBuildEvents>true</RunPostBuildEvents>
@@ -11,6 +12,7 @@
   <InstrumentAssembly>true</InstrumentAssembly>
   <PreventSigningOfAssembly>false</PreventSigningOfAssembly>
   <AnalyseExecutionTimes>true</AnalyseExecutionTimes>
+  <DetectStackOverflow>true</DetectStackOverflow>
   <IncludeStaticReferencesInWorkspace>false</IncludeStaticReferencesInWorkspace>
   <DefaultTestTimeout>60000</DefaultTestTimeout>
   <UseBuildConfiguration></UseBuildConfiguration>
@@ -19,5 +21,19 @@
   <UseCPUArchitecture>AutoDetect</UseCPUArchitecture>
   <MSTestThreadApartmentState>STA</MSTestThreadApartmentState>
   <BuildProcessArchitecture>x86</BuildProcessArchitecture>
+  <IgnoredTests>
+    <FixtureTestSelector>
+      <FixtureName>WebEssentialsTests.VSHostTest</FixtureName>
+    </FixtureTestSelector>
+    <FixtureTestSelector>
+      <FixtureName>WebEssentialsTests.Tests.IntellisenseGeneration.Parsing_CollectionModel_Tests</FixtureName>
+    </FixtureTestSelector>
+    <FixtureTestSelector>
+      <FixtureName>WebEssentialsTests.Tests.IntellisenseGeneration.Parsing_SimpleNullable_Tests</FixtureName>
+    </FixtureTestSelector>
+    <FixtureTestSelector>
+      <FixtureName>WebEssentialsTests.Tests.IntellisenseGeneration.Parsing_SimpleClass_Tests</FixtureName>
+    </FixtureTestSelector>
+  </IgnoredTests>
   <AdditionalFilesToInclude>..\EditorExtensions\Resources\**.*</AdditionalFilesToInclude>
 </ProjectConfiguration>

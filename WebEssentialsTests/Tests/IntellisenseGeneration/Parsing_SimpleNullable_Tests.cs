@@ -15,6 +15,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestInitialize]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void Init()
         {
             _item = VSHost.TestSolution.FindProjectItem("SimpleNullable.cs");
@@ -23,6 +24,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void SimpleNullable_should_be_parsed()
         {
             _theObject.Should().NotBeNull();
@@ -30,6 +32,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void SimpleNullable_Name_is_Simple()
         {
             _theObject.Should().NameIs("SimpleNullable");
@@ -37,6 +40,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void SimpleNullable_AnInt_is_correct()
         {
             _theObject.Should().HasProperty("AnInt")
@@ -47,6 +51,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void SimpleNullable_ABool_is_correct()
         {
             _theObject.Should().HasProperty("ABool")
@@ -57,6 +62,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void SimpleNullable_ADateTime_property_is_correct()
         {
             _theObject.Should().HasProperty("ADateTime")

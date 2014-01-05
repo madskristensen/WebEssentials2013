@@ -15,6 +15,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestInitialize]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void Init()
         {
             _item = VSHost.TestSolution.FindProjectItem("Simple.cs");
@@ -23,6 +24,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void Simple_should_be_parsed()
         {
             _theObject.Should().NotBeNull();
@@ -30,12 +32,14 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void Simple_Name_is_Simple()
         {
             _theObject.Should().NameIs("Simple");
         }
 
         [TestMethod]
+        [TestProperty("VSTest", "VSTest")]
         [HostType("VS IDE")]
         public void Simple_AString_is_correct()
         {
@@ -47,6 +51,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void Simple_AnInt_is_correct()
         {
             _theObject.Should().HasProperty("AnInt")
@@ -57,6 +62,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void Simple_ABool_is_correct()
         {
             _theObject.Should().HasProperty("ABool")
@@ -66,6 +72,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
         }
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void Simple_ASimple_property_is_correct()
         {
             _theObject.Should().HasProperty("ASimple")
@@ -76,6 +83,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void Simple_ADateTime_property_is_correct()
         {
             _theObject.Should().HasProperty("ADateTime")
