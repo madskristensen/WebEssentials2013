@@ -24,6 +24,10 @@ namespace MadsKristensen.EditorExtensions
             Directory.CreateDirectory(@"resources\nodejs\tools");
             // Force npm to install modules to the subdirectory
             // https://npmjs.org/doc/files/npm-folders.html#More-Information
+
+            // We install our modules in this subdirectory so that
+            // we can clean up their dependencies without catching
+            // npm's modules, which we don't want.
             File.WriteAllText(@"resources\nodejs\tools\package.json", "{}");
 
             // Since this is a synchronous job, I have
@@ -36,13 +40,17 @@ namespace MadsKristensen.EditorExtensions
                 DownloadNpmAsync()
             );
 
-            return Task.WhenAll(
+            if (!Task.WhenAll(
                 InstallModuleAsync("lessc", "less"),
                 InstallModuleAsync("jshint", "jshint"),
                 InstallModuleAsync("node-sass", "node-sass"),
                 InstallModuleAsync("coffee", "coffee-script"),
                 InstallModuleAsync("iced", "iced-coffee-script")
-            ).Result.All(b => b);
+            ).Result.All(b => b))
+                return false;
+            if (!FlattenModulesAsync().Result)
+                return false;
+            return true;
         }
 
         Task DownloadNodeAsync()
@@ -76,20 +84,24 @@ namespace MadsKristensen.EditorExtensions
                 return true;
 
             Log.LogMessage(MessageImportance.High, "npm install " + moduleName + " ...");
-            var output = new StringWriter();
-            int result = await ExecAsync(@"cmd", @"/c ..\npm.cmd install " + moduleName, @"resources\nodejs\tools", output, output);
-            if (result != 0)
+            var output = await ExecWithOutputAsync(@"cmd", @"/c ..\npm.cmd install " + moduleName, @"resources\nodejs\tools");
+            if (output != null)
             {
-                Log.LogError("npm error " + result + ": " + output.ToString().Trim());
+                Log.LogError("npm install " + moduleName + " error: " + output);
                 return false;
             }
-            // If the package has any dependencies, flatten them.
-            // If there are dependent modules, but they failed to
-            // install show an error.  I'm too lazy to add a JSON
-            // parser (how do I add a reference in a pre-build?);
-            // this should be good enough.
-            if (File.ReadAllText(@"resources\nodejs\node_modules\" + moduleName + @"\package.json").Contains(@"""dependencies"":"))
-                FlattenNodeModules(@"resources\nodejs\node_modules\" + moduleName + @"\node_modules");
+            return true;
+        }
+
+        async Task<bool> FlattenModulesAsync()
+        {
+            var output = await ExecWithOutputAsync(@"cmd", @"/c ..\npm.cmd dedup ", @"resources\nodejs\tools");
+            if (output != null)
+            {
+                Log.LogError("npm dedup error: " + output);
+                return false;
+            }
+            FlattenNodeModules(@"resources\nodejs\tools");
             return true;
         }
 
@@ -98,7 +110,7 @@ namespace MadsKristensen.EditorExtensions
         /// Therefore grab all node_modues directories and move them up to baseNodeModuleDir. Node's require() will then 
         /// traverse up and find them at the higher level. Should be fine as long as there are no versioning conflicts.
         /// </summary>
-        static void FlattenNodeModules(string baseNodeModuleDir)
+        void FlattenNodeModules(string baseNodeModuleDir)
         {
             var baseDir = new DirectoryInfo(baseNodeModuleDir);
 
@@ -110,15 +122,25 @@ namespace MadsKristensen.EditorExtensions
             foreach (var nodeModules in nodeModulesDirs)
             {
                 foreach (var module in nodeModules.EnumerateDirectories())
-                {
-                    string targetDir = Path.Combine(baseDir.FullName, module.Name);
+                    string targetDir = Path.Combine(baseDir.FullName, "node_modules", module.Name);
                     if (!Directory.Exists(targetDir))
                         module.MoveTo(targetDir);
+                    else if (module.Name != ".bin")
+                        Log.LogMessage(MessageImportance.High, "Not collapsing conflicting module " + module.FullName);
                 }
 
                 if (!nodeModules.EnumerateFileSystemInfos().Any())
                     nodeModules.Delete();
             }
+        }
+
+        /// <summary>Invokes a command-line process asynchronously, capturing its output to a string.</summary>
+        /// <returns>Null if the process exited successfully; the process' full output if it failed.</returns>
+        static async Task<string> ExecWithOutputAsync(string filename, string args, string workingDirectory = null)
+        {
+            var output = new StringWriter();
+            int result = await ExecAsync(filename, args, workingDirectory);
+            return result == 0 ? null : output.ToString().Trim();
         }
 
         /// <summary>Invokes a command-line process asynchronously.</summary>
@@ -180,7 +202,7 @@ namespace MadsKristensen.EditorExtensions
                         var lastModule = entry.FullName.LastIndexOf("node_modules/");
                         if (lastModule > prefix.Length)
                             targetSubPath = targetSubPath.Remove(prefix.Length, lastModule + "node_modules/".Length - prefix.Length);
-                        Log.LogMessage(MessageImportance.High, entry.FullName + "\t=> " + targetSubPath);
+                        Log.LogMessage(MessageImportance.Low, entry.FullName + "\t=> " + targetSubPath);
                     }
 
                     var targetPath = Path.GetFullPath(Path.Combine(destinationDirectoryName, targetSubPath));

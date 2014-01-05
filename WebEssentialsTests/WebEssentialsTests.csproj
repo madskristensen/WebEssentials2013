@@ -87,6 +87,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <None Include="ExtractZipTask.cs" />
     <Compile Include="Tests\Bootstrap\BootstrapValidationTests.cs" />
     <Compile Include="Tests\CoffeeScript\IcedCoffeeScriptCompilationTests.cs" />
     <Compile Include="Tests\CoffeeScript\CoffeeScriptCompilationTests.cs" />
@@ -196,15 +197,32 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
+  <UsingTask TaskName="MadsKristensen.EditorExtensions.ExtractZipTask" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll">
+    <ParameterGroup>
+      <ZipPath     ParameterType="System.String" Required="true" />
+      <ArchivePath ParameterType="System.String" Required="true" />
+      <Destination ParameterType="System.String" Required="true" />
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.IO.Compression" />
+      <Reference Include="System.IO.Compression.FileSystem" />
+      <Code Language="cs" Source="ExtractZipTask.cs" />
+    </Task>
+  </UsingTask>
+  <Target Name="AfterBuild">
+    <MadsKristensen.EditorExtensions.ExtractZipTask ZipPath="$(SolutionDir)EditorExtensions\$(OutDir)\WebEssentials2013.vsix"
+                                                    ArchivePath="Resources"
+                                                    Destination="$(OutDir)" />
+  </Target>
+
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>
-      rem Needed to run LESS compiler JS
-      xcopy /y /s /d "$(SolutionDir)EditorExtensions\Resources\Scripts\*" "$(TargetDir)Resources\Scripts\" &gt;nul
-      xcopy /y /s /d "$(SolutionDir)EditorExtensions\Resources\nodejs\*" "$(TargetDir)Resources\nodejs\" &gt;nul
+      rem Copy fixtures to output directory to run tests
       (robocopy /mir /e /ns /nc /nfl /ndl /np /njh /njs "$(ProjectDir)fixtures" "$(TargetDir)fixtures") ^&amp; IF %ERRORLEVEL% LEQ 1 exit 0
     </PostBuildEvent>
   </PropertyGroup>
