@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions
             if (project != null && !string.IsNullOrEmpty(project.FullName))
             {
                 var folder = ProjectHelpers.GetRootFolder(project);
-                var sourceFiles = Extensions.SelectMany(e => Directory.EnumerateFiles(folder, "*." + e, SearchOption.AllDirectories));
+                var sourceFiles = Extensions.SelectMany(e => Directory.EnumerateFiles(folder, "*" + e, SearchOption.AllDirectories));
 
                 await Compile(sourceFiles);
             }

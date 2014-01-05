@@ -31,10 +31,6 @@ namespace MadsKristensen.EditorExtensions
             OleMenuCommand menuLess = new OleMenuCommand(async (s, e) => await BuildLess(), cmdLess);
             _mcs.AddCommand(menuLess);
 
-            //CommandID cmdTS = new CommandID(GuidList.guidBuildCmdSet, (int)PkgCmdIDList.cmdBuildTypeScript);
-            //OleMenuCommand menuTS = new OleMenuCommand((s, e) => BuildTypeScript(), cmdTS);
-            //_mcs.AddCommand(menuTS);
-
             CommandID cmdMinify = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildMinify);
             OleMenuCommand menuMinify = new OleMenuCommand((s, e) => Minify(), cmdMinify);
             _mcs.AddCommand(menuMinify);
@@ -42,56 +38,52 @@ namespace MadsKristensen.EditorExtensions
             CommandID cmdCoffee = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildCoffeeScript);
             OleMenuCommand menuCoffee = new OleMenuCommand(async (s, e) => await BuildCoffeeScript(), cmdCoffee);
             _mcs.AddCommand(menuCoffee);
-
-            CommandID cmdIcedCoffee = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildIcedCoffeeScript);
-            OleMenuCommand menuIcedCoffee = new OleMenuCommand(async (s, e) => await BuildIcedCoffeeScript(), cmdIcedCoffee);
-            _mcs.AddCommand(menuIcedCoffee);
         }
 
         public async static ThreadingTasks.Task BuildCoffeeScript()
         {
-            var projectTasks = ProjectHelpers.GetAllProjects().Select(project =>
+            EditorExtensionsPackage.DTE.StatusBar.Text = "Compiling CofeeScript...";
+
+            var projects = ProjectHelpers.GetAllProjects();
+            var coffee = projects.Select(project =>
             {
                 return new CoffeeScriptProjectCompiler().CompileProject(project);
             });
 
-            await ThreadingTasks.Task.WhenAll(projectTasks.ToArray());
-        }
-
-        public async static ThreadingTasks.Task BuildIcedCoffeeScript()
-        {
-            var projectTasks = ProjectHelpers.GetAllProjects().Select(project =>
+            var iced = projects.Select(project =>
             {
                 return new IcedCoffeeScriptProjectCompiler().CompileProject(project);
             });
 
-            await ThreadingTasks.Task.WhenAll(projectTasks.ToArray());
+            List<ThreadingTasks.Task> list = new List<ThreadingTasks.Task>();
+            list.AddRange(coffee);
+            list.AddRange(iced);
+
+            await ThreadingTasks.Task.WhenAll(list);
+
+            EditorExtensionsPackage.DTE.StatusBar.Clear();
         }
 
         public static void UpdateBundleFiles()
         {
-            //Logger.Log("Updating bundles...");
+            EditorExtensionsPackage.DTE.StatusBar.Text = "Updating bundles..."; 
             BundleFilesMenu.UpdateBundles(null, true);
-            //Logger.Log("Bundles updated");
+            EditorExtensionsPackage.DTE.StatusBar.Clear();
         }
 
         public async static ThreadingTasks.Task BuildLess()
         {
+            EditorExtensionsPackage.DTE.StatusBar.Text = "Compiling LESS...";
+
             var projectTasks = ProjectHelpers.GetAllProjects().Select(project =>
             {
                 return new LessProjectCompiler().CompileProject(project);
             });
 
             await ThreadingTasks.Task.WhenAll(projectTasks.ToArray());
-        }
 
-        //private void BuildTypeScript()
-        //{
-        //    foreach (Project project in _dte.Solution.Projects)
-        //    {
-        //        new TypeScriptMargin().CompileProjectFiles(project);
-        //    }
-        //}
+            EditorExtensionsPackage.DTE.StatusBar.Clear();
+        }
 
         private static void Minify()
         {

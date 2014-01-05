@@ -93,7 +93,6 @@ namespace MadsKristensen.EditorExtensions
         BuildLess = 0x1084,
         BuildMinify = 0x1086,
         BuildCoffeeScript = 0x1087,
-        BuildIcedCoffeeScript = 0x1088,
 
         //Unused CSS
         UnusedCssSnapshot = 0x2100,
