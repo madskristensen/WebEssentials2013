@@ -7,9 +7,9 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
     [TestClass]
     public class IntellisenseJavaScript_with_primitives
     {
-        private readonly IntellisenseType _stringType = new IntellisenseType {CodeName = "String"};
+        private readonly IntellisenseType _stringType = new IntellisenseType { CodeName = "String" };
         private readonly IntellisenseType _int32Type = new IntellisenseType { CodeName = "Int32" };
-        private readonly IntellisenseType _int32ArrayType = new IntellisenseType {CodeName = "Int32", IsArray = true};
+        private readonly IntellisenseType _int32ArrayType = new IntellisenseType { CodeName = "Int32", IsArray = true };
         private readonly IntellisenseType _simpleType = new IntellisenseType { CodeName = "Foo.Simple", ClientSideReferenceName = "server.Simple" };
 
         [TestMethod]
@@ -26,7 +26,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
                 Name = "Primitives",
                 Namespace = "server"
             };
-            IntellisenseWriter.WriteJavaScript(new[] {io}, result);
+            IntellisenseWriter.WriteJavaScript(new[] { io }, result);
 
             result.ShouldBeCode(@"
 var server = server || {};
@@ -53,7 +53,7 @@ this.AString = '';
                 Name = "Primitives",
                 Namespace = "server"
             };
-            IntellisenseWriter.WriteJavaScript(new[] {io}, result);
+            IntellisenseWriter.WriteJavaScript(new[] { io }, result);
 
             result.ShouldBeCode(@"
 var server = server || {};

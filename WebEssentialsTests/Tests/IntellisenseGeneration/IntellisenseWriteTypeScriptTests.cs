@@ -7,10 +7,10 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
     [TestClass]
     public class IntellisenseTypescript_with_primitives
     {
-        private readonly IntellisenseType _stringType = new IntellisenseType {CodeName = "String"};
+        private readonly IntellisenseType _stringType = new IntellisenseType { CodeName = "String" };
         private readonly IntellisenseType _int32Type = new IntellisenseType { CodeName = "Int32" };
-        private readonly IntellisenseType _int32ArrayType = new IntellisenseType {CodeName = "Int32", IsArray = true};
-        private readonly IntellisenseType _simpleType= new IntellisenseType { CodeName = "Foo.Simple", ClientSideReferenceName= "server.Simple"};
+        private readonly IntellisenseType _int32ArrayType = new IntellisenseType { CodeName = "Int32", IsArray = true };
+        private readonly IntellisenseType _simpleType = new IntellisenseType { CodeName = "Foo.Simple", ClientSideReferenceName = "server.Simple" };
 
         [TestMethod]
         public void TypeScript_with_on_string_property()
@@ -26,7 +26,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
                 Name = "Primitives",
                 Namespace = "server"
             };
-            IntellisenseWriter.WriteTypeScript(new[] {io}, result);
+            IntellisenseWriter.WriteTypeScript(new[] { io }, result);
 
             result.ShouldBeCode(@"
 declare module server {
@@ -52,7 +52,7 @@ declare module server {
                 Name = "Primitives",
                 Namespace = "server"
             };
-            IntellisenseWriter.WriteTypeScript(new[] {io}, result);
+            IntellisenseWriter.WriteTypeScript(new[] { io }, result);
 
             result.ShouldBeCode(@"
 declare module server {

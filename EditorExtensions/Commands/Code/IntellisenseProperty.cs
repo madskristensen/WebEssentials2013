@@ -6,7 +6,7 @@ namespace MadsKristensen.EditorExtensions
     {
         public IntellisenseProperty()
         {
-            
+
         }
         public IntellisenseProperty(IntellisenseType type, string propertyName)
         {
