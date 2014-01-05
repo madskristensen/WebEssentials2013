@@ -27,7 +27,7 @@ namespace MadsKristensen.EditorExtensions
             IDataObject data = Clipboard.GetDataObject();
             ProjectItem item = ProjectHelpers.GetActiveFile();
 
-            if (!data.GetDataPresent(DataFormats.Bitmap) || item == null || string.IsNullOrEmpty(item.ContainingProject.FullName))
+            if (!data.GetDataPresent(DataFormats.Bitmap) || string.IsNullOrEmpty(item.ContainingProject.FullName))
                 return false;
 
             string fileName = null;
