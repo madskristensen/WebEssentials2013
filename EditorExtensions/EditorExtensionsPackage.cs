@@ -156,7 +156,7 @@ namespace MadsKristensen.EditorExtensions
             OleMenuCommand menuCommand = new OleMenuCommand((s, e) => { }, commandId);
             menuCommand.BeforeQueryStatus += menuCommand_BeforeQueryStatus;
             mcs.AddCommand(menuCommand);
-  
+
             CommandID cmdTopMenu = new CommandID(CommandGuids.guidTopMenu, (int)CommandId.TopMenu);
             _topMenu = new OleMenuCommand((s, e) => { }, cmdTopMenu);
             mcs.AddCommand(_topMenu);

@@ -19,11 +19,17 @@ namespace MadsKristensen.EditorExtensions
         private bool _isDisposed = false;
         private IWpfTextViewHost _viewHost;
         private string _marginName;
-        protected string SettingsKey { get; private set; }
         private bool _showMargin;
-        protected bool IsFirstRun { get; private set; }
         private Dispatcher _dispatcher;
         private ErrorListProvider _provider;
+
+        protected string SettingsKey { get; private set; }
+        protected bool IsFirstRun { get; private set; }
+        public abstract bool IsSaveFileEnabled { get; }
+        public abstract bool CompileEnabled { get; }
+        public abstract string CompileToLocation { get; }
+        protected ITextDocument Document { get; set; }
+        protected virtual bool CanWriteToDisk { get { return true; } }
 
         protected MarginBase()
         {
@@ -60,11 +66,6 @@ namespace MadsKristensen.EditorExtensions
                 }), DispatcherPriority.ApplicationIdle, null);
             }
         }
-
-        public abstract bool IsSaveFileEnabled { get; }
-        public abstract bool CompileEnabled { get; }
-        public abstract string CompileToLocation { get; }
-        protected ITextDocument Document { get; set; }
 
         private void Initialize(string contentType, string source)
         {
@@ -257,7 +258,7 @@ namespace MadsKristensen.EditorExtensions
         private void WriteCompiledFile(string content, string currentFileName, string fileName)
         {
             if (ProjectHelpers.CheckOutFileFromSourceControl(fileName)
-             && CanWriteToDisk(content)
+             && CanWriteToDisk
              && FileHelpers.WriteFile(content, fileName))
             {
                 ProjectHelpers.AddFileToProject(currentFileName, fileName);
@@ -335,8 +336,6 @@ namespace MadsKristensen.EditorExtensions
                 doc.Selection.MoveToLineAndOffset(task.Line, task.Column, false);
             }
         }
-
-        protected abstract bool CanWriteToDisk(string source);
 
         private void ThrowIfDisposed()
         {

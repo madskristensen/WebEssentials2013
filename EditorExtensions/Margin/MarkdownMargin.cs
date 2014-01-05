@@ -161,11 +161,6 @@ namespace MadsKristensen.EditorExtensions
             get { return true; }
         }
 
-        protected override bool CanWriteToDisk(string source)
-        {
-            return true;
-        }
-
         public override bool CompileEnabled
         {
             get { return WESettings.GetBoolean(WESettings.Keys.MarkdownEnableCompiler); }

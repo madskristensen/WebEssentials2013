@@ -90,11 +90,6 @@ namespace MadsKristensen.EditorExtensions
             get { return false; }
         }
 
-        protected override bool CanWriteToDisk(string source)
-        {
-            return false;
-        }
-
         public override bool CompileEnabled
         {
             get { return false; }

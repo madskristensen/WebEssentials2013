@@ -72,13 +72,5 @@ namespace MadsKristensen.EditorExtensions
         {
             get { return WESettings.GetBoolean(WESettings.Keys.GenerateCssFileFromLess) && !Path.GetFileName(Document.FilePath).StartsWith("_", StringComparison.Ordinal); }
         }
-
-        protected override bool CanWriteToDisk(string source)
-        {
-            //var parser = new Microsoft.CSS.Core.CssParser();
-            //StyleSheet stylesheet = parser.Parse(source, false);
-
-            return true;// !string.IsNullOrWhiteSpace(stylesheet.Text);
-        }
     }
 }

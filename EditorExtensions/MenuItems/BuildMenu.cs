@@ -31,6 +31,10 @@ namespace MadsKristensen.EditorExtensions
             OleMenuCommand menuLess = new OleMenuCommand(async (s, e) => await BuildLess(), cmdLess);
             _mcs.AddCommand(menuLess);
 
+            CommandID cmdSass = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildSass);
+            OleMenuCommand menuSass = new OleMenuCommand(async (s, e) => await BuildSass(), cmdSass);
+            _mcs.AddCommand(menuSass);
+
             CommandID cmdMinify = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildMinify);
             OleMenuCommand menuMinify = new OleMenuCommand((s, e) => Minify(), cmdMinify);
             _mcs.AddCommand(menuMinify);
@@ -64,13 +68,6 @@ namespace MadsKristensen.EditorExtensions
             EditorExtensionsPackage.DTE.StatusBar.Clear();
         }
 
-        public static void UpdateBundleFiles()
-        {
-            EditorExtensionsPackage.DTE.StatusBar.Text = "Updating bundles..."; 
-            BundleFilesMenu.UpdateBundles(null, true);
-            EditorExtensionsPackage.DTE.StatusBar.Clear();
-        }
-
         public async static ThreadingTasks.Task BuildLess()
         {
             EditorExtensionsPackage.DTE.StatusBar.Text = "Compiling LESS...";
@@ -82,6 +79,27 @@ namespace MadsKristensen.EditorExtensions
 
             await ThreadingTasks.Task.WhenAll(projectTasks.ToArray());
 
+            EditorExtensionsPackage.DTE.StatusBar.Clear();
+        }
+
+        public async static ThreadingTasks.Task BuildSass()
+        {
+            EditorExtensionsPackage.DTE.StatusBar.Text = "Compiling SASS...";
+
+            var projectTasks = ProjectHelpers.GetAllProjects().Select(project =>
+            {
+                return new SassProjectCompiler().CompileProject(project);
+            });
+
+            await ThreadingTasks.Task.WhenAll(projectTasks.ToArray());
+
+            EditorExtensionsPackage.DTE.StatusBar.Clear();
+        }
+
+        public static void UpdateBundleFiles()
+        {
+            EditorExtensionsPackage.DTE.StatusBar.Text = "Updating bundles...";
+            BundleFilesMenu.UpdateBundles(null, true);
             EditorExtensionsPackage.DTE.StatusBar.Clear();
         }
 

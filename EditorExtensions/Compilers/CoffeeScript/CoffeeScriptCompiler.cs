@@ -29,10 +29,11 @@ namespace MadsKristensen.EditorExtensions
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
             var args = new StringBuilder();
+
             if (WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure))
                 args.Append("--bare ");
 
-            if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptSourceMaps))
+            if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptSourceMaps) && !InUnitTests)
                 args.Append("--map ");
 
             args.AppendFormat(CultureInfo.CurrentCulture, "--output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);

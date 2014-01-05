@@ -12,6 +12,11 @@ namespace MadsKristensen.EditorExtensions
         private WebBrowser _browser;
         private string _fileName;
 
+        protected override bool CanWriteToDisk
+        {
+            get { return false; }
+        }
+
         public SvgMargin(string contentType, string source, bool showMargin, ITextDocument document)
             : base(source, MarginName, contentType, showMargin, document)
         {
@@ -72,11 +77,6 @@ namespace MadsKristensen.EditorExtensions
         public override bool IsSaveFileEnabled
         {
             get { return false; }
-        }
-
-        protected override bool CanWriteToDisk(string source)
-        {
-            return false;
         }
 
         public override bool CompileEnabled

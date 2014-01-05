@@ -79,10 +79,5 @@ namespace MadsKristensen.EditorExtensions
         {
             get { return WESettings.GetBoolean(WESettings.Keys.GenerateJsFileFromCoffeeScript); }
         }
-
-        protected override bool CanWriteToDisk(string source)
-        {
-            return !string.IsNullOrWhiteSpace(source);
-        }
     }
 }

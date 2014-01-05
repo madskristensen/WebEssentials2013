@@ -91,6 +91,7 @@ namespace MadsKristensen.EditorExtensions
         // Build
         BuildBundles = 0x1083,
         BuildLess = 0x1084,
+        BuildSass = 0x1085,
         BuildMinify = 0x1086,
         BuildCoffeeScript = 0x1087,
 
