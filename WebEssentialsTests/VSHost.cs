@@ -29,6 +29,7 @@ namespace WebEssentialsTests
     {
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void VSTest_CanOpenSolution()
         {
             VSHost.TestSolution.Should().NotBeNull();
@@ -36,6 +37,7 @@ namespace WebEssentialsTests
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void VSTest_CanFindProjectItem()
         {
             var projectItem = VSHost.TestSolution.FindProjectItem("Simple.cs");

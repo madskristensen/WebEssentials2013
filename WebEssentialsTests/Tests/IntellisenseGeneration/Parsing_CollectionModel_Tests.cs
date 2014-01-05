@@ -15,6 +15,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestInitialize]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void Init()
         {
             item = VSHost.TestSolution.FindProjectItem("CollectionModel.cs");
@@ -23,6 +24,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void CollectionModel_should_be_parsed()
         {
             theObject.Should().NotBeNull();
@@ -30,6 +32,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void CollectionModel_Name_is_CollectionModel()
         {
             theObject.Should().NameIs("CollectionModel");
@@ -37,6 +40,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void CollectionModel_Property_AStringArray_is_correct()
         {
             theObject.Should().HasProperty("AStringArray")
@@ -47,6 +51,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void CollectionModel_Property_AStringIEnumerable_is_correct()
         {
             theObject.Should().HasProperty("AStringIEnumerable")
@@ -57,6 +62,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void CollectionModel_Property_AStringICollection_is_correct()
         {
             theObject.Should().HasProperty("AStringICollection")
@@ -67,6 +73,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void CollectionModel_Property_AStringIList_is_correct()
         {
             theObject.Should().HasProperty("AStringIList")
@@ -77,6 +84,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void CollectionModel_Property_AStringList_is_correct()
         {
             theObject.Should().HasProperty("AStringList")
@@ -87,6 +95,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void CollectionModel_Property_AStringCollection_is_correct()
         {
             theObject.Should().HasProperty("AStringCollection")
@@ -107,6 +116,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 
         [TestMethod]
         [HostType("VS IDE")]
+        [TestProperty("VSTest", "VSTest")]
         public void CollectionModel_Property_ALongList_is_correct()
         {
             theObject.Should().HasProperty("ALongList")
