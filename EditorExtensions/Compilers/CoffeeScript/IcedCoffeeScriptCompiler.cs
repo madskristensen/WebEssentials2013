@@ -4,7 +4,7 @@ namespace MadsKristensen.EditorExtensions
 {
     public class IcedCoffeeScriptCompiler : CoffeeScriptCompiler
     {
-        private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node_modules\iced-coffee-script\bin\coffee");
+        private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\iced-coffee-script\bin\coffee");
 
         protected override string ServiceName
         {

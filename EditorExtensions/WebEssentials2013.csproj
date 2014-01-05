@@ -966,8 +966,10 @@
   -->
   <UsingTask TaskName="MadsKristensen.EditorExtensions.PreBuildTask" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll">
     <Task>
+      <Reference Include="Microsoft.CSharp" />
       <Reference Include="System.IO.Compression" />
       <Reference Include="System.IO.Compression.FileSystem" />
+      <Reference Include="System.Web.Helpers" />
       <Code Language="cs" Source="PreBuildTask.cs" />
     </Task>
   </UsingTask>
@@ -975,31 +977,30 @@
     <MadsKristensen.EditorExtensions.PreBuildTask />
     <!-- Include newly downloaded files now ... -->
     <ItemGroup>
-      <Content Include="Resources\nodejs\node_modules\less\lib\**; Resources\nodejs\node_modules\less\bin\**">
+      <!-- Exclude LESS & SASS because they have too many extra files; usea whitelist instead-->
+      <!-- Mocha comes from some package that forgot about "devDependencies"; Jade comes from Mocha -->
+      <Content Include="Resources\nodejs\tools\**" Exclude="
+               **\node-sass\**; **\less\**; 
+               **\mocha\**; **\jade\**; 
+               **\*.md; **\*.markdown; **\*.html; **\*.txt; **\LICENSE; **\README; **\CHANGELOG; **\CNAME; **\*.old; **\*.patch; **\*.ico; 
+               **\*.json; **\.*; **\Makefile.*; **\Rakefile; **\*.yml; 
+               **\test.*; **\generate-*; 
+               **\*.min.js; **\*-min.js; 
+               **\media\**; **\images\**; **\man\**; 
+               **\.bin\**; **\benchmark\**; **\build\**; **\scripts\**; 
+               **\vendor\**; 
+               **\test\**; **\tst\**; **\tests\**; **\testing\**; 
+               **\examples\**; **\example\**; **\tools\**\tools\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\node_modules\less\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
+      <Content Include="Resources\nodejs\tools\node_modules\node-sass\sass.js; Resources\nodejs\tools\node_modules\node-sass\lib\**; Resources\nodejs\tools\node_modules\node-sass\bin\win32-ia32\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\node_modules\coffee-script\lib\**; Resources\nodejs\node_modules\coffee-script\bin\**">
+      <Content Include="Resources\nodejs\tools\node_modules\less\lib\**; Resources\nodejs\tools\node_modules\less\bin\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\node_modules\coffee-script\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
-        <IncludeInVSIX>true</IncludeInVSIX>
-      </Content>
-      <Content Include="Resources\nodejs\node_modules\iced-coffee-script\lib\**; Resources\nodejs\node_modules\iced-coffee-script\bin\**">
-        <IncludeInVSIX>true</IncludeInVSIX>
-      </Content>
-      <Content Include="Resources\nodejs\node_modules\iced-coffee-script\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
-        <IncludeInVSIX>true</IncludeInVSIX>
-      </Content>
-      <Content Include="Resources\nodejs\node_modules\node-sass\sass.js; Resources\nodejs\node_modules\node-sass\lib\**; Resources\nodejs\node_modules\node-sass\bin\**" Exclude="**\linux*\**; **\darwin*\**">
-        <IncludeInVSIX>true</IncludeInVSIX>
-      </Content>
-      <Content Include="Resources\nodejs\node_modules\node-sass\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
-        <IncludeInVSIX>true</IncludeInVSIX>
-      </Content>
-      <Content Include="Resources\nodejs\node_modules\jshint\**;" Exclude="README.md; **\test\**; **\tst\**; **\tests\**; **\examples\**">
+      <!-- Explicitly include JSON files that are actually needed at runtime-->
+      <Content Include="Resources\nodejs\tools\node_modules\htmlparser2\lib\entities\**; Resources\nodejs\tools\node_modules\jshint\package.json">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
     </ItemGroup>
