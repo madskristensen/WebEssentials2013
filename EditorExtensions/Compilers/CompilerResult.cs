@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -7,6 +8,7 @@ namespace MadsKristensen.EditorExtensions
         public CompilerResult(string fileName)
         {
             FileName = fileName;
+            Errors = Enumerable.Empty<CompilerError>();
         }
 
         public bool IsSuccess { get; set; }

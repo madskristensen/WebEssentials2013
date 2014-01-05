@@ -102,6 +102,7 @@
     <Compile Include="Tests\IntellisenseGeneration\TestHelper\IntellisenseObjectsAssertions.cs" />
     <Compile Include="Tests\IntellisenseGeneration\TestHelper\IntellisensePropertyAssertions.cs" />
     <Compile Include="Tests\Extensions\TestCodeExtensions.cs" />
+    <Compile Include="Tests\JsHint\JsHintTests.cs" />
     <Compile Include="Tests\Less\LessCompilationTests.cs" />
     <Compile Include="Tests\Less\LessDocumentTests.cs">
       <SubType>Code</SubType>
@@ -125,6 +126,9 @@
   <ItemGroup>
     <Content Include="fixtures\coffee\compiled\test.js" />
     <Content Include="fixtures\iced\compiled\test.js" />
+    <Content Include="fixtures\jshint\config\clean.js" />
+    <Content Include="fixtures\jshint\skip.js" />
+    <Content Include="fixtures\jshint\default.js" />
     <Content Include="fixtures\less\css\URLs.css" />
     <Content Include="fixtures\less\css\_Deep Inclusion.css" />
     <Content Include="fixtures\less\css\_Entry1.css" />
@@ -163,6 +167,8 @@
     <None Include="app.config" />
     <Content Include="fixtures\less\URLs.css" />
     <None Include="fixtures\iced\source\test.iced" />
+    <Content Include="fixtures\jshint\config\.jshintrc" />
+    <None Include="fixtures\jshint\.jshintignore" />
     <None Include="fixtures\less\URLs.less" />
     <None Include="fixtures\less\sub1\deeper\_lib.less" />
     <None Include="fixtures\less\sub1\deeper\_Entry3.less" />
@@ -197,10 +203,9 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-
   <UsingTask TaskName="MadsKristensen.EditorExtensions.ExtractZipTask" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll">
     <ParameterGroup>
-      <ZipPath     ParameterType="System.String" Required="true" />
+      <ZipPath ParameterType="System.String" Required="true" />
       <ArchivePath ParameterType="System.String" Required="true" />
       <Destination ParameterType="System.String" Required="true" />
     </ParameterGroup>
@@ -211,11 +216,8 @@
     </Task>
   </UsingTask>
   <Target Name="AfterBuild">
-    <MadsKristensen.EditorExtensions.ExtractZipTask ZipPath="$(SolutionDir)EditorExtensions\$(OutDir)\WebEssentials2013.vsix"
-                                                    ArchivePath="Resources"
-                                                    Destination="$(OutDir)" />
+    <MadsKristensen.EditorExtensions.ExtractZipTask ZipPath="$(SolutionDir)EditorExtensions\$(OutDir)\WebEssentials2013.vsix" ArchivePath="Resources" Destination="$(OutDir)" />
   </Target>
-
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
