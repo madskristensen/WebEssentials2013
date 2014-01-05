@@ -975,31 +975,31 @@
     <MadsKristensen.EditorExtensions.PreBuildTask />
     <!-- Include newly downloaded files now ... -->
     <ItemGroup>
-      <Content Include="Resources\nodejs\node_modules\less\lib\**; Resources\nodejs\node_modules\less\bin\**">
+      <Content Include="Resources\nodejs\tools\node_modules\less\lib\**; Resources\nodejs\tools\node_modules\less\bin\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\node_modules\less\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
+      <Content Include="Resources\nodejs\tools\node_modules\less\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\node_modules\coffee-script\lib\**; Resources\nodejs\node_modules\coffee-script\bin\**">
+      <Content Include="Resources\nodejs\tools\node_modules\coffee-script\lib\**; Resources\nodejs\tools\node_modules\coffee-script\bin\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\node_modules\coffee-script\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
+      <Content Include="Resources\nodejs\tools\node_modules\coffee-script\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\node_modules\iced-coffee-script\lib\**; Resources\nodejs\node_modules\iced-coffee-script\bin\**">
+      <Content Include="Resources\nodejs\tools\node_modules\iced-coffee-script\lib\**; Resources\nodejs\tools\node_modules\iced-coffee-script\bin\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\node_modules\iced-coffee-script\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
+      <Content Include="Resources\nodejs\tools\node_modules\iced-coffee-script\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\node_modules\node-sass\sass.js; Resources\nodejs\node_modules\node-sass\lib\**; Resources\nodejs\node_modules\node-sass\bin\**" Exclude="**\linux*\**; **\darwin*\**">
+      <Content Include="Resources\nodejs\tools\node_modules\node-sass\sass.js; Resources\nodejs\tools\node_modules\node-sass\lib\**; Resources\nodejs\tools\node_modules\node-sass\bin\**" Exclude="**\linux*\**; **\darwin*\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\node_modules\node-sass\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
+      <Content Include="Resources\nodejs\tools\node_modules\node-sass\node_modules\**" Exclude="**\test\**; **\tst\**; **\tests\**; **\examples\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\node_modules\jshint\**;" Exclude="README.md; **\test\**; **\tst\**; **\tests\**; **\examples\**">
+      <Content Include="Resources\nodejs\tools\node_modules\jshint\**;" Exclude="README.md; **\test\**; **\tst\**; **\tests\**; **\examples\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
     </ItemGroup>

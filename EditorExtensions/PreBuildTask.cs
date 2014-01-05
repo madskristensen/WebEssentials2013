@@ -21,7 +21,10 @@ namespace MadsKristensen.EditorExtensions
         {
             var webclient = new WebClient();
 
-            Directory.CreateDirectory(@"resources\nodejs");
+            Directory.CreateDirectory(@"resources\nodejs\tools");
+            // Force npm to install modules to the subdirectory
+            // https://npmjs.org/doc/files/npm-folders.html#More-Information
+            File.WriteAllText(@"resources\nodejs\tools\package.json", "{}");
 
             // Since this is a synchronous job, I have
             // no choice but to synchronously wait for
@@ -69,12 +72,12 @@ namespace MadsKristensen.EditorExtensions
         }
         async Task<bool> InstallModuleAsync(string cmdName, string moduleName)
         {
-            if (File.Exists(@"resources\nodejs\node_modules\.bin\" + cmdName + ".cmd"))
+            if (File.Exists(@"resources\nodejs\tools\node_modules\.bin\" + cmdName + ".cmd"))
                 return true;
 
             Log.LogMessage(MessageImportance.High, "npm install " + moduleName + " ...");
             var output = new StringWriter();
-            int result = await ExecAsync(@"cmd", @"/c .\npm.cmd install " + moduleName, @"resources\nodejs", output, output);
+            int result = await ExecAsync(@"cmd", @"/c ..\npm.cmd install " + moduleName, @"resources\nodejs\tools", output, output);
             if (result != 0)
             {
                 Log.LogError("npm error " + result + ": " + output.ToString().Trim());
