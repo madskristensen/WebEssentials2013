@@ -966,8 +966,10 @@
   -->
   <UsingTask TaskName="MadsKristensen.EditorExtensions.PreBuildTask" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll">
     <Task>
+      <Reference Include="Microsoft.CSharp" />
       <Reference Include="System.IO.Compression" />
       <Reference Include="System.IO.Compression.FileSystem" />
+      <Reference Include="System.Web.Helpers" />
       <Code Language="cs" Source="PreBuildTask.cs" />
     </Task>
   </UsingTask>

@@ -8,6 +8,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.Helpers;
 using Microsoft.Build.Framework;
 
 namespace MadsKristensen.EditorExtensions
@@ -122,6 +123,22 @@ namespace MadsKristensen.EditorExtensions
             foreach (var nodeModules in nodeModulesDirs)
             {
                 foreach (var module in nodeModules.EnumerateDirectories())
+                {
+                    // If the package uses a non-default main file,
+                    // add a redirect in index.js so that require()
+                    // can find it without package.json.
+                    if (module.Name != ".bin" && !File.Exists(Path.Combine(module.FullName, "index.js")))
+                    {
+                        dynamic package = Json.Decode(File.ReadAllText(Path.Combine(module.FullName, "package.json")));
+                        string main = package.main;
+                        if (!main.StartsWith("."))
+                            main = "./" + main;
+                        File.WriteAllText(
+                            Path.Combine(module.FullName, "index.js"),
+                            "module.exports = require(" + Json.Encode(main) + ");"
+                        );
+                    }
+
                     string targetDir = Path.Combine(baseDir.FullName, "node_modules", module.Name);
                     if (!Directory.Exists(targetDir))
                         module.MoveTo(targetDir);
