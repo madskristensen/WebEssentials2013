@@ -52,7 +52,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static readonly Regex whitespaceTrimmer = new Regex(@"^\s+|\s+$|\s*[\r\n]+\s*", RegexOptions.Compiled);
 
-        private static void WriteJavaScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
+        internal static void WriteJavaScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
         {
             sb.AppendLine("var server = server || {};");
 
@@ -63,7 +63,7 @@ namespace MadsKristensen.EditorExtensions
                 string comment = io.Summary ?? "The " + io.Name + " class as defined in " + io.FullName;
                 comment = whitespaceTrimmer.Replace(comment, " ");
                 sb.AppendLine("/// <summary>" + SecurityElement.Escape(comment) + "</summary>");
-                sb.AppendLine("server." + CamelCaseClassName(io.Name) + " = function()  {");
+                sb.AppendLine("server." + CamelCaseClassName(io.Name) + " = function() {");
 
                 foreach (var p in io.Properties)
                 {

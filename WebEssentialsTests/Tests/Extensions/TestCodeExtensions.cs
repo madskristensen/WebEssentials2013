@@ -7,7 +7,7 @@ using FluentAssertions.Primitives;
 
 namespace WebEssentialsTests
 {
-    public static class TestCodeExtensions 
+    public static class TestCodeExtensions
     {
         private static AndConstraint<StringAssertions> BeCode(this StringAssertions assertion, string expectedCode)
         {
@@ -15,8 +15,13 @@ namespace WebEssentialsTests
             var expectedLines = TrimLines(expectedCode);
             Execute.Assertion
                 .ForCondition(lines.Length == expectedLines.Length)
-                .FailWith("Expected Code has {0} lines but has {1} lines, empty lines don't count", expectedLines.Length,
-                    lines.Length);
+                .FailWith(
+                    "Expected Code \r\n{2} \r\nhas {0} lines but \r\n{3}\r\n has {1} lines, empty lines don't count",
+                    expectedLines.Length,
+                    lines.Length, 
+                    string.Join(Environment.NewLine, expectedLines),
+                    string.Join(Environment.NewLine, lines)
+                    );
 
 
             for (int i = 0; i < lines.Length; i++)
@@ -24,7 +29,7 @@ namespace WebEssentialsTests
                 Execute.Assertion
                     .ForCondition(lines[i] == expectedLines[i])
                     .FailWith(
-                        "Expected code in line {0} is {1} but was {2}, whitespaces and the begining and end are not relevant",
+                        "Expected code in line {0} is \r\n{1}\r\n but was \r\n{2}\r\n, whitespaces and the begining and end are not relevant",
                         i + 1, expectedLines[i], lines[i]);
             }
             return new AndConstraint<StringAssertions>(assertion);
@@ -32,7 +37,7 @@ namespace WebEssentialsTests
 
         private static string[] TrimLines(string toString)
         {
-            string[] lines = toString.Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            string[] lines = toString.Split(new[] {Environment.NewLine, "\n"}, StringSplitOptions.RemoveEmptyEntries);
 
             return lines.Select(t => t.Trim()).Where(trimmedLine => !string.IsNullOrWhiteSpace(trimmedLine)).ToArray();
         }

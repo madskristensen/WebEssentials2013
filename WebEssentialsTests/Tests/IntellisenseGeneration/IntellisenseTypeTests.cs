@@ -190,4 +190,35 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
             new IntellisenseType { CodeName = "Boolean" }.JavaScriptName.Should().Be("Boolean");
         }
     }
+    [TestClass]
+    public class IntellisenseType_JavaScriptLiteral
+    {
+        [TestMethod]
+        public void JavaScriptLiteral_for_string()
+        {
+            new IntellisenseType { CodeName = "String" }.JavaScripLiteral.Should().Be("''");
+        }
+        [TestMethod]
+        public void JavaScriptLiteral_for_bool()
+        {
+            new IntellisenseType { CodeName = "bool" }.JavaScripLiteral.Should().Be("false");
+        }
+
+        [TestMethod]
+        public void JavaScriptLiteral_for_Int32()
+        {
+            new IntellisenseType { CodeName = "Int32" }.JavaScripLiteral.Should().Be("0");
+        }
+
+        [TestMethod]
+        public void JavaScriptLiteral_for_Int32Array()
+        {
+            new IntellisenseType { CodeName = "Int32", IsArray = true }.JavaScripLiteral.Should().Be("[]");
+        }
+        [TestMethod]
+        public void JavaScriptLiteral_for_Date()
+        {
+            new IntellisenseType { CodeName = "DateTime"}.JavaScripLiteral.Should().Be("new Date()");
+        }
+    }
 }

@@ -92,6 +92,7 @@
     <Compile Include="Tests\CoffeeScript\CoffeeScriptCompilationTests.cs" />
     <Compile Include="Tests\Extensions\Extensions.cs" />
     <Compile Include="Tests\IntellisenseGeneration\IntellisenseTypeTests.cs" />
+    <Compile Include="Tests\IntellisenseGeneration\IntellisenseWriteJavaScriptsTests.cs" />
     <Compile Include="Tests\IntellisenseGeneration\IntellisenseWriteTypeScriptTests.cs" />
     <Compile Include="Tests\IntellisenseGeneration\Parsing_SimpleClass_Tests.cs" />
     <Compile Include="Tests\IntellisenseGeneration\TestHelper\IntellisenseObjectsAssertionsExtensions.cs" />
