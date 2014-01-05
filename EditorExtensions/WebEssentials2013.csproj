@@ -874,9 +874,6 @@
     <Content Include="Resources\Settings Backup\.jshintrc">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\Scripts\es5-shim.min.js">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="Resources\Scripts\jshint-node-reporter.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
