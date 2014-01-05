@@ -127,17 +127,14 @@ namespace MadsKristensen.EditorExtensions
             if (!match.Success)
             {
                 Logger.Log(ServiceName + " parse error: " + error);
-                return new[] { new CompilerError { Message = error } };
+                yield return new CompilerError { Message = error };
             }
-            return new[]
+            yield return new CompilerError
             {
-                new CompilerError
-                {
-                    FileName = match.Groups["fileName"].Value,
-                    Message = match.Groups["message"].Value,
-                    Column = int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture),
-                    Line = int.Parse(match.Groups["line"].Value, CultureInfo.CurrentCulture)
-                }
+                FileName = match.Groups["fileName"].Value,
+                Message = match.Groups["message"].Value,
+                Column = int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture),
+                Line = int.Parse(match.Groups["line"].Value, CultureInfo.CurrentCulture)
             };
         }
 
