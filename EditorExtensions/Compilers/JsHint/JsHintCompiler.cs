@@ -38,7 +38,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
-            Logger.Log("JSHint: " + Path.GetFileName(sourceFileName) + " executed.");
+            Logger.Log("JSHint: " + Path.GetFileName(sourceFileName) + " checked.");
 
             return resultSource;
         }
