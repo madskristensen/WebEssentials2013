@@ -14,9 +14,7 @@ namespace MadsKristensen.EditorExtensions
     public class SassCompiler : NodeExecutorBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node_modules\node-sass\bin\node-sass");
-        private static readonly Regex _endingCurlyBraces = new Regex(@"}\W*}|}", RegexOptions.Compiled);
-        private static readonly Regex _linesStartingWithTwoSpaces = new Regex("(\n( *))", RegexOptions.Compiled);
-        private static readonly Regex _errorParsingPattern = new Regex(@"^(?<message>.+) in (?<fileName>.+) on line (?<line>\d+), column (?<column>\d+):$", RegexOptions.Multiline);
+        private static readonly Regex _errorParsingPattern = new Regex(@"(?<fileName>.*):(?<line>.\d*): error: (?<message>.*\n.*)", RegexOptions.Multiline);
         private static readonly Regex _sourceMapInCss = new Regex(@"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", RegexOptions.Multiline);
 
         protected override string ServiceName
@@ -33,11 +31,11 @@ namespace MadsKristensen.EditorExtensions
         }
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
-            var args = new StringBuilder("--no-color --relative-urls ");
+            var args = new StringBuilder("--output-style=expanded ");
 
             if (WESettings.GetBoolean(WESettings.Keys.SassSourceMaps) && !InUnitTests)
             {
-                args.Append("--source-comments=map");
+                args.Append("--source-comments=map ");
             }
 
             args.AppendFormat(CultureInfo.CurrentCulture, "\"{0}\" \"{1}\"", sourceFileName, targetFileName);
@@ -47,8 +45,6 @@ namespace MadsKristensen.EditorExtensions
 
         protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
-            // Inserts an empty row between each rule and replace two space indentation with 4 space indentation
-            resultSource = _endingCurlyBraces.Replace(_linesStartingWithTwoSpaces.Replace(resultSource.Trim(), "$1$2"), "$&\n");
             resultSource = UpdateSourceMapUrls(resultSource, targetFileName);
 
             var message = "SASS: " + Path.GetFileName(sourceFileName) + " compiled.";
