@@ -84,7 +84,7 @@ namespace MadsKristensen.EditorExtensions
         {
             try
             {   // Subjected to change, depending on https://github.com/andrew/node-sass/issues/207
-                if (string.IsNullOrEmpty(errorText) && process.ExitCode == 0)
+                if (!errorText.Contains("error: ") && process.ExitCode == 0)
                 {
                     result.Result = File.ReadAllText(outputFile);
                     result.IsSuccess = true;

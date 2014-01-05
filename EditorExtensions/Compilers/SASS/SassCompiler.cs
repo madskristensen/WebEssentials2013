@@ -45,7 +45,6 @@ namespace MadsKristensen.EditorExtensions
 
         protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
-            // Inserts an empty row between each rule and replace two space indentation with 4 space indentation
             resultSource = UpdateSourceMapUrls(resultSource, targetFileName);
 
             var message = "SASS: " + Path.GetFileName(sourceFileName) + " compiled.";
