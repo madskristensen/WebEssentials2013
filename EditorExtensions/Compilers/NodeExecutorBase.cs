@@ -47,8 +47,9 @@ namespace MadsKristensen.EditorExtensions
                 {
                     string errorText = "";
 
-                    if (File.Exists(errorOutputFile) && process.ExitCode != 0)
-                        errorText = File.ReadAllText(errorOutputFile);
+                    // Subjected to change, depending on https://github.com/andrew/node-sass/issues/207
+                    if (File.Exists(errorOutputFile))
+                        errorText = File.ReadAllText(errorOutputFile).Trim();
 
                     return ProcessResult(process, errorText, sourceFileName, targetFileName);
                 }
@@ -82,8 +83,8 @@ namespace MadsKristensen.EditorExtensions
         private void ValidateResult(Process process, string outputFile, string errorText, CompilerResult result)
         {
             try
-            {
-                if (process.ExitCode == 0)
+            {   // Subjected to change, depending on https://github.com/andrew/node-sass/issues/207
+                if (string.IsNullOrEmpty(errorText) && process.ExitCode == 0)
                 {
                     result.Result = File.ReadAllText(outputFile);
                     result.IsSuccess = true;
@@ -133,7 +134,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 FileName = match.Groups["fileName"].Value,
                 Message = match.Groups["message"].Value,
-                Column = int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture),
+                Column = string.IsNullOrEmpty(match.Groups["column"].Value) ? 1 : int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture),
                 Line = int.Parse(match.Groups["line"].Value, CultureInfo.CurrentCulture)
             };
         }

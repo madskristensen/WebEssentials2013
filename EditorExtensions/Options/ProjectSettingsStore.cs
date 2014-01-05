@@ -249,6 +249,12 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.LessMinify, true);
             dic.Add(Keys.LessEnableCompiler, true);
 
+            // SASS
+            dic.Add(Keys.GenerateCssFileFromSass, true);
+            dic.Add(Keys.ShowSassPreviewWindow, true);
+            dic.Add(Keys.SassMinify, true);
+            dic.Add(Keys.SassEnableCompiler, true);
+
             // TypeScript
             dic.Add(Keys.ShowTypeScriptPreviewWindow, true);
 
