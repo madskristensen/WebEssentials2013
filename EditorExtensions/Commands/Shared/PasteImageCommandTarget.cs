@@ -116,7 +116,7 @@ namespace MadsKristensen.EditorExtensions
                          + "img.src = \"{0}\"";
 
                 if (buffer.ContentType.IsOfType(MarkdownContentTypeDefinition.MarkdownContentType))
-                    return "![alt text]({0});";
+                    return "![alt text]({0})";
             }
 
             return "<img src=\"{0}\" alt=\"\" />";
