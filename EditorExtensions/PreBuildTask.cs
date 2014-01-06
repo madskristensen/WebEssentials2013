@@ -20,8 +20,6 @@ namespace MadsKristensen.EditorExtensions
     {
         public override bool Execute()
         {
-            var webclient = new WebClient();
-
             Directory.CreateDirectory(@"resources\nodejs\tools");
             // Force npm to install modules to the subdirectory
             // https://npmjs.org/doc/files/npm-folders.html#More-Information
@@ -41,14 +39,18 @@ namespace MadsKristensen.EditorExtensions
                 DownloadNpmAsync()
             );
 
-            if (!Task.WhenAll(
+            var moduleResults = Task.WhenAll(
                 InstallModuleAsync("lessc", "less"),
                 InstallModuleAsync("jshint", "jshint"),
                 InstallModuleAsync("node-sass", "node-sass"),
                 InstallModuleAsync("coffee", "coffee-script"),
                 InstallModuleAsync("iced", "iced-coffee-script")
-            ).Result.All(b => b))
+            ).Result.Where(r => r != ModuleInstallResult.AlreadyPresent);
+            if (moduleResults.Contains(ModuleInstallResult.Error))
                 return false;
+            if (!moduleResults.Any())
+                return true;
+            Log.LogMessage(MessageImportance.High, "Installed " + moduleResults.Count() + " modules.  Flattening...");
             if (!FlattenModulesAsync().Result)
                 return false;
             return true;
@@ -79,19 +81,20 @@ namespace MadsKristensen.EditorExtensions
                 throw;
             }
         }
-        async Task<bool> InstallModuleAsync(string cmdName, string moduleName)
+        enum ModuleInstallResult { AlreadyPresent, Installed, Error }
+        async Task<ModuleInstallResult> InstallModuleAsync(string cmdName, string moduleName)
         {
             if (File.Exists(@"resources\nodejs\tools\node_modules\.bin\" + cmdName + ".cmd"))
-                return true;
+                return ModuleInstallResult.AlreadyPresent;
 
             Log.LogMessage(MessageImportance.High, "npm install " + moduleName + " ...");
             var output = await ExecWithOutputAsync(@"cmd", @"/c ..\npm.cmd install " + moduleName, @"resources\nodejs\tools");
             if (output != null)
             {
                 Log.LogError("npm install " + moduleName + " error: " + output);
-                return false;
+                return ModuleInstallResult.Error;
             }
-            return true;
+            return ModuleInstallResult.Installed;
         }
 
         async Task<bool> FlattenModulesAsync()
