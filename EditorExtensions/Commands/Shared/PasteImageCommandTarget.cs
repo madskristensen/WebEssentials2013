@@ -15,11 +15,13 @@ namespace MadsKristensen.EditorExtensions
     internal class PasteImage : CommandTargetBase
     {
         private string _format;
+        private static string _lastPath;
 
         public PasteImage(IVsTextView adapter, IWpfTextView textView, string format)
             : base(adapter, textView, typeof(VSConstants.VSStd97CmdID).GUID, 26)
         {
             _format = format;
+            EditorExtensionsPackage.DTE.Events.SolutionEvents.AfterClosing += delegate { _lastPath = null; };
         }
 
         protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
@@ -32,18 +34,10 @@ namespace MadsKristensen.EditorExtensions
 
             string fileName = null;
 
-            using (var dialog = new SaveFileDialog())
-            {
-                dialog.FileName = "file.png";
-                dialog.DefaultExt = ".png";
-                dialog.Filter = "Images|*.png;*.gif;*.jpg;*.bmp;";
-                dialog.InitialDirectory = ProjectHelpers.GetRootFolder();
+            if (!GetFileName(out fileName))
+                return true;
 
-                if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
-                    return true;
-
-                fileName = dialog.FileName;
-            }
+            _lastPath = Path.GetDirectoryName(fileName);
 
             SaveClipboardImageToFile(data, fileName);
             UpdateTextBuffer(fileName);
@@ -53,6 +47,26 @@ namespace MadsKristensen.EditorExtensions
                 ProjectHelpers.AddFileToActiveProject(fileName);
 
             }), DispatcherPriority.ApplicationIdle, null);
+
+            return true;
+        }
+
+        private static bool GetFileName(out string fileName)
+        {
+            fileName = null;
+
+            using (var dialog = new SaveFileDialog())
+            {
+                dialog.FileName = "file.png";
+                dialog.DefaultExt = ".png";
+                dialog.Filter = "Images|*.png;*.gif;*.jpg;*.bmp;";
+                dialog.InitialDirectory = _lastPath ?? ProjectHelpers.GetRootFolder();
+
+                if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                    return false;
+
+                fileName = dialog.FileName;
+            }
 
             return true;
         }
