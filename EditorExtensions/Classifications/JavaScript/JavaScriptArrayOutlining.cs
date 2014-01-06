@@ -12,6 +12,7 @@ namespace MadsKristensen.EditorExtensions
     [Export(typeof(ITaggerProvider))]
     [TagType(typeof(IOutliningRegionTag))]
     [ContentType("JavaScript")]
+    [ContentType("TypeScript")]
     internal sealed class ArrayOutliningTaggerProvider : ITaggerProvider
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag

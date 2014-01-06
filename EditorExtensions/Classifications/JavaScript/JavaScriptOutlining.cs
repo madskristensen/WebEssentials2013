@@ -12,6 +12,7 @@ namespace MadsKristensen.EditorExtensions
     [Export(typeof(ITaggerProvider))]
     [TagType(typeof(IOutliningRegionTag))]
     [ContentType("JavaScript")]
+    [ContentType("TypeScript")]
     internal sealed class OutliningTaggerProvider : ITaggerProvider
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
@@ -57,7 +58,11 @@ namespace MadsKristensen.EditorExtensions
                     var startLine = currentSnapshot.GetLineFromLineNumber(region.StartLine);
                     string lineText = startLine.GetText().Trim();
 
-                    if (!lineText.Contains("function"))
+                    if (!lineText.Contains("function")
+                     && !lineText.Contains("module")
+                     && !lineText.Contains("constructor")
+                     && !lineText.Contains("void")
+                     && !lineText.Contains("class"))
                     {
                         var endLine = currentSnapshot.GetLineFromLineNumber(region.EndLine);
                         var contentSpan = new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End);
