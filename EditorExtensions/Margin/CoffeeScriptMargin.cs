@@ -18,12 +18,11 @@ namespace MadsKristensen.EditorExtensions
         
         protected override async void StartCompiler(string source)
         {
-            if (!IsSaveFileEnabled)
-                return;
-
             string sourceFilePath = Document.FilePath;
-
             string jsFileName = GetCompiledFileName(sourceFilePath, ".js", CompileToLocation);
+
+            if (!IsSaveFileEnabled)
+                jsFileName = Path.GetTempFileName();
 
             if (IsFirstRun && File.Exists(jsFileName))
             {

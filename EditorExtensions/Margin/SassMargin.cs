@@ -14,12 +14,11 @@ namespace MadsKristensen.EditorExtensions
 
         protected override async void StartCompiler(string source)
         {
-            if (!IsSaveFileEnabled)
-                return;
-
             string sassFilePath = Document.FilePath;
-
             string cssFilename = GetCompiledFileName(sassFilePath, ".css", CompileToLocation);
+
+            if (!IsSaveFileEnabled)
+                cssFilename = Path.GetTempFileName();
 
             if (IsFirstRun && File.Exists(cssFilename))
             {
