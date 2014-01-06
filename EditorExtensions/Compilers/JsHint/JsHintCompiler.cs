@@ -35,7 +35,7 @@ namespace MadsKristensen.EditorExtensions
             string jsHintRc = Path.Combine(Settings.GetWebEssentialsSettingsFolder(), ".jshintrc");
 
             if (!File.Exists(jsHintRc))
-                File.Copy(Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\Settings Backup\.jshintrc")
+                File.Copy(Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\settings-defaults\.jshintrc")
                         , jsHintRc);
 
             return jsHintRc;

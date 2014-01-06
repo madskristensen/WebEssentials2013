@@ -875,7 +875,7 @@
     <Content Include="Resources\nodejs\node.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\Settings Backup\.jshintrc">
+    <Content Include="Resources\settings-defaults\.jshintrc">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\Scripts\jshint-node-reporter.js">
