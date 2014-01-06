@@ -342,6 +342,9 @@
     <Compile Include="Classifications\Markdown\MarkdownOutlineTagger.cs" />
     <Compile Include="Classifications\Markdown\MarkdownLanguageSupport.cs" />
     <Compile Include="Classifications\Markdown\MarkdownParser.cs" />
+    <Compile Include="Classifications\SASS\SassClassificationTypes.cs" />
+    <Compile Include="Classifications\SASS\SassClassifier.cs" />
+    <Compile Include="Classifications\SASS\SassClassifierProvider.cs" />
     <Compile Include="Classifications\SASS\SassContentTypeDefinition.cs" />
     <Compile Include="Classifications\WebVTT\WebVttContentTypeDefinition.cs" />
     <Compile Include="Classifications\WebVTT\WebVttClassificationTypes.cs" />
