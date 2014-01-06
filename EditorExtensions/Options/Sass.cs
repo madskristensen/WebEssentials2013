@@ -17,7 +17,6 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.SassMinify, SassMinify);
             Settings.SetValue(WESettings.Keys.SassCompileOnBuild, SassCompileOnBuild);
             Settings.SetValue(WESettings.Keys.SassSourceMaps, SassSourceMaps);
-            Settings.SetValue(WESettings.Keys.SassEnableCompiler, SassEnableCompiler);
             Settings.SetValue(WESettings.Keys.SassCompileToLocation, SassCompileToLocation ?? string.Empty);
 
             Settings.Save();
@@ -30,7 +29,6 @@ namespace MadsKristensen.EditorExtensions
             SassMinify = WESettings.GetBoolean(WESettings.Keys.SassMinify);
             SassCompileOnBuild = WESettings.GetBoolean(WESettings.Keys.SassCompileOnBuild);
             SassSourceMaps = WESettings.GetBoolean(WESettings.Keys.SassSourceMaps);
-            SassEnableCompiler = WESettings.GetBoolean(WESettings.Keys.SassEnableCompiler);
             SassCompileToLocation = WESettings.GetString(WESettings.Keys.SassCompileToLocation);
         }
 
@@ -58,12 +56,7 @@ namespace MadsKristensen.EditorExtensions
         [Description("Compiles all SASS files in the project that have a corresponding .css file.")]
         [Category("SASS")]
         public bool SassCompileOnBuild { get; set; }
-
-        [LocDisplayName("Enable SASS compiler")]
-        [Description("Enables compiling SASS files. When false, no SASS files will be compiled to CSS, including during a build.")]
-        [Category("SASS")]
-        public bool SassEnableCompiler { get; set; }
-
+        
         [LocDisplayName("Compile to a custom folder")]
         [Description("Compiles each SASS file into a custom folder. Leave empty to save the compiled .css file to the same directory as the .scss file. Or, prefix your output directory with a `/` to indicate that it starts at the project's root directory (for example '/css' or '/styles') - this will apply to ALL .scss files! Otherwise, a relative path is assumed (starting from the file being compiled) - this may cause the output path to be different for each .scss file.")]
         [Category("SASS")]

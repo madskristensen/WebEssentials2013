@@ -17,7 +17,6 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.LessMinify, LessMinify);
             Settings.SetValue(WESettings.Keys.LessCompileOnBuild, LessCompileOnBuild);
             Settings.SetValue(WESettings.Keys.LessSourceMaps, LessSourceMaps);
-            Settings.SetValue(WESettings.Keys.LessEnableCompiler, LessEnableCompiler);
             Settings.SetValue(WESettings.Keys.LessCompileToLocation, LessCompileToLocation ?? string.Empty);
 
             Settings.Save();
@@ -30,7 +29,6 @@ namespace MadsKristensen.EditorExtensions
             LessMinify = WESettings.GetBoolean(WESettings.Keys.LessMinify);
             LessCompileOnBuild = WESettings.GetBoolean(WESettings.Keys.LessCompileOnBuild);
             LessSourceMaps = WESettings.GetBoolean(WESettings.Keys.LessSourceMaps);
-            LessEnableCompiler = WESettings.GetBoolean(WESettings.Keys.LessEnableCompiler);
             LessCompileToLocation = WESettings.GetString(WESettings.Keys.LessCompileToLocation);
         }
 
@@ -58,11 +56,6 @@ namespace MadsKristensen.EditorExtensions
         [Description("Compiles all LESS files in the project that have a corresponding .css file.")]
         [Category("LESS")]
         public bool LessCompileOnBuild { get; set; }
-
-        [LocDisplayName("Enable LESS compiler")]
-        [Description("Enables compiling LESS files. When false, no LESS files will be compiled to CSS, including during a build.")]
-        [Category("LESS")]
-        public bool LessEnableCompiler { get; set; }
 
         [LocDisplayName("Compile to a custom folder")]
         [Description("Compiles each LESS file into a custom folder. Leave empty to save the compiled .css file to the same directory as the .less file. Or, prefix your output directory with a `/` to indicate that it starts at the project's root directory (for example '/css' or '/styles') - this will apply to ALL .less files! Otherwise, a relative path is assumed (starting from the file being compiled) - this may cause the output path to be different for each .less file.")]

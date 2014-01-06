@@ -16,12 +16,12 @@ namespace MadsKristensen.EditorExtensions
 
         protected override async void StartCompiler(string source)
         {
-            if (!CompileEnabled)
+            if (!IsSaveFileEnabled)
                 return;
 
             string sassFilePath = Document.FilePath;
 
-            string cssFilename = GetCompiledFileName(sassFilePath, ".css", CompileEnabled ? CompileToLocation : null);
+            string cssFilename = GetCompiledFileName(sassFilePath, ".css", CompileToLocation);
 
             if (IsFirstRun && File.Exists(cssFilename))
             {
@@ -49,7 +49,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override void MinifyFile(string fileName, string source)
         {
-            if (!CompileEnabled)
+            if (!IsSaveFileEnabled)
                 return;
 
             if (WESettings.GetBoolean(WESettings.Keys.SassMinify) && !Path.GetFileName(fileName).StartsWith("_", StringComparison.Ordinal))
@@ -57,12 +57,7 @@ namespace MadsKristensen.EditorExtensions
                 FileHelpers.MinifyFile(fileName, source, ".css");
             }
         }
-
-        public override bool CompileEnabled
-        {
-            get { return WESettings.GetBoolean(WESettings.Keys.SassEnableCompiler); }
-        }
-
+        
         public override string CompileToLocation
         {
             get { return WESettings.GetString(WESettings.Keys.SassCompileToLocation); }

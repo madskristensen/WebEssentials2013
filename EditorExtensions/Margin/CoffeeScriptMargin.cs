@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override async void StartCompiler(string source)
         {
-            if (!CompileEnabled)
+            if (!IsSaveFileEnabled)
                 return;
 
             string sourceFilePath = Document.FilePath;
@@ -56,18 +56,13 @@ namespace MadsKristensen.EditorExtensions
 
         protected override void MinifyFile(string fileName, string source)
         {
-            if (!CompileEnabled)
+            if (!IsSaveFileEnabled)
                 return;
 
             if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptMinify))
             {
                 FileHelpers.MinifyFile(fileName, source, ".js");
             }
-        }
-
-        public override bool CompileEnabled
-        {
-            get { return WESettings.GetBoolean(WESettings.Keys.CoffeeScriptEnableCompiler); }
         }
 
         public override string CompileToLocation

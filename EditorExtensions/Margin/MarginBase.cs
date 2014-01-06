@@ -26,7 +26,6 @@ namespace MadsKristensen.EditorExtensions
         protected string SettingsKey { get; private set; }
         protected bool IsFirstRun { get; private set; }
         public abstract bool IsSaveFileEnabled { get; }
-        public abstract bool CompileEnabled { get; }
         public abstract string CompileToLocation { get; }
         protected ITextDocument Document { get; set; }
         protected virtual bool CanWriteToDisk { get { return true; } }

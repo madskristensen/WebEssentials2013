@@ -22,7 +22,6 @@ namespace MadsKristensen.EditorExtensions
             public const string LessMinify = "LessMinify";
             public const string LessCompileOnBuild = "LessCompileOnBuild";
             public const string LessSourceMaps = "LessSourceMaps";
-            public const string LessEnableCompiler = "LessEnableCompiler";
             public const string LessCompileToLocation = "LessCompileToLocation";
 
             // SASS
@@ -31,7 +30,6 @@ namespace MadsKristensen.EditorExtensions
             public const string SassMinify = "SassMinify";
             public const string SassCompileOnBuild = "SassCompileOnBuild";
             public const string SassSourceMaps = "SassSourceMaps";
-            public const string SassEnableCompiler = "SassEnableCompiler";
             public const string SassCompileToLocation = "SassCompileToLocation";
 
             // TypeScript
@@ -44,7 +42,6 @@ namespace MadsKristensen.EditorExtensions
             public const string WrapCoffeeScriptClosure = "CoffeeScriptWrapClosure";
             public const string CoffeeScriptCompileOnBuild = "CoffeeScriptCompileOnBuild";
             public const string CoffeeScriptSourceMaps = "CoffeeScriptSourceMaps";
-            public const string CoffeeScriptEnableCompiler = "CoffeeScriptEnableCompiler";
             public const string CoffeeScriptCompileToLocation = "CoffeeScriptCompileToLocation";
 
             // Markdown

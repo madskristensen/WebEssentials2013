@@ -18,7 +18,6 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.CoffeeScriptMinify, CoffeeScriptMinify);
             Settings.SetValue(WESettings.Keys.CoffeeScriptCompileOnBuild, CoffeeScriptCompileOnBuild);
             Settings.SetValue(WESettings.Keys.CoffeeScriptSourceMaps, CoffeeScriptSourceMaps);
-            Settings.SetValue(WESettings.Keys.CoffeeScriptEnableCompiler, CoffeeScriptEnableCompiler);
             Settings.SetValue(WESettings.Keys.CoffeeScriptCompileToLocation, CoffeeScriptCompileToLocation ?? string.Empty);
 
             Settings.Save();
@@ -32,7 +31,6 @@ namespace MadsKristensen.EditorExtensions
             CoffeeScriptMinify = WESettings.GetBoolean(WESettings.Keys.CoffeeScriptMinify);
             CoffeeScriptCompileOnBuild = WESettings.GetBoolean(WESettings.Keys.CoffeeScriptCompileOnBuild);
             CoffeeScriptSourceMaps = WESettings.GetBoolean(WESettings.Keys.CoffeeScriptSourceMaps);
-            CoffeeScriptEnableCompiler = WESettings.GetBoolean(WESettings.Keys.CoffeeScriptEnableCompiler);
             CoffeeScriptCompileToLocation = WESettings.GetString(WESettings.Keys.CoffeeScriptCompileToLocation);
         }
 
@@ -70,12 +68,6 @@ namespace MadsKristensen.EditorExtensions
         [Category("CoffeeScript")]
         [DefaultValue(false)]
         public bool CoffeeScriptCompileOnBuild { get; set; }
-
-        [LocDisplayName("Enable CoffeeScript compiler")]
-        [Description("Enables compiling CoffeeScript files. When false, no CoffeeScript files will be compiled to JavaScript, including during a build.")]
-        [Category("CoffeeScript")]
-        [DefaultValue(true)]
-        public bool CoffeeScriptEnableCompiler { get; set; }
 
         [LocDisplayName("Compile to a custom folder")]
         [Description("Compiles each CoffeeScript file into a custom folder. Leave empty or `.` to save the compiled .js file to the same directory as the .coffee file. Or, prefix your output directory with a `/` to indicate that it starts at the project's root directory (for example '/js' or '/scripts') - this will apply to ALL .coffee files! Otherwise, a relative path is assumed (starting from the file being compiled) - this may cause the output path to be different for each .coffee file.")]

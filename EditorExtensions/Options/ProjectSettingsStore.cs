@@ -247,13 +247,11 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.GenerateCssFileFromLess, true);
             dic.Add(Keys.ShowLessPreviewWindow, true);
             dic.Add(Keys.LessMinify, true);
-            dic.Add(Keys.LessEnableCompiler, true);
 
             // SASS
             dic.Add(Keys.GenerateCssFileFromSass, true);
             dic.Add(Keys.ShowSassPreviewWindow, true);
             dic.Add(Keys.SassMinify, true);
-            dic.Add(Keys.SassEnableCompiler, true);
 
             // TypeScript
             dic.Add(Keys.ShowTypeScriptPreviewWindow, true);
@@ -261,7 +259,6 @@ namespace MadsKristensen.EditorExtensions
             // CoffeeScript
             dic.Add(Keys.GenerateJsFileFromCoffeeScript, true);
             dic.Add(Keys.ShowCoffeeScriptPreviewWindow, true);
-            dic.Add(Keys.CoffeeScriptEnableCompiler, true);
             dic.Add(Keys.CoffeeScriptCompileToLocation, string.Empty);
 
             // Markdown

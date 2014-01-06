@@ -49,7 +49,7 @@ namespace MadsKristensen.EditorExtensions
             // NOTE: Markdown files are always compiled for the Preview window.
             //       But, only saved to disk when the CompileEnabled flag is true.
             //       That is why the following if statement is not wrapping this whole method.
-            if (CompileEnabled)
+            if (IsSaveFileEnabled)
             {
                 OnCompilationDone(result.Trim(), Document.FilePath);
             }
@@ -157,11 +157,6 @@ namespace MadsKristensen.EditorExtensions
         }
 
         public override bool IsSaveFileEnabled
-        {
-            get { return true; }
-        }
-
-        public override bool CompileEnabled
         {
             get { return WESettings.GetBoolean(WESettings.Keys.MarkdownEnableCompiler); }
         }

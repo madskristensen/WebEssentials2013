@@ -16,12 +16,12 @@ namespace MadsKristensen.EditorExtensions
 
         protected override async void StartCompiler(string source)
         {
-            if (!CompileEnabled)
+            if (!IsSaveFileEnabled)
                 return;
 
             string lessFilePath = Document.FilePath;
 
-            string cssFilename = GetCompiledFileName(lessFilePath, ".css", CompileEnabled ? CompileToLocation : null);
+            string cssFilename = GetCompiledFileName(lessFilePath, ".css", CompileToLocation);
 
             if (IsFirstRun && File.Exists(cssFilename))
             {
@@ -49,20 +49,12 @@ namespace MadsKristensen.EditorExtensions
 
         protected override void MinifyFile(string fileName, string source)
         {
-            if (!CompileEnabled)
-                return;
-
             if (WESettings.GetBoolean(WESettings.Keys.LessMinify) && !Path.GetFileName(fileName).StartsWith("_", StringComparison.Ordinal))
             {
                 FileHelpers.MinifyFile(fileName, source, ".css");
             }
         }
-
-        public override bool CompileEnabled
-        {
-            get { return WESettings.GetBoolean(WESettings.Keys.LessEnableCompiler); }
-        }
-
+        
         public override string CompileToLocation
         {
             get { return WESettings.GetString(WESettings.Keys.LessCompileToLocation); }

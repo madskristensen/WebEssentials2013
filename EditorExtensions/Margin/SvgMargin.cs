@@ -79,11 +79,6 @@ namespace MadsKristensen.EditorExtensions
             get { return false; }
         }
 
-        public override bool CompileEnabled
-        {
-            get { return true; }
-        }
-
         public override string CompileToLocation
         {
             get { return string.Empty; }
