@@ -631,7 +631,7 @@
 
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildBundles" mod1="Shift Alt" key1="I" editor="guidVSStd97"/>
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildLess" mod1="Shift Alt" key1="Y" editor="guidVSStd97"/>
-    <KeyBinding guid="guidBuildCmdSet" id="cmdBuildSass" mod1="Shift Alt" key1="Y" editor="guidVSStd97"/>
+    <KeyBinding guid="guidBuildCmdSet" id="cmdBuildSass" mod1="Shift Alt" key1="Q" editor="guidVSStd97"/>
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildMinify" mod1="Shift Alt" key1="F" editor="guidVSStd97"/>
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildCoffeeScript" mod1="Shift Alt" key1="Z" editor="guidVSStd97"/>
     <KeyBinding guid="guidFormattingCmdSet" id="SurroundWith" mod1="Shift Alt" key1="W" editor="guidVSStd97"/>
