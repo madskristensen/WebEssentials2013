@@ -681,10 +681,10 @@
     </Compile>
     <Compile Include="Schemas\Browsers\BrowserStore.cs" />
     <Compile Include="Schemas\Browsers\BrowserSchemaFilter.cs" />
-    <Compile Include="Schemas\ColorPaletteProvider.cs" />
-    <Compile Include="Schemas\CssSchemaUpdater.cs" />
-    <Compile Include="Schemas\ModernizrProvider.cs" />
-    <Compile Include="Schemas\XmlColorPaletteProvider.cs" />
+    <Compile Include="Schemas\CSS\ColorPaletteProvider.cs" />
+    <Compile Include="Schemas\CSS\CssSchemaUpdater.cs" />
+    <Compile Include="Schemas\CSS\ModernizrProvider.cs" />
+    <Compile Include="Schemas\CSS\XmlColorPaletteProvider.cs" />
     <Compile Include="SmartTags\CSS\Actions\LessExtractVariableSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\SortSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Actions\UpdateEmbedSmartTagAction.cs" />
@@ -888,10 +888,10 @@
     <Resource Include="Resources\Images\sort.png" />
     <None Include="Source.extension.vsixmanifest" />
     <Resource Include="Resources\Images\vsgallery.png" />
-    <Content Include="Schemas\css-we-settings.xml">
+    <Content Include="Schemas\CSS\css-we-settings.xml">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Schemas\WE-Palette.css">
+    <Content Include="Schemas\CSS\WE-Palette.css">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Resource Include="Resources\Images\Browsers\s.png" />
