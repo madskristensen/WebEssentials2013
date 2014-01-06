@@ -14,7 +14,6 @@ namespace MadsKristensen.EditorExtensions
     [TagType(typeof(IOutliningRegionTag))]
     [ContentType("javascript")]
     [ContentType("TypeScript")]
-    [ContentType("LESS")]
     internal sealed class RegionTaggerProvider : ITaggerProvider
     {
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
