@@ -12,6 +12,7 @@ namespace MadsKristensen.EditorExtensions
     [ContentType("css")]
     [ContentType("javascript")]
     [ContentType("typescript")]
+    [ContentType("CoffeeScript")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     public class WebEditorsViewCreationListener : IVsTextViewCreationListener
     {

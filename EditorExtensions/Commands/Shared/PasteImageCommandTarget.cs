@@ -108,7 +108,12 @@ namespace MadsKristensen.EditorExtensions
                 if (buffer.ContentType.IsOfType("JavaScript") || buffer.ContentType.IsOfType("TypeScript"))
                     return "var img = new Image();"
                          + Environment.NewLine
-                         + "img.src = '{0}';";
+                         + "img.src = \"{0}\";";
+
+                if (buffer.ContentType.IsOfType("CoffeeScript"))
+                    return "img = new Image()"
+                         + Environment.NewLine
+                         + "img.src = \"{0}\"";
 
                 if (buffer.ContentType.IsOfType(MarkdownContentTypeDefinition.MarkdownContentType))
                     return "![alt text]({0});";
