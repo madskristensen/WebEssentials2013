@@ -13,6 +13,7 @@ namespace MadsKristensen.EditorExtensions
         public override void SaveSettingsToStorage()
         {
             Settings.SetValue(WESettings.Keys.ShowTypeScriptPreviewWindow, ShowTypeScriptPreviewWindow);
+            Settings.SetValue(WESettings.Keys.TypeScriptBraceCompletion, TypeScriptBraceCompletion);
 
             Settings.Save();
         }
@@ -20,6 +21,7 @@ namespace MadsKristensen.EditorExtensions
         public override void LoadSettingsFromStorage()
         {
             ShowTypeScriptPreviewWindow = WESettings.GetBoolean(WESettings.Keys.ShowTypeScriptPreviewWindow);
+            TypeScriptBraceCompletion = WESettings.GetBoolean(WESettings.Keys.TypeScriptBraceCompletion);
         }
 
         [LocDisplayName("Show preview pane")]
@@ -27,5 +29,11 @@ namespace MadsKristensen.EditorExtensions
         [Category("TypeScript")]
         [DefaultValue(true)]
         public bool ShowTypeScriptPreviewWindow { get; set; }
+
+        [LocDisplayName("Enable brace completion")]
+        [Description("Will close braces when opened. This setting also enables Smart Indent.")]
+        [Category("TypeScript")]
+        [DefaultValue(true)]
+        public bool TypeScriptBraceCompletion { get; set; }
     }
 }

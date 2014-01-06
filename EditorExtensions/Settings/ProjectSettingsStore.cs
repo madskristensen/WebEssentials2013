@@ -255,6 +255,7 @@ namespace MadsKristensen.EditorExtensions
 
             // TypeScript
             dic.Add(Keys.ShowTypeScriptPreviewWindow, true);
+            dic.Add(Keys.TypeScriptBraceCompletion, true);
 
             // CoffeeScript
             dic.Add(Keys.GenerateJsFileFromCoffeeScript, true);

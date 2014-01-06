@@ -34,6 +34,7 @@ namespace MadsKristensen.EditorExtensions
 
             // TypeScript
             public const string ShowTypeScriptPreviewWindow = "TypeScriptShowPreviewWindow";
+            public const string TypeScriptBraceCompletion = "TypeScriptBraceCompletion";
 
             // CoffeeScript
             public const string GenerateJsFileFromCoffeeScript = "CoffeeScriptGenerateJsFile";

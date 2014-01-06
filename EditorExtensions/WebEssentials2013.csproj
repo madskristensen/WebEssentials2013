@@ -361,6 +361,9 @@
     <Compile Include="Commands\AppCache\AppCacheCreationListener.cs" />
     <Compile Include="Commands\CoffeeScript\CoffeeScriptCreationListener.cs" />
     <Compile Include="Commands\Shared\PasteImageCommandTarget.cs" />
+    <Compile Include="Commands\TypeScript\TypeScriptSmartIndentCommandTarget.cs" />
+    <Compile Include="Commands\TypeScript\TypeScriptTypeThroughControllerProvider.cs" />
+    <Compile Include="Commands\TypeScript\TypeThroughController.cs" />
     <Compile Include="Commands\WebVTT\WebVttCreationListener.cs" />
     <Compile Include="Commands\Shared\CommentCommandTarget.cs" />
     <Compile Include="Commands\CoffeeScript\EnterIndentationCommandTarget.cs" />
