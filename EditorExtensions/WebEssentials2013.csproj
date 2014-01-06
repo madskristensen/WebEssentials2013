@@ -515,22 +515,22 @@
     <Compile Include="MenuItems\ReferenceJs.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineTag.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineProvider.cs" />
-    <Compile Include="Options\CodeGeneration.cs">
+    <Compile Include="Settings\OptionPages\CodeGeneration.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\Html.cs">
+    <Compile Include="Settings\OptionPages\Html.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\Sass.cs">
+    <Compile Include="Settings\OptionPages\Sass.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\Markdown.cs">
+    <Compile Include="Settings\OptionPages\Markdown.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\TypeScript.cs">
+    <Compile Include="Settings\OptionPages\TypeScript.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\BrowserLinkOptions.cs">
+    <Compile Include="Settings\OptionPages\BrowserLinkOptions.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Classifications\IconRegistration.cs" />
@@ -634,24 +634,24 @@
     <Compile Include="MenuItems\Diff.cs" />
     <Compile Include="MenuItems\Transform.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineProviderFactory.cs" />
-    <Compile Include="Options\CoffeeScript.cs">
+    <Compile Include="Settings\OptionPages\CoffeeScript.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\JavaScript.cs">
+    <Compile Include="Settings\OptionPages\JavaScript.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\Less.cs">
+    <Compile Include="Settings\OptionPages\Less.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\ProjectSettingsStore.cs" />
-    <Compile Include="Options\ProjectSettingsTextViewListener.cs" />
-    <Compile Include="Options\JsHint.cs">
+    <Compile Include="Settings\ProjectSettingsStore.cs" />
+    <Compile Include="Settings\ProjectSettingsTextViewListener.cs" />
+    <Compile Include="Settings\OptionPages\JsHint.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\Css.cs">
+    <Compile Include="Settings\OptionPages\Css.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Options\General.cs">
+    <Compile Include="Settings\OptionPages\General.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="QuickInfo\ImageHtml\ImageQuickInfo.cs" />
@@ -736,7 +736,7 @@
     <Compile Include="SmartTags\CSS\Actions\EmbedSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\CssSmartTagger.cs" />
     <Compile Include="Helpers\Css\CssItemCollector.cs" />
-    <Compile Include="Options\WebEssentialsSettings.cs" />
+    <Compile Include="Settings\WebEssentialsSettings.cs" />
     <Compile Include="Validation\HTML\OpenGraphPrefixValidator.cs" />
     <Compile Include="Validation\HTML\ItemTypeValidator.cs" />
     <Compile Include="Validation\LESS\Providers\ImportOnceErrorTagProvider.cs" />
