@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
+    // TODO: Remove this when the SASS editor is included in VS.
     public class SassContentTypeDefinition
     {
         public const string SassContentType = "Sass";
