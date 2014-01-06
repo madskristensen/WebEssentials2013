@@ -58,6 +58,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     using (EditorExtensionsPackage.UndoContext("Smart Indent"))
                     {
+                        // HACK: A better way is needed. 
                         // We do this to get around the native TS formatter
                         SendKeys.Send("{TAB}{ENTER}{UP}");
                     }
