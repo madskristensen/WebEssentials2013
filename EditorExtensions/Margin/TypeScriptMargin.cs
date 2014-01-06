@@ -6,12 +6,11 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class TypeScriptMargin : MarginBase
     {
-        public const string MarginName = "TypeScriptMargin";
         private bool _isReady;
         private FileSystemWatcher _watcher;
 
         public TypeScriptMargin(string contentType, string source, bool showMargin, ITextDocument document)
-            : base(source, MarginName, contentType, showMargin && !document.FilePath.EndsWith(".d.ts", StringComparison.OrdinalIgnoreCase), document)
+            : base(source, contentType, showMargin && !document.FilePath.EndsWith(".d.ts", StringComparison.OrdinalIgnoreCase), document)
         {
             SetupWatcher();
         }

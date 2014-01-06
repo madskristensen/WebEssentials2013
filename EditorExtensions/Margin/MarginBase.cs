@@ -18,7 +18,6 @@ namespace MadsKristensen.EditorExtensions
     {
         private bool _isDisposed = false;
         private IWpfTextViewHost _viewHost;
-        private string _marginName;
         private bool _showMargin;
         private Dispatcher _dispatcher;
         private ErrorListProvider _provider;
@@ -36,12 +35,11 @@ namespace MadsKristensen.EditorExtensions
             IsFirstRun = true;
         }
 
-        protected MarginBase(string source, string name, string contentType, bool showMargin, ITextDocument document)
+        protected MarginBase(string source, string contentType, bool showMargin, ITextDocument document)
             : this()
         {
             Document = document;
-            _marginName = name;
-            SettingsKey = _marginName + "_width";
+            SettingsKey = GetType().Name + "_width";
             _showMargin = showMargin;
             _provider = new ErrorListProvider(EditorExtensionsPackage.Instance);
 
@@ -394,7 +392,7 @@ namespace MadsKristensen.EditorExtensions
         /// <returns>An instance of EditorMargin1 or null</returns>
         public ITextViewMargin GetTextViewMargin(string marginName)
         {
-            return (marginName == this._marginName) ? (IWpfTextViewMargin)this : null;
+            return (marginName == GetType().Name) ? (IWpfTextViewMargin)this : null;
         }
 
         public void Dispose()

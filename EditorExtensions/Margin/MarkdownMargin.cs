@@ -15,13 +15,12 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class MarkdownMargin : MarginBase
     {
-        public const string MarginName = "MarkdownMargin";
         private Markdown _compiler;
         private WebBrowser _browser;
         private const string _stylesheet = "WE-Markdown.css";
 
         public MarkdownMargin(string contentType, string source, bool showMargin, ITextDocument document)
-            : base(source, MarginName, contentType, showMargin, document)
+            : base(source, contentType, showMargin, document)
         { }
 
         protected override void StartCompiler(string source)

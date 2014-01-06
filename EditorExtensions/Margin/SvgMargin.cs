@@ -8,7 +8,6 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class SvgMargin : MarginBase
     {
-        public const string MarginName = "SvgMargin";
         private WebBrowser _browser;
         private string _fileName;
 
@@ -18,7 +17,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
         public SvgMargin(string contentType, string source, bool showMargin, ITextDocument document)
-            : base(source, MarginName, contentType, showMargin, document)
+            : base(source, contentType, showMargin, document)
         {
             _fileName = document.FilePath;
         }

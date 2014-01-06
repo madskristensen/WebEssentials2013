@@ -7,20 +7,15 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class CoffeeScriptMargin : MarginBase
     {
-        public const string MarginName = "CoffeeScriptMargin";
         private static NodeExecutorBase _compiler = new CoffeeScriptCompiler();
 
         protected virtual string ServiceName { get { return "CoffeeScript"; } }
         protected virtual NodeExecutorBase Compiler { get { return _compiler; } }
 
         public CoffeeScriptMargin(string contentType, string source, bool showMargin, ITextDocument document)
-            : base(source, MarginName, contentType, showMargin, document)
+            : base(source, contentType, showMargin, document)
         { }
-
-        protected CoffeeScriptMargin(string contentType, string source, bool showMargin, ITextDocument document, string marginName)
-            : base(source, marginName, contentType, showMargin, document)
-        { }
-
+        
         protected override async void StartCompiler(string source)
         {
             if (!IsSaveFileEnabled)

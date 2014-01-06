@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions
         protected override NodeExecutorBase Compiler { get { return _compiler; } }
 
         public IcedCoffeeScriptMargin(string contentType, string source, bool showMargin, ITextDocument document)
-            : base(contentType, source, showMargin, document, "IcedCoffeeScriptMargin")
+            : base(contentType, source, showMargin, document)
         { }
     }
 }
