@@ -3,10 +3,14 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using EnvDTE;
+using MadsKristensen.EditorExtensions.Classifications.Markdown;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.Web.Editor;
 
@@ -17,10 +21,9 @@ namespace MadsKristensen.EditorExtensions
         private string _format;
         private static string _lastPath;
 
-        public PasteImage(IVsTextView adapter, IWpfTextView textView, string format)
+        public PasteImage(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, typeof(VSConstants.VSStd97CmdID).GUID, 26)
         {
-            _format = format;
             EditorExtensionsPackage.DTE.Events.SolutionEvents.AfterClosing += delegate { _lastPath = null; };
         }
 
@@ -30,6 +33,9 @@ namespace MadsKristensen.EditorExtensions
             ProjectItem item = ProjectHelpers.GetActiveFile();
 
             if (!data.GetDataPresent(DataFormats.Bitmap) || string.IsNullOrEmpty(item.ContainingProject.FullName))
+                return false;
+
+            if (!IsValidTextBuffer())
                 return false;
 
             string fileName = null;
@@ -49,6 +55,66 @@ namespace MadsKristensen.EditorExtensions
             }), DispatcherPriority.ApplicationIdle, null);
 
             return true;
+        }
+
+        private bool IsValidTextBuffer()
+        {
+            var projection = TextView.TextBuffer as IProjectionBuffer;
+
+            if (projection != null)
+            {
+                var snapshotPoint = TextView.Caret.Position.BufferPosition;
+
+                var buffers = projection.SourceBuffers.Where(
+                    s =>
+                        !s.ContentType.IsOfType("html")
+                        && !s.ContentType.IsOfType("htmlx")
+                        && !s.ContentType.IsOfType("inert")
+                        && !s.ContentType.IsOfType("CSharp")
+                        && !s.ContentType.IsOfType("VisualBasic")
+                        && !s.ContentType.IsOfType("RoslynCSharp")
+                        && !s.ContentType.IsOfType("RoslynVisualBasic")
+                        || s.ContentType.IsOfType("Markdown"));
+
+                foreach (ITextBuffer buffer in buffers)
+                {
+                    SnapshotPoint? point = TextView.BufferGraph.MapDownToBuffer(snapshotPoint, PointTrackingMode.Negative, buffer, PositionAffinity.Predecessor);
+
+                    if (point.HasValue)
+                    {
+                        _format = GetFormat(buffer);
+                        return true;
+                    }
+                }
+
+                _format = GetFormat(null);
+                return true;
+            }
+            else
+            {
+                _format = GetFormat(TextView.TextBuffer);
+                return true;
+            }
+        }
+
+        private static string GetFormat(ITextBuffer buffer)
+        {
+            // CSS
+            if (buffer != null)
+            {
+                if (buffer.ContentType.IsOfType(CssContentTypeDefinition.CssContentType))
+                    return "background-image: url('{0}');";
+
+                if (buffer.ContentType.IsOfType("JavaScript") || buffer.ContentType.IsOfType("TypeScript"))
+                    return "var img = new Image();"
+                         + Environment.NewLine
+                         + "img.src = '{0}';";
+
+                if (buffer.ContentType.IsOfType(MarkdownContentTypeDefinition.MarkdownContentType))
+                    return "![alt text]({0});";
+            }
+
+            return "<img src=\"{0}\" alt=\"\" />";
         }
 
         private static bool GetFileName(out string fileName)

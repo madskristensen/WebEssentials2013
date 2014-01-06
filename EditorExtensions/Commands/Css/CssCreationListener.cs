@@ -41,7 +41,6 @@ namespace MadsKristensen.EditorExtensions
             textView.Properties.GetOrCreateSingletonProperty<CssSelectBrowsers>(() => new CssSelectBrowsers(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<RetriggerTarget>(() => new RetriggerTarget(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<ArrowsCommandTarget>(() => new ArrowsCommandTarget(textViewAdapter, textView));
-            textView.Properties.GetOrCreateSingletonProperty(() => new PasteImage(textViewAdapter, textView, "background-image: url('{0}');"));
 
             uint cssFormatProperties;
             ErrorHandler.ThrowOnFailure(EditorExtensionsPackage.PriorityCommandTarget.RegisterPriorityCommandTarget(0, new CssFormatProperties(textView), out cssFormatProperties));
