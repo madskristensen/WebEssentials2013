@@ -67,13 +67,10 @@ namespace MadsKristensen.EditorExtensions
 
                 var buffers = projection.SourceBuffers.Where(
                     s =>
-                        !s.ContentType.IsOfType("html")
-                        && !s.ContentType.IsOfType("htmlx")
-                        && !s.ContentType.IsOfType("inert")
-                        && !s.ContentType.IsOfType("CSharp")
-                        && !s.ContentType.IsOfType("VisualBasic")
-                        && !s.ContentType.IsOfType("RoslynCSharp")
-                        && !s.ContentType.IsOfType("RoslynVisualBasic")
+                        s.ContentType.IsOfType("CSS")
+                        || s.ContentType.IsOfType("JavaScript")
+                        || s.ContentType.IsOfType("TypeScript")
+                        || s.ContentType.IsOfType("CoffeeScript")
                         || s.ContentType.IsOfType("Markdown"));
 
                 foreach (ITextBuffer buffer in buffers)
@@ -151,6 +148,12 @@ namespace MadsKristensen.EditorExtensions
             {
                 string text = string.Format(CultureInfo.InvariantCulture, _format, relative);
                 TextView.TextBuffer.Insert(position, text);
+
+                SnapshotSpan span = new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, position, _format.Length);
+                TextView.Selection.Select(span, false);
+                
+                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                TextView.Selection.Clear();
             }
         }
 
