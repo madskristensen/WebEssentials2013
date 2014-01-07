@@ -120,6 +120,9 @@ namespace MadsKristensen.EditorExtensions
                     if (WESettings.GetBoolean(WESettings.Keys.LessCompileOnBuild))
                         await BuildMenu.BuildLess();
 
+                    if (WESettings.GetBoolean(WESettings.Keys.SassCompileOnBuild))
+                        await BuildMenu.BuildSass();
+
                     if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptCompileOnBuild))
                         await BuildMenu.BuildCoffeeScript();
 
