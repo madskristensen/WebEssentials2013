@@ -164,11 +164,13 @@ namespace MadsKristensen.EditorExtensions
                 Summary = GetSummary(element),
             };
 
-            foreach (var codeEnum in element.Members.OfType<CodeElement>())
+            foreach (var codeEnum in element.Members.OfType<CodeVariable>())
             {
                 var prop = new IntellisenseProperty
                 {
                     Name = codeEnum.Name,
+                    Summary = GetSummary(codeEnum),
+                    InitExpression = codeEnum.InitExpression
                 };
 
                 data.Properties.Add(prop);
@@ -354,26 +356,28 @@ namespace MadsKristensen.EditorExtensions
         }
 
         // External items throw an exception from the DocComment getter
-        private static string GetSummary(CodeProperty property) { return property.InfoLocation != vsCMInfoLocation.vsCMInfoLocationProject ? null : GetSummary(property.InfoLocation, property.DocComment, property.FullName); }
+        private static string GetSummary(CodeProperty property) { return property.InfoLocation != vsCMInfoLocation.vsCMInfoLocationProject ? null : GetSummary(property.InfoLocation, property.DocComment, property.Comment, property.FullName); }
 
-        private static string GetSummary(CodeClass property) { return GetSummary(property.InfoLocation, property.DocComment, property.FullName); }
+        private static string GetSummary(CodeClass property) { return GetSummary(property.InfoLocation, property.DocComment, property.Comment, property.FullName); }
 
-        private static string GetSummary(CodeEnum property) { return GetSummary(property.InfoLocation, property.DocComment, property.FullName); }
+        private static string GetSummary(CodeEnum property) { return GetSummary(property.InfoLocation, property.DocComment, property.Comment, property.FullName); }
 
-        private static string GetSummary(vsCMInfoLocation location, string comment, string fullName)
+        private static string GetSummary(CodeVariable property) { return GetSummary(property.InfoLocation, property.DocComment, property.Comment, property.FullName); }
+
+        private static string GetSummary(vsCMInfoLocation location, string xmlComment, string inlineComment, string fullName)
         {
-            if (location != vsCMInfoLocation.vsCMInfoLocationProject || string.IsNullOrWhiteSpace(comment))
+            if (location != vsCMInfoLocation.vsCMInfoLocationProject || (string.IsNullOrWhiteSpace(xmlComment) && string.IsNullOrWhiteSpace(inlineComment)))
                 return null;
 
             try
             {
-                string summary = XElement.Parse(comment)
+                string summary = XElement.Parse(xmlComment)
                                .Descendants("summary")
                                .Select(x => x.Value)
                                .FirstOrDefault();
-                if (!string.IsNullOrEmpty(summary)) summary = summary.Trim();
-
-                return summary;
+                if (!string.IsNullOrEmpty(summary)) return summary.Trim();
+                if (!string.IsNullOrWhiteSpace(inlineComment)) return inlineComment.Trim();
+                return null;
             }
             catch (Exception ex)
             {
