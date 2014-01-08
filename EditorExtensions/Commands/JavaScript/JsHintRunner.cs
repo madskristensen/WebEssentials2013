@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using EnvDTE;
-using MadsKristensen.EditorExtensions.Commands.JavaScript;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.VisualStudio.Shell;
 
@@ -86,8 +85,6 @@ namespace MadsKristensen.EditorExtensions
             _providers.Clear();
         }
 
-        private static FileCache<JsHintIgnoreList> ignoreListCache = new FileCache<JsHintIgnoreList>(JsHintIgnoreList.Load);
-
         public static bool ShouldIgnore(string file)
         {
             if (!Path.GetExtension(file).Equals(".js", StringComparison.OrdinalIgnoreCase) ||
@@ -110,63 +107,10 @@ namespace MadsKristensen.EditorExtensions
             if (parent != null && !Directory.Exists(parent.FileNames[1]) || File.Exists(item.FileNames[1] + ".bundle"))
                 return true;
 
-            var ignoreFile = FindLocalIgnore(file);
-
-            if (ignoreFile != null && ignoreListCache.Get(ignoreFile).IsIgnored(file))
-                return true;
-
             string name = Path.GetFileName(file);
-            return MustIgnore(name);
+            return _builtInIgnoreRegex.IsMatch(name);
         }
-
-        private static string FindLocalIgnore(string sourcePath)
-        {
-            string dir = Path.GetDirectoryName(sourcePath);
-
-            while (!File.Exists(Path.Combine(dir, ".jshintignore")))
-            {
-                dir = Path.GetDirectoryName(dir);
-                if (String.IsNullOrEmpty(dir))
-                    return null;
-            }
-
-            return Path.Combine(dir, ".jshintignore");
-        }
-
-
-        private static bool MustIgnore(string name)
-        {
-            if (_builtInIgnoreRegex.IsMatch(name))
-                return true;
-
-            if (_parsedUserIgnoreList != WESettings.GetString(WESettings.Keys.JsHint_ignoreFiles))
-                ParseUserIgnoreList();
-
-            return _userIgnoreRegexes.Any(r => r.IsMatch(name));
-        }
-
-        static string _parsedUserIgnoreList;
-        static IReadOnlyCollection<Regex> _userIgnoreRegexes = new Regex[0];
-        static void ParseUserIgnoreList()
-        {
-            _parsedUserIgnoreList = WESettings.GetString(WESettings.Keys.JsHint_ignoreFiles);
-            _userIgnoreRegexes = _parsedUserIgnoreList.Split(';')
-                .Select(s =>
-            {
-                s = s.Trim();
-                if (s.Length == 0) return null;
-                try
-                {
-                    return new Regex(s, RegexOptions.IgnoreCase);
-                }
-                catch (Exception ex)
-                {
-                    Logger.ShowMessage("Skipping invalid regex '" + s + "' in JSHint ignore patterns.\nPlease fix that in Web Essentials Options.\n\n" + ex.Message);
-                    return null;
-                }
-            }).Where(r => r != null).ToList();
-        }
-
+        
         private static Regex _builtInIgnoreRegex = new Regex("(" + String.Join(")|(", new[] {
             @"_references\.js",
             @"amplify\.js",

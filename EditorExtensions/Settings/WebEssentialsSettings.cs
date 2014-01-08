@@ -82,7 +82,6 @@ namespace MadsKristensen.EditorExtensions
 
             // JSHint
             public const string EnableJsHint = "JsHintEnable";
-            public const string JsHint_ignoreFiles = "JsHint_ignoreFiles";
             public const string RunJsHintOnBuild = "JsHintRunOnBuild";
             public const string JsHintErrorLocation = "JsHintErrorLocation";
             

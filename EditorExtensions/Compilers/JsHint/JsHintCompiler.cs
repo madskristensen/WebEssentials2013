@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
             }
             return Path.Combine(dir, ".jshintrc");
         }
-        public static string GetGlobalSettings()
+        public static string GetOrCreateGlobalSettings()
         {
             string jsHintRc = Path.Combine(Settings.GetWebEssentialsSettingsFolder(), ".jshintrc");
 
@@ -57,7 +57,7 @@ namespace MadsKristensen.EditorExtensions
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
             return String.Format(CultureInfo.CurrentCulture, "--config \"{0}\" --reporter \"{1}\" \"{2}\""
-                               , FindLocalSettings(sourceFileName) ?? GetGlobalSettings()
+                               , FindLocalSettings(sourceFileName) ?? GetOrCreateGlobalSettings()
                                , _jsHintReporter
                                , sourceFileName);
         }

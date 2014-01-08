@@ -282,7 +282,6 @@ namespace MadsKristensen.EditorExtensions
             // JSHint
             dic.Add(Keys.EnableJsHint, true);
             dic.Add(Keys.JsHintErrorLocation, (int)Keys.FullErrorLocation.Messages);
-            dic.Add(Keys.JsHint_ignoreFiles, "kendo.*; globalize.*");
 
             // Misc
             dic.Add(Keys.ShowBrowserTooltip, true);

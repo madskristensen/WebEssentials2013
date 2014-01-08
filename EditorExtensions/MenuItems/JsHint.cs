@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void EditGlobalJsHintFile()
         {
-            string fileName = JsHintCompiler.GetGlobalSettings();
+            string fileName = JsHintCompiler.GetOrCreateGlobalSettings();
             _dte.ItemOperations.OpenFile(fileName);
         }
 

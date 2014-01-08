@@ -391,7 +391,7 @@
       <Button guid="guidDiffCmdSet" id="cmdEditGlobalJsHint" priority="0x0102" type="Button">
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <Strings>
-          <ButtonText>Edit global .jshintrc file</ButtonText>
+          <ButtonText>Edit global .jshintrc file...</ButtonText>
         </Strings>
       </Button>
 

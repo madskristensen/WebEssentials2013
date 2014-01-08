@@ -163,9 +163,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Web.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Minimatch">
-      <HintPath>..\packages\Minimatch.1.0.0.0\lib\portable-net40+sl50+wp80+win\Minimatch.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -418,7 +415,6 @@
     <Compile Include="Commands\HTML\SurroundWithTarget.cs" />
     <Compile Include="Commands\HTML\EnterFormatCommandTarget.cs" />
     <Compile Include="Commands\HTML\ZenCodingCommandTarget.cs" />
-    <Compile Include="Commands\JavaScript\JsHintIgnoreList.cs" />
     <Compile Include="Commands\JavaScript\ReferenceTagGoToDefinition.cs" />
     <Compile Include="Commands\JavaScript\NodeModuleGoToDefinition.cs" />
     <Compile Include="Commands\JavaScript\JavaScriptCreationListener.cs">
