@@ -16,7 +16,7 @@ namespace MadsKristensen.EditorExtensions
             : base(adapter, textView, typeof(VSConstants.VSStd2KCmdID).GUID, 3)
         {
             _broker = broker;
-         }
+        }
 
         protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {

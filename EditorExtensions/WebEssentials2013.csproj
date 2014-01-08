@@ -359,6 +359,13 @@
     <Compile Include="Commands\CoffeeScript\CoffeeScriptCreationListener.cs" />
     <Compile Include="Commands\JavaScript\CommentIndentationCommandTarget.cs" />
     <Compile Include="Commands\JavaScript\CommentCompletionCommandTarget.cs" />
+    <Compile Include="SmartTags\HTML\ImageDropDialogs\AddFormat.xaml.cs">
+      <DependentUpon>AddFormat.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SmartTags\HTML\ImageDropDialogs\ImageDropFormattingDialog.xaml.cs">
+      <DependentUpon>ImageDropFormattingDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SmartTags\HTML\DropImagesSmartTag.cs" />
     <Compile Include="Commands\Shared\PasteImageCommandTarget.cs" />
     <Compile Include="Commands\Shared\WebEditorsCreationListener.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptCreationListener.cs" />
@@ -947,6 +954,14 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="SmartTags\HTML\ImageDropDialogs\AddFormat.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SmartTags\HTML\ImageDropDialogs\ImageDropFormattingDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Schemas\Browsers\BrowserSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

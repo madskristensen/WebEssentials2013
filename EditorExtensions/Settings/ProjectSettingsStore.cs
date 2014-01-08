@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using EnvDTE;
 using EnvDTE80;
 using Keys = MadsKristensen.EditorExtensions.WESettings.Keys;
@@ -83,37 +85,82 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        public static IEnumerable<KeyValuePair<string, string>> LoadImageDropFormats()
+        {
+            var path = GetFilePath();
+            var doc = XDocument.Load(path);
+
+            if (doc.XPathSelectElement("webessentials/settings/ImageDropFormats") == null)
+            {
+                IEnumerable<KeyValuePair<string, string>> defaultList = new[] {
+                    new KeyValuePair<string, string>("Simple Image Tag", "<img src=\"{0}\"  alt=\"\" />"),
+                    new KeyValuePair<string, string>("Enclosed in Div", "<div><img src=\"{0}\"  alt=\"\" /></div>"),
+                    new KeyValuePair<string, string>("Enclosed as List Item", "<li id=\"item_{1}\"><img src=\"{0}\"  alt=\"\" /></li>"),
+                    new KeyValuePair<string, string>("Inline CSS", "<div style=\"background-image=url('{0}')\"></div>")
+                };
+
+                UpdateImageDropFormats(defaultList);
+
+                return defaultList;
+            }
+
+            return doc.XPathSelectElement("webessentials/settings/ImageDropFormats")
+                                .Elements()
+                                .ToDictionary
+                                (
+                                         element => element.Attribute("Key").Value,
+                                         element => element.Attribute("Value").Value
+                                );
+        }
+
+        public static void UpdateImageDropFormats(IEnumerable<KeyValuePair<string, string>> formatsList)
+        {
+            var path = GetFilePath();
+            var doc = XDocument.Load(path);
+
+            if (doc.XPathSelectElement("webessentials/settings/ImageDropFormats") != null)
+                doc.XPathSelectElement("webessentials/settings/ImageDropFormats").Remove();
+
+
+            doc.XPathSelectElement("webessentials/settings").Add(
+                    new XElement("ImageDropFormats",
+                    formatsList.Select(kv => new XElement("Format",
+                        new XAttribute("Key", kv.Key),
+                        new XAttribute("Value", kv.Value))))
+                );
+            doc.Save(path);
+        }
+
         public static void UpdateCache()
         {
             try
             {
                 string path = GetFilePath();
 
-                if (File.Exists(path))
+                if (!File.Exists(path))
+                    return;
+
+                XmlDocument doc = LoadXmlDocument(path);
+
+                if (doc == null)
+                    return;
+
+                XmlNode settingsNode = doc.SelectSingleNode("webessentials/settings");
+
+                if (settingsNode == null)
+                    return;
+
+                lock (_syncCacheRoot)
                 {
-                    XmlDocument doc = LoadXmlDocument(path);
+                    _cache.Clear();
 
-                    if (doc != null)
+                    foreach (XmlNode node in settingsNode.ChildNodes)
                     {
-
-                        XmlNode settingsNode = doc.SelectSingleNode("webessentials/settings");
-
-                        if (settingsNode != null)
-                        {
-                            lock (_syncCacheRoot)
-                            {
-                                _cache.Clear();
-
-                                foreach (XmlNode node in settingsNode.ChildNodes)
-                                {
-                                    _cache[node.Name] = node.InnerText;
-                                }
-                            }
-
-                            OnUpdated();
-                        }
+                        _cache[node.Name] = node.InnerText;
                     }
                 }
+
+                OnUpdated();
             }
             catch
             { }

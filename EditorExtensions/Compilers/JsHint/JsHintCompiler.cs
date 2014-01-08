@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
@@ -31,21 +30,6 @@ namespace MadsKristensen.EditorExtensions
             return Path.Combine(dir, ".jshintrc");
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
-        public static string GetOrCreateGlobalSettings()
-        {
-            string userPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".jshintrc");
-
-            if (!File.Exists(userPath))
-            {
-                string extensionDir = Path.GetDirectoryName(typeof(JsHintCompiler).Assembly.Location);
-                string fullPath = Path.Combine(extensionDir, @"Resources\settings-defaults\.jshintrc");
-                File.Copy(fullPath, userPath);
-            }
-
-            return userPath;
-        }
-
         protected override string ServiceName
         {
             get { return "JsHint"; }
@@ -58,11 +42,24 @@ namespace MadsKristensen.EditorExtensions
         {
             get { return ParseErrorsWithJson; }
         }
+        public static string GlobalSettings
+        {
+            get
+            {
+                string jsHintRc = Path.Combine(Settings.GetWebEssentialsSettingsFolder(), ".jshintrc");
+
+                if (!File.Exists(jsHintRc))
+                    File.Copy(Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\settings-defaults\.jshintrc")
+                            , jsHintRc);
+
+                return jsHintRc;
+            }
+        }
 
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
             return String.Format(CultureInfo.CurrentCulture, "--config \"{0}\" --reporter \"{1}\" \"{2}\""
-                               , FindLocalSettings(sourceFileName) ?? GetOrCreateGlobalSettings()
+                               , FindLocalSettings(sourceFileName) ?? GlobalSettings
                                , _jsHintReporter
                                , sourceFileName);
         }

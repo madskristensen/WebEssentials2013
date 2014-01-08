@@ -85,7 +85,7 @@ namespace MadsKristensen.EditorExtensions
             public const string EnableJsHint = "JsHintEnable";
             public const string RunJsHintOnBuild = "JsHintRunOnBuild";
             public const string JsHintErrorLocation = "JsHintErrorLocation";
-            
+
             // Browser Link
             public const string UnusedCss_IgnorePatterns = "UnusedCss_IgnorePatterns";
             public const string EnableBrowserLinkMenu = "EnableBrowserLinkMenu";

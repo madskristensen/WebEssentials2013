@@ -151,7 +151,7 @@ namespace MadsKristensen.EditorExtensions
 
                 SnapshotSpan span = new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, position, _format.Length);
                 TextView.Selection.Select(span, false);
-                
+
                 EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
                 TextView.Selection.Clear();
             }
