@@ -104,6 +104,9 @@ namespace MadsKristensen.EditorExtensions
 
         public void AddHierarchyItem(ErrorTask task)
         {
+            if (task == null)
+                return;
+
             IVsHierarchy HierarchyItem;
             IVsSolution solution = EditorExtensionsPackage.GetGlobalService<IVsSolution>(typeof(SVsSolution));
 
