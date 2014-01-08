@@ -388,7 +388,14 @@
         </Strings>
       </Button>
 
-      <Button guid="guidDiffCmdSet" id="cmdSolutionColors" priority="0x0102" type="Button">
+      <Button guid="guidDiffCmdSet" id="cmdEditGlobalJsHint" priority="0x0102" type="Button">
+        <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
+        <Strings>
+          <ButtonText>Edit global .jshintrc file</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidDiffCmdSet" id="cmdSolutionColors" priority="0x0103" type="Button">
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -396,7 +403,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidDiffCmdSet" id="cmdMarkdownStylesheet" priority="0x0101" type="Button">
+      <Button guid="guidDiffCmdSet" id="cmdMarkdownStylesheet" priority="0x0104" type="Button">
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -771,7 +778,8 @@
       <IDSymbol name="cmdJavaScriptIntellisense" value="0x1047" />
       <IDSymbol name="cmdTypeScriptIntellisense" value="0x1048" />
       <IDSymbol name="MarkdownGroup" value="0x1049" />
-      <IDSymbol name="cmdMarkdownCompile" value="0x1039" />
+      <IDSymbol name="cmdEditGlobalJsHint" value="0x1038" />
+      <IDSymbol name="cmdMarkdownCompile" value="0x1039" />      
     </GuidSymbol>
 
     <GuidSymbol name="guidMinifyCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e61}">

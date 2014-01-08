@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
             }
             return Path.Combine(dir, ".jshintrc");
         }
-        private static string GetGlobalSettings()
+        public static string GetGlobalSettings()
         {
             string jsHintRc = Path.Combine(Settings.GetWebEssentialsSettingsFolder(), ".jshintrc");
 
