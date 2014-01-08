@@ -282,20 +282,6 @@ namespace MadsKristensen.EditorExtensions
             // JSHint
             dic.Add(Keys.EnableJsHint, true);
             dic.Add(Keys.JsHintErrorLocation, (int)Keys.FullErrorLocation.Messages);
-            dic.Add(Keys.JsHint_bitwise, true);
-            dic.Add(Keys.JsHint_browser, true);
-            dic.Add(Keys.JsHint_devel, true);
-            dic.Add(Keys.JsHint_eqeqeq, true);
-            dic.Add(Keys.JsHint_expr, true);
-            dic.Add(Keys.JsHint_debug, true);
-            dic.Add(Keys.JsHint_jquery, true);
-            dic.Add(Keys.JsHint_laxbreak, true);
-            dic.Add(Keys.JsHint_laxcomma, true);
-            dic.Add(Keys.JsHint_maxerr, 50);
-            dic.Add(Keys.JsHint_regexdash, true);
-            dic.Add(Keys.JsHint_smarttabs, true);
-            dic.Add(Keys.JsHint_undef, true);
-            dic.Add(Keys.JsHint_unused, true);
             dic.Add(Keys.JsHint_ignoreFiles, "kendo.*; globalize.*");
 
             // Misc
