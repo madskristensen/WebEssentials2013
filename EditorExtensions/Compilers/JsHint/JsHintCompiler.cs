@@ -30,17 +30,21 @@ namespace MadsKristensen.EditorExtensions
             }
             return Path.Combine(dir, ".jshintrc");
         }
+
         public static string GetOrCreateGlobalSettings()
         {
-            string jsHintRc = Path.Combine(Settings.GetWebEssentialsSettingsFolder(), ".jshintrc");
+            string userPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".jshintrc");
 
-            if (!File.Exists(jsHintRc))
-                File.Copy(Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\settings-defaults\.jshintrc")
-                        , jsHintRc);
+            if (!File.Exists(userPath))
+            {
+                string extensionDir = Path.GetDirectoryName(typeof(JsHintCompiler).Assembly.Location);
+                string fullPath = Path.Combine(extensionDir, @"Resources\settings-defaults\.jshintrc");
+                File.Copy(fullPath, userPath);
+            }
 
-            return jsHintRc;
+            return userPath;
         }
-        
+
         protected override string ServiceName
         {
             get { return "JsHint"; }
