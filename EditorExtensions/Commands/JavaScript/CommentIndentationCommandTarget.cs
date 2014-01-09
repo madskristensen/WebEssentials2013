@@ -1,0 +1,106 @@
+﻿using System;
+using System.Linq;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.TextManager.Interop;
+
+namespace MadsKristensen.EditorExtensions
+{
+    class CommentIndentationCommandTarget : CommandTargetBase
+    {
+        private IClassifier _classifier;
+
+        public CommentIndentationCommandTarget(IVsTextView adapter, IWpfTextView textView, IClassifierAggregatorService classifier)
+            : base(adapter, textView, typeof(VSConstants.VSStd2KCmdID).GUID, (uint)VSConstants.VSStd2KCmdID.RETURN)
+        {
+            _classifier = classifier.GetClassifier(textView.TextBuffer);
+        }
+
+        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        {
+            if (!WESettings.GetBoolean(WESettings.Keys.JavaScriptCommentCompletion))
+                return false;
+
+            int position = TextView.Caret.Position.BufferPosition.Position;
+
+            if (position < 1 || position > TextView.TextBuffer.CurrentSnapshot.Length - 2)
+                return false;
+                        
+            int checkPosition = position;
+            if (TextView.TextBuffer.ContentType.IsOfType("TypeScript"))
+            {
+                // HACK: TypeScript classifies wrongly, so we have to move the position to 
+                // the previous character to test if the caret is in a comment.
+                checkPosition -=1;
+
+                if (TextView.TextBuffer.CurrentSnapshot.GetText(checkPosition, 1) == "/")
+                    return false;
+            }
+
+            SnapshotSpan span = new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, checkPosition, 1);
+            bool isComment = _classifier.GetClassificationSpans(span).Any(c => c.ClassificationType.IsOfType("comment"));
+
+            if (!isComment)
+                return false;
+
+            ITextSnapshotLine line = TextView.TextBuffer.CurrentSnapshot.GetLineFromPosition(position);
+            string text = line.GetText();
+            string indentation = new string(text.TakeWhile(c => char.IsWhiteSpace(c)).ToArray());
+            int index = position - line.Start;
+
+            char firstChar = text.SkipWhile(Char.IsWhiteSpace).FirstOrDefault();
+
+            if (firstChar == '*' && index > indentation.Length)
+            {
+                // If first char of the line is * then insert new line and *
+                return HandleStartLines(position, indentation);
+            }
+            else
+            {
+                // Handles when caret is between /* and */ on the same line
+                return HandleBlockComment(position, text, indentation, index);
+            }
+        }
+
+        private bool HandleBlockComment(int position, string text, string indentation, int index)
+        {
+            int start = text.IndexOf("/*", StringComparison.Ordinal) + 2;
+            int end = text.IndexOf("*/", StringComparison.Ordinal);
+
+            if (start == 1 || end == -1 || index < start || index > end)
+                return false;
+
+            string result = Environment.NewLine + indentation + " * " + Environment.NewLine + indentation;
+
+            using (EditorExtensionsPackage.UndoContext("Smart Indent"))
+            {
+                TextView.TextBuffer.Insert(position, result);
+                SnapshotPoint point = new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, position + indentation.Length + 5);
+                TextView.Caret.MoveTo(point);
+            }
+
+            return true;
+        }
+
+        private bool HandleStartLines(int position, string indentation)
+        {
+            string result = Environment.NewLine + indentation + "* ";
+
+            using (EditorExtensionsPackage.UndoContext("Smart Indent"))
+            {
+                TextView.TextBuffer.Insert(position, result);
+                SnapshotPoint point = new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, position + result.Length);
+                TextView.Caret.MoveTo(point);
+            }
+
+            return true;
+        }
+
+        protected override bool IsEnabled()
+        {
+            return true;
+        }
+    }
+}

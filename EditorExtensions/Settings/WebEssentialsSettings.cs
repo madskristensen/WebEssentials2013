@@ -79,6 +79,7 @@ namespace MadsKristensen.EditorExtensions
             public const string EnableJsMinification = "JavaScriptEnableMinification";
             public const string GenerateJavaScriptSourceMaps = "JavaScriptGenerateSourceMaps";
             public const string JavaScriptEnableGzipping = "JavaScriptEnableGzipping";
+            public const string JavaScriptCommentCompletion = "JavaScriptCommentCompletion";
 
             // JSHint
             public const string EnableJsHint = "JsHintEnable";

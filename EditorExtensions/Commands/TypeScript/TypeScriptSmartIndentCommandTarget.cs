@@ -1,34 +1,13 @@
 ﻿using System;
-using System.ComponentModel.Composition;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [Export(typeof(IVsTextViewCreationListener))]
-    [ContentType("TypeScript")]
-    [TextViewRole(PredefinedTextViewRoles.Document)]
-    internal class TypeScriptSmartIndentTextViewCreationListener : IVsTextViewCreationListener
-    {
-        [Import, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
-
-        [Import]
-        internal ICompletionBroker CompletionBroker { get; set; }
-
-        public void VsTextViewCreated(IVsTextView textViewAdapter)
-        {
-            var textView = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
-            textView.Properties.GetOrCreateSingletonProperty<TypeScriptSmartIndent>(() => new TypeScriptSmartIndent(textViewAdapter, textView, CompletionBroker));
-        }
-    }
-
     internal class TypeScriptSmartIndent : CommandTargetBase
     {
         private readonly ICompletionBroker _broker;

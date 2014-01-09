@@ -15,6 +15,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.SetValue(WESettings.Keys.EnableJsMinification, EnableJsMinification);
             Settings.SetValue(WESettings.Keys.JavaScriptEnableGzipping, EnableGzipping);
             Settings.SetValue(WESettings.Keys.GenerateJavaScriptSourceMaps, GenerateJavaScriptSourceMaps);
+            Settings.SetValue(WESettings.Keys.JavaScriptCommentCompletion, JavaScriptCommentCompletion);
 
             Settings.Save();
         }
@@ -24,6 +25,7 @@ namespace MadsKristensen.EditorExtensions
             EnableJsMinification = WESettings.GetBoolean(WESettings.Keys.EnableJsMinification);
             EnableGzipping = WESettings.GetBoolean(WESettings.Keys.JavaScriptEnableGzipping);
             GenerateJavaScriptSourceMaps = WESettings.GetBoolean(WESettings.Keys.GenerateJavaScriptSourceMaps);
+            JavaScriptCommentCompletion = WESettings.GetBoolean(WESettings.Keys.JavaScriptCommentCompletion);
         }
 
         [LocDisplayName("Minify JavaScript files on save")]
@@ -40,5 +42,10 @@ namespace MadsKristensen.EditorExtensions
         [Description("When minification is enabled, a source map file (*.min.js.map) will be generated.")]
         [Category("JavaScript")]
         public bool GenerateJavaScriptSourceMaps { get; set; }
+
+        [LocDisplayName("Enable comment completion")]
+        [Description("Auto-complete /* comment blocks and insert * on new lines.")]
+        [Category("JavaScript")]
+        public bool JavaScriptCommentCompletion { get; set; }
     }
 }

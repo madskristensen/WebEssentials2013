@@ -237,6 +237,7 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.EnableBrowserLinkMenu, true);
             dic.Add(Keys.BrowserLink_ShowMenu, true);
             dic.Add(Keys.SvgShowPreviewWindow, true);
+            dic.Add(Keys.JavaScriptCommentCompletion, true);
 
             // HTML
             dic.Add(Keys.EnableEnterFormat, true);
@@ -305,6 +306,7 @@ namespace MadsKristensen.EditorExtensions
             // Code Generation
             dic.Add(Keys.JavaScriptCamelCaseClassNames, false);
             dic.Add(Keys.JavaScriptCamelCasePropertyNames, false);
+
             return dic;
         }
 

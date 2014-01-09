@@ -357,8 +357,11 @@
     <Compile Include="Classifications\SVG\SvgContentTypeDefinition.cs" />
     <Compile Include="Commands\AppCache\AppCacheCreationListener.cs" />
     <Compile Include="Commands\CoffeeScript\CoffeeScriptCreationListener.cs" />
+    <Compile Include="Commands\JavaScript\CommentIndentationCommandTarget.cs" />
+    <Compile Include="Commands\JavaScript\CommentCompletionCommandTarget.cs" />
     <Compile Include="Commands\Shared\PasteImageCommandTarget.cs" />
     <Compile Include="Commands\Shared\WebEditorsCreationListener.cs" />
+    <Compile Include="Commands\TypeScript\TypeScriptCreationListener.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptSmartIndentCommandTarget.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptTypeThroughControllerProvider.cs" />
     <Compile Include="Commands\TypeScript\TypeThroughController.cs" />
