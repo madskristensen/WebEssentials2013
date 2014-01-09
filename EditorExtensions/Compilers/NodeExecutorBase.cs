@@ -101,7 +101,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        protected IEnumerable<CompilerError> ParseErrorsWithJson(string error)
+        protected virtual IEnumerable<CompilerError> ParseErrorsWithJson(string error)
         {
             if (string.IsNullOrEmpty(error))
                 return null;

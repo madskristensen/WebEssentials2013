@@ -363,6 +363,7 @@
     <Compile Include="Commands\TypeScript\TypeScriptCreationListener.cs" />
     <Compile Include="Commands\TypeScript\TsLintProjectRunner.cs" />
     <Compile Include="Commands\TypeScript\TsHintRunner.cs" />
+    <Compile Include="Compilers\Lint\TsLintCompilerError.cs" />
     <Compile Include="Compilers\Lint\TsLintCompiler.cs" />
     <Compile Include="MenuItems\TsLint.cs" />
     <Compile Include="Settings\OptionPages\TsLint.cs">
