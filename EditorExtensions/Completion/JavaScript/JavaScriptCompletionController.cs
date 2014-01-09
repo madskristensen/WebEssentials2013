@@ -196,7 +196,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 case VSConstants.VSStd2KCmdID.TYPECHAR:
                     char ch = GetTypeChar(pvaIn);
-                    if (ch == ':')
+                    if (ch == ':' || ch == ' ')
                         Cancel();
                     else if (ch == '"' || ch == '\'' || ch == '/' || ch == '.' || ch == '@' || (!char.IsPunctuation(ch) && !char.IsControl(ch)))
                     {
