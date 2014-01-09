@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions
                     AddIcon(classes, "CoffeeScript.ico", ".iced");
 
                     // Markdown
-                    AddIcon(classes, "Markdown.ico", ".md", ".mdown", ".markdown", ".mkd", ".mkdn", ".mdwn");
+                    AddIcon(classes, "Markdown.ico", ".md", ".mdown", ".markdown", ".mkd", ".mkdn", ".mdwn", ".mmd");
 
                     // WebVTT
                     AddIcon(classes, "WebVTT.ico", ".vtt");

@@ -246,6 +246,7 @@ namespace MadsKristensen.EditorExtensions
                 case ".mkd":
                 case ".mkdn":
                 case ".mdwn":
+                case ".mmd":
                     return GetCompiledFileName(sourceFileName, ".html", CompileToLocation);
 
                 default: // For the Diff view

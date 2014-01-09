@@ -23,6 +23,7 @@
 "mkd"=dword:32
 "mkdn"=dword:32
 "mdwn"=dword:32
+"mmd"=dword:32
 
 // CSS bundles
 //[$RootKey$\Projects\{E24C65DC-7377-472b-9ABA-BC803B73C61A}\RelatedFiles\.css.bundle]

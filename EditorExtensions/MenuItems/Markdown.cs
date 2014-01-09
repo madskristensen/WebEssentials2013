@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions
     {
         private OleMenuCommandService _mcs;
         private DTE2 _dte;
-        private static HashSet<string> _extensions = new HashSet<string>() { ".md", ".mdown", ".markdown", ".mkd", ".mkdn", ".mdwn" };
+        private static HashSet<string> _extensions = new HashSet<string>() { ".md", ".mdown", ".markdown", ".mkd", ".mkdn", ".mdwn", ".mmd" };
 
         public MarkdownMenu(DTE2 dte, OleMenuCommandService mcs)
         {

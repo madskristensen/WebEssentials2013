@@ -50,5 +50,10 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         [ContentType(MarkdownContentType)]
         [FileExtension(".mdwn")]
         public FileExtensionToContentTypeDefinition MdwnFileExtension { get; set; }
+
+        [Export(typeof(FileExtensionToContentTypeDefinition))]
+        [ContentType(MarkdownContentType)]
+        [FileExtension(".mmd")]
+        public FileExtensionToContentTypeDefinition MmdFileExtension { get; set; }
     }
 }
