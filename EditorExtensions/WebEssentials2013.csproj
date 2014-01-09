@@ -359,6 +359,15 @@
     <Compile Include="Commands\CoffeeScript\CoffeeScriptCreationListener.cs" />
     <Compile Include="Commands\JavaScript\CommentIndentationCommandTarget.cs" />
     <Compile Include="Commands\JavaScript\CommentCompletionCommandTarget.cs" />
+    <Compile Include="Commands\TypeScript\TypeScriptFindReferencesCommandTarget.cs" />
+    <Compile Include="Commands\TypeScript\TypeScriptCreationListener.cs" />
+    <Compile Include="Commands\TypeScript\TsLintProjectRunner.cs" />
+    <Compile Include="Commands\TypeScript\TsHintRunner.cs" />
+    <Compile Include="Compilers\Lint\TsLintCompiler.cs" />
+    <Compile Include="MenuItems\TsLint.cs" />
+    <Compile Include="Settings\OptionPages\TsLint.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="SmartTags\HTML\ImageDropDialogs\AddFormat.xaml.cs">
       <DependentUpon>AddFormat.xaml</DependentUpon>
     </Compile>
@@ -368,7 +377,6 @@
     <Compile Include="SmartTags\HTML\DropImagesSmartTag.cs" />
     <Compile Include="Commands\Shared\PasteImageCommandTarget.cs" />
     <Compile Include="Commands\Shared\WebEditorsCreationListener.cs" />
-    <Compile Include="Commands\TypeScript\TypeScriptCreationListener.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptSmartIndentCommandTarget.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptTypeThroughControllerProvider.cs" />
     <Compile Include="Commands\TypeScript\TypeThroughController.cs" />
@@ -381,7 +389,7 @@
     <Compile Include="Commands\Code\IntellisenseType.cs" />
     <Compile Include="Commands\CommandExceptionFilter.cs" />
     <Compile Include="Commands\HTML\HtmlSaveListener.cs" />
-    <Compile Include="Compilers\JsHint\JsHintCompiler.cs" />
+    <Compile Include="Compilers\Lint\JsHintCompiler.cs" />
     <Compile Include="Compilers\LESS\LessCompiler.cs" />
     <Compile Include="Compilers\SASS\SassProjectCompiler.cs" />
     <Compile Include="Compilers\SASS\SassCompiler.cs" />
@@ -893,6 +901,9 @@
     <Content Include="Resources\settings-defaults\.jshintrc">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\settings-defaults\.tslintrc">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\Scripts\jshint-node-reporter.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -1003,17 +1014,17 @@
     <ItemGroup>
       <!-- Exclude LESS & SASS because they have too many extra files; usea whitelist instead-->
       <!-- Mocha comes from some package that forgot about "devDependencies"; Jade comes from Mocha -->
-      <Content Include="Resources\nodejs\tools\**" Exclude="&#xD;&#xA;               **\node-sass\**; **\less\**; &#xD;&#xA;               **\mocha\**; **\jade\**; &#xD;&#xA;               **\*.md; **\*.markdown; **\*.html; **\*.txt; **\LICENSE; **\README; **\CHANGELOG; **\CNAME; **\*.old; **\*.patch; **\*.ico; &#xD;&#xA;               **\*.json; **\.*; **\Makefile.*; **\Rakefile; **\*.yml; &#xD;&#xA;               **\test.*; **\generate-*; &#xD;&#xA;               **\*.min.js; **\*-min.js; &#xD;&#xA;               **\media\**; **\images\**; **\man\**; &#xD;&#xA;               **\.bin\**; **\benchmark\**; **\build\**; **\scripts\**; &#xD;&#xA;               **\vendor\**; &#xD;&#xA;               **\test\**; **\tst\**; **\tests\**; **\testing\**; &#xD;&#xA;               **\examples\**; **\example\**; **\tools\**\tools\**">
+      <Content Include="Resources\nodejs\tools\**" Exclude="&#xD;&#xA; **\node-sass\**; **\less\**; &#xD;&#xA;               **\mocha\**; **\jade\**; &#xD;&#xA;               **\*.md; **\*.markdown; **\*.html; **\*.txt; **\LICENSE; **\README; **\CHANGELOG; **\CNAME; **\*.old; **\*.patch; **\*.ico; &#xD;&#xA;               **\*.json; **\.*; **\Makefile.*; **\Rakefile; **\*.yml; &#xD;&#xA;               **\test.*; **\generate-*; &#xD;&#xA;               **\*.min.js; **\*-min.js; &#xD;&#xA;               **\media\**; **\images\**; **\man\**; &#xD;&#xA;               **\.bin\**; **\benchmark\**; **\build\**; **\scripts\**; &#xD;&#xA;               **\vendor\**; &#xD;&#xA;               **\test\**; **\tst\**; **\tests\**; **\testing\**; &#xD;&#xA;               **\examples\**; **\example\**; **\tools\**\tools\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\tools\node_modules\node-sass\sass.js; Resources\nodejs\tools\node_modules\node-sass\bin\node-sass; Resources\nodejs\tools\node_modules\node-sass\lib\**; Resources\nodejs\tools\node_modules\node-sass\bin\win32-ia32-*\**">
+      <Content Include="Resources\nodejs\tools\node_modules\node-sass\sass.js; Resources\nodejs\tools\node_modules\node-sass\bin\node-sass; Resources\nodejs\tools\node_modules\node-sass\lib\**; Resources\nodejs\tools\node_modules\node-sass\bin\win32-ia32-*\**; Resources\nodejs\tools\node_modules\tslint\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <Content Include="Resources\nodejs\tools\node_modules\less\lib\**; Resources\nodejs\tools\node_modules\less\bin\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <!-- Explicitly include JSON files that are actually needed at runtime-->
-      <Content Include="Resources\nodejs\tools\node_modules\htmlparser2\lib\entities\**; Resources\nodejs\tools\node_modules\jshint\package.json">
+      <Content Include="Resources\nodejs\tools\node_modules\htmlparser2\lib\entities\**; Resources\nodejs\tools\node_modules\jshint\package.json;">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
     </ItemGroup>

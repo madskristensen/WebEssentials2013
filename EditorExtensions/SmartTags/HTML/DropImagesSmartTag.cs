@@ -1,14 +1,14 @@
-﻿using System.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.IO;
+using System.Linq;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.SmartTags;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System.IO;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -49,7 +49,7 @@ namespace MadsKristensen.EditorExtensions
                 // This collection needs to be coming from editor; the list of file paths dropped
                 IEnumerable<string> imagesCollection = null;
 
-                imagesCollection.Where(image => new[]{".jpg", ".jpeg", ".gif", ".bmp", ".ico"}
+                imagesCollection = imagesCollection.Where(image => new[] { ".jpg", ".jpeg", ".gif", ".bmp", ".ico" }
                                                            .Contains(Path.GetExtension(image)));
 
                 string markup = new ImageDropFormattingDialog(imagesCollection).ShowAsDialog();

@@ -42,17 +42,23 @@ namespace MadsKristensen.EditorExtensions
             var moduleResults = Task.WhenAll(
                 InstallModuleAsync("lessc", "less"),
                 InstallModuleAsync("jshint", "jshint"),
+                InstallModuleAsync("tslint", "tslint"),
                 InstallModuleAsync("node-sass", "node-sass"),
                 InstallModuleAsync("coffee", "coffee-script"),
                 InstallModuleAsync("iced", "iced-coffee-script")
             ).Result.Where(r => r != ModuleInstallResult.AlreadyPresent);
+
             if (moduleResults.Contains(ModuleInstallResult.Error))
                 return false;
+
             if (!moduleResults.Any())
                 return true;
+
             Log.LogMessage(MessageImportance.High, "Installed " + moduleResults.Count() + " modules.  Flattening...");
+
             if (!FlattenModulesAsync().Result)
                 return false;
+
             return true;
         }
 
@@ -63,13 +69,16 @@ namespace MadsKristensen.EditorExtensions
             Log.LogMessage(MessageImportance.High, "Downloading nodejs ...");
             return new WebClient().DownloadFileTaskAsync("http://nodejs.org/dist/latest/node.exe", @"resources\nodejs\node.exe");
         }
+
         async Task DownloadNpmAsync()
         {
             if (File.Exists(@"resources\nodejs\node_modules\npm\bin\npm.cmd"))
                 return;
+
             Log.LogMessage(MessageImportance.High, "Downloading npm ...");
 
-            var npmZip = await new WebClient().OpenReadTaskAsync("http://nodejs.org/dist/npm/npm-1.3.13.zip");
+            var npmZip = await new WebClient().OpenReadTaskAsync("http://nodejs.org/dist/npm/npm-1.3.23.zip");
+
             try
             {
                 ExtractZipWithOverwrite(npmZip, @"resources\nodejs");
@@ -81,31 +90,40 @@ namespace MadsKristensen.EditorExtensions
                 throw;
             }
         }
+
         enum ModuleInstallResult { AlreadyPresent, Installed, Error }
+
         async Task<ModuleInstallResult> InstallModuleAsync(string cmdName, string moduleName)
         {
             if (File.Exists(@"resources\nodejs\tools\node_modules\.bin\" + cmdName + ".cmd"))
                 return ModuleInstallResult.AlreadyPresent;
 
             Log.LogMessage(MessageImportance.High, "npm install " + moduleName + " ...");
+
             var output = await ExecWithOutputAsync(@"cmd", @"/c ..\npm.cmd install " + moduleName, @"resources\nodejs\tools");
+
             if (output != null)
             {
                 Log.LogError("npm install " + moduleName + " error: " + output);
                 return ModuleInstallResult.Error;
             }
+
             return ModuleInstallResult.Installed;
         }
 
         async Task<bool> FlattenModulesAsync()
         {
             var output = await ExecWithOutputAsync(@"cmd", @"/c ..\npm.cmd dedup ", @"resources\nodejs\tools");
+
             if (output != null)
             {
                 Log.LogError("npm dedup error: " + output);
+
                 return false;
             }
+
             FlattenNodeModules(@"resources\nodejs\tools");
+
             return true;
         }
 
@@ -160,6 +178,7 @@ namespace MadsKristensen.EditorExtensions
         {
             var output = new StringWriter();
             int result = await ExecAsync(filename, args, workingDirectory);
+
             return result == 0 ? null : output.ToString().Trim();
         }
 

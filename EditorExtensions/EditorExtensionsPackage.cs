@@ -22,6 +22,7 @@ namespace MadsKristensen.EditorExtensions
     [ProvideOptionPage(typeof(GeneralOptions), "Web Essentials", "General", 101, 101, true, new[] { "ZenCoding", "Mustache", "Handlebars", "Comments", "Bundling", "Bundle" })]
     [ProvideOptionPage(typeof(CssOptions), "Web Essentials", "CSS", 101, 102, true, new[] { "Minify", "Minification", "W3C", "CSS3" })]
     [ProvideOptionPage(typeof(JsHintOptions), "Web Essentials", "JSHint", 101, 103, true, new[] { "JSLint", "Lint" })]
+    [ProvideOptionPage(typeof(TsLintOptions), "Web Essentials", "TSLint", 101, 104, true, new[] { "TSLint", "Lint" })]
     [ProvideOptionPage(typeof(LessOptions), "Web Essentials", "LESS", 101, 105, true)]
     [ProvideOptionPage(typeof(SassOptions), "Web Essentials", "SASS", 101, 113, true)]
     [ProvideOptionPage(typeof(CoffeeScriptOptions), "Web Essentials", "CoffeeScript", 101, 106, true, new[] { "Iced", "JavaScript", "JS", "JScript" })]
@@ -75,6 +76,7 @@ namespace MadsKristensen.EditorExtensions
                 MinifyFileMenu minifyMenu = new MinifyFileMenu(DTE, mcs);
                 BundleFilesMenu bundleMenu = new BundleFilesMenu(DTE, mcs);
                 JsHintMenu jsHintMenu = new JsHintMenu(DTE, mcs);
+                TsLintMenu tsLintMenu = new TsLintMenu(DTE, mcs);
                 ProjectSettingsMenu projectSettingsMenu = new ProjectSettingsMenu(DTE, mcs);
                 SolutionColorsMenu solutionColorsMenu = new SolutionColorsMenu(mcs);
                 BuildMenu buildMenu = new BuildMenu(DTE, mcs);
@@ -94,6 +96,7 @@ namespace MadsKristensen.EditorExtensions
                 solutionColorsMenu.SetupCommands();
                 projectSettingsMenu.SetupCommands();
                 jsHintMenu.SetupCommands();
+                tsLintMenu.SetupCommands();
                 bundleMenu.SetupCommands();
                 minifyMenu.SetupCommands();
                 diffMenu.SetupCommands();
@@ -134,9 +137,19 @@ namespace MadsKristensen.EditorExtensions
                                         new Action(() => JsHintProjectRunner.RunOnAllFilesInProject()),
                                         DispatcherPriority.ApplicationIdle, null);
                     }
+
+                    if (WESettings.GetBoolean(WESettings.Keys.RunTsLintOnBuild))
+                    {
+                        await Dispatcher.CurrentDispatcher.BeginInvoke(
+                                        new Action(() => TsLintProjectRunner.RunOnAllFilesInProject()),
+                                        DispatcherPriority.ApplicationIdle, null);
+                    }
                 });
             else if (Action == vsBuildAction.vsBuildActionClean)
+            {
                 await ThreadingTask.Task.Run(() => JsHintRunner.Reset());
+                await ThreadingTask.Task.Run(() => TsLintRunner.Reset());
+            }
         }
 
         public static void ExecuteCommand(string commandName, string commandArgs = "")

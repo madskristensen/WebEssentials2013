@@ -7,12 +7,12 @@ using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class JsHintMenu
+    internal class TsLintMenu
     {
         private DTE2 _dte;
         private OleMenuCommandService _mcs;
 
-        public JsHintMenu(DTE2 dte, OleMenuCommandService mcs)
+        public TsLintMenu(DTE2 dte, OleMenuCommandService mcs)
         {
             _dte = dte;
             _mcs = mcs;
@@ -20,20 +20,19 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            CommandID commandId = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.RunJsHint);
-            OleMenuCommand menuCommand = new OleMenuCommand((s, e) => RunJsHint(), commandId);
+            CommandID commandId = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.RunTsLint);
+            OleMenuCommand menuCommand = new OleMenuCommand((s, e) => RunTsLint(), commandId);
             menuCommand.BeforeQueryStatus += menuCommand_BeforeQueryStatus;
             _mcs.AddCommand(menuCommand);
 
-            CommandID edit = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.EditGlobalJsHint);
-            OleMenuCommand editCommand = new OleMenuCommand((s, e) => EditGlobalJsHintFile(), edit);
+            CommandID edit = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.EditGlobalTsLint);
+            OleMenuCommand editCommand = new OleMenuCommand((s, e) => EditGlobalTsLintFile(), edit);
             _mcs.AddCommand(editCommand);
         }
 
-        private void EditGlobalJsHintFile()
+        private void EditGlobalTsLintFile()
         {
-            string fileName = JsHintCompiler.GlobalSettings("jshint");
-
+            string fileName = TsLintCompiler.GlobalSettings("tslint");
             _dte.ItemOperations.OpenFile(fileName);
         }
 
@@ -42,21 +41,19 @@ namespace MadsKristensen.EditorExtensions
         void menuCommand_BeforeQueryStatus(object sender, System.EventArgs e)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
-
-            var raw = MinifyFileMenu.GetSelectedFilePaths(_dte);
-            files = raw.Where(f => !JsHintRunner.ShouldIgnore(f)).ToList();
+            files = MinifyFileMenu.GetSelectedFilePaths(_dte).ToList();
 
             menuCommand.Enabled = files.Count > 0;
         }
 
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        private void RunJsHint()
+        private void RunTsLint()
         {
-            JsHintRunner.Reset();
+            TsLintRunner.Reset();
 
             foreach (string file in files)
             {
-                JsHintRunner runner = new JsHintRunner(file);
+                TsLintRunner runner = new TsLintRunner(file);
                 runner.RunCompiler();
             }
         }

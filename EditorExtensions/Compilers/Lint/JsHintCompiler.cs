@@ -12,24 +12,6 @@ namespace MadsKristensen.EditorExtensions
         // JsHint Reported is located in Resources\Scripts\ directory. Read more at http://www.jshint.com/docs/reporters/
         private static readonly string _jsHintReporter = Path.Combine(WebEssentialsResourceDirectory, @"Scripts\jshint-node-reporter.js");
 
-        public Task<CompilerResult> Check(string sourcePath)
-        {
-            return Compile(sourcePath, null);
-        }
-
-        private static string FindLocalSettings(string sourcePath)
-        {
-            string dir = Path.GetDirectoryName(sourcePath);
-
-            while (!File.Exists(Path.Combine(dir, ".jshintrc")))
-            {
-                dir = Path.GetDirectoryName(dir);
-                if (String.IsNullOrEmpty(dir))
-                    return null;
-            }
-            return Path.Combine(dir, ".jshintrc");
-        }
-
         protected override string ServiceName
         {
             get { return "JsHint"; }
@@ -42,31 +24,50 @@ namespace MadsKristensen.EditorExtensions
         {
             get { return ParseErrorsWithJson; }
         }
-        public static string GlobalSettings
+
+        public static string GlobalSettings(string serviceName)
         {
-            get
+            var serviceNameLower = serviceName.ToLower(CultureInfo.CurrentCulture);
+
+            string jsHintRc = Path.Combine(Settings.GetWebEssentialsSettingsFolder(), "." + serviceNameLower + "rc");
+
+            if (!File.Exists(jsHintRc))
+                File.Copy(Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\settings-defaults\." + serviceNameLower + "rc")
+                        , jsHintRc);
+
+            return jsHintRc;
+        }
+
+        public Task<CompilerResult> Check(string sourcePath)
+        {
+            return Compile(sourcePath, null);
+        }
+
+        protected string FindLocalSettings(string sourcePath)
+        {
+            string dir = Path.GetDirectoryName(sourcePath);
+
+            while (!File.Exists(Path.Combine(dir, "." + ServiceName.ToLower(CultureInfo.CurrentCulture) + "rc")))
             {
-                string jsHintRc = Path.Combine(Settings.GetWebEssentialsSettingsFolder(), ".jshintrc");
-
-                if (!File.Exists(jsHintRc))
-                    File.Copy(Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\settings-defaults\.jshintrc")
-                            , jsHintRc);
-
-                return jsHintRc;
+                dir = Path.GetDirectoryName(dir);
+                if (String.IsNullOrEmpty(dir))
+                    return null;
             }
+
+            return Path.Combine(dir, "." + ServiceName.ToLower(CultureInfo.CurrentCulture) + "rc");
         }
 
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
             return String.Format(CultureInfo.CurrentCulture, "--config \"{0}\" --reporter \"{1}\" \"{2}\""
-                               , FindLocalSettings(sourceFileName) ?? GlobalSettings
+                               , FindLocalSettings(sourceFileName) ?? GlobalSettings(ServiceName)
                                , _jsHintReporter
                                , sourceFileName);
         }
 
         protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
-            Logger.Log("JSHint: " + Path.GetFileName(sourceFileName) + " checked.");
+            Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " checked.");
 
             return resultSource;
         }

@@ -30,13 +30,13 @@ namespace MadsKristensen.EditorExtensions
 
             if (position < 1 || position > TextView.TextBuffer.CurrentSnapshot.Length - 2)
                 return false;
-                        
+
             int checkPosition = position;
             if (TextView.TextBuffer.ContentType.IsOfType("TypeScript"))
             {
                 // HACK: TypeScript classifies wrongly, so we have to move the position to 
                 // the previous character to test if the caret is in a comment.
-                checkPosition -=1;
+                checkPosition -= 1;
 
                 if (TextView.TextBuffer.CurrentSnapshot.GetText(checkPosition, 1) == "/")
                     return false;

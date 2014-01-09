@@ -331,6 +331,10 @@ namespace MadsKristensen.EditorExtensions
             dic.Add(Keys.EnableJsHint, true);
             dic.Add(Keys.JsHintErrorLocation, (int)Keys.FullErrorLocation.Messages);
 
+            // TSLint
+            dic.Add(Keys.EnableTsLint, true);
+            dic.Add(Keys.TsLintErrorLocation, (int)Keys.FullErrorLocation.Messages);
+
             // Misc
             dic.Add(Keys.ShowBrowserTooltip, true);
             dic.Add(Keys.WrapCoffeeScriptClosure, true);

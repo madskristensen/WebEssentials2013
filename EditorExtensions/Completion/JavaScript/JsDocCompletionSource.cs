@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows.Media;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.Web.Editor;
 using Intel = Microsoft.VisualStudio.Language.Intellisense;
