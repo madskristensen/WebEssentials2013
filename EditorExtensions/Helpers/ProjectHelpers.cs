@@ -419,16 +419,36 @@ namespace MadsKristensen.EditorExtensions
 
             var item = ProjectHelpers.GetProjectItem(parentFileName);
 
-            if (item != null && item.ContainingProject != null && !string.IsNullOrEmpty(item.ContainingProject.FullName))
+            if (item == null || item.ContainingProject == null || string.IsNullOrEmpty(item.ContainingProject.FullName))
+                return null;
+
+            if (item.ContainingProject.GetType().Name == "OAProject" && item.ProjectItems != null)
             {
-                if (item.ContainingProject.GetType().Name != "OAProject" && item.ProjectItems != null && Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
-                {   // WAP
-                    return item.ProjectItems.AddFromFile(fileName);
+                // WinJS
+                var currentItem = ProjectHelpers.GetProjectItem(fileName);
+                // check if the file already added ( adding second time fails with ADDRESULT_Cancel )
+                if (currentItem.Kind != Guid.Empty.ToString("B")) return currentItem;
+
+                item = ProjectHelpers.GetProjectItem(fileName);
+
+                var addedItem = item.ProjectItems.AddFromFile(fileName);
+
+                if (Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
+                {
+                    // create nesting
+                    var dependentUponProperty = addedItem.Properties.Item("DependentUpon");
+                    dependentUponProperty.Value = Path.GetFileName(parentFileName);
                 }
-                else if (Path.GetFullPath(fileName).StartsWith(GetRootFolder(item.ContainingProject), StringComparison.OrdinalIgnoreCase))
-                {   // Website
-                    return item.ContainingProject.ProjectItems.AddFromFile(fileName);
-                }
+
+                return addedItem;
+            }
+            else if (item.ContainingProject.GetType().Name != "OAProject" && item.ProjectItems != null && Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
+            {   // WAP
+                return item.ProjectItems.AddFromFile(fileName);
+            }
+            else if (Path.GetFullPath(fileName).StartsWith(GetRootFolder(item.ContainingProject), StringComparison.OrdinalIgnoreCase))
+            {   // Website
+                return item.ContainingProject.ProjectItems.AddFromFile(fileName);
             }
 
             return null;
