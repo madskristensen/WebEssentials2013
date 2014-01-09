@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions
     internal class JsDocCompletionSource : StringCompletionSource
     {
         private static readonly Type jsTaggerType = typeof(Microsoft.VisualStudio.JSLS.JavaScriptLanguageService).Assembly.GetType("Microsoft.VisualStudio.JSLS.Classification.Tagger");
-        private static readonly ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMapItem, StandardGlyphItem.GlyphItemPublic);
+        private static readonly ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupField, StandardGlyphItem.GlyphItemPublic);
         private static List<Intel.Completion> _completions = new List<Intel.Completion>();
 
         public override Span? GetInvocationSpan(string text, int linePosition, SnapshotPoint position)
