@@ -2,7 +2,7 @@
   "rules": {
     "class-name": true,
     "curly": true,
-    "eofline": true,
+    "eofline": false,
     "forin": true,
     "indent": [true, 4],
     "label-position": true,
@@ -37,7 +37,7 @@
     "semicolon": true,
     "triple-equals": [true, "allow-null-check"],
     "variable-name": false,
-    "whitespace": [true,
+    "whitespace": [false,
         "check-branch",
         "check-decl",
         "check-operator",
