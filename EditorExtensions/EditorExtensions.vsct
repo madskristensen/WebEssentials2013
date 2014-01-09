@@ -395,14 +395,14 @@
         </Strings>
       </Button>
 
-      <Button guid="guidDiffCmdSet" id="cmdEditGlobalTsLint" priority="0x0114" type="Button">
+      <Button guid="guidDiffCmdSet" id="cmdEditGlobalTsLint" priority="0x0103" type="Button">
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <Strings>
           <ButtonText>Edit global .tslintrc file</ButtonText>
         </Strings>
       </Button>
 
-      <Button guid="guidDiffCmdSet" id="cmdSolutionColors" priority="0x0103" type="Button">
+      <Button guid="guidDiffCmdSet" id="cmdSolutionColors" priority="0x0104" type="Button">
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -410,7 +410,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidDiffCmdSet" id="cmdMarkdownStylesheet" priority="0x0104" type="Button">
+      <Button guid="guidDiffCmdSet" id="cmdMarkdownStylesheet" priority="0x0105" type="Button">
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -442,7 +442,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidDiffCmdSet" id="cmdTsLint" priority="0x0111" type="Button">
+      <Button guid="guidDiffCmdSet" id="cmdTsLint" priority="0x0106" type="Button">
         <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -450,7 +450,7 @@
         </Strings>
       </Button>
       
-      <Button guid="guidDiffCmdSet" id="cmdJavaScriptIntellisense" priority="0x0106" type="Button">
+      <Button guid="guidDiffCmdSet" id="cmdJavaScriptIntellisense" priority="0x0107" type="Button">
         <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -459,7 +459,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidDiffCmdSet" id="cmdTypeScriptIntellisense" priority="0x0106" type="Button">
+      <Button guid="guidDiffCmdSet" id="cmdTypeScriptIntellisense" priority="0x0108" type="Button">
         <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>

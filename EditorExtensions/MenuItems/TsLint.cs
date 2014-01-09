@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
@@ -41,7 +42,9 @@ namespace MadsKristensen.EditorExtensions
         void menuCommand_BeforeQueryStatus(object sender, System.EventArgs e)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
-            files = MinifyFileMenu.GetSelectedFilePaths(_dte).ToList();
+            files = MinifyFileMenu.GetSelectedFilePaths(_dte)
+                    .Where(f => Path.GetExtension(f).Equals(".ts", System.StringComparison.OrdinalIgnoreCase))
+                    .ToList();
 
             menuCommand.Enabled = files.Count > 0;
         }
