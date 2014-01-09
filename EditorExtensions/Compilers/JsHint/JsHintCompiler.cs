@@ -31,6 +31,7 @@ namespace MadsKristensen.EditorExtensions
             return Path.Combine(dir, ".jshintrc");
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
         public static string GetOrCreateGlobalSettings()
         {
             string userPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".jshintrc");
