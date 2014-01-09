@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions
         {
             var serviceNameLower = serviceName.ToLower(CultureInfo.CurrentCulture);
 
-            string jsHintRc = Path.Combine(Settings.GetWebEssentialsSettingsFolder(), "." + serviceNameLower + "rc");
+            string jsHintRc = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + serviceNameLower + "rc");
 
             if (!File.Exists(jsHintRc))
                 File.Copy(Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\settings-defaults\." + serviceNameLower + "rc")
