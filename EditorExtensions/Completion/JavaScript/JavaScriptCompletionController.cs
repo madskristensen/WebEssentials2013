@@ -120,16 +120,18 @@ namespace MadsKristensen.EditorExtensions
                 return Next.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 
             // This filter should only have do anything inside a string literal, or when opening a string literal.
-            bool isInString = GetCaretClassifications().Contains(_standardClassifications.StringLiteral);
+            var classifications = GetCaretClassifications();
+            bool isInString = classifications.Contains(_standardClassifications.StringLiteral);
+            bool isInComment = classifications.Contains(_standardClassifications.Comment);
 
             var command = (VSConstants.VSStd2KCmdID)nCmdID;
-            if (!isInString)
+            if (!isInString && !isInComment)
             {
                 if (command != VSConstants.VSStd2KCmdID.TYPECHAR)
                     return Next.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 
                 char ch = GetTypeChar(pvaIn);
-                if (ch != '"' && ch != '\'')
+                if (ch != '"' && ch != '\'' && ch != '@')
                     return Next.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
             }
 
@@ -158,8 +160,16 @@ namespace MadsKristensen.EditorExtensions
                         // We will re-open completion after handling the keypress, to
                         // show completions for this folder.
                     }
+                    else if (isInComment && ch == '@')
+                    {
+                        var c = Complete(force: false, dontAdvance: true);
+                        handled = c != null;
+                        // We will re-open completion after handling the keypress, to
+                        // show completions for this folder.
+                    }
                     break;
                 case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
+                case VSConstants.VSStd2KCmdID.SHOWMEMBERLIST:
                 case VSConstants.VSStd2KCmdID.COMPLETEWORD:
                     // Never handle this command; we always want JSLS to try too.
                     StartSession();
@@ -188,7 +198,7 @@ namespace MadsKristensen.EditorExtensions
                     char ch = GetTypeChar(pvaIn);
                     if (ch == ':')
                         Cancel();
-                    else if (ch == '"' || ch == '\'' || ch == '/' || ch == '.' || (!char.IsPunctuation(ch) && !char.IsControl(ch)))
+                    else if (ch == '"' || ch == '\'' || ch == '/' || ch == '.' || ch == '@' || (!char.IsPunctuation(ch) && !char.IsControl(ch)))
                     {
                         if (!closedCompletion)
                             StartSession();
@@ -307,6 +317,7 @@ namespace MadsKristensen.EditorExtensions
                 switch ((VSConstants.VSStd2KCmdID)prgCmds[0].cmdID)
                 {
                     case VSConstants.VSStd2KCmdID.AUTOCOMPLETE:
+                    case VSConstants.VSStd2KCmdID.SHOWMEMBERLIST:
                     case VSConstants.VSStd2KCmdID.COMPLETEWORD:
                         prgCmds[0].cmdf = (uint)OLECMDF.OLECMDF_ENABLED | (uint)OLECMDF.OLECMDF_SUPPORTED;
                         return VSConstants.S_OK;

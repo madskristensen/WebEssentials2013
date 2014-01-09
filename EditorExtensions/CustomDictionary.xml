@@ -18,6 +18,7 @@
       <Word>Intellisense</Word>
       <Word>Modernizr</Word>
       <Word>Htmlx</Word>
+      <Word>param</Word>
       <Word>Prev</Word>
       <Word>Svg</Word>
       <Word>png</Word>
@@ -45,6 +46,8 @@
       <Word>mkd</Word>
       <Word>mkdn</Word>
       <Word>mdwn</Word>
+      <Word>fileOverview</Word>
+      <Word>memberOf</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>

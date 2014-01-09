@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
@@ -11,16 +12,18 @@ namespace MadsKristensen.EditorExtensions
     class CommentIndentationCommandTarget : CommandTargetBase
     {
         private IClassifier _classifier;
+        private ICompletionBroker _broker;
 
-        public CommentIndentationCommandTarget(IVsTextView adapter, IWpfTextView textView, IClassifierAggregatorService classifier)
+        public CommentIndentationCommandTarget(IVsTextView adapter, IWpfTextView textView, IClassifierAggregatorService classifier, ICompletionBroker broker)
             : base(adapter, textView, typeof(VSConstants.VSStd2KCmdID).GUID, (uint)VSConstants.VSStd2KCmdID.RETURN)
         {
             _classifier = classifier.GetClassifier(textView.TextBuffer);
+            _broker = broker;
         }
 
         protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.JavaScriptCommentCompletion))
+            if (!WESettings.GetBoolean(WESettings.Keys.JavaScriptCommentCompletion) || _broker.IsCompletionActive(TextView))
                 return false;
 
             int position = TextView.Caret.Position.BufferPosition.Position;

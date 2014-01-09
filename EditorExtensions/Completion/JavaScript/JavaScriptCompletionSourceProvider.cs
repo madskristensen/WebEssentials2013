@@ -36,6 +36,7 @@ namespace MadsKristensen.EditorExtensions
 
             completionSources = new ReadOnlyCollection<StringCompletionSource>(new StringCompletionSource[] {
                 new UseDirectiveCompletionSource(), 
+                new JsDocCompletionSource(),
                 new ElementsByTagNameCompletionSource(), 
                 new ElementsByClassNameCompletionSource(classNames),
                 new ElementsByIdCompletionSource(classNames)
@@ -60,6 +61,8 @@ namespace MadsKristensen.EditorExtensions
                 var span = source.GetInvocationSpan(text, linePosition, position);
                 if (span == null) continue;
 
+                if (span.Value.Length == 0)
+                    return;
 
                 var trackingSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(span.Value.Start + line.Start, span.Value.Length, SpanTrackingMode.EdgeInclusive);
                 completionSets.Add(new StringCompletionSet(

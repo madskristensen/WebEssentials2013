@@ -26,9 +26,9 @@ namespace MadsKristensen.EditorExtensions
         {
             var textView = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
 
-            textView.Properties.GetOrCreateSingletonProperty<TypeScriptSmartIndent>(() => new TypeScriptSmartIndent(textViewAdapter, textView, CompletionBroker));
+            textView.Properties.GetOrCreateSingletonProperty(() => new TypeScriptSmartIndent(textViewAdapter, textView, CompletionBroker));
             textView.Properties.GetOrCreateSingletonProperty(() => new CommentCompletionCommandTarget(textViewAdapter, textView, AggregatorService));
-            textView.Properties.GetOrCreateSingletonProperty(() => new CommentIndentationCommandTarget(textViewAdapter, textView, AggregatorService));
+            textView.Properties.GetOrCreateSingletonProperty(() => new CommentIndentationCommandTarget(textViewAdapter, textView, AggregatorService, CompletionBroker));
         }
     }
 }

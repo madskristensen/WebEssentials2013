@@ -386,6 +386,7 @@
     <Compile Include="Completion\CSS\ContextProviders\MediaFeatureContextProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\VariableContextProvider.cs" />
     <Compile Include="Completion\HTML\InputIdAttributeCompletion.cs" />
+    <Compile Include="Completion\JavaScript\JsDocCompletionSource.cs" />
     <Compile Include="Completion\Markdown\MarkdownCompletionFilter.cs" />
     <Compile Include="DropTargets\HtmlImageDrop.cs" />
     <Compile Include="Helpers\Disposable.cs" />
