@@ -1,8 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions

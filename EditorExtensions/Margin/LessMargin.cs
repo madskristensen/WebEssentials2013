@@ -51,7 +51,7 @@ namespace MadsKristensen.EditorExtensions
                 FileHelpers.MinifyFile(fileName, source, ".css");
             }
         }
-        
+
         public override string CompileToLocation
         {
             get { return WESettings.GetString(WESettings.Keys.LessCompileToLocation); }

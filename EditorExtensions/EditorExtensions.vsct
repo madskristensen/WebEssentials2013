@@ -395,6 +395,13 @@
         </Strings>
       </Button>
 
+      <Button guid="guidDiffCmdSet" id="cmdEditGlobalTsLint" priority="0x0114" type="Button">
+        <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
+        <Strings>
+          <ButtonText>Edit global .tslintrc file</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guidDiffCmdSet" id="cmdSolutionColors" priority="0x0103" type="Button">
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -435,6 +442,14 @@
         </Strings>
       </Button>
 
+      <Button guid="guidDiffCmdSet" id="cmdTsLint" priority="0x0111" type="Button">
+        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Run TSLint</ButtonText>
+        </Strings>
+      </Button>
+      
       <Button guid="guidDiffCmdSet" id="cmdJavaScriptIntellisense" priority="0x0106" type="Button">
         <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -771,6 +786,7 @@
       <IDSymbol name="MyMenuGroup" value="0x1040" />
       <IDSymbol name="cmdDiff" value="0x1041" />
       <IDSymbol name="cmdJsHint" value="0x1042" />
+      <IDSymbol name="cmdTsLint" value="0x1092" />
       <IDSymbol name="cmdProjectSettings" value="0x1043" />
       <IDSymbol name="cmdSolutionSettings" value="0x1044" />
       <IDSymbol name="cmdSolutionColors" value="0x1045" />
@@ -779,7 +795,8 @@
       <IDSymbol name="cmdTypeScriptIntellisense" value="0x1048" />
       <IDSymbol name="MarkdownGroup" value="0x1049" />
       <IDSymbol name="cmdEditGlobalJsHint" value="0x1038" />
-      <IDSymbol name="cmdMarkdownCompile" value="0x1039" />      
+      <IDSymbol name="cmdEditGlobalTsLint" value="0x1098" />
+      <IDSymbol name="cmdMarkdownCompile" value="0x1039" />
     </GuidSymbol>
 
     <GuidSymbol name="guidMinifyCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e61}">

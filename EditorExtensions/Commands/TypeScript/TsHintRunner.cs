@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class JsHintRunner : IDisposable
+    internal class TsLintRunner : IDisposable
     {
         private readonly ErrorListProvider _provider;
         private readonly static Dictionary<string, ErrorListProvider> _providers = InitializeResources();
@@ -27,7 +26,7 @@ namespace MadsKristensen.EditorExtensions
             EditorExtensionsPackage.DTE.Events.SolutionEvents.AfterClosing -= SolutionEvents_AfterClosing;
         }
 
-        public JsHintRunner(string fileName)
+        public TsLintRunner(string fileName)
         {
             _fileName = fileName;
 
@@ -54,16 +53,9 @@ namespace MadsKristensen.EditorExtensions
             if (_isDisposed)
                 return;
 
-            if (ShouldIgnore(_fileName))
-            {
-                // In case this file was added to JSHintIgnore after it was opened, clear the existing errors.
-                _provider.Tasks.Clear();
-                return;
-            }
+            EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: Running TSLint...";
 
-            EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: Running JSHint...";
-
-            CompilerResult result = await new JsHintCompiler().Check(_fileName);
+            CompilerResult result = await new TsLintCompiler().Check(_fileName);
 
             EditorExtensionsPackage.DTE.StatusBar.Clear();
 
@@ -83,67 +75,6 @@ namespace MadsKristensen.EditorExtensions
 
             _providers.Clear();
         }
-
-        public static bool ShouldIgnore(string file)
-        {
-            if (!Path.GetExtension(file).Equals(".js", StringComparison.OrdinalIgnoreCase) ||
-                file.EndsWith(".min.js", StringComparison.OrdinalIgnoreCase) ||
-                file.EndsWith(".debug.js", StringComparison.OrdinalIgnoreCase) ||
-                file.EndsWith(".intellisense.js", StringComparison.OrdinalIgnoreCase) ||
-                file.Contains("-vsdoc.js") ||
-                !File.Exists(file))
-            {
-                return true;
-            }
-
-            ProjectItem item = ProjectHelpers.GetProjectItem(file);
-
-            if (item == null)
-                return true;
-
-            // Ignore files nested under other files such as bundle or TypeScript output
-            ProjectItem parent = item.Collection.Parent as ProjectItem;
-            if (parent != null && !Directory.Exists(parent.FileNames[1]) || File.Exists(item.FileNames[1] + ".bundle"))
-                return true;
-
-            string name = Path.GetFileName(file);
-            return _builtInIgnoreRegex.IsMatch(name);
-        }
-
-        private static Regex _builtInIgnoreRegex = new Regex("(" + String.Join(")|(", new[] {
-            @"_references\.js",
-            @"amplify\.js",
-            @"angular\.js",
-            @"backbone\.js",
-            @"bootstrap\.js",
-            @"dojo\.js",
-            @"ember\.js",
-            @"ext-core\.js",
-            @"handlebars.*",
-            @"highlight\.js",
-            @"history\.js",
-            @"jquery-([0-9\.]+)\.js",
-            @"jquery.blockui.*",
-            @"jquery.validate.*",
-            @"jquery.unobtrusive.*",
-            @"jquery-ui-([0-9\.]+)\.js",
-            @"json2\.js",
-            @"knockout-([0-9\.]+)\.js",
-            @"MicrosoftAjax([a-z]+)\.js",
-            @"modernizr-([0-9\.]+)\.js",
-            @"mustache.*",
-            @"prototype\.js ",
-            @"qunit-([0-9a-z\.]+)\.js",
-            @"require\.js",
-            @"respond\.js",
-            @"sammy\.js",
-            @"scriptaculous\.js ",
-            @"swfobject\.js",
-            @"underscore\.js",
-            @"webfont\.js",
-            @"yepnope\.js",
-            @"zepto\.js",
-        }) + ")", RegexOptions.IgnoreCase);
 
         private void ReadResult(IEnumerable<CompilerError> results)
         {
@@ -165,7 +96,7 @@ namespace MadsKristensen.EditorExtensions
             }
             catch
             {
-                Logger.Log("Error reading JSHint result");
+                Logger.Log("Error reading TSLint result");
             }
             finally
             {
@@ -194,7 +125,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static TaskErrorCategory GetOutputLocation()
         {
-            var location = (WESettings.Keys.FullErrorLocation)WESettings.GetInt(WESettings.Keys.JsHintErrorLocation);
+            var location = (WESettings.Keys.FullErrorLocation)WESettings.GetInt(WESettings.Keys.TsLintErrorLocation);
 
             if (location == WESettings.Keys.FullErrorLocation.Errors)
                 return TaskErrorCategory.Error;

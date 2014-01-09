@@ -56,7 +56,7 @@ namespace MadsKristensen.EditorExtensions
         [Description("Compiles all SASS files in the project that have a corresponding .css file.")]
         [Category("SASS")]
         public bool SassCompileOnBuild { get; set; }
-        
+
         [LocDisplayName("Compile to a custom folder")]
         [Description("Compiles each SASS file into a custom folder. Leave empty to save the compiled .css file to the same directory as the .scss file. Or, prefix your output directory with a `/` to indicate that it starts at the project's root directory (for example '/css' or '/styles') - this will apply to ALL .scss files! Otherwise, a relative path is assumed (starting from the file being compiled) - this may cause the output path to be different for each .scss file.")]
         [Category("SASS")]

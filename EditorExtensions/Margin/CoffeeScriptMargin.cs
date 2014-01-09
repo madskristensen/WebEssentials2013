@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
         public CoffeeScriptMargin(string contentType, string source, bool showMargin, ITextDocument document)
             : base(source, contentType, showMargin, document)
         { }
-        
+
         protected override async void StartCompiler(string source)
         {
             string sourceFilePath = Document.FilePath;

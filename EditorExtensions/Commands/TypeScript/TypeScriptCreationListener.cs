@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
@@ -18,9 +20,15 @@ namespace MadsKristensen.EditorExtensions
 
         [Import]
         internal ICompletionBroker CompletionBroker { get; set; }
-        
+
         [Import]
         internal IClassifierAggregatorService AggregatorService;
+
+        [Import(typeof(ITextStructureNavigatorSelectorService))]
+        public ITextStructureNavigatorSelectorService Navigator { get; set; }
+
+        [Import]
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
         public void VsTextViewCreated(IVsTextView textViewAdapter)
         {
@@ -29,6 +37,15 @@ namespace MadsKristensen.EditorExtensions
             textView.Properties.GetOrCreateSingletonProperty(() => new TypeScriptSmartIndent(textViewAdapter, textView, CompletionBroker));
             textView.Properties.GetOrCreateSingletonProperty(() => new CommentCompletionCommandTarget(textViewAdapter, textView, AggregatorService));
             textView.Properties.GetOrCreateSingletonProperty(() => new CommentIndentationCommandTarget(textViewAdapter, textView, AggregatorService, CompletionBroker));
+
+            ITextDocument document;
+            if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
+            {
+                TsLintProjectRunner lint = new TsLintProjectRunner(document);
+                textView.Closed += (s, e) => lint.Dispose();
+
+                textView.TextBuffer.Properties.GetOrCreateSingletonProperty(() => lint);
+            }
         }
     }
 }
