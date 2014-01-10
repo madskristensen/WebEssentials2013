@@ -28,10 +28,12 @@ namespace MadsKristensen.EditorExtensions
             var doc = CssEditorDocument.FromTextBuffer(snapshot.TextBuffer);
 
             StringBuilder sb = new StringBuilder(snapshot.GetText());
+            int scrollPosition = TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
 
             using (EditorExtensionsPackage.UndoContext("Remove Duplicate Properties"))
             {
-                string result = RemoveDuplicateProperties(sb, doc);
+                int count;
+                string result = RemoveDuplicateProperties(sb, doc, out count);
                 Span span = new Span(0, snapshot.Length);
                 snapshot.TextBuffer.Replace(span, result);
 
@@ -39,15 +41,18 @@ namespace MadsKristensen.EditorExtensions
                 selection.GotoLine(1);
 
                 EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
+                TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, TextView.TextSnapshot.GetLineNumberFromPosition(scrollPosition));
+                EditorExtensionsPackage.DTE.StatusBar.Text = count + " duplicate properties removed";
             }
 
             return true;
         }
 
-        private static string RemoveDuplicateProperties(StringBuilder sb, CssEditorDocument doc)
+        private static string RemoveDuplicateProperties(StringBuilder sb, CssEditorDocument doc, out int count)
         {
             var visitor = new CssItemCollector<RuleBlock>(true);
             doc.Tree.StyleSheet.Accept(visitor);
+            count = 0;
 
             foreach (RuleBlock rule in visitor.Items.Reverse())
             {
@@ -56,7 +61,10 @@ namespace MadsKristensen.EditorExtensions
                 foreach (Declaration dec in rule.Declarations.Reverse())
                 {
                     if (!list.Add(dec.Text))
+                    {
                         sb.Remove(dec.Start, dec.Length);
+                        count++;
+                    }
                 }
             }
 

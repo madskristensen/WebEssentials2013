@@ -29,10 +29,12 @@ namespace MadsKristensen.EditorExtensions
             ICssSchemaInstance rootSchema = CssSchemaManager.SchemaManager.GetSchemaRoot(null);
 
             StringBuilder sb = new StringBuilder(buffer.CurrentSnapshot.GetText());
+            int scrollPosition = TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
 
             using (EditorExtensionsPackage.UndoContext("Add Missing Vendor Specifics"))
             {
-                string result = AddMissingVendorDeclarations(sb, doc, rootSchema);
+                int count;
+                string result = AddMissingVendorDeclarations(sb, doc, rootSchema, out count);
                 Span span = new Span(0, buffer.CurrentSnapshot.Length);
                 buffer.Replace(span, result);
 
@@ -40,15 +42,18 @@ namespace MadsKristensen.EditorExtensions
                 selection.GotoLine(1);
 
                 EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
+                TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, TextView.TextSnapshot.GetLineNumberFromPosition(scrollPosition));
+                EditorExtensionsPackage.DTE.StatusBar.Text = count + " missing vendor specific properties added";
             }
 
             return true;
         }
 
-        private static string AddMissingVendorDeclarations(StringBuilder sb, CssEditorDocument doc, ICssSchemaInstance rootSchema)
+        private static string AddMissingVendorDeclarations(StringBuilder sb, CssEditorDocument doc, ICssSchemaInstance rootSchema, out int count)
         {
             var visitor = new CssItemCollector<Declaration>(true);
             doc.Tree.StyleSheet.Accept(visitor);
+            count = 0;
 
             var items = visitor.Items.Where(d => d.IsValid && !d.IsVendorSpecific() && d.PropertyName.Text != "filter");
 
@@ -63,6 +68,7 @@ namespace MadsKristensen.EditorExtensions
                     string vendors = GetVendorDeclarations(missingPrefixes, dec);
 
                     sb.Insert(dec.Start, vendors);
+                    count++;
                 }
             }
 

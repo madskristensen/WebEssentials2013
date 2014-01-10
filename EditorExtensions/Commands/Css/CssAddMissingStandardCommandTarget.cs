@@ -31,10 +31,12 @@ namespace MadsKristensen.EditorExtensions
             ICssSchemaInstance rootSchema = CssSchemaManager.SchemaManager.GetSchemaRoot(null);
 
             StringBuilder sb = new StringBuilder(buffer.CurrentSnapshot.GetText());
+            int scrollPosition = TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
 
             using (EditorExtensionsPackage.UndoContext("Add Missing Standard Property"))
             {
-                string result = AddMissingStandardDeclaration(sb, doc, rootSchema);
+                int count;
+                string result = AddMissingStandardDeclaration(sb, doc, rootSchema, out count);
                 Span span = new Span(0, buffer.CurrentSnapshot.Length);
                 buffer.Replace(span, result);
 
@@ -42,15 +44,18 @@ namespace MadsKristensen.EditorExtensions
                 selection.GotoLine(1);
 
                 EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
+                TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, TextView.TextSnapshot.GetLineNumberFromPosition(scrollPosition));
+                EditorExtensionsPackage.DTE.StatusBar.Text = count +  " missing standard properties added";
             }
 
             return true;
         }
 
-        private static string AddMissingStandardDeclaration(StringBuilder sb, CssEditorDocument doc, ICssSchemaInstance rootSchema)
+        private static string AddMissingStandardDeclaration(StringBuilder sb, CssEditorDocument doc, ICssSchemaInstance rootSchema, out int count)
         {
             var visitor = new CssItemCollector<RuleBlock>(true);
             doc.Tree.StyleSheet.Accept(visitor);
+            count = 0;
 
             //var items = visitor.Items.Where(d => d.IsValid && d.IsVendorSpecific());
             foreach (RuleBlock rule in visitor.Items.Reverse())
@@ -68,6 +73,7 @@ namespace MadsKristensen.EditorExtensions
 
                         sb.Insert(dec.AfterEnd, standard);
                         list.Add(entry.DisplayText);
+                        count++;
                     }
                 }
             }

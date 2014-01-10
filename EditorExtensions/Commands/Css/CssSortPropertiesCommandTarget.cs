@@ -21,6 +21,7 @@ namespace MadsKristensen.EditorExtensions
             if (point == null) return false;
 
             var buffer = point.Value.Snapshot.TextBuffer;
+            int scrollPosition = TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
 
             using (EditorExtensionsPackage.UndoContext("Sort All Properties"))
             {
@@ -31,6 +32,9 @@ namespace MadsKristensen.EditorExtensions
                 EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
                 var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
                 selection.GotoLine(1);
+
+                TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, TextView.TextSnapshot.GetLineNumberFromPosition(scrollPosition));
+                EditorExtensionsPackage.DTE.StatusBar.Text = "Properties sorted";
             }
 
             return true;
