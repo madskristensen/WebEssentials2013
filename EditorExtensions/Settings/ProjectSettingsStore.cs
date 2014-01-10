@@ -90,13 +90,14 @@ namespace MadsKristensen.EditorExtensions
             var path = GetFilePath();
             var doc = XDocument.Load(path);
 
-            if (doc.XPathSelectElement("webessentials/settings/ImageDropFormats") == null)
+            if (doc.XPathSelectElement("webessentials/settings/ImageDropFormats") == null ||
+                doc.XPathSelectElement("webessentials/settings/ImageDropFormats/Format") == null)
             {
                 IEnumerable<KeyValuePair<string, string>> defaultList = new[] {
-                    new KeyValuePair<string, string>("Simple Image Tag", "<img src=\"{0}\"  alt=\"\" />"),
-                    new KeyValuePair<string, string>("Enclosed in Div", "<div><img src=\"{0}\"  alt=\"\" /></div>"),
-                    new KeyValuePair<string, string>("Enclosed as List Item", "<li id=\"item_{1}\"><img src=\"{0}\"  alt=\"\" /></li>"),
-                    new KeyValuePair<string, string>("Inline CSS", "<div style=\"background-image=url('{0}')\"></div>")
+                    new KeyValuePair<string, string>("Simple Image Tag", "&lt;img src=&quot;{0}&quot; alt=&quot;&quot; /&gt;"),
+                    new KeyValuePair<string, string>("Enclosed in Div", "&lt;div&gt;&lt;img src=&quot;{0}&quot; alt=&quot;&quot; /&gt;&lt;/div&gt;"),
+                    new KeyValuePair<string, string>("Enclosed as List Item", "&lt;li id=&quot;item_{1}&quot;&gt;&lt;img src=&quot;{0}&quot; alt=&quot;&quot; /&gt;&lt;/li&gt;"),
+                    new KeyValuePair<string, string>("Inline CSS", "&lt;div style=&quot;background-image=url('{0}')&quot;&gt;&lt;/div&gt;")
                 };
 
                 UpdateImageDropFormats(defaultList);
