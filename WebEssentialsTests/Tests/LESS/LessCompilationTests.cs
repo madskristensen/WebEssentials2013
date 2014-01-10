@@ -16,7 +16,6 @@ namespace WebEssentialsTests
     {
         private static string originalPath;
         private static readonly string BaseDirectory = Path.GetDirectoryName(typeof(NodeModuleImportedTests).Assembly.Location);
-        private static readonly Regex _linesStartingWithTwoSpaces = new Regex("(\n( *))", RegexOptions.Compiled);
 
         #region Helper Methods
         private static async Task<string> CompileLess(string fileName, string targetFileName)
@@ -25,8 +24,7 @@ namespace WebEssentialsTests
 
             if (result.IsSuccess)
             {
-                // Insert extra line-breaks between adjecent rule (to mimic the compiler's post-processing)
-                File.WriteAllText(targetFileName, _linesStartingWithTwoSpaces.Replace(File.ReadAllText(targetFileName).Trim(), "$1$2"));
+                File.WriteAllText(targetFileName, File.ReadAllText(targetFileName).Trim());
 
                 return result.Result;
             }
