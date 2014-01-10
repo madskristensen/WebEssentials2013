@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Xml.Linq;
@@ -22,6 +23,8 @@ namespace MadsKristensen.EditorExtensions
     {
         private const string DefaultModuleName = "server";
         private const string ModuleNameAttributeName = "TypeScriptModule";
+
+        private static readonly Regex IsNumber = new Regex("^[0-9a-fx]+[ul]{0,2}$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         internal static class Ext
         {
@@ -170,7 +173,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     Name = codeEnum.Name,
                     Summary = GetSummary(codeEnum),
-                    InitExpression = codeEnum.InitExpression
+                    InitExpression = GetInitializer(codeEnum.InitExpression)
                 };
 
                 data.Properties.Add(prop);
@@ -384,6 +387,16 @@ namespace MadsKristensen.EditorExtensions
                 Logger.Log("Couldn't parse XML Doc Comment for " + fullName + ":\n" + ex);
                 return null;
             }
+        }
+
+        private static string GetInitializer(object initExpression)
+        {
+            if (initExpression != null)
+            {
+                string initializer = initExpression.ToString();
+                if (IsNumber.IsMatch(initializer)) return initializer;
+            }
+            return null;
         }
     }
 }

@@ -21,6 +21,6 @@ namespace MadsKristensen.EditorExtensions
         public IntellisenseType Type { get; set; }
 
         public string Summary { get; set; }
-        public object InitExpression { get; set; }
+        public string InitExpression { get; set; }
     }
 }
