@@ -14,7 +14,6 @@ namespace MadsKristensen.EditorExtensions
     public class LessCompiler : NodeExecutorBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\less\bin\lessc");
-        private static readonly Regex _endingCurlyBraces = new Regex(@"}\W*}|}", RegexOptions.Compiled);
         private static readonly Regex _linesStartingWithTwoSpaces = new Regex("(\n( *))", RegexOptions.Compiled);
         private static readonly Regex _errorParsingPattern = new Regex(@"^(?<message>.+) in (?<fileName>.+) on line (?<line>\d+), column (?<column>\d+):$", RegexOptions.Multiline);
         private static readonly Regex _sourceMapInCss = new Regex(@"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", RegexOptions.Multiline);
@@ -54,7 +53,6 @@ namespace MadsKristensen.EditorExtensions
         protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
             // Inserts an empty row between each rule and replace two space indentation with 4 space indentation
-            resultSource = _endingCurlyBraces.Replace(_linesStartingWithTwoSpaces.Replace(resultSource.Trim(), "$1$2"), "$&\n");
             resultSource = UpdateSourceMapUrls(resultSource, targetFileName);
 
             var message = "LESS: " + Path.GetFileName(sourceFileName) + " compiled.";
