@@ -60,7 +60,7 @@ namespace WebEssentialsTests
                 var expected = File.ReadAllText(compiledFile)
                                .Replace("\r", "");
 
-                compiled.Should().Be(expected.Trim());
+                compiled.Trim().Should().Be(expected.Trim());
             }
         }
 

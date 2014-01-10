@@ -58,7 +58,7 @@ namespace MadsKristensen.EditorExtensions
             var message = "LESS: " + Path.GetFileName(sourceFileName) + " compiled.";
 
             // If the caller wants us to renormalize URLs to a different filename, do so.
-            if (targetFileName != null && resultSource.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
+            if (!string.IsNullOrWhiteSpace(WESettings.GetString(WESettings.Keys.LessCompileToLocation)) && targetFileName != null && resultSource.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
             {
                 try
                 {
