@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions
     internal class TagCompletionProvider : ICssCompletionListProvider
     {
         private static IEnumerable<ICssCompletionListEntry> _entryCache = GetListEntriesCache(includeUnstyled: false);
-        private static HashSet<string> _basicIgnore = new HashSet<string>() { "noscript", "br", "font", "___all___", "FlowContentElement" };
+        private static HashSet<string> _basicIgnore = new HashSet<string>() { "noscript", "font", "___all___", "FlowContentElement" };
         private static HashSet<string> _cssIgnore = new HashSet<string>(_basicIgnore) { "script", "meta", "link", "style", "head", };
 
         public CssCompletionContextType ContextType
