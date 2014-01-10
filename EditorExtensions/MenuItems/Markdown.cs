@@ -44,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
             OleMenuCommand menuCommand = sender as OleMenuCommand;
             var paths = ProjectHelpers.GetSelectedItemPaths(_dte);
 
-            menuCommand.Enabled = paths.All(p => _extensions.Contains(Path.GetExtension(p)));
+            menuCommand.Enabled = paths.Count() > 0 && paths.All(p => _extensions.Contains(Path.GetExtension(p)));
         }
 
         private void AddHtmlFiles()
