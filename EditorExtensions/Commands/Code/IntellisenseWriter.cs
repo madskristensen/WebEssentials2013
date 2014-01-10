@@ -106,9 +106,9 @@ namespace MadsKristensen.EditorExtensions
                         foreach (var p in io.Properties)
                         {
                             WriteTypeScriptComment(p, sb);
-                            if (p.InitExpression != null && !p.InitExpression.ToString().Contains('+'))
+                            if (p.InitExpression != null)
                             {
-                                sb.AppendLine("\t\t" + CamelCasePropertyName(p.Name) + " = " + CleanEnumInitValue(p.InitExpression.ToString()) + ",");
+                                sb.AppendLine("\t\t" + CamelCasePropertyName(p.Name) + " = " + CleanEnumInitValue(p.InitExpression) + ",");
                             }
                             else
                             {
