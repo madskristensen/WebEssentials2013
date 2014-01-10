@@ -8,7 +8,7 @@ namespace MadsKristensen.EditorExtensions
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\tslint\bin\tslint");
         private static readonly string _tsLintFormatterDirectory = Path.Combine(WebEssentialsResourceDirectory, @"Scripts");
-        private static readonly string _tsLintFormatter = "tslint";
+        private const string _tsLintFormatter = "tslint";
 
         protected override string ServiceName
         {

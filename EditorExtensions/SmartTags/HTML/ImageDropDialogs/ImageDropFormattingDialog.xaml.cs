@@ -23,7 +23,9 @@ namespace MadsKristensen.EditorExtensions
 
             InitializeComponent();
             BindResources(0);
-            BuildMarkup(_formatsList.First().Value);
+
+            if (_formatsList.Any())
+                BuildMarkup(_formatsList.First().Value);
         }
 
         public string ShowAsDialog()
