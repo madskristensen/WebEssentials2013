@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
 
                 EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
                 TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, TextView.TextSnapshot.GetLineNumberFromPosition(scrollPosition));
-                EditorExtensionsPackage.DTE.StatusBar.Text = count +  " missing standard properties added";
+                EditorExtensionsPackage.DTE.StatusBar.Text = count + " missing standard properties added";
             }
 
             return true;

@@ -31,14 +31,14 @@ namespace MadsKristensen.EditorExtensions
         }
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
-            var args = new StringBuilder("--output-style=expanded ");
+            var args = new StringBuilder();
 
             if (WESettings.GetBoolean(WESettings.Keys.SassSourceMaps) && !InUnitTests)
             {
-                args.Append("--source-comments=map ");
+                args.Append("--source-map ");
             }
 
-            args.AppendFormat(CultureInfo.CurrentCulture, "\"{0}\" \"{1}\"", sourceFileName, targetFileName);
+            args.AppendFormat(CultureInfo.CurrentCulture, "--output-style=expanded \"{0}\" --output \"{1}\"", sourceFileName, targetFileName);
 
             return args.ToString();
         }
@@ -94,8 +94,11 @@ namespace MadsKristensen.EditorExtensions
 
         private static string GetUpdatedSourceMapFileContent(string cssFileName, string sourceMapFilename)
         {
+            // Should be removed when this is fixed: https://github.com/hcatlin/libsass/issues/242
+            var sourceMapFileContent = File.ReadAllText(sourceMapFilename).Replace("\\", "\\\\");
+
             // Read JSON map file and deserialize.
-            dynamic jsonSourceMap = Json.Decode(File.ReadAllText(sourceMapFilename));
+            dynamic jsonSourceMap = Json.Decode(sourceMapFileContent);
 
             if (jsonSourceMap == null)
                 return null;

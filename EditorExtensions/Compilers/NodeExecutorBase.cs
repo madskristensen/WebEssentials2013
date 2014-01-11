@@ -45,13 +45,12 @@ namespace MadsKristensen.EditorExtensions
             {
                 using (var process = await start.ExecuteAsync())
                 {
-                    string errorText = "";
-
-                    // Subjected to change, depending on https://github.com/andrew/node-sass/issues/207
-                    if (File.Exists(errorOutputFile))
-                        errorText = File.ReadAllText(errorOutputFile).Trim();
-
-                    return ProcessResult(process, errorText, sourceFileName, targetFileName);
+                    return ProcessResult(
+                                            process,
+                                            File.ReadAllText(errorOutputFile).Trim(),
+                                            sourceFileName,
+                                            targetFileName
+                                        );
                 }
             }
             finally
@@ -83,8 +82,8 @@ namespace MadsKristensen.EditorExtensions
         private void ValidateResult(Process process, string outputFile, string errorText, CompilerResult result)
         {
             try
-            {   // Subjected to change, depending on https://github.com/andrew/node-sass/issues/207
-                if (!errorText.Contains("error: ") && process.ExitCode == 0)
+            {
+                if (process.ExitCode == 0)
                 {
                     if (!string.IsNullOrEmpty(outputFile))
                         result.Result = File.ReadAllText(outputFile);
