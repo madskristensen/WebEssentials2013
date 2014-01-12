@@ -396,7 +396,7 @@
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <Icon guid="guidMenuImages" id="bmpScript"/>
         <Strings>
-          <ButtonText>Edit global .jshintrc file...</ButtonText>
+          <ButtonText>Edit global JSHint settings (.jshintrc)...</ButtonText>
         </Strings>
       </Button>
 
@@ -404,7 +404,7 @@
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <Icon guid="guidMenuImages" id="bmpScript"/>
         <Strings>
-          <ButtonText>Edit global .tslintrc file</ButtonText>
+          <ButtonText>Edit global TSLint settings (tslint.json)...</ButtonText>
         </Strings>
       </Button>
 
