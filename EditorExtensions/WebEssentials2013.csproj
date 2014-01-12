@@ -370,8 +370,8 @@
     <Compile Include="Compilers\Lint\TsLintCompiler.cs" />
     <Compile Include="MenuItems\CompressImage.cs" />
     <Compile Include="MenuItems\TsLint.cs" />
-    <Compile Include="Optimization\Image Compression\CompressionResult.cs" />
-    <Compile Include="Optimization\Image Compression\ImageCompressor.cs" />
+    <Compile Include="Optimization\Compression\CompressionResult.cs" />
+    <Compile Include="Optimization\Compression\ImageCompressor.cs" />
     <Compile Include="Settings\OptionPages\TsLint.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -579,11 +579,11 @@
     <Compile Include="SmartTags\HTML\HtmlRemoveParentSmartTag.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Sprite\SpriteMap.cs" />
-    <Compile Include="Sprite\SpriteMapConstituent.cs" />
-    <Compile Include="Sprite\SpriteRunner.cs" />
-    <Compile Include="Sprite\Sprite.cs" />
-    <Compile Include="Sprite\ImageInfo.cs" />
+    <Compile Include="Optimization\Sprite\SpriteMap.cs" />
+    <Compile Include="Optimization\Sprite\SpriteMapConstituent.cs" />
+    <Compile Include="Optimization\Sprite\SpriteRunner.cs" />
+    <Compile Include="Optimization\Sprite\Sprite.cs" />
+    <Compile Include="Optimization\Sprite\ImageInfo.cs" />
     <Compile Include="Validation\CSS\Filters\VariableCssErrorFilter.cs" />
     <Compile Include="Validation\CSS\Providers\MediaQuerySyntaxErrorTagProvider.cs" />
     <Compile Include="Validation\CSS\Providers\UnusedCssTagProvider.cs" />
