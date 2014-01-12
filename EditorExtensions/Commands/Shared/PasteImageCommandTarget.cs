@@ -32,15 +32,14 @@ namespace MadsKristensen.EditorExtensions
             IDataObject data = Clipboard.GetDataObject();
             ProjectItem item = ProjectHelpers.GetActiveFile();
 
-            if (!data.GetDataPresent(DataFormats.Bitmap) || string.IsNullOrEmpty(item.ContainingProject.FullName))
-                return false;
-
-            if (!IsValidTextBuffer())
+            if (!(data.GetDataPresent(DataFormats.Bitmap) || data.GetDataPresent(DataFormats.FileDrop)) 
+                || string.IsNullOrEmpty(item.ContainingProject.FullName)
+                || !IsValidTextBuffer())
                 return false;
 
             string fileName = null;
 
-            if (!GetFileName(out fileName))
+            if (!GetFileName(data, out fileName))
                 return true;
 
             _lastPath = Path.GetDirectoryName(fileName);
@@ -119,15 +118,27 @@ namespace MadsKristensen.EditorExtensions
             return "<img src=\"{0}\" alt=\"\" />";
         }
 
-        private static bool GetFileName(out string fileName)
+        private static bool GetFileName(IDataObject data, out string fileName)
         {
-            fileName = null;
+            string extension = "png";
+            fileName = "file";
+
+            if (data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string fullpath = ((string[])data.GetData(DataFormats.FileDrop))[0];
+                fileName = Path.GetFileName(fullpath);
+                extension = Path.GetExtension(fileName).TrimStart('.');
+            }
+            else
+            {
+                extension = GetMimeType((Bitmap)data.GetData(DataFormats.Bitmap));
+            }
 
             using (var dialog = new SaveFileDialog())
             {
-                dialog.FileName = "file.png";
-                dialog.DefaultExt = ".png";
-                dialog.Filter = "Images|*.png;*.gif;*.jpg;*.bmp;";
+                dialog.FileName = fileName;
+                dialog.DefaultExt = "." + extension;
+                dialog.Filter = extension.ToUpperInvariant() + " Files|*." + extension;
                 dialog.InitialDirectory = _lastPath ?? ProjectHelpers.GetRootFolder();
 
                 if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
@@ -137,6 +148,28 @@ namespace MadsKristensen.EditorExtensions
             }
 
             return true;
+        }
+
+        private static string GetMimeType(Bitmap bitmap)
+        {
+            if (bitmap.RawFormat.Guid == ImageFormat.Bmp.Guid)
+                return "bmp";
+            if (bitmap.RawFormat.Guid == ImageFormat.Emf.Guid)
+                return "emf";
+            if (bitmap.RawFormat.Guid == ImageFormat.Exif.Guid)
+                return "exif";
+            if (bitmap.RawFormat.Guid == ImageFormat.Gif.Guid)
+                return "gif";
+            if (bitmap.RawFormat.Guid == ImageFormat.Icon.Guid)
+                return "icon";
+            if (bitmap.RawFormat.Guid == ImageFormat.Jpeg.Guid)
+                return "jpg";
+            if (bitmap.RawFormat.Guid == ImageFormat.Tiff.Guid)
+                return "tiff";
+            if (bitmap.RawFormat.Guid == ImageFormat.Wmf.Guid)
+                return "wmf";
+
+            return "png";
         }
 
         private void UpdateTextBuffer(string fileName)
@@ -159,12 +192,22 @@ namespace MadsKristensen.EditorExtensions
 
         public static async void SaveClipboardImageToFile(IDataObject data, string fileName)
         {
-            using (Bitmap image = (Bitmap)data.GetData(DataFormats.Bitmap))
-            using (MemoryStream ms = new MemoryStream())
+            if (data.GetDataPresent(DataFormats.FileDrop))
             {
-                image.Save(ms, GetImageFormat(Path.GetExtension(fileName)));
-                byte[] buffer = ms.ToArray();
-                File.WriteAllBytes(fileName, buffer);
+                string original = ((string[])data.GetData(DataFormats.FileDrop))[0];
+                
+                if (File.Exists(original))
+                    File.Copy(original, fileName, true);
+            }
+            else
+            {
+                using (Bitmap image = (Bitmap)data.GetData(DataFormats.Bitmap))
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    image.Save(ms, GetImageFormat(Path.GetExtension(fileName)));
+                    byte[] buffer = ms.ToArray();
+                    File.WriteAllBytes(fileName, buffer);
+                }
             }
 
             ImageCompressor compressor = new ImageCompressor();
