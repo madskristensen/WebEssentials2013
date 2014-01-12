@@ -33,7 +33,8 @@ namespace MadsKristensen.EditorExtensions
             if (dec == null || dec.PropertyName == null || dec.Colon == null)
                 return;
 
-            var span = _buffer.CurrentSnapshot.CreateTrackingSpan(dec.Colon.Start, dec.Length - dec.PropertyName.Length, SpanTrackingMode.EdgeNegative);
+            int length = dec.Length - (dec.Colon.Start - dec.Start);
+            var span = _buffer.CurrentSnapshot.CreateTrackingSpan(dec.Colon.Start, length, SpanTrackingMode.EdgeNegative);
 
             ValueOrderFactory.AddSignatures method = ValueOrderFactory.GetMethod(dec);
 
