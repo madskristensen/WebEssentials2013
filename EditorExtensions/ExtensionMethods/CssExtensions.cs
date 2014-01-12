@@ -21,5 +21,13 @@ namespace MadsKristensen.EditorExtensions
             var schema = CssSchemaManager.SchemaManager.GetSchemaRoot(null);
             return schema.GetPseudo(":" + item.Text) != null;
         }
+
+        public static bool IsDataUri(this UrlItem item)
+        {
+            if (item.UrlString == null || string.IsNullOrEmpty(item.UrlString.Text))
+                return false;
+
+            return item.UrlString.Text.Contains(";base64,");
+        }
     }
 }

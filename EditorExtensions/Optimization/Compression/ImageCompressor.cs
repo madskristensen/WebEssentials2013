@@ -10,6 +10,8 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class ImageCompressor
     {
+        private const string _dataUriPrefix = "base64-";
+
         public static bool IsFileSupported(string fileName)
         {
             return GetArguments(fileName, string.Empty) != null;
@@ -23,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
             if (!IsFileSupported("file." + extension))
                 return dataUri;
 
-            string temp = Path.ChangeExtension(Path.GetTempFileName(), "." + extension);
+            string temp = Path.Combine(Path.GetTempPath(), _dataUriPrefix + Guid.NewGuid() + "." + extension);
             bool isFileSaved = FileHelpers.SaveDataUriToFile(dataUri, temp);
 
             if (isFileSaved)
@@ -82,18 +84,20 @@ namespace MadsKristensen.EditorExtensions
 
         private static void HandleResult(string file, CompressionResult result)
         {
+            string name = file.Contains(_dataUriPrefix) ? "the dataUri" : Path.GetFileName(file);
+
             if (result.Saving > 0)
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(result.OriginalFileName);
                 File.Copy(result.ResultFileName, result.OriginalFileName, true);
-
-                string text = "Compressed " + Path.GetFileName(file) + " by " + result.Saving + " bytes / " + result.Percent + "%...";
+                
+                string text = "Compressed " + name + " by " + result.Saving + " bytes / " + result.Percent + "%...";
                 EditorExtensionsPackage.DTE.StatusBar.Text = text;
                 Logger.Log(result.ToString());
             }
             else
             {
-                EditorExtensionsPackage.DTE.StatusBar.Text = Path.GetFileName(file) + " is already optimized...";
+                EditorExtensionsPackage.DTE.StatusBar.Text = name + " is already optimized...";
             }
         }
 

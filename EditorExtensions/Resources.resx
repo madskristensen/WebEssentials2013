@@ -199,10 +199,10 @@
     <value>Add missing standard property ({0})</value>
   </data>
   <data name="UpdateEmbedSmartTagActionName" xml:space="preserve">
-    <value>Re-embed dataURI from "{0}"</value>
+    <value>Re-embed dataUri from "{0}"</value>
   </data>
   <data name="UrlSmartTagActionName" xml:space="preserve">
-    <value>Embed as base64 DataURI</value>
+    <value>Embed as base64 dataUri</value>
   </data>
   <data name="ValidationColorValuesInRange" xml:space="preserve">
     <value>Validation (WE): Values must be between 0 and 255</value>

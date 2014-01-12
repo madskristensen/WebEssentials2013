@@ -21,7 +21,19 @@ namespace MadsKristensen.EditorExtensions
         public IEnumerable<ISmartTagAction> GetSmartTagActions(ParseItem item, int position, ITrackingSpan itemTrackingSpan, ITextView view)
         {
             UrlItem url = (UrlItem)item;
-            if (!url.IsValid || url.UrlString == null)
+            if (!url.IsValid || url.UrlString == null || string.IsNullOrEmpty(url.UrlString.Text))
+                yield break;
+
+            string text = url.UrlString.Text.Trim('"', '\'');
+            string testSupportFileName = text;
+
+            if (url.IsDataUri())
+            {
+                string mime = FileHelpers.GetMimeTypeFromBase64(text);
+                testSupportFileName = "file." + FileHelpers.GetExtension(mime);
+            }
+                        
+            if (!ImageCompressor.IsFileSupported(testSupportFileName))
                 yield break;
 
             yield return new OptimizeImageSmartTagAction(itemTrackingSpan, url);

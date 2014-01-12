@@ -27,7 +27,7 @@ namespace MadsKristensen.EditorExtensions
 
         public override string DisplayText
         {
-            get { return "Optimize Image"; }
+            get { return _url.IsDataUri() ? "Optimize dataUri" : "Optimize Image"; }
         }
 
         public async override void Invoke()
@@ -37,9 +37,8 @@ namespace MadsKristensen.EditorExtensions
 
             ImageCompressor compressor = new ImageCompressor();
             string url = _url.UrlString.Text.Trim('"', '\'');
-            bool isDataUri = url.StartsWith("data:image/", StringComparison.Ordinal);
 
-            if (isDataUri)
+            if (_url.IsDataUri())
             {
                 string dataUri = await compressor.CompressDataUri(url);
                 

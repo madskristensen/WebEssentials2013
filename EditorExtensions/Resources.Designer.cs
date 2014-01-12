@@ -304,7 +304,7 @@ namespace MadsKristensen.EditorExtensions {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Re-embed dataURI from &quot;{0}&quot;.
+        ///   Looks up a localized string similar to Re-embed dataUri from &quot;{0}&quot;.
         /// </summary>
         internal static string UpdateEmbedSmartTagActionName {
             get {
@@ -313,7 +313,7 @@ namespace MadsKristensen.EditorExtensions {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Embed as base64 DataURI.
+        ///   Looks up a localized string similar to Embed as base64 dataUri.
         /// </summary>
         internal static string UrlSmartTagActionName {
             get {
