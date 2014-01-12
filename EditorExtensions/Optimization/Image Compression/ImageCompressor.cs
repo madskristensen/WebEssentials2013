@@ -87,9 +87,18 @@ namespace MadsKristensen.EditorExtensions
                 CreateNoWindow = true
             };
 
-            using (var process = await start.ExecuteAsync())
+            try
             {
-                return new CompressionResult(fileName, targetFile);
+                using (var process = await start.ExecuteAsync())
+                {
+                    return new CompressionResult(fileName, targetFile);
+                }
+            }
+            catch
+            {
+                CompressionResult result = new CompressionResult(fileName, targetFile);
+                File.Delete(targetFile);
+                return result;
             }
         }
 
@@ -106,6 +115,9 @@ namespace MadsKristensen.EditorExtensions
                 case ".jpg":
                 case ".jpeg":
                     return string.Format("/c jpegtran -copy none -optimize -progressive \"{0}\" \"{1}\"", sourceFile, targetFile);
+
+                case ".gif":
+                    return string.Format("/c gifsicle --crop-transparency --no-comments --no-extensions --no-names --optimize=3 --batch \"{0}\" --output=\"{1}\"", sourceFile, targetFile);
             }
 
             return null;

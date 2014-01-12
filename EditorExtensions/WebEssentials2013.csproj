@@ -797,6 +797,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\Tools\gifsicle.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\Tools\jpegtran.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

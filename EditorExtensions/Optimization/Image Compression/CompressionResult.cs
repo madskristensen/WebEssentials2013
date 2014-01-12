@@ -11,10 +11,17 @@ namespace MadsKristensen.EditorExtensions
             FileInfo original = new FileInfo(originalFileName);
             FileInfo result = new FileInfo(resultFileName);
 
-            OriginalFileName = original.FullName;
-            OriginalFileSize = original.Length;
-            ResultFileName = result.FullName;
-            ResultFileSize = result.Length;
+            if (original.Exists)
+            {
+                OriginalFileName = original.FullName;
+                OriginalFileSize = original.Length;
+            }
+
+            if (result.Exists)
+            {
+                ResultFileName = result.FullName;
+                ResultFileSize = result.Length;
+            }
         }
 
         public long OriginalFileSize { get; set; }
@@ -29,7 +36,10 @@ namespace MadsKristensen.EditorExtensions
 
         public double Percent
         {
-            get { return 100 - Math.Round((double)ResultFileSize / (double)OriginalFileSize * 100, 1); }
+            get
+            {
+                return 100 - Math.Round((double)ResultFileSize / (double)OriginalFileSize * 100, 1);
+            }
         }
 
         public override string ToString()
