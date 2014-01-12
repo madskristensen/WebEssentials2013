@@ -792,6 +792,9 @@
     <Content Include="Resources\Icons\Git.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\Icons\Jigsaw.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\Icons\WebVTT.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

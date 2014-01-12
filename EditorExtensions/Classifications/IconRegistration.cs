@@ -33,6 +33,9 @@ namespace MadsKristensen.EditorExtensions
 
                     // Generic script
                     AddIcon(classes, "GenericScript.ico", ".appcache", ".jshintrc", ".jshintignore", ".tslintrc");
+
+                    // Jigsaw
+                    AddIcon(classes, "Jigsaw.ico", ".sprite");
                 }
             }
         }
