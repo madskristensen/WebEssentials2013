@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Design;
-using System.IO;
 using System.Linq;
-using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
@@ -10,7 +8,7 @@ using Task = System.Threading.Tasks.Task;
 namespace MadsKristensen.EditorExtensions
 {
     internal class CompressImageMenu
-    { 
+    {
         private DTE2 _dte;
         private OleMenuCommandService _mcs;
         private IEnumerable<string> _selectedPaths;
@@ -42,7 +40,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
         private async Task Compress()
-        {         
+        {
             ImageCompressor compressor = new ImageCompressor();
             await compressor.CompressFiles(_selectedPaths.ToArray());
         }
