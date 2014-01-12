@@ -60,6 +60,7 @@ namespace MadsKristensen.EditorExtensions
         }
         public static EditorExtensionsPackage Instance { get; private set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         protected override void Initialize()
         {
             base.Initialize();
