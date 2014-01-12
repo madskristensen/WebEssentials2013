@@ -92,34 +92,23 @@ namespace MadsKristensen.EditorExtensions
         private static void DrawRectangle(Graphics graphics, int width, int height, int xOffset, int yOffset, bool occupied, bool newlyOccupied)
         {
             // Fill the rectangle
-            Color c;
-            if (occupied)
-            {
-                if (newlyOccupied)
-                {
-                    c = Color.DarkGreen;
-                }
-                else
-                {
-                    c = Color.LightGreen;
-                }
-            }
-            else
-            {
-                c = Color.White;
-            }
+            Color color = occupied ?
+                            newlyOccupied ? Color.DarkGreen : Color.LightGreen :
+                            Color.White;
 
-            SolidBrush brush = new SolidBrush(c);
-            graphics.FillRectangle(brush, xOffset, yOffset, width, height);
-
+            using (SolidBrush brush = new SolidBrush(color))
+            {
+                graphics.FillRectangle(brush, xOffset, yOffset, width, height);
+            }
             // Draw border 
-            Pen pen = new Pen(Color.Black);
-            graphics.DrawRectangle(pen, xOffset, yOffset, width - 1, height - 1);
+            using (Pen pen = new Pen(Color.Black))
+            {
+                graphics.DrawRectangle(pen, xOffset, yOffset, width - 1, height - 1);
+            }
         }
 
-        public static void GenerateSpriteMap(string fileName, IEnumerable<IMappedImageInfo> mappedImages)
+        private static void GenerateSpriteMap(string fileName, IEnumerable<IMappedImageInfo> mappedImages)
         {
-
             SpriteMap map = new SpriteMap()
             {
                 File = fileName,
