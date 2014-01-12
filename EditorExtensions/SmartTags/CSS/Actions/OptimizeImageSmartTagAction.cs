@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
@@ -41,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
             if (_url.IsDataUri())
             {
                 string dataUri = await compressor.CompressDataUri(url);
-                
+
                 if (dataUri.Length < url.Length)
                 {
                     using (EditorExtensionsPackage.UndoContext("Optimize image"))

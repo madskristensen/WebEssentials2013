@@ -36,7 +36,7 @@ namespace MadsKristensen.EditorExtensions
             SpriteToImage(sprite, spriteImageFile);
 
             // Write .sprite file
-            GenerateSpriteMap(Path.ChangeExtension(spriteImageFile, ".sprite"), sprite.MappedImages);
+            GenerateSpriteMap(spriteImageFile, sprite.MappedImages);
         }
 
 
@@ -107,11 +107,11 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static void GenerateSpriteMap(string fileName, IEnumerable<IMappedImageInfo> mappedImages)
+        private static void GenerateSpriteMap(string spriteFileName, IEnumerable<IMappedImageInfo> mappedImages)
         {
             SpriteMap map = new SpriteMap()
             {
-                File = fileName,
+                File = spriteFileName,
                 Constituents =
                         mappedImages.Select(mapped =>
                         {
@@ -126,7 +126,7 @@ namespace MadsKristensen.EditorExtensions
                         })
             };
 
-            FileHelpers.WriteFile(fileName + ".sprite", Json.Encode(map));
+            FileHelpers.WriteFile(Path.Combine(spriteFileName, ".map"), Json.Encode(map));
         }
     }
 }

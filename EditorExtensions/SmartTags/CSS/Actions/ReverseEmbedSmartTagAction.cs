@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
-using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;

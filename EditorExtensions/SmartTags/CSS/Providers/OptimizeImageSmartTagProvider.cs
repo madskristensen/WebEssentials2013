@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
                 string mime = FileHelpers.GetMimeTypeFromBase64(text);
                 testSupportFileName = "file." + FileHelpers.GetExtension(mime);
             }
-                        
+
             if (!ImageCompressor.IsFileSupported(testSupportFileName))
                 yield break;
 
