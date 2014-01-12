@@ -85,6 +85,7 @@ namespace MadsKristensen.EditorExtensions
                 UnusedCssMenu unusedCssMenu = new UnusedCssMenu(mcs);
                 PixelPushingMenu pixelPushingMenu = new PixelPushingMenu(mcs);
                 ReferenceJsMenu referenceJsMenu = new ReferenceJsMenu(mcs);
+                CompressImageMenu imageMenu = new CompressImageMenu(DTE, mcs);
 
                 HandleMenuVisibility(mcs);
                 referenceJsMenu.SetupCommands();
@@ -101,6 +102,7 @@ namespace MadsKristensen.EditorExtensions
                 minifyMenu.SetupCommands();
                 diffMenu.SetupCommands();
                 transform.SetupCommands();
+                imageMenu.SetupCommands();
             }
 
             IconRegistration.RegisterIcons();

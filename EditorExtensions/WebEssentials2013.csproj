@@ -364,10 +364,14 @@
     <Compile Include="Commands\TypeScript\TsLintProjectRunner.cs" />
     <Compile Include="Commands\TypeScript\TsHintRunner.cs" />
     <Compile Include="Compilers\Lint\TsLintCompiler.cs" />
+    <Compile Include="MenuItems\CompressImage.cs" />
     <Compile Include="MenuItems\TsLint.cs" />
+    <Compile Include="Optimization\Image Compression\CompressionResult.cs" />
+    <Compile Include="Optimization\Image Compression\ImageCompressor.cs" />
     <Compile Include="Settings\OptionPages\TsLint.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="SmartTags\HTML\OptimizeImageSmartTag.cs" />
     <Compile Include="SmartTags\HTML\ImageDropDialogs\AddFormat.xaml.cs">
       <DependentUpon>AddFormat.xaml</DependentUpon>
     </Compile>
@@ -793,6 +797,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\Tools\jpegtran.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Tools\optipng.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Tools\pngout.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Snippets\snippets.pkgdef">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -915,6 +928,9 @@
     <Resource Include="Resources\Images\graph_class.png" />
     <Resource Include="Resources\Images\graph_parent.png" />
     <Resource Include="Resources\Images\sort.png" />
+    <Content Include="Resources\Tools\png.cmd">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="Source.extension.vsixmanifest" />
     <Resource Include="Resources\Images\vsgallery.png" />
     <Content Include="Schemas\CSS\css-we-settings.xml">

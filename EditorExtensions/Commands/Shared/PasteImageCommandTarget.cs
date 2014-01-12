@@ -157,7 +157,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public static void SaveClipboardImageToFile(IDataObject data, string fileName)
+        public static async void SaveClipboardImageToFile(IDataObject data, string fileName)
         {
             using (Bitmap image = (Bitmap)data.GetData(DataFormats.Bitmap))
             using (MemoryStream ms = new MemoryStream())
@@ -166,6 +166,9 @@ namespace MadsKristensen.EditorExtensions
                 byte[] buffer = ms.ToArray();
                 File.WriteAllBytes(fileName, buffer);
             }
+
+            ImageCompressor compressor = new ImageCompressor();
+            await compressor.CompressFiles(fileName);
         }
 
         private static ImageFormat GetImageFormat(string extension)

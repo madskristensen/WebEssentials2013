@@ -120,6 +120,10 @@
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
       </Group>
 
+      <Group guid="guidImageCmdSet" id="MyMenuGroup" priority="0x0009">
+        <Parent guid="guidSolutionExplorerCmdSet" id="MySubMenuGroup"/>
+      </Group>
+
       <Group guid="guidSolutionExplorerCmdSet" id="MyMenuGroup" priority="0x0001">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
       </Group>
@@ -390,6 +394,7 @@
 
       <Button guid="guidDiffCmdSet" id="cmdEditGlobalJsHint" priority="0x0102" type="Button">
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
+        <Icon guid="guidMenuImages" id="bmpScript"/>
         <Strings>
           <ButtonText>Edit global .jshintrc file...</ButtonText>
         </Strings>
@@ -397,6 +402,7 @@
 
       <Button guid="guidDiffCmdSet" id="cmdEditGlobalTsLint" priority="0x0103" type="Button">
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
+        <Icon guid="guidMenuImages" id="bmpScript"/>
         <Strings>
           <ButtonText>Edit global .tslintrc file</ButtonText>
         </Strings>
@@ -492,6 +498,15 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Minify HTML file(s)</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidImageCmdSet" id="cmdCompressImage" priority="0x0101" type="Button">
+        <Parent guid="guidImageCmdSet" id="MyMenuGroup"/>
+        <Icon guid="guidMenuImages" id="bmpImage"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Optimize image(s)</ButtonText>
         </Strings>
       </Button>
 
@@ -638,6 +653,7 @@
       <Bitmap guid="guidImages" href="Resources\Images\Images.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpLogo, bmpMinify"/>
       <Bitmap guid="guidNumbers" href="Resources\Images\numbers.png" usedList="pic1, pic2, pic3, pic4"/>
       <Bitmap guid="guidBrowserLink" href="Resources\Images\browserlink.png" usedList="bmpRecord, bmpPause"/>
+      <Bitmap guid="guidMenuImages" href="Resources\Images\menuimages.png" usedList="bmpScript, bmpImage"/>
     </Bitmaps>
   </Commands>
 
@@ -832,6 +848,11 @@
       <IDSymbol name="cmdBundleTs" value="0x1073" />
       <IDSymbol name="cmdBundleHtml" value="0x1074" />
     </GuidSymbol>
+    
+    <GuidSymbol name="guidImageCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e68}">
+      <IDSymbol name="MyMenuGroup" value="0x1090" />
+      <IDSymbol name="cmdCompressImage" value="0x1091" />
+    </GuidSymbol>
 
     <GuidSymbol name="htmlEditorCommandSet" value="{D7E8C5E1-BDB8-11D0-9C88-0000F8040A53}">
       <IDSymbol name="htmlContextMenu" value="0x0033"/>
@@ -899,6 +920,11 @@
     <GuidSymbol name="guidBrowserLink" value="{51f54cc4-4444-4ae5-a1a6-d44f9a6b7cbe}" >
       <IDSymbol name="bmpRecord" value="1" />
       <IDSymbol name="bmpPause" value="2" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidMenuImages" value="{51f54cc4-4444-4ae5-a1a6-d44f9a6b7cbf}" >
+      <IDSymbol name="bmpScript" value="1" />
+      <IDSymbol name="bmpImage" value="2" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>
