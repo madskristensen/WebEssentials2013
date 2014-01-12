@@ -71,7 +71,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
 
                 var fileName = FileHelpers.ShowDialog(extension);
 
-                if (!string.IsNullOrEmpty(fileName) && ReverseEmbedSmartTagAction.TrySaveFile(src.Value, fileName))
+                if (!string.IsNullOrEmpty(fileName) && FileHelpers.SaveDataUriToFile(src.Value, fileName))
                 {
                     using (EditorExtensionsPackage.UndoContext((DisplayText)))
                         ReplaceUrlValue(fileName, textBuffer, src);

@@ -37,7 +37,7 @@ namespace MadsKristensen.EditorExtensions
 
             var fileName = FileHelpers.ShowDialog(extension);
 
-            if (!string.IsNullOrEmpty(fileName) && TrySaveFile(base64, fileName))
+            if (!string.IsNullOrEmpty(fileName) && FileHelpers.SaveDataUriToFile(base64, fileName))
             {
                 using (EditorExtensionsPackage.UndoContext((DisplayText)))
                     ReplaceUrlValue(fileName);
@@ -49,23 +49,6 @@ namespace MadsKristensen.EditorExtensions
             string relative = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, fileName);
             string urlValue = string.Format(CultureInfo.InvariantCulture, "url({0})", relative);
             _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), urlValue);
-        }
-
-        public static bool TrySaveFile(string base64, string filePath)
-        {
-            try
-            {
-                int index = base64.IndexOf("base64,", StringComparison.Ordinal) + 7;
-                byte[] imageBytes = Convert.FromBase64String(base64.Substring(index));
-                File.WriteAllBytes(filePath, imageBytes);
-                ProjectHelpers.AddFileToActiveProject(filePath);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Logger.ShowMessage(ex.Message, "Web Essentials " + ex.GetType().Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
         }
     }
 }

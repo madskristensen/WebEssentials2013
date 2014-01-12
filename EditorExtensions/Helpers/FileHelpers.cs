@@ -146,9 +146,26 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        public static bool SaveDataUriToFile(string dataUri, string filePath)
+        {
+            try
+            {
+                int index = dataUri.IndexOf("base64,", StringComparison.Ordinal) + 7;
+                byte[] imageBytes = Convert.FromBase64String(dataUri.Substring(index));
+                File.WriteAllBytes(filePath, imageBytes);
+                ProjectHelpers.AddFileToActiveProject(filePath);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.ShowMessage(ex.Message, "Web Essentials " + ex.GetType().Name, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
+
         public static string GetMimeTypeFromBase64(string base64)
         {
-            int end = base64.IndexOf(";", StringComparison.Ordinal);
+            int end = base64.IndexOf(';');
 
             if (end > -1)
             {

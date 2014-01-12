@@ -375,6 +375,8 @@
     <Compile Include="Settings\OptionPages\TsLint.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="SmartTags\CSS\Actions\OptimizeImageSmartTagAction.cs" />
+    <Compile Include="SmartTags\CSS\Providers\OptimizeImageSmartTagProvider.cs" />
     <Compile Include="SmartTags\HTML\OptimizeImageSmartTag.cs" />
     <Compile Include="SmartTags\HTML\ImageDropDialogs\AddFormat.xaml.cs">
       <DependentUpon>AddFormat.xaml</DependentUpon>

@@ -65,25 +65,14 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
 
                 if (isDataUri)
                 {
-                    string mimeType = FileHelpers.GetMimeTypeFromBase64(src.Value);
-                    string extension = FileHelpers.GetExtension(mimeType);
+                    string dataUri = await compressor.CompressDataUri(src.Value);
 
-                    if (!ImageCompressor.IsFileSupported("file." + extension))
-                        return;
-
-                    string temp = Path.ChangeExtension(Path.GetTempFileName(), "." + extension);
-                    bool isFileSaved = ReverseEmbedSmartTagAction.TrySaveFile(src.Value, temp);
-
-                    if (isFileSaved)
+                    if (dataUri.Length < src.Value.Length)
                     {
-                        await compressor.CompressFiles(temp);
-                        string base64 = FileHelpers.ConvertToBase64(temp);
-                        File.Delete(temp);
-
                         using (EditorExtensionsPackage.UndoContext("Optimize image"))
                         {
                             Span span = Span.FromBounds(src.ValueRangeUnquoted.Start, src.ValueRangeUnquoted.End);
-                            textBuffer.Replace(span, base64);
+                            textBuffer.Replace(span, dataUri);
                         }
                     }
                 }
