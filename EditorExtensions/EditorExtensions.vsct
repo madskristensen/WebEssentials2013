@@ -504,6 +504,7 @@
       <Button guid="guidImageCmdSet" id="cmdCompressImage" priority="0x0101" type="Button">
         <Parent guid="guidImageCmdSet" id="MyMenuGroup"/>
         <Icon guid="guidMenuImages" id="bmpImage"/>
+        <CommandFlag>TextChanges</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Optimize image(s)</ButtonText>
