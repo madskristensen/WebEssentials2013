@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -23,6 +25,22 @@ namespace MadsKristensen.EditorExtensions
         public long Saving
         {
             get { return OriginalFileSize - ResultFileSize; }
+        }
+
+        public double Percent
+        {
+            get { return 100 - Math.Round((double)ResultFileSize / (double)OriginalFileSize * 100, 1); }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Optimized " + Path.GetFileName(OriginalFileName));
+            sb.AppendLine("Before: " + OriginalFileSize + " bytes");
+            sb.AppendLine("After: " + ResultFileSize + " bytes");
+            sb.AppendLine("Saving: " + Saving + " bytes / " + Percent + "%");
+
+            return sb.ToString();
         }
     }
 }

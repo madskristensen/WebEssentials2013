@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (savings > 0)
             {
-                double percent = Math.Round((double)results / (double)originals * 100, 1);
+                double percent = 100 - Math.Round((double)results / (double)originals * 100, 1);
                 EditorExtensionsPackage.DTE.StatusBar.Text = list.Count + " images optimized. Total saving of " + savings + " bytes / " + percent + "%";
             }
             else
@@ -64,9 +64,9 @@ namespace MadsKristensen.EditorExtensions
                 ProjectHelpers.CheckOutFileFromSourceControl(result.OriginalFileName);
                 File.Copy(result.ResultFileName, result.OriginalFileName, true);
 
-                double percent = Math.Round((double)result.ResultFileSize / (double)result.OriginalFileSize * 100, 1);
-                string text = "Compressed " + Path.GetFileName(file) + " by " + result.Saving + " bytes / " + percent + "%...";
+                string text = "Compressed " + Path.GetFileName(file) + " by " + result.Saving + " bytes / " + result.Percent + "%...";
                 EditorExtensionsPackage.DTE.StatusBar.Text = text;
+                Logger.Log(result.ToString());
             }
             else
             {
