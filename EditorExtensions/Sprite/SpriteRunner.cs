@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Web.Helpers;
 using Mapper;
 
@@ -35,13 +36,7 @@ namespace MadsKristensen.EditorExtensions
             SpriteToImage(sprite, spriteImageFile);
 
             // Write .sprite file
-            var spriteName = Path.ChangeExtension(spriteImageFile, ".sprite");
-            dynamic spriteInfo = null;
-
-            spriteInfo.File = spriteImageFile;
-            spriteInfo.Constituent = rectangles;
-
-            FileHelpers.WriteFile(Json.Encode(spriteInfo), spriteName);
+            GenerateSpriteMap(Path.ChangeExtension(spriteImageFile, ".sprite"), sprite.MappedImages);
         }
 
 
@@ -120,6 +115,29 @@ namespace MadsKristensen.EditorExtensions
             // Draw border 
             Pen pen = new Pen(Color.Black);
             graphics.DrawRectangle(pen, xOffset, yOffset, width - 1, height - 1);
+        }
+
+        public static void GenerateSpriteMap(string fileName, IEnumerable<IMappedImageInfo> mappedImages)
+        {
+
+            SpriteMap map = new SpriteMap()
+            {
+                File = fileName,
+                Constituents =
+                        mappedImages.Select(mapped =>
+                        {
+                            SpriteMapConstituent image = new SpriteMapConstituent();
+                            var info = mapped.ImageInfo as ImageInfo;
+                            image.Name = Path.GetFileName(info.Name);
+                            image.Width = info.Width;
+                            image.Height = info.Height;
+                            image.OffsetX = mapped.X;
+                            image.OffsetY = mapped.Y;
+                            return image;
+                        })
+            };
+
+            FileHelpers.WriteFile(fileName + ".sprite", Json.Encode(map));
         }
     }
 }
