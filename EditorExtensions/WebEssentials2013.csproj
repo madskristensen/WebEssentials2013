@@ -367,6 +367,7 @@
     <Compile Include="Commands\TypeScript\TypeScriptCreationListener.cs" />
     <Compile Include="Commands\TypeScript\TsLintProjectRunner.cs" />
     <Compile Include="Commands\TypeScript\TsHintRunner.cs" />
+    <Compile Include="Compilers\Lint\LintConfigEncodingFix.cs" />
     <Compile Include="Compilers\Lint\TsLintCompiler.cs" />
     <Compile Include="MenuItems\CompressImage.cs" />
     <Compile Include="MenuItems\TsLint.cs" />
