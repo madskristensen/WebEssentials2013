@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags
     internal class HtmlRemoveParentSmartTag : HtmlSmartTag
     {
         public HtmlRemoveParentSmartTag(ITextView textView, ITextBuffer textBuffer, ElementNode element)
-            : base(textView, textBuffer, element, HtmlSmartTagPosition.ElementName)
+            : base(textView, textBuffer, element, HtmlSmartTagPosition.StartTag)
         { }
 
         protected override IEnumerable<ISmartTagAction> GetSmartTagActions(ITrackingSpan span)

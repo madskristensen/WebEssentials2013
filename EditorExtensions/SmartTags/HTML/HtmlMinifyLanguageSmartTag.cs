@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags
     internal class HtmlMinifySmartTag : HtmlSmartTag
     {
         public HtmlMinifySmartTag(ITextView textView, ITextBuffer textBuffer, ElementNode element)
-            : base(textView, textBuffer, element, HtmlSmartTagPosition.ElementName)
+            : base(textView, textBuffer, element, HtmlSmartTagPosition.StartTag)
         {
         }
 

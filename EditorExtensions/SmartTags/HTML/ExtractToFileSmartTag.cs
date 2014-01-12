@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags
     internal class ExtractToFileSmartTag : HtmlSmartTag
     {
         public ExtractToFileSmartTag(ITextView textView, ITextBuffer textBuffer, ElementNode element)
-            : base(textView, textBuffer, element, HtmlSmartTagPosition.ElementName)
+            : base(textView, textBuffer, element, HtmlSmartTagPosition.StartTag)
         { }
 
         protected override IEnumerable<ISmartTagAction> GetSmartTagActions(ITrackingSpan span)

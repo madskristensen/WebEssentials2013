@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
     internal class HtmlAngularControllerSmartTag : HtmlSmartTag
     {
         public HtmlAngularControllerSmartTag(ITextView textView, ITextBuffer textBuffer, ElementNode element)
-            : base(textView, textBuffer, element, HtmlSmartTagPosition.ElementName)
+            : base(textView, textBuffer, element, HtmlSmartTagPosition.StartTag)
         {
         }
 

@@ -28,7 +28,7 @@ namespace MadsKristensen.EditorExtensions
     internal class DropImagesSmartTag : HtmlSmartTag
     {
         public DropImagesSmartTag(ITextView textView, ITextBuffer textBuffer, ElementNode element)
-            : base(textView, textBuffer, element, HtmlSmartTagPosition.ElementName)
+            : base(textView, textBuffer, element, HtmlSmartTagPosition.StartTag)
         {
         }
 
