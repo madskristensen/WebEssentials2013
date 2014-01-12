@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void EditGlobalTsLintFile()
         {
-            string fileName = TsLintCompiler.GlobalSettings("tslint");
+            string fileName = TsLintCompiler.GetOrCreateGlobalSettings("tslint.json");
             _dte.ItemOperations.OpenFile(fileName);
         }
 

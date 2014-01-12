@@ -928,7 +928,7 @@
     <Content Include="Resources\settings-defaults\.jshintrc">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\settings-defaults\.tslintrc">
+    <Content Include="Resources\settings-defaults\tslint.json">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\Scripts\jshint-node-reporter.js">

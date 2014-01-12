@@ -25,42 +25,30 @@ namespace MadsKristensen.EditorExtensions
             get { return ParseErrorsWithJson; }
         }
 
-        public static string GlobalSettings(string serviceName)
-        {
-            var serviceNameLower = serviceName.ToLower(CultureInfo.CurrentCulture);
-
-            string jsHintRc = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "." + serviceNameLower + "rc");
-
-            if (!File.Exists(jsHintRc))
-                File.Copy(Path.Combine(Path.GetDirectoryName(typeof(LessCompiler).Assembly.Location), @"Resources\settings-defaults\." + serviceNameLower + "rc")
-                        , jsHintRc);
-
-            return jsHintRc;
-        }
-
         public Task<CompilerResult> Check(string sourcePath)
         {
             return Compile(sourcePath, null);
         }
 
-        protected string FindLocalSettings(string sourcePath)
+        public static string GetOrCreateGlobalSettings(string fileName)
         {
-            string dir = Path.GetDirectoryName(sourcePath);
+            string globalFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), fileName);
 
-            while (!File.Exists(Path.Combine(dir, "." + ServiceName.ToLower(CultureInfo.CurrentCulture) + "rc")))
+            if (!File.Exists(globalFile))
             {
-                dir = Path.GetDirectoryName(dir);
-                if (String.IsNullOrEmpty(dir))
-                    return null;
+                string extensionDir = Path.GetDirectoryName(typeof(JsHintCompiler).Assembly.Location);
+                string settingsFile = Path.Combine(extensionDir, @"Resources\settings-defaults\", fileName);
+                File.Copy(settingsFile, globalFile);
             }
 
-            return Path.Combine(dir, "." + ServiceName.ToLower(CultureInfo.CurrentCulture) + "rc");
+            return globalFile;
         }
 
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
-            return String.Format(CultureInfo.CurrentCulture, "--config \"{0}\" --reporter \"{1}\" \"{2}\""
-                               , FindLocalSettings(sourceFileName) ?? GlobalSettings(ServiceName)
+            GetOrCreateGlobalSettings(".jshintrc"); // Ensure that default settings exist
+
+            return String.Format(CultureInfo.CurrentCulture, "--reporter \"{0}\" \"{1}\""
                                , _jsHintReporter
                                , sourceFileName);
         }
