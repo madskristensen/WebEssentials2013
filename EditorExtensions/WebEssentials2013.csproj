@@ -38,6 +38,7 @@
     <ZipPackageCompressionLevel>Normal</ZipPackageCompressionLevel>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>Source.extension.vsixmanifest</ApplicationManifest>
@@ -59,7 +60,7 @@
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -92,6 +93,9 @@
     </Reference>
     <Reference Include="CssSorter">
       <HintPath>..\CssSorter.dll</HintPath>
+    </Reference>
+    <Reference Include="Mapper">
+      <HintPath>..\Mapper.dll</HintPath>
     </Reference>
     <Reference Include="MarkdownSharp">
       <HintPath>..\MarkdownSharp.dll</HintPath>
@@ -575,6 +579,9 @@
     <Compile Include="SmartTags\HTML\HtmlRemoveParentSmartTag.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Sprite\SpriteRunner.cs" />
+    <Compile Include="Sprite\Sprite.cs" />
+    <Compile Include="Sprite\ImageInfo.cs" />
     <Compile Include="Validation\CSS\Filters\VariableCssErrorFilter.cs" />
     <Compile Include="Validation\CSS\Providers\MediaQuerySyntaxErrorTagProvider.cs" />
     <Compile Include="Validation\CSS\Providers\UnusedCssTagProvider.cs" />
