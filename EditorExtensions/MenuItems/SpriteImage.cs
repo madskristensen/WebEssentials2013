@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.IO;
@@ -45,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
         private async Task CreateSprite()
         {
             string spriteFile;
-         
+
             if (!GetFileName(out spriteFile))
                 return;
 
