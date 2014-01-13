@@ -19,7 +19,7 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>If set, the executor will not try to use the VS project system.</summary>
         public static bool InUnitTests { get; set; }
 
-        protected abstract string ServiceName { get; }
+        public abstract string ServiceName { get; }
         protected abstract string CompilerPath { get; }
         protected virtual Regex ErrorParsingPattern { get { return null; } }
         protected virtual Func<string, IEnumerable<CompilerError>> ParseErrors { get { return ParseErrorsWithRegex; } }

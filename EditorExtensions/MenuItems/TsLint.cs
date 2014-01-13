@@ -52,12 +52,12 @@ namespace MadsKristensen.EditorExtensions
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         private void RunTsLint()
         {
-            TsLintRunner.Reset();
+            LintReporter.Reset();            // TODO: Why?
 
             foreach (string file in files)
             {
-                TsLintRunner runner = new TsLintRunner(file);
-                runner.RunCompiler();
+                var runner = new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, file);
+                runner.RunCompiler().ToString();    // Don't wait for result
             }
         }
     }

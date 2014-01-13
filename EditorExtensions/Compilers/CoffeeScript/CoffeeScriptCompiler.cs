@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions
         private static readonly Regex _errorParsingPattern = new Regex(@"(?<fileName>.*):(?<line>.\d*):(?<column>.\d*): error: (?<message>.*\n.*)", RegexOptions.Multiline);
         private static readonly Regex _sourceMapInJs = new Regex(@"\/\*\n.*=(.*)\n\*\/", RegexOptions.Multiline);
 
-        protected override string ServiceName
+        public override string ServiceName
         {
             get { return "CoffeeScript"; }
         }

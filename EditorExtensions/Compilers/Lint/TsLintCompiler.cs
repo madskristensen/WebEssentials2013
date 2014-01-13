@@ -11,15 +11,9 @@ namespace MadsKristensen.EditorExtensions
         private const string _tsLintFormatter = "tslint";
         private const string _settingsName = "tslint.json";
 
-        protected override string ServiceName
-        {
-            get { return "TsLint"; }
-        }
-        protected override string CompilerPath
-        {
-            get { return _compilerPath; }
-        }
-
+        public override string SourceExtension { get { return ".ts"; } }
+        public override string ServiceName { get { return "TsLint"; } }
+        protected override string CompilerPath { get { return _compilerPath; } }
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
             GetOrCreateGlobalSettings(_settingsName); // Ensure that default settings exist

@@ -89,8 +89,13 @@ namespace MadsKristensen.EditorExtensions
         public bool CamelCaseTypeNames { get; set; }
     }
 
-
-    public class LinterSettings<T> : SettingsBase<T> where T : LinterSettings<T>
+    public interface ILinterSettings
+    {
+        bool LintOnSave { get; }
+        bool LintOnBuild { get; }
+        TaskErrorCategory LintResultLocation { get; }
+    }
+    public class LinterSettings<T> : SettingsBase<T>, ILinterSettings where T : LinterSettings<T>
     {
         [Category("Linter")]
         [DisplayName("Run on save")]

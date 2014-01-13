@@ -6,7 +6,7 @@ namespace MadsKristensen.EditorExtensions
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\iced-coffee-script\bin\coffee");
 
-        protected override string ServiceName
+        public override string ServiceName
         {
             get { return "IcedCoffeeScript"; }
         }

@@ -45,10 +45,10 @@ namespace MadsKristensen.EditorExtensions
             ITextDocument document;
             if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
             {
-                JsHintProjectRunner runner = new JsHintProjectRunner(document);
-                textView.Closed += (s, e) => runner.Dispose();
+                var lintInvoker = new LintFileInvoker(f => new JsHintReporter(f), document);
+                textView.Closed += (s, e) => lintInvoker.Dispose();
 
-                textView.TextBuffer.Properties.GetOrCreateSingletonProperty(() => runner);
+                textView.TextBuffer.Properties.GetOrCreateSingletonProperty(() => lintInvoker);
             }
         }
     }

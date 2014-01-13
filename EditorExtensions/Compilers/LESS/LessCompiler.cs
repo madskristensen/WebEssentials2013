@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions
         private static readonly Regex _errorParsingPattern = new Regex(@"^(?<message>.+) in (?<fileName>.+) on line (?<line>\d+), column (?<column>\d+):$", RegexOptions.Multiline);
         private static readonly Regex _sourceMapInCss = new Regex(@"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", RegexOptions.Multiline);
 
-        protected override string ServiceName
+        public override string ServiceName
         {
             get { return "LESS"; }
         }

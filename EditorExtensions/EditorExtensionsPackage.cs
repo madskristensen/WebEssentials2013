@@ -136,14 +136,13 @@ namespace MadsKristensen.EditorExtensions
                 });
 
                 if (WESettings.Instance.JavaScript.LintOnBuild)
-                    JsHintProjectRunner.RunOnAllFilesInProject();
+                    await LintFileInvoker.RunOnAllFilesInProject(".js", f => new JsHintReporter(f));
                 if (WESettings.Instance.TypeScript.LintOnBuild)
-                    TsLintProjectRunner.RunOnAllFilesInProject();
+                    await LintFileInvoker.RunOnAllFilesInProject(".ts", f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f));
             }
             else if (Action == vsBuildAction.vsBuildActionClean)
             {
-                JsHintRunner.Reset();
-                TsLintRunner.Reset();
+                LintReporter.Reset();
             }
         }
 
