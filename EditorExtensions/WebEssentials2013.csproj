@@ -87,9 +87,9 @@
     <CopyVsixExtensionLocation>bin/release/new folder</CopyVsixExtensionLocation>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AjaxMin, Version=5.6.5100.19196, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+    <Reference Include="AjaxMin, Version=5.7.5124.21494, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AjaxMin.5.6.5100.19204\lib\net40\AjaxMin.dll</HintPath>
+      <HintPath>..\packages\AjaxMin.5.7.5124.21499\lib\net40\AjaxMin.dll</HintPath>
     </Reference>
     <Reference Include="CssSorter">
       <HintPath>..\CssSorter.dll</HintPath>
