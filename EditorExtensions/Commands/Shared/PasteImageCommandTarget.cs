@@ -47,12 +47,6 @@ namespace MadsKristensen.EditorExtensions
             SaveClipboardImageToFile(data, fileName);
             UpdateTextBuffer(fileName);
 
-            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
-            {
-                ProjectHelpers.AddFileToActiveProject(fileName);
-
-            }), DispatcherPriority.ApplicationIdle, null);
-
             return true;
         }
 
@@ -212,6 +206,8 @@ namespace MadsKristensen.EditorExtensions
 
             ImageCompressor compressor = new ImageCompressor();
             await compressor.CompressFiles(fileName);
+
+            ProjectHelpers.AddFileToActiveProject(fileName);
         }
 
         private static ImageFormat GetImageFormat(string extension)
