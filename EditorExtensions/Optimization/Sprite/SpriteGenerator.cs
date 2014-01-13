@@ -11,7 +11,8 @@ namespace MadsKristensen.EditorExtensions
 {
     public class SpriteGenerator
     {
-        IEnumerable<ImageInfo> rectangles;
+        private IEnumerable<ImageInfo> rectangles;
+        private Sprite sprite;
         public const string MapExtension = ".sprite";
 
         public SpriteGenerator(IEnumerable<ImageInfo> imageInfo)
@@ -25,25 +26,21 @@ namespace MadsKristensen.EditorExtensions
         /// <param name="spriteImageFile">Full path to destination file name</param>
         public void GenerateSpriteWithMaps(string spriteImageFile)
         {
-            Mapper.Canvas canvas = new Mapper.Canvas();
-            MapperOptimalEfficiency<Sprite> mapper = new MapperOptimalEfficiency<Sprite>(canvas);
+            MapperOptimalEfficiency<Sprite> mapper = new MapperOptimalEfficiency<Sprite>(new Canvas());
 
-            Sprite sprite = mapper.Mapping(rectangles);
+            sprite = mapper.Mapping(rectangles);
 
-            GenerateSpriteImage(sprite, spriteImageFile);
+            GenerateSpriteImage(spriteImageFile);
 
-            GenerateSpriteMap(spriteImageFile, sprite.MappedImages);
+            GenerateSpriteMap(spriteImageFile);
         }
 
-        private void GenerateSpriteImage(ISprite sprite, string spriteImageFile)
+        private void GenerateSpriteImage(string spriteImageFile)
         {
             using (Bitmap bitmap = new Bitmap(sprite.Width, sprite.Height, PixelFormat.Format32bppPArgb))
             {
                 using (Graphics graphics = Graphics.FromImage(bitmap))
                 {
-                    // Draw border around the entire image. [Mads] Why?
-                    DrawBorder(graphics, sprite.Width, sprite.Height, 0, 0);
-
                     foreach (IMappedImageInfo map in sprite.MappedImages)
                     {
                         ImageInfo info = map.ImageInfo as ImageInfo;
@@ -58,27 +55,11 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static void DrawBorder(Graphics graphics, int width, int height, int xOffset, int yOffset)
-        {
-            // Fill the rectangle
-            Color color = Color.White;
-
-            using (SolidBrush brush = new SolidBrush(color))
-            {
-                graphics.FillRectangle(brush, xOffset, yOffset, width, height);
-            }
-            // Draw border 
-            using (Pen pen = new Pen(Color.Black))
-            {
-                graphics.DrawRectangle(pen, xOffset, yOffset, width - 1, height - 1);
-            }
-        }
-
-        private static void GenerateSpriteMap(string spriteFileName, IEnumerable<IMappedImageInfo> mappedImages)
+        private void GenerateSpriteMap(string spriteFileName)
         {
             var map = new
             {
-                Constituents = mappedImages.Select(mapped =>
+                Constituents = sprite.MappedImages.Select(mapped =>
                 {
                     var info = mapped.ImageInfo as ImageInfo;
                     SpriteMapConstituent image = new SpriteMapConstituent()
