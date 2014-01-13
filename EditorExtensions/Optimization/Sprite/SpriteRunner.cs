@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Web.Helpers;
 using Mapper;
+using Newtonsoft.Json.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -54,24 +55,26 @@ namespace MadsKristensen.EditorExtensions
         /// </returns>
         private void SpriteToImage(ISprite sprite, string spriteImageFile)
         {
-            using (Bitmap bitmap = new Bitmap(sprite.Width * _imageZoom, sprite.Height * _imageZoom))
+            using (Bitmap bitmap = new Bitmap(sprite.Width * _imageZoom, sprite.Height * _imageZoom, PixelFormat.Format32bppPArgb))
             {
                 using (Graphics graphics = Graphics.FromImage(bitmap))
                 {
                     // Draw border around the entire image
-                    DrawRectangle(
+                    DrawBorder(
                         graphics,
                         sprite.Width * _imageZoom, sprite.Height * _imageZoom,
-                        0, 0,
-                        false, false);
+                        0, 0);
 
                     foreach (IMappedImageInfo mappedImageInfo in sprite.MappedImages)
                     {
-                        DrawRectangle(
-                            graphics,
-                            mappedImageInfo.ImageInfo.Width * _imageZoom, mappedImageInfo.ImageInfo.Height * _imageZoom,
-                            mappedImageInfo.X * _imageZoom, mappedImageInfo.Y * _imageZoom,
-                            true, false);
+                        var info = (mappedImageInfo.ImageInfo as ImageInfo);
+
+                        graphics.DrawImage(Image.FromFile(info.Name),
+                                               info.Width * _imageZoom,
+                                               info.Height * _imageZoom,
+                                               mappedImageInfo.X * _imageZoom,
+                                               mappedImageInfo.Y * _imageZoom
+                                          );
                     }
                 }
 
@@ -79,22 +82,18 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-
         /// <summary>
-        /// Draws a rectangle on the canvas. The rectangle denotes a FreeArea.
+        /// Draws a Border around the canvas. The rectangle denotes a FreeArea.
         /// </summary>
         /// <param name="graphics"></param>
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="xOffset"></param>
         /// <param name="yOffset"></param>
-        /// <param name="occupied"></param>
-        private static void DrawRectangle(Graphics graphics, int width, int height, int xOffset, int yOffset, bool occupied, bool newlyOccupied)
+        private static void DrawBorder(Graphics graphics, int width, int height, int xOffset, int yOffset)
         {
             // Fill the rectangle
-            Color color = occupied ?
-                            newlyOccupied ? Color.DarkGreen : Color.LightGreen :
-                            Color.White;
+            Color color = Color.White;
 
             using (SolidBrush brush = new SolidBrush(color))
             {
@@ -126,7 +125,7 @@ namespace MadsKristensen.EditorExtensions
                         })
             };
 
-            FileHelpers.WriteFile(Path.Combine(spriteFileName, ".map"), Json.Encode(map));
+            File.WriteAllText(spriteFileName + ".map", JObject.Parse(Json.Encode(map)).ToString());
         }
     }
 }

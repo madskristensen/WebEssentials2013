@@ -120,7 +120,11 @@
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
       </Group>
 
-      <Group guid="guidImageCmdSet" id="MyMenuGroup" priority="0x0009">
+      <Group guid="guidCompressImageCmdSet" id="MyMenuGroup" priority="0x0009">
+        <Parent guid="guidSolutionExplorerCmdSet" id="MySubMenuGroup"/>
+      </Group>
+
+      <Group guid="guidSpriteImageCmdSet" id="MyMenuGroup" priority="0x0009">
         <Parent guid="guidSolutionExplorerCmdSet" id="MySubMenuGroup"/>
       </Group>
 
@@ -455,7 +459,7 @@
           <ButtonText>Run TSLint</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidDiffCmdSet" id="cmdJavaScriptIntellisense" priority="0x0107" type="Button">
         <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -501,13 +505,23 @@
         </Strings>
       </Button>
 
-      <Button guid="guidImageCmdSet" id="cmdCompressImage" priority="0x0101" type="Button">
-        <Parent guid="guidImageCmdSet" id="MyMenuGroup"/>
+      <Button guid="guidCompressImageCmdSet" id="cmdCompressImage" priority="0x0101" type="Button">
+        <Parent guid="guidCompressImageCmdSet" id="MyMenuGroup"/>
         <Icon guid="guidMenuImages" id="bmpImage"/>
         <CommandFlag>TextChanges</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Optimize image(s)</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidSpriteImageCmdSet" id="cmdSpriteImage" priority="0x0101" type="Button">
+        <Parent guid="guidSpriteImageCmdSet" id="MyMenuGroup"/>
+        <Icon guid="guidMenuImages" id="bmpImage"/>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Sprite image</ButtonText>
         </Strings>
       </Button>
 
@@ -849,10 +863,15 @@
       <IDSymbol name="cmdBundleTs" value="0x1073" />
       <IDSymbol name="cmdBundleHtml" value="0x1074" />
     </GuidSymbol>
-    
-    <GuidSymbol name="guidImageCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e68}">
+
+    <GuidSymbol name="guidCompressImageCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e68}">
       <IDSymbol name="MyMenuGroup" value="0x1090" />
       <IDSymbol name="cmdCompressImage" value="0x1091" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidSpriteImageCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e77}">
+      <IDSymbol name="MyMenuGroup" value="0x1094" />
+      <IDSymbol name="cmdSpriteImage" value="0x1093" />
     </GuidSymbol>
 
     <GuidSymbol name="htmlEditorCommandSet" value="{D7E8C5E1-BDB8-11D0-9C88-0000F8040A53}">

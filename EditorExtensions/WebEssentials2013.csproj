@@ -369,6 +369,7 @@
     <Compile Include="Commands\TypeScript\TsHintRunner.cs" />
     <Compile Include="Compilers\Lint\LintConfigEncodingFix.cs" />
     <Compile Include="Compilers\Lint\TsLintCompiler.cs" />
+    <Compile Include="MenuItems\SpriteImage.cs" />
     <Compile Include="MenuItems\CompressImage.cs" />
     <Compile Include="MenuItems\TsLint.cs" />
     <Compile Include="Optimization\Compression\CompressionResult.cs" />
