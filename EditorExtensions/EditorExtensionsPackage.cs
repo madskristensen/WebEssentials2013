@@ -19,19 +19,17 @@ namespace MadsKristensen.EditorExtensions
     [Guid(CommandGuids.guidEditorExtensionsPkgString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
-    [ProvideOptionPage(typeof(GeneralOptions), "Web Essentials", "General", 101, 101, true, new[] { "ZenCoding", "Mustache", "Handlebars", "Comments", "Bundling", "Bundle" })]
-    [ProvideOptionPage(typeof(CssOptions), "Web Essentials", "CSS", 101, 102, true, new[] { "Minify", "Minification", "W3C", "CSS3" })]
-    [ProvideOptionPage(typeof(JsHintOptions), "Web Essentials", "JSHint", 101, 103, true, new[] { "JSLint", "Lint" })]
-    [ProvideOptionPage(typeof(TsLintOptions), "Web Essentials", "TSLint", 101, 104, true, new[] { "TSLint", "Lint" })]
-    [ProvideOptionPage(typeof(LessOptions), "Web Essentials", "LESS", 101, 105, true)]
-    [ProvideOptionPage(typeof(SassOptions), "Web Essentials", "SASS", 101, 113, true)]
-    [ProvideOptionPage(typeof(CoffeeScriptOptions), "Web Essentials", "CoffeeScript", 101, 106, true, new[] { "Iced", "JavaScript", "JS", "JScript" })]
-    [ProvideOptionPage(typeof(JavaScriptOptions), "Web Essentials", "JavaScript", 101, 107, true, new[] { "JScript", "JS", "Minify", "Minification", "EcmaScript" })]
-    [ProvideOptionPage(typeof(BrowserLinkOptions), "Web Essentials", "Browser Link", 101, 108, true, new[] { "HTML menu", "BrowserLink" })]
-    [ProvideOptionPage(typeof(MarkdownOptions), "Web Essentials", "Markdown", 101, 109, true, new[] { "markdown", "Markdown", "md" })]
-    [ProvideOptionPage(typeof(CodeGenerationOptions), "Web Essentials", "Code Generation", 101, 210, true, new[] { "CodeGeneration", "codeGeneration" })]
-    [ProvideOptionPage(typeof(TypeScriptOptions), "Web Essentials", "TypeScript", 101, 210, true, new[] { "TypeScript", "TS" })]
-    [ProvideOptionPage(typeof(HtmlOptions), "Web Essentials", "HTML", 101, 111, true, new[] { "html", "angular", "xhtml" })]
+    [ProvideOptionPage(typeof(Settings.GeneralOptions), "Web Essentials", "General", 101, 101, true, new[] { "ZenCoding", "Mustache", "Handlebars", "Comments", "Bundling", "Bundle" })]
+    [ProvideOptionPage(typeof(Settings.CssOptions), "Web Essentials", "CSS", 101, 102, true, new[] { "Minify", "Minification", "W3C", "CSS3" })]
+    [ProvideOptionPage(typeof(Settings.LessOptions), "Web Essentials", "LESS", 101, 105, true, new[] { "LESS", "Complier", "Minification", "Minify" })]
+    [ProvideOptionPage(typeof(Settings.SassOptions), "Web Essentials", "SASS", 101, 113, true, new[] { "SASS", "Complier", "Minification", "Minify" })]
+    [ProvideOptionPage(typeof(Settings.CoffeeScriptOptions), "Web Essentials", "CoffeeScript", 101, 106, true, new[] { "Iced", "JavaScript", "JS", "JScript" })]
+    [ProvideOptionPage(typeof(Settings.JavaScriptOptions), "Web Essentials", "JavaScript", 101, 107, true, new[] { "JScript", "JS", "Minify", "Minification", "EcmaScript" })]
+    [ProvideOptionPage(typeof(Settings.BrowserLinkOptions), "Web Essentials", "Browser Link", 101, 108, true, new[] { "HTML menu", "BrowserLink" })]
+    [ProvideOptionPage(typeof(Settings.MarkdownOptions), "Web Essentials", "Markdown", 101, 109, true, new[] { "markdown", "Markdown", "md" })]
+    [ProvideOptionPage(typeof(Settings.CodeGenOptions), "Web Essentials", "Code Generation", 101, 210, true, new[] { "CodeGeneration", "codeGeneration" })]
+    [ProvideOptionPage(typeof(Settings.TypeScriptOptions), "Web Essentials", "TypeScript", 101, 210, true, new[] { "TypeScript", "TS" })]
+    [ProvideOptionPage(typeof(Settings.HtmlOptions), "Web Essentials", "HTML", 101, 111, true, new[] { "html", "angular", "xhtml" })]
     public sealed class EditorExtensionsPackage : Package
     {
         private static DTE2 _dte;
@@ -67,7 +65,7 @@ namespace MadsKristensen.EditorExtensions
 
             Instance = this;
 
-            Settings.UpdateCache();
+            SettingsStore.Load();
 
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
 
@@ -112,10 +110,9 @@ namespace MadsKristensen.EditorExtensions
             IconRegistration.RegisterIcons();
 
             // Hook up event handlers
-            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
-            {
+            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => {
                 DTE.Events.BuildEvents.OnBuildDone += BuildEvents_OnBuildDone;
-                DTE.Events.SolutionEvents.Opened += delegate { Settings.UpdateCache(); Settings.UpdateStatusBar("applied"); ShowTopMenu(); };
+                DTE.Events.SolutionEvents.Opened += delegate { SettingsStore.Load(); SettingsStore.UpdateStatusBar("applied"); ShowTopMenu(); };
                 DTE.Events.SolutionEvents.AfterClosing += delegate { DTE.StatusBar.Clear(); ShowTopMenu(); };
 
             }), DispatcherPriority.ApplicationIdle, null);
@@ -124,8 +121,7 @@ namespace MadsKristensen.EditorExtensions
         private async void BuildEvents_OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
         {
             if (Action != vsBuildAction.vsBuildActionClean)
-                await ThreadingTask.Task.Run(async () =>
-                {
+                await ThreadingTask.Task.Run(async () => {
                     if (WESettings.GetBoolean(WESettings.Keys.LessCompileOnBuild))
                         await BuildMenu.BuildLess();
 

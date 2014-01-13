@@ -91,6 +91,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\AjaxMin.5.7.5124.21499\lib\net40\AjaxMin.dll</HintPath>
     </Reference>
+    <Reference Include="ConfOxide">
+      <HintPath>..\packages\ConfOxide.1.1.0.0\lib\net40\ConfOxide.dll</HintPath>
+    </Reference>
     <Reference Include="CssSorter">
       <HintPath>..\CssSorter.dll</HintPath>
     </Reference>
@@ -351,11 +354,13 @@
     <Compile Include="Optimization\Sprite\SpriteDocument.cs" />
     <Compile Include="Optimization\Sprite\SpriteFragment.cs" />
     <Compile Include="Optimization\Sprite\SpriteExporter.cs" />
-    <Compile Include="Settings\OptionPages\TsLint.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="SmartTags\CSS\Actions\OptimizeImageSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Providers\OptimizeImageSmartTagProvider.cs" />
+    <Compile Include="Settings\OptionPages.cs">
+      <SubType>component</SubType>
+    </Compile>
+    <Compile Include="Settings\SettingsStore.cs" />
+    <Compile Include="Settings\WESettings.cs" />
     <Compile Include="SmartTags\HTML\OptimizeImageSmartTag.cs" />
     <Compile Include="SmartTags\HTML\ImageDropDialogs\AddFormat.xaml.cs">
       <DependentUpon>AddFormat.xaml</DependentUpon>
@@ -526,24 +531,6 @@
     <Compile Include="MenuItems\ReferenceJs.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineTag.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineProvider.cs" />
-    <Compile Include="Settings\OptionPages\CodeGeneration.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\Html.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\Sass.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\Markdown.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\TypeScript.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\BrowserLinkOptions.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Classifications\IconRegistration.cs" />
     <Compile Include="SmartTags\CSS\Actions\RemoveCssRuleSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Providers\RemoveCssRuleSmartTagProvider.cs" />
@@ -645,26 +632,7 @@
     <Compile Include="MenuItems\Diff.cs" />
     <Compile Include="MenuItems\Transform.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineProviderFactory.cs" />
-    <Compile Include="Settings\OptionPages\CoffeeScript.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\JavaScript.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\Less.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\ProjectSettingsStore.cs" />
     <Compile Include="Settings\ProjectSettingsTextViewListener.cs" />
-    <Compile Include="Settings\OptionPages\JsHint.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\Css.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\General.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="QuickInfo\ImageHtml\ImageQuickInfo.cs" />
     <Compile Include="QuickInfo\ImageHtml\ImageQuickInfoController.cs" />
     <Compile Include="QuickInfo\ImageHtml\ImageQuickInfoControllerProvider.cs" />
@@ -747,7 +715,7 @@
     <Compile Include="SmartTags\CSS\Actions\EmbedSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\CssSmartTagger.cs" />
     <Compile Include="Helpers\Css\CssItemCollector.cs" />
-    <Compile Include="Settings\WebEssentialsSettings.cs" />
+    <Compile Include="Settings\LegacySettings.cs" />
     <Compile Include="Validation\HTML\OpenGraphPrefixValidator.cs" />
     <Compile Include="Validation\HTML\ItemTypeValidator.cs" />
     <Compile Include="Validation\LESS\Providers\ImportOnceErrorTagProvider.cs" />

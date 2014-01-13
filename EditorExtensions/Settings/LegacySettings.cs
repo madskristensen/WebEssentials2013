@@ -1,7 +1,7 @@
 ﻿
 namespace MadsKristensen.EditorExtensions
 {
-    static class WESettings
+    partial class WESettings
     {
         public static class Keys
         {
