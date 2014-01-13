@@ -4,6 +4,7 @@ using System.ComponentModel.Design;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
@@ -14,8 +15,8 @@ namespace MadsKristensen.EditorExtensions
     {
         private DTE2 _dte;
         private OleMenuCommandService _mcs;
-        private IEnumerable<string> _selectedPaths;
-        private string _extension = ".png";
+        private IEnumerable<string> _files;
+        private static string[] _supported = new[] { ".png", ".jpg", ".jpeg", ".gif" };
 
         public SpriteImageMenu(DTE2 dte, OleMenuCommandService mcs)
         {
@@ -35,54 +36,55 @@ namespace MadsKristensen.EditorExtensions
         {
             OleMenuCommand button = sender as OleMenuCommand;
 
-            _selectedPaths = MinifyFileMenu.GetSelectedFilePaths(_dte)
-                                .Where(image => new[] { ".png", ".jpg", ".jpeg", ".gif", ".bmp" }
-                                                           .Contains(Path.GetExtension(image))); ;
+            _files = MinifyFileMenu.GetSelectedFilePaths(_dte)
+                                   .Where(file => _supported.Contains(Path.GetExtension(file)));
 
-            button.Enabled = _selectedPaths.Count() > 1;
+            button.Enabled = _files.Count() > 1;
         }
 
         private async Task CreateSprite()
         {
-            string dir = Path.GetDirectoryName(_selectedPaths.First());
-
-            if (!Directory.Exists(dir))
+            string spriteFile;
+         
+            if (!GetFileName(out spriteFile))
                 return;
 
-            var rectangles = _selectedPaths.Select(path =>
-                                               {
-                                                   var image = Image.FromFile(path);
-                                                   return new ImageInfo(
-                                                        (int)image.Width,
-                                                        (int)image.Height,
-                                                        path);
-                                               }
-                                        );
-
-            var spriteFile = Microsoft.VisualBasic.Interaction.InputBox("Specify the name of the sprite", "Web Essentials", "sprite1");
-
-            if (string.IsNullOrEmpty(spriteFile))
-                return;
-
-            if (!spriteFile.EndsWith(_extension, StringComparison.OrdinalIgnoreCase))
-                spriteFile = spriteFile + _extension;
-
-            spriteFile = Path.Combine(dir, spriteFile);
-
-            if (File.Exists(spriteFile))
+            var rectangles = _files.Select(path =>
             {
-                Logger.ShowMessage("The sprite file already exists.");
-            }
-            else
+                var image = Image.FromFile(path);
+                return new ImageInfo(image.Width, image.Height, path);
+            });
+
+            SpriteGenerator runner = new SpriteGenerator(rectangles);
+            runner.GenerateSpriteWithMaps(spriteFile);
+
+            ProjectHelpers.AddFileToActiveProject(spriteFile);
+            ProjectHelpers.AddFileToProject(spriteFile, spriteFile + SpriteGenerator.MapExtension);
+
+            await new ImageCompressor().CompressFiles(spriteFile);
+        }
+
+        private bool GetFileName(out string fileName)
+        {
+            fileName = "sprite";
+            string firstFile = _files.First();
+            string directory = Path.GetDirectoryName(firstFile);
+            string extension = Path.GetExtension(firstFile);
+
+            using (var dialog = new SaveFileDialog())
             {
-                SpriteGenerator runner = new SpriteGenerator(rectangles);
-                runner.GenerateSpriteWithMaps(spriteFile);
+                dialog.FileName = fileName;
+                dialog.DefaultExt = extension;
+                dialog.Filter = "Images|*.png;*.gif;*.jpg";
+                dialog.InitialDirectory = directory;
 
-                ProjectHelpers.AddFileToActiveProject(spriteFile);
-                ProjectHelpers.AddFileToProject(spriteFile, spriteFile + ".sprite");
+                if (dialog.ShowDialog() != DialogResult.OK)
+                    return false;
 
-                await new ImageCompressor().CompressFiles(new[] { spriteFile });
+                fileName = dialog.FileName;
             }
+
+            return true;
         }
     }
 }

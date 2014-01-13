@@ -210,7 +210,7 @@ namespace MadsKristensen.EditorExtensions
             ProjectHelpers.AddFileToActiveProject(fileName);
         }
 
-        private static ImageFormat GetImageFormat(string extension)
+        public static ImageFormat GetImageFormat(string extension)
         {
             switch (extension.ToLowerInvariant())
             {

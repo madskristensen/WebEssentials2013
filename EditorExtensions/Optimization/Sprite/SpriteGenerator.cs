@@ -12,6 +12,7 @@ namespace MadsKristensen.EditorExtensions
     public class SpriteGenerator
     {
         IEnumerable<ImageInfo> rectangles;
+        public const string MapExtension = ".sprite";
 
         public SpriteGenerator(IEnumerable<ImageInfo> imageInfo)
         {
@@ -52,7 +53,8 @@ namespace MadsKristensen.EditorExtensions
                     }
                 }
 
-                bitmap.Save(spriteImageFile, ImageFormat.Png);
+                ImageFormat format = PasteImage.GetImageFormat(Path.GetExtension(spriteImageFile));
+                bitmap.Save(spriteImageFile, format);
             }
         }
 
@@ -92,7 +94,7 @@ namespace MadsKristensen.EditorExtensions
                 })
             };
 
-            File.WriteAllText(spriteFileName + ".sprite", JObject.Parse(Json.Encode(map)).ToString());
+            File.WriteAllText(spriteFileName + MapExtension, JObject.Parse(Json.Encode(map)).ToString());
         }
     }
 }
