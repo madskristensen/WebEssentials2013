@@ -72,20 +72,10 @@ namespace MadsKristensen.EditorExtensions
                 if (i < 3)
                 {
                     pair = text.Split('%');
-
-                    if (pair.Length > 1 || pair[0].IsNumeric())
+                    
+                    if (int.TryParse(pair[0], out value))
                     {
-                        context.AddError(new SimpleErrorTag(argument, "Validation: Invalid value", CssErrorFlags.TaskListWarning | CssErrorFlags.UnderlineRed));
-                    }
-
-                    if (!int.TryParse(pair[0], out value))
-                    {
-                        context.AddError(new SimpleErrorTag(argument, "Validation: Missing value", CssErrorFlags.TaskListWarning | CssErrorFlags.UnderlineRed));
-                    }
-
-                    else
-                    {
-                        if (value < 0 || value > 100)
+                        if (value < 0 || value > 100 && i > 0)
                         {
                             context.AddError(new SimpleErrorTag(argument, "Validation: Values must be between 0 and 100%", CssErrorFlags.TaskListWarning | CssErrorFlags.UnderlineRed));
                         }
