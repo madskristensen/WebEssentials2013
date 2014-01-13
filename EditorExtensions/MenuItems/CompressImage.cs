@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            CommandID cmd = new CommandID(CommandGuids.guidCompressImageCmdSet, (int)CommandId.CompressImage);
+            CommandID cmd = new CommandID(CommandGuids.guidImageCmdSet, (int)CommandId.CompressImage);
             OleMenuCommand menuCmd = new OleMenuCommand(async (s, e) => await Compress(), cmd);
             menuCmd.BeforeQueryStatus += BeforeQueryStatus;
             _mcs.AddCommand(menuCmd);

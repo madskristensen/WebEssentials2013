@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            CommandID cmd = new CommandID(CommandGuids.guidSpriteImageCmdSet, (int)CommandId.SpriteImage);
+            CommandID cmd = new CommandID(CommandGuids.guidImageCmdSet, (int)CommandId.SpriteImage);
             OleMenuCommand menuCmd = new OleMenuCommand(async (s, e) => await CreateSprite(), cmd);
             menuCmd.BeforeQueryStatus += BeforeQueryStatus;
             _mcs.AddCommand(menuCmd);
@@ -36,13 +36,10 @@ namespace MadsKristensen.EditorExtensions
             OleMenuCommand button = sender as OleMenuCommand;
 
             _selectedPaths = MinifyFileMenu.GetSelectedFilePaths(_dte)
-                                .Where(image => new[] { ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".ico" }
+                                .Where(image => new[] { ".png", ".jpg", ".jpeg", ".gif", ".bmp" }
                                                            .Contains(Path.GetExtension(image))); ;
 
-            int items = _selectedPaths.Count();
-
-            button.Text = "Create Sprite";
-            button.Enabled = items > 1;
+            button.Enabled = _selectedPaths.Count() > 1;
         }
 
         private async Task CreateSprite()
@@ -62,24 +59,29 @@ namespace MadsKristensen.EditorExtensions
                                                }
                                         );
 
-            var destinationSpriteFile = Microsoft.VisualBasic.Interaction.InputBox("Specify the name of the sprite", "Web Essentials", "sprite1");
+            var spriteFile = Microsoft.VisualBasic.Interaction.InputBox("Specify the name of the sprite", "Web Essentials", "sprite1");
 
-            if (string.IsNullOrEmpty(destinationSpriteFile))
+            if (string.IsNullOrEmpty(spriteFile))
                 return;
 
-            if (!destinationSpriteFile.EndsWith(_extension, StringComparison.OrdinalIgnoreCase))
-                destinationSpriteFile = destinationSpriteFile + _extension;
+            if (!spriteFile.EndsWith(_extension, StringComparison.OrdinalIgnoreCase))
+                spriteFile = spriteFile + _extension;
 
-            destinationSpriteFile = Path.Combine(dir, destinationSpriteFile);
+            spriteFile = Path.Combine(dir, spriteFile);
 
-            if (File.Exists(destinationSpriteFile))
+            if (File.Exists(spriteFile))
             {
                 Logger.ShowMessage("The sprite file already exists.");
             }
             else
             {
-                new SpriteRunner(rectangles).GenerateSpriteWithMaps(destinationSpriteFile);
-                await new ImageCompressor().CompressFiles(new[] { destinationSpriteFile });
+                SpriteRunner runner = new SpriteRunner(rectangles);
+                runner.GenerateSpriteWithMaps(spriteFile);
+
+                ProjectHelpers.AddFileToActiveProject(spriteFile);
+                ProjectHelpers.AddFileToProject(spriteFile, spriteFile + ".map");
+
+                await new ImageCompressor().CompressFiles(new[] { spriteFile });
             }
         }
     }

@@ -120,11 +120,7 @@
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
       </Group>
 
-      <Group guid="guidCompressImageCmdSet" id="MyMenuGroup" priority="0x0009">
-        <Parent guid="guidSolutionExplorerCmdSet" id="MySubMenuGroup"/>
-      </Group>
-
-      <Group guid="guidSpriteImageCmdSet" id="MyMenuGroup" priority="0x0009">
+      <Group guid="guidImageCmdSet" id="MyMenuGroup" priority="0x0009">
         <Parent guid="guidSolutionExplorerCmdSet" id="MySubMenuGroup"/>
       </Group>
 
@@ -505,8 +501,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidCompressImageCmdSet" id="cmdCompressImage" priority="0x0101" type="Button">
-        <Parent guid="guidCompressImageCmdSet" id="MyMenuGroup"/>
+      <Button guid="guidImageCmdSet" id="cmdCompressImage" priority="0x0101" type="Button">
+        <Parent guid="guidImageCmdSet" id="MyMenuGroup"/>
         <Icon guid="guidMenuImages" id="bmpImage"/>
         <CommandFlag>TextChanges</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -515,13 +511,12 @@
         </Strings>
       </Button>
 
-      <Button guid="guidSpriteImageCmdSet" id="cmdSpriteImage" priority="0x0101" type="Button">
-        <Parent guid="guidSpriteImageCmdSet" id="MyMenuGroup"/>
-        <Icon guid="guidMenuImages" id="bmpImage"/>
-        <CommandFlag>TextChanges</CommandFlag>
+      <Button guid="guidImageCmdSet" id="cmdSpriteImage" priority="0x0102" type="Button">
+        <Parent guid="guidImageCmdSet" id="MyMenuGroup"/>
+        <Icon guid="guidMenuImages" id="bmpJigsaw"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Sprite image</ButtonText>
+          <ButtonText>Create image sprite...</ButtonText>
         </Strings>
       </Button>
 
@@ -668,7 +663,7 @@
       <Bitmap guid="guidImages" href="Resources\Images\Images.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpLogo, bmpMinify"/>
       <Bitmap guid="guidNumbers" href="Resources\Images\numbers.png" usedList="pic1, pic2, pic3, pic4"/>
       <Bitmap guid="guidBrowserLink" href="Resources\Images\browserlink.png" usedList="bmpRecord, bmpPause"/>
-      <Bitmap guid="guidMenuImages" href="Resources\Images\menuimages.png" usedList="bmpScript, bmpImage"/>
+      <Bitmap guid="guidMenuImages" href="Resources\Images\menuimages.png" usedList="bmpScript, bmpImage, bmpJigsaw"/>
     </Bitmaps>
   </Commands>
 
@@ -864,13 +859,9 @@
       <IDSymbol name="cmdBundleHtml" value="0x1074" />
     </GuidSymbol>
 
-    <GuidSymbol name="guidCompressImageCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e68}">
+    <GuidSymbol name="guidImageCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e68}">
       <IDSymbol name="MyMenuGroup" value="0x1090" />
       <IDSymbol name="cmdCompressImage" value="0x1091" />
-    </GuidSymbol>
-
-    <GuidSymbol name="guidSpriteImageCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e77}">
-      <IDSymbol name="MyMenuGroup" value="0x1094" />
       <IDSymbol name="cmdSpriteImage" value="0x1093" />
     </GuidSymbol>
 
@@ -945,6 +936,7 @@
     <GuidSymbol name="guidMenuImages" value="{51f54cc4-4444-4ae5-a1a6-d44f9a6b7cbf}" >
       <IDSymbol name="bmpScript" value="1" />
       <IDSymbol name="bmpImage" value="2" />
+      <IDSymbol name="bmpJigsaw" value="3" />
     </GuidSymbol>
   </Symbols>
 </CommandTable>
