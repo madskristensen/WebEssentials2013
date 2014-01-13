@@ -32,8 +32,13 @@ namespace MadsKristensen.EditorExtensions
             sprite = mapper.Mapping(rectangles);
 
             GenerateSpriteImage(spriteImageFile);
-
             GenerateSpriteMap(spriteImageFile);
+
+            SpriteExporter formatter = new SpriteExporter();
+            formatter.ExportToCodeFile(sprite, spriteImageFile, SpriteFormatter.CSS);
+            formatter.ExportToCodeFile(sprite, spriteImageFile, SpriteFormatter.LESS);
+            formatter.ExportToCodeFile(sprite, spriteImageFile, SpriteFormatter.SCSS);
+                     
         }
 
         private void GenerateSpriteImage(string spriteImageFile)
@@ -89,7 +94,7 @@ namespace MadsKristensen.EditorExtensions
         {
             var map = new
             {
-                Constituents = sprite.MappedImages.Select(mapped =>
+                Images = sprite.MappedImages.Select(mapped =>
                 {
                     var info = mapped.ImageInfo as ImageInfo;
                     SpriteMapConstituent image = new SpriteMapConstituent()

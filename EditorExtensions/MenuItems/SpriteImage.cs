@@ -59,6 +59,9 @@ namespace MadsKristensen.EditorExtensions
 
             ProjectHelpers.AddFileToActiveProject(spriteFile);
             ProjectHelpers.AddFileToProject(spriteFile, spriteFile + SpriteGenerator.MapExtension);
+            ProjectHelpers.AddFileToProject(spriteFile, spriteFile + ".css");
+            ProjectHelpers.AddFileToProject(spriteFile, spriteFile + ".less");
+            ProjectHelpers.AddFileToProject(spriteFile, spriteFile + ".scss");
 
             await new ImageCompressor().CompressFiles(spriteFile);
         }
