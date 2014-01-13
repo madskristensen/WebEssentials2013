@@ -9,16 +9,11 @@ using Newtonsoft.Json.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
-    /// <summary>
-    /// Sprite runner class
-    /// </summary>
-    public class SpriteRunner
+    public class SpriteGenerator
     {
         IEnumerable<ImageInfo> rectangles;
-
-        private int _imageZoom = 1;
-
-        public SpriteRunner(IEnumerable<ImageInfo> imageInfo)
+        
+        public SpriteGenerator(IEnumerable<ImageInfo> imageInfo)
         {
             rectangles = imageInfo;
         }
@@ -29,51 +24,31 @@ namespace MadsKristensen.EditorExtensions
         /// <param name="spriteImageFile">Full path to destination file name</param>
         public void GenerateSpriteWithMaps(string spriteImageFile)
         {
-            Mapper.Canvas _canvas = new Mapper.Canvas();
-            MapperOptimalEfficiency<Sprite> mapper = new MapperOptimalEfficiency<Sprite>(_canvas);
+            Mapper.Canvas canvas = new Mapper.Canvas();
+            MapperOptimalEfficiency<Sprite> mapper = new MapperOptimalEfficiency<Sprite>(canvas);
 
             Sprite sprite = mapper.Mapping(rectangles);
 
-            SpriteToImage(sprite, spriteImageFile);
+            GenerateSpriteImage(sprite, spriteImageFile);
 
-            // Write .sprite file
             GenerateSpriteMap(spriteImageFile, sprite.MappedImages);
         }
 
-
-        /// <summary>
-        /// Creates an image showing the structure of a sprite (that is, its constituent images).
-        /// </summary>
-        /// <param name="sprite">
-        /// Sprite to be shown
-        /// </param>
-        /// <param name="spriteFileName">
-        /// Generate Sprite image with map file
-        /// </param>
-        /// <returns>
-        /// Url of the generated image.
-        /// </returns>
-        private void SpriteToImage(ISprite sprite, string spriteImageFile)
+        private void GenerateSpriteImage(ISprite sprite, string spriteImageFile)
         {
-            using (Bitmap bitmap = new Bitmap(sprite.Width * _imageZoom, sprite.Height * _imageZoom, PixelFormat.Format32bppPArgb))
+            using (Bitmap bitmap = new Bitmap(sprite.Width, sprite.Height, PixelFormat.Format32bppPArgb))
             {
                 using (Graphics graphics = Graphics.FromImage(bitmap))
                 {
-                    // Draw border around the entire image
-                    DrawBorder(
-                        graphics,
-                        sprite.Width * _imageZoom, sprite.Height * _imageZoom,
-                        0, 0);
+                    // Draw border around the entire image. [Mads] Why?
+                    DrawBorder(graphics, sprite.Width, sprite.Height, 0, 0);
 
-                    foreach (IMappedImageInfo mappedImageInfo in sprite.MappedImages)
+                    foreach (IMappedImageInfo map in sprite.MappedImages)
                     {
-                        var info = (mappedImageInfo.ImageInfo as ImageInfo);
+                        ImageInfo info = map.ImageInfo as ImageInfo;
+                        Image image = Image.FromFile(info.Name);
 
-                        graphics.DrawImage(Image.FromFile(info.Name),
-                                           info.Width * _imageZoom,
-                                           info.Height * _imageZoom,
-                                           mappedImageInfo.X * _imageZoom,
-                                           mappedImageInfo.Y * _imageZoom);
+                        graphics.DrawImage(image, map.X, map.Y, info.Width, info.Height);
                     }
                 }
 
@@ -81,14 +56,6 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        /// <summary>
-        /// Draws a Border around the canvas. The rectangle denotes a FreeArea.
-        /// </summary>
-        /// <param name="graphics"></param>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
-        /// <param name="xOffset"></param>
-        /// <param name="yOffset"></param>
         private static void DrawBorder(Graphics graphics, int width, int height, int xOffset, int yOffset)
         {
             // Fill the rectangle
@@ -124,7 +91,7 @@ namespace MadsKristensen.EditorExtensions
                         })
             };
 
-            File.WriteAllText(spriteFileName + ".map", JObject.Parse(Json.Encode(map)).ToString());
+            File.WriteAllText(spriteFileName + ".sprite", JObject.Parse(Json.Encode(map)).ToString());
         }
     }
 }

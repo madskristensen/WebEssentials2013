@@ -75,11 +75,11 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                SpriteRunner runner = new SpriteRunner(rectangles);
+                SpriteGenerator runner = new SpriteGenerator(rectangles);
                 runner.GenerateSpriteWithMaps(spriteFile);
 
                 ProjectHelpers.AddFileToActiveProject(spriteFile);
-                ProjectHelpers.AddFileToProject(spriteFile, spriteFile + ".map");
+                ProjectHelpers.AddFileToProject(spriteFile, spriteFile + ".sprite");
 
                 await new ImageCompressor().CompressFiles(new[] { spriteFile });
             }
