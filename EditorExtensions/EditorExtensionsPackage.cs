@@ -121,36 +121,29 @@ namespace MadsKristensen.EditorExtensions
         private async void BuildEvents_OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
         {
             if (Action != vsBuildAction.vsBuildActionClean)
+            {
                 await ThreadingTask.Task.Run(async () => {
-                    if (WESettings.GetBoolean(WESettings.Keys.LessCompileOnBuild))
+                    if (WESettings.Instance.Less.CompileOnBuild)
                         await BuildMenu.BuildLess();
 
-                    if (WESettings.GetBoolean(WESettings.Keys.SassCompileOnBuild))
+                    if (WESettings.Instance.Sass.CompileOnBuild)
                         await BuildMenu.BuildSass();
 
-                    if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptCompileOnBuild))
+                    if (WESettings.Instance.CoffeeScript.CompileOnBuild)
                         await BuildMenu.BuildCoffeeScript();
 
                     BuildMenu.UpdateBundleFiles();
-
-                    if (WESettings.GetBoolean(WESettings.Keys.RunJsHintOnBuild))
-                    {
-                        await Dispatcher.CurrentDispatcher.BeginInvoke(
-                                        new Action(() => JsHintProjectRunner.RunOnAllFilesInProject()),
-                                        DispatcherPriority.ApplicationIdle, null);
-                    }
-
-                    if (WESettings.GetBoolean(WESettings.Keys.RunTsLintOnBuild))
-                    {
-                        await Dispatcher.CurrentDispatcher.BeginInvoke(
-                                        new Action(() => TsLintProjectRunner.RunOnAllFilesInProject()),
-                                        DispatcherPriority.ApplicationIdle, null);
-                    }
                 });
+
+                if (WESettings.Instance.JavaScript.LintOnBuild)
+                    JsHintProjectRunner.RunOnAllFilesInProject();
+                if (WESettings.Instance.TypeScript.LintOnBuild)
+                    TsLintProjectRunner.RunOnAllFilesInProject();
+            }
             else if (Action == vsBuildAction.vsBuildActionClean)
             {
-                await ThreadingTask.Task.Run(() => JsHintRunner.Reset());
-                await ThreadingTask.Task.Run(() => TsLintRunner.Reset());
+                JsHintRunner.Reset();
+                TsLintRunner.Reset();
             }
         }
 

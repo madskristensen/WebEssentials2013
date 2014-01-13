@@ -45,9 +45,10 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
         {
             get
             {
-                var ignorePatterns = WESettings.GetString(WESettings.Keys.UnusedCss_IgnorePatterns) ?? "";
+                var ignorePatterns = WESettings.Instance.BrowserLink.CssIgnorePatterns ?? "";
 
-                return _ignoreList ?? (_ignoreList = ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => new Regex(UnusedCssExtension.FilePatternToRegex(x.Trim()))).ToList());
+                return _ignoreList ?? (_ignoreList = ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(x => new Regex(UnusedCssExtension.FilePatternToRegex(x.Trim()))).ToList());
             }
         }
 

@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
         {
             var args = new StringBuilder("--no-color --relative-urls ");
 
-            if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps))
+            if (WESettings.Instance.Less.GenerateSourceMaps)
             {
                 string baseFolder = null;
                 if (!InUnitTests)
@@ -57,7 +57,8 @@ namespace MadsKristensen.EditorExtensions
             var message = "LESS: " + Path.GetFileName(sourceFileName) + " compiled.";
 
             // If the caller wants us to renormalize URLs to a different filename, do so.
-            if (!string.IsNullOrWhiteSpace(WESettings.GetString(WESettings.Keys.LessCompileToLocation)) && targetFileName != null && resultSource.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
+            if (targetFileName != null && Path.GetDirectoryName(targetFileName) != Path.GetDirectoryName(sourceFileName)
+             && resultSource.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
             {
                 try
                 {
@@ -80,7 +81,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static string UpdateSourceMapUrls(string content, string compiledFileName)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.LessSourceMaps) || !File.Exists(compiledFileName))
+            if (!WESettings.Instance.Less.GenerateSourceMaps || !File.Exists(compiledFileName))
                 return content;
 
             string sourceMapFilename = compiledFileName + ".map";

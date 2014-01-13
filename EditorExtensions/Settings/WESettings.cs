@@ -54,18 +54,22 @@ namespace MadsKristensen.EditorExtensions
         [DisplayName("Enable Browser Link menu")]
         [Description("Enable the menu that shows up in the browser. Requires restart.")]
         [DefaultValue(true)]
-        public bool EnableBrowserLinkMenu { get; set; }
+        public bool EnableMenu { get; set; }
         [Category("CSS")]
         [DisplayName("CSS usage files to ignore")]
         [Description("A semicolon-separated list of file patterns to ignore.")]
         [DefaultValue("bootstrap*; reset.css; normalize.css; jquery*; toastr*; foundation*; animate*; inuit*; elements*; ratchet*; hint*; flat-ui*; 960*; skeleton*")]
-        public string IgnorePatterns { get; set; }  // TODO: Switch to List<string> & check property designer support
+        public string CssIgnorePatterns { get; set; }  // TODO: Switch to List<string> & check property designer support
 
         [Category("CSS")]
         [DisplayName("Enable f12 auto-sync")]
         [Description("Automatically synchronize changes made in the browser dev tools with CSS files in Visual Studio.  If this is turned off, you can synchronize changes explicitly in the Browser Link menu.")]
         [DefaultValue(true)]
         public bool EnablePixelPushing { get; set; }
+
+        [Browsable(false)]
+        [DefaultValue(true)]
+        public bool ShowMenu { get; set; }
     }
     public sealed class CodeGenSettings : SettingsBase<CodeGenSettings>
     {
@@ -170,7 +174,7 @@ namespace MadsKristensen.EditorExtensions
 
         [Category("Minification")]
         [DisplayName("Create source map files")]
-        [Description("Generate source map files when minifying.  This option has no effect when Minify on save is disabled.")]
+        [Description("Generate source map files when minifying or bundling.")]
         [DefaultValue(true)]
         public bool GenerateSourceMaps { get; set; }
         #endregion
@@ -192,7 +196,7 @@ namespace MadsKristensen.EditorExtensions
 
         [Category("Minification")]
         [DisplayName("Create gzipped files")]
-        [Description("Also save separate gzipped files when minifying.  This option has no effect when Minify on save is disabled.")]
+        [Description("Also save separate gzipped files when minifying or bundling.")]
         [DefaultValue(false)]
         public bool GzipMinifiedFiles { get; set; }
 
@@ -316,7 +320,7 @@ namespace MadsKristensen.EditorExtensions
         [DisplayName("Wrap generated JavaScript files")]
         [Description("Wrap the generated JavaScript source in an anonymous function.  This prevents variables from leaking into the global scope.")]
         [Category("CoffeeScript")]
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool WrapClosure { get; set; }
     }
 

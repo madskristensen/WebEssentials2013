@@ -61,8 +61,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 string file = e.FilePath.EndsWith(_ext, StringComparison.OrdinalIgnoreCase) ? e.FilePath : null;
 
-                System.Threading.Tasks.Task.Run(() =>
-                {
+                System.Threading.Tasks.Task.Run(() => {
                     UpdateBundles(file, true);
                 });
             }
@@ -323,7 +322,7 @@ namespace MadsKristensen.EditorExtensions
                 //{
                 //    sb.AppendLine("/*#source " + files[file] + " */");
                 //}
-                if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase) && WESettings.GetBoolean(WESettings.Keys.GenerateJavaScriptSourceMaps))
+                if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase) && WESettings.Instance.JavaScript.GenerateSourceMaps)
                 {
                     sb.AppendLine("///#source 1 1 " + files[file]);
                 }
@@ -338,7 +337,7 @@ namespace MadsKristensen.EditorExtensions
                     // or if does not have URLs, no need to normalize.
                     if (Path.GetDirectoryName(file) != Path.GetDirectoryName(bundlePath)
                      && source.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0
-                        && !WESettings.GetBoolean(WESettings.Keys.CssPreserveRelativePathsOnMinify))
+                     && WESettings.Instance.Css.AdjustRelativePaths)
                         source = CssUrlNormalizer.NormalizeUrls(
                             tree: new CssParser().Parse(source, true),
                             targetFile: bundlePath,
@@ -371,15 +370,14 @@ namespace MadsKristensen.EditorExtensions
             if (!bundleChanged && File.Exists(minPath))
                 return;
 
+            // TODO: Refactor to common class that takes settings interface & minifier
             if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase))
             {
                 JavaScriptSaveListener.Minify(bundlePath, minPath, true);
                 ProjectHelpers.AddFileToProject(filePath, minPath);
 
-                if (WESettings.GetBoolean(WESettings.Keys.GenerateJavaScriptSourceMaps))
-                {
+                if (WESettings.Instance.JavaScript.GenerateSourceMaps)
                     ProjectHelpers.AddFileToProject(filePath, minPath + ".map");
-                }
 
                 ProjectHelpers.AddFileToProject(filePath, minPath + ".gzip");
             }
@@ -391,7 +389,7 @@ namespace MadsKristensen.EditorExtensions
                 File.WriteAllText(minPath, minContent, new UTF8Encoding(true));
                 ProjectHelpers.AddFileToProject(filePath, minPath);
 
-                if (WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping))
+                if (WESettings.Instance.Css.GzipMinifiedFiles)
                     CssSaveListener.GzipFile(filePath, minPath, minContent);
             }
             else if (extension.Equals(".html", StringComparison.OrdinalIgnoreCase))

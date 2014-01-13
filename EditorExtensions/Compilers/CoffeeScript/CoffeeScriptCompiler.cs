@@ -30,10 +30,10 @@ namespace MadsKristensen.EditorExtensions
         {
             var args = new StringBuilder();
 
-            if (!WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure))
+            if (!WESettings.Instance.CoffeeScript.WrapClosure)
                 args.Append("--bare ");
 
-            if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptSourceMaps) && !InUnitTests)
+            if (WESettings.Instance.CoffeeScript.GenerateSourceMaps && !InUnitTests)
                 args.Append("--map ");
 
             args.AppendFormat(CultureInfo.CurrentCulture, "--output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
@@ -65,10 +65,9 @@ namespace MadsKristensen.EditorExtensions
             File.Delete(oldSourceMapFile);
             // end-Hack
 
-            if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptSourceMaps))
+            if (WESettings.Instance.CoffeeScript.GenerateSourceMaps)
             {
-                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
-                {
+                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => {
                     ProjectHelpers.AddFileToProject(jsFileName, sourceMapFile);
                 }), DispatcherPriority.ApplicationIdle, null);
             }
@@ -76,7 +75,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static string UpdateSourceMapUrls(string content, string compiledFileName)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.LessSourceMaps) || !File.Exists(compiledFileName))
+            if (!WESettings.Instance.CoffeeScript.GenerateSourceMaps || !File.Exists(compiledFileName))
                 return content;
 
             string sourceMapFilename = compiledFileName + ".map";

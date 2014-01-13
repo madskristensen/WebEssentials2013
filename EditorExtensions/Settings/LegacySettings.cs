@@ -104,13 +104,13 @@ namespace MadsKristensen.EditorExtensions
             target.TypeScript.LintResultLocation = (ErrorLocation)GetInt("TsLintErrorLocation");
 
             // Browser Link
-            target.BrowserLink.IgnorePatterns = GetString("UnusedCss_IgnorePatterns");
-            target.BrowserLink.EnableBrowserLinkMenu = GetBoolean("EnableBrowserLinkMenu");
+            target.BrowserLink.CssIgnorePatterns = GetString("UnusedCss_IgnorePatterns");
+            target.BrowserLink.EnableMenu = GetBoolean("EnableBrowserLinkMenu");
 
             //Pixel Pushing mode
             target.BrowserLink.EnablePixelPushing = GetBoolean("PixelPushing_OnByDefault");
 
-            //target. = GetBoolean("BrowserLink_ShowMenu");
+            target.BrowserLink.ShowMenu = GetBoolean("BrowserLink_ShowMenu");
 
         }
 

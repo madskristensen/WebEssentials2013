@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions
 
         void document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.EnableHtmlMinification))
+            if (!WESettings.Instance.Html.MinifyOnSave)
                 return;
 
             if (e.FileActionType == FileActionTypes.ContentSavedToDisk && e.FilePath.EndsWith(".html", StringComparison.OrdinalIgnoreCase))

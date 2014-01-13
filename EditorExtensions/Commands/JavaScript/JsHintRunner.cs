@@ -194,22 +194,23 @@ namespace MadsKristensen.EditorExtensions
 
         private static TaskErrorCategory GetOutputLocation()
         {
-            var location = (WESettings.Keys.FullErrorLocation)WESettings.GetInt(WESettings.Keys.JsHintErrorLocation);
-
-            if (location == WESettings.Keys.FullErrorLocation.Errors)
-                return TaskErrorCategory.Error;
-
-            if (location == WESettings.Keys.FullErrorLocation.Warnings)
-                return TaskErrorCategory.Warning;
-
-            return TaskErrorCategory.Message;
+            switch (WESettings.Instance.JavaScript.LintResultLocation)
+            {
+                case ErrorLocation.Errors:
+                    return TaskErrorCategory.Error;
+                case ErrorLocation.Warnings:
+                    return TaskErrorCategory.Warning;
+                case ErrorLocation.Messages:
+                default:
+                    return TaskErrorCategory.Message;
+            }
         }
 
         private void task_Navigate(object sender, EventArgs e)
         {
             Task task = sender as Task;
 
-            _provider.Navigate(task, new Guid(EnvDTE.Constants.vsViewKindPrimary));
+            _provider.Navigate(task, new Guid(Constants.vsViewKindPrimary));
 
             if (task.Column > 0)
             {

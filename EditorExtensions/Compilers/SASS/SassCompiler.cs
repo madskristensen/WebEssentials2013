@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
         {
             var args = new StringBuilder();
 
-            if (WESettings.GetBoolean(WESettings.Keys.SassSourceMaps) && !InUnitTests)
+            if (WESettings.Instance.Sass.GenerateSourceMaps && !InUnitTests)
             {
                 args.Append("--source-map ");
             }
@@ -73,7 +73,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static string UpdateSourceMapUrls(string content, string compiledFileName)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.SassSourceMaps) || !File.Exists(compiledFileName))
+            if (WESettings.Instance.Sass.GenerateSourceMaps || !File.Exists(compiledFileName))
                 return content;
 
             string sourceMapFilename = compiledFileName + ".map";

@@ -15,6 +15,7 @@ namespace MadsKristensen.EditorExtensions
     [TextViewRole(PredefinedTextViewRoles.Document)]
     public class CssSaveListener : IWpfTextViewCreationListener
     {
+        //TODO: Move to common base class
         [Import]
         public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
@@ -30,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
 
         void document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.EnableCssMinification))
+            if (!WESettings.Instance.Css.MinifyOnSave)
                 return;
 
             if (e.FileActionType == FileActionTypes.ContentSavedToDisk && e.FilePath.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
@@ -62,7 +63,7 @@ namespace MadsKristensen.EditorExtensions
                     writer.Write(content);
                 }
 
-                if (WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping))
+                if (WESettings.Instance.Css.GzipMinifiedFiles)
                     GzipFile(file, minFile, content);
             }
             catch

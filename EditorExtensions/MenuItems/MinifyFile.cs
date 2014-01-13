@@ -97,31 +97,32 @@ namespace MadsKristensen.EditorExtensions
         {
             string message = "Do you also want to enable automatic minification when the source file changes?";
 
-            if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase) && !WESettings.GetBoolean(WESettings.Keys.EnableCssMinification))
+            // TODO: Move to common code with map of extension to settings interface
+            if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase) && !WESettings.Instance.Css.MinifyOnSave)
             {
                 var result = MessageBox.Show(message, "Web Essentials", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    Settings.SetValue(WESettings.Keys.EnableCssMinification, true);
-                    Settings.Save();
+                    WESettings.Instance.Css.MinifyOnSave = true;
+                    SettingsStore.Save();
                 }
             }
-            else if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase) && !WESettings.GetBoolean(WESettings.Keys.EnableJsMinification))
+            else if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase) && !WESettings.Instance.JavaScript.MinifyOnSave)
             {
                 var result = MessageBox.Show(message, "Web Essentials", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    Settings.SetValue(WESettings.Keys.EnableJsMinification, true);
-                    Settings.Save();
+                    WESettings.Instance.JavaScript.MinifyOnSave = true;
+                    SettingsStore.Save();
                 }
             }
-            else if (extension.Equals(".html", StringComparison.OrdinalIgnoreCase) && !WESettings.GetBoolean(WESettings.Keys.EnableHtmlMinification))
+            else if (extension.Equals(".html", StringComparison.OrdinalIgnoreCase) && !WESettings.Instance.Html.MinifyOnSave)
             {
                 var result = MessageBox.Show(message, "Web Essentials", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    Settings.SetValue(WESettings.Keys.EnableHtmlMinification, true);
-                    Settings.Save();
+                    WESettings.Instance.Html.MinifyOnSave = true;
+                    SettingsStore.Save();
                 }
             }
         }
@@ -136,10 +137,10 @@ namespace MadsKristensen.EditorExtensions
             if (extension == ".css")
             {
                 Minifier minifier = new Minifier();
-                CssSettings settings = new CssSettings();
+                var settings = new Microsoft.Ajax.Utilities.CssSettings();
                 settings.CommentMode = CssComment.None;
 
-                if (WESettings.GetBoolean(WESettings.Keys.KeepImportantComments))
+                if (WESettings.Instance.General.KeepImportantComments)
                 {
                     settings.CommentMode = CssComment.Important;
                 }
@@ -149,18 +150,16 @@ namespace MadsKristensen.EditorExtensions
             else if (extension == ".js")
             {
                 Minifier minifier = new Minifier();
-                CodeSettings settings = new CodeSettings()
-                {
+                CodeSettings settings = new CodeSettings() {
                     EvalTreatment = EvalTreatment.MakeImmediateSafe,
-                    PreserveImportantComments = WESettings.GetBoolean(WESettings.Keys.KeepImportantComments)
+                    PreserveImportantComments = WESettings.Instance.General.KeepImportantComments
                 };
 
                 return minifier.MinifyJavaScript(content, settings);
             }
             else if (_htmlExt.Contains(extension.ToLowerInvariant()))
             {
-                var settings = new HtmlMinificationSettings
-                {
+                var settings = new HtmlMinificationSettings {
                     RemoveOptionalEndTags = false,
                     AttributeQuotesRemovalMode = HtmlAttributeQuotesRemovalMode.KeepQuotes,
                     RemoveRedundantAttributes = false,

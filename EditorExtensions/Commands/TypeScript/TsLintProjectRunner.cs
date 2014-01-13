@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions
             _document.FileActionOccurred += DocumentSavedHandler;
             _runner = new TsLintRunner(_document.FilePath);
 
-            if (WESettings.GetBoolean(WESettings.Keys.EnableTsLint))
+            if (WESettings.Instance.TypeScript.LintOnSave)
             {
                 Dispatcher.CurrentDispatcher.BeginInvoke(new Action(_runner.RunCompiler), DispatcherPriority.ApplicationIdle, null);
             }
@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void DocumentSavedHandler(object sender, TextDocumentFileActionEventArgs e)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.EnableTsLint))
+            if (!WESettings.Instance.TypeScript.LintOnSave)
                 return;
 
             ITextDocument document = (ITextDocument)sender;

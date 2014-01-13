@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.JavaScriptCommentCompletion) || _broker.IsCompletionActive(TextView))
+            if (!WESettings.Instance.JavaScript.BlockCommentCompletion || _broker.IsCompletionActive(TextView))
                 return false;
 
             int position = TextView.Caret.Position.BufferPosition.Position;
