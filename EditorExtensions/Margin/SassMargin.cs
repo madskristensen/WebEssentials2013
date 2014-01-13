@@ -8,8 +8,8 @@ namespace MadsKristensen.EditorExtensions
 {
     public class SassMargin : MarginBase
     {
-        public SassMargin(string contentType, string source, bool showMargin, ITextDocument document)
-            : base(source, contentType, showMargin, document)
+        public SassMargin(string contentType, string source, ITextDocument document)
+            : base(source, contentType, WESettings.Instance.Sass, document)
         { }
 
         protected override async void StartCompiler(string source)

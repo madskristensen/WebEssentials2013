@@ -44,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
             MessageBoxIcon messageBoxIcon = MessageBoxIcon.Warning,
             MessageBoxDefaultButton messageBoxDefaultButton = MessageBoxDefaultButton.Button1)
         {
-            if (WESettings.GetBoolean(WESettings.Keys.AllMessagesToOutputWindow))
+            if (WESettings.Instance.General.AllMessagesToOutputWindow)
             {
                 Log(String.Format(CultureInfo.CurrentCulture, "{0}: {1}", title, message));
             }

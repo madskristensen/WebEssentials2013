@@ -9,6 +9,7 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class TsLintRunner : IDisposable
     {
+        // TODO: Unify with JsHintRunner
         private readonly ErrorListProvider _provider;
         private readonly static Dictionary<string, ErrorListProvider> _providers = InitializeResources();
         private readonly string _fileName;
@@ -110,7 +111,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 Line = error.Line,
                 Column = error.Column,
-                ErrorCategory = GetOutputLocation(),
+                ErrorCategory = WESettings.Instance.TypeScript.LintResultLocation,
                 Category = TaskCategory.Html,
                 Document = error.FileName,
                 Priority = TaskPriority.Low,
@@ -121,19 +122,6 @@ namespace MadsKristensen.EditorExtensions
 
             task.Navigate += task_Navigate;
             return task;
-        }
-
-        private static TaskErrorCategory GetOutputLocation()
-        {
-            var location = (WESettings.Keys.FullErrorLocation)WESettings.GetInt(WESettings.Keys.TsLintErrorLocation);
-
-            if (location == WESettings.Keys.FullErrorLocation.Errors)
-                return TaskErrorCategory.Error;
-
-            if (location == WESettings.Keys.FullErrorLocation.Warnings)
-                return TaskErrorCategory.Warning;
-
-            return TaskErrorCategory.Message;
         }
 
         private void task_Navigate(object sender, EventArgs e)

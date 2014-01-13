@@ -19,8 +19,8 @@ namespace MadsKristensen.EditorExtensions
         private WebBrowser _browser;
         private const string _stylesheet = "WE-Markdown.css";
 
-        public MarkdownMargin(string contentType, string source, bool showMargin, ITextDocument document)
-            : base(source, contentType, showMargin, document)
+        public MarkdownMargin(string contentType, string source, ITextDocument document)
+            : base(source, contentType, WESettings.Instance.Markdown, document)
         { }
 
         protected override void StartCompiler(string source)
@@ -56,15 +56,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static Markdown CreateCompiler()
         {
-            MarkdownSharp.MarkdownOptions options = new MarkdownSharp.MarkdownOptions();
-            options.AutoHyperlink = AutoHyperlinks;
-            options.LinkEmails = LinkEmails;
-            options.AutoNewLines = AutoNewLines;
-            options.EmptyElementSuffix = GenerateXHTML ? "/>" : ">";
-            options.EncodeProblemUrlCharacters = EncodeProblemUrlCharacters;
-            options.StrictBoldItalic = StrictBoldItalic;
-
-            return new Markdown(options);
+            return new Markdown(WESettings.Instance.Markdown);
         }
 
         public static string GetStylesheet()
@@ -89,32 +81,16 @@ namespace MadsKristensen.EditorExtensions
         public static void CreateStylesheet()
         {
             string file = Path.Combine(ProjectHelpers.GetSolutionFolderPath(), _stylesheet);
-
-            using (StreamWriter writer = new StreamWriter(file, false, new UTF8Encoding(true)))
-            {
-                writer.Write("body { background: yellow; }");
-            }
-
-            Solution2 solution = EditorExtensionsPackage.DTE.Solution as Solution2;
-            Project project = solution.Projects
-                                .OfType<Project>()
-                                .FirstOrDefault(p => p.Name.Equals(Settings._solutionFolder, StringComparison.OrdinalIgnoreCase));
-
-            if (project == null)
-            {
-                project = solution.AddSolutionFolder(Settings._solutionFolder);
-            }
-
-            project.ProjectItems.AddFromFile(file);
+            File.WriteAllText(file, "body { background: yellow; }", new UTF8Encoding(true));
+            ProjectHelpers.GetSolutionItemsProject().ProjectItems.AddFromFile(file);
         }
 
         protected override void CreateControls(IWpfTextViewHost host, string source)
         {
-            int width = WESettings.GetInt(SettingsKey);
-            width = width == -1 ? 400 : width;
+            double width = WESettings.Instance.Markdown.PreviewPaneWidth;
 
             _browser = new WebBrowser();
-            _browser.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+            _browser.HorizontalAlignment = HorizontalAlignment.Stretch;
 
             Grid grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0, GridUnitType.Star) });
@@ -142,13 +118,13 @@ namespace MadsKristensen.EditorExtensions
 
         void splitter_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            Settings.SetValue(SettingsKey, (int)this.ActualWidth);
-            Settings.Save();
+            WESettings.Instance.Markdown.PreviewPaneWidth = this.ActualWidth;
+            SettingsStore.Save();
         }
 
         protected override void MinifyFile(string fileName, string source)
         {
-            if (WESettings.GetBoolean(WESettings.Keys.EnableHtmlMinification)
+            if (WESettings.Instance.Html.MinifyOnSave
                 && File.Exists(Path.ChangeExtension(fileName, ".min.html")))
             {
                 FileHelpers.MinifyFile(fileName, source, ".html");
@@ -157,42 +133,12 @@ namespace MadsKristensen.EditorExtensions
 
         public override bool IsSaveFileEnabled
         {
-            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownEnableCompiler); }
+            get { return WESettings.Instance.Markdown.CompileOnSave; }
         }
 
         public override string CompileToLocation
         {
-            get { return WESettings.GetString(WESettings.Keys.MarkdownCompileToLocation); }
-        }
-
-        public static bool AutoHyperlinks
-        {
-            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownAutoHyperlinks); }
-        }
-
-        public static bool LinkEmails
-        {
-            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownLinkEmails); }
-        }
-
-        public static bool AutoNewLines
-        {
-            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownAutoNewLine); }
-        }
-
-        public static bool GenerateXHTML
-        {
-            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownGenerateXHTML); }
-        }
-
-        public static bool EncodeProblemUrlCharacters
-        {
-            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownEncodeProblemUrlCharacters); }
-        }
-
-        public static bool StrictBoldItalic
-        {
-            get { return WESettings.GetBoolean(WESettings.Keys.MarkdownStrictBoldItalic); }
+            get { return WESettings.Instance.Markdown.OutputDirectory; }
         }
     }
 }

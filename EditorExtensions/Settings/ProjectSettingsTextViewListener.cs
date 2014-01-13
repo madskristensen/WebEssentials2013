@@ -27,7 +27,7 @@ namespace MadsKristensen.EditorExtensions.Options
 
         private void document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
-            if (e.FileActionType == FileActionTypes.ContentSavedToDisk && e.FilePath.EndsWith(SettingsStore._fileName, StringComparison.OrdinalIgnoreCase))
+            if (e.FileActionType == FileActionTypes.ContentSavedToDisk && e.FilePath.EndsWith(SettingsStore.FileName, StringComparison.OrdinalIgnoreCase))
             {
                 SettingsStore.Load();
             }

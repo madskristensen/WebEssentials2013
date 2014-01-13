@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static string CamelCasePropertyName(string name)
         {
-            if (WESettings.GetBoolean(WESettings.Keys.JavaScriptCamelCasePropertyNames))
+            if (WESettings.Instance.CodeGen.CamelCasePropertyNames)
             {
                 name = CamelCase(name);
             }
@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static string CamelCaseClassName(string name)
         {
-            if (WESettings.GetBoolean(WESettings.Keys.JavaScriptCamelCaseClassNames))
+            if (WESettings.Instance.CodeGen.CamelCaseTypeNames)
             {
                 name = CamelCase(name);
             }

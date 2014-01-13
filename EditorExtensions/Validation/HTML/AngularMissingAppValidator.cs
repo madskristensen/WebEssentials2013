@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
         {
             var results = new ValidationErrorCollection();
 
-            if (!WESettings.GetBoolean(WESettings.Keys.EnableAngularValidation))
+            if (!WESettings.Instance.Html.EnableAngularValidation)
                 return results;
 
             AttributeNode attr = element.Attributes.SingleOrDefault(a => a.Name.StartsWith("ng-", StringComparison.Ordinal));

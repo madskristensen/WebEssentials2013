@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -14,18 +15,19 @@ namespace MadsKristensen.EditorExtensions
     /// </summary>
     public partial class ImageDropFormattingDialog : Window
     {
-        private static IEnumerable<KeyValuePair<string, string>> _formatsList = Settings.LoadImageDropFormats();//(IEnumerable<KeyValuePair<string, string>>)Settings.GetValue(WESettings.Keys.ImageDropFormats);
-        private IEnumerable<string> _imagePaths;
+        readonly ObservableCollection<ImageDropFormat> _formats = WESettings.Instance.Html.ImageDropFormats;
+        readonly IList<string> _imagePaths;
 
         public ImageDropFormattingDialog(IEnumerable<string> imagePaths)
         {
-            _imagePaths = imagePaths;
+            _imagePaths = imagePaths.ToList();
 
             InitializeComponent();
+            FormatComboBox.ItemsSource = _formats;
             BindResources(0);
 
-            if (_formatsList.Any())
-                BuildMarkup(_formatsList.First().Value);
+            if (_formats.Any())
+                BuildMarkup(_formats.First().HtmlFormat);
         }
 
         public string ShowAsDialog()
@@ -40,12 +42,13 @@ namespace MadsKristensen.EditorExtensions
         {
             StringBuilder markup = new StringBuilder();
 
-            // Needs to be converted to Linq?
-            var images = _imagePaths.ToArray();
-
-            for (int i = 0; i < images.Length; ++i)
+            for (int i = 0; i < _imagePaths.Count; ++i)
             {
-                markup.Append(WebUtility.HtmlDecode(String.Format(CultureInfo.CurrentCulture, format, images[i], i) + Environment.NewLine));
+                markup.AppendFormat(
+                    CultureInfo.CurrentCulture, 
+                    format + Environment.NewLine, 
+                    WebUtility.HtmlEncode(_imagePaths[i]), i
+                );
             }
 
             // TODO: format markup?
@@ -55,29 +58,23 @@ namespace MadsKristensen.EditorExtensions
 
         public void BindResources(int selected)
         {
-            FormatComboBox.ItemsSource = _formatsList;
             FormatComboBox.SelectedIndex = selected;
         }
 
-        /// <summary>
-        /// Serialize back to settings xml and refresh list.
-        /// </summary>
-        public void UpdateResources(KeyValuePair<string, string>? format)
+        public void AddFormat(ImageDropFormat format)
         {
             if (format == null)
                 return;
 
-            _formatsList = _formatsList.Concat(new[] { format.GetValueOrDefault() });
+            _formats.Add(format);
+            SettingsStore.Save();
 
-            Settings.UpdateImageDropFormats(_formatsList);
-            BindResources(_formatsList.Count() - 1);
-            FormatComboBox.SelectedIndex = _formatsList.Count() - 1;
-            BuildMarkup(FormatComboBox.SelectedValue.ToString());
+            BindResources(_formats.Count - 1);
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
         {
-            UpdateResources(new AddFormat().ShowAsDialog());
+            AddFormat(new AddFormat().ShowAsDialog());
         }
 
         private void FormatComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

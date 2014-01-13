@@ -11,9 +11,8 @@ namespace MadsKristensen.EditorExtensions
 {
     internal static class SettingsStore
     {
-        public const string _legacyFileName = "WE2013-settings.xml";
-        public const string _fileName = "WebEssentials-Settings.json";
-        public const string _solutionFolder = "Solution Items";
+        const string _legacyFileName = "WE2013-settings.xml";
+        public const string FileName = "WebEssentials-Settings.json";
 
         public static bool SolutionSettingsExist
         {
@@ -26,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
             string jsonPath = GetFilePath();
             if (!File.Exists(jsonPath))
             {
-                var legacyPath = jsonPath.Replace(_fileName, _legacyFileName);
+                var legacyPath = jsonPath.Replace(FileName, _legacyFileName);
                 if (File.Exists(legacyPath))
                 {
                     new SettingsMigrator(legacyPath).ApplyTo(WESettings.Instance);
@@ -58,14 +57,7 @@ namespace MadsKristensen.EditorExtensions
                 return;
 
             Save(path);
-
-            Solution2 solution = EditorExtensionsPackage.DTE.Solution as Solution2;
-            Project project = solution.Projects
-                                .OfType<Project>()
-                                .FirstOrDefault(p => p.Name.Equals(_solutionFolder, StringComparison.OrdinalIgnoreCase))
-                           ?? solution.AddSolutionFolder(_solutionFolder);
-
-            project.ProjectItems.AddFromFile(path);
+            ProjectHelpers.GetSolutionItemsProject().ProjectItems.AddFromFile(path);
             UpdateStatusBar("created");
         }
 
@@ -86,13 +78,13 @@ namespace MadsKristensen.EditorExtensions
             if (solution == null || string.IsNullOrEmpty(solution.FullName))
                 return null;
 
-            return Path.Combine(Path.GetDirectoryName(solution.FullName), _fileName);
+            return Path.Combine(Path.GetDirectoryName(solution.FullName), FileName);
         }
 
         private static string GetUserFilePath()
         {
             var ssm = new ShellSettingsManager(EditorExtensionsPackage.Instance);
-            return Path.Combine(ssm.GetApplicationDataFolder(ApplicationDataFolder.Configuration), _fileName);
+            return Path.Combine(ssm.GetApplicationDataFolder(ApplicationDataFolder.Configuration), FileName);
         }
 
         public static void UpdateStatusBar(string action)

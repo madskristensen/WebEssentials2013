@@ -16,6 +16,17 @@ namespace MadsKristensen.EditorExtensions
 {
     internal static class ProjectHelpers
     {
+        public const string SolutionItemsFolder = "Solution Items";
+        ///<summary>Gets the Solution Items solution folder in the current solution, creating it if it doesn't exist.</summary>
+        public static Project GetSolutionItemsProject()
+        {
+            Solution2 solution = EditorExtensionsPackage.DTE.Solution as Solution2;
+            return solution.Projects
+                           .OfType<Project>()
+                           .FirstOrDefault(p => p.Name.Equals(SolutionItemsFolder, StringComparison.OrdinalIgnoreCase))
+                      ?? solution.AddSolutionFolder(SolutionItemsFolder);
+        }
+
         public static IEnumerable<Project> GetAllProjects()
         {
             return EditorExtensionsPackage.DTE.Solution.Projects

@@ -8,8 +8,8 @@ namespace MadsKristensen.EditorExtensions
 {
     public class LessMargin : MarginBase
     {
-        public LessMargin(string contentType, string source, bool showMargin, ITextDocument document)
-            : base(source, contentType, showMargin, document)
+        public LessMargin(string contentType, string source, ITextDocument document)
+            : base(source, contentType, WESettings.Instance.Less, document)
         { }
 
         protected override async void StartCompiler(string source)

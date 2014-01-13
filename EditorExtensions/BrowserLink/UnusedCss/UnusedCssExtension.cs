@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             get
             {
-                var ignorePatterns = WESettings.GetString(WESettings.Keys.UnusedCss_IgnorePatterns) ?? "";
+                var ignorePatterns = WESettings.Instance.BrowserLink.CssIgnorePatterns ?? "";
 
                 return ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim());
             }
@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             _uploadHelper = new UploadHelper();
             _connection = connection;
 
-            BrowserLinkOptions.SettingsUpdated += InstallIgnorePatterns;
+            Settings.BrowserLinkOptions.SettingsUpdated += InstallIgnorePatterns;
         }
 
         private void ToggleRecordingModeAction(BrowserLinkAction obj)
@@ -177,7 +177,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             ExtensionByConnection.TryRemove(connection, out extension);
 
-            BrowserLinkOptions.SettingsUpdated -= InstallIgnorePatterns;
+            Settings.BrowserLinkOptions.SettingsUpdated -= InstallIgnorePatterns;
         }
 
         [BrowserLinkCallback]

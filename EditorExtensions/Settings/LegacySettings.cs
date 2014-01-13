@@ -62,7 +62,7 @@ namespace MadsKristensen.EditorExtensions
             target.Markdown.CompileOnSave = GetBoolean("MarkdownEnableCompiler");
             target.Markdown.OutputDirectory = GetString("MarkdownCompileToLocation");
 
-            target.Markdown.AutoHyperlinks = GetBoolean("MarkdownAutoHyperlinks");
+            target.Markdown.AutoHyperlink = GetBoolean("MarkdownAutoHyperlinks");
             target.Markdown.LinkEmails = GetBoolean("MarkdownLinkEmails");
             target.Markdown.AutoNewLines = GetBoolean("MarkdownAutoNewLine");
             target.Markdown.GenerateXHTML = GetBoolean("MarkdownGenerateXHTML");

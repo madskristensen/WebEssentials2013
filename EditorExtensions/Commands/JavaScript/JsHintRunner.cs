@@ -179,7 +179,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 Line = error.Line,
                 Column = error.Column,
-                ErrorCategory = GetOutputLocation(),
+                ErrorCategory = WESettings.Instance.JavaScript.LintResultLocation,
                 Category = TaskCategory.Html,
                 Document = error.FileName,
                 Priority = TaskPriority.Low,
@@ -190,20 +190,6 @@ namespace MadsKristensen.EditorExtensions
 
             task.Navigate += task_Navigate;
             return task;
-        }
-
-        private static TaskErrorCategory GetOutputLocation()
-        {
-            switch (WESettings.Instance.JavaScript.LintResultLocation)
-            {
-                case ErrorLocation.Errors:
-                    return TaskErrorCategory.Error;
-                case ErrorLocation.Warnings:
-                    return TaskErrorCategory.Warning;
-                case ErrorLocation.Messages:
-                default:
-                    return TaskErrorCategory.Message;
-            }
         }
 
         private void task_Navigate(object sender, EventArgs e)

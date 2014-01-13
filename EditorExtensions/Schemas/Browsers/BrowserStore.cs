@@ -50,18 +50,8 @@ namespace MadsKristensen.EditorExtensions
 
         public static void SaveBrowsers(IEnumerable<string> browsers)
         {
-            Solution2 solution = EditorExtensionsPackage.DTE.Solution as Solution2;
-            EnvDTE.Project project = solution.Projects
-                                .OfType<EnvDTE.Project>()
-                                .FirstOrDefault(p => p.Name.Equals(Settings._solutionFolder, StringComparison.OrdinalIgnoreCase));
-
-            if (project == null)
-            {
-                project = solution.AddSolutionFolder(Settings._solutionFolder);
-            }
-
             string path = GetSolutionFilePath();
-
+            // TODO: XLINQ
             using (XmlWriter writer = XmlWriter.Create(path, new XmlWriterSettings() { Indent = true }))
             {
                 writer.WriteStartElement("browsers");
@@ -74,7 +64,7 @@ namespace MadsKristensen.EditorExtensions
                 writer.WriteEndElement();
             }
 
-            project.ProjectItems.AddFromFile(path);
+            ProjectHelpers.GetSolutionItemsProject().ProjectItems.AddFromFile(path);
             CssSchemaManager.SchemaManager.ReloadSchemas();
         }
 

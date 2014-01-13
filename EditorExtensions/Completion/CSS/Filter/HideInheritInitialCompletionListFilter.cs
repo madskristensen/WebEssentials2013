@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions
     {
         public void FilterCompletionList(IList<CssCompletionEntry> completions, CssCompletionContext context)
         {
-            if (context.ContextType != CssCompletionContextType.PropertyValue || WESettings.GetBoolean(WESettings.Keys.ShowInitialInherit))
+            if (context.ContextType != CssCompletionContextType.PropertyValue || WESettings.Instance.Css.ShowInitialInherit)
                 return;
 
             foreach (CssCompletionEntry entry in completions)

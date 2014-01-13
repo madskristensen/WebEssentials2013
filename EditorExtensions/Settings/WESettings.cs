@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ConfOxide;
+using MarkdownSharp;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -28,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
         public MarkdownSettings Markdown { get; private set; }
 
     }
-    public sealed class GeneralSettings : SettingsBase<GeneralSettings>
+    public sealed class GeneralSettings : SettingsBase<GeneralSettings>, IMarginSettings
     {
         [Category("Minification")]
         [DisplayName("Keep important comments")]
@@ -47,6 +50,8 @@ namespace MadsKristensen.EditorExtensions
         [Description("Show a preview pane when editing SVG files.")]
         [DefaultValue(true)]
         public bool SvgPreviewPane { get; set; }
+
+        bool IMarginSettings.ShowPreviewPane { get { return SvgPreviewPane; } }
     }
     public sealed class BrowserLinkSettings : SettingsBase<BrowserLinkSettings>
     {
@@ -101,8 +106,8 @@ namespace MadsKristensen.EditorExtensions
         [Category("Linter")]
         [DisplayName("Results location")]
         [Description("Where to show messages from the linter.")]
-        [DefaultValue(ErrorLocation.Messages)]
-        public ErrorLocation LintResultLocation { get; set; }
+        [DefaultValue(TaskErrorCategory.Message)]
+        public TaskErrorCategory LintResultLocation { get; set; }
     }
     public sealed class TypeScriptSettings : LinterSettings<TypeScriptSettings>
     {
@@ -137,7 +142,7 @@ namespace MadsKristensen.EditorExtensions
         public bool EnableAngularValidation { get; set; }
 
         [Browsable(false)]
-        public List<ImageDropFormat> ImageDropFormats { get; private set; }
+        public ObservableCollection<ImageDropFormat> ImageDropFormats { get; private set; }
         protected override void ResetCustom()
         {
             ImageDropFormats.Add(new ImageDropFormat("Simple Image Tag", @"<img src=""{0}"" alt="""" />"));
@@ -271,7 +276,7 @@ namespace MadsKristensen.EditorExtensions
         public bool ShowBrowserTooltip { get; set; }
     }
 
-    public abstract class CompilationSettings<T> : SettingsBase<T> where T : CompilationSettings<T>
+    public abstract class CompilationSettings<T> : SettingsBase<T>, ICompilingMarginSettings where T : CompilationSettings<T>
     {
         [Category("Editor")]
         [DisplayName("Show preview pane")]
@@ -324,7 +329,7 @@ namespace MadsKristensen.EditorExtensions
         public bool WrapClosure { get; set; }
     }
 
-    public sealed class MarkdownSettings : SettingsBase<MarkdownSettings>
+    public sealed class MarkdownSettings : SettingsBase<MarkdownSettings>, ICompilingMarginSettings, IMarkdownOptions
     {
         #region Compilation
         [Category("Editor")]
@@ -352,10 +357,10 @@ namespace MadsKristensen.EditorExtensions
         #endregion
 
         [Category("Compile Options")]
-        [DisplayName("Make bare Urls into hyperlinks")]
+        [DisplayName("Make bare URLs into hyperlinks")]
         [Description("When true, (most) bare plain Urls are auto-hyperlinked. WARNING: this is a significant deviation from the Markdown spec.")]
         [DefaultValue(false)]
-        public bool AutoHyperlinks { get; set; }
+        public bool AutoHyperlink { get; set; }
 
         [Category("Compile Options")]
         [DisplayName("Make bare emails into links")]
@@ -386,19 +391,23 @@ namespace MadsKristensen.EditorExtensions
         [Description("When true, bold and italic require non-word characters on both sides. WARNING: this is a significant deviation from the Markdown spec.")]
         [DefaultValue(false)]
         public bool StrictBoldItalic { get; set; }
+        string IMarkdownOptions.EmptyElementSuffix { get { return GenerateXHTML ? " />" : ">"; } }
     }
 
+    public interface IMarginSettings
+    {
+        bool ShowPreviewPane { get; }
+    }
+
+    public interface ICompilingMarginSettings : IMarginSettings
+    {
+        bool CompileOnSave { get; }
+        string OutputDirectory { get; }
+    }
 
     public enum WarningLocation
     {
         Warnings = 0,
         Messages = 1,
-    }
-
-    public enum ErrorLocation
-    {
-        Errors = 0,
-        Warnings = 1,
-        Messages = 2,
     }
 }

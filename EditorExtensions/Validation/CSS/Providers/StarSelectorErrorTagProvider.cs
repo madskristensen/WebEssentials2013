@@ -16,7 +16,7 @@ namespace MadsKristensen.EditorExtensions
         {
             SimpleSelector sel = (SimpleSelector)item;
 
-            if (!WESettings.GetBoolean(WESettings.Keys.ValidateStarSelector) || !sel.IsValid || context == null)
+            if (!WESettings.Instance.Css.ValidateStarSelector || !sel.IsValid || context == null)
                 return ItemCheckResult.Continue;
 
             if (sel.Text == "*")

@@ -14,10 +14,10 @@ namespace MadsKristensen.EditorExtensions
             InitializeComponent();
         }
 
-        public KeyValuePair<string, string>? ShowAsDialog()
+        public ImageDropFormat ShowAsDialog()
         {
             if (this.ShowDialog().Value)
-                return new KeyValuePair<string, string>(FormatName.Text, WebUtility.HtmlEncode(Markup.Text));
+                return new ImageDropFormat(FormatName.Text, Markup.Text);
 
             return null;
         }

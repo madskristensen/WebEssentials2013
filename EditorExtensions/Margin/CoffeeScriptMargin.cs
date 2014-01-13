@@ -13,8 +13,8 @@ namespace MadsKristensen.EditorExtensions
         protected virtual string ServiceName { get { return "CoffeeScript"; } }
         protected virtual NodeExecutorBase Compiler { get { return _compiler; } }
 
-        public CoffeeScriptMargin(string contentType, string source, bool showMargin, ITextDocument document)
-            : base(source, contentType, showMargin, document)
+        public CoffeeScriptMargin(string contentType, string source, ITextDocument document)
+            : base(source, contentType, WESettings.Instance.CoffeeScript, document)
         { }
 
         protected override async void StartCompiler(string source)

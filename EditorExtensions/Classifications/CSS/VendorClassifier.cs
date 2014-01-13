@@ -61,7 +61,7 @@ namespace MadsKristensen.EditorExtensions
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)
         {
             List<ClassificationSpan> spans = new List<ClassificationSpan>();
-            if (!WESettings.GetBoolean(WESettings.Keys.SyncVendorValues))
+            if (!WESettings.Instance.Css.SyncVendorValues)
                 return spans;
 
             foreach (Declaration dec in Cache.Where(d => d.PropertyName.Text.Length > 0 && span.Start <= d.Start && span.End >= d.AfterEnd))
@@ -158,7 +158,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void UpdateVendorValues(ParseItem item)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.SyncVendorValues))
+            if (!WESettings.Instance.Css.SyncVendorValues)
                 return;
 
             Declaration dec = item.FindType<Declaration>();

@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions
     {
         public ItemCheckResult CheckItem(ParseItem item, ICssCheckerContext context)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.ValidateZeroUnit))
+            if (!WESettings.Instance.Css.ValidateZeroUnit)
                 return ItemCheckResult.Continue;
 
             NumericalValue number = (NumericalValue)item;
