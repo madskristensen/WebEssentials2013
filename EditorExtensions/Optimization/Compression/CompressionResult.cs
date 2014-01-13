@@ -38,7 +38,7 @@ namespace MadsKristensen.EditorExtensions
         {
             get
             {
-                return 100 - Math.Round((double)ResultFileSize / (double)OriginalFileSize * 100, 1);
+                return Math.Round(100 - (double)ResultFileSize / (double)OriginalFileSize * 100, 1);
             }
         }
 
