@@ -36,7 +36,7 @@ namespace MadsKristensen.EditorExtensions
             OleMenuCommand button = sender as OleMenuCommand;
 
             _selectedPaths = MinifyFileMenu.GetSelectedFilePaths(_dte)
-                                .Where(image => new[] { ".jpg", ".jpeg", ".gif", ".bmp", ".ico" }
+                                .Where(image => new[] { ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".ico" }
                                                            .Contains(Path.GetExtension(image))); ;
 
             int items = _selectedPaths.Count();

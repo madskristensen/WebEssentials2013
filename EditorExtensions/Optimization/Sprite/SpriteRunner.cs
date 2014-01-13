@@ -70,11 +70,10 @@ namespace MadsKristensen.EditorExtensions
                         var info = (mappedImageInfo.ImageInfo as ImageInfo);
 
                         graphics.DrawImage(Image.FromFile(info.Name),
-                                               info.Width * _imageZoom,
-                                               info.Height * _imageZoom,
-                                               mappedImageInfo.X * _imageZoom,
-                                               mappedImageInfo.Y * _imageZoom
-                                          );
+                                           info.Width * _imageZoom,
+                                           info.Height * _imageZoom,
+                                           mappedImageInfo.X * _imageZoom,
+                                           mappedImageInfo.Y * _imageZoom);
                     }
                 }
 

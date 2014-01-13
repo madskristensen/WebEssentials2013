@@ -49,7 +49,7 @@ namespace MadsKristensen.EditorExtensions
                 // This collection needs to be coming from editor; the list of file paths dropped
                 IEnumerable<string> imagesCollection = null;
 
-                imagesCollection = imagesCollection.Where(image => new[] { ".jpg", ".jpeg", ".gif", ".bmp", ".ico" }
+                imagesCollection = imagesCollection.Where(image => new[] { ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".ico" }
                                                            .Contains(Path.GetExtension(image)));
 
                 string markup = new ImageDropFormattingDialog(imagesCollection).ShowAsDialog();
