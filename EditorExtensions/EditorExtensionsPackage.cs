@@ -70,6 +70,7 @@ namespace MadsKristensen.EditorExtensions
             Settings.UpdateCache();
 
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+
             if (null != mcs)
             {
                 TransformMenu transform = new TransformMenu(DTE, mcs);
@@ -86,7 +87,8 @@ namespace MadsKristensen.EditorExtensions
                 UnusedCssMenu unusedCssMenu = new UnusedCssMenu(mcs);
                 PixelPushingMenu pixelPushingMenu = new PixelPushingMenu(mcs);
                 ReferenceJsMenu referenceJsMenu = new ReferenceJsMenu(mcs);
-                CompressImageMenu imageMenu = new CompressImageMenu(DTE, mcs);
+                CompressImageMenu compressImageMenu = new CompressImageMenu(DTE, mcs);
+                SpriteImageMenu spriteImageMenu = new SpriteImageMenu(DTE, mcs);
 
                 HandleMenuVisibility(mcs);
                 referenceJsMenu.SetupCommands();
@@ -103,7 +105,8 @@ namespace MadsKristensen.EditorExtensions
                 minifyMenu.SetupCommands();
                 diffMenu.SetupCommands();
                 transform.SetupCommands();
-                imageMenu.SetupCommands();
+                compressImageMenu.SetupCommands();
+                spriteImageMenu.SetupCommands();
             }
 
             IconRegistration.RegisterIcons();

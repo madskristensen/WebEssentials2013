@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
             IDataObject data = Clipboard.GetDataObject();
             ProjectItem item = ProjectHelpers.GetActiveFile();
 
-            if (!(data.GetDataPresent(DataFormats.Bitmap) || data.GetDataPresent(DataFormats.FileDrop)) 
+            if (!(data.GetDataPresent(DataFormats.Bitmap) || data.GetDataPresent(DataFormats.FileDrop))
                 || string.IsNullOrEmpty(item.ContainingProject.FullName)
                 || !IsValidTextBuffer())
                 return false;
@@ -195,7 +195,7 @@ namespace MadsKristensen.EditorExtensions
             if (data.GetDataPresent(DataFormats.FileDrop))
             {
                 string original = ((string[])data.GetData(DataFormats.FileDrop))[0];
-                
+
                 if (File.Exists(original))
                     File.Copy(original, fileName, true);
             }
