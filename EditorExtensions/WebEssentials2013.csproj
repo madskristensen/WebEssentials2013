@@ -583,7 +583,6 @@
     <Compile Include="SmartTags\HTML\HtmlRemoveParentSmartTag.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Optimization\Sprite\SpriteMap.cs" />
     <Compile Include="Optimization\Sprite\SpriteMapConstituent.cs" />
     <Compile Include="Optimization\Sprite\SpriteGenerator.cs" />
     <Compile Include="Optimization\Sprite\Sprite.cs" />

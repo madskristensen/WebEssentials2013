@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions
     public class SpriteGenerator
     {
         IEnumerable<ImageInfo> rectangles;
-        
+
         public SpriteGenerator(IEnumerable<ImageInfo> imageInfo)
         {
             rectangles = imageInfo;
@@ -74,21 +74,22 @@ namespace MadsKristensen.EditorExtensions
 
         private static void GenerateSpriteMap(string spriteFileName, IEnumerable<IMappedImageInfo> mappedImages)
         {
-            SpriteMap map = new SpriteMap()
+            var map = new
             {
-                File = spriteFileName,
-                Constituents =
-                        mappedImages.Select(mapped =>
-                        {
-                            SpriteMapConstituent image = new SpriteMapConstituent();
-                            var info = mapped.ImageInfo as ImageInfo;
-                            image.Name = Path.GetFileName(info.Name);
-                            image.Width = info.Width;
-                            image.Height = info.Height;
-                            image.OffsetX = mapped.X;
-                            image.OffsetY = mapped.Y;
-                            return image;
-                        })
+                Constituents = mappedImages.Select(mapped =>
+                {
+                    var info = mapped.ImageInfo as ImageInfo;
+                    SpriteMapConstituent image = new SpriteMapConstituent()
+                    {
+                        Name = Path.GetFileName(info.Name),
+                        Width = info.Width,
+                        Height = info.Height,
+                        OffsetX = mapped.X,
+                        OffsetY = mapped.Y,
+                    };
+
+                    return image;
+                })
             };
 
             File.WriteAllText(spriteFileName + ".sprite", JObject.Parse(Json.Encode(map)).ToString());
