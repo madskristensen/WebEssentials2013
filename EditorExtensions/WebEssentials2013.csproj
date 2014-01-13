@@ -94,9 +94,8 @@
     <Reference Include="CssSorter">
       <HintPath>..\CssSorter.dll</HintPath>
     </Reference>
-    <Reference Include="Mapper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Mapper.1.0.0.0\lib\net451\Mapper.dll</HintPath>
+    <Reference Include="Mapper">
+      <HintPath>..\packages\RectanglePacker.1.1\lib\net451\Mapper.dll</HintPath>
     </Reference>
     <Reference Include="MarkdownSharp">
       <HintPath>..\MarkdownSharp.dll</HintPath>
