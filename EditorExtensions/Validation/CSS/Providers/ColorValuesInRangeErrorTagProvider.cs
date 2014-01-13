@@ -72,7 +72,7 @@ namespace MadsKristensen.EditorExtensions
                 if (i < 3)
                 {
                     pair = text.Split('%');
-                    
+
                     if (int.TryParse(pair[0], out value))
                     {
                         if (value < 0 || value > 100 && i > 0)

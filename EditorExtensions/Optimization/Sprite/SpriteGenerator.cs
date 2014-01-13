@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -41,17 +42,46 @@ namespace MadsKristensen.EditorExtensions
             {
                 using (Graphics graphics = Graphics.FromImage(bitmap))
                 {
+                    graphics.SmoothingMode = SmoothingMode.HighSpeed;
+                    graphics.CompositingQuality = CompositingQuality.HighSpeed;
+
                     foreach (IMappedImageInfo map in sprite.MappedImages)
                     {
                         ImageInfo info = map.ImageInfo as ImageInfo;
                         Image image = Image.FromFile(info.Name);
+
+                        var ext = Path.GetExtension(info.Name);
+
+                        if (ext.Equals(".jpg") || ext.Equals(".jpeg"))
+                            image = ScaleJpeg(Image.FromFile(info.Name), 70);
 
                         graphics.DrawImage(image, map.X, map.Y, info.Width, info.Height);
                     }
                 }
 
                 ImageFormat format = PasteImage.GetImageFormat(Path.GetExtension(spriteImageFile));
+
                 bitmap.Save(spriteImageFile, format);
+            }
+        }
+
+        public static Image ScaleJpeg(Image image, int quality)
+        {
+            using (var qualityParam = new EncoderParameter(Encoder.Quality, quality))
+            using (var encoderParams = new EncoderParameters(1))
+            using (var stream = new MemoryStream())
+            {
+                ImageCodecInfo jpegCodec = ImageCodecInfo.GetImageEncoders()
+                                                         .FirstOrDefault(t => t.MimeType == "image/jpeg");
+
+
+                encoderParams.Param[0] = qualityParam;
+
+                image.Save(stream, jpegCodec, encoderParams);
+
+                stream.Position = 0;
+
+                return Image.FromStream(stream);
             }
         }
 
