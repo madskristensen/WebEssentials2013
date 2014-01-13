@@ -87,18 +87,18 @@ namespace MadsKristensen.EditorExtensions
         [DisplayName("Run on save")]
         [Description("Run linter when saving each source file.")]
         [DefaultValue(true)]
-        public bool RunOnSave { get; set; }
+        public bool LintOnSave { get; set; }
         [Category("Linter")]
         [DisplayName("Run on build")]
         [Description("Lint all files when building the solution.")]
         [DefaultValue(true)]
-        public bool RunOnBuild { get; set; }
+        public bool LintOnBuild { get; set; }
 
         [Category("Linter")]
         [DisplayName("Results location")]
         [Description("Where to show messages from the linter.")]
         [DefaultValue(ErrorLocation.Messages)]
-        public ErrorLocation ResultLocation { get; set; }
+        public ErrorLocation LintResultLocation { get; set; }
     }
     public sealed class TypeScriptSettings : LinterSettings<TypeScriptSettings>
     {
@@ -125,7 +125,7 @@ namespace MadsKristensen.EditorExtensions
         [DisplayName("Minify files on save")]
         [Description("Update any .min.html file when saving the corresponding .html file.  To create a .min.html file, right-click a .html file.")]
         [DefaultValue(false)]
-        public bool EnableHtmlMinification { get; set; }
+        public bool MinifyOnSave { get; set; }
 
         [DisplayName("Enable Angular.js validation")]
         [Description("Validate HTML files against Angular.js best practices.")]
@@ -349,39 +349,39 @@ namespace MadsKristensen.EditorExtensions
 
         [Category("Compile Options")]
         [DisplayName("Make bare Urls into hyperlinks")]
-        [Description("When true, (most) bare plain Urls are auto-hyperlinked. WARNING: this is a significant deviation from the markdown spec.")]
+        [Description("When true, (most) bare plain Urls are auto-hyperlinked. WARNING: this is a significant deviation from the Markdown spec.")]
         [DefaultValue(false)]
-        public bool MarkdownAutoHyperlinks { get; set; }
+        public bool AutoHyperlinks { get; set; }
 
         [Category("Compile Options")]
         [DisplayName("Make bare emails into links")]
-        [Description("When false, email addresses will never be auto-linked. WARNING: this is a significant deviation from the markdown spec.")]
+        [Description("When false, email addresses will never be auto-linked. WARNING: this is a significant deviation from the Markdown spec.")]
         [DefaultValue(false)]
-        public bool MarkdownLinkEmails { get; set; }
+        public bool LinkEmails { get; set; }
 
         [Category("Compile Options")]
         [DisplayName("Make return into a newline")]
-        [Description("When true, RETURN becomes a literal newline. WARNING: this is a significant deviation from the markdown spec.")]
+        [Description("When true, RETURN becomes a literal newline. WARNING: this is a significant deviation from the Markdown spec.")]
         [DefaultValue(false)]
-        public bool MarkdownAutoNewLines { get; set; }
+        public bool AutoNewLines { get; set; }
 
         [Category("Compile Options")]
         [DisplayName("Generate XHTML output")]
         [Description("When true, the output is valid XHTML. Otherwise regular HTML it output. In this case, when true (mostly) means that single tags are closed with `/>` instead of `>`.")]
         [DefaultValue(true)]
-        public bool MarkdownGenerateXHTML { get; set; }
+        public bool GenerateXHTML { get; set; }
 
         [Category("Compile Options")]
         [DisplayName("Encode problem Url characters")]
-        [Description("When true, problematic Url characters like [, ], (, and so forth will be encoded. WARNING: this is a significant deviation from the markdown spec.")]
+        [Description("When true, problematic Url characters like [, ], (, and so forth will be encoded. WARNING: this is a significant deviation from the Markdown spec.")]
         [DefaultValue(false)]
-        public bool MarkdownEncodeProblemUrlCharacters { get; set; }
+        public bool EncodeProblemUrlCharacters { get; set; }
 
         [Category("Compile Options")]
         [DisplayName("Require non-word characters for bold/italic")]
-        [Description("When true, bold and italic require non-word characters on both sides. WARNING: this is a significant deviation from the markdown spec.")]
+        [Description("When true, bold and italic require non-word characters on both sides. WARNING: this is a significant deviation from the Markdown spec.")]
         [DefaultValue(false)]
-        public bool MarkdownStrictBoldItalic { get; set; }
+        public bool StrictBoldItalic { get; set; }
     }
 
 

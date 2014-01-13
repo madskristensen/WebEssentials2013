@@ -112,7 +112,7 @@ namespace MadsKristensen.EditorExtensions
             // Hook up event handlers
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => {
                 DTE.Events.BuildEvents.OnBuildDone += BuildEvents_OnBuildDone;
-                DTE.Events.SolutionEvents.Opened += delegate { SettingsStore.Load(); SettingsStore.UpdateStatusBar("applied"); ShowTopMenu(); };
+                DTE.Events.SolutionEvents.Opened += delegate { SettingsStore.Load(); ShowTopMenu(); };
                 DTE.Events.SolutionEvents.AfterClosing += delegate { DTE.StatusBar.Clear(); ShowTopMenu(); };
 
             }), DispatcherPriority.ApplicationIdle, null);

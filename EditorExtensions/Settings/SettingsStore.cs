@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.XPath;
 using ConfOxide;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell.Settings;
-using Keys = MadsKristensen.EditorExtensions.WESettings.Keys;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -30,7 +23,21 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>Loads the active settings file.</summary>
         public static void Load()
         {
-            WESettings.Instance.ReadJsonFile(GetFilePath());
+            string jsonPath = GetFilePath();
+            if (!File.Exists(jsonPath))
+            {
+                var legacyPath = jsonPath.Replace(_fileName, _legacyFileName);
+                if (File.Exists(legacyPath))
+                {
+                    new SettingsMigrator(legacyPath).ApplyTo(WESettings.Instance);
+                    Save(jsonPath);
+                    UpdateStatusBar("imported from legacy XML settings file");
+                }
+                return;
+            }
+
+            WESettings.Instance.ReadJsonFile(jsonPath);
+            UpdateStatusBar("applied");
         }
 
         ///<summary>Saves the current settings to the active settings file.</summary>
@@ -59,10 +66,8 @@ namespace MadsKristensen.EditorExtensions
                            ?? solution.AddSolutionFolder(_solutionFolder);
 
             project.ProjectItems.AddFromFile(path);
-            UpdateStatusBar("applied");
+            UpdateStatusBar("created");
         }
-
-
 
         private static string GetFilePath()
         {
