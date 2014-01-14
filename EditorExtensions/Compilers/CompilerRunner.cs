@@ -1,21 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EnvDTE;
 using MarkdownSharp;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
-using Microsoft.Web.Editor.Composition;
 using Task = System.Threading.Tasks.Task;
 
 namespace MadsKristensen.EditorExtensions.Compilers
 {
-
     ///<summary>A base class to run a compiler on arbitrary project files and report the results.</summary>
     ///<remarks>
     /// This class uses the project system.  It
@@ -80,7 +74,6 @@ namespace MadsKristensen.EditorExtensions.Compilers
         ///<summary>Compiles the specified source file, notifying all <see cref="ICompilationConsumer"/>s.</summary>
         ///<param name="sourcePath">The path to the source file.</param>
         ///<param name="targetPath">The path to save the compiled output, or null to compile in-memory.</param>
-
         private async Task<CompilerResult> CompileAsync(string sourcePath, string targetPath)
         {
             if (!string.IsNullOrEmpty(targetPath))

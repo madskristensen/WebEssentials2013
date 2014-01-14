@@ -343,6 +343,7 @@
     <Compile Include="Compilers\Lint\LintConfigEncodingFix.cs" />
     <Compile Include="Commands\LintFileInvoker.cs" />
     <Compile Include="Commands\LintReporter.cs" />
+    <Compile Include="Compilers\CompilerNotifierProviders.cs" />
     <Compile Include="Compilers\EditorCompilerInvoker.cs" />
     <Compile Include="Compilers\Lint\TsLintCompiler.cs" />
     <Compile Include="MenuItems\SpriteImage.cs" />

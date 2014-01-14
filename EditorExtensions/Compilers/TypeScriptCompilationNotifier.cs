@@ -8,15 +8,16 @@ namespace MadsKristensen.EditorExtensions.Compilers
     internal class TypeScriptCompilationNotifier : ICompilationNotifier
     {
         private readonly FileSystemWatcher _watcher;
-        public string SourceFilePath { get; private set; }
-        public string TargetFilePath { get; private set; }
+        public ITextDocument Document { get; private set; }
+        public string SourceFilePath { get { return Document.FilePath; } }
+        public string TargetFilePath { get { return Path.ChangeExtension(SourceFilePath, ".js"); } }
 
         private bool _isReady;
 
-        public TypeScriptCompilationNotifier(string sourcePath)
+        public TypeScriptCompilationNotifier(ITextDocument doc)
         {
-            SourceFilePath = sourcePath;
-            TargetFilePath = Path.ChangeExtension(sourcePath, ".js");
+            Document = doc;
+            Document.FileActionOccurred += Document_FileActionOccurred;
 
             _watcher = new FileSystemWatcher(Path.GetDirectoryName(TargetFilePath)) {
                 Filter = Path.GetFileName(TargetFilePath)
@@ -26,6 +27,15 @@ namespace MadsKristensen.EditorExtensions.Compilers
             _watcher.Changed += FileTouched;
         }
 
+        private void Document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
+        {
+            if (e.FileActionType != FileActionTypes.DocumentRenamed)
+                return;
+            _watcher.Path = Path.GetDirectoryName(TargetFilePath);
+            _watcher.Filter = Path.GetFileName(TargetFilePath);
+        }
+
+
         ///<summary>Releases all resources used by the EditorCompilerInvoker.</summary>
         public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
         ///<summary>Releases the unmanaged resources used by the EditorCompilerInvoker and optionally releases the managed resources.</summary>
@@ -34,6 +44,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         {
             if (disposing)
             {
+                Document.FileActionOccurred -= Document_FileActionOccurred;
                 _watcher.Created -= FileTouched;
                 _watcher.Changed -= FileTouched;
                 _watcher.Dispose();

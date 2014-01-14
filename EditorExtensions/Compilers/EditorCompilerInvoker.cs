@@ -49,7 +49,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         }
         private async void Document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
-            if (e.FileActionType == FileActionTypes.ContentSavedToDisk)
+            if (e.FileActionType == FileActionTypes.ContentSavedToDisk || e.FileActionType == FileActionTypes.DocumentRenamed)
                 await CompileAsync(e.FilePath);
         }
 
