@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 writer.WriteStartElement("sprite");
                 writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
-                writer.WriteAttributeString("xsi", "noNamespaceSchemaLocation", null, "http://vswebessentials.com/schemas/sprite.v1.xsd");
+                writer.WriteAttributeString("xsi", "noNamespaceSchemaLocation", null, "http://vswebessentials.com/schemas/v1/sprite.xsd");
                 writer.WriteComment("The order of the <file> elements determines the order of the images in the sprite.");
                 
                 // Settings
