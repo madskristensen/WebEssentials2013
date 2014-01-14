@@ -239,6 +239,7 @@ namespace MadsKristensen.EditorExtensions
                 writer.WriteAttributeString("minify", "true");
                 writer.WriteAttributeString("runOnBuild", "true");
                 writer.WriteAttributeString("output", output);
+                writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
                 writer.WriteAttributeString("xsi", "noNamespaceSchemaLocation", null, "http://vswebessentials.com/schemas/v1/bundle.xsd");
                 writer.WriteComment("The order of the <file> elements determines the order of the file contents when bundled.");
 
