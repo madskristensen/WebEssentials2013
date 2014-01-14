@@ -30,6 +30,9 @@ namespace MadsKristensen.EditorExtensions
 
             var result = await new LessCompiler().Compile(lessFilePath, cssFilename);
 
+            if (result == null)
+                return;
+
             if (result.IsSuccess)
             {
                 OnCompilationDone(result.Result, result.FileName);
