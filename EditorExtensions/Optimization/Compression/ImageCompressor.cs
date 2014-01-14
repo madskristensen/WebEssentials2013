@@ -46,23 +46,32 @@ namespace MadsKristensen.EditorExtensions
             EditorExtensionsPackage.DTE.StatusBar.Animate(true, vsStatusAnimation.vsStatusAnimationDeploy);
             List<CompressionResult> list = new List<CompressionResult>();
 
-            await Task.WhenAll(fileNames.Select(async file =>
+            try
             {
-                if (!File.Exists(file))
-                    return;
+                await Task.WhenAll(fileNames.Select(async file =>
+                {
+                    if (!File.Exists(file))
+                        return;
 
-                var result = await CompressFile(file);
+                    var result = await CompressFile(file);
 
-                if (result.Saving > 0)
-                    list.Add(result);
+                    if (result.Saving > 0)
+                        list.Add(result);
 
-                HandleResult(file, result);
-            }));
+                    HandleResult(file, result);
+                }));
 
-            EditorExtensionsPackage.DTE.StatusBar.Animate(false, vsStatusAnimation.vsStatusAnimationDeploy);
-
-            if (fileNames.Length > 1)
-                DisplayEndResult(list);
+                if (fileNames.Length > 1)
+                    DisplayEndResult(list);
+            }
+            catch
+            {
+                EditorExtensionsPackage.DTE.StatusBar.Text = "The image could not be optimized. Wrong format";
+            }
+            finally
+            {
+                EditorExtensionsPackage.DTE.StatusBar.Animate(false, vsStatusAnimation.vsStatusAnimationDeploy);                
+            }
         }
 
         private static void DisplayEndResult(List<CompressionResult> list)
