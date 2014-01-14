@@ -74,6 +74,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 Logger.Log(ex);
                 MessageBox.Show("Error generating the sprite. See output window for details");
+                _dte.StatusBar.Text = "Sprite was not created";
             }
         }
 
@@ -87,6 +88,12 @@ namespace MadsKristensen.EditorExtensions
                     await Generate(doc);
                 }));
             }
+            catch (FileNotFoundException ex)
+            {
+                Logger.Log(ex.Message);
+                MessageBox.Show("The file '" + Path.GetFileName(ex.Message) + "' does not exist");
+                _dte.StatusBar.Text = "Sprite was not created";
+            }
             catch (Exception ex)
             {
                 Logger.Log(ex);
@@ -94,8 +101,10 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static async Task Generate(SpriteDocument sprite)
+        private async Task Generate(SpriteDocument sprite)
         {
+            _dte.StatusBar.Text = "Generating sprite...";
+
             string imageFile;
             var fragments = SpriteGenerator.CreateImage(sprite, out imageFile);
 
@@ -106,12 +115,14 @@ namespace MadsKristensen.EditorExtensions
 
             if (sprite.Optimize)
                 await new ImageCompressor().CompressFiles(imageFile);
+
+            _dte.StatusBar.Text = "Sprite generated";
         }
 
         private static void Export(IEnumerable<SpriteFragment> fragments, string imageFile)
         {
             foreach (ExportFormat format in (ExportFormat[])Enum.GetValues(typeof(ExportFormat)))
-            {
+            {   
                 string exportFile = SpriteExporter.Export(fragments, imageFile, format);
                 ProjectHelpers.AddFileToProject(imageFile, exportFile);
             }
