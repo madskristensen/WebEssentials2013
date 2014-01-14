@@ -40,6 +40,7 @@ namespace MadsKristensen.EditorExtensions
             };
 
             string outputFile = GetFileName(imageFile, ExportFormat.Json);
+            ProjectHelpers.CheckOutFileFromSourceControl(outputFile);
 
             using (StreamWriter sw = new StreamWriter(outputFile))
             using (JsonWriter jw = new JsonTextWriter(sw))
@@ -69,10 +70,12 @@ namespace MadsKristensen.EditorExtensions
                 sb.AppendLine("}");
             }
 
-            string outputFileName = GetFileName(imageFile, format);
-            File.WriteAllText(outputFileName, sb.ToString());
+            string outputFile = GetFileName(imageFile, format);
 
-            return outputFileName;
+            ProjectHelpers.CheckOutFileFromSourceControl(outputFile);
+            File.WriteAllText(outputFile, sb.ToString());
+
+            return outputFile;
         }
 
         private static string GetDescription(ExportFormat format)
