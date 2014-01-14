@@ -51,6 +51,7 @@
       <Word>mmd</Word>
       <Word>fileOverview</Word>
       <Word>memberOf</Word>
+      <Word>Scss</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>

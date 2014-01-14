@@ -103,6 +103,7 @@ namespace MadsKristensen.EditorExtensions
         // Images
         CompressImage = 0x1091,
         SpriteImage = 0x1093,
+        UpdateSprite = 0x1094,
 
         //Unused CSS
         UnusedCssSnapshot = 0x2100,

@@ -520,6 +520,15 @@
         </Strings>
       </Button>
 
+      <Button guid="guidImageCmdSet" id="cmdUpdateSprite" priority="0x0103" type="Button">
+        <Parent guid="guidImageCmdSet" id="MyMenuGroup"/>
+        <Icon guid="guidMenuImages" id="bmpJigsaw"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Update image sprite</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guidBundleCmdSet" id="cmdBundleJs" priority="0x0101" type="Button">
         <Parent guid="guidSolutionExplorerCmdSet" id="MyBundleGroup"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -863,6 +872,7 @@
       <IDSymbol name="MyMenuGroup" value="0x1090" />
       <IDSymbol name="cmdCompressImage" value="0x1091" />
       <IDSymbol name="cmdSpriteImage" value="0x1093" />
+      <IDSymbol name="cmdUpdateSprite" value="0x1094" />
     </GuidSymbol>
 
     <GuidSymbol name="htmlEditorCommandSet" value="{D7E8C5E1-BDB8-11D0-9C88-0000F8040A53}">

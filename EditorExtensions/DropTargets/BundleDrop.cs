@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
-using System.IO;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.DragDrop;
 using Microsoft.VisualStudio.Utilities;
@@ -25,7 +23,6 @@ namespace MadsKristensen.EditorExtensions
     internal class BundleDropHandler : IDropHandler
     {
         private IWpfTextView _view;
-        private readonly List<string> _allowedExtensions = new List<string> { ".css", ".less", ".js", ".coffee", ".ts" };
         private string _draggedFilename;
         private string _format = Environment.NewLine + "\t<file>/{0}</file>";
 
@@ -69,16 +66,7 @@ namespace MadsKristensen.EditorExtensions
         {
             _draggedFilename = FontDropHandler.GetImageFilename(dragDropInfo);
 
-            if (!string.IsNullOrEmpty(_draggedFilename))
-            {
-                string fileExtension = Path.GetExtension(_draggedFilename).ToLowerInvariant();
-                if (this._allowedExtensions.Contains(fileExtension))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return true;
         }
     }
 }

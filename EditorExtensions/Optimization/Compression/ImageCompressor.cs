@@ -111,7 +111,7 @@ namespace MadsKristensen.EditorExtensions
                 WorkingDirectory = Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location), @"Resources\tools\"),
                 Arguments = GetArguments(fileName, targetFile),
                 UseShellExecute = false,
-                CreateNoWindow = true
+                CreateNoWindow = true,
             };
 
             try
