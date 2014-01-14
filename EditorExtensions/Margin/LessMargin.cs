@@ -28,14 +28,14 @@ namespace MadsKristensen.EditorExtensions
 
             Logger.Log("LESS: Compiling " + Path.GetFileName(lessFilePath));
 
-            var result = await new LessCompiler().Compile(lessFilePath, cssFilename);
+            var result = await new LessCompiler().CompileAsync(lessFilePath, cssFilename);
 
             if (result == null)
                 return;
 
             if (result.IsSuccess)
             {
-                OnCompilationDone(result.Result, result.FileName);
+                OnCompilationDone(result.Result, result.SourceFileName);
             }
             else
             {

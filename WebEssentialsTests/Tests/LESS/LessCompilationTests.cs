@@ -19,7 +19,7 @@ namespace WebEssentialsTests
         #region Helper Methods
         private static async Task<string> CompileLess(string fileName, string targetFileName)
         {
-            var result = await new LessCompiler().Compile(fileName, targetFileName);
+            var result = await new LessCompiler().CompileAsync(fileName, targetFileName);
 
             if (result.IsSuccess)
             {

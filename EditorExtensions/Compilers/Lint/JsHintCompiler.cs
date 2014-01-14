@@ -19,6 +19,7 @@ namespace MadsKristensen.EditorExtensions
         // JsHint Reported is located in Resources\Scripts\ directory. Read more at http://www.jshint.com/docs/reporters/
         private static readonly string _jsHintReporter = Path.Combine(WebEssentialsResourceDirectory, @"Scripts\jshint-node-reporter.js");
 
+        public override string TargetExtension { get { return null; } }
         public virtual string SourceExtension { get { return ".js"; } }
         public override string ServiceName { get { return "JsHint"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
@@ -29,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
 
         public Task<CompilerResult> Check(string sourcePath)
         {
-            return Compile(sourcePath, null);
+            return CompileAsync(sourcePath, null);
         }
 
         public static string GetOrCreateGlobalSettings(string fileName)

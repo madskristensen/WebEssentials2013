@@ -16,15 +16,14 @@ namespace MadsKristensen.EditorExtensions
         private static readonly string NodePath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node.exe");
         private static string[] _disallowedParentExtensions = new[] { ".png", ".jpg", ".jpeg", ".gif" };
 
-        ///<summary>If set, the executor will not try to use the VS project system.</summary>
-        public static bool InUnitTests { get; set; }
+        public abstract string TargetExtension { get; }
 
         public abstract string ServiceName { get; }
         protected abstract string CompilerPath { get; }
         protected virtual Regex ErrorParsingPattern { get { return null; } }
         protected virtual Func<string, IEnumerable<CompilerError>> ParseErrors { get { return ParseErrorsWithRegex; } }
 
-        public async Task<CompilerResult> Compile(string sourceFileName, string targetFileName)
+        public async Task<CompilerResult> CompileAsync(string sourceFileName, string targetFileName)
         {
             if (!CheckPrerequisites(sourceFileName))
                 return null;
@@ -37,8 +36,7 @@ namespace MadsKristensen.EditorExtensions
 
             cmdArgs = string.Format("/c \"{0} {1} > \"{2}\" 2>&1\"", cmdArgs, scriptArgs, errorOutputFile);
 
-            ProcessStartInfo start = new ProcessStartInfo("cmd")
-            {
+            ProcessStartInfo start = new ProcessStartInfo("cmd") {
                 WindowStyle = ProcessWindowStyle.Hidden,
                 WorkingDirectory = Path.GetDirectoryName(sourceFileName),
                 Arguments = cmdArgs,
@@ -75,15 +73,13 @@ namespace MadsKristensen.EditorExtensions
 
         private CompilerResult ProcessResult(Process process, string errorText, string sourceFileName, string targetFileName)
         {
-            CompilerResult result = new CompilerResult(sourceFileName);
+            CompilerResult result = new CompilerResult(sourceFileName, targetFileName);
 
             ValidateResult(process, targetFileName, errorText, result);
 
             if (result.IsSuccess)
             {
                 result.Result = PostProcessResult(result.Result, sourceFileName, targetFileName);
-                if (!InUnitTests)
-                    ProjectHelpers.AddFileToProject(sourceFileName, targetFileName);
             }
             else
             {
@@ -144,8 +140,7 @@ namespace MadsKristensen.EditorExtensions
                 Logger.Log(ServiceName + " parse error: " + error);
                 yield return new CompilerError { Message = error };
             }
-            yield return new CompilerError
-            {
+            yield return new CompilerError {
                 FileName = match.Groups["fileName"].Value,
                 Message = match.Groups["message"].Value,
                 Column = string.IsNullOrEmpty(match.Groups["column"].Value) ? 1 : int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture),

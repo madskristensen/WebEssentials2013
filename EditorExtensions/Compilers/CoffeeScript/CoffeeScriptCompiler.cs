@@ -4,27 +4,21 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Threading;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
+    [ContentType("CoffeeScript")]
     public class CoffeeScriptCompiler : NodeExecutorBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\coffee-script\bin\coffee");
         private static readonly Regex _errorParsingPattern = new Regex(@"(?<fileName>.*):(?<line>.\d*):(?<column>.\d*): error: (?<message>.*\n.*)", RegexOptions.Multiline);
         private static readonly Regex _sourceMapInJs = new Regex(@"\/\*\n.*=(.*)\n\*\/", RegexOptions.Multiline);
 
-        public override string ServiceName
-        {
-            get { return "CoffeeScript"; }
-        }
-        protected override string CompilerPath
-        {
-            get { return _compilerPath; }
-        }
-        protected override Regex ErrorParsingPattern
-        {
-            get { return _errorParsingPattern; }
-        }
+        public override string TargetExtension { get { return ".js"; } }
+        public override string ServiceName { get { return "CoffeeScript"; } }
+        protected override string CompilerPath { get { return _compilerPath; } }
+        protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
 
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
@@ -33,7 +27,7 @@ namespace MadsKristensen.EditorExtensions
             if (!WESettings.Instance.CoffeeScript.WrapClosure)
                 args.Append("--bare ");
 
-            if (WESettings.Instance.CoffeeScript.GenerateSourceMaps && !InUnitTests)
+            if (WESettings.Instance.CoffeeScript.GenerateSourceMaps)
                 args.Append("--map ");
 
             args.AppendFormat(CultureInfo.CurrentCulture, "--output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);

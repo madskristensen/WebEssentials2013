@@ -40,7 +40,7 @@ namespace MadsKristensen.EditorExtensions
                 if (!File.Exists(compiledFile))
                     return;
 
-                var result = await Compiler.Compile(sourceFile, compiledFile);
+                var result = await Compiler.CompileAsync(sourceFile, compiledFile);
 
                 if (result == null)
                     return;

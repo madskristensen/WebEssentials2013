@@ -34,22 +34,10 @@ namespace MadsKristensen.EditorExtensions
             Document = document;
             Settings = settings;
 
-            Document.FileActionOccurred += Document_FileActionOccurred;
-
             if (settings.ShowPreviewPane)
             {
                 _dispatcher.BeginInvoke(
                     new Action(CreateControls), DispatcherPriority.ApplicationIdle, null);
-            }
-        }
-        void Document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
-        {
-            if (e.FileActionType == FileActionTypes.ContentSavedToDisk)
-            {
-                _dispatcher.BeginInvoke(new Action(() => {
-                    _provider.Tasks.Clear();
-                    StartUpdatePreview(File.ReadAllText(e.FilePath));
-                }), DispatcherPriority.ApplicationIdle, null);
             }
         }
 
@@ -75,7 +63,7 @@ namespace MadsKristensen.EditorExtensions
 
             _previewControl = CreateControl(width);
             grid.Children.Add(_previewControl);
-            this.Children.Add(grid);
+            Children.Add(grid);
 
             Grid.SetColumn(_previewControl, 2);
             Grid.SetRow(_previewControl, 0);
@@ -83,8 +71,8 @@ namespace MadsKristensen.EditorExtensions
             GridSplitter splitter = new GridSplitter();
             splitter.Width = 5;
             splitter.ResizeDirection = GridResizeDirection.Columns;
-            splitter.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
-            splitter.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+            splitter.VerticalAlignment = VerticalAlignment.Stretch;
+            splitter.HorizontalAlignment = HorizontalAlignment.Stretch;
             splitter.DragCompleted += splitter_DragCompleted;
 
             grid.Children.Add(splitter);
@@ -105,7 +93,7 @@ namespace MadsKristensen.EditorExtensions
         private void ThrowIfDisposed()
         {
             if (_isDisposed)
-                throw new ObjectDisposedException("MarginBase");
+                throw new ObjectDisposedException(_settingsKey);
         }
         #region IWpfTextViewMargin Members
 
@@ -135,7 +123,7 @@ namespace MadsKristensen.EditorExtensions
             get
             {
                 ThrowIfDisposed();
-                return this.ActualHeight;
+                return ActualHeight;
             }
         }
 
@@ -159,52 +147,32 @@ namespace MadsKristensen.EditorExtensions
             return (marginName == GetType().Name) ? this : null;
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            Dispose(true);
-        }
 
+        ///<summary>Releases all resources used by the MarginBase.</summary>
+        public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+        ///<summary>Releases the unmanaged resources used by the MarginBase and optionally releases the managed resources.</summary>
+        ///<param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (_isDisposed)
-                return;
-            _isDisposed = true;
-
             if (disposing)
             {
-                if (_previewTextHost != null)
-                {
-                    _previewTextHost.Close();
-                }
-
-                if (Document != null)
-                    Document.FileActionOccurred -= Document_FileActionOccurred;
-
-                if (_provider != null)
-                {
-                    _provider.Tasks.Clear();
-                    _provider.Dispose();
-                }
             }
         }
         #endregion
     }
     public abstract class TextViewMarginBase : MarginBase
     {
-        private ErrorListProvider _provider;
         private IWpfTextViewHost _previewTextHost;
 
-        protected ICompilingMarginSettings CompilationSettings { get; private set; }
+        protected ICompilerInvocationSettings CompilationSettings { get; private set; }
 
         protected bool IsFirstRun { get; private set; }
         readonly string _contentType;
-        protected TextViewMarginBase(string contentType, IMarginSettings settings, ITextDocument document)
+        protected TextViewMarginBase(string targetContentType, IMarginSettings settings, ITextDocument document)
             : base(settings, document)
         {
             IsFirstRun = true;
-            _provider = new ErrorListProvider(EditorExtensionsPackage.Instance);
-            _contentType = contentType;
+            _contentType = targetContentType;
         }
 
         protected override FrameworkElement CreateControl(double width)
@@ -215,7 +183,6 @@ namespace MadsKristensen.EditorExtensions
             _previewTextHost.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.GlyphMarginId, false);
             _previewTextHost.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.LineNumberMarginId, true);
             _previewTextHost.TextView.VisualElement.KeyDown += TextView_KeyUp;
-
 
             return _previewTextHost.HostControl;
         }
@@ -256,7 +223,7 @@ namespace MadsKristensen.EditorExtensions
                 _previewTextHost.TextView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(_previewTextHost.TextView.TextBuffer.CurrentSnapshot, _previewTextHost.TextView.TextBuffer.CurrentSnapshot.Length, 0));
         }
 
-        public void SetText(string text)
+        protected void SetText(string text)
         {
             if (!Settings.ShowPreviewPane)
                 return;
@@ -302,36 +269,6 @@ namespace MadsKristensen.EditorExtensions
                     MinifyFile(targetFileName, result.Result);
             }
             IsFirstRun = false;
-        }
-        protected abstract Task<CompilerResult> CompileAsync(string source);
-
-        private string GetTargetFileName()
-        {
-            switch (Path.GetExtension(Document.FilePath).ToLowerInvariant())
-            {
-                case ".less":
-                    return GetCompiledFileName(Document.FilePath, ".css", CompilationSettings.OutputDirectory);
-
-                case ".scss":
-                    return GetCompiledFileName(Document.FilePath, ".css", CompilationSettings.OutputDirectory);
-
-                case ".coffee":
-                case ".iced":
-                case ".ts":
-                    return GetCompiledFileName(Document.FilePath, ".js", CompilationSettings.OutputDirectory);
-
-                case ".md":
-                case ".mdown":
-                case ".markdown":
-                case ".mkd":
-                case ".mkdn":
-                case ".mdwn":
-                case ".mmd":
-                    return GetCompiledFileName(Document.FilePath, ".html", CompilationSettings.OutputDirectory);
-
-                default: // For the Diff view
-                    return null;
-            }
         }
 
         protected abstract void MinifyFile(string fileName, string source);
@@ -383,37 +320,6 @@ namespace MadsKristensen.EditorExtensions
             }
 
             return Path.Combine(sourceDir, compiledFileName);
-        }
-
-        protected void CreateTask(CompilerError error)
-        {
-            ErrorTask task = new ErrorTask() {
-                Line = error.Line,
-                Column = error.Column,
-                ErrorCategory = TaskErrorCategory.Error,
-                Category = TaskCategory.Html,
-                Document = error.FileName,
-                Priority = TaskPriority.Low,
-                Text = error.Message,
-            };
-
-            task.AddHierarchyItem();
-
-            task.Navigate += task_Navigate;
-            _provider.Tasks.Add(task);
-        }
-
-        private void task_Navigate(object sender, EventArgs e)
-        {
-            ErrorTask task = sender as ErrorTask;
-
-            _provider.Navigate(task, new Guid(EnvDTE.Constants.vsViewKindPrimary));
-
-            if (task.Column > 0)
-            {
-                var doc = (TextDocument)EditorExtensionsPackage.DTE.ActiveDocument.Object("textdocument");
-                doc.Selection.MoveToLineAndOffset(task.Line, task.Column, false);
-            }
         }
     }
 }

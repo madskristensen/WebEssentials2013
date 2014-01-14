@@ -28,11 +28,11 @@ namespace MadsKristensen.EditorExtensions
 
             Logger.Log("SASS: Compiling " + Path.GetFileName(sassFilePath));
 
-            var result = await new SassCompiler().Compile(sassFilePath, cssFilename);
+            var result = await new SassCompiler().CompileAsync(sassFilePath, cssFilename);
 
             if (result.IsSuccess)
             {
-                OnCompilationDone(result.Result, result.FileName);
+                OnCompilationDone(result.Result, result.SourceFileName);
             }
             else
             {

@@ -18,7 +18,7 @@ namespace WebEssentialsTests
             {
                 File.WriteAllText(sourceFileName, source);
 
-                var result = await compiler.Compile(sourceFileName, targetFileName);
+                var result = await compiler.CompileAsync(sourceFileName, targetFileName);
 
                 if (result.IsSuccess)
                     return result.Result;

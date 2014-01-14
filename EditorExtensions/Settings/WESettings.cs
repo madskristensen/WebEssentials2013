@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ConfOxide;
+using ConfOxide.MemberAccess;
 using MarkdownSharp;
 using Microsoft.VisualStudio.Shell;
 
@@ -19,6 +20,7 @@ namespace MadsKristensen.EditorExtensions
         public CodeGenSettings CodeGen { get; private set; }
         public BrowserLinkSettings BrowserLink { get; private set; }
 
+        // The names of these properties must match VS ContentTypes
         public TypeScriptSettings TypeScript { get; private set; }
 
         public CssSettings Css { get; private set; }
@@ -29,7 +31,6 @@ namespace MadsKristensen.EditorExtensions
         public SassSettings Sass { get; private set; }
         public CoffeeScriptSettings CoffeeScript { get; private set; }
         public MarkdownSettings Markdown { get; private set; }
-
     }
     public sealed class GeneralSettings : SettingsBase<GeneralSettings>, IMarginSettings
     {
@@ -281,7 +282,7 @@ namespace MadsKristensen.EditorExtensions
         public bool ShowBrowserTooltip { get; set; }
     }
 
-    public abstract class CompilationSettings<T> : SettingsBase<T>, ICompilingMarginSettings where T : CompilationSettings<T>
+    public abstract class CompilationSettings<T> : SettingsBase<T>, ICompilerInvocationSettings, IMarginSettings where T : CompilationSettings<T>
     {
         [Category("Editor")]
         [DisplayName("Show preview pane")]
@@ -334,7 +335,7 @@ namespace MadsKristensen.EditorExtensions
         public bool WrapClosure { get; set; }
     }
 
-    public sealed class MarkdownSettings : SettingsBase<MarkdownSettings>, ICompilingMarginSettings, IMarkdownOptions
+    public sealed class MarkdownSettings : SettingsBase<MarkdownSettings>, ICompilerInvocationSettings, IMarginSettings, IMarkdownOptions
     {
         #region Compilation
         [Category("Editor")]
@@ -404,7 +405,7 @@ namespace MadsKristensen.EditorExtensions
         bool ShowPreviewPane { get; }
     }
 
-    public interface ICompilingMarginSettings : IMarginSettings
+    public interface ICompilerInvocationSettings 
     {
         bool CompileOnSave { get; }
         string OutputDirectory { get; }

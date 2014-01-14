@@ -92,7 +92,7 @@
       <HintPath>..\packages\AjaxMin.5.7.5124.21499\lib\net40\AjaxMin.dll</HintPath>
     </Reference>
     <Reference Include="ConfOxide">
-      <HintPath>..\packages\ConfOxide.1.1.0.0\lib\net40\ConfOxide.dll</HintPath>
+      <HintPath>..\packages\ConfOxide.1.2.0.0\lib\net40\ConfOxide.dll</HintPath>
     </Reference>
     <Reference Include="CssSorter">
       <HintPath>..\CssSorter.dll</HintPath>
@@ -343,8 +343,12 @@
     <Compile Include="Compilers\Lint\LintConfigEncodingFix.cs" />
     <Compile Include="Commands\LintFileInvoker.cs" />
     <Compile Include="Commands\LintReporter.cs" />
+    <Compile Include="Compilers\CompilerInvoker.cs" />
     <Compile Include="Compilers\Lint\TsLintCompiler.cs" />
     <Compile Include="MenuItems\SpriteImage.cs" />
+    <Compile Include="Compilers\ICompilationService.cs" />
+    <Compile Include="Compilers\CompilerManager.cs" />
+    <Compile Include="Helpers\Mef.cs" />
     <Compile Include="MenuItems\CompressImage.cs" />
     <Compile Include="MenuItems\TsLint.cs" />
     <Compile Include="Optimization\Compression\CompressionResult.cs" />
@@ -610,7 +614,6 @@
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Compilers\CoffeeScript\CoffeeScriptCompiler.cs" />
     <Compile Include="Helpers\FileHelpers.cs" />
-    <Compile Include="Compilers\CompilerError.cs" />
     <Compile Include="Compilers\CompilerResult.cs" />
     <Compile Include="Margin\MarkdownMargin.cs" />
     <Compile Include="Compilers\LESS\LessProjectCompiler.cs" />

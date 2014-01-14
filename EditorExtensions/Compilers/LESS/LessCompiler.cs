@@ -8,27 +8,21 @@ using System.Text.RegularExpressions;
 using System.Web.Helpers;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.CSS.Core;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
+    [ContentType("LESS")]
     public class LessCompiler : NodeExecutorBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\less\bin\lessc");
         private static readonly Regex _errorParsingPattern = new Regex(@"^(?<message>.+) in (?<fileName>.+) on line (?<line>\d+), column (?<column>\d+):$", RegexOptions.Multiline);
         private static readonly Regex _sourceMapInCss = new Regex(@"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", RegexOptions.Multiline);
 
-        public override string ServiceName
-        {
-            get { return "LESS"; }
-        }
-        protected override string CompilerPath
-        {
-            get { return _compilerPath; }
-        }
-        protected override Regex ErrorParsingPattern
-        {
-            get { return _errorParsingPattern; }
-        }
+        public override string TargetExtension { get { return ".css"; } }
+        public override string ServiceName { get { return "LESS"; } }
+        protected override string CompilerPath { get { return _compilerPath; } }
+        protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
             var args = new StringBuilder("--no-color --relative-urls ");

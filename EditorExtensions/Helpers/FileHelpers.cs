@@ -258,7 +258,7 @@ namespace MadsKristensen.EditorExtensions
 
         internal static void WriteResult(CompilerResult result, string compileToFileName, string compileToExtension)
         {
-            MinifyFile(result.FileName, result.Result, compileToExtension);
+            MinifyFile(result.SourceFileName, result.Result, compileToExtension);
 
             if (!File.Exists(compileToFileName))
                 return;

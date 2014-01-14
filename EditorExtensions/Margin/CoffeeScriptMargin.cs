@@ -33,11 +33,11 @@ namespace MadsKristensen.EditorExtensions
 
             Logger.Log(ServiceName + ": Compiling " + Path.GetFileName(sourceFilePath));
 
-            var result = await Compiler.Compile(sourceFilePath, jsFileName);
+            var result = await Compiler.CompileAsync(sourceFilePath, jsFileName);
 
             if (result.IsSuccess)
             {
-                OnCompilationDone(result.Result, result.FileName);
+                OnCompilationDone(result.Result, result.SourceFileName);
             }
             else
             {

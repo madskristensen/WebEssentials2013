@@ -1,5 +1,6 @@
 ﻿
 using System.Xml.Linq;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -34,7 +35,7 @@ namespace MadsKristensen.EditorExtensions
             target.Less.Minify = GetBoolean("LessMinify");
             target.Less.CompileOnBuild = GetBoolean("LessCompileOnBuild");
             target.Less.GenerateSourceMaps = GetBoolean("LessSourceMaps");
-            target.Less.OutputDirectory = GetString("LessCompileToLocation");
+            target.Less.OutputDirectory = GetNonBooleanString("LessCompileToLocation");
 
             // SASS
             target.Sass.CompileOnSave = GetBoolean("SassGenerateCssFile");
@@ -42,7 +43,7 @@ namespace MadsKristensen.EditorExtensions
             target.Sass.Minify = GetBoolean("SassMinify");
             target.Sass.CompileOnBuild = GetBoolean("SassCompileOnBuild");
             target.Sass.GenerateSourceMaps = GetBoolean("SassSourceMaps");
-            target.Sass.OutputDirectory = GetString("SassCompileToLocation");
+            target.Sass.OutputDirectory = GetNonBooleanString("SassCompileToLocation");
 
             // TypeScript
             target.TypeScript.ShowPreviewPane = GetBoolean("TypeScriptShowPreviewWindow");
@@ -55,12 +56,12 @@ namespace MadsKristensen.EditorExtensions
             target.CoffeeScript.WrapClosure = GetBoolean("CoffeeScriptWrapClosure");
             target.CoffeeScript.CompileOnBuild = GetBoolean("CoffeeScriptCompileOnBuild");
             target.CoffeeScript.GenerateSourceMaps = GetBoolean("CoffeeScriptSourceMaps");
-            target.CoffeeScript.OutputDirectory = GetString("CoffeeScriptCompileToLocation");
+            target.CoffeeScript.OutputDirectory = GetNonBooleanString("CoffeeScriptCompileToLocation");
 
             // Markdown
             target.Markdown.ShowPreviewPane = GetBoolean("MarkdownShowPreviewWindow");
             target.Markdown.CompileOnSave = GetBoolean("MarkdownEnableCompiler");
-            target.Markdown.OutputDirectory = GetString("MarkdownCompileToLocation");
+            target.Markdown.OutputDirectory = GetNonBooleanString("MarkdownCompileToLocation");
 
             target.Markdown.AutoHyperlink = GetBoolean("MarkdownAutoHyperlinks");
             target.Markdown.LinkEmails = GetBoolean("MarkdownLinkEmails");
@@ -96,12 +97,12 @@ namespace MadsKristensen.EditorExtensions
             // JSHint
             target.JavaScript.LintOnSave = GetBoolean("JsHintEnable");
             target.JavaScript.LintOnBuild = GetBoolean("JsHintRunOnBuild");
-            target.JavaScript.LintResultLocation = (ErrorLocation)GetInt("JsHintErrorLocation");
+            target.JavaScript.LintResultLocation = (TaskErrorCategory)GetInt("JsHintErrorLocation");
 
             // TSLint
             target.TypeScript.LintOnSave = GetBoolean("TsLintEnable");
             target.TypeScript.LintOnBuild = GetBoolean("TsLintRunOnBuild");
-            target.TypeScript.LintResultLocation = (ErrorLocation)GetInt("TsLintErrorLocation");
+            target.TypeScript.LintResultLocation = (TaskErrorCategory)GetInt("TsLintErrorLocation");
 
             // Browser Link
             target.BrowserLink.CssIgnorePatterns = GetString("UnusedCss_IgnorePatterns");
@@ -127,6 +128,16 @@ namespace MadsKristensen.EditorExtensions
         string GetString(string propertyName)
         {
             return (string)settingsElement.Element(propertyName);
+        }
+
+        // Use this for legacy settings that were changed from booleans and may have bad values
+        string GetNonBooleanString(string propertyName)
+        {
+            var value = GetString(propertyName);
+            bool unused;
+            if (bool.TryParse(value, out unused))
+                return null;
+            return value;
         }
     }
 }
