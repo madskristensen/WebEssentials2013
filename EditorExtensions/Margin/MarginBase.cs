@@ -12,14 +12,14 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using ErrorTask = Microsoft.VisualStudio.Shell.Task;
+//using ErrorTask = Microsoft.VisualStudio.Shell.Task;
 
 namespace MadsKristensen.EditorExtensions
 {
     public abstract class MarginBase : DockPanel, IWpfTextViewMargin
     {
         readonly string _settingsKey;
-        Control _previewControl;
+        FrameworkElement _previewControl;
 
         private bool _isDisposed = false;
         private Dispatcher _dispatcher;
@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
         protected abstract void StartUpdatePreview(string source);
-        protected abstract Control CreateControl(double width);
+        protected abstract FrameworkElement CreateControl(double width);
 
         void CreateControls()
         {
@@ -102,14 +102,18 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-
+        private void ThrowIfDisposed()
+        {
+            if (_isDisposed)
+                throw new ObjectDisposedException("MarginBase");
+        }
         #region IWpfTextViewMargin Members
 
         /// <summary>
         /// The <see cref="Sytem.Windows.FrameworkElement"/> that implements the visual representation
         /// of the margin.
         /// </summary>
-        public System.Windows.FrameworkElement VisualElement
+        public FrameworkElement VisualElement
         {
             // Since this margin implements Canvas, this is the object which renders
             // the margin.
@@ -152,7 +156,7 @@ namespace MadsKristensen.EditorExtensions
         /// <returns>An instance of EditorMargin1 or null</returns>
         public ITextViewMargin GetTextViewMargin(string marginName)
         {
-            return (marginName == GetType().Name) ? (IWpfTextViewMargin)this : null;
+            return (marginName == GetType().Name) ? this : null;
         }
 
         public void Dispose()
@@ -203,7 +207,7 @@ namespace MadsKristensen.EditorExtensions
             _contentType = contentType;
         }
 
-        protected override Control CreateControl(double width)
+        protected override FrameworkElement CreateControl(double width)
         {
             _previewTextHost = CreateTextViewHost(_contentType);
             _previewTextHost.TextView.VisualElement.MinWidth = width;
@@ -297,7 +301,7 @@ namespace MadsKristensen.EditorExtensions
                 if (!string.IsNullOrEmpty(targetFileName))
                     MinifyFile(targetFileName, result.Result);
             }
-                IsFirstRun = false;
+            IsFirstRun = false;
         }
         protected abstract Task<CompilerResult> CompileAsync(string source);
 
@@ -410,12 +414,6 @@ namespace MadsKristensen.EditorExtensions
                 var doc = (TextDocument)EditorExtensionsPackage.DTE.ActiveDocument.Object("textdocument");
                 doc.Selection.MoveToLineAndOffset(task.Line, task.Column, false);
             }
-        }
-
-        private void ThrowIfDisposed()
-        {
-            if (_isDisposed)
-                throw new ObjectDisposedException("MarginBase");
         }
     }
 }
