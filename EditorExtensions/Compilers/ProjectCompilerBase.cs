@@ -34,6 +34,9 @@ namespace MadsKristensen.EditorExtensions
                 string compiledFile = MarginBase.GetCompiledFileName(sourceFile, CompileToExtension, CompileToLocation);
                 var result = await Compiler.Compile(sourceFile, compiledFile);
 
+                if (result == null)
+                    return;
+
                 if (result.IsSuccess)
                     FileHelpers.WriteResult(result, compiledFile, CompileToExtension);
                 else

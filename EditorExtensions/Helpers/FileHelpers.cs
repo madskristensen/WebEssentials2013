@@ -256,27 +256,6 @@ namespace MadsKristensen.EditorExtensions
             find.MatchWholeWord = matchWord;
         }
 
-        internal static bool CanCompile(string fileName, string compileToExtension)
-        {
-            if (ProjectHelpers.GetProjectItem(fileName) == null)
-                return false;
-
-            if (Path.GetFileName(fileName).StartsWith("_", StringComparison.Ordinal))
-                return false;
-
-            string minFile = MarginBase.GetCompiledFileName(fileName, ".min" + compileToExtension, WESettings.GetString(WESettings.Keys.CoffeeScriptCompileToLocation));
-
-            if (File.Exists(minFile) && WESettings.GetBoolean(WESettings.Keys.CoffeeScriptMinify))
-                return true;
-
-            string jsFile = MarginBase.GetCompiledFileName(fileName, compileToExtension, WESettings.GetString(WESettings.Keys.CoffeeScriptCompileToLocation));
-
-            if (!File.Exists(jsFile))
-                return false;
-
-            return true;
-        }
-
         internal static void WriteResult(CompilerResult result, string compileToFileName, string compileToExtension)
         {
             MinifyFile(result.FileName, result.Result, compileToExtension);
@@ -307,7 +286,7 @@ namespace MadsKristensen.EditorExtensions
         internal static void MinifyFile(string sourceFileName, string source, string compileToExtension)
         {
             string content = MinifyFileMenu.MinifyString(compileToExtension, source);
-            string minFile = MarginBase.GetCompiledFileName(sourceFileName, ".min" + compileToExtension, WESettings.GetString(WESettings.Keys.CoffeeScriptCompileToLocation));
+            string minFile = MarginBase.GetCompiledFileName(sourceFileName, ".min" + compileToExtension, Path.GetDirectoryName(sourceFileName));
             bool fileExist = File.Exists(minFile);
             string old = fileExist ? File.ReadAllText(minFile) : string.Empty;
 

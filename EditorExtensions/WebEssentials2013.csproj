@@ -777,6 +777,15 @@
     <Compile Include="Validation\HTML\ItemTypeValidator.cs" />
     <Compile Include="Validation\LESS\Providers\ImportOnceErrorTagProvider.cs" />
     <Compile Include="Validation\SASS\Filters\SassErrorFilter.cs" />
+    <None Include="Bundle.xsc">
+      <DependentUpon>Bundle.xsd</DependentUpon>
+    </None>
+    <None Include="Bundle.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Bundle.xss">
+      <DependentUpon>Bundle.xsd</DependentUpon>
+    </None>
     <None Include="PreBuildTask.cs" />
     <Content Include="Resources\Icons\Bundle.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
