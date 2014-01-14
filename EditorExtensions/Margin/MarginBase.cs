@@ -1,21 +1,15 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Threading;
-using EnvDTE;
+using MadsKristensen.EditorExtensions.Compilers;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
-//using ErrorTask = Microsoft.VisualStudio.Shell.Task;
 
 namespace MadsKristensen.EditorExtensions
 {
+    ///<summary>A base class for all margins, providing  basic layout and resize functionality.</summary>
     public abstract class MarginBase : DockPanel, IWpfTextViewMargin
     {
         readonly string _settingsKey;
@@ -37,14 +31,13 @@ namespace MadsKristensen.EditorExtensions
             if (settings.ShowPreviewPane)
             {
                 _dispatcher.BeginInvoke(
-                    new Action(CreateControls), DispatcherPriority.ApplicationIdle, null);
+                    new Action(CreateMarginControls), DispatcherPriority.ApplicationIdle, null);
             }
         }
 
-        protected abstract void StartUpdatePreview(string source);
-        protected abstract FrameworkElement CreateControl(double width);
+        protected abstract FrameworkElement CreatePreviewControl(double width);
 
-        void CreateControls()
+        protected virtual void CreateMarginControls()
         {
             int width;
             using (var key = EditorExtensionsPackage.Instance.UserRegistryRoot)
@@ -61,7 +54,7 @@ namespace MadsKristensen.EditorExtensions
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0, GridUnitType.Auto) });
             grid.RowDefinitions.Add(new RowDefinition());
 
-            _previewControl = CreateControl(width);
+            _previewControl = CreatePreviewControl(width);
             grid.Children.Add(_previewControl);
             Children.Add(grid);
 
@@ -78,8 +71,6 @@ namespace MadsKristensen.EditorExtensions
             grid.Children.Add(splitter);
             Grid.SetColumn(splitter, 1);
             Grid.SetRow(splitter, 0);
-
-            StartUpdatePreview(Document.TextBuffer.CurrentSnapshot.GetText());
         }
 
         void splitter_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
@@ -101,16 +92,7 @@ namespace MadsKristensen.EditorExtensions
         /// The <see cref="Sytem.Windows.FrameworkElement"/> that implements the visual representation
         /// of the margin.
         /// </summary>
-        public FrameworkElement VisualElement
-        {
-            // Since this margin implements Canvas, this is the object which renders
-            // the margin.
-            get
-            {
-                ThrowIfDisposed();
-                return this;
-            }
-        }
+        public FrameworkElement VisualElement { get { return this; } }
 
         #endregion
 
@@ -127,15 +109,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public bool Enabled
-        {
-            // The margin should always be enabled
-            get
-            {
-                ThrowIfDisposed();
-                return true;
-            }
-        }
+        public bool Enabled { get { return true; } }
 
         /// <summary>
         /// Returns an instance of the margin if this is the margin that has been requested.
@@ -160,166 +134,71 @@ namespace MadsKristensen.EditorExtensions
         }
         #endregion
     }
-    public abstract class TextViewMarginBase : MarginBase
+
+    ///<summary>A base class for margins that use the original file contents rather than the output of a compiler.</summary>
+    public abstract class DirectMarginBase : MarginBase
     {
-        private IWpfTextViewHost _previewTextHost;
-
-        protected ICompilerInvocationSettings CompilationSettings { get; private set; }
-
-        protected bool IsFirstRun { get; private set; }
-        readonly string _contentType;
-        protected TextViewMarginBase(string targetContentType, IMarginSettings settings, ITextDocument document)
+        protected DirectMarginBase(IMarginSettings settings, ITextDocument document)
             : base(settings, document)
         {
-            IsFirstRun = true;
-            _contentType = targetContentType;
+            Document.FileActionOccurred += Document_FileActionOccurred;
         }
 
-        protected override FrameworkElement CreateControl(double width)
+        private void Document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
-            _previewTextHost = CreateTextViewHost(_contentType);
-            _previewTextHost.TextView.VisualElement.MinWidth = width;
-            _previewTextHost.TextView.VisualElement.HorizontalAlignment = HorizontalAlignment.Stretch;
-            _previewTextHost.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.GlyphMarginId, false);
-            _previewTextHost.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.LineNumberMarginId, true);
-            _previewTextHost.TextView.VisualElement.KeyDown += TextView_KeyUp;
-
-            return _previewTextHost.HostControl;
+            if (e.FileActionType == FileActionTypes.ContentSavedToDisk)
+                UpdateMargin(e.FilePath);
         }
 
-        private static IWpfTextViewHost CreateTextViewHost(string contentType)
+        protected override void CreateMarginControls()
         {
-            var componentModel = ProjectHelpers.GetComponentModel();
-            var service = componentModel.GetService<IContentTypeRegistryService>();
-            var type = service.GetContentType(contentType);
-
-            var textBufferFactory = componentModel.GetService<ITextBufferFactoryService>();
-            var textViewFactory = componentModel.GetService<ITextEditorFactoryService>();
-            var textRoles = contentType == "JavaScript" ? new[] { PredefinedTextViewRoles.Document } : new[] { PredefinedTextViewRoles.Document, PredefinedTextViewRoles.Interactive };
-            ITextBuffer textBuffer = textBufferFactory.CreateTextBuffer(string.Empty, type);
-            ITextViewRoleSet roles = textViewFactory.CreateTextViewRoleSet(textRoles);
-            IWpfTextView textView = textViewFactory.CreateTextView(textBuffer, roles);
-            IWpfTextViewHost host = textViewFactory.CreateTextViewHost(textView, false);
-
-            return host;
+            base.CreateMarginControls();
+            Dispatcher.InvokeAsync(() => UpdateMargin(Document.FilePath));
         }
 
+        ///<summary>Updates the contents of the margin.</summary>
+        protected abstract void UpdateMargin(string filePath);
 
-        void TextView_KeyUp(object sender, KeyEventArgs e)
+
+        ///<summary>Releases the unmanaged resources used by the DirectMarginBase and optionally releases the managed resources.</summary>
+        ///<param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
         {
-            if (e.Key == Key.C && Keyboard.Modifiers == ModifierKeys.Control)
-                Clipboard.SetText(_previewTextHost.TextView.TextBuffer.CurrentSnapshot.GetText(_previewTextHost.TextView.Selection.Start.Position.Position, _previewTextHost.TextView.Selection.End.Position.Position - _previewTextHost.TextView.Selection.Start.Position.Position));
-            else if (e.Key == Key.PageDown)
-                _previewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByPage(ScrollDirection.Down);
-            else if (e.Key == Key.PageUp)
-                _previewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByPage(ScrollDirection.Up);
-            else if (e.Key == Key.Down)
-                _previewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByLine(ScrollDirection.Down);
-            else if (e.Key == Key.Up)
-                _previewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByLine(ScrollDirection.Up);
-            else if (e.Key == Key.Home)
-                _previewTextHost.TextView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(_previewTextHost.TextView.TextBuffer.CurrentSnapshot, 0, 0));
-            else if (e.Key == Key.End)
-                _previewTextHost.TextView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(_previewTextHost.TextView.TextBuffer.CurrentSnapshot, _previewTextHost.TextView.TextBuffer.CurrentSnapshot.Length, 0));
+            if (disposing)
+            {
+                Document.FileActionOccurred -= Document_FileActionOccurred;
+            }
+            base.Dispose(disposing);
+        }
+    }
+    ///<summary>A base class for margins that display the result of an <see cref="ICompilationNotifier"/>.</summary>
+    public abstract class CompilingMarginBase : MarginBase
+    {
+        public ICompilationNotifier Notifier { get; private set; }
+        protected CompilingMarginBase(IMarginSettings settings, ITextDocument document)
+            : base(settings, document)
+        {
+            Notifier = Mef.GetImport<ICompilationNotifier>(Document.TextBuffer.ContentType);
+            Notifier.CompilationReady += (s, e) => UpdateMargin(e.CompilerResult);
         }
 
-        protected void SetText(string text)
+        protected override void CreateMarginControls()
         {
-            if (!Settings.ShowPreviewPane)
-                return;
-
-            if (string.IsNullOrEmpty(text))
-            {
-                _previewTextHost.HostControl.Opacity = 0.3;
-                return;
-            }
-            int position = _previewTextHost.TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
-            _previewTextHost.TextView.TextBuffer.SetText(text);
-
-            try
-            {
-                _previewTextHost.HostControl.Opacity = 1;
-                _previewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, _previewTextHost.TextView.TextSnapshot.GetLineNumberFromPosition(position));
-                _previewTextHost.TextView.ViewScroller.ScrollViewportHorizontallyByPixels(-9999);
-            }
-            catch
-            {
-                // Threading issues when called from TypeScript
-            }
+            base.CreateMarginControls();
+            Dispatcher.InvokeAsync(() => Notifier.RequestCompilationResult(cached: true));
         }
+        protected abstract void UpdateMargin(CompilerResult result);
 
-        protected override async void StartUpdatePreview(string source)
+
+        ///<summary>Releases the unmanaged resources used by the CompilingMarginBase and optionally releases the managed resources.</summary>
+        ///<param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
         {
-            var result = await CompileAsync(source);
-            if (!result.IsSuccess)
+            if (disposing)
             {
-                SetText("/*\r\n\r\nCompile Error. \r\nSee error list for details\r\n"
-                      + string.Join("\r\n", result.Errors.Select(e => e.Message))
-                      + "\r\n\r\n*/");
-                IsFirstRun = false;
-                return;
+                Notifier.Dispose();
             }
-            if (!IsFirstRun && CompilationSettings.CompileOnSave)
-            {
-                string targetFileName = GetTargetFileName(state, CompilationSettings.OutputDirectory);
-
-                WriteCompiledFile(result, state, targetFileName);
-
-                if (!string.IsNullOrEmpty(targetFileName))
-                    MinifyFile(targetFileName, result.Result);
-            }
-            IsFirstRun = false;
-        }
-
-        protected abstract void MinifyFile(string fileName, string source);
-
-        private void WriteCompiledFile(string content, string currentFileName, string fileName)
-        {
-            if (ProjectHelpers.CheckOutFileFromSourceControl(fileName)
-             && FileHelpers.WriteFile(content, fileName))
-            {
-                ProjectHelpers.AddFileToProject(currentFileName, fileName);
-            }
-        }
-
-        public static string GetCompiledFileName(string Document.FilePath, string compiledExtension, string customFolder)
-        {
-            string compiledFileName = Path.GetFileName(Path.ChangeExtension(Document.FilePath, compiledExtension));
-            string sourceDir = Path.GetDirectoryName(Document.FilePath);
-            string compiledDir;
-            string rootDir = ProjectHelpers.GetRootFolder();
-
-            if (rootDir == null || rootDir.Length == 0)
-            {
-                // Assuming a project is not loaded..
-                return Path.Combine(sourceDir, compiledFileName);
-            }
-
-            if (!string.IsNullOrEmpty(customFolder) &&
-                !customFolder.Equals("false", StringComparison.OrdinalIgnoreCase) &&
-                !customFolder.Equals("true", StringComparison.OrdinalIgnoreCase))
-            {
-                if (customFolder.StartsWith("~/", StringComparison.OrdinalIgnoreCase) || customFolder.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-                {
-                    // Output path starts at the project root..
-                    compiledDir = Path.Combine(rootDir, customFolder.Substring(customFolder.StartsWith("~/", StringComparison.OrdinalIgnoreCase) ? 2 : 1));
-                }
-                else
-                {
-                    // Output path is a relative path..
-                    // NOTE: if the output path doesn't exist, it will be created below.
-                    compiledDir = new DirectoryInfo(Path.Combine(sourceDir, customFolder)).FullName;
-                }
-
-                if (!Directory.Exists(compiledDir))
-                {
-                    Directory.CreateDirectory(compiledDir);
-                }
-
-                return Path.Combine(compiledDir, compiledFileName);
-            }
-
-            return Path.Combine(sourceDir, compiledFileName);
+            base.Dispose(disposing);
         }
     }
 }

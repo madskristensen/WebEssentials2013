@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class SvgMargin : MarginBase
+    internal class SvgMargin : DirectMarginBase
     {
         private WebBrowser _browser;
 
@@ -15,15 +15,15 @@ namespace MadsKristensen.EditorExtensions
             : base(WESettings.Instance.General, document)
         { }
 
-        protected override void StartUpdatePreview(string source)
+        protected override void UpdateMargin(string sourcePath)
         {
-            if (_browser != null && File.Exists(Document.FilePath))
+            if (_browser != null && File.Exists(sourcePath))
             {
-                _browser.Navigate(Document.FilePath);
+                _browser.Navigate(sourcePath);
             }
         }
 
-        protected override FrameworkElement CreateControl(double width)
+        protected override FrameworkElement CreatePreviewControl(double width)
         {
             _browser = new WebBrowser();
             _browser.HorizontalAlignment = HorizontalAlignment.Stretch;

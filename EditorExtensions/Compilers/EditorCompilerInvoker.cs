@@ -15,30 +15,30 @@ using Task = System.Threading.Tasks.Task;
 
 namespace MadsKristensen.EditorExtensions.Compilers
 {
-    ///<summary>A base class for compiler invokers that are run directly when the source document is saved.</summary>
+    ///<summary>Compiles an open document in the editor, updating the results when the file is saved.</summary>
     ///<remarks>
     /// This is only run when the file is opened in an editor; 
     /// it is not called on build.  All compilation logic that
-    /// msut run on build too should go in ICompilerManager or
-    /// ICompilationConsumer.
+    /// must run on build too should go in CompilerRunnerBase,
+    /// or in an ICompilationConsumer.
     ///</remarks>
-    abstract class CompilerInvokerBase : ICompilationNotifier
+    class EditorCompilerInvoker : ICompilationNotifier
     {
         public ITextDocument Document { get; private set; }
-        public CompilerManagerBase CompilerManager { get; private set; }
+        public CompilerRunnerBase CompilerRunner { get; private set; }
 
-        protected CompilerInvokerBase(ITextDocument doc, CompilerManagerBase compilerManager)
+        public EditorCompilerInvoker(ITextDocument doc, CompilerRunnerBase compilerRunner)
         {
             Document = doc;
-            CompilerManager = compilerManager;
+            CompilerRunner = compilerRunner;
 
             Document.FileActionOccurred += Document_FileActionOccurred;
             CompileAsync(Document.FilePath).ToString(); // Don't wait
         }
 
-        ///<summary>Releases all resources used by the CompilerInvokerBase.</summary>
+        ///<summary>Releases all resources used by the EditorCompilerInvoker.</summary>
         public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
-        ///<summary>Releases the unmanaged resources used by the CompilerInvokerBase and optionally releases the managed resources.</summary>
+        ///<summary>Releases the unmanaged resources used by the EditorCompilerInvoker and optionally releases the managed resources.</summary>
         ///<param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
@@ -65,24 +65,42 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         protected virtual async Task CompileAsync(string sourcePath)
         {
-            var result = await CompilerManager.CompileAsync(sourcePath, save: CompilerManager.Settings.CompileOnSave);
+            Logger.Log(CompilerRunner.SourceContentType + ": Compiling " + Path.GetFileName(sourcePath));
+            var result = await CompilerRunner.CompileAsync(sourcePath, save: CompilerRunner.Settings.CompileOnSave);
 
             OnCompilationReady(new CompilerResultEventArgs(result));
         }
+
+        public void RequestCompilationResult(bool cached)
+        {
+            if (cached && CompilerRunner.Settings.CompileOnSave)
+            {
+                var targetPath = CompilerRunner.GetTargetPath(Document.FilePath);
+                if (File.Exists(targetPath))
+                {
+                    OnCompilationReady(new CompilerResultEventArgs(new CompilerResult(Document.FilePath, targetPath) {
+                        IsSuccess = true,
+                        Result = File.ReadAllText(targetPath)
+                    }));
+                    return;
+                }
+            }
+            CompileAsync(Document.FilePath).ToString();  // Don't wait
+        }
     }
 
-    ///<summary>Invokes a Node.js-based for an open document in the editor, updating the results when the file is saved.</summary>
-    class NodeCompilerInvoker : CompilerInvokerBase
+    ///<summary>An <see cref="EditorCompilerInvoker"/> that reports compilation errors to the error list.</summary>
+    class ErrorReportingCompilerInvoker : EditorCompilerInvoker
     {
         private readonly ErrorListProvider _provider;
 
 
-        public NodeCompilerInvoker(ITextDocument doc) : base(doc, new NodeCompilerManager(doc.TextBuffer.ContentType))
+        public ErrorReportingCompilerInvoker(ITextDocument doc, CompilerRunnerBase compilerRunner) : base(doc, compilerRunner)
         {
             _provider = new ErrorListProvider(EditorExtensionsPackage.Instance);
         }
 
-        ///<summary>Releases the unmanaged resources used by the NodeCompilerInvoker and optionally releases the managed resources.</summary>
+        ///<summary>Releases the unmanaged resources used by the ErrorReportingCompilerInvoker and optionally releases the managed resources.</summary>
         ///<param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {

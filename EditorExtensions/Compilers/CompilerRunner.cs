@@ -16,21 +16,21 @@ using Task = System.Threading.Tasks.Task;
 namespace MadsKristensen.EditorExtensions.Compilers
 {
 
-    ///<summary>A base class to run a compiler on arbitary project files and report the results.</summary>
+    ///<summary>A base class to run a compiler on arbitrary project files and report the results.</summary>
     ///<remarks>
     /// This class uses the project system.  It
     /// is used for all compilations, including
     /// margins, build, and save.
     ///</remarks>
-    abstract class CompilerManagerBase
+    abstract class CompilerRunnerBase
     {
         private readonly ICollection<ICompilationConsumer> _listeners;
-        public IContentType ContentType { get; private set; }
+        public IContentType SourceContentType { get; private set; }
         public ICompilerInvocationSettings Settings { get; private set; }
 
-        public CompilerManagerBase(IContentType contentType)
+        public CompilerRunnerBase(IContentType contentType)
         {
-            ContentType = contentType;
+            SourceContentType = contentType;
 
             _listeners = Mef.GetAllImports<ICompilationConsumer>(contentType);
             Settings = WESettings.Instance.ForContentType<ICompilerInvocationSettings>(contentType);
@@ -50,7 +50,8 @@ namespace MadsKristensen.EditorExtensions.Compilers
             Directory.CreateDirectory(Path.GetDirectoryName(targetPath));
             return CompileAsync(sourcePath, targetPath);
         }
-        private string GetTargetPath(string sourcePath)
+        ///<summary>Gets the default save location for the compiled results of the specified file, based on user settings.</summary>
+        public string GetTargetPath(string sourcePath)
         {
             if (string.IsNullOrEmpty(Settings.OutputDirectory))
                 return Path.ChangeExtension(sourcePath, TargetExtension);
@@ -100,9 +101,9 @@ namespace MadsKristensen.EditorExtensions.Compilers
     }
 
     ///<summary>Compiles files using <see cref="NodeExecutorBase"/> classes and reports the results.</summary>
-    class NodeCompilerManager : CompilerManagerBase
+    class NodeCompilerRunner : CompilerRunnerBase
     {
-        public NodeCompilerManager(IContentType contentType) : base(contentType)
+        public NodeCompilerRunner(IContentType contentType) : base(contentType)
         {
             Compiler = Mef.GetImport<NodeExecutorBase>(contentType);
         }
@@ -131,9 +132,10 @@ namespace MadsKristensen.EditorExtensions.Compilers
         }
     }
 
-    class MarkdownCompilerManager : CompilerManagerBase
+    ///<summary>Compiles files synchronously using MarkdownSharp and reports the results.</summary>
+    class MarkdownCompilerRunner : CompilerRunnerBase
     {
-        public MarkdownCompilerManager(IContentType contentType) : base(contentType) { }
+        public MarkdownCompilerRunner(IContentType contentType) : base(contentType) { }
         public override string TargetExtension { get { return ".html"; } }
         protected override Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
         {

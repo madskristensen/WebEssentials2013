@@ -8,8 +8,16 @@ using Microsoft.VisualStudio.Text;
 namespace MadsKristensen.EditorExtensions.Compilers
 {
     ///<summary>Exposes compiled results from a source file to consumers.  This will initiate compilation automatically, as appropriate, and notify consumers when it's ready.</summary>
-    interface ICompilationNotifier : IDisposable
+    public interface ICompilationNotifier : IDisposable
     {
+        ///<summary>
+        /// Requests that the notifier raise <see cref="CompilationReady"/> with the last available result.  
+        /// The notifier may ignore the request, raise the event later, or raise it re-entrantly.</summary>
+        ///<param name="cached">
+        /// If true, the compiler may return cached output from an older compilation;
+        /// if false, the compiler should try to recompile if possible.  
+        /// The implementation may ignore this parameter.</param>
+        void RequestCompilationResult(bool cached);
         ///<summary>Raised whenever new compiled output is available.</summary>
         event EventHandler<CompilerResultEventArgs> CompilationReady;
     }
@@ -24,9 +32,9 @@ namespace MadsKristensen.EditorExtensions.Compilers
     }
 
     ///<summary>Creates <see cref="ICompilationNotifier"/> implementations for a specific content type.</summary>
-    interface ICompilationServiceProvider
+    interface ICompilationNotifierProvider
     {
-        ICompilationNotifier GetCompilationService(ITextDocument doc);
+        ICompilationNotifier GetCompilationNotifier(ITextDocument doc);
     }
 
     ///<summary>Allows components to automatically consume all compilations of a specific ContentType.</summary>
