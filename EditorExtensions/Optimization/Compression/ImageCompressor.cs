@@ -91,7 +91,7 @@ namespace MadsKristensen.EditorExtensions
                 ProjectHelpers.CheckOutFileFromSourceControl(result.OriginalFileName);
                 File.Copy(result.ResultFileName, result.OriginalFileName, true);
 
-                string text = "Compressed " + name + " by " + result.Saving + " bytes / " + result.Percent + "%...";
+                string text = "Compressed " + name + " by " + result.Saving + " bytes / " + result.Percent + "%";
                 EditorExtensionsPackage.DTE.StatusBar.Text = text;
                 Logger.Log(result.ToString());
             }
