@@ -10,6 +10,8 @@ namespace MadsKristensen.EditorExtensions
         public static IEnumerable<SpriteFragment> CreateImage(SpriteDocument sprite, out string imageFile)
         {
             imageFile = Path.ChangeExtension(sprite.FileName, sprite.FileExtension);
+            ProjectHelpers.CheckOutFileFromSourceControl(imageFile);
+
             Dictionary<string, Image> images = GetImages(sprite);
 
             int width = sprite.IsVertical ? images.Values.Max(i => i.Width) : images.Values.Sum(i => i.Width);
