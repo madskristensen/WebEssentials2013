@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class ImageGenerator
+    internal class SpriteGenerator
     {
-        public static IEnumerable<SpriteFragment> CreateImage(SpriteDocument sprite, ImageFormat format, out string imageFile)
+        public static IEnumerable<SpriteFragment> CreateImage(SpriteDocument sprite, out string imageFile)
         {
-            imageFile = Path.ChangeExtension(sprite.FileName, format.ToString().ToLowerInvariant().Replace("jpeg", "jpg"));
+            imageFile = Path.ChangeExtension(sprite.FileName, sprite.FileExtension);
             Dictionary<string, Image> images = GetImages(sprite);
 
             int width = sprite.IsVertical ? images.Values.Max(i => i.Width) : images.Values.Sum(i => i.Width);
@@ -28,7 +27,7 @@ namespace MadsKristensen.EditorExtensions
                         Horizontal(images, fragments, canvas);
                 }
 
-                bitmap.Save(imageFile, format);
+                bitmap.Save(imageFile, PasteImage.GetImageFormat("." + sprite.FileExtension));
             }
 
             return fragments;

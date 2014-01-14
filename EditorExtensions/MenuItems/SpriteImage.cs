@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -63,16 +62,13 @@ namespace MadsKristensen.EditorExtensions
             if (!GetFileName(out spriteFile))
                 return;
 
-            string extension = Path.GetExtension(_files.First());
-            ImageFormat format = PasteImage.GetImageFormat(extension);
-
             try
             {
                 SpriteDocument doc = new SpriteDocument(spriteFile, _files.ToArray());
                 doc.Save();
                 EditorExtensionsPackage.DTE.ItemOperations.OpenFile(spriteFile);
 
-                await Generate(format, doc);
+                await Generate(doc);
             }
             catch (Exception ex)
             {
@@ -88,9 +84,7 @@ namespace MadsKristensen.EditorExtensions
                 await Task.WhenAll(_sprites.Select(async file =>
                 {
                     SpriteDocument doc = SpriteDocument.FromFile(file);
-                    string extension = Path.GetExtension(doc.ImageFiles.First());
-                    ImageFormat format = PasteImage.GetImageFormat(extension);
-                    await Generate(format, doc);
+                    await Generate(doc);
                 }));
             }
             catch (Exception ex)
@@ -100,10 +94,10 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static async Task Generate(ImageFormat format, SpriteDocument sprite)
+        private static async Task Generate(SpriteDocument sprite)
         {
             string imageFile;
-            var fragments = ImageGenerator.CreateImage(sprite, format, out imageFile);
+            var fragments = SpriteGenerator.CreateImage(sprite, out imageFile);
 
             ProjectHelpers.AddFileToActiveProject(sprite.FileName);
             ProjectHelpers.AddFileToProject(sprite.FileName, imageFile);

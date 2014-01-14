@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -17,12 +15,14 @@ namespace MadsKristensen.EditorExtensions
             ImageFiles = imageFiles;
             Optimize = true;
             IsVertical = true;
+            FileExtension = Path.GetExtension(imageFiles.First()).TrimStart('.');
         }
 
         public string FileName { get; set; }
         public IEnumerable<string> ImageFiles { get; set; }
         public bool Optimize { get; set; }
         public bool IsVertical { get; set; }
+        public string FileExtension { get; set; }
 
         public void Save()
         {
@@ -31,15 +31,19 @@ namespace MadsKristensen.EditorExtensions
             using (XmlWriter writer = XmlWriter.Create(FileName, settings))
             {
                 writer.WriteStartElement("sprite");
+                writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
+                writer.WriteAttributeString("xsi", "noNamespaceSchemaLocation", null, "http://vswebessentials.com/schemas/sprite.v1.xsd");
                 writer.WriteComment("The order of the <file> elements determines the order of the images in the sprite.");
                 
+                // Settings
                 writer.WriteStartElement("settings");
                 writer.WriteComment("Determines if the sprite image should be automatically optimized after creation/update");
                 writer.WriteElementString("optimize", Optimize ? "true" : "false");
-                writer.WriteComment("Determines the orientation of the images in the sprite. Values can be 'vertical' and 'horizontal'");
                 writer.WriteElementString("orientation", IsVertical ? "vertical" : "horizontal");
+                writer.WriteElementString("outputType", FileExtension.ToString().ToLowerInvariant());
                 writer.WriteEndElement(); // </settings>
-
+                
+                // Files
                 writer.WriteStartElement("files");
 
                 string root = ProjectHelpers.GetRootFolder();
@@ -67,6 +71,7 @@ namespace MadsKristensen.EditorExtensions
             SpriteDocument sprite = new SpriteDocument(fileName, imageFiles.ToArray());
             sprite.Optimize = doc.Descendants("optimize").First().Value.Equals("true", StringComparison.OrdinalIgnoreCase);
             sprite.IsVertical = doc.Descendants("orientation").First().Value.Equals("vertical", StringComparison.OrdinalIgnoreCase);
+            sprite.FileExtension = doc.Descendants("outputType").First().Value;
 
             return sprite;
         }

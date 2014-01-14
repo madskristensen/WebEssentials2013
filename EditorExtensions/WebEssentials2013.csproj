@@ -372,7 +372,7 @@
     <Compile Include="Optimization\Compression\CompressionResult.cs" />
     <Compile Include="Optimization\Compression\ImageCompressor.cs" />
     <Compile Include="Optimization\Sprite\ExportFormat.cs" />
-    <Compile Include="Optimization\Sprite\ImageGenerator.cs" />
+    <Compile Include="Optimization\Sprite\SpriteGenerator.cs" />
     <Compile Include="Optimization\Sprite\SpriteDocument.cs" />
     <Compile Include="Optimization\Sprite\SpriteFragment.cs" />
     <Compile Include="Optimization\Sprite\SpriteExporter.cs" />
