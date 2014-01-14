@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -32,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 writer.WriteStartElement("sprite");
                 writer.WriteComment("The order of the <file> elements determines the order of the images in the sprite.");
-                
+
                 writer.WriteStartElement("settings");
                 writer.WriteComment("Determines if the sprite image should be automatically optimized after creation/update");
                 writer.WriteElementString("optimize", Optimize ? "true" : "false");

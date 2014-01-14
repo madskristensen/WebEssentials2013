@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Helpers;
@@ -13,6 +14,7 @@ namespace MadsKristensen.EditorExtensions
     {
         protected static readonly string WebEssentialsResourceDirectory = Path.Combine(Path.GetDirectoryName(typeof(NodeExecutorBase).Assembly.Location), @"Resources");
         private static readonly string NodePath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node.exe");
+        private static string[] _disallowedParentExtensions = new[] { ".png", ".jpg", ".jpeg", ".gif" };
 
         ///<summary>If set, the executor will not try to use the VS project system.</summary>
         public static bool InUnitTests { get; set; }
@@ -24,6 +26,9 @@ namespace MadsKristensen.EditorExtensions
 
         public async Task<CompilerResult> Compile(string sourceFileName, string targetFileName)
         {
+            if (!CheckPrerequisites(sourceFileName))
+                return null;
+
             var scriptArgs = GetArguments(sourceFileName, targetFileName);
 
             var errorOutputFile = Path.GetTempFileName();
@@ -137,6 +142,13 @@ namespace MadsKristensen.EditorExtensions
                 Column = string.IsNullOrEmpty(match.Groups["column"].Value) ? 1 : int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture),
                 Line = int.Parse(match.Groups["line"].Value, CultureInfo.CurrentCulture)
             };
+        }
+
+        private static bool CheckPrerequisites(string fileName)
+        {
+            return !(new DirectoryInfo(Path.GetDirectoryName(fileName)).GetFiles(
+                       Path.GetFileNameWithoutExtension(fileName) + ".*", SearchOption.TopDirectoryOnly)
+                       .Any(file => _disallowedParentExtensions.Contains(Path.GetExtension(file.Name))));
         }
 
         protected abstract string GetArguments(string sourceFileName, string targetFileName);
