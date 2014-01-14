@@ -26,13 +26,14 @@ namespace MadsKristensen.EditorExtensions.Margin
 
         static readonly Dictionary<string, Func<ITextDocument, IWpfTextViewMargin>> marginFactories = new Dictionary<string, Func<ITextDocument, IWpfTextViewMargin>>(StringComparer.OrdinalIgnoreCase)
         {
+            { "Svg",               (document) => new SvgMargin(document) },
+            { "Markdown",          (document) => new MarkdownMargin(document) },
             { "LESS",              (document) => new TextViewMargin("CSS", document) },
             { "SASS",              (document) => new TextViewMargin("CSS", document) },
             { "CoffeeScript",      (document) => new TextViewMargin("JavaScript", document) },
             { "IcedCoffeeScript",  (document) => new TextViewMargin("JavaScript", document) },
-            { "TypeScript",        (document) => new TextViewMargin("JavaScript", document) },
-            { "Markdown",          (document) => new MarkdownMargin(document) },
-            { "Svg",               (document) => new SvgMargin(document) }
+            { "TypeScript",        (document) => document.FilePath.EndsWith(".d.ts", StringComparison.OrdinalIgnoreCase) 
+                                                ? null : new TextViewMargin("JavaScript", document) }
         };
 
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
