@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using EnvDTE;
 using EnvDTE80;
+using MadsKristensen.EditorExtensions.Optimization.Minification;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
 using Task = System.Threading.Tasks.Task;
 
 namespace MadsKristensen.EditorExtensions
@@ -36,7 +40,7 @@ namespace MadsKristensen.EditorExtensions
             _mcs.AddCommand(menuSass);
 
             CommandID cmdMinify = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildMinify);
-            OleMenuCommand menuMinify = new OleMenuCommand((s, e) => Minify(), cmdMinify);
+            OleMenuCommand menuMinify = new OleMenuCommand((s, e) => Task.Run(new Action(Minify)), cmdMinify);
             _mcs.AddCommand(menuMinify);
 
             CommandID cmdCoffee = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildCoffeeScript);
@@ -87,65 +91,28 @@ namespace MadsKristensen.EditorExtensions
         private static void Minify()
         {
             _dte.StatusBar.Text = "Web Essentials: Minifying files...";
-            var files = GetFiles();
+            var extensions = new HashSet<string>(
+                Mef.GetSupportedExtensions<IFileMinifier>(),
+                StringComparer.OrdinalIgnoreCase
+            );
 
-            foreach (string path in files)
-            {
-                string extension = Path.GetExtension(path);
-                string minPath = MinifyFileMenu.GetMinFileName(path, extension);
+            var files = ProjectHelpers.GetAllProjects()
+                            .Select(ProjectHelpers.GetRootFolder)
+                            .SelectMany(p => Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories))
+                            .Where(f => extensions.Contains(Path.GetExtension(f)));
 
-                if (!path.EndsWith(".min" + extension, StringComparison.Ordinal) && File.Exists(minPath) && _dte.Solution.FindProjectItem(path) != null)
-                {
-                    if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase))
-                    {
-                        JavaScriptSaveListener.Minify(path, minPath, false);
-                    }
-                    else if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase))
-                    {
-                        CssSaveListener.Minify(path, minPath);
-                    }
-                    else if (extension.Equals(".html", StringComparison.OrdinalIgnoreCase))
-                    {
-                        HtmlSaveListener.Minify(path, minPath);
-                    }
-                }
-            }
+            var extensionService = WebEditor.ExportProvider.GetExport<IFileExtensionRegistryService>();
+            var minifyService = WebEditor.ExportProvider.GetExport<MinificationSaveListener>();
+
+            // Perform expensive blocking work in parallel
+            Parallel.ForEach(files, file =>
+                minifyService.Value.ReMinify(
+                    extensionService.Value.GetContentTypeForExtension(Path.GetExtension(file).TrimStart('.')),
+                    file
+                )
+            );
 
             _dte.StatusBar.Text = "Web Essentials: Files minified";
-        }
-
-        private static IEnumerable<string> GetFiles()
-        {
-            foreach (Project project in ProjectHelpers.GetAllProjects())
-            {
-                string dir = ProjectHelpers.GetRootFolder(project);
-
-                List<string> list = new List<string>();
-                list.AddRange(Directory.GetFiles(dir, "*.css", SearchOption.AllDirectories));
-                list.AddRange(Directory.GetFiles(dir, "*.js", SearchOption.AllDirectories));
-
-                foreach (string file in list.Where(f => !f.Contains(".min.")))
-                {
-                    string extension = Path.GetExtension(file);
-
-                    if (extension == ".css")
-                    {
-                        if (!File.Exists(file.Replace(".css", ".less")) &&
-                            !File.Exists(file.Replace(".css", ".scss")) &&
-                            !File.Exists(file + ".bundle"))
-
-                            yield return file;
-                    }
-                    if (extension == ".js")
-                    {
-                        if (!File.Exists(file.Replace(".js", ".coffee")) &&
-                            !File.Exists(file.Replace(".js", ".ts")) &&
-                            !File.Exists(file + ".bundle"))
-
-                            yield return file;
-                    }
-                }
-            }
         }
     }
 }

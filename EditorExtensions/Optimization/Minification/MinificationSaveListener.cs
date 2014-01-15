@@ -19,17 +19,21 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     {
         public void FileSaved(IContentType contentType, string path)
         {
+            var settings = WESettings.Instance.ForContentType<IMinifierSettings>(contentType);
+            if (!settings.AutoMinify)
+                return;
+            ReMinify(contentType, path, settings);
+        }
+        ///<summary>Minifies an existing file if it should be minified.</summary>
+        public void ReMinify(IContentType contentType, string path, IMinifierSettings settings = null)
+        {
             // Don't minify ".min" files
             if (ShouldMinify(path))
                 return;
             if (!File.Exists(GetMinFileName(path)))
                 return;
 
-            var settings = WESettings.Instance.ForContentType<IMinifierSettings>(contentType);
-            if (!settings.AutoMinify)
-                return;
-
-            MinifyFile(contentType, path, settings);
+            MinifyFile(contentType, path, settings ?? WESettings.Instance.ForContentType<IMinifierSettings>(contentType));
         }
         public static string GetMinFileName(string path)
         {
