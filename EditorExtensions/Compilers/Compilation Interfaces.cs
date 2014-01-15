@@ -36,11 +36,4 @@ namespace MadsKristensen.EditorExtensions.Compilers
     {
         ICompilationNotifier GetCompilationNotifier(ITextDocument doc);
     }
-
-    ///<summary>Allows components to automatically consume all compilations of a specific ContentType.</summary>
-    interface ICompilationConsumer
-    {
-        ///<summary>Called when a file is compiled.  The source and target (may be null) filenames are available in the result.</summary>
-        void OnCompiled(CompilerResult result);
-    }
 }

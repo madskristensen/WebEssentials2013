@@ -333,6 +333,7 @@
     <Compile Include="Classifications\SVG\SvgContentTypeDefinition.cs" />
     <Compile Include="Commands\AppCache\AppCacheCreationListener.cs" />
     <Compile Include="Commands\CoffeeScript\CoffeeScriptCreationListener.cs" />
+    <Compile Include="Commands\IFileSaveListener.cs" />
     <Compile Include="Commands\JavaScript\CommentIndentationCommandTarget.cs" />
     <Compile Include="Commands\JavaScript\CommentCompletionCommandTarget.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptFindReferencesCommandTarget.cs" />
@@ -354,6 +355,7 @@
     <Compile Include="Optimization\Compression\CompressionResult.cs" />
     <Compile Include="Optimization\Compression\ImageCompressor.cs" />
     <Compile Include="Optimization\Minification\IFileMinifier.cs" />
+    <Compile Include="Optimization\Minification\MinificationSaveListener.cs" />
     <Compile Include="Optimization\Sprite\ExportFormat.cs" />
     <Compile Include="Optimization\Sprite\SpriteGenerator.cs" />
     <Compile Include="Optimization\Sprite\SpriteDocument.cs" />

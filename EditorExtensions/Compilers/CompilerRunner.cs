@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using MadsKristensen.EditorExtensions.Commands;
 using MarkdownSharp;
+using Microsoft.Html.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;
 using Task = System.Threading.Tasks.Task;
@@ -18,15 +20,20 @@ namespace MadsKristensen.EditorExtensions.Compilers
     ///</remarks>
     abstract class CompilerRunnerBase
     {
-        private readonly ICollection<ICompilationConsumer> _listeners;
+        private readonly ICollection<IFileSaveListener> _listeners;
+        public abstract string TargetExtension { get; }
         public IContentType SourceContentType { get; private set; }
+        public IContentType TargetContentType { get; private set; }
         public ICompilerInvocationSettings Settings { get; private set; }
 
+        public IFileExtensionRegistryService FileExtensionRegistry { get; set; }
         public CompilerRunnerBase(IContentType contentType)
         {
+            Mef.SatisfyImportsOnce(this);
             SourceContentType = contentType;
+            TargetContentType = FileExtensionRegistry.GetContentTypeForExtension(TargetExtension.TrimEnd('.'));
 
-            _listeners = Mef.GetAllImports<ICompilationConsumer>(contentType);
+            _listeners = Mef.GetAllImports<IFileSaveListener>(contentType);
             Settings = WESettings.Instance.ForContentType<ICompilerInvocationSettings>(contentType);
         }
 
@@ -82,14 +89,14 @@ namespace MadsKristensen.EditorExtensions.Compilers
             var result = await RunCompilerAsync(sourcePath, targetPath);
 
             if (!string.IsNullOrEmpty(targetPath))
+            {
                 ProjectHelpers.AddFileToProject(sourcePath, targetPath);
-
-            foreach (var listener in _listeners)
-                listener.OnCompiled(result);
+                foreach (var listener in _listeners)
+                    listener.FileSaved(TargetContentType, result.TargetFileName);
+            }
             return result;
         }
 
-        public abstract string TargetExtension { get; }
         protected abstract Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath);
     }
 

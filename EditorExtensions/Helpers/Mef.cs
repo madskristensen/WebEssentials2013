@@ -14,6 +14,7 @@ namespace MadsKristensen.EditorExtensions
     {
         private static ICompositionService CompositionService { get { return WebEditor.CompositionService; } }
 
+        public static void SatisfyImportsOnce(object instance) { CompositionService.SatisfyImportsOnce(instance); }
         public static T GetImport<T>(IContentType contentType) where T : class
         {
             return new ContentTypeImportComposer<T>(CompositionService).GetImport(contentType);
