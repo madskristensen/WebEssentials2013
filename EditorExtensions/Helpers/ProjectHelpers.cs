@@ -390,10 +390,11 @@ namespace MadsKristensen.EditorExtensions
         {
             var doc = EditorExtensionsPackage.DTE.ActiveDocument;
 
-            if (doc != null)
-            {
+            if (doc == null)
+                return null;
+
+            if (GetProjectFolder(doc.ProjectItem) == null)
                 return doc.ProjectItem;
-            }
 
             return null;
         }
