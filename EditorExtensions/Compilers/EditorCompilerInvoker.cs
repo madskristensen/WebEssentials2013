@@ -68,7 +68,8 @@ namespace MadsKristensen.EditorExtensions.Compilers
             Logger.Log(CompilerRunner.SourceContentType + ": Compiling " + Path.GetFileName(sourcePath));
             var result = await CompilerRunner.CompileAsync(sourcePath, save: CompilerRunner.Settings.CompileOnSave);
 
-            OnCompilationReady(new CompilerResultEventArgs(result));
+            if (result != null)
+                OnCompilationReady(new CompilerResultEventArgs(result));
         }
 
         public void RequestCompilationResult(bool cached)
@@ -78,7 +79,8 @@ namespace MadsKristensen.EditorExtensions.Compilers
                 var targetPath = CompilerRunner.GetTargetPath(Document.FilePath);
                 if (File.Exists(targetPath))
                 {
-                    OnCompilationReady(new CompilerResultEventArgs(new CompilerResult(Document.FilePath, targetPath) {
+                    OnCompilationReady(new CompilerResultEventArgs(new CompilerResult(Document.FilePath, targetPath)
+                    {
                         IsSuccess = true,
                         Result = File.ReadAllText(targetPath)
                     }));
@@ -124,7 +126,8 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         private void CreateTask(CompilerError error)
         {
-            ErrorTask task = new ErrorTask() {
+            ErrorTask task = new ErrorTask()
+            {
                 Line = error.Line,
                 Column = error.Column,
                 ErrorCategory = TaskErrorCategory.Error,

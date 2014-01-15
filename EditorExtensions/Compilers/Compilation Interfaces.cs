@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions.Compilers
 {
@@ -35,5 +36,10 @@ namespace MadsKristensen.EditorExtensions.Compilers
     interface ICompilationNotifierProvider
     {
         ICompilationNotifier GetCompilationNotifier(ITextDocument doc);
+    }
+    ///<summary>Creates <see cref="CompilerRunnerBase"/> implementations for a specific content type.</summary>
+    interface ICompilerRunnerProvider
+    {
+        CompilerRunnerBase GetCompiler(IContentType contentType);
     }
 }

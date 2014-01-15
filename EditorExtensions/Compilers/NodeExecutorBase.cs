@@ -36,7 +36,8 @@ namespace MadsKristensen.EditorExtensions
 
             cmdArgs = string.Format("/c \"{0} {1} > \"{2}\" 2>&1\"", cmdArgs, scriptArgs, errorOutputFile);
 
-            ProcessStartInfo start = new ProcessStartInfo("cmd") {
+            ProcessStartInfo start = new ProcessStartInfo("cmd")
+            {
                 WindowStyle = ProcessWindowStyle.Hidden,
                 WorkingDirectory = Path.GetDirectoryName(sourceFileName),
                 Arguments = cmdArgs,
@@ -83,7 +84,8 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compilation failed.");
+                Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName)
+                         + " compilation failed: " + result.Errors.Select(e => e.Message).FirstOrDefault());
             }
 
             return result;
@@ -140,7 +142,8 @@ namespace MadsKristensen.EditorExtensions
                 Logger.Log(ServiceName + " parse error: " + error);
                 yield return new CompilerError { Message = error };
             }
-            yield return new CompilerError {
+            yield return new CompilerError
+            {
                 FileName = match.Groups["fileName"].Value,
                 Message = match.Groups["message"].Value,
                 Column = string.IsNullOrEmpty(match.Groups["column"].Value) ? 1 : int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture),

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     /// is used for all compilations, including
     /// margins, build, and save.
     ///</remarks>
-    abstract class CompilerRunnerBase
+    public abstract class CompilerRunnerBase
     {
         private readonly ICollection<IFileSaveListener> _listeners;
         public abstract string TargetExtension { get; }
@@ -37,6 +38,9 @@ namespace MadsKristensen.EditorExtensions.Compilers
             Settings = WESettings.Instance.ForContentType<ICompilerInvocationSettings>(contentType);
         }
 
+        ///<summary>Compiles a source file, optionally saving it to the default output directory.</summary>
+        /// <param name="sourcePath">The source file to compile.</param>
+        /// <param name="save">True to save the compiled file(s) to the default output directory.</param>
         public Task<CompilerResult> CompileAsync(string sourcePath, bool save)
         {
             return save ? CompileToDefaultOutputAsync(sourcePath) : CompileInMemoryAsync(sourcePath);
@@ -81,14 +85,14 @@ namespace MadsKristensen.EditorExtensions.Compilers
         ///<summary>Compiles the specified source file, notifying all <see cref="ICompilationConsumer"/>s.</summary>
         ///<param name="sourcePath">The path to the source file.</param>
         ///<param name="targetPath">The path to save the compiled output, or null to compile in-memory.</param>
-        private async Task<CompilerResult> CompileAsync(string sourcePath, string targetPath)
+        public async Task<CompilerResult> CompileAsync(string sourcePath, string targetPath)
         {
             if (!string.IsNullOrEmpty(targetPath))
                 ProjectHelpers.CheckOutFileFromSourceControl(targetPath);   // TODO: Only if output changed?
 
             var result = await RunCompilerAsync(sourcePath, targetPath);
 
-            if (!string.IsNullOrEmpty(targetPath))
+            if (result != null && result.IsSuccess && !string.IsNullOrEmpty(targetPath))
             {
                 ProjectHelpers.AddFileToProject(sourcePath, targetPath);
                 foreach (var listener in _listeners)
@@ -98,6 +102,16 @@ namespace MadsKristensen.EditorExtensions.Compilers
         }
 
         protected abstract Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath);
+    }
+
+    [Export(typeof(ICompilerRunnerProvider))]
+    [ContentType("LESS")]
+    [ContentType("SASS")]
+    [ContentType("CoffeeScript")]
+    [ContentType("IcedCoffeeScript")]
+    public class NodeCompilerRunnerProvider : ICompilerRunnerProvider
+    {
+        public CompilerRunnerBase GetCompiler(IContentType contentType) { return new NodeCompilerRunner(contentType); }
     }
 
     ///<summary>Compiles files using <see cref="NodeExecutorBase"/> classes and reports the results.</summary>
@@ -132,6 +146,12 @@ namespace MadsKristensen.EditorExtensions.Compilers
         }
     }
 
+    [Export(typeof(ICompilerRunnerProvider))]
+    [ContentType("Markdown")]
+    public class MarkdownCompilerRunnerProvider : ICompilerRunnerProvider
+    {
+        public CompilerRunnerBase GetCompiler(IContentType contentType) { return new MarkdownCompilerRunner(contentType); }
+    }
     ///<summary>Compiles files synchronously using MarkdownSharp and reports the results.</summary>
     class MarkdownCompilerRunner : CompilerRunnerBase
     {
