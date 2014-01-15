@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Web.Editor;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Windows.Media.Imaging;
@@ -29,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
 
         public override void Invoke()
         {
-            string filePath = ProjectHelpers.ToAbsoluteFilePath(_path, ProjectHelpers.GetActiveFile());
+            string filePath = ProjectHelpers.ToAbsoluteFilePath(_path, _span.TextBuffer.GetFileName());
             ApplyChanges(filePath);
         }
 
