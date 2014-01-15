@@ -70,7 +70,7 @@ namespace MadsKristensen.EditorExtensions
             }
             finally
             {
-                EditorExtensionsPackage.DTE.StatusBar.Animate(false, vsStatusAnimation.vsStatusAnimationDeploy);                
+                EditorExtensionsPackage.DTE.StatusBar.Animate(false, vsStatusAnimation.vsStatusAnimationDeploy);
             }
         }
 

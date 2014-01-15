@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions
                 writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
                 writer.WriteAttributeString("xsi", "noNamespaceSchemaLocation", null, "http://vswebessentials.com/schemas/v1/sprite.xsd");
                 writer.WriteComment("The order of the <file> elements determines the order of the images in the sprite.");
-                
+
                 // Settings
                 writer.WriteStartElement("settings");
                 writer.WriteComment("Determines if the sprite image should be automatically optimized after creation/update");
@@ -42,7 +42,7 @@ namespace MadsKristensen.EditorExtensions
                 writer.WriteElementString("orientation", IsVertical ? "vertical" : "horizontal");
                 writer.WriteElementString("outputType", FileExtension.ToString().ToLowerInvariant());
                 writer.WriteEndElement(); // </settings>
-                
+
                 // Files
                 writer.WriteStartElement("files");
 

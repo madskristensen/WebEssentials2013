@@ -122,7 +122,7 @@ namespace MadsKristensen.EditorExtensions
         private static void Export(IEnumerable<SpriteFragment> fragments, string imageFile)
         {
             foreach (ExportFormat format in (ExportFormat[])Enum.GetValues(typeof(ExportFormat)))
-            {   
+            {
                 string exportFile = SpriteExporter.Export(fragments, imageFile, format);
                 ProjectHelpers.AddFileToProject(imageFile, exportFile);
             }
