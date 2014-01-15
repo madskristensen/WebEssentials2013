@@ -27,12 +27,11 @@ namespace MadsKristensen.EditorExtensions
             // HTML
             target.Html.EnableEnterFormat = GetBoolean("EnableEnterFormat");
             target.Html.EnableAngularValidation = GetBoolean("EnableAngularValidation");
-            target.Html.MinifyOnSave = GetBoolean("HtmlEnableMinification");
+            target.Html.AutoMinify = GetBoolean("HtmlEnableMinification");
 
             // LESS
             target.Less.CompileOnSave = GetBoolean("LessGenerateCssFile");
             target.Less.ShowPreviewPane = GetBoolean("LessShowPreviewWindow");
-            target.Less.Minify = GetBoolean("LessMinify");
             target.Less.CompileOnBuild = GetBoolean("LessCompileOnBuild");
             target.Less.GenerateSourceMaps = GetBoolean("LessSourceMaps");
             target.Less.OutputDirectory = GetNonBooleanString("LessCompileToLocation");
@@ -40,7 +39,6 @@ namespace MadsKristensen.EditorExtensions
             // SASS
             target.Sass.CompileOnSave = GetBoolean("SassGenerateCssFile");
             target.Sass.ShowPreviewPane = GetBoolean("SassShowPreviewWindow");
-            target.Sass.Minify = GetBoolean("SassMinify");
             target.Sass.CompileOnBuild = GetBoolean("SassCompileOnBuild");
             target.Sass.GenerateSourceMaps = GetBoolean("SassSourceMaps");
             target.Sass.OutputDirectory = GetNonBooleanString("SassCompileToLocation");
@@ -52,7 +50,6 @@ namespace MadsKristensen.EditorExtensions
             // CoffeeScript
             target.CoffeeScript.CompileOnSave = GetBoolean("CoffeeScriptGenerateJsFile");
             target.CoffeeScript.ShowPreviewPane = GetBoolean("CoffeeScriptShowPreviewWindow");
-            target.CoffeeScript.Minify = GetBoolean("CoffeeScriptMinify");
             target.CoffeeScript.WrapClosure = GetBoolean("CoffeeScriptWrapClosure");
             target.CoffeeScript.CompileOnBuild = GetBoolean("CoffeeScriptCompileOnBuild");
             target.CoffeeScript.GenerateSourceMaps = GetBoolean("CoffeeScriptSourceMaps");
@@ -82,14 +79,14 @@ namespace MadsKristensen.EditorExtensions
             target.Css.SyncVendorValues = GetBoolean("CssSyncVendorValues");
             target.Css.ShowInitialInherit = GetBoolean("CssShowInitialInherit");
             target.Css.ShowUnsupported = GetBoolean("CssShowUnsupported");
-            target.Css.MinifyOnSave = GetBoolean("CssEnableMinification");
+            target.Css.AutoMinify = GetBoolean("CssEnableMinification");
             target.Css.ValidateZeroUnit = GetBoolean("CssValidateZeroUnit");
             target.Css.ValidateVendorSpecifics = GetBoolean("ValidateVendorSpecifics");
             target.Css.GzipMinifiedFiles = GetBoolean("CssEnableGzipping");
             target.Css.AdjustRelativePaths = !GetBoolean("CssPreserveRelativePathsOnMinify");
 
             // JavaScript
-            target.JavaScript.MinifyOnSave = GetBoolean("JavaScriptEnableMinification");
+            target.JavaScript.AutoMinify = GetBoolean("JavaScriptEnableMinification");
             target.JavaScript.GenerateSourceMaps = GetBoolean("JavaScriptGenerateSourceMaps");
             target.JavaScript.GzipMinifiedFiles = GetBoolean("JavaScriptEnableGzipping");
             target.JavaScript.BlockCommentCompletion = GetBoolean("JavaScriptCommentCompletion");

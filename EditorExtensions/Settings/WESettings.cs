@@ -130,7 +130,7 @@ namespace MadsKristensen.EditorExtensions
         public bool BraceCompletion { get; set; }
     }
 
-    public sealed class HtmlSettings : SettingsBase<HtmlSettings>
+    public sealed class HtmlSettings : SettingsBase<HtmlSettings>,IMinifierSettings
     {
         [DisplayName("Auto-format HTML on Enter")]
         [Description("Automatically format HTML source when pressing Enter.")]
@@ -140,7 +140,12 @@ namespace MadsKristensen.EditorExtensions
         [DisplayName("Minify files on save")]
         [Description("Update any .min.html file when saving the corresponding .html file.  To create a .min.html file, right-click a .html file.")]
         [DefaultValue(false)]
-        public bool MinifyOnSave { get; set; }
+        public bool AutoMinify { get; set; }
+        [Category("Minification")]
+        [DisplayName("Create gzipped files")]
+        [Description("Also save separate gzipped files when minifying.  This option has no effect when Minify on save is disabled.")]
+        [DefaultValue(false)]
+        public bool GzipMinifiedFiles { get; set; }
 
         [DisplayName("Enable Angular.js validation")]
         [Description("Validate HTML files against Angular.js best practices.")]
@@ -168,14 +173,14 @@ namespace MadsKristensen.EditorExtensions
         public string Name { get; set; }
         public string HtmlFormat { get; set; }
     }
-    public sealed class JavaScriptSettings : LinterSettings<JavaScriptSettings>
+    public sealed class JavaScriptSettings : LinterSettings<JavaScriptSettings>, IMinifierSettings
     {
         #region Minification
         [Category("Minification")]
         [DisplayName("Minify files on save")]
         [Description("Update any .min.js file when saving the corresponding .js file.  To create a .min.js file, right-click a .js file.")]
         [DefaultValue(false)]
-        public bool MinifyOnSave { get; set; }
+        public bool AutoMinify { get; set; }
 
         [Category("Minification")]
         [DisplayName("Create gzipped files")]
@@ -196,14 +201,14 @@ namespace MadsKristensen.EditorExtensions
         [DefaultValue(true)]
         public bool BlockCommentCompletion { get; set; }
     }
-    public sealed class CssSettings : SettingsBase<CssSettings>
+    public sealed class CssSettings : SettingsBase<CssSettings>, IMinifierSettings
     {
         #region Minification
         [Category("Minification")]
         [DisplayName("Minify files on save")]
-        [Description("Update any .min.css file when saving the corresponding .css file.  To create a .min.css file, right-click a .css file.")]
+        [Description("Update any .min.css file when saving the corresponding .css file.  To create a .min.css file, right-click a .css file.  This also applies to compiled LESS and SASS files.")]
         [DefaultValue(false)]
-        public bool MinifyOnSave { get; set; }
+        public bool AutoMinify { get; set; }
 
         [Category("Minification")]
         [DisplayName("Create gzipped files")]
@@ -308,20 +313,10 @@ namespace MadsKristensen.EditorExtensions
         public string OutputDirectory { get; set; }
 
         [Category("Compilation")]
-        [DisplayName("Minify compiled files")]
-        [Description("Create a minified file when compiling.  This option has no effect when Compile on build & save are both disabled.")]
-        [DefaultValue(true)]
-        public bool Minify { get; set; }
-        [Category("Compilation")]
         [DisplayName("Create source map files")]
         [Description("Generate source map files when minifying.  This option has no effect when Minify is disabled.")]
         [DefaultValue(true)]
         public bool GenerateSourceMaps { get; set; }
-        //[Category("Compilation")]
-        //[DisplayName("Create gzipped files")]
-        //[Description("Also save separate minified gzipped file when minifying.  This option has no effect when Minify is disabled.")]
-        //[DefaultValue(false)]
-        //public bool GzipMinifiedFiles { get; set; }
     }
 
     public sealed class SassSettings : CompilationSettings<SassSettings> { }
@@ -405,10 +400,15 @@ namespace MadsKristensen.EditorExtensions
         bool ShowPreviewPane { get; }
     }
 
-    public interface ICompilerInvocationSettings 
+    public interface ICompilerInvocationSettings
     {
         bool CompileOnSave { get; }
         string OutputDirectory { get; }
+    }
+    public interface IMinifierSettings
+    {
+        bool AutoMinify { get; }
+        bool GzipMinifiedFiles { get; }
     }
 
     public enum WarningLocation

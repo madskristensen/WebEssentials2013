@@ -98,30 +98,30 @@ namespace MadsKristensen.EditorExtensions
             string message = "Do you also want to enable automatic minification when the source file changes?";
 
             // TODO: Move to common code with map of extension to settings interface
-            if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase) && !WESettings.Instance.Css.MinifyOnSave)
+            if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase) && !WESettings.Instance.Css.AutoMinify)
             {
                 var result = MessageBox.Show(message, "Web Essentials", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    WESettings.Instance.Css.MinifyOnSave = true;
+                    WESettings.Instance.Css.AutoMinify = true;
                     SettingsStore.Save();
                 }
             }
-            else if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase) && !WESettings.Instance.JavaScript.MinifyOnSave)
+            else if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase) && !WESettings.Instance.JavaScript.AutoMinify)
             {
                 var result = MessageBox.Show(message, "Web Essentials", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    WESettings.Instance.JavaScript.MinifyOnSave = true;
+                    WESettings.Instance.JavaScript.AutoMinify = true;
                     SettingsStore.Save();
                 }
             }
-            else if (extension.Equals(".html", StringComparison.OrdinalIgnoreCase) && !WESettings.Instance.Html.MinifyOnSave)
+            else if (extension.Equals(".html", StringComparison.OrdinalIgnoreCase) && !WESettings.Instance.Html.AutoMinify)
             {
                 var result = MessageBox.Show(message, "Web Essentials", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
-                    WESettings.Instance.Html.MinifyOnSave = true;
+                    WESettings.Instance.Html.AutoMinify = true;
                     SettingsStore.Save();
                 }
             }

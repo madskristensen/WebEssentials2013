@@ -16,7 +16,8 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     public interface IFileMinifier
     {
         ///<summary>Minifies an existing file, creating or overwriting the target.</summary>
-        void MinifyFile(string sourcePath, string targetPath);
+        /// <returns>The minified content.</returns>
+        string MinifyFile(string sourcePath, string targetPath);
 
         ///<summary>Minifies a string in-memory.</summary>
         string MinifyString(string source);
@@ -25,11 +26,12 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     ///<summary>An <see cref="IFileMinifier"/> that minifies files in-memory, then writes the results to disk.</summary>
     public abstract class InMemoryMinifier : IFileMinifier
     {
-        public void MinifyFile(string sourcePath, string targetPath)
+        public string MinifyFile(string sourcePath, string targetPath)
         {
             var result = MinifyString(File.ReadAllText(sourcePath));
             if (result != null)
                 File.WriteAllText(targetPath, result);
+            return result;
         }
         public abstract string MinifyString(string source);
     }

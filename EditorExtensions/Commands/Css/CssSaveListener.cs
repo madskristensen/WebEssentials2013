@@ -31,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
 
         void document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
-            if (!WESettings.Instance.Css.MinifyOnSave)
+            if (!WESettings.Instance.Css.AutoMinify)
                 return;
 
             if (e.FileActionType == FileActionTypes.ContentSavedToDisk && e.FilePath.EndsWith(".css", StringComparison.OrdinalIgnoreCase))
