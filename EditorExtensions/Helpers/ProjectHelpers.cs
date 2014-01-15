@@ -266,6 +266,17 @@ namespace MadsKristensen.EditorExtensions
             return (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
         }
 
+        ///<summary>Gets the paths to all files included in the selection, including files within selected folders.</summary>
+        public static IEnumerable<string> GetSelectedFilePaths()
+        {
+            return GetSelectedItemPaths()
+                .SelectMany(p => Directory.Exists(p) 
+                                 ? Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories) 
+                                 : new[] { p }
+                           );
+        }
+
+
         ///<summary>Gets the full paths to the currently selected item(s) in the Solution Explorer.</summary>
         public static IEnumerable<string> GetSelectedItemPaths(DTE2 dte = null)
         {

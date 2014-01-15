@@ -43,7 +43,7 @@ namespace MadsKristensen.EditorExtensions
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
 
-            var raw = MinifyFileMenu.GetSelectedFilePaths(_dte);
+            var raw = ProjectHelpers.GetSelectedFilePaths();
             files = raw.Where(f => !JsHintReporter.ShouldIgnore(f)).ToList();
 
             menuCommand.Enabled = files.Count > 0;

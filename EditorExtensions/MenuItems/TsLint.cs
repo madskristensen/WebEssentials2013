@@ -42,7 +42,7 @@ namespace MadsKristensen.EditorExtensions
         void menuCommand_BeforeQueryStatus(object sender, System.EventArgs e)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
-            files = MinifyFileMenu.GetSelectedFilePaths(_dte)
+            files = ProjectHelpers.GetSelectedFilePaths()
                     .Where(f => Path.GetExtension(f).Equals(".ts", System.StringComparison.OrdinalIgnoreCase))
                     .ToList();
 

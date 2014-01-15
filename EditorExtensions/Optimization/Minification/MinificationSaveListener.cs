@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         public void FileSaved(IContentType contentType, string path)
         {
             // Don't minify ".min" files
-            if (Path.ChangeExtension(path, "").EndsWith(".min", StringComparison.OrdinalIgnoreCase))
+            if (ShouldMinify(path))
                 return;
             if (!File.Exists(GetMinFileName(path)))
                 return;
@@ -34,6 +34,12 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         public static string GetMinFileName(string path)
         {
             return path.Insert(path.Length - Path.GetExtension(path).Length, ".min");
+        }
+        public static bool ShouldMinify(string path)
+        {
+            var baseName = Path.GetFileNameWithoutExtension(path);
+            return !baseName.EndsWith(".min", StringComparison.OrdinalIgnoreCase)
+                && !baseName.EndsWith(".bundle", StringComparison.OrdinalIgnoreCase);
         }
 
         public void CreateMinFile(IContentType contentType, string sourcePath)

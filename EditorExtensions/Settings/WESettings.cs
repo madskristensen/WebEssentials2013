@@ -130,7 +130,7 @@ namespace MadsKristensen.EditorExtensions
         public bool BraceCompletion { get; set; }
     }
 
-    public sealed class HtmlSettings : SettingsBase<HtmlSettings>,IMinifierSettings
+    public sealed class HtmlSettings : SettingsBase<HtmlSettings>, IMinifierSettings
     {
         [DisplayName("Auto-format HTML on Enter")]
         [Description("Automatically format HTML source when pressing Enter.")]
@@ -407,7 +407,7 @@ namespace MadsKristensen.EditorExtensions
     }
     public interface IMinifierSettings
     {
-        bool AutoMinify { get; }
+        bool AutoMinify { get; set; }
         bool GzipMinifiedFiles { get; }
     }
 

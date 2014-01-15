@@ -389,7 +389,6 @@
     <Compile Include="Commands\Code\IntellisenseProperty.cs" />
     <Compile Include="Commands\Code\IntellisenseType.cs" />
     <Compile Include="Commands\CommandExceptionFilter.cs" />
-    <Compile Include="Commands\HTML\HtmlSaveListener.cs" />
     <Compile Include="Compilers\Lint\JsHintCompiler.cs" />
     <Compile Include="Compilers\LESS\LessCompiler.cs" />
     <Compile Include="Compilers\SASS\SassProjectCompiler.cs" />
@@ -441,9 +440,6 @@
     <Compile Include="Commands\JavaScript\JavaScriptFindReferencesCommandTarget.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Commands\JavaScript\JavaScriptSaveListener.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Commands\JavaScript\JsHintReporter.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -460,9 +456,6 @@
     <Compile Include="Commands\Css\CssExtractToFileCommandTarget.cs" />
     <Compile Include="Commands\Css\CssCreationListener.cs" />
     <Compile Include="Commands\Css\CssSortPropertiesCommandTarget.cs" />
-    <Compile Include="Commands\Css\CssSaveListener.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Classifications\CSS\Base64TaggerProvider.cs" />
     <Compile Include="Classifications\CSS\CssHighlightWordTagger.cs" />
     <Compile Include="Classifications\CSS\ValueTaggerProvider.cs" />
