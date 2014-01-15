@@ -178,7 +178,7 @@ namespace MadsKristensen.EditorExtensions
         protected CompilingMarginBase(IMarginSettings settings, ITextDocument document)
             : base(settings, document)
         {
-            Notifier = Mef.GetImport<ICompilationNotifier>(Document.TextBuffer.ContentType);
+            Notifier = Mef.GetImport<ICompilationNotifierProvider>(Document.TextBuffer.ContentType).GetCompilationNotifier(document);
             Notifier.CompilationReady += (s, e) => UpdateMargin(e.CompilerResult);
         }
 

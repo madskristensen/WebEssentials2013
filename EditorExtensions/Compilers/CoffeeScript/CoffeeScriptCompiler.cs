@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -8,6 +9,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
+    [Export(typeof(NodeExecutorBase))]
     [ContentType("CoffeeScript")]
     public class CoffeeScriptCompiler : NodeExecutorBase
     {

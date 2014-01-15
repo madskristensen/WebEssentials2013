@@ -1,8 +1,10 @@
-﻿using System.IO;
+﻿using System.ComponentModel.Composition;
+using System.IO;
 using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
+    [Export(typeof(NodeExecutorBase))]
     [ContentType("IcedCoffeeScript")]
     public class IcedCoffeeScriptCompiler : CoffeeScriptCompiler
     {

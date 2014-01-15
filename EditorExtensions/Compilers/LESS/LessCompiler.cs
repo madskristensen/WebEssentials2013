@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -12,6 +13,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions.Compilers
 {
+    [Export(typeof(NodeExecutorBase))]
     [ContentType("LESS")]
     public class LessCompiler : CssCompilerBase
     {

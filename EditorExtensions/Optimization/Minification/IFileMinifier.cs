@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -33,6 +34,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         public abstract string MinifyString(string source);
     }
 
+    [Export(typeof(IFileMinifier))]
     [ContentType("HTMLX")]
     public class HtmlFileMinifier : InMemoryMinifier
     {
@@ -60,6 +62,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         }
     }
 
+    [Export(typeof(IFileMinifier))]
     [ContentType("CSS")]
     public class CssFileMinifer : InMemoryMinifier
     {
@@ -74,6 +77,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         }
     }
 
+    [Export(typeof(IFileMinifier))]
     [ContentType("JavaScript")]
     public class JavaScriptFileMinifer : InMemoryMinifier
     {
