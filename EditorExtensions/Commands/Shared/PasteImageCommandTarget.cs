@@ -29,10 +29,8 @@ namespace MadsKristensen.EditorExtensions
         protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             IDataObject data = Clipboard.GetDataObject();
-            ProjectItem item = ProjectHelpers.GetActiveFile();
 
             if (!(data.GetDataPresent(DataFormats.Bitmap) || data.GetDataPresent(DataFormats.FileDrop))
-                || string.IsNullOrEmpty(item.ContainingProject.FullName)
                 || !IsValidTextBuffer())
                 return false;
 
