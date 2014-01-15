@@ -15,8 +15,8 @@ namespace MadsKristensen.EditorExtensions
     {
         public void FilterErrorList(IList<ICssError> errors, ICssCheckerContext context)
         {
-            ProjectItem item = ProjectHelpers.GetActiveFile();
-            if (item == null || !item.FileNames[0].EndsWith(".scss", StringComparison.OrdinalIgnoreCase))
+            Document doc = EditorExtensionsPackage.DTE.ActiveDocument;
+            if (doc == null || string.IsNullOrEmpty(doc.FullName) || !doc.FullName.EndsWith(".scss", StringComparison.OrdinalIgnoreCase))
                 return;
 
             errors.Clear();
