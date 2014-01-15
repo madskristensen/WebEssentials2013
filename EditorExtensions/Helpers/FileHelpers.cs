@@ -16,26 +16,39 @@ namespace MadsKristensen.EditorExtensions
     public static class FileHelpers
     {
         public static SnapshotPoint? GetCurrentSelection(string contentType) { return ProjectHelpers.GetCurentTextView().GetSelection(contentType); }
-        ///<summary>Gets the currently selected span within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
+        ///<summary>Gets the currently selected point within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
         ///<param name="view">The TextView containing the selection</param>
         ///<param name="contentType">The ContentType to filter the selection by.</param>        
         public static SnapshotPoint? GetSelection(this ITextView view, string contentType)
         {
             return view.BufferGraph.MapDownToInsertionPoint(view.Caret.Position.BufferPosition, PointTrackingMode.Positive, ts => ts.ContentType.IsOfType(contentType));
         }
-        ///<summary>Gets the currently selected span within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
+        ///<summary>Gets the currently selected point within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
         ///<param name="view">The TextView containing the selection</param>
         ///<param name="contentTypes">The ContentTypes to filter the selection by.</param>        
         public static SnapshotPoint? GetSelection(this ITextView view, params string[] contentTypes)
         {
             return view.BufferGraph.MapDownToInsertionPoint(view.Caret.Position.BufferPosition, PointTrackingMode.Positive, ts => contentTypes.Any(c => ts.ContentType.IsOfType(c)));
         }
-        ///<summary>Gets the currently selected span within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
+        ///<summary>Gets the currently selected point within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
         ///<param name="view">The TextView containing the selection</param>
         ///<param name="contentTypeFilter">The ContentType to filter the selection by.</param>        
         public static SnapshotPoint? GetSelection(this ITextView view, Func<IContentType, bool> contentTypeFilter)
         {
             return view.BufferGraph.MapDownToInsertionPoint(view.Caret.Position.BufferPosition, PointTrackingMode.Positive, ts => contentTypeFilter(ts.ContentType));
+        }
+        ///<summary>Gets the first currently selected span within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
+        ///<param name="view">The TextView containing the selection</param>
+        ///<param name="contentTypeFilter">The ContentType to filter the selection by.</param>        
+        public static SnapshotSpan? GetSelectedSpan(this ITextView view, Func<IContentType, bool> contentTypeFilter)
+        {
+            return view.Selection.SelectedSpans.SelectMany(span =>
+                view.BufferGraph.MapDownToFirstMatch(
+                    span,
+                    SpanTrackingMode.EdgePositive,
+                    ts => contentTypeFilter(ts.ContentType)
+                ), (s, c) => (SnapshotSpan?)s
+            ).FirstOrDefault();
         }
 
         public static void OpenFileInPreviewTab(string file)

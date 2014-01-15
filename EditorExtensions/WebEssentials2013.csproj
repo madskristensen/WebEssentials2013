@@ -353,6 +353,7 @@
     <Compile Include="MenuItems\TsLint.cs" />
     <Compile Include="Optimization\Compression\CompressionResult.cs" />
     <Compile Include="Optimization\Compression\ImageCompressor.cs" />
+    <Compile Include="Optimization\Minification\IFileMinifier.cs" />
     <Compile Include="Optimization\Sprite\ExportFormat.cs" />
     <Compile Include="Optimization\Sprite\SpriteGenerator.cs" />
     <Compile Include="Optimization\Sprite\SpriteDocument.cs" />
