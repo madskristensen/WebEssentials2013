@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Commands;
@@ -51,10 +52,23 @@ namespace MadsKristensen.EditorExtensions.Compilers
         }
         public Task<CompilerResult> CompileToDefaultOutputAsync(string sourcePath)
         {
+            if (!ShouldCompile(sourcePath))
+                return CompileInMemoryAsync(sourcePath);
             var targetPath = Path.GetFullPath(GetTargetPath(sourcePath));
             Directory.CreateDirectory(Path.GetDirectoryName(targetPath));
             return CompileAsync(sourcePath, targetPath);
         }
+
+        private static string[] _disallowedParentExtensions = new[] { ".png", ".jpg", ".jpeg", ".gif" };
+        ///<summary>Checks whether a file should never be compiled to disk, based on filename conventions.</summary>
+        public bool ShouldCompile(string sourcePath)
+        {
+            if (Path.GetFileName(sourcePath).StartsWith("_"))
+                return false;
+
+            return !_disallowedParentExtensions.Any(e => File.Exists(Path.ChangeExtension(sourcePath, e)));
+        }
+
         ///<summary>Gets the default save location for the compiled results of the specified file, based on user settings.</summary>
         public string GetTargetPath(string sourcePath)
         {
@@ -92,7 +106,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
             var result = await RunCompilerAsync(sourcePath, targetPath);
 
-            if (result != null && result.IsSuccess && !string.IsNullOrEmpty(targetPath))
+            if (result.IsSuccess && !string.IsNullOrEmpty(targetPath))
             {
                 ProjectHelpers.AddFileToProject(sourcePath, targetPath);
                 foreach (var listener in _listeners)

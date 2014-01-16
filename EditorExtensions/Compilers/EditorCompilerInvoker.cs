@@ -67,9 +67,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         {
             Logger.Log(CompilerRunner.SourceContentType + ": Compiling " + Path.GetFileName(sourcePath));
             var result = await CompilerRunner.CompileAsync(sourcePath, save: CompilerRunner.Settings.CompileOnSave);
-
-            if (result != null)
-                OnCompilationReady(new CompilerResultEventArgs(result));
+            OnCompilationReady(new CompilerResultEventArgs(result));
         }
 
         public void RequestCompilationResult(bool cached)

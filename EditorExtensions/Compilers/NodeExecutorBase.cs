@@ -14,7 +14,6 @@ namespace MadsKristensen.EditorExtensions
     {
         protected static readonly string WebEssentialsResourceDirectory = Path.Combine(Path.GetDirectoryName(typeof(NodeExecutorBase).Assembly.Location), @"Resources");
         private static readonly string NodePath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node.exe");
-        private static string[] _disallowedParentExtensions = new[] { ".png", ".jpg", ".jpeg", ".gif" };
 
         public abstract string TargetExtension { get; }
 
@@ -25,9 +24,6 @@ namespace MadsKristensen.EditorExtensions
 
         public async Task<CompilerResult> CompileAsync(string sourceFileName, string targetFileName)
         {
-            if (!CheckPrerequisites(sourceFileName))
-                return null;
-
             var scriptArgs = GetArguments(sourceFileName, targetFileName);
 
             var errorOutputFile = Path.GetTempFileName();
@@ -149,13 +145,6 @@ namespace MadsKristensen.EditorExtensions
                 Column = string.IsNullOrEmpty(match.Groups["column"].Value) ? 1 : int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture),
                 Line = int.Parse(match.Groups["line"].Value, CultureInfo.CurrentCulture)
             };
-        }
-
-        private static bool CheckPrerequisites(string fileName)
-        {
-            return !(new DirectoryInfo(Path.GetDirectoryName(fileName)).GetFiles(
-                       Path.GetFileNameWithoutExtension(fileName) + ".*", SearchOption.TopDirectoryOnly)
-                       .Any(file => _disallowedParentExtensions.Contains(Path.GetExtension(file.Name))));
         }
 
         protected abstract string GetArguments(string sourceFileName, string targetFileName);
