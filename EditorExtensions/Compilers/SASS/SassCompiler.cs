@@ -24,7 +24,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         protected override string CompilerPath { get { return _compilerPath; } }
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
 
-        protected override bool GenerateSourceMap { get { return WESettings.Instance.Sass.GenerateSourceMaps; } }
+        public override bool GenerateSourceMap { get { return WESettings.Instance.Sass.GenerateSourceMaps; } }
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
             var args = new StringBuilder();

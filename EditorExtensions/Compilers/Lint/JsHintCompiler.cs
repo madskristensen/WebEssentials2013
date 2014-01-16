@@ -22,6 +22,7 @@ namespace MadsKristensen.EditorExtensions
         public override string TargetExtension { get { return null; } }
         public virtual string SourceExtension { get { return ".js"; } }
         public override string ServiceName { get { return "JsHint"; } }
+        public override bool GenerateSourceMap { get { return false; } }
         protected override string CompilerPath { get { return _compilerPath; } }
         protected override Func<string, IEnumerable<CompilerError>> ParseErrors
         {

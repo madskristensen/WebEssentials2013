@@ -23,6 +23,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     public abstract class CompilerRunnerBase
     {
         private readonly ICollection<IFileSaveListener> _listeners;
+        public abstract bool GenerateSourceMap { get; }
         public abstract string TargetExtension { get; }
         public IContentType SourceContentType { get; private set; }
         public IContentType TargetContentType { get; private set; }
@@ -109,6 +110,8 @@ namespace MadsKristensen.EditorExtensions.Compilers
             if (result.IsSuccess && !string.IsNullOrEmpty(targetPath))
             {
                 ProjectHelpers.AddFileToProject(sourcePath, targetPath);
+                if (GenerateSourceMap && File.Exists(targetPath + ".map"))
+                    ProjectHelpers.AddFileToProject(sourcePath, targetPath + ".map");
                 foreach (var listener in _listeners)
                     listener.FileSaved(TargetContentType, result.TargetFileName);
             }
@@ -139,6 +142,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         public NodeExecutorBase Compiler { get; private set; }
 
         public override string TargetExtension { get { return Compiler.TargetExtension; } }
+        public override bool GenerateSourceMap { get { return Compiler.GenerateSourceMap; } }
         protected override async Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
         {
             bool isTemp = false;
@@ -155,7 +159,10 @@ namespace MadsKristensen.EditorExtensions.Compilers
             finally
             {
                 if (isTemp)
+                {
                     File.Delete(targetPath);
+                    File.Delete(targetPath + ".map");   //  Idempotent
+                }
             }
         }
     }
@@ -170,6 +177,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     class MarkdownCompilerRunner : CompilerRunnerBase
     {
         public MarkdownCompilerRunner(IContentType contentType) : base(contentType) { }
+        public override bool GenerateSourceMap { get { return false; } }
         public override string TargetExtension { get { return ".html"; } }
         protected override Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
         {

@@ -18,6 +18,7 @@ namespace MadsKristensen.EditorExtensions
         private static readonly Regex _sourceMapInJs = new Regex(@"\/\*\n.*=(.*)\n\*\/", RegexOptions.Multiline);
 
         public override string TargetExtension { get { return ".js"; } }
+        public override bool GenerateSourceMap { get { return WESettings.Instance.CoffeeScript.GenerateSourceMaps; } }
         public override string ServiceName { get { return "CoffeeScript"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
@@ -29,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
             if (!WESettings.Instance.CoffeeScript.WrapClosure)
                 args.Append("--bare ");
 
-            if (WESettings.Instance.CoffeeScript.GenerateSourceMaps)
+            if (GenerateSourceMap)
                 args.Append("--map ");
 
             args.AppendFormat(CultureInfo.CurrentCulture, "--output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
@@ -60,13 +61,6 @@ namespace MadsKristensen.EditorExtensions
             File.Copy(oldSourceMapFile, sourceMapFile, true);
             File.Delete(oldSourceMapFile);
             // end-Hack
-
-            if (WESettings.Instance.CoffeeScript.GenerateSourceMaps)
-            {
-                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => {
-                    ProjectHelpers.AddFileToProject(jsFileName, sourceMapFile);
-                }), DispatcherPriority.ApplicationIdle, null);
-            }
         }
 
         private static string UpdateSourceMapUrls(string content, string compiledFileName)

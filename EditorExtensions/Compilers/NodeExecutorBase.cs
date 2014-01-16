@@ -16,8 +16,10 @@ namespace MadsKristensen.EditorExtensions
         private static readonly string NodePath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node.exe");
 
         public abstract string TargetExtension { get; }
-
         public abstract string ServiceName { get; }
+        ///<summary>Indicates whether this compiler will emit a source map file.  Will only return true if enabled in user settings.</summary>
+        public abstract bool GenerateSourceMap { get; }
+
         protected abstract string CompilerPath { get; }
         protected virtual Regex ErrorParsingPattern { get { return null; } }
         protected virtual Func<string, IEnumerable<CompilerError>> ParseErrors { get { return ParseErrorsWithRegex; } }

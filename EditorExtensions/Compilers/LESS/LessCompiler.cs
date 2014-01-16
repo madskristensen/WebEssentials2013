@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         protected override string CompilerPath { get { return _compilerPath; } }
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
 
-        protected override bool GenerateSourceMap { get { return WESettings.Instance.Less.GenerateSourceMaps; } }
+        public override bool GenerateSourceMap { get { return WESettings.Instance.Less.GenerateSourceMaps; } }
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
             var args = new StringBuilder("--no-color --relative-urls ");

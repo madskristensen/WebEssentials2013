@@ -17,8 +17,6 @@ namespace MadsKristensen.EditorExtensions.Compilers
     {
         private static readonly Regex _sourceMapInCss = new Regex(@"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", RegexOptions.Multiline);
 
-        protected abstract bool GenerateSourceMap { get; }
-
 
         protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
@@ -67,7 +65,6 @@ namespace MadsKristensen.EditorExtensions.Compilers
                 return content;
 
             File.WriteAllText(sourceMapFilename, updatedFileContent);
-            ProjectHelpers.AddFileToProject(compiledFileName, sourceMapFilename);
 
             return UpdateSourceLinkInCssComment(content, FileHelpers.RelativePath(compiledFileName, sourceMapFilename));
         }
