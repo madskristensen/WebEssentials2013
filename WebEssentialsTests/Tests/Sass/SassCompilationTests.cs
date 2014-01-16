@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
+using MadsKristensen.EditorExtensions.Compilers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebEssentialsTests
@@ -10,7 +11,7 @@ namespace WebEssentialsTests
     public class SassCompilationTests
     {
         [ClassInitialize]
-        public static void Initialize(TestContext c) { NodeExecutorBase.InUnitTests = true; }
+        public static void Initialize(TestContext c) { SettingsStore.EnterTestMode(); }
 
         private static readonly string BaseDirectory = Path.GetDirectoryName(typeof(SassCompilationTests).Assembly.Location);
 

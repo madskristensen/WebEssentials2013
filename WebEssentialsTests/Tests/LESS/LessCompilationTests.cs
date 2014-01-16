@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
+using MadsKristensen.EditorExtensions.Compilers;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -37,7 +38,7 @@ namespace WebEssentialsTests
         [ClassInitialize]
         public static void ObscureNode(TestContext context)
         {
-            NodeExecutorBase.InUnitTests = true;
+            SettingsStore.EnterTestMode();
             originalPath = Environment.GetEnvironmentVariable("PATH");
             Environment.SetEnvironmentVariable("PATH", originalPath.Replace(@";C:\Program Files\nodejs\", ""), EnvironmentVariableTarget.Process);
         }

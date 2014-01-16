@@ -19,6 +19,19 @@ namespace MadsKristensen.EditorExtensions
             get { return File.Exists(GetSolutionFilePath()); }
         }
 
+        public static bool InTestMode { get; set; }
+        ///<summary>Resets all settings and disables persistence for unit tests.</summary>
+        /// <param name="testSettings">Optional settings to apply for the tests.</param>
+        /// <remarks>It is completely safe to call this function multiple times.</remarks>
+        public static void EnterTestMode(WESettings testSettings = null)
+        {
+            InTestMode = true;
+            if (testSettings != null)
+                WESettings.Instance.AssignFrom(testSettings);
+            else
+                WESettings.Instance.ResetValues();
+        }
+
         ///<summary>Loads the active settings file.</summary>
         public static void Load()
         {
