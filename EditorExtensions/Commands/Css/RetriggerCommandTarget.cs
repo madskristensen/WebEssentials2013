@@ -45,7 +45,11 @@ namespace MadsKristensen.EditorExtensions
         {
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
-                CssCompletionController.FromView(_textView).OnShowMemberList(true);
+                var controller = CssCompletionController.FromView(_textView);
+
+                if (controller != null)
+                    controller.OnShowMemberList(true);
+
             }), DispatcherPriority.Normal, null);
         }
 
