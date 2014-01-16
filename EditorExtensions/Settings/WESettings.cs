@@ -344,11 +344,11 @@ namespace MadsKristensen.EditorExtensions
         [Description("Compile files when saving them, if a compiled file already exists.")]
         [DefaultValue(true)]
         public bool CompileOnSave { get; set; }
-        //[Category("Compilation")]
-        //[DisplayName("Compile files on build")]
-        //[Description("Compile all files that have matching compiled files when building the project.")]
-        //[DefaultValue(true)]
-        //public bool CompileOnBuild { get; set; }
+        [Category("Compilation")]
+        [DisplayName("Compile files on build")]
+        [Description("Compile all files that have matching compiled files when building the project.")]
+        [DefaultValue(true)]
+        public bool CompileOnBuild { get; set; }
 
         [Category("Compilation")]
         [DisplayName("Custom output directory")]

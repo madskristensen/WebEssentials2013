@@ -26,11 +26,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         }
         public Task CompileFilesAsync(IContentType contentType, IEnumerable<string> paths)
         {
-            var exts = new HashSet<string>(
-                FileExtensionRegistry.GetExtensionsForContentType(contentType)
-                                        .Select(e => "." + e),
-                StringComparer.OrdinalIgnoreCase
-            );
+            var exts = FileExtensionRegistry.GetFileExtensionSet(contentType);
             var runner = Mef.GetImport<ICompilerRunnerProvider>(contentType).GetCompiler(contentType);
 
             return Task.WhenAll(

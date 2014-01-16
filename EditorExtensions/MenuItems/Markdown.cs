@@ -1,20 +1,36 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using EnvDTE80;
+using MadsKristensen.EditorExtensions.Compilers;
+using Microsoft.Html.Editor;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class MarkdownMenu
     {
-        private OleMenuCommandService _mcs;
-        private DTE2 _dte;
-        private static HashSet<string> _extensions = new HashSet<string>() { ".md", ".mdown", ".markdown", ".mkd", ".mkdn", ".mdwn", ".mmd" };
+        private readonly OleMenuCommandService _mcs;
+        private readonly DTE2 _dte;
+        private readonly ISet<string> _extensions;
+        private readonly IContentType _contentType;
+
+        [Import]
+        public IContentTypeRegistryService ContentTypes { get; set; }
+        [Import]
+        public IFileExtensionRegistryService FileExtensionRegistry { get; set; }
 
         public MarkdownMenu(DTE2 dte, OleMenuCommandService mcs)
         {
+            Mef.SatisfyImportsOnce(this);
+            _contentType = ContentTypes.GetContentType("Markdown");
+            _extensions = FileExtensionRegistry.GetFileExtensionSet(_contentType);
+
             _dte = dte;
             _mcs = mcs;
         }
@@ -50,23 +66,10 @@ namespace MadsKristensen.EditorExtensions
         private void AddHtmlFiles()
         {
             var paths = ProjectHelpers.GetSelectedItemPaths(_dte);
-            var compiler = MarkdownMargin.CreateCompiler();
+            var compiler = WebEditor.ExportProvider.GetExport<ICompilerRunnerProvider>()
+                       .Value.GetCompiler(ContentTypeManager.GetContentType("Markdown"));
 
-            foreach (string path in paths)
-            {
-                try
-                {
-                    string result = compiler.Transform(File.ReadAllText(path));
-                    string htmlFile = Path.ChangeExtension(path, ".html");
-
-                    File.WriteAllText(htmlFile, result);
-                    ProjectHelpers.AddFileToProject(path, htmlFile);
-                }
-                catch
-                {
-                    Logger.Log("Markdown: Couldn't generate .html file from menu button");
-                }
-            }
+            Parallel.ForEach(paths, p => compiler.CompileToDefaultOutputAsync(p));
         }
 
         private static void AddStylesheet()
