@@ -345,6 +345,7 @@
     <Compile Include="Compilers\CompilerNotifierProviders.cs" />
     <Compile Include="Compilers\EditorCompilerInvoker.cs" />
     <Compile Include="Compilers\Lint\TsLintCompiler.cs" />
+    <Compile Include="Compilers\ProjectCompiler.cs" />
     <Compile Include="MenuItems\SpriteImage.cs" />
     <Compile Include="Compilers\Compilation Interfaces.cs" />
     <Compile Include="Compilers\CompilerRunner.cs" />
@@ -391,7 +392,6 @@
     <Compile Include="Commands\CommandExceptionFilter.cs" />
     <Compile Include="Compilers\Lint\JsHintCompiler.cs" />
     <Compile Include="Compilers\LESS\LessCompiler.cs" />
-    <Compile Include="Compilers\SASS\SassProjectCompiler.cs" />
     <Compile Include="Compilers\SASS\SassCompiler.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\MediaTypeCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\MediaValueCompletionProvider.cs" />
@@ -407,11 +407,8 @@
     <Compile Include="Helpers\Disposable.cs" />
     <Compile Include="ExtensionMethods\Extensions.cs" />
     <Compile Include="Helpers\TabAwareCharacterStream.cs" />
-    <Compile Include="Compilers\CoffeeScript\IcedCoffeeScriptProjectCompiler.cs" />
     <Compile Include="Compilers\CoffeeScript\IcedCoffeeScriptCompiler.cs" />
-    <Compile Include="Compilers\CoffeeScript\CoffeeScriptProjectCompiler.cs" />
     <Compile Include="Compilers\NodeExecutorBase.cs" />
-    <Compile Include="Compilers\ProjectCompilerBase.cs" />
     <Compile Include="Margin\SvgMargin.cs" />
     <Compile Include="Compilers\TypeScriptCompilationNotifier.cs" />
     <Compile Include="MenuItems\AddIntellisenseFile.cs" />
@@ -610,7 +607,6 @@
     <Compile Include="Helpers\FileHelpers.cs" />
     <Compile Include="Compilers\CompilerResult.cs" />
     <Compile Include="Margin\MarkdownMargin.cs" />
-    <Compile Include="Compilers\LESS\LessProjectCompiler.cs" />
     <Compile Include="Helpers\OptionHelpers.cs" />
     <Compile Include="Margin\MarginBase.cs" />
     <Compile Include="Margin\EditorMarginFactory.cs" />

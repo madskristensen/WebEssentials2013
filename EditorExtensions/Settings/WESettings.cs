@@ -403,6 +403,7 @@ namespace MadsKristensen.EditorExtensions
     public interface ICompilerInvocationSettings
     {
         bool CompileOnSave { get; }
+        bool CompileOnBuild { get; }
         string OutputDirectory { get; }
     }
     public interface IMinifierSettings

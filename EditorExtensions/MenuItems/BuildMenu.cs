@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using EnvDTE;
 using EnvDTE80;
+using MadsKristensen.EditorExtensions.Compilers;
 using MadsKristensen.EditorExtensions.Optimization.Minification;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;
@@ -16,69 +18,48 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class BuildMenu
     {
-        private static DTE2 _dte;
-        private OleMenuCommandService _mcs;
+        private readonly DTE2 _dte;
+        private readonly OleMenuCommandService _mcs;
+
+        [Import]
+        public IContentTypeRegistryService ContentTypes { get; set; }
+        [Import]
+        public ProjectCompiler Compiler { get; set; }
 
         public BuildMenu(DTE2 dte, OleMenuCommandService mcs)
         {
+            Mef.SatisfyImportsOnce(this);
             _dte = dte;
             _mcs = mcs;
         }
 
         public void SetupCommands()
         {
+            AddCommand(CommandId.BuildLess, ContentTypes.GetContentType("LESS"));
+            AddCommand(CommandId.BuildSass, ContentTypes.GetContentType("SASS"));
+            AddCommand(CommandId.BuildCoffeeScript, ContentTypes.GetContentType("CoffeeScript"));
+            AddCommand(CommandId.BuildCoffeeScript, ContentTypes.GetContentType("CoffeeScript"));
+
             CommandID cmdBundles = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildBundles);
             OleMenuCommand menuBundles = new OleMenuCommand((s, e) => UpdateBundleFiles(), cmdBundles);
             _mcs.AddCommand(menuBundles);
-
-            CommandID cmdLess = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildLess);
-            OleMenuCommand menuLess = new OleMenuCommand(async (s, e) => await BuildLess(), cmdLess);
-            _mcs.AddCommand(menuLess);
-
-            CommandID cmdSass = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildSass);
-            OleMenuCommand menuSass = new OleMenuCommand(async (s, e) => await BuildSass(), cmdSass);
-            _mcs.AddCommand(menuSass);
 
             CommandID cmdMinify = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildMinify);
             OleMenuCommand menuMinify = new OleMenuCommand((s, e) => Task.Run(new Action(Minify)), cmdMinify);
             _mcs.AddCommand(menuMinify);
 
-            CommandID cmdCoffee = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildCoffeeScript);
-            OleMenuCommand menuCoffee = new OleMenuCommand(async (s, e) => await BuildCoffeeScript(), cmdCoffee);
-            _mcs.AddCommand(menuCoffee);
         }
 
-        public async static Task BuildCoffeeScript()
+        private void AddCommand(CommandId id, IContentType contentType)
         {
-            EditorExtensionsPackage.DTE.StatusBar.Text = "Compiling CofeeScript...";
-
-            var compilers = new[] { new CoffeeScriptProjectCompiler(), new IcedCoffeeScriptProjectCompiler() };
-            await Task.WhenAll(
-                ProjectHelpers.GetAllProjects()
-                              .SelectMany(p => compilers.Select(c => c.CompileProject(p)))
-            );
-
-            EditorExtensionsPackage.DTE.StatusBar.Clear();
-        }
-
-        public async static Task BuildLess()
-        {
-            EditorExtensionsPackage.DTE.StatusBar.Text = "Compiling LESS...";
-            await Task.WhenAll(
-                ProjectHelpers.GetAllProjects()
-                              .Select(new LessProjectCompiler().CompileProject)
-            );
-            EditorExtensionsPackage.DTE.StatusBar.Clear();
-        }
-
-        public async static Task BuildSass()
-        {
-            EditorExtensionsPackage.DTE.StatusBar.Text = "Compiling SASS...";
-            await Task.WhenAll(
-                ProjectHelpers.GetAllProjects()
-                              .Select(new SassProjectCompiler().CompileProject)
-            );
-            EditorExtensionsPackage.DTE.StatusBar.Clear();
+            var cid = new CommandID(CommandGuids.guidBuildCmdSet, (int)id);
+            var command = new OleMenuCommand(async (s, e) =>
+            {
+                EditorExtensionsPackage.DTE.StatusBar.Text = "Compiling " + contentType + "...";
+                await Task.Run(() => Compiler.CompileSolutionAsync(contentType));
+                EditorExtensionsPackage.DTE.StatusBar.Clear();
+            }, cid);
+            _mcs.AddCommand(command);
         }
 
         public static void UpdateBundleFiles()
@@ -88,7 +69,7 @@ namespace MadsKristensen.EditorExtensions
             EditorExtensionsPackage.DTE.StatusBar.Clear();
         }
 
-        private static void Minify()
+        private void Minify()
         {
             _dte.StatusBar.Text = "Web Essentials: Minifying files...";
             var extensions = new HashSet<string>(
@@ -112,7 +93,7 @@ namespace MadsKristensen.EditorExtensions
                 )
             );
 
-            _dte.StatusBar.Text = "Web Essentials: Files minified";
+            EditorExtensionsPackage.DTE.StatusBar.Clear();
         }
     }
 }

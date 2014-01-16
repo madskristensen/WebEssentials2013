@@ -2,14 +2,17 @@
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using EnvDTE;
 using EnvDTE80;
 using MadsKristensen.EditorExtensions.BrowserLink.PixelPushing;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+using MadsKristensen.EditorExtensions.Compilers;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.Web.Editor;
 using ThreadingTask = System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
@@ -110,7 +113,8 @@ namespace MadsKristensen.EditorExtensions
             IconRegistration.RegisterIcons();
 
             // Hook up event handlers
-            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => {
+            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+            {
                 DTE.Events.BuildEvents.OnBuildDone += BuildEvents_OnBuildDone;
                 DTE.Events.SolutionEvents.Opened += delegate { SettingsStore.Load(); ShowTopMenu(); };
                 DTE.Events.SolutionEvents.AfterClosing += delegate { DTE.StatusBar.Clear(); ShowTopMenu(); };
@@ -122,16 +126,14 @@ namespace MadsKristensen.EditorExtensions
         {
             if (Action != vsBuildAction.vsBuildActionClean)
             {
-                await ThreadingTask.Task.Run(async () => {
-                    if (WESettings.Instance.Less.CompileOnBuild)
-                        await BuildMenu.BuildLess();
-
-                    if (WESettings.Instance.Sass.CompileOnBuild)
-                        await BuildMenu.BuildSass();
-
-                    if (WESettings.Instance.CoffeeScript.CompileOnBuild)
-                        await BuildMenu.BuildCoffeeScript();
-
+                var compiler = WebEditor.Host.ExportProvider.GetExport<ProjectCompiler>();
+                await ThreadingTask.Task.Run(() =>
+                {
+                    Parallel.ForEach(
+                        Mef.GetSupportedContentTypes<ICompilerRunnerProvider>()
+                           .Where(c => WESettings.Instance.ForContentType<ICompilerInvocationSettings>(c).CompileOnBuild),
+                        c => compiler.Value.CompileSolutionAsync(c)
+                    );
                     BuildMenu.UpdateBundleFiles();
                 });
 

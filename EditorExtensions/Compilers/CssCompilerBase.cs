@@ -66,7 +66,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
             if (updatedFileContent == null)
                 return content;
 
-            FileHelpers.WriteFile(updatedFileContent, sourceMapFilename);
+            File.WriteAllText(sourceMapFilename, updatedFileContent);
             ProjectHelpers.AddFileToProject(compiledFileName, sourceMapFilename);
 
             return UpdateSourceLinkInCssComment(content, FileHelpers.RelativePath(compiledFileName, sourceMapFilename));
