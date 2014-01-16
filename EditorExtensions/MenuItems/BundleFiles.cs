@@ -242,6 +242,7 @@ namespace MadsKristensen.EditorExtensions
                 writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
                 writer.WriteAttributeString("xsi", "noNamespaceSchemaLocation", null, "http://vswebessentials.com/schemas/v1/bundle.xsd");
                 writer.WriteComment("The order of the <file> elements determines the order of the file contents when bundled.");
+                writer.WriteComment("<folder> elements include all files inside the folder (order not guaranteed)");
 
                 foreach (ProjectItem item in files)
                 {
@@ -286,7 +287,7 @@ namespace MadsKristensen.EditorExtensions
 
             Dictionary<string, string> files = new Dictionary<string, string>();
             string extension = Path.GetExtension(filePath.Replace(_ext, string.Empty));
-            XmlNodeList nodes = doc.SelectNodes("//file");
+            XmlNodeList nodes = doc.SelectNodes("//file|//folder");
 
             foreach (XmlNode node in nodes)
             {
@@ -300,7 +301,17 @@ namespace MadsKristensen.EditorExtensions
                     absolute = ProjectHelpers.ToAbsoluteFilePath(node.InnerText, filePath);
                 }
 
-                if (File.Exists(absolute))
+                if (Directory.Exists(absolute))
+                {
+                    var includeSub = (node.Attributes["includeSubFolders"] != null && node.Attributes["includeSubFolders"].InnerText == "true");
+
+                    foreach (var file in Directory.GetFiles(absolute, "*" + extension, includeSub ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).Where(a=>!a.EndsWith(".min" + extension)))
+                    {
+                        if (!files.ContainsKey(absolute))
+                            files.Add(file, node.InnerText + file.Replace(absolute, "").Replace(@"\", @"/"));
+                    }
+                }
+                else if (File.Exists(absolute))
                 {
                     if (!files.ContainsKey(absolute))
                         files.Add(absolute, node.InnerText);
@@ -308,7 +319,7 @@ namespace MadsKristensen.EditorExtensions
                 else
                 {
                     _dte.ItemOperations.OpenFile(filePath);
-                    Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "Bundle error: The file '{0}' doesn't exist", node.InnerText));
+                    Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "Bundle error: The path '{0}' doesn't exist", node.InnerText));
 
                     return;
                 }
