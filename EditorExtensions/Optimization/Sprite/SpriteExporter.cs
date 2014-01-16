@@ -66,14 +66,14 @@ namespace MadsKristensen.EditorExtensions
                 sb.AppendLine("/* You may have to set 'display: block' */");
                 sb.AppendLine("\twidth: " + fragment.Width + "px;");
                 sb.AppendLine("\theight: " + fragment.Height + "px;");
-                sb.AppendLine("\tbackground: url('" + Path.GetFileName(imageFile) + "') " + fragment.X + "px " + fragment.Y + "px;");
+                sb.AppendLine("\tbackground: url('" + Path.GetFileName(imageFile) + "') -" + fragment.X + "px -" + fragment.Y + "px;");
                 sb.AppendLine("}");
             }
 
             string outputFile = GetFileName(imageFile, format);
 
             ProjectHelpers.CheckOutFileFromSourceControl(outputFile);
-            File.WriteAllText(outputFile, sb.ToString());
+            File.WriteAllText(outputFile, sb.ToString().Replace("-0px", "0"));
 
             return outputFile;
         }
