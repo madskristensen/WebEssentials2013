@@ -32,8 +32,8 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
 var server = server || {};
 /// <summary>The Primitives class as defined in Foo.Primitives</summary>
 server.Primitives = function() {
-/// <field name=""AString"" type=""String"">The AString property as defined in Foo.Primitives</field>
-this.AString = '';
+/// <field name=""aString"" type=""String"">The AString property as defined in Foo.Primitives</field>
+this.aString = '';
 };");
         }
         [TestMethod]
@@ -59,14 +59,14 @@ this.AString = '';
 var server = server || {};
 /// <summary>The Primitives class as defined in Foo.Primitives</summary>
 server.Primitives = function() {
-/// <field name=""AString"" type=""String"">The AString property as defined in Foo.Primitives</field>
-this.AString = '';
-/// <field name=""AnInt"" type=""Number"">The AnInt property as defined in Foo.Primitives</field>
-this.AnInt = 0;
-/// <field name=""AnIntArray"" type=""Number[]"">ASummary</field>
-this.AnIntArray = [];
-/// <field name=""TheSimple"" type=""Object"">The TheSimple property as defined in Foo.Primitives</field>
-this.TheSimple = { };
+/// <field name=""aString"" type=""String"">The AString property as defined in Foo.Primitives</field>
+this.aString = '';
+/// <field name=""anInt"" type=""Number"">The AnInt property as defined in Foo.Primitives</field>
+this.anInt = 0;
+/// <field name=""anIntArray"" type=""Number[]"">ASummary</field>
+this.anIntArray = [];
+/// <field name=""theSimple"" type=""Object"">The TheSimple property as defined in Foo.Primitives</field>
+this.theSimple = { };
 };");
         }
 

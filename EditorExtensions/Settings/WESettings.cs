@@ -79,14 +79,14 @@ namespace MadsKristensen.EditorExtensions
     }
     public sealed class CodeGenSettings : SettingsBase<CodeGenSettings>
     {
-        [DisplayName("Use UpperCamelCase for property names")]
-        [Description("Use UpperCamelCase instead of lowerCamelCase for property names in generated JS/TS files.")]
-        [DefaultValue(false)]
+        [DisplayName("Use LowerCamelCase for property names")]
+        [Description("Use LowerCamelCase instead of lowerCamelCase for property names in generated JS/TS files.")]
+        [DefaultValue(true)]
         public bool CamelCasePropertyNames { get; set; }
 
-        [DisplayName("Use UpperCamelCase for type names")]
-        [Description("Use UpperCamelCase instead of lowerCamelCase for type names in generated JS/TS files.")]
-        [DefaultValue(true)]
+        [DisplayName("Use LowerCamelCase for type names")]
+        [Description("Use LowerCamelCase instead of lowerCamelCase for type names in generated JS/TS files.")]
+        [DefaultValue(false)]
         public bool CamelCaseTypeNames { get; set; }
     }
 
