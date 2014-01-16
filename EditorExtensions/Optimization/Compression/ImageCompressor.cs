@@ -106,7 +106,7 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                EditorExtensionsPackage.DTE.StatusBar.Text = name + " is already optimized...";
+                EditorExtensionsPackage.DTE.StatusBar.Text = name + " is already optimized";
             }
         }
 
