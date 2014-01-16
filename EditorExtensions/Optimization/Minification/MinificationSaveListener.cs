@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Commands;
 using Microsoft.VisualStudio.Utilities;
 
@@ -55,6 +50,10 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
 
             //TODO: Should be unnecessary: ProjectHelpers.AddFileToActiveProject(minPath);
             ProjectHelpers.AddFileToProject(sourcePath, minPath);
+            if (File.Exists(minPath + ".map"))
+                ProjectHelpers.AddFileToProject(sourcePath, minPath + ".map");
+            if (File.Exists(minPath + ".map.gzip"))
+                ProjectHelpers.AddFileToProject(sourcePath, minPath + ".map.gzip");
             if (settings.GzipMinifiedFiles)
                 ProjectHelpers.AddFileToProject(sourcePath, minPath + ".gzip");
         }
@@ -64,21 +63,13 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             var minifier = Mef.GetImport<IFileMinifier>(contentType);
 
             var minPath = GetMinFileName(sourcePath);
-            var minContent = minifier.MinifyFile(sourcePath, minPath);
-
-            if (settings.GzipMinifiedFiles)
-                GzipFile(minPath, minContent);
-        }
-
-        private static void GzipFile(string minPath, string content)
-        {
-            var gzipPath = minPath + ".gzip";
-            ProjectHelpers.CheckOutFileFromSourceControl(gzipPath);
-
-            using (var sourceStream = File.OpenRead(minPath))
-            using (var targetStream = File.OpenWrite(gzipPath))
-            using (var gzipStream = new GZipStream(targetStream, CompressionMode.Compress))
-                sourceStream.CopyTo(targetStream);
+            bool changed = minifier.MinifyFile(sourcePath, minPath);
+            if (settings.GzipMinifiedFiles && (changed || !File.Exists(minPath + ".gzip")))
+            {
+                FileHelpers.GzipFile(minPath);
+                if (minifier.GenerateSourceMap && File.Exists(minPath + ".map"))
+                    FileHelpers.GzipFile(minPath + ".map");
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -49,6 +50,17 @@ namespace MadsKristensen.EditorExtensions
                     ts => contentTypeFilter(ts.ContentType)
                 ), (s, c) => (SnapshotSpan?)s
             ).FirstOrDefault();
+        }
+
+        public static void GzipFile(string sourcePath)
+        {
+            var gzipPath = sourcePath + ".gzip";
+            ProjectHelpers.CheckOutFileFromSourceControl(gzipPath);
+
+            using (var sourceStream = File.OpenRead(sourcePath))
+            using (var targetStream = File.OpenWrite(gzipPath))
+            using (var gzipStream = new GZipStream(targetStream, CompressionMode.Compress))
+                sourceStream.CopyTo(targetStream);
         }
 
         public static void OpenFileInPreviewTab(string file)
