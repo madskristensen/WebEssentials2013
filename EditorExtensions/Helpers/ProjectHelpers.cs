@@ -417,6 +417,7 @@ namespace MadsKristensen.EditorExtensions
         {
             if (!File.Exists(fileName))
                 return null;
+            fileName = Path.GetFullPath(fileName);  // WAP projects don't like paths with forward slashes
 
             var item = ProjectHelpers.GetProjectItem(parentFileName);
 
