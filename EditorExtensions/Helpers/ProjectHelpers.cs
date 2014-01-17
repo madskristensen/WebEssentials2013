@@ -429,9 +429,11 @@ namespace MadsKristensen.EditorExtensions
                 // WinJS
                 var currentItem = ProjectHelpers.GetProjectItem(fileName);
                 // check if the file already added ( adding second time fails with ADDRESULT_Cancel )
-                if (currentItem.Kind != Guid.Empty.ToString("B")) return currentItem;
+                if (currentItem != null && currentItem.Kind != Guid.Empty.ToString("B")) return currentItem;
 
                 item = ProjectHelpers.GetProjectItem(fileName);
+                if (item == null)
+                    return null;
 
                 var addedItem = item.ProjectItems.AddFromFile(fileName);
 
