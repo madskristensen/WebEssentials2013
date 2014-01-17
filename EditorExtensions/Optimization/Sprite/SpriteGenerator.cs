@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -69,7 +70,12 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (string file in sprite.ImageFiles)
             {
-                images.Add(file, new Bitmap(Image.FromFile(file)));
+                Image image = Image.FromFile(file);
+
+                if (Math.Round(image.VerticalResolution) != 96F || Math.Round(image.HorizontalResolution) != 96F)
+                    image = new Bitmap(image);
+
+                images.Add(file, image);
             }
 
             return images;
