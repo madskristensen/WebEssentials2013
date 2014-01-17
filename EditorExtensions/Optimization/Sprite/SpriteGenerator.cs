@@ -72,6 +72,8 @@ namespace MadsKristensen.EditorExtensions
             {
                 Image image = Image.FromFile(file);
 
+                // Only touch the resolution of the image if it isn't 96. 
+                // That way we keep the original image 'as is' in all other cases.
                 if (Math.Round(image.VerticalResolution) != 96F || Math.Round(image.HorizontalResolution) != 96F)
                     image = new Bitmap(image);
 
