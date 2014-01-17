@@ -12,7 +12,13 @@ namespace WebEssentialsTests
     public class CoffeeScriptCompilationTests
     {
         [ClassInitialize]
-        public static void Initialize(TestContext c) { SettingsStore.EnterTestMode(); }
+        public static void Initialize(TestContext c)
+        {
+            SettingsStore.EnterTestMode(new WESettings
+            {
+                CoffeeScript = { GenerateSourceMaps = false }
+            });
+        }
 
         private static readonly string BaseDirectory = Path.GetDirectoryName(typeof(NodeModuleImportedTests).Assembly.Location);
 

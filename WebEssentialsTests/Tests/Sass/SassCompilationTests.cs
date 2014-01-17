@@ -11,7 +11,14 @@ namespace WebEssentialsTests
     public class SassCompilationTests
     {
         [ClassInitialize]
-        public static void Initialize(TestContext c) { SettingsStore.EnterTestMode(); }
+        public static void Initialize(TestContext c)
+        {
+            SettingsStore.EnterTestMode(new WESettings
+            {
+                Sass = { GenerateSourceMaps = false }
+            });
+        }
+
 
         private static readonly string BaseDirectory = Path.GetDirectoryName(typeof(SassCompilationTests).Assembly.Location);
 
