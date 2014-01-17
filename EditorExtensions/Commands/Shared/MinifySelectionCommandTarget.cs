@@ -24,10 +24,21 @@ namespace MadsKristensen.EditorExtensions
                 string extension = Path.GetExtension(_dte.ActiveDocument.FullName).ToLowerInvariant();
                 string result = MinifyFileMenu.MinifyString(extension, content);
 
-                if (result != content)
+                if (!string.IsNullOrEmpty(result))
                 {
-                    using (EditorExtensionsPackage.UndoContext(("Minify")))
-                        TextView.TextBuffer.Replace(TextView.Selection.SelectedSpans[0].Span, result);
+                    if (result != content)
+                    {
+                        using (EditorExtensionsPackage.UndoContext(("Minify")))
+                            TextView.TextBuffer.Replace(TextView.Selection.SelectedSpans[0].Span, result);
+                    }
+                    else
+                    {
+                        _dte.StatusBar.Text = "The selection was already minified";
+                    }
+                }
+                else
+                {
+                    _dte.StatusBar.Text = "Could not minify the selection. Unsupported file type.";
                 }
             }
 
