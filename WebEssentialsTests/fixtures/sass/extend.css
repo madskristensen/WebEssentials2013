@@ -1,7 +1,7 @@
 ﻿.message, .success, .error, .warning {
-  border: 1px solid #ccc;
+  border: 1px solid #cccccc;
   padding: 10px;
-  color: #333; }
+  color: #333333; }
 
 .success {
   border-color: green; }
