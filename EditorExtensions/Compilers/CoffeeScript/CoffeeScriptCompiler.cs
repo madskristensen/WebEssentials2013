@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
         {
             var args = new StringBuilder();
 
-            if (WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure))
+            if (!WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure))
                 args.Append("--bare ");
 
             if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptSourceMaps) && !InUnitTests)
