@@ -17,8 +17,8 @@ namespace MadsKristensen.EditorExtensions
             string lessFilePath = Document.FilePath;
             string cssFilename = GetCompiledFileName(lessFilePath, ".css", CompileToLocation);
 
-            if (!IsSaveFileEnabled)
-                cssFilename = Path.GetTempFileName();
+            if (!IsSaveFileEnabled) // Path.GetTempFileName() creates the file. We don't want that
+                cssFilename = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".tmp");
 
             if (IsFirstRun && File.Exists(cssFilename))
             {

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using EnvDTE;
 using Microsoft.VisualStudio.Text;
@@ -21,8 +22,8 @@ namespace MadsKristensen.EditorExtensions
             string sourceFilePath = Document.FilePath;
             string jsFileName = GetCompiledFileName(sourceFilePath, ".js", CompileToLocation);
 
-            if (!IsSaveFileEnabled)
-                jsFileName = Path.GetTempFileName();
+            if (!IsSaveFileEnabled) // Path.GetTempFileName() creates the file. We don't want that
+                jsFileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".tmp");
 
             if (IsFirstRun && File.Exists(jsFileName))
             {
