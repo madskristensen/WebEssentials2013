@@ -69,7 +69,7 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (string file in sprite.ImageFiles)
             {
-                images.Add(file, Image.FromFile(file));
+                images.Add(file, new Bitmap(Image.FromFile(file)));
             }
 
             return images;
