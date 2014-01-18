@@ -36,12 +36,12 @@ namespace MadsKristensen.EditorExtensions
             return Task.WhenAll(sourceFiles.Select(async sourceFile =>
             {
                 string compiledFile = MarginBase.GetCompiledFileName(sourceFile, CompileToExtension, CompileToLocation);
-                
+
                 if (!File.Exists(compiledFile))
                     return;
-                
+
                 var result = await Compiler.Compile(sourceFile, compiledFile);
-                
+
                 if (result == null)
                     return;
 

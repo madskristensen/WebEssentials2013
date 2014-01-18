@@ -56,7 +56,7 @@ namespace MadsKristensen.EditorExtensions
                 }
 
                 ProjectHelpers.CheckOutFileFromSourceControl(targetFileName);
-                
+
                 using (var process = await start.ExecuteAsync())
                 {
                     return ProcessResult(

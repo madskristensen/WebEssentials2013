@@ -29,6 +29,11 @@ namespace MadsKristensen.EditorExtensions
         ITextBuffer buffer;
         ITextSnapshot snapshot;
         List<Region> regions;
+        static string[] nativelySupported = { "function", "module", "constructor", "void", "class" };
+        public static char[] PunctuationCharacters = Enumerable.Range(1, char.MaxValue)
+                                                               .Where(x => !(char.IsLetterOrDigit((char)x)))
+                                                               .Select(i => (char)i)
+                                                               .ToArray();
 
         public JavaScriptOutliningTagger(ITextBuffer buffer)
         {
@@ -58,11 +63,8 @@ namespace MadsKristensen.EditorExtensions
                     var startLine = currentSnapshot.GetLineFromLineNumber(region.StartLine);
                     string lineText = startLine.GetText().Trim();
 
-                    if (!lineText.Contains("function")
-                     && !lineText.Contains("module")
-                     && !lineText.Contains("constructor")
-                     && !lineText.Contains("void")
-                     && !lineText.Contains("class"))
+                    // Note: if we revoke this condition, clicking (+) button 'twice' would expand the region while Ctrl+M,M works as expected.
+                    if (!lineText.Split(PunctuationCharacters).Any(word => nativelySupported.Contains(word)))
                     {
                         var endLine = currentSnapshot.GetLineFromLineNumber(region.EndLine);
                         var contentSpan = new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End);
