@@ -10,6 +10,8 @@ namespace MadsKristensen.EditorExtensions
 {
     internal abstract class ProjectCompilerBase
     {
+        private string[] _ignorePaths = new[] { @"\bin\", @"\obj\", @"\app_data\" };
+
         protected abstract string ServiceName { get; }
         protected abstract string CompileToExtension { get; }
         protected abstract string CompileToLocation { get; }
@@ -21,7 +23,9 @@ namespace MadsKristensen.EditorExtensions
             if (project != null && !string.IsNullOrEmpty(project.FullName))
             {
                 var folder = ProjectHelpers.GetRootFolder(project);
-                var sourceFiles = Extensions.SelectMany(e => Directory.EnumerateFiles(folder, "*" + e, SearchOption.AllDirectories));
+                var sourceFiles = Extensions
+                    .SelectMany(e => Directory.EnumerateFiles(folder, "*" + e, SearchOption.AllDirectories))
+                    .Where(f => _ignorePaths.Contains(f.ToLowerInvariant()));
 
                 await Compile(sourceFiles);
             }
