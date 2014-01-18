@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
                 var folder = ProjectHelpers.GetRootFolder(project);
                 var sourceFiles = Extensions
                     .SelectMany(e => Directory.EnumerateFiles(folder, "*" + e, SearchOption.AllDirectories))
-                    .Where(f => _ignorePaths.Contains(f.ToLowerInvariant()));
+                    .Where(f => !_ignorePaths.Contains(f.ToLowerInvariant()));
 
                 await Compile(sourceFiles);
             }
