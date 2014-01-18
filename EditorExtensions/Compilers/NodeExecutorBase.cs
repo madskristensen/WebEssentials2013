@@ -48,8 +48,15 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                ProjectHelpers.CheckOutFileFromSourceControl(targetFileName);
+                if (!ProjectHelpers.CheckOutFileFromSourceControl(sourceFileName))
+                {
+                    // Someone else have this file checked out
+                    Logger.Log("Could not check the file out of source control");
+                    return null;
+                }
 
+                ProjectHelpers.CheckOutFileFromSourceControl(targetFileName);
+                
                 using (var process = await start.ExecuteAsync())
                 {
                     return ProcessResult(
