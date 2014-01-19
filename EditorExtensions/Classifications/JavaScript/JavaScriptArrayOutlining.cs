@@ -58,7 +58,7 @@ namespace MadsKristensen.EditorExtensions
                     var startLine = currentSnapshot.GetLineFromLineNumber(region.StartLine);
                     string lineText = startLine.GetText().Trim();
 
-                    if (!lineText.Split(JavaScriptOutliningTagger.PunctuationCharacters).Contains("function"))
+                    if (!JavaScriptOutliningTagger.HasReservedBlockKeywords(startLine, new[] { "function" }))
                     {
                         var endLine = currentSnapshot.GetLineFromLineNumber(region.EndLine);
                         var contentSpan = new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End);
