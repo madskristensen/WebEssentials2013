@@ -29,11 +29,6 @@ namespace MadsKristensen.EditorExtensions
         ITextBuffer buffer;
         ITextSnapshot snapshot;
         List<Region> regions;
-        static string[] nativelySupported = { "function", "module", "constructor", "void", "class" };
-        public static char[] PunctuationCharacters = Enumerable.Range(1, char.MaxValue)
-                                                               .Where(x => !(char.IsLetterOrDigit((char)x)))
-                                                               .Select(i => (char)i)
-                                                               .ToArray();
 
         public JavaScriptOutliningTagger(ITextBuffer buffer)
         {
@@ -64,7 +59,7 @@ namespace MadsKristensen.EditorExtensions
                     string lineText = startLine.GetText().Trim();
 
                     // Note: if we revoke this condition, clicking (+) button 'twice' would expand the region while Ctrl+M,M works as expected.
-                    if (!lineText.Split(PunctuationCharacters).Any(word => nativelySupported.Contains(word)))
+                    if (!HasReservedBlockKeywords(startLine, new[] { "function", "module", "constructor", "void", "class" }))
                     {
                         var endLine = currentSnapshot.GetLineFromLineNumber(region.EndLine);
                         var contentSpan = new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End);
@@ -73,6 +68,23 @@ namespace MadsKristensen.EditorExtensions
                     }
                 }
             }
+        }
+
+        static readonly Type jsTaggerType = typeof(Microsoft.VisualStudio.JSLS.JavaScriptLanguageService).Assembly.GetType("Microsoft.VisualStudio.JSLS.Classification.Tagger");
+
+        public static bool HasReservedBlockKeywords(ITextSnapshotLine start, string[] nativelySupportedTokens)
+        {
+            var tagger = start.Snapshot.TextBuffer.Properties.GetProperty<ITagger<ClassificationTag>>(jsTaggerType);
+
+            var classifications = tagger.GetTags(new NormalizedSnapshotSpanCollection(start.Extent));
+
+            foreach (var tag in classifications.Where(c => !c.Tag.ClassificationType.IsOfType("comment")))
+            {
+                if (tag.Tag.ClassificationType.IsOfType("keyword") && nativelySupportedTokens.Contains(tag.Span.GetText()))
+                    return true;
+            }
+
+            return false;
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
