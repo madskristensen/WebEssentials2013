@@ -29,6 +29,11 @@ namespace MadsKristensen.EditorExtensions
         ITextBuffer buffer;
         ITextSnapshot snapshot;
         List<Region> regions;
+        static readonly Type jsTaggerType = typeof(Microsoft.VisualStudio.JSLS.JavaScriptLanguageService).Assembly.GetType("Microsoft.VisualStudio.JSLS.Classification.Tagger");
+        static char[] PunctuationCharacters = Enumerable.Range(1, char.MaxValue)
+                                                        .Where(x => !(char.IsLetterOrDigit((char)x)))
+                                                        .Select(i => (char)i)
+                                                        .ToArray();
 
         public JavaScriptOutliningTagger(ITextBuffer buffer)
         {
@@ -56,10 +61,9 @@ namespace MadsKristensen.EditorExtensions
                 if (region.StartLine <= endLineNumber && region.EndLine >= startLineNumber)
                 {
                     var startLine = currentSnapshot.GetLineFromLineNumber(region.StartLine);
-                    string lineText = startLine.GetText().Trim();
 
                     // Note: if we revoke this condition, clicking (+) button 'twice' would expand the region while Ctrl+M,M works as expected.
-                    if (!HasReservedBlockKeywords(startLine, new[] { "function", "module", "constructor", "void", "class" }))
+                    if (!HasReservedBlockKeywords(startLine, "function", "module", "constructor", "void", "class"))
                     {
                         var endLine = currentSnapshot.GetLineFromLineNumber(region.EndLine);
                         var contentSpan = new SnapshotSpan(startLine.Start + region.StartOffset, endLine.End);
@@ -70,21 +74,22 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        static readonly Type jsTaggerType = typeof(Microsoft.VisualStudio.JSLS.JavaScriptLanguageService).Assembly.GetType("Microsoft.VisualStudio.JSLS.Classification.Tagger");
-
-        public static bool HasReservedBlockKeywords(ITextSnapshotLine start, string[] nativelySupportedTokens)
+        public static bool HasReservedBlockKeywords(ITextSnapshotLine start, params string[] nativelySupportedTokens)
         {
-            var tagger = start.Snapshot.TextBuffer.Properties.GetProperty<ITagger<ClassificationTag>>(jsTaggerType);
-
-            var classifications = tagger.GetTags(new NormalizedSnapshotSpanCollection(start.Extent));
-
-            foreach (var tag in classifications.Where(c => !c.Tag.ClassificationType.IsOfType("comment")))
+            try
             {
-                if (tag.Tag.ClassificationType.IsOfType("keyword") && nativelySupportedTokens.Contains(tag.Span.GetText()))
-                    return true;
-            }
+                var tagger = start.Snapshot.TextBuffer.Properties.GetProperty<ITagger<ClassificationTag>>(jsTaggerType);
+                var classifications = tagger.GetTags(new NormalizedSnapshotSpanCollection(start.Extent));
 
-            return false;
+                return classifications.Any(tag => !tag.Tag.ClassificationType.IsOfType("comment") &&
+                                                   tag.Tag.ClassificationType.IsOfType("keyword") &&
+                                                   nativelySupportedTokens.Contains(tag.Span.GetText()));
+            }
+            catch
+            {
+                return start.GetText().Trim().Split(PunctuationCharacters)
+                            .Any(word => nativelySupportedTokens.Contains(word));
+            }
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
