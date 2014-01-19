@@ -75,7 +75,7 @@ namespace MadsKristensen.EditorExtensions
             if (start == 1 || end == -1 || index < start || index > end)
                 return false;
 
-            string result = Environment.NewLine + indentation + " * " + Environment.NewLine + indentation;
+            string result = Environment.NewLine + indentation + " * " + Environment.NewLine + indentation + " ";
 
             using (EditorExtensionsPackage.UndoContext("Smart Indent"))
             {
