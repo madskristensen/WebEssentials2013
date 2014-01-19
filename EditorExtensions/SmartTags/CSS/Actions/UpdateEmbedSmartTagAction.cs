@@ -1,9 +1,9 @@
-﻿using Microsoft.Web.Editor;
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using System.Windows.Media.Imaging;
 using Microsoft.VisualStudio.Text;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {

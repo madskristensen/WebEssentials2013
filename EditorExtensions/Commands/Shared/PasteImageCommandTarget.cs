@@ -5,7 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using EnvDTE;
 using MadsKristensen.EditorExtensions.Classifications.Markdown;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
