@@ -84,7 +84,7 @@ namespace MadsKristensen.EditorExtensions
             if (string.IsNullOrEmpty(text))
                 return null;
 
-            text = text.Trim(new[] { '\'', '"' });
+            text = text.Trim(new[] { '\'', '"', '~' });
 
             if (text.StartsWith("//", StringComparison.Ordinal))
                 text = "http:" + text;
