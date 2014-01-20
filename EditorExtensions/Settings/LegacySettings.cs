@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.Shell;
 
@@ -94,12 +95,12 @@ namespace MadsKristensen.EditorExtensions
             // JSHint
             target.JavaScript.LintOnSave = GetBoolean("JsHintEnable");
             target.JavaScript.LintOnBuild = GetBoolean("JsHintRunOnBuild");
-            target.JavaScript.LintResultLocation = (TaskErrorCategory)GetInt("JsHintErrorLocation");
+            target.JavaScript.LintResultLocation = GetEnum<TaskErrorCategory>("JsHintErrorLocation") ?? target.JavaScript.LintResultLocation;
 
             // TSLint
             target.TypeScript.LintOnSave = GetBoolean("TsLintEnable");
             target.TypeScript.LintOnBuild = GetBoolean("TsLintRunOnBuild");
-            target.TypeScript.LintResultLocation = (TaskErrorCategory)GetInt("TsLintErrorLocation");
+            target.TypeScript.LintResultLocation = GetEnum<TaskErrorCategory>("TsLintErrorLocation")??target.TypeScript.LintResultLocation;
 
             // Browser Link
             target.BrowserLink.CssIgnorePatterns = GetString("UnusedCss_IgnorePatterns");
@@ -135,6 +136,14 @@ namespace MadsKristensen.EditorExtensions
             if (bool.TryParse(value, out unused))
                 return null;
             return value;
+        }
+
+        T? GetEnum<T>(string key) where T : struct
+        {
+            var retVal = Enum.ToObject(typeof(T), GetInt(key));
+            if (!Enum.IsDefined(typeof(T), retVal))
+                return null;
+            return (T?)retVal;
         }
     }
 }
