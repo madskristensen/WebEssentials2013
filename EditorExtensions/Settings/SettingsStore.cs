@@ -35,6 +35,7 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>Loads the active settings file.</summary>
         public static void Load()
         {
+            if (InTestMode) return;
             string jsonPath = GetFilePath();
             if (!File.Exists(jsonPath))
             {

@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         public void ReMinify(IContentType contentType, string path, IMinifierSettings settings = null)
         {
             // Don't minify ".min" files
-            if (ShouldMinify(path))
+            if (!ShouldMinify(path))
                 return;
             if (!File.Exists(GetMinFileName(path)))
                 return;

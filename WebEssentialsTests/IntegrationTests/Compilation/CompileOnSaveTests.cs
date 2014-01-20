@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using EnvDTE;
+using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VSSDK.Tools.VsIdeTesting;
@@ -12,6 +13,25 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
     public class CompileOnSaveTests
     {
         static DTE DTE { get { return VsIdeTestHostContext.Dte; } }
+
+        static string TestCaseDirectory { get; set; }
+
+        [ClassInitialize]
+        public static void Initialize(TestContext c)
+        {
+            DTE.ToString(); // Force initial launch to avoid funceval issues
+            //System.Diagnostics.Debugger.Launch();
+            SettingsStore.EnterTestMode();
+            TestCaseDirectory = Path.Combine(Path.GetTempPath(), "Web Essentials Test Files", c.FullyQualifiedTestClassName + "-" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
+            Directory.CreateDirectory(TestCaseDirectory);
+        }
+        [ClassCleanup]
+        public static void DeleteTestCase()
+        {
+            Directory.Delete(TestCaseDirectory, true);
+        }
+
+
 
         static async Task WaitFor(Func<bool> test, int maxSeconds)
         {
@@ -29,21 +49,45 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
         [TestMethod]
         public async Task CompileLessOnSaveWithoutProject()
         {
-            //System.Diagnostics.Debugger.Launch();
             SettingsStore.EnterTestMode();
-            var fileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".less");
+            var fileName = Path.Combine(TestCaseDirectory, "Compile-" + Guid.NewGuid() + ".less");
 
-            try
+            File.WriteAllText(fileName, @"a{b{color:red;}}");
+            DTE.ItemOperations.OpenFile(fileName).Document.Save();
+            await WaitFor(() => File.Exists(Path.ChangeExtension(fileName, ".css")), 10);
+            File.Exists(Path.ChangeExtension(fileName, ".min.css")).Should().BeFalse("Should not minify by default");
+        }
+        [HostType("VS IDE")]
+        [TestMethod]
+        public async Task SkippableFiles()
+        {
+            SettingsStore.EnterTestMode();
+            foreach (var baseName in new[] { "_underscore", "Sprite.png" })
             {
+                var fileName = Path.Combine(TestCaseDirectory, baseName + ".less");
+
                 File.WriteAllText(fileName, @"a{b{color:red;}}");
                 DTE.ItemOperations.OpenFile(fileName).Document.Save();
-                await WaitFor(() => File.Exists(Path.ChangeExtension(fileName, ".css")), 10);
+                await Task.Delay(TimeSpan.FromSeconds(7.5));
+                File.Exists(Path.ChangeExtension(fileName, ".css")).Should().BeFalse("Should not compile " + baseName + ".less");
             }
-            finally
-            {
-                File.Delete(fileName);
-                File.Delete(Path.ChangeExtension(fileName, ".css"));
-            }
+        }
+        [HostType("VS IDE")]
+        [TestMethod]
+        public async Task MinifyLessOnSave()
+        {
+            SettingsStore.EnterTestMode();
+            WESettings.Instance.Css.AutoMinify = true;
+            WESettings.Instance.Css.GzipMinifiedFiles = true;
+
+            var fileName = Path.Combine(TestCaseDirectory, "Minify-" + Guid.NewGuid() + ".less");
+            var minFileName = Path.ChangeExtension(fileName, ".min.css");
+
+            File.WriteAllText(fileName, @"a{b{color:red;}}");
+            File.Create(Path.Combine(minFileName)).Close();     // Only files that have a .min will be minified.
+
+            DTE.ItemOperations.OpenFile(fileName).Document.Save();
+            await WaitFor(() => new FileInfo(minFileName).Length > 0, 10);
         }
     }
 }

@@ -61,14 +61,15 @@ namespace MadsKristensen.EditorExtensions.Compilers
             return CompileAsync(sourcePath, targetPath);
         }
 
-        private static string[] _disallowedParentExtensions = new[] { ".png", ".jpg", ".jpeg", ".gif" };
+        private static ISet<string> _disallowedParentExtensions = new HashSet<string> { ".png", ".jpg", ".jpeg", ".gif" };
         ///<summary>Checks whether a file should never be compiled to disk, based on filename conventions.</summary>
         public bool ShouldCompile(string sourcePath)
         {
             if (Path.GetFileName(sourcePath).StartsWith("_"))
                 return false;
 
-            return !_disallowedParentExtensions.Any(e => File.Exists(Path.ChangeExtension(sourcePath, e)));
+            var parentExtension = Path.GetExtension(Path.GetFileNameWithoutExtension(sourcePath));
+            return !_disallowedParentExtensions.Contains(parentExtension);
         }
 
         ///<summary>Gets the default save location for the compiled results of the specified file, based on user settings.</summary>
