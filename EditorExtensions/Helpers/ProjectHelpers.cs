@@ -24,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
         }
         private static IEnumerable<Project> GetChildProjects(Project parent)
         {
-            if (parent.Collection == null)  // Unloaded
+            if (parent.Kind !=  ProjectKinds.vsProjectKindSolutionFolder && parent.Collection == null)  // Unloaded
                 return Enumerable.Empty<Project>();
 
             if (!String.IsNullOrEmpty(parent.FullName))
