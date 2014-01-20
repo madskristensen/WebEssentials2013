@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using EnvDTE;
 using Microsoft.VisualStudio.Text;
 
@@ -28,10 +29,13 @@ namespace MadsKristensen.EditorExtensions
 
             Logger.Log("LESS: Compiling " + Path.GetFileName(lessFilePath));
 
-            var result = await new LessCompiler().Compile(lessFilePath, cssFilename);
-
+            string preProcessedLessFilePath = GetPreProcessedFileName(Document.FilePath);
+            var result = await new LessCompiler().Compile(preProcessedLessFilePath, cssFilename);
             if (result == null)
+            {
+                File.Delete(preProcessedLessFilePath);
                 return;
+            }
 
             if (result.IsSuccess)
             {
@@ -45,6 +49,8 @@ namespace MadsKristensen.EditorExtensions
 
                 base.OnCompilationDone("ERROR:" + result.Errors.First().Message, lessFilePath);
             }
+
+            File.Delete(preProcessedLessFilePath);
         }
 
         protected override void MinifyFile(string fileName, string source)
@@ -63,6 +69,34 @@ namespace MadsKristensen.EditorExtensions
         public override bool IsSaveFileEnabled
         {
             get { return WESettings.GetBoolean(WESettings.Keys.GenerateCssFileFromLess) && !Path.GetFileName(Document.FilePath).StartsWith("_", StringComparison.Ordinal); }
+        }
+
+        private static readonly Regex _referenceCommentPattern = new Regex(@"///\s*<reference\s+path=(['""])(?<path>[^'""]+)\1(\s*/>)?");
+        private string GetPreProcessedFileName(string sourceFileName)
+        {
+            string preProcessedFileName = GetCompiledFileName(sourceFileName, ".obj.less", CompileToLocation);
+
+            var lines = File.ReadAllLines(sourceFileName).Select(line =>
+            {
+                var matches = _referenceCommentPattern.Matches(line).Cast<Match>().ToArray();
+                if (matches.Length == 0)
+                    return line;
+
+                var imports = string.Empty;
+                foreach (var match in matches)
+                {
+                    var path = match.Groups["path"].Value;
+                    if (path.StartsWith("~/"))
+                        path = Path.Combine(ProjectHelpers.GetProjectFolder(sourceFileName), path.Substring(2));
+
+                    imports += "@import (reference) \"" + path + "\";";
+                }
+
+                return imports;
+            });
+
+            File.WriteAllLines(preProcessedFileName, lines);
+            return preProcessedFileName;
         }
     }
 }
