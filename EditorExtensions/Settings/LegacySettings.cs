@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
 
             // TypeScript
             target.TypeScript.ShowPreviewPane = GetBoolean("TypeScriptShowPreviewWindow");
-            target.TypeScript.ShowPreviewPane = GetBoolean("TypeScriptBraceCompletion");
+            target.TypeScript.BraceCompletion = GetBoolean("TypeScriptBraceCompletion");
 
             // CoffeeScript
             target.CoffeeScript.CompileOnSave = GetBoolean("CoffeeScriptGenerateJsFile");

@@ -215,12 +215,6 @@ namespace MadsKristensen.EditorExtensions
         [Description("Also save separate gzipped files when minifying or bundling.")]
         [DefaultValue(false)]
         public bool GzipMinifiedFiles { get; set; }
-
-        [Category("Minification")]
-        [DisplayName("Create source map files")]
-        [Description("Generate source map files when minifying.  This option has no effect when Minify on save is disabled.")]
-        [DefaultValue(true)]
-        public bool GenerateSourceMaps { get; set; }
         #endregion
 
         [Category("Bundles")]
