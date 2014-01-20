@@ -7,6 +7,9 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
     [TestClass]
     public class IntellisenseJavaScript_with_primitives
     {
+        [ClassInitialize]
+        public static void Initialize(TestContext c) { SettingsStore.EnterTestMode(); }
+
         private readonly IntellisenseType _stringType = new IntellisenseType { CodeName = "String" };
         private readonly IntellisenseType _int32Type = new IntellisenseType { CodeName = "Int32" };
         private readonly IntellisenseType _int32ArrayType = new IntellisenseType { CodeName = "Int32", IsArray = true };

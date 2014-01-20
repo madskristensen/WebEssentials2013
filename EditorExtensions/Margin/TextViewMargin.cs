@@ -71,6 +71,9 @@ namespace MadsKristensen.EditorExtensions.Margin
             if (!Settings.ShowPreviewPane)
                 return;
 
+            // Prevents race conditions when the file is saved before the preview is open.
+            if (_previewTextHost == null) return;
+
             if (string.IsNullOrEmpty(text))
             {
                 _previewTextHost.HostControl.Opacity = 0.3;

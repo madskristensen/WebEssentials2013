@@ -88,6 +88,7 @@
   </Choose>
   <ItemGroup>
     <None Include="ExtractZipTask.cs" />
+    <Compile Include="IntegrationTests\Compilation\CompileOnSaveTests.cs" />
     <Compile Include="Tests\Bootstrap\BootstrapValidationTests.cs" />
     <Compile Include="Tests\CoffeeScript\IcedCoffeeScriptCompilationTests.cs" />
     <Compile Include="Tests\CoffeeScript\CoffeeScriptCompilationTests.cs" />
