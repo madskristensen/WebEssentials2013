@@ -38,7 +38,7 @@ namespace MadsKristensen.EditorExtensions
             AddCommand(CommandId.BuildLess, ContentTypes.GetContentType("LESS"));
             AddCommand(CommandId.BuildSass, ContentTypes.GetContentType("SASS"));
             AddCommand(CommandId.BuildCoffeeScript, ContentTypes.GetContentType("CoffeeScript"));
-            AddCommand(CommandId.BuildCoffeeScript, ContentTypes.GetContentType("CoffeeScript"));
+            //TODO: Iced CoffeeScript?
 
             CommandID cmdBundles = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildBundles);
             OleMenuCommand menuBundles = new OleMenuCommand((s, e) => UpdateBundleFiles(), cmdBundles);

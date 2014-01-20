@@ -37,7 +37,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
             SourceContentType = contentType;
             TargetContentType = FileExtensionRegistry.GetContentTypeForExtension(TargetExtension.TrimEnd('.'));
 
-            _listeners = Mef.GetAllImports<IFileSaveListener>(contentType);
+            _listeners = Mef.GetAllImports<IFileSaveListener>(TargetContentType);
             Settings = WESettings.Instance.ForContentType<ICompilerInvocationSettings>(contentType);
         }
 
@@ -142,7 +142,11 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         public NodeExecutorBase Compiler { get; private set; }
 
-        public override string TargetExtension { get { return Compiler.TargetExtension; } }
+        public override string TargetExtension
+        {
+            // This is called by the base ctor, before we assign Compiler
+            get { return (Compiler ?? Mef.GetImport<NodeExecutorBase>(SourceContentType)).TargetExtension; }
+        }
         public override bool GenerateSourceMap { get { return Compiler.GenerateSourceMap; } }
         protected override async Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
         {

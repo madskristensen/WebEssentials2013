@@ -33,7 +33,6 @@ namespace MadsKristensen.EditorExtensions.Compilers
             CompilerRunner = compilerRunner;
 
             Document.FileActionOccurred += Document_FileActionOccurred;
-            CompileAsync(Document.FilePath).ToString(); // Don't wait
         }
 
         ///<summary>Releases all resources used by the EditorCompilerInvoker.</summary>
