@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
@@ -38,7 +39,9 @@ namespace MadsKristensen.EditorExtensions
         //TODO: Add menu items for compilable files too
         class MinifyFileCommand
         {
+            [Import]
             public MinificationSaveListener MinificationService { get; set; }
+            [Import]
             public IFileExtensionRegistryService FileExtensionRegistry { get; set; }
             public OleMenuCommand Command { get; private set; }
             public IContentType ContentType { get; private set; }

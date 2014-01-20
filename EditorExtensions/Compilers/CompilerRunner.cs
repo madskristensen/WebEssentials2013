@@ -29,6 +29,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         public IContentType TargetContentType { get; private set; }
         public ICompilerInvocationSettings Settings { get; private set; }
 
+        [Import]
         public IFileExtensionRegistryService FileExtensionRegistry { get; set; }
         public CompilerRunnerBase(IContentType contentType)
         {

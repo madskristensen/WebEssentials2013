@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions.Optimization.Minification
 {
+    [Export]    // This class is imported for its own methods, and as a general save listener
     [Export(typeof(IFileSaveListener))]
     [ContentType("HTMLX")]
     [ContentType("CSS")]
