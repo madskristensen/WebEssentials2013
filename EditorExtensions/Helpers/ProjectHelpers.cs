@@ -24,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
         }
         private static IEnumerable<Project> GetChildProjects(Project parent)
         {
-            if (parent.Kind !=  ProjectKinds.vsProjectKindSolutionFolder && parent.Collection == null)  // Unloaded
+            if (parent.Kind != ProjectKinds.vsProjectKindSolutionFolder && parent.Collection == null)  // Unloaded
                 return Enumerable.Empty<Project>();
 
             if (!String.IsNullOrEmpty(parent.FullName))
@@ -282,28 +282,26 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        ///<summary>Attempts to ensure that a file is writable.</summary>
+        /// <returns>True if the file is not under source control or was checked out; false if the checkout failed or an error occurred.</returns>
         public static bool CheckOutFileFromSourceControl(string fileName)
         {
             try
             {
                 var dte = EditorExtensionsPackage.DTE;
 
-                if (File.Exists(fileName) && dte.Solution.FindProjectItem(fileName) != null)
-                {
-                    if (dte.SourceControl.IsItemUnderSCC(fileName) && !dte.SourceControl.IsItemCheckedOut(fileName))
-                    {
-                        dte.SourceControl.CheckOutItem(fileName);
-                    }
-
+                if (!File.Exists(fileName) || dte.Solution.FindProjectItem(fileName) == null)
                     return true;
-                }
+                if (dte.SourceControl.IsItemUnderSCC(fileName) && !dte.SourceControl.IsItemCheckedOut(fileName))
+                    return dte.SourceControl.CheckOutItem(fileName);
+
+                return true;
             }
             catch (Exception ex)
             {
                 Logger.Log(ex);
+                return false;
             }
-
-            return false;
         }
 
         ///<summary>Gets the directory containing the active solution file.</summary>
