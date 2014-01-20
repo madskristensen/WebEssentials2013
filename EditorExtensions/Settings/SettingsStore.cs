@@ -38,12 +38,13 @@ namespace MadsKristensen.EditorExtensions
             string jsonPath = GetFilePath();
             if (!File.Exists(jsonPath))
             {
-                var legacyPath = jsonPath.Replace(FileName, _legacyFileName);
+                var legacyPath = GetLegacyFilePath();
                 if (File.Exists(legacyPath))
                 {
                     new SettingsMigrator(legacyPath).ApplyTo(WESettings.Instance);
                     Save(jsonPath);
                     UpdateStatusBar("imported from legacy XML settings file");
+                    Logger.Log("Migrated legacy XML settings file " + legacyPath + " to " + jsonPath);
                 }
                 return;
             }
@@ -83,6 +84,15 @@ namespace MadsKristensen.EditorExtensions
 
             return path;
         }
+        private static string GetLegacyFilePath()
+        {
+            string path = GetSolutionFilePath().Replace(FileName, _legacyFileName);
+
+            if (!File.Exists(path))
+                path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Web Essentials", _legacyFileName);
+
+            return path;
+        }
 
         public static string GetSolutionFilePath()
         {
@@ -97,7 +107,7 @@ namespace MadsKristensen.EditorExtensions
         private static string GetUserFilePath()
         {
             var ssm = new ShellSettingsManager(EditorExtensionsPackage.Instance);
-            return Path.Combine(ssm.GetApplicationDataFolder(ApplicationDataFolder.Configuration), FileName);
+            return Path.Combine(ssm.GetApplicationDataFolder(ApplicationDataFolder.RoamingSettings), FileName);
         }
 
         public static void UpdateStatusBar(string action)

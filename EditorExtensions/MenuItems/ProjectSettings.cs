@@ -87,7 +87,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    SettingsStore.UpdateStatusBar("still applies. The settings file still exist in the solution folder.");
+                    SettingsStore.UpdateStatusBar("are still applied. The settings file still exists in the solution folder.");
                 }
             }
         }
