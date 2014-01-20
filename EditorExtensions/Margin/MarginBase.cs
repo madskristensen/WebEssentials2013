@@ -6,6 +6,7 @@ using MadsKristensen.EditorExtensions.Compilers;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.Win32;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -24,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
         protected MarginBase(IMarginSettings settings, ITextDocument document)
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
-            _settingsKey = GetType().Name;
+            _settingsKey = document.TextBuffer.ContentType.DisplayName + "Margin_width";
             Document = document;
             Settings = settings;
 
@@ -43,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
             using (var key = EditorExtensionsPackage.Instance.UserRegistryRoot)
             {
                 var raw = key.GetValue("WE_" + _settingsKey);
-                width = raw != null ? (int)raw : -1;
+                width = raw is int ? (int)raw : -1;
             }
             width = width == -1 ? 400 : width;
 
@@ -75,16 +76,17 @@ namespace MadsKristensen.EditorExtensions
 
         void splitter_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
+            if (double.IsNaN(_previewControl.ActualWidth)) return;
             using (var key = EditorExtensionsPackage.Instance.UserRegistryRoot)
             {
-                key.SetValue("WE_" + _settingsKey, _previewControl.Width);
+                key.SetValue("WE_" + _settingsKey, _previewControl.ActualWidth, RegistryValueKind.DWord);
             }
         }
 
         private void ThrowIfDisposed()
         {
             if (_isDisposed)
-                throw new ObjectDisposedException(_settingsKey);
+                throw new ObjectDisposedException(GetType().Name);
         }
         #region IWpfTextViewMargin Members
 
