@@ -11,15 +11,25 @@ namespace MadsKristensen.EditorExtensions
 {
     static class Extensions
     {
-        ///<summary>Returns a strongly-typed Settings object for the specified ContentType, or null if <see cref="WESettings"/> has no properties with that name (including base types).</summary>
-        /// <typeparam name="T">The interface to return.</typeparam>
-        public static T ForContentType<T>(this WESettings settings, IContentType contentType)
+        ///<summary>Returns a strongly-typed Settings object for the specified ContentType, or null if <see cref="WESettings"/> has no properties with that name (including base types) or type.</summary>
+        ///<typeparam name="T">The interface to return.</typeparam>
+        ///<remarks>
+        /// If the ContentType has a settings property, but that property 
+        /// does not implement <typeparamref name="T"/>, this will return
+        /// null, even if its base type has a settings property that does
+        /// implement <typeparamref name="T"/>.  For example, this cannot
+        /// return <see cref="IMinifierSettings"/> for LESS.
+        ///</remarks>
+        public static T ForContentType<T>(this WESettings settings, IContentType contentType) where T : class
         {
             var prop = TypeAccessor<WESettings>.Properties.FirstOrDefault(p => p.Property.Name.Equals(contentType.TypeName, StringComparison.OrdinalIgnoreCase));
             if (prop == null)
                 return contentType.BaseTypes.Select(settings.ForContentType<T>)
                                             .FirstOrDefault(o => o != null);
-            return ((ITypedPropertyAccessor<WESettings, T>)prop).GetValue(settings);
+            var typedProp = prop as ITypedPropertyAccessor<WESettings, T>;
+            if (typedProp == null)
+                return null;
+            return typedProp.GetValue(settings);
         }
 
 

@@ -15,8 +15,9 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     {
         public void FileSaved(IContentType contentType, string path)
         {
+            // This will also be called for derived ContentTypes like LESS & Markdown.  Ignore those.
             var settings = WESettings.Instance.ForContentType<IMinifierSettings>(contentType);
-            if (!settings.AutoMinify)
+            if (settings == null || !settings.AutoMinify)
                 return;
             ReMinify(contentType, path, settings);
         }
