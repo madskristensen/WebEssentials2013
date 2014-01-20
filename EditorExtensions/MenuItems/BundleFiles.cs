@@ -154,6 +154,7 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
+            // TODO: Replace with single class that takes ContentType
             CommandID commandCss = new CommandID(CommandGuids.guidBundleCmdSet, (int)CommandId.BundleCss);
             OleMenuCommand menuCommandCss = new OleMenuCommand((s, e) => CreateBundlefile(".css"), commandCss);
             menuCommandCss.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".css"); };
@@ -262,6 +263,7 @@ namespace MadsKristensen.EditorExtensions
 
             _dte.ItemOperations.OpenFile(filePath);
 
+            //TODO: Use XLINQ
             XmlDocument doc = GetXmlDocument(filePath);
 
             if (doc != null)
@@ -274,7 +276,6 @@ namespace MadsKristensen.EditorExtensions
         private static void WriteBundleFile(string filePath, XmlDocument doc)
         {
             XmlNode bundleNode = doc.SelectSingleNode("//bundle");
-
             if (bundleNode == null)
                 return;
 
@@ -287,7 +288,14 @@ namespace MadsKristensen.EditorExtensions
             }
 
             Dictionary<string, string> files = new Dictionary<string, string>();
-            string extension = Path.GetExtension(filePath.Replace(_ext, string.Empty));
+
+            // filePath must end in ".targetExtension.bundle"
+            string extension = Path.GetExtension(Path.GetFileNameWithoutExtension(filePath));
+            if (string.IsNullOrEmpty(extension))
+            {
+                Logger.Log("Skipping bundle file " + filePath + " without extension.  Bundle files must end with the output extension, followed by '.bundle'.");
+                return;
+            }
             XmlNodeList nodes = doc.SelectNodes("//file");
 
             foreach (XmlNode node in nodes)

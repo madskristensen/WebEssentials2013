@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
             public IFileExtensionRegistryService FileExtensionRegistry { get; set; }
             public OleMenuCommand Command { get; private set; }
             public IContentType ContentType { get; private set; }
-            private readonly HashSet<string> _sourceExtensions;
+            private readonly ISet<string> _sourceExtensions;
 
             private IEnumerable<string> selectedFiles;
 
@@ -53,11 +53,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 Mef.SatisfyImportsOnce(this);
                 ContentType = contentType;
-                _sourceExtensions = new HashSet<string>(
-                    FileExtensionRegistry.GetExtensionsForContentType(contentType)
-                                         .Select(e => "." + e),
-                    StringComparer.OrdinalIgnoreCase
-                );
+                _sourceExtensions = FileExtensionRegistry.GetFileExtensionSet(contentType);
 
                 Command = new OleMenuCommand((s, e) => Execute(), new CommandID(CommandGuids.guidMinifyCmdSet, (int)id));
                 Command.BeforeQueryStatus += (s, e) => CheckVisible();
