@@ -17,7 +17,9 @@ namespace MadsKristensen.EditorExtensions.Compilers
         ///<param name="cached">
         /// If true, the compiler may return cached output from an older compilation;
         /// if false, the compiler should try to recompile if possible.  
-        /// The implementation may ignore this parameter.</param>
+        /// The implementation may ignore this parameter.
+        /// Either way, no result will be saved to disk.
+        ///</param>
         void RequestCompilationResult(bool cached);
         ///<summary>Raised whenever new compiled output is available.</summary>
         event EventHandler<CompilerResultEventArgs> CompilationReady;

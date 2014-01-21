@@ -59,6 +59,18 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
         }
         [HostType("VS IDE")]
         [TestMethod]
+        public async Task DontCompileOnOpen()
+        {
+            SettingsStore.EnterTestMode();
+            var fileName = Path.Combine(TestCaseDirectory, "Don'tCompile-" + Guid.NewGuid() + ".less");
+
+            File.WriteAllText(fileName, @"a{b{color:red;}}");
+            DTE.ItemOperations.OpenFile(fileName);
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            File.Exists(Path.ChangeExtension(fileName, ".css")).Should().BeFalse("Should not compile without saving");
+        }
+        [HostType("VS IDE")]
+        [TestMethod]
         public async Task SkippableFiles()
         {
             SettingsStore.EnterTestMode();

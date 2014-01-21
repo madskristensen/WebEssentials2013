@@ -69,7 +69,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
             OnCompilationReady(new CompilerResultEventArgs(result));
         }
 
-        public void RequestCompilationResult(bool cached)
+        public async void RequestCompilationResult(bool cached)
         {
             if (cached && CompilerRunner.Settings.CompileOnSave)
             {
@@ -84,7 +84,8 @@ namespace MadsKristensen.EditorExtensions.Compilers
                     return;
                 }
             }
-            CompileAsync(Document.FilePath).ToString();  // Don't wait
+            var result = await CompilerRunner.CompileAsync(Document.FilePath, save: false);
+            OnCompilationReady(new CompilerResultEventArgs(result));
         }
     }
 
