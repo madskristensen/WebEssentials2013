@@ -87,7 +87,7 @@ namespace MadsKristensen.EditorExtensions
         }
         private static string GetLegacyFilePath()
         {
-            string path = GetSolutionFilePath().Replace(FileName, _legacyFileName);
+            string path = (GetSolutionFilePath() ?? "").Replace(FileName, _legacyFileName);
 
             if (!File.Exists(path))
                 path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Web Essentials", _legacyFileName);
