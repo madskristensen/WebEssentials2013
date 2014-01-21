@@ -26,6 +26,8 @@ namespace MadsKristensen.EditorExtensions
 
         public async Task<CompilerResult> Compile(string sourceFileName, string targetFileName)
         {
+            BeforeCompile(sourceFileName, targetFileName);
+
             if (!CheckPrerequisites(sourceFileName))
                 return null;
 
@@ -50,8 +52,8 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (!ProjectHelpers.CheckOutFileFromSourceControl(sourceFileName))
                 {
-                    // Someone else have this file checked out
-                    Logger.Log("Could not check the file out of source control");
+                    // Someone else has this file checked out
+                    Logger.Log(string.Format("Could not check the file out of source control: {0}", sourceFileName));
                     return null;
                 }
 
@@ -163,5 +165,7 @@ namespace MadsKristensen.EditorExtensions
         protected abstract string GetArguments(string sourceFileName, string targetFileName);
 
         protected abstract string PostProcessResult(string resultSource, string sourceFileName, string targetFileName);
+
+        protected virtual void BeforeCompile(string sourceFileName, string targetFileName) { }
     }
 }
