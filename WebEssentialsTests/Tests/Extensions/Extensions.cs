@@ -9,15 +9,14 @@ namespace WebEssentialsTests
 {
     static class Extensions
     {
-        public static async Task<string> CompileString(this NodeExecutorBase compiler, string source, string sourceExtension, string targetExtension)
+        ///<summary>Compiles an existing file on disk to a string.</summary>
+        public static async Task<string> CompileToStringAsync(this NodeExecutorBase compiler, string sourceFileName)
         {
-            var sourceFileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + sourceExtension);
-            var targetFileName = Path.ChangeExtension(sourceFileName, targetExtension);
+            // CoffeeScript cannot compile to a different filename.
+            var targetFileName = Path.ChangeExtension(sourceFileName, compiler.TargetExtension);
 
             try
             {
-                File.WriteAllText(sourceFileName, source);
-
                 var result = await compiler.CompileAsync(sourceFileName, targetFileName);
 
                 if (result.IsSuccess)
@@ -27,8 +26,21 @@ namespace WebEssentialsTests
             }
             finally
             {
-                File.Delete(sourceFileName);
                 File.Delete(targetFileName);
+            }
+        }
+        ///<summary>Compiles an in-memory string.</summary>
+        public static async Task<string> CompileSourceAsync(this NodeExecutorBase compiler, string source, string sourceExtension)
+        {
+            var sourceFileName = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + sourceExtension);
+            try
+            {
+                File.WriteAllText(sourceFileName, source);
+                return await compiler.CompileToStringAsync(sourceFileName);
+            }
+            finally
+            {
+                File.Delete(sourceFileName);
             }
         }
     }

@@ -25,6 +25,9 @@ namespace MadsKristensen.EditorExtensions
 
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
+            if (Path.GetFileName(targetFileName) != Path.GetFileNameWithoutExtension(sourceFileName) + ".js")
+                throw new ArgumentException("CoffeeScript cannot compile to a targetFileName with a different name.  Only the containing directory can be different.", "targetFileName");
+
             var args = new StringBuilder();
 
             if (!WESettings.Instance.CoffeeScript.WrapClosure)

@@ -32,9 +32,9 @@ namespace WebEssentialsTests
                 if (!File.Exists(compiledFile))
                     continue;
 
-                var compiled = await new SassCompiler().CompileString(File.ReadAllText(sourceFile), ".scss", ".css");
                 var expected = File.ReadAllText(compiledFile)
                                    .Replace("\r", "");
+                var compiled = await new SassCompiler().CompileToStringAsync(sourceFile);
 
                 compiled.Should().Be(expected);
             }

@@ -23,22 +23,19 @@ namespace WebEssentialsTests
             var result = await new LessCompiler().CompileAsync(fileName, targetFileName);
 
             if (result.IsSuccess)
-            {
-                File.WriteAllText(targetFileName, File.ReadAllText(targetFileName).Trim());
-
                 return result.Result;
-            }
             else
-            {
                 throw new ExternalException(result.Errors.First().Message);
-            }
         }
         #endregion
 
         [ClassInitialize]
         public static void ObscureNode(TestContext context)
         {
-            SettingsStore.EnterTestMode();
+            SettingsStore.EnterTestMode(new WESettings
+            {
+                Less = { GenerateSourceMaps = false }
+            });
             originalPath = Environment.GetEnvironmentVariable("PATH");
             Environment.SetEnvironmentVariable("PATH", originalPath.Replace(@";C:\Program Files\nodejs\", ""), EnvironmentVariableTarget.Process);
         }
@@ -55,10 +52,9 @@ namespace WebEssentialsTests
             var sourcePath = Path.Combine(BaseDirectory, "fixtures\\less");
             foreach (var lessFilename in Directory.EnumerateFiles(sourcePath, "*.less", SearchOption.AllDirectories))
             {
-                var compiledFile = Path.ChangeExtension(lessFilename, ".css");
-                var compiled = await CompileLess(lessFilename, compiledFile);
-                var expected = File.ReadAllText(compiledFile)
+                var expected = File.ReadAllText(Path.ChangeExtension(lessFilename, ".css"))
                                .Replace("\r", "");
+                var compiled = await new LessCompiler().CompileToStringAsync(lessFilename);
 
                 compiled.Trim().Should().Be(expected.Trim());
             }
@@ -74,11 +70,9 @@ namespace WebEssentialsTests
                 if (!File.Exists(expectedPath))
                     continue;
 
+                var expected = File.ReadAllText(expectedPath)
+                               .Replace("\r", "");
                 var compiled = await CompileLess(lessFilename, expectedPath);
-                var expected = File.ReadAllText(expectedPath);
-
-                compiled = new CssFormatter().Format(compiled).Replace("\r", "");
-                expected = new CssFormatter().Format(expected).Replace("\r", "");
 
                 compiled.Should().Be(expected);
             }

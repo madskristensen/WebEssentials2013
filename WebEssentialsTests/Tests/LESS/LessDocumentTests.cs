@@ -215,7 +215,7 @@ a {
 
             foreach (var lessCode in testSources)
             {
-                var cssCode = await new LessCompiler().CompileString(lessCode, ".less", ".css");
+                var cssCode = await new LessCompiler().CompileSourceAsync(lessCode, ".less");
                 var lessDoc = new LessParser().Parse(lessCode, false);
                 var cssDoc = new CssParser().Parse(cssCode, false);
 
