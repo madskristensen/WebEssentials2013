@@ -49,6 +49,18 @@ namespace MadsKristensen.EditorExtensions
             return args.ToString();
         }
 
+        protected override void BeforeCompile(string sourceFileName, string targetFileName)
+        {
+            // Checkout map file before compiling
+            if (WESettings.GetBoolean(WESettings.Keys.LessSourceMaps) && File.Exists(targetFileName))
+            {
+                string sourceMapFilename = targetFileName + ".map";
+
+                if (File.Exists(sourceMapFilename))
+                    ProjectHelpers.CheckOutFileFromSourceControl(sourceMapFilename);
+            }
+        }
+
         protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
             // Inserts an empty row between each rule and replace two space indentation with 4 space indentation
