@@ -22,7 +22,9 @@ namespace MadsKristensen.EditorExtensions
         ///</remarks>
         public static T ForContentType<T>(this WESettings settings, IContentType contentType) where T : class
         {
-            var prop = TypeAccessor<WESettings>.Properties.FirstOrDefault(p => p.Property.Name.Equals(contentType.TypeName, StringComparison.OrdinalIgnoreCase));
+            var name = contentType.TypeName;
+            if (name.Equals("HTMLX", StringComparison.OrdinalIgnoreCase)) name = "Html";
+            var prop = TypeAccessor<WESettings>.Properties.FirstOrDefault(p => p.Property.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             if (prop == null)
                 return contentType.BaseTypes.Select(settings.ForContentType<T>)
                                             .FirstOrDefault(o => o != null);
@@ -61,7 +63,8 @@ namespace MadsKristensen.EditorExtensions
             var processTaskCompletionSource = new TaskCompletionSource<Process>();
 
             process.EnableRaisingEvents = true;
-            process.Exited += (s, e) => {
+            process.Exited += (s, e) =>
+            {
                 process.WaitForExit();
                 processTaskCompletionSource.TrySetResult(process);
             };

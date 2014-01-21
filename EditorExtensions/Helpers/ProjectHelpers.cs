@@ -270,8 +270,8 @@ namespace MadsKristensen.EditorExtensions
         public static IEnumerable<string> GetSelectedFilePaths()
         {
             return GetSelectedItemPaths()
-                .SelectMany(p => Directory.Exists(p) 
-                                 ? Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories) 
+                .SelectMany(p => Directory.Exists(p)
+                                 ? Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories)
                                  : new[] { p }
                            );
         }
@@ -312,7 +312,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 var dte = EditorExtensionsPackage.DTE;
 
-                if (!File.Exists(fileName) || dte.Solution.FindProjectItem(fileName) == null)
+                if (dte == null || !File.Exists(fileName) || dte.Solution.FindProjectItem(fileName) == null)
                     return true;
                 if (dte.SourceControl.IsItemUnderSCC(fileName) && !dte.SourceControl.IsItemCheckedOut(fileName))
                     return dte.SourceControl.CheckOutItem(fileName);
@@ -321,6 +321,7 @@ namespace MadsKristensen.EditorExtensions
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debugger.Launch();
                 Logger.Log(ex);
                 return false;
             }
