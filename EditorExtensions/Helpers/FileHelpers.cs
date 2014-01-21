@@ -60,7 +60,7 @@ namespace MadsKristensen.EditorExtensions
             using (var sourceStream = File.OpenRead(sourcePath))
             using (var targetStream = File.OpenWrite(gzipPath))
             using (var gzipStream = new GZipStream(targetStream, CompressionMode.Compress))
-                sourceStream.CopyTo(targetStream);
+                sourceStream.CopyTo(gzipStream);
         }
 
         public static void OpenFileInPreviewTab(string file)
