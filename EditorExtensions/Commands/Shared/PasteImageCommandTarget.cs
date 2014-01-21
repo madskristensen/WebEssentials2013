@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions
         {
             IDataObject data = Clipboard.GetDataObject();
 
-            if (!(data.GetDataPresent(DataFormats.Bitmap) || data.GetDataPresent(DataFormats.FileDrop))
+            if (!(data.GetDataPresent("System.Drawing.Bitmap") || data.GetDataPresent(DataFormats.FileDrop))
                 || !IsValidTextBuffer())
                 return false;
 
@@ -121,7 +121,7 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                extension = GetMimeType((Bitmap)data.GetData(DataFormats.Bitmap));
+                extension = GetMimeType((Bitmap)data.GetData("System.Drawing.Bitmap"));
             }
 
             using (var dialog = new SaveFileDialog())
@@ -164,19 +164,26 @@ namespace MadsKristensen.EditorExtensions
 
         private void UpdateTextBuffer(string fileName)
         {
-            string relative = "/" + FileHelpers.RelativePath(ProjectHelpers.GetRootFolder(), fileName);
             int position = TextView.Caret.Position.BufferPosition.Position;
-
+            string relative = "/" + FileHelpers.RelativePath(ProjectHelpers.GetRootFolder(), fileName);
+            string text = string.Format(CultureInfo.InvariantCulture, _format, relative);
+            
             using (EditorExtensionsPackage.UndoContext("Insert Image"))
-            {
-                string text = string.Format(CultureInfo.InvariantCulture, _format, relative);
+            {                
                 TextView.TextBuffer.Insert(position, text);
 
-                SnapshotSpan span = new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, position, _format.Length);
-                TextView.Selection.Select(span, false);
+                try
+                {
+                    SnapshotSpan span = new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, position, _format.Length);
+                    TextView.Selection.Select(span, false);
 
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-                TextView.Selection.Clear();
+                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                    TextView.Selection.Clear();
+                }
+                catch
+                {
+                    // Try to format the selection. Some editors handle this differently, so try/catch
+                }
             }
         }
 
@@ -191,7 +198,7 @@ namespace MadsKristensen.EditorExtensions
             }
             else
             {
-                using (Bitmap image = (Bitmap)data.GetData(DataFormats.Bitmap))
+                using (Bitmap image = (Bitmap)data.GetData("System.Drawing.Bitmap"))
                 using (MemoryStream ms = new MemoryStream())
                 {
                     image.Save(ms, GetImageFormat(Path.GetExtension(fileName)));
