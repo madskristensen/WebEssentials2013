@@ -39,6 +39,8 @@ namespace MadsKristensen.EditorExtensions
         public static string GetCustomStylesheetFilePath()
         {
             string folder = ProjectHelpers.GetSolutionFolderPath();
+            if (string.IsNullOrEmpty(folder))
+                return null;
             return Path.Combine(folder, _stylesheet);
         }
 
