@@ -16,10 +16,11 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
 
         static string TestCaseDirectory { get; set; }
 
+        [HostType("VS IDE")]
         [ClassInitialize]
         public static void Initialize(TestContext c)
         {
-            DTE.ToString(); // Force initial launch to avoid funceval issues
+            //DTE.ToString(); // Force initial launch to avoid funceval issues
             //System.Diagnostics.Debugger.Launch();
             SettingsStore.EnterTestMode();
             TestCaseDirectory = Path.Combine(Path.GetTempPath(), "Web Essentials Test Files", c.FullyQualifiedTestClassName + "-" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
@@ -86,16 +87,17 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
         }
         [HostType("VS IDE")]
         [TestMethod]
-        public async Task MinifyLessOnSave()
+        public async Task MinifyOnSave()
         {
             SettingsStore.EnterTestMode();
-            WESettings.Instance.Css.AutoMinify = true;
-            WESettings.Instance.Css.GzipMinifiedFiles = true;
+            WESettings.Instance.Html.AutoMinify = true;
+            WESettings.Instance.Html.GzipMinifiedFiles = true;
+            WESettings.Instance.Markdown.CompileOnSave = true;
 
-            var fileName = Path.Combine(TestCaseDirectory, "Minify-" + Guid.NewGuid() + ".less");
-            var minFileName = Path.ChangeExtension(fileName, ".min.css");
+            var fileName = Path.Combine(TestCaseDirectory, "Minify-" + Guid.NewGuid() + ".md");
+            var minFileName = Path.ChangeExtension(fileName, ".min.html");
 
-            File.WriteAllText(fileName, @"a{b{color:red;}}");
+            File.WriteAllText(fileName, "Hi\n#Header\n\n**Bold!**");
             File.Create(Path.Combine(minFileName)).Close();     // Only files that have a .min will be minified.
 
             DTE.ItemOperations.OpenFile(fileName).Document.Save();
