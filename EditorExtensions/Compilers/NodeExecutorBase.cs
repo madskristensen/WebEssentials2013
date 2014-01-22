@@ -21,11 +21,17 @@ namespace MadsKristensen.EditorExtensions
         public abstract bool GenerateSourceMap { get; }
 
         protected abstract string CompilerPath { get; }
+        ///<summary>Indicates whether this compiler is capable of compiling to a filename that doesn't match the source filename.</summary>
+        public virtual bool RequireMatchingFileName { get { return false; } }
         protected virtual Regex ErrorParsingPattern { get { return null; } }
         protected virtual Func<string, IEnumerable<CompilerError>> ParseErrors { get { return ParseErrorsWithRegex; } }
 
         public async Task<CompilerResult> CompileAsync(string sourceFileName, string targetFileName)
         {
+            if (RequireMatchingFileName && Path.GetFileName(targetFileName) != Path.GetFileNameWithoutExtension(sourceFileName) + TargetExtension)
+                throw new ArgumentException(ServiceName + " cannot compile to a targetFileName with a different name.  Only the containing directory can be different.", "targetFileName");
+
+
             var scriptArgs = GetArguments(sourceFileName, targetFileName);
 
             var errorOutputFile = Path.GetTempFileName();

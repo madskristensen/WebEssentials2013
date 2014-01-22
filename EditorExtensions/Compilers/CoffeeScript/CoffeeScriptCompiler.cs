@@ -21,13 +21,11 @@ namespace MadsKristensen.EditorExtensions
         public override bool GenerateSourceMap { get { return WESettings.Instance.CoffeeScript.GenerateSourceMaps; } }
         public override string ServiceName { get { return "CoffeeScript"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
+        public override bool RequireMatchingFileName { get { return true; } }
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
 
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
-            if (Path.GetFileName(targetFileName) != Path.GetFileNameWithoutExtension(sourceFileName) + ".js")
-                throw new ArgumentException("CoffeeScript cannot compile to a targetFileName with a different name.  Only the containing directory can be different.", "targetFileName");
-
             var args = new StringBuilder();
 
             if (!WESettings.Instance.CoffeeScript.WrapClosure)
