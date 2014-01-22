@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions
 
         public abstract string TargetExtension { get; }
         public abstract string ServiceName { get; }
-        ///<summary>Indicates whether this compiler will emit a source map file.  Will only return true if enabled in user settings.</summary>
+        ///<summary>Indicates whether this compiler will emit a source map file.  Will only return true if aupported and enabled in user settings.</summary>
         public abstract bool GenerateSourceMap { get; }
 
         protected abstract string CompilerPath { get; }
@@ -45,14 +45,10 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                if (!ProjectHelpers.CheckOutFileFromSourceControl(sourceFileName))
-                {
-                    // Someone else have this file checked out
-                    Logger.Log("Could not check the file out of source control");
-                    return null;
-                }
 
                 ProjectHelpers.CheckOutFileFromSourceControl(targetFileName);
+                if (GenerateSourceMap)
+                    ProjectHelpers.CheckOutFileFromSourceControl(targetFileName + ".map");
 
                 using (var process = await start.ExecuteAsync())
                 {

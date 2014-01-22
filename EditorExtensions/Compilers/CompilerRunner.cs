@@ -104,9 +104,6 @@ namespace MadsKristensen.EditorExtensions.Compilers
         ///<param name="targetPath">The path to save the compiled output, or null to compile in-memory.</param>
         public async Task<CompilerResult> CompileAsync(string sourcePath, string targetPath)
         {
-            if (!string.IsNullOrEmpty(targetPath))
-                ProjectHelpers.CheckOutFileFromSourceControl(targetPath);   // TODO: Only if output changed?
-
             var result = await RunCompilerAsync(sourcePath, targetPath);
 
             if (result.IsSuccess && !string.IsNullOrEmpty(targetPath))
@@ -189,7 +186,10 @@ namespace MadsKristensen.EditorExtensions.Compilers
         {
             var result = new Markdown(WESettings.Instance.Markdown).Transform(File.ReadAllText(sourcePath));
             if (!string.IsNullOrEmpty(targetPath))
+            {
+                ProjectHelpers.CheckOutFileFromSourceControl(targetPath);   // TODO: Only if output changed?
                 File.WriteAllText(targetPath, result, new UTF8Encoding(false));
+            }
 
             return Task.FromResult(new CompilerResult(sourcePath, targetPath) { IsSuccess = true, Result = result });
         }
