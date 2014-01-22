@@ -16,7 +16,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 string assembly = Assembly.GetExecutingAssembly().Location;
                 string folder = Path.GetDirectoryName(assembly);
-                return Path.Combine(folder, "schemas\\css-we-settings.xml");
+                return Path.Combine(folder, "schemas\\css\\css-we-settings.xml");
             }
         }
     }

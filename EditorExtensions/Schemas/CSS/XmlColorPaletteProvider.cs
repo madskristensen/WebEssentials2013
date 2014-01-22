@@ -42,7 +42,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 string assembly = Assembly.GetExecutingAssembly().Location;
                 string folder = Path.GetDirectoryName(assembly);
-                string path = Path.Combine(folder, "schemas\\WE-Palette.css");
+                string path = Path.Combine(folder, "schemas\\css\\WE-Palette.css");
 
                 File.Copy(path, GetSolutionFilePath(), true);
 
@@ -57,6 +57,7 @@ namespace MadsKristensen.EditorExtensions
                 }
 
                 project.ProjectItems.AddFromFile(path);
+                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(path);
             }
         }
 
