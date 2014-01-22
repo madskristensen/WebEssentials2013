@@ -44,6 +44,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     new SettingsMigrator(legacyPath).ApplyTo(WESettings.Instance);
                     Save(jsonPath);
+                    ProjectHelpers.GetSolutionItemsProject().ProjectItems.AddFromFile(jsonPath);
                     UpdateStatusBar("imported from legacy XML settings file");
                     Logger.Log("Migrated legacy XML settings file " + legacyPath + " to " + jsonPath);
                 }
