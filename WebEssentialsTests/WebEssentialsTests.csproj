@@ -105,9 +105,9 @@
     <Compile Include="IntegrationTests\Compilation\CompileOnSaveTests.cs" />
     <Compile Include="IntegrationTests\ProjectHelpersTests.cs" />
     <Compile Include="Tests\Bootstrap\BootstrapValidationTests.cs" />
-    <Compile Include="Tests\CoffeeScript\IcedCoffeeScriptCompilationTests.cs" />
-    <Compile Include="Tests\CoffeeScript\CoffeeScriptCompilationTests.cs" />
-    <Compile Include="Tests\Extensions\Extensions.cs" />
+    <Compile Include="Tests\NodeExecutors\IcedCoffeeScriptCompilationTests.cs" />
+    <Compile Include="Tests\NodeExecutors\CoffeeScriptCompilationTests.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Tests\IntellisenseGeneration\IntellisenseTypeTests.cs" />
     <Compile Include="Tests\IntellisenseGeneration\IntellisenseWriteJavaScriptsTests.cs" />
     <Compile Include="Tests\IntellisenseGeneration\IntellisenseWriteTypeScriptTests.cs" />
@@ -117,16 +117,16 @@
     <Compile Include="Tests\IntellisenseGeneration\Parsing_SimpleNullable_Tests.cs" />
     <Compile Include="Tests\IntellisenseGeneration\TestHelper\IntellisenseObjectsAssertions.cs" />
     <Compile Include="Tests\IntellisenseGeneration\TestHelper\IntellisensePropertyAssertions.cs" />
-    <Compile Include="Tests\Extensions\TestCodeExtensions.cs" />
-    <Compile Include="Tests\JsHint\JsHintTests.cs" />
-    <Compile Include="Tests\Less\LessCompilationTests.cs" />
+    <Compile Include="TestCodeExtensions.cs" />
+    <Compile Include="Tests\NodeExecutors\JsHintTests.cs" />
+    <Compile Include="Tests\NodeExecutors\LessCompilationTests.cs" />
     <Compile Include="Tests\Less\LessDocumentTests.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tests\Markdown\MarkdownOutlinerTests.cs" />
     <Compile Include="Tests\Markdown\MarkdownCodeBlockTests.cs" />
     <Compile Include="Tests\Markdown\TabAwareCharacterStreamTests.cs" />
-    <Compile Include="Tests\Sass\SassCompilationTests.cs" />
+    <Compile Include="Tests\NodeExecutors\SassCompilationTests.cs" />
     <Compile Include="Tests\Shared\MockSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\NodeModules\NodeModuleImportedTests.cs" />
