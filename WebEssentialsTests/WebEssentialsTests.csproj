@@ -59,6 +59,8 @@
     <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Shell.12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.VisualStudio.Text.Data, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Text.Logic, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Text.UI, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -94,8 +96,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="VSHost.cs" />
     <None Include="ExtractZipTask.cs" />
     <Compile Include="IntegrationTests\Compilation\CompileOnSaveTests.cs" />
+    <Compile Include="IntegrationTests\ProjectHelpersTests.cs" />
     <Compile Include="Tests\Bootstrap\BootstrapValidationTests.cs" />
     <Compile Include="Tests\CoffeeScript\IcedCoffeeScriptCompilationTests.cs" />
     <Compile Include="Tests\CoffeeScript\CoffeeScriptCompilationTests.cs" />
@@ -124,7 +128,6 @@
     <Compile Include="Tests\NodeModules\NodeModuleImportedTests.cs" />
     <Compile Include="Tests\NodeModules\NodeModuleCompletionTests.cs" />
     <Compile Include="Tests\Markdown\MarkdownClassifierTests.cs" />
-    <Compile Include="VSHost.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EditorExtensions\WebEssentials2013.csproj">

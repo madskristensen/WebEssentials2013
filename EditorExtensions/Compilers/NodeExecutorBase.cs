@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
-
+            
             try
             {
 
