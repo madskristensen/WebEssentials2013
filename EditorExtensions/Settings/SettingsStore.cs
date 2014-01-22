@@ -36,23 +36,48 @@ namespace MadsKristensen.EditorExtensions
         public static void Load()
         {
             if (InTestMode) return;
-            string jsonPath = GetFilePath();
-            if (!File.Exists(jsonPath))
+
+            if (!File.Exists(GetSolutionFilePath()))
             {
-                var legacyPath = GetLegacyFilePath();
-                if (File.Exists(legacyPath))
+                // If there is a legacy solution settings file, and no
+                // modern solution settings file, migrate it.
+                if (File.Exists(GetLegacySolutionFilePath()))
                 {
-                    new SettingsMigrator(legacyPath).ApplyTo(WESettings.Instance);
-                    Save(jsonPath);
-                    ProjectHelpers.GetSolutionItemsProject().ProjectItems.AddFromFile(jsonPath);
-                    UpdateStatusBar("imported from legacy XML settings file");
-                    Logger.Log("Migrated legacy XML settings file " + legacyPath + " to " + jsonPath);
+                    Migrate(solution: true);
+                    return;
                 }
-                return;
+                // If there aren't any solution-level settings, check
+                // whether we need to migrate legacy global settings.
+                if (File.Exists(GetLegacyFilePath()) && !File.Exists(GetUserFilePath()))
+                {
+                    Migrate(solution: false);
+                    return;
+                }
             }
 
-            WESettings.Instance.ReadJsonFile(jsonPath);
-            UpdateStatusBar("applied");
+            string jsonPath = GetFilePath();
+            if (File.Exists(jsonPath))
+            {
+                WESettings.Instance.ReadJsonFile(jsonPath);
+                UpdateStatusBar("applied");
+            }
+        }
+
+        private static void Migrate(bool solution)
+        {
+            var legacyPath = GetLegacyFilePath();
+            if (!File.Exists(legacyPath))
+                return;
+
+            new SettingsMigrator(legacyPath).ApplyTo(WESettings.Instance);
+
+            var jsonPath = solution ? GetSolutionFilePath() : GetUserFilePath();
+            Save(jsonPath);
+            if (solution)
+                ProjectHelpers.GetSolutionItemsProject().ProjectItems.AddFromFile(jsonPath);
+
+            UpdateStatusBar("imported from legacy XML settings file");
+            Logger.Log("Migrated legacy XML settings file " + legacyPath + " to " + jsonPath);
         }
 
         ///<summary>Saves the current settings to the active settings file.</summary>
@@ -77,6 +102,29 @@ namespace MadsKristensen.EditorExtensions
             UpdateStatusBar("created");
         }
 
+        #region Legacy Locator
+        private static string GetLegacyFilePath()
+        {
+            string path = (GetSolutionFilePath() ?? "").Replace(FileName, _legacyFileName);
+
+            if (!File.Exists(path))
+                return GetLegacyUserFilePath();
+            return path;
+        }
+        private static string GetLegacySolutionFilePath()
+        {
+            string path = GetSolutionFilePath();
+            if (string.IsNullOrEmpty(path))
+                return null;
+            return path.Replace(FileName, _legacyFileName);
+        }
+        private static string GetLegacyUserFilePath()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Web Essentials", _legacyFileName);
+        }
+        #endregion
+
+        #region Modern Locator
         private static string GetFilePath()
         {
             string path = GetSolutionFilePath();
@@ -86,16 +134,6 @@ namespace MadsKristensen.EditorExtensions
 
             return path;
         }
-        private static string GetLegacyFilePath()
-        {
-            string path = (GetSolutionFilePath() ?? "").Replace(FileName, _legacyFileName);
-
-            if (!File.Exists(path))
-                path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Web Essentials", _legacyFileName);
-
-            return path;
-        }
-
         public static string GetSolutionFilePath()
         {
             Solution solution = EditorExtensionsPackage.DTE.Solution;
@@ -105,12 +143,12 @@ namespace MadsKristensen.EditorExtensions
 
             return Path.Combine(Path.GetDirectoryName(solution.FullName), FileName);
         }
-
         private static string GetUserFilePath()
         {
             var ssm = new ShellSettingsManager(EditorExtensionsPackage.Instance);
             return Path.Combine(ssm.GetApplicationDataFolder(ApplicationDataFolder.RoamingSettings), FileName);
         }
+        #endregion
 
         public static void UpdateStatusBar(string action)
         {
