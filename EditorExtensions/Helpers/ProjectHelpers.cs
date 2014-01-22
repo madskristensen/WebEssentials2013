@@ -46,7 +46,7 @@ namespace MadsKristensen.EditorExtensions
                     .SelectMany(p => GetChildProjects(p.SubProject));
         }
 
-        ///<summary>Indicates whether a Project is a Web Application or Web Site project.</summary>
+        ///<summary>Indicates whether a Project is a Web Application, Web Site, or WinJS project.</summary>
         public static bool IsWebProject(this Project project)
         {
             // Web site project
@@ -58,10 +58,8 @@ namespace MadsKristensen.EditorExtensions
             {
                 return project.Properties.Item("WebApplication.UseIISExpress") != null;
             }
-            catch (ArgumentException argumentException)
-            {
-                Logger.Log("Not a Web Application: " + argumentException.Message);
-            }
+            catch (ArgumentException)
+            { }
 
             return false;
         }

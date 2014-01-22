@@ -16,16 +16,23 @@ namespace WebEssentialsTests.IntegrationTests
     {
         static readonly string BaseDirectory = Path.GetDirectoryName(typeof(ProjectHelpersTests).Assembly.Location);
         static readonly string FixtureDirectory = Path.Combine(BaseDirectory, "fixtures", "Visual Studio");
+        static readonly string SolutionDir = Path.Combine(FixtureDirectory, "ProjectEnumeration");
         static DTE DTE { get { return VsIdeTestHostContext.Dte; } }
         static IServiceProvider ServiceProvider { get { return VsIdeTestHostContext.ServiceProvider; } }
+
+
+        [HostType("VS IDE")]
+        [ClassInitialize]
+        public static void Initialize(TestContext c)
+        {
+            SettingsStore.EnterTestMode();
+            DTE.Solution.Open(Path.Combine(SolutionDir, "ProjectEnumeration.sln"));
+        }
 
         [HostType("VS IDE")]
         [TestMethod]
         public void ProjectEnumerationTest()
         {
-            SettingsStore.EnterTestMode();
-            var solutionDir = Path.Combine(FixtureDirectory, "ProjectEnumeration");
-            DTE.Solution.Open(Path.Combine(solutionDir, "ProjectEnumeration.sln"));
             var solutionService = ServiceProvider.GetService(typeof(SVsSolution)) as IVsSolution;
 
             Project project = ProjectHelpers.GetAllProjects().First(p => p.Name == "CS-Normal");
@@ -35,19 +42,24 @@ namespace WebEssentialsTests.IntegrationTests
             ErrorHandler.ThrowOnFailure(solutionService.CloseSolutionElement((uint)__VSSLNCLOSEOPTIONS.SLNCLOSEOPT_UnloadProject, projHierarchy, 0));
 
             ProjectHelpers.GetAllProjects()
-                          .Select(p =>
-                                FileHelpers.RelativePath(
-                                    solutionDir, ProjectHelpers.GetRootFolder(p)
-                                ).TrimEnd('/')
-                            )
+                          .Select(ProjectHelpers.GetRootFolder)
+                          .Select(f => f.TrimEnd('\\'))
                           .Should()
                           .BeEquivalentTo(
-                                Directory.EnumerateDirectories(solutionDir)
-                                     .Select(Path.GetFileName)
-                                     .Except(new[] { "CS-Normal" })
+                                Directory.EnumerateDirectories(SolutionDir)
+                                     .Where(f => Path.GetFileName(f) != "CS-Normal")
                           );
         }
 
-        // TODO: Test GetRootFolder() & other methods for each project type
+        // TODO: Test other methods for each project type
+        [TestMethod]
+        public void IsWebProjectTest()
+        {
+            foreach (var project in ProjectHelpers.GetAllProjects())
+            {
+                project.IsWebProject().Should().Be(project.Name.StartsWith("Web") || project.Name.StartsWith("JS"),
+                                                   project.Name + " should be detected");
+            }
+        }
     }
 }
