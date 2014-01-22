@@ -115,7 +115,7 @@ namespace MadsKristensen.EditorExtensions
         [DefaultValue(TaskErrorCategory.Message)]
         public TaskErrorCategory LintResultLocation { get; set; }
     }
-    public sealed class TypeScriptSettings : LinterSettings<TypeScriptSettings>
+    public sealed class TypeScriptSettings : LinterSettings<TypeScriptSettings>, IMarginSettings
     {
         [Category("Editor")]
         [DisplayName("Show preview pane")]
