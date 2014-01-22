@@ -6,7 +6,6 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{9B43DABC-6854-427D-A995-4B2A90A31442}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Lib</RootNamespace>
     <AssemblyName>Lib</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -42,7 +41,6 @@
     <Compile Include="Generation\CollectionModel.cs" />
     <Compile Include="Generation\SimpleNullable.cs" />
     <Compile Include="Generation\Simple.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Generation\Simple.cs.js">

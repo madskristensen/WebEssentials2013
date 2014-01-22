@@ -27,10 +27,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{6A26D6
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegrationTestProjects", "IntegrationTestProjects", "{236BFFB8-186E-49D4-804F-0A9B3698C68A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib", "TestProjects\Lib\Lib.csproj", "{9B43DABC-6854-427D-A995-4B2A90A31442}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,13 +41,8 @@ Global
 		{E05B0E57-CF56-4513-9D24-18B6EE7C3712}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E05B0E57-CF56-4513-9D24-18B6EE7C3712}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E05B0E57-CF56-4513-9D24-18B6EE7C3712}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9B43DABC-6854-427D-A995-4B2A90A31442}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9B43DABC-6854-427D-A995-4B2A90A31442}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{9B43DABC-6854-427D-A995-4B2A90A31442} = {236BFFB8-186E-49D4-804F-0A9B3698C68A}
 	EndGlobalSection
 EndGlobal
