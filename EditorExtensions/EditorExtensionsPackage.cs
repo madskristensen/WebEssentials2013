@@ -132,15 +132,17 @@ namespace MadsKristensen.EditorExtensions
                     Parallel.ForEach(
                         Mef.GetSupportedContentTypes<ICompilerRunnerProvider>()
                            .Where(c => WESettings.Instance.ForContentType<ICompilerInvocationSettings>(c).CompileOnBuild),
-                        c => compiler.Value.CompileSolutionAsync(c)
+                        c => compiler.Value.CompileSolutionAsync(c).DontWait("compiling solution-wide " + c.DisplayName)
                     );
                     BuildMenu.UpdateBundleFiles();
                 });
 
                 if (WESettings.Instance.JavaScript.LintOnBuild)
-                    await LintFileInvoker.RunOnAllFilesInProject(".js", f => new JsHintReporter(f));
+                    LintFileInvoker.RunOnAllFilesInProject(".js", f => new JsHintReporter(f))
+                        .DontWait("running solution-wide JSHint");
                 if (WESettings.Instance.TypeScript.LintOnBuild)
-                    await LintFileInvoker.RunOnAllFilesInProject(".ts", f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f));
+                    LintFileInvoker.RunOnAllFilesInProject(".ts", f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f))
+                        .DontWait("running solution-wide TSLint");
             }
             else if (Action == vsBuildAction.vsBuildActionClean)
             {

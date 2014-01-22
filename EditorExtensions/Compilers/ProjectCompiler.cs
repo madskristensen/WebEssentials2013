@@ -36,7 +36,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
                         {
                             string targetPath = runner.GetTargetPath(fileName);
                             if (File.Exists(targetPath))
-                                return runner.CompileAsync(fileName, targetPath);
+                                return runner.CompileAsync(fileName, targetPath).HandleErrors("compiling" + fileName);
                             else
                                 return Task.FromResult<CompilerResult>(null);
                         })

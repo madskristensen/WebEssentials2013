@@ -69,7 +69,7 @@ namespace MadsKristensen.EditorExtensions
             var compiler = WebEditor.ExportProvider.GetExport<ICompilerRunnerProvider>()
                        .Value.GetCompiler(ContentTypeManager.GetContentType("Markdown"));
 
-            Parallel.ForEach(paths, p => compiler.CompileToDefaultOutputAsync(p));
+            Parallel.ForEach(paths, f => compiler.CompileToDefaultOutputAsync(f).DontWait("compiling " + f));
         }
 
         private static void AddStylesheet()

@@ -62,14 +62,13 @@ namespace MadsKristensen.EditorExtensions.Compilers
                 CompilationReady(this, e);
         }
 
-        protected virtual async Task CompileAsync(string sourcePath)
+        protected virtual Task CompileAsync(string sourcePath)
         {
             Logger.Log(CompilerRunner.SourceContentType + ": Compiling " + Path.GetFileName(sourcePath));
-            var result = await CompilerRunner.CompileAsync(sourcePath, save: CompilerRunner.Settings.CompileOnSave);
-            OnCompilationReady(new CompilerResultEventArgs(result));
+            return InitiateCompilationAsync(sourcePath, save: CompilerRunner.Settings.CompileOnSave).HandleErrors("compiling " + Document.FilePath);
         }
 
-        public async void RequestCompilationResult(bool cached)
+        public void RequestCompilationResult(bool cached)
         {
             if (cached && CompilerRunner.Settings.CompileOnSave)
             {
@@ -84,7 +83,11 @@ namespace MadsKristensen.EditorExtensions.Compilers
                     return;
                 }
             }
-            var result = await CompilerRunner.CompileAsync(Document.FilePath, save: false);
+            InitiateCompilationAsync(Document.FilePath, save: false).DontWait("compiling " + Document.FilePath);
+        }
+        async Task InitiateCompilationAsync(string sourcePath, bool save)
+        {
+            var result = await CompilerRunner.CompileAsync(sourcePath, save);
             OnCompilationReady(new CompilerResultEventArgs(result));
         }
     }
