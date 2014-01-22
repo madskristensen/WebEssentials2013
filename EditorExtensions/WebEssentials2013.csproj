@@ -91,14 +91,18 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\AjaxMin.5.7.5124.21499\lib\net40\AjaxMin.dll</HintPath>
     </Reference>
+    <Reference Include="ConfOxide, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ConfOxide.1.3.0.0\lib\net40\ConfOxide.dll</HintPath>
+    </Reference>
     <Reference Include="CssSorter">
       <HintPath>..\CssSorter.dll</HintPath>
     </Reference>
-    <Reference Include="MarkdownSharp">
-      <HintPath>..\MarkdownSharp.dll</HintPath>
+    <Reference Include="MarkdownSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=86ca04712d6fe173, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MarkdownSharp.1.13.0.0\lib\35\MarkdownSharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.JScript" />
     <Reference Include="Microsoft.VisualStudio.JSLS" />
     <Reference Include="Microsoft.VisualStudio.Language.StandardClassification" />
     <Reference Include="Microsoft.CSS.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -122,8 +126,6 @@
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.GraphModel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Language.NavigateTo.Interfaces, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Shell.12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -135,10 +137,6 @@
     <Reference Include="Microsoft.VisualStudio.Text.UI, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="Microsoft.VisualStudio.Web, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(DevEnvDir)\Microsoft.VisualStudio.Web.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.Web.BrowserLink.12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Web.Extensions">
       <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Languages\Microsoft.VisualStudio.Web.Extensions.dll</HintPath>
@@ -146,10 +144,6 @@
     <Reference Include="Microsoft.Web.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Web.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Web.Design.Client, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(DevEnvDir)\Microsoft.Web.Design.Client.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Editor, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
@@ -206,15 +200,6 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </COMReference>
-    <COMReference Include="EnvDTE100">
-      <Guid>{26AD1324-4B7C-44BC-84F8-B86AED45729F}</Guid>
-      <VersionMajor>10</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
     <COMReference Include="EnvDTE80">
       <Guid>{1A31287A-4D7D-413E-8E32-3B374931BD89}</Guid>
       <VersionMajor>8</VersionMajor>
@@ -227,15 +212,6 @@
     <COMReference Include="EnvDTE90">
       <Guid>{2CE2370E-D744-4936-A090-3FFFE667B0E1}</Guid>
       <VersionMajor>9</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="Microsoft.VisualStudio.CommandBars">
-      <Guid>{1CBA492E-7263-47BB-87FE-639000619B15}</Guid>
-      <VersionMajor>8</VersionMajor>
       <VersionMinor>0</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>primary</WrapperTool>
@@ -358,30 +334,50 @@
     <Compile Include="Classifications\SVG\SvgContentTypeDefinition.cs" />
     <Compile Include="Commands\AppCache\AppCacheCreationListener.cs" />
     <Compile Include="Commands\CoffeeScript\CoffeeScriptCreationListener.cs" />
+    <Compile Include="Commands\IFileSaveListener.cs" />
     <Compile Include="Commands\JavaScript\CommentIndentationCommandTarget.cs" />
     <Compile Include="Commands\JavaScript\CommentCompletionCommandTarget.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptFindReferencesCommandTarget.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptCreationListener.cs" />
-    <Compile Include="Commands\TypeScript\TsLintProjectRunner.cs" />
-    <Compile Include="Commands\TypeScript\TsHintRunner.cs" />
+    <Compile Include="Compilers\CssCompilerBase.cs" />
     <Compile Include="Compilers\Lint\LintConfigEncodingFix.cs" />
+    <Compile Include="Commands\LintFileInvoker.cs" />
+    <Compile Include="Commands\LintReporter.cs" />
+    <Compile Include="Compilers\CompilerNotifierProviders.cs" />
+    <Compile Include="Compilers\EditorCompilerInvoker.cs" />
     <Compile Include="Compilers\Lint\TsLintCompiler.cs" />
+    <Compile Include="Compilers\ProjectCompiler.cs" />
     <Compile Include="MenuItems\SpriteImage.cs" />
+    <Compile Include="Compilers\Compilation Interfaces.cs" />
+    <Compile Include="Compilers\CompilerRunner.cs" />
+    <Compile Include="Helpers\Mef.cs" />
+    <Compile Include="Margin\TextViewMargin.cs" />
     <Compile Include="MenuItems\CompressImage.cs" />
     <Compile Include="MenuItems\TsLint.cs" />
     <Compile Include="Optimization\Compression\CompressionResult.cs" />
     <Compile Include="Optimization\Compression\ImageCompressor.cs" />
+    <Compile Include="Optimization\Minification\IFileMinifier.cs" />
+    <Compile Include="Optimization\Minification\MinificationSaveListener.cs" />
     <Compile Include="Optimization\Sprite\ExportFormat.cs" />
     <Compile Include="Optimization\Sprite\SpriteGenerator.cs" />
     <Compile Include="Optimization\Sprite\SpriteDocument.cs" />
     <Compile Include="Optimization\Sprite\SpriteFragment.cs" />
     <Compile Include="Optimization\Sprite\SpriteExporter.cs" />
-    <Compile Include="Settings\OptionPages\TsLint.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="SmartTags\CSS\Actions\OptimizeImageSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Providers\OptimizeImageSmartTagProvider.cs" />
+    <Compile Include="Settings\OptionPages.cs">
+      <SubType>component</SubType>
+    </Compile>
+    <Compile Include="Settings\SettingsStore.cs" />
+    <Compile Include="Settings\WESettings.cs" />
     <Compile Include="SmartTags\HTML\OptimizeImageSmartTag.cs" />
+    <Compile Include="SmartTags\HTML\ImageDropDialogs\AddFormat.xaml.cs">
+      <DependentUpon>AddFormat.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SmartTags\HTML\ImageDropDialogs\ImageDropFormattingDialog.xaml.cs">
+      <DependentUpon>ImageDropFormattingDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SmartTags\HTML\DropImagesSmartTag.cs" />
     <Compile Include="Commands\Shared\PasteImageCommandTarget.cs" />
     <Compile Include="Commands\Shared\WebEditorsCreationListener.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptSmartIndentCommandTarget.cs" />
@@ -395,10 +391,8 @@
     <Compile Include="Commands\Code\IntellisenseProperty.cs" />
     <Compile Include="Commands\Code\IntellisenseType.cs" />
     <Compile Include="Commands\CommandExceptionFilter.cs" />
-    <Compile Include="Commands\HTML\HtmlSaveListener.cs" />
     <Compile Include="Compilers\Lint\JsHintCompiler.cs" />
     <Compile Include="Compilers\LESS\LessCompiler.cs" />
-    <Compile Include="Compilers\SASS\SassProjectCompiler.cs" />
     <Compile Include="Compilers\SASS\SassCompiler.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\MediaTypeCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\MediaValueCompletionProvider.cs" />
@@ -414,15 +408,10 @@
     <Compile Include="Helpers\Disposable.cs" />
     <Compile Include="ExtensionMethods\Extensions.cs" />
     <Compile Include="Helpers\TabAwareCharacterStream.cs" />
-    <Compile Include="Compilers\CoffeeScript\IcedCoffeeScriptProjectCompiler.cs" />
     <Compile Include="Compilers\CoffeeScript\IcedCoffeeScriptCompiler.cs" />
-    <Compile Include="Compilers\CoffeeScript\CoffeeScriptProjectCompiler.cs" />
-    <Compile Include="Margin\IcedCoffeeScriptMargin.cs" />
     <Compile Include="Compilers\NodeExecutorBase.cs" />
-    <Compile Include="Compilers\ProjectCompilerBase.cs" />
-    <Compile Include="Margin\SassMargin.cs" />
     <Compile Include="Margin\SvgMargin.cs" />
-    <Compile Include="Margin\TypeScriptMargin.cs" />
+    <Compile Include="Compilers\TypeScriptCompilationNotifier.cs" />
     <Compile Include="MenuItems\AddIntellisenseFile.cs" />
     <Compile Include="Commands\Code\IntellisenseWriter.cs" />
     <Compile Include="Commands\Code\ScriptIntellisenseListener.cs" />
@@ -449,13 +438,7 @@
     <Compile Include="Commands\JavaScript\JavaScriptFindReferencesCommandTarget.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Commands\JavaScript\JavaScriptSaveListener.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Commands\JavaScript\JsHintProjectRunner.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Commands\JavaScript\JsHintRunner.cs">
+    <Compile Include="Commands\JavaScript\JsHintReporter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Commands\LESS\LessExtractMixinCommandTarget.cs" />
@@ -471,9 +454,6 @@
     <Compile Include="Commands\Css\CssExtractToFileCommandTarget.cs" />
     <Compile Include="Commands\Css\CssCreationListener.cs" />
     <Compile Include="Commands\Css\CssSortPropertiesCommandTarget.cs" />
-    <Compile Include="Commands\Css\CssSaveListener.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Classifications\CSS\Base64TaggerProvider.cs" />
     <Compile Include="Classifications\CSS\CssHighlightWordTagger.cs" />
     <Compile Include="Classifications\CSS\ValueTaggerProvider.cs" />
@@ -544,24 +524,6 @@
     <Compile Include="MenuItems\ReferenceJs.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineTag.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineProvider.cs" />
-    <Compile Include="Settings\OptionPages\CodeGeneration.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\Html.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\Sass.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\Markdown.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\TypeScript.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\BrowserLinkOptions.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Classifications\IconRegistration.cs" />
     <Compile Include="SmartTags\CSS\Actions\RemoveCssRuleSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\Providers\RemoveCssRuleSmartTagProvider.cs" />
@@ -644,14 +606,10 @@
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Compilers\CoffeeScript\CoffeeScriptCompiler.cs" />
     <Compile Include="Helpers\FileHelpers.cs" />
-    <Compile Include="Compilers\CompilerError.cs" />
     <Compile Include="Compilers\CompilerResult.cs" />
     <Compile Include="Margin\MarkdownMargin.cs" />
-    <Compile Include="Compilers\LESS\LessProjectCompiler.cs" />
     <Compile Include="Helpers\OptionHelpers.cs" />
-    <Compile Include="Margin\CoffeeScriptMargin.cs" />
     <Compile Include="Margin\MarginBase.cs" />
-    <Compile Include="Margin\LessMargin.cs" />
     <Compile Include="Margin\EditorMarginFactory.cs" />
     <Compile Include="MenuItems\BundleFiles.cs" />
     <Compile Include="MenuItems\BuildMenu.cs" />
@@ -663,26 +621,7 @@
     <Compile Include="MenuItems\Diff.cs" />
     <Compile Include="MenuItems\Transform.cs" />
     <Compile Include="NavigateTo\CSS\CssGoToLineProviderFactory.cs" />
-    <Compile Include="Settings\OptionPages\CoffeeScript.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\JavaScript.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\Less.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\ProjectSettingsStore.cs" />
     <Compile Include="Settings\ProjectSettingsTextViewListener.cs" />
-    <Compile Include="Settings\OptionPages\JsHint.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\Css.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Settings\OptionPages\General.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="QuickInfo\ImageHtml\ImageQuickInfo.cs" />
     <Compile Include="QuickInfo\ImageHtml\ImageQuickInfoController.cs" />
     <Compile Include="QuickInfo\ImageHtml\ImageQuickInfoControllerProvider.cs" />
@@ -765,7 +704,7 @@
     <Compile Include="SmartTags\CSS\Actions\EmbedSmartTagAction.cs" />
     <Compile Include="SmartTags\CSS\CssSmartTagger.cs" />
     <Compile Include="Helpers\Css\CssItemCollector.cs" />
-    <Compile Include="Settings\WebEssentialsSettings.cs" />
+    <Compile Include="Settings\LegacySettings.cs" />
     <Compile Include="Validation\HTML\OpenGraphPrefixValidator.cs" />
     <Compile Include="Validation\HTML\ItemTypeValidator.cs" />
     <Compile Include="Validation\LESS\Providers\ImportOnceErrorTagProvider.cs" />
@@ -993,6 +932,14 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="SmartTags\HTML\ImageDropDialogs\AddFormat.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SmartTags\HTML\ImageDropDialogs\ImageDropFormattingDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Schemas\Browsers\BrowserSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

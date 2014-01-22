@@ -41,10 +41,13 @@ namespace MadsKristensen.EditorExtensions
             ITextDocument document;
             if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
             {
-                TsLintProjectRunner lint = new TsLintProjectRunner(document);
-                textView.Closed += (s, e) => lint.Dispose();
+                var lintInvoker = new LintFileInvoker(
+                    f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f),
+                    document
+                );
+                textView.Closed += (s, e) => lintInvoker.Dispose();
 
-                textView.TextBuffer.Properties.GetOrCreateSingletonProperty(() => lint);
+                textView.TextBuffer.Properties.GetOrCreateSingletonProperty(() => lintInvoker);
             }
         }
     }

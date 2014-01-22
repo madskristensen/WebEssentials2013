@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static string CamelCasePropertyName(string name)
         {
-            if (WESettings.GetBoolean(WESettings.Keys.JavaScriptCamelCasePropertyNames))
+            if (WESettings.Instance.CodeGen.CamelCasePropertyNames)
             {
                 name = CamelCase(name);
             }
@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static string CamelCaseClassName(string name)
         {
-            if (WESettings.GetBoolean(WESettings.Keys.JavaScriptCamelCaseClassNames))
+            if (WESettings.Instance.CodeGen.CamelCaseTypeNames)
             {
                 name = CamelCase(name);
             }
@@ -78,7 +78,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     string type = p.Type.JavaScriptName + (p.Type.IsArray ? "[]" : "");
                     var propertyName = CamelCasePropertyName(p.Name);
-                    comment = p.Summary ?? "The " + propertyName + " property as defined in " + io.FullName;
+                    comment = p.Summary ?? "The " + p.Name + " property as defined in " + io.FullName;
                     comment = whitespaceTrimmer.Replace(comment, " ");
                     sb.AppendLine("\t/// <field name=\"" + propertyName + "\" type=\"" + type + "\">" +
                                   SecurityElement.Escape(comment) + "</field>");

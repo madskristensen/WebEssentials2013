@@ -31,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if (_broker.IsCompletionActive(TextView) || !IsValidTextBuffer() || !WESettings.GetBoolean(WESettings.Keys.EnableEnterFormat))
+            if (_broker.IsCompletionActive(TextView) || !IsValidTextBuffer() || !WESettings.Instance.Html.EnableEnterFormat)
                 return false;
 
             int position = TextView.Caret.Position.BufferPosition.Position;

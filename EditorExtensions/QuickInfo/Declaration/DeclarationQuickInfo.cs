@@ -31,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
         {
             applicableToSpan = null;
 
-            if (session == null || qiContent == null || qiContent.Count > 0 || !WESettings.GetBoolean(WESettings.Keys.ShowBrowserTooltip))
+            if (session == null || qiContent == null || qiContent.Count > 0 || !WESettings.Instance.Css.ShowBrowserTooltip)
                 return;
 
             SnapshotPoint? point = session.GetTriggerPoint(_buffer.CurrentSnapshot);

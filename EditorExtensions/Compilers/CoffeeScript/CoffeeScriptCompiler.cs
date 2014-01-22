@@ -1,39 +1,37 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Threading;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
+    [Export(typeof(NodeExecutorBase))]
+    [ContentType("CoffeeScript")]
     public class CoffeeScriptCompiler : NodeExecutorBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\coffee-script\bin\coffee");
         private static readonly Regex _errorParsingPattern = new Regex(@"(?<fileName>.*):(?<line>.\d*):(?<column>.\d*): error: (?<message>.*\n.*)", RegexOptions.Multiline);
         private static readonly Regex _sourceMapInJs = new Regex(@"\/\*\n.*=(.*)\n\*\/", RegexOptions.Multiline);
 
-        protected override string ServiceName
-        {
-            get { return "CoffeeScript"; }
-        }
-        protected override string CompilerPath
-        {
-            get { return _compilerPath; }
-        }
-        protected override Regex ErrorParsingPattern
-        {
-            get { return _errorParsingPattern; }
-        }
+        public override string TargetExtension { get { return ".js"; } }
+        public override bool GenerateSourceMap { get { return WESettings.Instance.CoffeeScript.GenerateSourceMaps; } }
+        public override string ServiceName { get { return "CoffeeScript"; } }
+        protected override string CompilerPath { get { return _compilerPath; } }
+        public override bool RequireMatchingFileName { get { return true; } }
+        protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
 
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
             var args = new StringBuilder();
 
-            if (!WESettings.GetBoolean(WESettings.Keys.WrapCoffeeScriptClosure))
+            if (!WESettings.Instance.CoffeeScript.WrapClosure)
                 args.Append("--bare ");
 
-            if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptSourceMaps) && !InUnitTests)
+            if (GenerateSourceMap)
                 args.Append("--map ");
 
             args.AppendFormat(CultureInfo.CurrentCulture, "--output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
@@ -64,19 +62,11 @@ namespace MadsKristensen.EditorExtensions
             File.Copy(oldSourceMapFile, sourceMapFile, true);
             File.Delete(oldSourceMapFile);
             // end-Hack
-
-            if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptSourceMaps))
-            {
-                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
-                {
-                    ProjectHelpers.AddFileToProject(jsFileName, sourceMapFile);
-                }), DispatcherPriority.ApplicationIdle, null);
-            }
         }
 
         private static string UpdateSourceMapUrls(string content, string compiledFileName)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.LessSourceMaps) || !File.Exists(compiledFileName))
+            if (!WESettings.Instance.CoffeeScript.GenerateSourceMaps || !File.Exists(compiledFileName))
                 return content;
 
             string sourceMapFilename = compiledFileName + ".map";

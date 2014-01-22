@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using MadsKristensen.EditorExtensions.Optimization.Minification;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.SmartTags;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -55,8 +56,8 @@ namespace MadsKristensen.EditorExtensions.SmartTags
 
                 ITextRange range = element.InnerRange;
                 string text = textBuffer.CurrentSnapshot.GetText(range.Start, range.Length);
-                string ext = element.IsScriptBlock() ? ".js" : ".css";
-                string result = MinifyFileMenu.MinifyString(ext, text);
+                IFileMinifier minifier = element.IsScriptBlock() ? (IFileMinifier)new JavaScriptFileMinifer() : new CssFileMinifer();
+                string result = minifier.MinifyString(text);
 
                 using (EditorExtensionsPackage.UndoContext((this.DisplayText)))
                     textBuffer.Replace(range.ToSpan(), result);

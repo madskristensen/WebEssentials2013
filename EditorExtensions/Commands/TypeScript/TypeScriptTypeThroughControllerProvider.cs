@@ -40,7 +40,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool CanComplete(ITextBuffer textBuffer, int position)
         {
-            bool result = WESettings.GetBoolean(WESettings.Keys.TypeScriptBraceCompletion);
+            bool result = WESettings.Instance.TypeScript.BraceCompletion;
 
             if (result)
             {

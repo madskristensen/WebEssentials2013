@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {
-            if (textView == null || !WESettings.GetBoolean(WESettings.Keys.SyncVendorValues))
+            if (textView == null || !WESettings.Instance.Css.SyncVendorValues)
             {
                 return null;
             }

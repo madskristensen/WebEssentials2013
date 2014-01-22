@@ -1,112 +1,53 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Threading;
-using EnvDTE;
+using MadsKristensen.EditorExtensions.Compilers;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
+using Microsoft.Win32;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
+    ///<summary>A base class for all margins, providing  basic layout and resize functionality.</summary>
     public abstract class MarginBase : DockPanel, IWpfTextViewMargin
     {
+        readonly string _settingsKey;
+        FrameworkElement _previewControl;
+
         private bool _isDisposed = false;
-        private IWpfTextViewHost _viewHost;
-        private bool _showMargin;
         private Dispatcher _dispatcher;
-        private ErrorListProvider _provider;
+        protected ITextDocument Document { get; private set; }
 
-        protected string SettingsKey { get; private set; }
-        protected bool IsFirstRun { get; private set; }
-        public abstract bool IsSaveFileEnabled { get; }
-        public abstract string CompileToLocation { get; }
-        protected ITextDocument Document { get; set; }
-        protected virtual bool CanWriteToDisk { get { return true; } }
+        protected IMarginSettings Settings { get; private set; }
 
-        protected MarginBase()
+        protected MarginBase(IMarginSettings settings, ITextDocument document)
         {
             _dispatcher = Dispatcher.CurrentDispatcher;
-            IsFirstRun = true;
-        }
-
-        protected MarginBase(string source, string contentType, bool showMargin, ITextDocument document)
-            : this()
-        {
+            _settingsKey = document.TextBuffer.ContentType.DisplayName + "Margin_width";
             Document = document;
-            SettingsKey = GetType().Name + "_width";
-            _showMargin = showMargin;
-            _provider = new ErrorListProvider(EditorExtensionsPackage.Instance);
+            Settings = settings;
 
-            Document.FileActionOccurred += Document_FileActionOccurred;
-
-            if (showMargin)
+            if (settings.ShowPreviewPane)
             {
                 _dispatcher.BeginInvoke(
-                    new Action(() => Initialize(contentType, source)), DispatcherPriority.ApplicationIdle, null);
+                    new Action(CreateMarginControls), DispatcherPriority.ApplicationIdle, null);
             }
         }
 
-        void Document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
-        {
-            if (e.FileActionType == FileActionTypes.ContentSavedToDisk)
-            {
-                _dispatcher.BeginInvoke(new Action(() =>
-                {
-                    _provider.Tasks.Clear();
-                    StartCompiler(File.ReadAllText(e.FilePath));
-                }), DispatcherPriority.ApplicationIdle, null);
-            }
-        }
+        protected abstract FrameworkElement CreatePreviewControl(double width);
 
-        private void Initialize(string contentType, string source)
-        {
-            _viewHost = CreateTextViewHost(contentType);
-            CreateControls(_viewHost, source);
-            StartCompiler(source);
-        }
-
-        private static IWpfTextViewHost CreateTextViewHost(string contentType)
-        {
-            var componentModel = ProjectHelpers.GetComponentModel();
-            var service = componentModel.GetService<IContentTypeRegistryService>();
-            var type = service.GetContentType(contentType);
-
-            var textBufferFactory = componentModel.GetService<ITextBufferFactoryService>();
-            var textViewFactory = componentModel.GetService<ITextEditorFactoryService>();
-            var textRoles = contentType == "JavaScript" ? new[] { PredefinedTextViewRoles.Document } : new[] { PredefinedTextViewRoles.Document, PredefinedTextViewRoles.Interactive };
-            ITextBuffer textBuffer = textBufferFactory.CreateTextBuffer(string.Empty, type);
-            ITextViewRoleSet roles = textViewFactory.CreateTextViewRoleSet(textRoles);
-            IWpfTextView textView = textViewFactory.CreateTextView(textBuffer, roles);
-            IWpfTextViewHost host = textViewFactory.CreateTextViewHost(textView, false);
-
-            return host;
-        }
-
-        protected virtual void CreateControls(IWpfTextViewHost host, string source)
+        protected virtual void CreateMarginControls()
         {
             int width;
-
             using (var key = EditorExtensionsPackage.Instance.UserRegistryRoot)
             {
-                var raw = key.GetValue("WE_" + SettingsKey);
-                width = raw != null ? (int)raw : -1;
+                var raw = key.GetValue("WE_" + _settingsKey);
+                width = raw is int ? (int)raw : -1;
             }
-
             width = width == -1 ? 400 : width;
 
-            host.TextView.VisualElement.MinWidth = width;
-            host.TextView.VisualElement.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
-            host.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.GlyphMarginId, false);
-            host.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.LineNumberMarginId, true);
-            host.TextView.VisualElement.KeyDown += VisualElement_KeyUp;
-
-            //host.GetTextViewMargin(PredefinedMarginNames.BottomControl).VisualElement.Height = 0;
 
             Grid grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0, GridUnitType.Star) });
@@ -114,17 +55,18 @@ namespace MadsKristensen.EditorExtensions
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0, GridUnitType.Auto) });
             grid.RowDefinitions.Add(new RowDefinition());
 
-            grid.Children.Add(host.HostControl);
-            this.Children.Add(grid);
+            _previewControl = CreatePreviewControl(width);
+            grid.Children.Add(_previewControl);
+            Children.Add(grid);
 
-            Grid.SetColumn(host.HostControl, 2);
-            Grid.SetRow(host.HostControl, 0);
+            Grid.SetColumn(_previewControl, 2);
+            Grid.SetRow(_previewControl, 0);
 
             GridSplitter splitter = new GridSplitter();
             splitter.Width = 5;
             splitter.ResizeDirection = GridResizeDirection.Columns;
-            splitter.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
-            splitter.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+            splitter.VerticalAlignment = VerticalAlignment.Stretch;
+            splitter.HorizontalAlignment = HorizontalAlignment.Stretch;
             splitter.DragCompleted += splitter_DragCompleted;
 
             grid.Children.Add(splitter);
@@ -134,232 +76,25 @@ namespace MadsKristensen.EditorExtensions
 
         void splitter_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            //Settings.SetValue(_settingsKey, (int)_viewHost.HostControl.ActualWidth);
-            //Settings.Save();
+            if (double.IsNaN(_previewControl.ActualWidth)) return;
             using (var key = EditorExtensionsPackage.Instance.UserRegistryRoot)
             {
-                key.SetValue("WE_" + SettingsKey, (int)_viewHost.HostControl.ActualWidth);
-            }
-        }
-
-        void VisualElement_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            if (e.Key == Key.C && Keyboard.Modifiers == ModifierKeys.Control)
-                Clipboard.SetText(_viewHost.TextView.TextBuffer.CurrentSnapshot.GetText(_viewHost.TextView.Selection.Start.Position.Position, _viewHost.TextView.Selection.End.Position.Position - _viewHost.TextView.Selection.Start.Position.Position));
-            else if (e.Key == Key.PageDown)
-                _viewHost.TextView.ViewScroller.ScrollViewportVerticallyByPage(ScrollDirection.Down);
-            else if (e.Key == Key.PageUp)
-                _viewHost.TextView.ViewScroller.ScrollViewportVerticallyByPage(ScrollDirection.Up);
-            else if (e.Key == Key.Down)
-                _viewHost.TextView.ViewScroller.ScrollViewportVerticallyByLine(ScrollDirection.Down);
-            else if (e.Key == Key.Up)
-                _viewHost.TextView.ViewScroller.ScrollViewportVerticallyByLine(ScrollDirection.Up);
-            else if (e.Key == Key.Home)
-                _viewHost.TextView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(_viewHost.TextView.TextBuffer.CurrentSnapshot, 0, 0));
-            else if (e.Key == Key.End)
-                _viewHost.TextView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(_viewHost.TextView.TextBuffer.CurrentSnapshot, _viewHost.TextView.TextBuffer.CurrentSnapshot.Length, 0));
-        }
-
-        public void SetText(string text)
-        {
-            if (!_showMargin)
-                return;
-
-            if (!string.IsNullOrEmpty(text))
-            {
-                int position = _viewHost.TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
-                using (var edit = _viewHost.TextView.TextBuffer.CreateEdit())
-                {
-                    edit.Replace(new Span(0, _viewHost.TextView.TextBuffer.CurrentSnapshot.Length), text);
-                    edit.Apply();
-                }
-
-                try
-                {
-                    _viewHost.HostControl.Opacity = 1;
-                    _viewHost.TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, _viewHost.TextView.TextSnapshot.GetLineNumberFromPosition(position));
-                    _viewHost.TextView.ViewScroller.ScrollViewportHorizontallyByPixels(-9999);
-                }
-                catch
-                {
-                    // Threading issues when called from TypeScript
-                }
-            }
-            else
-            {
-                _viewHost.HostControl.Opacity = 0.3;
-            }
-        }
-
-        protected abstract void StartCompiler(string source);
-
-        protected void OnCompilationDone(string result, string state)
-        {
-            bool isSuccess = !result.StartsWith("ERROR:", StringComparison.Ordinal);
-
-            _dispatcher.BeginInvoke(new Action(() =>
-            {
-                if (isSuccess)
-                {
-                    if (!IsFirstRun && IsSaveFileEnabled)
-                    {
-                        string targetFileName = GetTargetFileName(state, CompileToLocation);
-
-                        WriteCompiledFile(result, state, targetFileName);
-
-                        if (!string.IsNullOrEmpty(targetFileName))
-                            MinifyFile(targetFileName, result);
-                    }
-
-                    // Moved after the WriteCompiledFile method to 
-                    // get the updated source map in CSS file comment.
-                    SetText(result);
-                }
-                else
-                {
-                    result = result.Replace("ERROR:", string.Empty);
-                    SetText("/*\r\n\r\nCompile Error. \r\nSee error list for details\r\n" + result + "\r\n\r\n*/");
-                }
-
-                IsFirstRun = false;
-            }), DispatcherPriority.Normal, null);
-        }
-
-        private static string GetTargetFileName(string sourceFileName, string CompileToLocation)
-        {
-            switch (Path.GetExtension(sourceFileName).ToLowerInvariant())
-            {
-                case ".less":
-                    return GetCompiledFileName(sourceFileName, ".css", CompileToLocation);
-
-                case ".scss":
-                    return GetCompiledFileName(sourceFileName, ".css", CompileToLocation);
-
-                case ".coffee":
-                case ".iced":
-                case ".ts":
-                    return GetCompiledFileName(sourceFileName, ".js", CompileToLocation);
-
-                case ".md":
-                case ".mdown":
-                case ".markdown":
-                case ".mkd":
-                case ".mkdn":
-                case ".mdwn":
-                case ".mmd":
-                    return GetCompiledFileName(sourceFileName, ".html", CompileToLocation);
-
-                default: // For the Diff view
-                    return null;
-            }
-        }
-
-        protected abstract void MinifyFile(string fileName, string source);
-
-        private void WriteCompiledFile(string content, string currentFileName, string fileName)
-        {
-            if (ProjectHelpers.CheckOutFileFromSourceControl(fileName)
-             && CanWriteToDisk
-             && FileHelpers.WriteFile(content, fileName))
-            {
-                ProjectHelpers.AddFileToProject(currentFileName, fileName);
-            }
-        }
-
-        public static string GetCompiledFileName(string sourceFileName, string compiledExtension, string customFolder)
-        {
-            string compiledFileName = Path.GetFileName(Path.ChangeExtension(sourceFileName, compiledExtension));
-            string sourceDir = Path.GetDirectoryName(sourceFileName);
-            string compiledDir;
-            string rootDir = ProjectHelpers.GetRootFolder();
-
-            if (rootDir == null || rootDir.Length == 0)
-            {
-                // Assuming a project is not loaded..
-                return Path.Combine(sourceDir, compiledFileName);
-            }
-
-            if (!string.IsNullOrEmpty(customFolder) &&
-                !customFolder.Equals("false", StringComparison.OrdinalIgnoreCase) &&
-                !customFolder.Equals("true", StringComparison.OrdinalIgnoreCase))
-            {
-                if (customFolder.StartsWith("~/", StringComparison.OrdinalIgnoreCase) || customFolder.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-                {
-                    // Output path starts at the project root..
-                    compiledDir = Path.Combine(rootDir, customFolder.Substring(customFolder.StartsWith("~/", StringComparison.OrdinalIgnoreCase) ? 2 : 1));
-                }
-                else
-                {
-                    // Output path is a relative path..
-                    // NOTE: if the output path doesn't exist, it will be created below.
-                    compiledDir = new DirectoryInfo(Path.Combine(sourceDir, customFolder)).FullName;
-                }
-
-                if (!Directory.Exists(compiledDir))
-                {
-                    Directory.CreateDirectory(compiledDir);
-                }
-
-                return Path.Combine(compiledDir, compiledFileName);
-            }
-
-            return Path.Combine(sourceDir, compiledFileName);
-        }
-
-        protected void CreateTask(CompilerError error)
-        {
-            ErrorTask task = new ErrorTask()
-            {
-                Line = error.Line,
-                Column = error.Column,
-                ErrorCategory = TaskErrorCategory.Error,
-                Category = TaskCategory.Html,
-                Document = error.FileName,
-                Priority = TaskPriority.Low,
-                Text = error.Message,
-            };
-
-            task.AddHierarchyItem();
-
-            task.Navigate += task_Navigate;
-            _provider.Tasks.Add(task);
-        }
-
-        private void task_Navigate(object sender, EventArgs e)
-        {
-            Task task = sender as Task;
-
-            _provider.Navigate(task, new Guid(EnvDTE.Constants.vsViewKindPrimary));
-
-            if (task.Column > 0)
-            {
-                var doc = (TextDocument)EditorExtensionsPackage.DTE.ActiveDocument.Object("textdocument");
-                doc.Selection.MoveToLineAndOffset(task.Line, task.Column, false);
+                key.SetValue("WE_" + _settingsKey, _previewControl.ActualWidth, RegistryValueKind.DWord);
             }
         }
 
         private void ThrowIfDisposed()
         {
             if (_isDisposed)
-                throw new ObjectDisposedException("MarginBase");
+                throw new ObjectDisposedException(GetType().Name);
         }
-
         #region IWpfTextViewMargin Members
 
         /// <summary>
         /// The <see cref="Sytem.Windows.FrameworkElement"/> that implements the visual representation
         /// of the margin.
         /// </summary>
-        public System.Windows.FrameworkElement VisualElement
-        {
-            // Since this margin implements Canvas, this is the object which renders
-            // the margin.
-            get
-            {
-                ThrowIfDisposed();
-                return this;
-            }
-        }
+        public FrameworkElement VisualElement { get { return this; } }
 
         #endregion
 
@@ -372,19 +107,11 @@ namespace MadsKristensen.EditorExtensions
             get
             {
                 ThrowIfDisposed();
-                return this.ActualHeight;
+                return ActualHeight;
             }
         }
 
-        public bool Enabled
-        {
-            // The margin should always be enabled
-            get
-            {
-                ThrowIfDisposed();
-                return true;
-            }
-        }
+        public bool Enabled { get { return true; } }
 
         /// <summary>
         /// Returns an instance of the margin if this is the margin that has been requested.
@@ -393,39 +120,87 @@ namespace MadsKristensen.EditorExtensions
         /// <returns>An instance of EditorMargin1 or null</returns>
         public ITextViewMargin GetTextViewMargin(string marginName)
         {
-            return (marginName == GetType().Name) ? (IWpfTextViewMargin)this : null;
+            return (marginName == GetType().Name) ? this : null;
         }
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            Dispose(true);
-        }
 
+        ///<summary>Releases all resources used by the MarginBase.</summary>
+        public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+        ///<summary>Releases the unmanaged resources used by the MarginBase and optionally releases the managed resources.</summary>
+        ///<param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (_isDisposed)
-                return;
-            _isDisposed = true;
-
             if (disposing)
             {
-                if (_viewHost != null)
-                {
-                    _viewHost.Close();
-                }
-
-                if (Document != null)
-                    Document.FileActionOccurred -= Document_FileActionOccurred;
-
-                if (_provider != null)
-                {
-                    _provider.Tasks.Clear();
-                    _provider.Dispose();
-                }
             }
         }
         #endregion
+    }
 
+    ///<summary>A base class for margins that use the original file contents rather than the output of a compiler.</summary>
+    public abstract class DirectMarginBase : MarginBase
+    {
+        protected DirectMarginBase(IMarginSettings settings, ITextDocument document)
+            : base(settings, document)
+        {
+            Document.FileActionOccurred += Document_FileActionOccurred;
+        }
+
+        private void Document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
+        {
+            if (e.FileActionType == FileActionTypes.ContentSavedToDisk)
+                UpdateMargin(e.FilePath);
+        }
+
+        protected override void CreateMarginControls()
+        {
+            base.CreateMarginControls();
+            Dispatcher.InvokeAsync(() => UpdateMargin(Document.FilePath));
+        }
+
+        ///<summary>Updates the contents of the margin.</summary>
+        protected abstract void UpdateMargin(string filePath);
+
+
+        ///<summary>Releases the unmanaged resources used by the DirectMarginBase and optionally releases the managed resources.</summary>
+        ///<param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Document.FileActionOccurred -= Document_FileActionOccurred;
+            }
+            base.Dispose(disposing);
+        }
+    }
+    ///<summary>A base class for margins that display the result of an <see cref="ICompilationNotifier"/>.</summary>
+    public abstract class CompilingMarginBase : MarginBase
+    {
+        public ICompilationNotifier Notifier { get; private set; }
+        protected CompilingMarginBase(IMarginSettings settings, ITextDocument document)
+            : base(settings, document)
+        {
+            Notifier = Mef.GetImport<ICompilationNotifierProvider>(Document.TextBuffer.ContentType).GetCompilationNotifier(document);
+            Notifier.CompilationReady += (s, e) => UpdateMargin(e.CompilerResult);
+        }
+
+        protected override void CreateMarginControls()
+        {
+            base.CreateMarginControls();
+            Dispatcher.InvokeAsync(() => Notifier.RequestCompilationResult(cached: true));
+        }
+        protected abstract void UpdateMargin(CompilerResult result);
+
+
+        ///<summary>Releases the unmanaged resources used by the CompilingMarginBase and optionally releases the managed resources.</summary>
+        ///<param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Notifier.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

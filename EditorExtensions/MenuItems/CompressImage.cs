@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
         void BeforeQueryStatus(object sender, System.EventArgs e)
         {
             OleMenuCommand button = sender as OleMenuCommand;
-            _selectedPaths = MinifyFileMenu.GetSelectedFilePaths(_dte)
+            _selectedPaths = ProjectHelpers.GetSelectedFilePaths()
                                 .Where(p => ImageCompressor.IsFileSupported(p));
 
             int items = _selectedPaths.Count();

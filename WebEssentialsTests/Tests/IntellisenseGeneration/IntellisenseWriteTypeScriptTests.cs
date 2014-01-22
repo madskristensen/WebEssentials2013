@@ -31,7 +31,7 @@ namespace WebEssentialsTests.Tests.IntellisenseGeneration
             result.ShouldBeCode(@"
 declare module server {
        interface Primitives {
-        AString: string;
+        aString: string;
     }
 }");
         }
@@ -57,11 +57,11 @@ declare module server {
             result.ShouldBeCode(@"
 declare module server {
        interface Primitives {
-        AString: string;
-        AnInt: number;
+        aString: string;
+        anInt: number;
 /** ASummary */
-        AnIntArray: number[];
-        TheSimple: server.Simple;
+        anIntArray: number[];
+        theSimple: server.Simple;
 }
 }");
         }

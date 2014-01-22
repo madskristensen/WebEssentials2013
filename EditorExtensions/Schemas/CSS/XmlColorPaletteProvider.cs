@@ -38,27 +38,17 @@ namespace MadsKristensen.EditorExtensions
 
         public static void CreateSolutionColors()
         {
-            if (!SolutionColorsExist)
-            {
-                string assembly = Assembly.GetExecutingAssembly().Location;
-                string folder = Path.GetDirectoryName(assembly);
-                string path = Path.Combine(folder, "schemas\\css\\WE-Palette.css");
+            if (SolutionColorsExist)
+                return;
 
-                File.Copy(path, GetSolutionFilePath(), true);
+            string assembly = Assembly.GetExecutingAssembly().Location;
+            string folder = Path.GetDirectoryName(assembly);
+            string sourcePath = Path.Combine(folder, "schemas\\css\\WE-Palette.css");
+            string targetPath = GetSolutionFilePath();
 
-                Solution2 solution = EditorExtensionsPackage.DTE.Solution as Solution2;
-                Project project = solution.Projects
-                                    .OfType<Project>()
-                                    .FirstOrDefault(p => p.Name.Equals(Settings._solutionFolder, StringComparison.OrdinalIgnoreCase));
-
-                if (project == null)
-                {
-                    project = solution.AddSolutionFolder(Settings._solutionFolder);
-                }
-
-                project.ProjectItems.AddFromFile(path);
-                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(path);
-            }
+            File.Copy(sourcePath, targetPath, true);
+            ProjectHelpers.GetSolutionItemsProject().ProjectItems.AddFromFile(targetPath);
+            EditorExtensionsPackage.DTE.ItemOperations.OpenFile(targetPath);
         }
 
         public IEnumerable<ColorModel> GetColors(ITextView textView, SnapshotSpan contextSpan)

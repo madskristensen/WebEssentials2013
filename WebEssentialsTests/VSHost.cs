@@ -9,39 +9,25 @@ namespace WebEssentialsTests
 {
     public static class VSHost
     {
-        static readonly Lazy<Solution> Solution = new Lazy<Solution>(OpenSolution);
+        static readonly string BaseDirectory = Path.GetDirectoryName(typeof(VSHost).Assembly.Location);
+        public static readonly string FixtureDirectory = Path.Combine(BaseDirectory, "fixtures", "Visual Studio");
 
-        private static Solution OpenSolution()
+        public static DTE DTE { get { return VsIdeTestHostContext.Dte; } }
+        public static IServiceProvider ServiceProvider { get { return VsIdeTestHostContext.ServiceProvider; } }
+
+        public static T GetService<T>(Type idType) { return (T)ServiceProvider.GetService(idType); }
+
+        ///<summary>Ensures that the specified solution is open.</summary>
+        ///<param name="relativePath">The path to the solution file, relative to fixtures\Visual Studio.</param>
+        public static Solution EnsureSolution(string relativePath)
         {
-            var path = typeof(VSHost).Assembly.Location;
-            Path.GetDirectoryName(path);
+            var fileName = Path.GetFullPath(Path.Combine(FixtureDirectory, relativePath));
+            if (!File.Exists(fileName))
+                throw new FileNotFoundException("Solution file does not exist", fileName);
             var solution = VsIdeTestHostContext.Dte.Solution;
-            var fileName = Path.GetFullPath(Path.Combine(path, @"..\..\..\..\TestProjects", "TestProjects.sln"));
-            solution.Open(fileName);
+            if (solution.FullName != fileName)
+                solution.Open(fileName);
             return solution;
-        }
-
-        public static Solution TestSolution { get { return Solution.Value; } }
-    }
-
-    [TestClass]
-    public class VSHostTest
-    {
-        [TestMethod]
-        [HostType("VS IDE")]
-        [TestProperty("VSTest", "VSTest")]
-        public void VSTest_CanOpenSolution()
-        {
-            VSHost.TestSolution.Should().NotBeNull();
-        }
-
-        [TestMethod]
-        [HostType("VS IDE")]
-        [TestProperty("VSTest", "VSTest")]
-        public void VSTest_CanFindProjectItem()
-        {
-            var projectItem = VSHost.TestSolution.FindProjectItem("Simple.cs");
-            projectItem.Should().NotBeNull();
         }
     }
 }

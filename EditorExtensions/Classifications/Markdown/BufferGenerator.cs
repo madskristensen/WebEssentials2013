@@ -47,8 +47,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             var pBuffer = ProjectionBufferManager.GetProjectionBuffer(contentType);
 
-            var contentTypeImportComposer = new ContentTypeImportComposer<ICodeLanguageEmbedder>(WebEditor.CompositionService);
-            var embedder = contentTypeImportComposer.GetImport(contentType);
+            var embedder = Mef.GetImport<ICodeLanguageEmbedder>(contentType);
 
             var fullSource = new StringBuilder();
             if (embedder != null)

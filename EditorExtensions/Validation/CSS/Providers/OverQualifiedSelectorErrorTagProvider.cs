@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions
         {
             Selector sel = (Selector)item;
 
-            if (!WESettings.GetBoolean(WESettings.Keys.ValidateOverQualifiedSelector) || !sel.IsValid || context == null)
+            if (!WESettings.Instance.Css.ValidateOverQualifiedSelector || !sel.IsValid || context == null)
                 return ItemCheckResult.Continue;
 
             var idPart = sel.SimpleSelectors.Skip(1).FirstOrDefault(s => s.Text.StartsWith("#", StringComparison.Ordinal));

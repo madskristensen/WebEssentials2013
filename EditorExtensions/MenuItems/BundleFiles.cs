@@ -11,11 +11,13 @@ using System.Xml;
 using EnvDTE;
 using EnvDTE80;
 using MadsKristensen.EditorExtensions.Helpers;
+using MadsKristensen.EditorExtensions.Optimization.Minification;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -152,6 +154,7 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
+            // TODO: Replace with single class that takes ContentType
             CommandID commandCss = new CommandID(CommandGuids.guidBundleCmdSet, (int)CommandId.BundleCss);
             OleMenuCommand menuCommandCss = new OleMenuCommand((s, e) => CreateBundlefile(".css"), commandCss);
             menuCommandCss.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".css"); };
@@ -260,6 +263,7 @@ namespace MadsKristensen.EditorExtensions
 
             _dte.ItemOperations.OpenFile(filePath);
 
+            //TODO: Use XLINQ
             XmlDocument doc = GetXmlDocument(filePath);
 
             if (doc != null)
@@ -272,7 +276,6 @@ namespace MadsKristensen.EditorExtensions
         private static void WriteBundleFile(string filePath, XmlDocument doc)
         {
             XmlNode bundleNode = doc.SelectSingleNode("//bundle");
-
             if (bundleNode == null)
                 return;
 
@@ -285,7 +288,14 @@ namespace MadsKristensen.EditorExtensions
             }
 
             Dictionary<string, string> files = new Dictionary<string, string>();
-            string extension = Path.GetExtension(filePath.Replace(_ext, string.Empty));
+
+            // filePath must end in ".targetExtension.bundle"
+            string extension = Path.GetExtension(Path.GetFileNameWithoutExtension(filePath));
+            if (string.IsNullOrEmpty(extension))
+            {
+                Logger.Log("Skipping bundle file " + filePath + " without extension.  Bundle files must end with the output extension, followed by '.bundle'.");
+                return;
+            }
             XmlNodeList nodes = doc.SelectNodes("//file");
 
             foreach (XmlNode node in nodes)
@@ -323,7 +333,7 @@ namespace MadsKristensen.EditorExtensions
                 //{
                 //    sb.AppendLine("/*#source " + files[file] + " */");
                 //}
-                if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase) && WESettings.GetBoolean(WESettings.Keys.GenerateJavaScriptSourceMaps))
+                if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase) && WESettings.Instance.JavaScript.GenerateSourceMaps)
                 {
                     sb.AppendLine("///#source 1 1 " + files[file]);
                 }
@@ -338,7 +348,7 @@ namespace MadsKristensen.EditorExtensions
                     // or if does not have URLs, no need to normalize.
                     if (Path.GetDirectoryName(file) != Path.GetDirectoryName(bundlePath)
                      && source.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0
-                        && !WESettings.GetBoolean(WESettings.Keys.CssPreserveRelativePathsOnMinify))
+                     && WESettings.Instance.Css.AdjustRelativePaths)
                         source = CssUrlNormalizer.NormalizeUrls(
                             tree: new CssParser().Parse(source, true),
                             targetFile: bundlePath,
@@ -370,37 +380,17 @@ namespace MadsKristensen.EditorExtensions
             // If the bundle didn't change, don't re-minify, unless the user just enabled minification.
             if (!bundleChanged && File.Exists(minPath))
                 return;
+            var fers = WebEditor.ExportProvider.GetExport<IFileExtensionRegistryService>().Value;
+            var contentType = fers.GetContentTypeForExtension(extension);
+            var settings = WESettings.Instance.ForContentType<IMinifierSettings>(contentType);
+            var minifier = Mef.GetImport<IFileMinifier>(contentType);
 
-            if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase))
+            bool changed = minifier.MinifyFile(filePath, minPath);
+            if (settings.GzipMinifiedFiles && (changed || !File.Exists(minPath + ".gzip")))
             {
-                JavaScriptSaveListener.Minify(bundlePath, minPath, true);
-                ProjectHelpers.AddFileToProject(filePath, minPath);
-
-                if (WESettings.GetBoolean(WESettings.Keys.GenerateJavaScriptSourceMaps))
-                {
-                    ProjectHelpers.AddFileToProject(filePath, minPath + ".map");
-                }
-
-                ProjectHelpers.AddFileToProject(filePath, minPath + ".gzip");
-            }
-            else if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase))
-            {
-                string minContent = MinifyFileMenu.MinifyString(extension, content);
-
-                ProjectHelpers.CheckOutFileFromSourceControl(minPath);
-                File.WriteAllText(minPath, minContent, new UTF8Encoding(true));
-                ProjectHelpers.AddFileToProject(filePath, minPath);
-
-                if (WESettings.GetBoolean(WESettings.Keys.CssEnableGzipping))
-                    CssSaveListener.GzipFile(filePath, minPath, minContent);
-            }
-            else if (extension.Equals(".html", StringComparison.OrdinalIgnoreCase))
-            {
-                string minContent = MinifyFileMenu.MinifyString(extension, content);
-
-                ProjectHelpers.CheckOutFileFromSourceControl(minPath);
-                File.WriteAllText(minPath, minContent, new UTF8Encoding(true));
-                ProjectHelpers.AddFileToProject(filePath, minPath);
+                FileHelpers.GzipFile(minPath);
+                if (minifier.GenerateSourceMap && File.Exists(minPath + ".map"))
+                    FileHelpers.GzipFile(minPath + ".map");
             }
         }
     }

@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.Composition;
+﻿using System;
+using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -14,7 +16,8 @@ namespace MadsKristensen.EditorExtensions.Commands
     {
         [Import]
         public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
-
+        [Import]
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
         [Import]
         public ITextUndoHistoryRegistry UndoRegistry { get; set; }
 
@@ -23,12 +26,30 @@ namespace MadsKristensen.EditorExtensions.Commands
         {
             var textView = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
 
-            textView.Properties.GetOrCreateSingletonProperty<EncodeSelection>(() => new EncodeSelection(textViewAdapter, textView));
-            textView.Properties.GetOrCreateSingletonProperty<SortSelectedLines>(() => new SortSelectedLines(textViewAdapter, textView));
-            textView.Properties.GetOrCreateSingletonProperty<RemoveDuplicateLines>(() => new RemoveDuplicateLines(textViewAdapter, textView));
-            textView.Properties.GetOrCreateSingletonProperty<RemoveEmptyLines>(() => new RemoveEmptyLines(textViewAdapter, textView));
+            textView.Properties.GetOrCreateSingletonProperty(() => new EncodeSelection(textViewAdapter, textView));
+            textView.Properties.GetOrCreateSingletonProperty(() => new SortSelectedLines(textViewAdapter, textView));
+            textView.Properties.GetOrCreateSingletonProperty(() => new RemoveDuplicateLines(textViewAdapter, textView));
+            textView.Properties.GetOrCreateSingletonProperty(() => new RemoveEmptyLines(textViewAdapter, textView));
 
             textView.Properties.GetOrCreateSingletonProperty(() => new CommandExceptionFilter(textViewAdapter, textView, UndoRegistry));
+
+            ITextDocument document;
+            if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
+            {
+                var saveListeners = Mef.GetAllImports<IFileSaveListener>(document.TextBuffer.ContentType);
+                if (saveListeners.Count > 0)
+                {
+                    EventHandler<TextDocumentFileActionEventArgs> saveHandler = (s, e) =>
+                    {
+                        if (e.FileActionType != FileActionTypes.ContentSavedToDisk)
+                            return;
+                        foreach (var listener in saveListeners)
+                            listener.FileSaved(document.TextBuffer.ContentType, e.FilePath);
+                    };
+                    document.FileActionOccurred += saveHandler;
+                    textView.Closed += delegate { document.FileActionOccurred -= saveHandler; };
+                }
+            }
         }
     }
 }

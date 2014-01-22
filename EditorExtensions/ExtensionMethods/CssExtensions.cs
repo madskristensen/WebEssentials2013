@@ -29,5 +29,16 @@ namespace MadsKristensen.EditorExtensions
 
             return item.UrlString.Text.Contains(";base64,");
         }
+        public static CssErrorFlags ToCssErrorFlags(this WarningLocation location)
+        {
+            switch (location)
+            {
+                case WarningLocation.Warnings:
+                    return CssErrorFlags.UnderlinePurple | CssErrorFlags.TaskListWarning;
+
+                default:
+                    return CssErrorFlags.UnderlinePurple | CssErrorFlags.TaskListMessage;
+            }
+        }
     }
 }

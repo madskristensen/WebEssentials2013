@@ -14,20 +14,23 @@ namespace MadsKristensen.EditorExtensions
     {
         protected static readonly string WebEssentialsResourceDirectory = Path.Combine(Path.GetDirectoryName(typeof(NodeExecutorBase).Assembly.Location), @"Resources");
         private static readonly string NodePath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node.exe");
-        private static string[] _disallowedParentExtensions = new[] { ".png", ".jpg", ".jpeg", ".gif" };
 
-        ///<summary>If set, the executor will not try to use the VS project system.</summary>
-        public static bool InUnitTests { get; set; }
+        public abstract string TargetExtension { get; }
+        public abstract string ServiceName { get; }
+        ///<summary>Indicates whether this compiler will emit a source map file.  Will only return true if aupported and enabled in user settings.</summary>
+        public abstract bool GenerateSourceMap { get; }
 
-        protected abstract string ServiceName { get; }
         protected abstract string CompilerPath { get; }
+        ///<summary>Indicates whether this compiler is capable of compiling to a filename that doesn't match the source filename.</summary>
+        public virtual bool RequireMatchingFileName { get { return false; } }
         protected virtual Regex ErrorParsingPattern { get { return null; } }
         protected virtual Func<string, IEnumerable<CompilerError>> ParseErrors { get { return ParseErrorsWithRegex; } }
 
-        public async Task<CompilerResult> Compile(string sourceFileName, string targetFileName)
+        public async Task<CompilerResult> CompileAsync(string sourceFileName, string targetFileName)
         {
-            if (!CheckPrerequisites(sourceFileName))
-                return null;
+            if (RequireMatchingFileName && Path.GetFileName(targetFileName) != Path.GetFileNameWithoutExtension(sourceFileName) + TargetExtension)
+                throw new ArgumentException(ServiceName + " cannot compile to a targetFileName with a different name.  Only the containing directory can be different.", "targetFileName");
+
 
             var scriptArgs = GetArguments(sourceFileName, targetFileName);
 
@@ -48,14 +51,10 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                if (!ProjectHelpers.CheckOutFileFromSourceControl(sourceFileName))
-                {
-                    // Someone else have this file checked out
-                    Logger.Log("Could not check the file out of source control");
-                    return null;
-                }
 
                 ProjectHelpers.CheckOutFileFromSourceControl(targetFileName);
+                if (GenerateSourceMap)
+                    ProjectHelpers.CheckOutFileFromSourceControl(targetFileName + ".map");
 
                 using (var process = await start.ExecuteAsync())
                 {
@@ -75,19 +74,18 @@ namespace MadsKristensen.EditorExtensions
 
         private CompilerResult ProcessResult(Process process, string errorText, string sourceFileName, string targetFileName)
         {
-            CompilerResult result = new CompilerResult(sourceFileName);
+            CompilerResult result = new CompilerResult(sourceFileName, targetFileName);
 
             ValidateResult(process, targetFileName, errorText, result);
 
             if (result.IsSuccess)
             {
                 result.Result = PostProcessResult(result.Result, sourceFileName, targetFileName);
-                if (!InUnitTests)
-                    ProjectHelpers.AddFileToProject(sourceFileName, targetFileName);
             }
             else
             {
-                Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compilation failed.");
+                Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName)
+                         + " compilation failed: " + result.Errors.Select(e => e.Message).FirstOrDefault());
             }
 
             return result;
@@ -137,27 +135,20 @@ namespace MadsKristensen.EditorExtensions
 
         protected IEnumerable<CompilerError> ParseErrorsWithRegex(string error)
         {
-            var match = ErrorParsingPattern.Match(error);
+            var matches = ErrorParsingPattern.Matches(error);
 
-            if (!match.Success)
+            if (matches.Count == 0)
             {
-                Logger.Log(ServiceName + " parse error: " + error);
-                yield return new CompilerError { Message = error };
+                Logger.Log(ServiceName + ": unparseable compilation error: " + error);
+                return new[] { new CompilerError { Message = error } };
             }
-            yield return new CompilerError
+            return matches.Cast<Match>().Select(match => new CompilerError
             {
                 FileName = match.Groups["fileName"].Value,
                 Message = match.Groups["message"].Value,
                 Column = string.IsNullOrEmpty(match.Groups["column"].Value) ? 1 : int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture),
                 Line = int.Parse(match.Groups["line"].Value, CultureInfo.CurrentCulture)
-            };
-        }
-
-        private static bool CheckPrerequisites(string fileName)
-        {
-            return !(new DirectoryInfo(Path.GetDirectoryName(fileName)).GetFiles(
-                       Path.GetFileNameWithoutExtension(fileName) + ".*", SearchOption.TopDirectoryOnly)
-                       .Any(file => _disallowedParentExtensions.Contains(Path.GetExtension(file.Name))));
+            });
         }
 
         protected abstract string GetArguments(string sourceFileName, string targetFileName);

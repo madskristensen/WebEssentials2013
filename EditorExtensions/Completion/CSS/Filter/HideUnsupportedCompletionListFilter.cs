@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions
     {
         public ICssSchemaFilter CreateFilter(ICssSchemaManager schemaManager, ITextBuffer textBuffer)
         {
-            return textBuffer.Properties.GetOrCreateSingletonProperty<HideUnsupportedSchemaFilter>(() => new HideUnsupportedSchemaFilter());
+            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new HideUnsupportedSchemaFilter());
         }
     }
 
@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions
     {
         public bool IsSupported(Version cssVersion, ICssCompletionListEntry entry)
         {
-            if (WESettings.GetBoolean(WESettings.Keys.ShowUnsupported))
+            if (WESettings.Instance.Css.ShowUnsupported)
                 return entry.IsSupported(cssVersion);
 
             return entry.GetAttribute("browsers") != "none" || entry.DisplayText.Contains("gradient");
@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions
 
         public string Name
         {
-            get { return WESettings.GetBoolean(WESettings.Keys.ShowUnsupported) ? string.Empty : "WE"; }
+            get { return WESettings.Instance.Css.ShowUnsupported ? string.Empty : "WE"; }
         }
 
         public bool Equals(ICssSchemaFilter other)

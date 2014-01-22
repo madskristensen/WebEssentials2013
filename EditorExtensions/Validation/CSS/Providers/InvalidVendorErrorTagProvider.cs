@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions
 
         public ItemCheckResult CheckItem(ParseItem item, ICssCheckerContext context)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.ValidateVendorSpecifics))
+            if (!WESettings.Instance.Css.ValidateVendorSpecifics)
                 return ItemCheckResult.Continue;
 
             Declaration dec = (Declaration)item;
@@ -62,7 +62,7 @@ namespace MadsKristensen.EditorExtensions
     {
         public ItemCheckResult CheckItem(ParseItem item, ICssCheckerContext context)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.ValidateVendorSpecifics))
+            if (!WESettings.Instance.Css.ValidateVendorSpecifics)
                 return ItemCheckResult.Continue;
 
             if (!item.IsValid || context == null)
@@ -96,7 +96,7 @@ namespace MadsKristensen.EditorExtensions
     {
         public ItemCheckResult CheckItem(ParseItem item, ICssCheckerContext context)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.ValidateVendorSpecifics))
+            if (!WESettings.Instance.Css.ValidateVendorSpecifics)
                 return ItemCheckResult.Continue;
 
             AtDirective dir = item as AtDirective;

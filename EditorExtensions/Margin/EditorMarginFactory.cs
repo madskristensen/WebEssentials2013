@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Margin
 {
     [Export(typeof(IWpfTextViewMarginProvider))]
     [Name("MarginFactory")]
@@ -24,20 +24,21 @@ namespace MadsKristensen.EditorExtensions
         [Import]
         public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
-        static readonly Dictionary<string, Func<string, ITextDocument, IWpfTextViewMargin>> marginFactories = new Dictionary<string, Func<string, ITextDocument, IWpfTextViewMargin>>(StringComparer.OrdinalIgnoreCase)
+        static readonly Dictionary<string, Func<ITextDocument, IWpfTextViewMargin>> marginFactories = new Dictionary<string, Func<ITextDocument, IWpfTextViewMargin>>(StringComparer.OrdinalIgnoreCase)
         {
-            { "LESS",              (source, document) => new LessMargin("CSS", source, WESettings.GetBoolean(WESettings.Keys.ShowLessPreviewWindow), document) },
-            { "SASS",              (source, document) => new SassMargin("CSS", source, WESettings.GetBoolean(WESettings.Keys.ShowSassPreviewWindow), document) },
-            { "CoffeeScript",      (source, document) => new CoffeeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow), document) },
-            { "IcedCoffeeScript",  (source, document) => new IcedCoffeeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowCoffeeScriptPreviewWindow), document) },
-            { "TypeScript",        (source, document) => new TypeScriptMargin("JavaScript", source, WESettings.GetBoolean(WESettings.Keys.ShowTypeScriptPreviewWindow), document) },
-            { "Markdown",          (source, document) => new MarkdownMargin("text", source, WESettings.GetBoolean(WESettings.Keys.MarkdownShowPreviewWindow), document) },
-            { "Svg",               (source, document) => new SvgMargin("svg", source, WESettings.GetBoolean(WESettings.Keys.SvgShowPreviewWindow), document) }
+            { "Svg",               (document) => new SvgMargin(document) },
+            { "Markdown",          (document) => new MarkdownMargin(document) },
+            { "LESS",              (document) => new TextViewMargin("CSS", document) },
+            { "SASS",              (document) => new TextViewMargin("CSS", document) },
+            { "CoffeeScript",      (document) => new TextViewMargin("JavaScript", document) },
+            { "IcedCoffeeScript",  (document) => new TextViewMargin("JavaScript", document) },
+            { "TypeScript",        (document) => document.FilePath.EndsWith(".d.ts", StringComparison.OrdinalIgnoreCase) 
+                                                ? null : new TextViewMargin("JavaScript", document) }
         };
 
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
-            Func<string, ITextDocument, IWpfTextViewMargin> creator;
+            Func<ITextDocument, IWpfTextViewMargin> creator;
             if (!marginFactories.TryGetValue(wpfTextViewHost.TextView.TextDataModel.DocumentBuffer.ContentType.TypeName, out creator))
                 return null;
 
@@ -46,9 +47,7 @@ namespace MadsKristensen.EditorExtensions
             if (!TextDocumentFactoryService.TryGetTextDocument(wpfTextViewHost.TextView.TextDataModel.DocumentBuffer, out document))
                 return null;
 
-            string source = wpfTextViewHost.TextView.TextBuffer.CurrentSnapshot.GetText();
-
-            return creator(source, document);
+            return creator(document);
         }
     }
 }

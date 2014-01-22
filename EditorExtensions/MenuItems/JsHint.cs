@@ -43,8 +43,8 @@ namespace MadsKristensen.EditorExtensions
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
 
-            var raw = MinifyFileMenu.GetSelectedFilePaths(_dte);
-            files = raw.Where(f => !JsHintRunner.ShouldIgnore(f)).ToList();
+            var raw = ProjectHelpers.GetSelectedFilePaths();
+            files = raw.Where(f => !JsHintReporter.ShouldIgnore(f)).ToList();
 
             menuCommand.Enabled = files.Count > 0;
         }
@@ -52,12 +52,12 @@ namespace MadsKristensen.EditorExtensions
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         private void RunJsHint()
         {
-            JsHintRunner.Reset();
+            LintReporter.Reset();            // TODO: Why?
 
             foreach (string file in files)
             {
-                JsHintRunner runner = new JsHintRunner(file);
-                runner.RunCompiler();
+                JsHintReporter runner = new JsHintReporter(file);
+                runner.RunCompiler().DontWait("linting " +file);
             }
         }
     }

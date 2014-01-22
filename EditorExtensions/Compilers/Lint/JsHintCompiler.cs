@@ -6,20 +6,24 @@ using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
 {
-    public class JsHintCompiler : NodeExecutorBase
+    public interface ILintCompiler
+    {
+        Task<CompilerResult> Check(string sourcePath);
+        string ServiceName { get; }
+        string SourceExtension { get; }
+    }
+
+    public class JsHintCompiler : NodeExecutorBase, ILintCompiler
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\jshint\bin\jshint");
         // JsHint Reported is located in Resources\Scripts\ directory. Read more at http://www.jshint.com/docs/reporters/
         private static readonly string _jsHintReporter = Path.Combine(WebEssentialsResourceDirectory, @"Scripts\jshint-node-reporter.js");
 
-        protected override string ServiceName
-        {
-            get { return "JsHint"; }
-        }
-        protected override string CompilerPath
-        {
-            get { return _compilerPath; }
-        }
+        public override string TargetExtension { get { return null; } }
+        public virtual string SourceExtension { get { return ".js"; } }
+        public override string ServiceName { get { return "JsHint"; } }
+        public override bool GenerateSourceMap { get { return false; } }
+        protected override string CompilerPath { get { return _compilerPath; } }
         protected override Func<string, IEnumerable<CompilerError>> ParseErrors
         {
             get { return ParseErrorsWithJson; }
@@ -27,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
 
         public Task<CompilerResult> Check(string sourcePath)
         {
-            return Compile(sourcePath, null);
+            return CompileAsync(sourcePath, null);
         }
 
         public static string GetOrCreateGlobalSettings(string fileName)

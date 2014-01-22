@@ -2,14 +2,17 @@
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using EnvDTE;
 using EnvDTE80;
 using MadsKristensen.EditorExtensions.BrowserLink.PixelPushing;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+using MadsKristensen.EditorExtensions.Compilers;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.Web.Editor;
 using ThreadingTask = System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
@@ -19,19 +22,17 @@ namespace MadsKristensen.EditorExtensions
     [Guid(CommandGuids.guidEditorExtensionsPkgString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
-    [ProvideOptionPage(typeof(GeneralOptions), "Web Essentials", "General", 101, 101, true, new[] { "ZenCoding", "Mustache", "Handlebars", "Comments", "Bundling", "Bundle" })]
-    [ProvideOptionPage(typeof(CssOptions), "Web Essentials", "CSS", 101, 102, true, new[] { "Minify", "Minification", "W3C", "CSS3" })]
-    [ProvideOptionPage(typeof(JsHintOptions), "Web Essentials", "JSHint", 101, 103, true, new[] { "JSLint", "Lint" })]
-    [ProvideOptionPage(typeof(TsLintOptions), "Web Essentials", "TSLint", 101, 104, true, new[] { "TSLint", "Lint" })]
-    [ProvideOptionPage(typeof(LessOptions), "Web Essentials", "LESS", 101, 105, true)]
-    [ProvideOptionPage(typeof(SassOptions), "Web Essentials", "SASS", 101, 113, true)]
-    [ProvideOptionPage(typeof(CoffeeScriptOptions), "Web Essentials", "CoffeeScript", 101, 106, true, new[] { "Iced", "JavaScript", "JS", "JScript" })]
-    [ProvideOptionPage(typeof(JavaScriptOptions), "Web Essentials", "JavaScript", 101, 107, true, new[] { "JScript", "JS", "Minify", "Minification", "EcmaScript" })]
-    [ProvideOptionPage(typeof(BrowserLinkOptions), "Web Essentials", "Browser Link", 101, 108, true, new[] { "HTML menu", "BrowserLink" })]
-    [ProvideOptionPage(typeof(MarkdownOptions), "Web Essentials", "Markdown", 101, 109, true, new[] { "markdown", "Markdown", "md" })]
-    [ProvideOptionPage(typeof(CodeGenerationOptions), "Web Essentials", "Code Generation", 101, 210, true, new[] { "CodeGeneration", "codeGeneration" })]
-    [ProvideOptionPage(typeof(TypeScriptOptions), "Web Essentials", "TypeScript", 101, 210, true, new[] { "TypeScript", "TS" })]
-    [ProvideOptionPage(typeof(HtmlOptions), "Web Essentials", "HTML", 101, 111, true, new[] { "html", "angular", "xhtml" })]
+    [ProvideOptionPage(typeof(Settings.GeneralOptions), "Web Essentials", "General", 101, 101, true, new[] { "ZenCoding", "Mustache", "Handlebars", "Comments", "Bundling", "Bundle" })]
+    [ProvideOptionPage(typeof(Settings.CssOptions), "Web Essentials", "CSS", 101, 102, true, new[] { "Minify", "Minification", "W3C", "CSS3" })]
+    [ProvideOptionPage(typeof(Settings.LessOptions), "Web Essentials", "LESS", 101, 105, true, new[] { "LESS", "Complier", "Minification", "Minify" })]
+    [ProvideOptionPage(typeof(Settings.SassOptions), "Web Essentials", "SASS", 101, 113, true, new[] { "SASS", "Complier", "Minification", "Minify" })]
+    [ProvideOptionPage(typeof(Settings.CoffeeScriptOptions), "Web Essentials", "CoffeeScript", 101, 106, true, new[] { "Iced", "JavaScript", "JS", "JScript" })]
+    [ProvideOptionPage(typeof(Settings.JavaScriptOptions), "Web Essentials", "JavaScript", 101, 107, true, new[] { "JScript", "JS", "Minify", "Minification", "EcmaScript" })]
+    [ProvideOptionPage(typeof(Settings.BrowserLinkOptions), "Web Essentials", "Browser Link", 101, 108, true, new[] { "HTML menu", "BrowserLink" })]
+    [ProvideOptionPage(typeof(Settings.MarkdownOptions), "Web Essentials", "Markdown", 101, 109, true, new[] { "markdown", "Markdown", "md" })]
+    [ProvideOptionPage(typeof(Settings.CodeGenOptions), "Web Essentials", "Code Generation", 101, 210, true, new[] { "CodeGeneration", "codeGeneration" })]
+    [ProvideOptionPage(typeof(Settings.TypeScriptOptions), "Web Essentials", "TypeScript", 101, 210, true, new[] { "TypeScript", "TS" })]
+    [ProvideOptionPage(typeof(Settings.HtmlOptions), "Web Essentials", "HTML", 101, 111, true, new[] { "html", "angular", "xhtml" })]
     public sealed class EditorExtensionsPackage : Package
     {
         private static DTE2 _dte;
@@ -67,7 +68,7 @@ namespace MadsKristensen.EditorExtensions
 
             Instance = this;
 
-            Settings.UpdateCache();
+            SettingsStore.Load();
 
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
 
@@ -115,7 +116,7 @@ namespace MadsKristensen.EditorExtensions
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
                 DTE.Events.BuildEvents.OnBuildDone += BuildEvents_OnBuildDone;
-                DTE.Events.SolutionEvents.Opened += delegate { Settings.UpdateCache(); Settings.UpdateStatusBar("applied"); ShowTopMenu(); };
+                DTE.Events.SolutionEvents.Opened += delegate { SettingsStore.Load(); ShowTopMenu(); };
                 DTE.Events.SolutionEvents.AfterClosing += delegate { DTE.StatusBar.Clear(); ShowTopMenu(); };
 
             }), DispatcherPriority.ApplicationIdle, null);
@@ -124,37 +125,28 @@ namespace MadsKristensen.EditorExtensions
         private async void BuildEvents_OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
         {
             if (Action != vsBuildAction.vsBuildActionClean)
-                await ThreadingTask.Task.Run(async () =>
+            {
+                var compiler = WebEditor.Host.ExportProvider.GetExport<ProjectCompiler>();
+                await ThreadingTask.Task.Run(() =>
                 {
-                    if (WESettings.GetBoolean(WESettings.Keys.LessCompileOnBuild))
-                        await BuildMenu.BuildLess();
-
-                    if (WESettings.GetBoolean(WESettings.Keys.SassCompileOnBuild))
-                        await BuildMenu.BuildSass();
-
-                    if (WESettings.GetBoolean(WESettings.Keys.CoffeeScriptCompileOnBuild))
-                        await BuildMenu.BuildCoffeeScript();
-
+                    Parallel.ForEach(
+                        Mef.GetSupportedContentTypes<ICompilerRunnerProvider>()
+                           .Where(c => WESettings.Instance.ForContentType<ICompilerInvocationSettings>(c).CompileOnBuild),
+                        c => compiler.Value.CompileSolutionAsync(c).DontWait("compiling solution-wide " + c.DisplayName)
+                    );
                     BuildMenu.UpdateBundleFiles();
-
-                    if (WESettings.GetBoolean(WESettings.Keys.RunJsHintOnBuild))
-                    {
-                        await Dispatcher.CurrentDispatcher.BeginInvoke(
-                                        new Action(() => JsHintProjectRunner.RunOnAllFilesInProject()),
-                                        DispatcherPriority.ApplicationIdle, null);
-                    }
-
-                    if (WESettings.GetBoolean(WESettings.Keys.RunTsLintOnBuild))
-                    {
-                        await Dispatcher.CurrentDispatcher.BeginInvoke(
-                                        new Action(() => TsLintProjectRunner.RunOnAllFilesInProject()),
-                                        DispatcherPriority.ApplicationIdle, null);
-                    }
                 });
+
+                if (WESettings.Instance.JavaScript.LintOnBuild)
+                    LintFileInvoker.RunOnAllFilesInProject(".js", f => new JsHintReporter(f))
+                        .DontWait("running solution-wide JSHint");
+                if (WESettings.Instance.TypeScript.LintOnBuild)
+                    LintFileInvoker.RunOnAllFilesInProject(".ts", f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f))
+                        .DontWait("running solution-wide TSLint");
+            }
             else if (Action == vsBuildAction.vsBuildActionClean)
             {
-                await ThreadingTask.Task.Run(() => JsHintRunner.Reset());
-                await ThreadingTask.Task.Run(() => TsLintRunner.Reset());
+                LintReporter.Reset();
             }
         }
 

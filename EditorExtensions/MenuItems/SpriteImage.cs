@@ -39,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
         void IsSpriteFile(object sender, System.EventArgs e)
         {
             OleMenuCommand button = sender as OleMenuCommand;
-            _sprites = MinifyFileMenu.GetSelectedFilePaths(_dte)
+            _sprites = ProjectHelpers.GetSelectedFilePaths()
                                    .Where(file => Path.GetExtension(file) == ".sprite");
 
             button.Enabled = _sprites.Count() > 0;
@@ -49,7 +49,7 @@ namespace MadsKristensen.EditorExtensions
         {
             OleMenuCommand button = sender as OleMenuCommand;
 
-            _files = MinifyFileMenu.GetSelectedFilePaths(_dte)
+            _files = ProjectHelpers.GetSelectedFilePaths()
                                    .Where(file => _supported.Contains(Path.GetExtension(file)));
 
             button.Enabled = _files.Count() > 1;

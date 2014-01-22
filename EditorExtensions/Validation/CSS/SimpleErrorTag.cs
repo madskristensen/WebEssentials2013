@@ -4,71 +4,32 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class SimpleErrorTag : ICssError
     {
-        private ParseItem _item;
-        private string _errorMessage;
-        private int _length;
 
-        public SimpleErrorTag(ParseItem item, string errorMessage, CssErrorFlags flags = CssErrorFlags.TaskListMessage | CssErrorFlags.UnderlinePurple)
+        public SimpleErrorTag(ParseItem item, string errorMessage, CssErrorFlags flags)
+            : this(item, errorMessage, item.AfterEnd - item.Start, flags)
+        { }
+
+        public SimpleErrorTag(ParseItem item, string errorMessage)
+            : this(item, errorMessage, item.AfterEnd - item.Start)
+        { }
+
+        public SimpleErrorTag(ParseItem item, string errorMessage, int length)
+            : this(item, errorMessage, length, WESettings.Instance.Css.ValidationLocation.ToCssErrorFlags())
+        { }
+        public SimpleErrorTag(ParseItem item, string errorMessage, int length, CssErrorFlags flags)
         {
-            _item = item;
-            _errorMessage = errorMessage;
-            _length = AfterEnd - Start;
+            Item = item;
+            Text = errorMessage;
+            Length = length;
             Flags = flags;
         }
 
-        public SimpleErrorTag(ParseItem item, string errorMessage)
-        {
-            _item = item;
-            _errorMessage = errorMessage;
-            _length = AfterEnd - Start;
-            Flags = GetLocation();
-        }
+        public ParseItem Item { get; private set; }
+        public string Text { get; private set; }
 
-        public SimpleErrorTag(ParseItem item, string errorMessage, int length)
-        {
-            _item = item;
-            _errorMessage = errorMessage;
-            _length = length;
-            Flags = GetLocation();
-        }
-
-        private static CssErrorFlags GetLocation()
-        {
-            switch ((WESettings.Keys.ErrorLocation)WESettings.GetInt(WESettings.Keys.CssErrorLocation))
-            {
-                case WESettings.Keys.ErrorLocation.Warnings:
-                    return CssErrorFlags.UnderlinePurple | CssErrorFlags.TaskListWarning;
-
-                default:
-                    return CssErrorFlags.UnderlinePurple | CssErrorFlags.TaskListMessage;
-            }
-        }
-
-        public ParseItem Item
-        {
-            get { return _item; }
-        }
-
-        public string Text
-        {
-            get { return _errorMessage; }
-        }
-
-        public int AfterEnd
-        {
-            get { return _item.AfterEnd; }
-        }
-
-        public int Length
-        {
-            get { return _length; }
-        }
-
-        public int Start
-        {
-            get { return _item.Start; }
-        }
-
-        public CssErrorFlags Flags { get; set; }
+        public int AfterEnd { get { return Item.AfterEnd; } }
+        public int Start { get { return Item.Start; } }
+        public int Length { get; private set; }
+        public CssErrorFlags Flags { get; private set; }
     }
 }

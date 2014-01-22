@@ -34,30 +34,30 @@ namespace MadsKristensen.EditorExtensions
             solutionEvents.ProjectRemoved += ProjectRemoved;
         }
 
-        private void SolutionBeforeQueryStatus(object sender, System.EventArgs e)
+        private void SolutionBeforeQueryStatus(object sender, EventArgs e)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
-            bool settingsExist = Settings.SolutionSettingsExist;
+            bool settingsExist = SettingsStore.SolutionSettingsExist;
 
             menuCommand.Enabled = !settingsExist;
         }
 
         private static void ApplySolutionSettings()
         {
-            Settings.CreateSolutionSettings();
+            SettingsStore.CreateSolutionSettings();
         }
 
         private static void ItemRenamed(ProjectItem ProjectItem, string OldName)
         {
-            if (OldName.EndsWith(Settings._fileName, StringComparison.OrdinalIgnoreCase) || ProjectItem.Name == Settings._fileName)
-                Settings.UpdateCache();
+            if (OldName.EndsWith(SettingsStore.FileName, StringComparison.OrdinalIgnoreCase) || ProjectItem.Name == SettingsStore.FileName)
+                SettingsStore.Load();
         }
 
         private void ItemRemoved(ProjectItem ProjectItem)
         {
-            if (ProjectItem.Name == Settings._fileName &&
+            if (ProjectItem.Name == SettingsStore.FileName &&
                 ProjectItem.ContainingProject != null &&
-                ProjectItem.ContainingProject.Name == Settings._solutionFolder)
+                ProjectItem.ContainingProject.Name == ProjectHelpers.SolutionItemsFolder)
             {
                 DeleteSolutionSettings();
             }
@@ -65,7 +65,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void ProjectRemoved(Project project)
         {
-            if (project.Name == Settings._solutionFolder)
+            if (project.Name == ProjectHelpers.SolutionItemsFolder)
             {
                 DeleteSolutionSettings();
             }
@@ -73,7 +73,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static void DeleteSolutionSettings()
         {
-            string file = Settings.GetSolutionFilePath();
+            string file = SettingsStore.GetSolutionFilePath();
 
             if (File.Exists(file))
             {
@@ -83,12 +83,11 @@ namespace MadsKristensen.EditorExtensions
                 if (result == DialogResult.Yes)
                 {
                     File.Delete(file);
-                    Settings.UpdateCache();
-                    Settings.UpdateStatusBar("applied");
+                    SettingsStore.Load();
                 }
                 else
                 {
-                    Settings.UpdateStatusBar("still applies. The settings file still exist in the solution folder.");
+                    SettingsStore.UpdateStatusBar("are still applied. The settings file still exists in the solution folder.");
                 }
             }
         }

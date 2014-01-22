@@ -12,30 +12,16 @@ namespace MadsKristensen.EditorExtensions
         {
             _range = range;
             _errorMessage = errorMessage;
-            Flags = GetLocation();
+            Flags = WESettings.Instance.Css.ValidationLocation.ToCssErrorFlags();
         }
 
-        private static CssErrorFlags GetLocation()
-        {
-            switch ((WESettings.Keys.ErrorLocation)WESettings.GetInt(WESettings.Keys.CssErrorLocation))
-            {
-                case WESettings.Keys.ErrorLocation.Warnings:
-                    return CssErrorFlags.UnderlinePurple | CssErrorFlags.TaskListWarning;
-
-                default:
-                    return CssErrorFlags.UnderlinePurple | CssErrorFlags.TaskListMessage;
-            }
-        }
 
         public ParseItem Item
         {
             get { return _range.First(); }
         }
 
-        public string Text
-        {
-            get { return _errorMessage; }
-        }
+        public string Text { get; private set; }
 
         public int AfterEnd
         {
@@ -52,6 +38,6 @@ namespace MadsKristensen.EditorExtensions
             get { return _range.First().Start; }
         }
 
-        public CssErrorFlags Flags { get; set; }
+        public CssErrorFlags Flags { get; private set; }
     }
 }

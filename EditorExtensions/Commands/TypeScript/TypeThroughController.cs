@@ -126,7 +126,7 @@ namespace MadsKristensen.EditorExtensions
             // current caret position may be beyond projection boundary like when
             // typing at the end of onclick="return foo(".
 
-            if (WESettings.GetBoolean(WESettings.Keys.TypeScriptBraceCompletion))
+            if (WESettings.Instance.TypeScript.BraceCompletion)
             {
                 char completionCharacter = GetCompletionCharacter(typedCharacter);
                 if (completionCharacter != '\0')

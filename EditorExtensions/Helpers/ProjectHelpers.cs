@@ -16,6 +16,17 @@ namespace MadsKristensen.EditorExtensions
 {
     internal static class ProjectHelpers
     {
+        public const string SolutionItemsFolder = "Solution Items";
+        ///<summary>Gets the Solution Items solution folder in the current solution, creating it if it doesn't exist.</summary>
+        public static Project GetSolutionItemsProject()
+        {
+            Solution2 solution = EditorExtensionsPackage.DTE.Solution as Solution2;
+            return solution.Projects
+                           .OfType<Project>()
+                           .FirstOrDefault(p => p.Name.Equals(SolutionItemsFolder, StringComparison.OrdinalIgnoreCase))
+                      ?? solution.AddSolutionFolder(SolutionItemsFolder);
+        }
+
         public static IEnumerable<Project> GetAllProjects()
         {
             return EditorExtensionsPackage.DTE.Solution.Projects
@@ -24,7 +35,7 @@ namespace MadsKristensen.EditorExtensions
         }
         private static IEnumerable<Project> GetChildProjects(Project parent)
         {
-            if (parent.Kind !=  ProjectKinds.vsProjectKindSolutionFolder && parent.Collection == null)  // Unloaded
+            if (parent.Kind != ProjectKinds.vsProjectKindSolutionFolder && parent.Collection == null)  // Unloaded
                 return Enumerable.Empty<Project>();
 
             if (!String.IsNullOrEmpty(parent.FullName))
@@ -35,7 +46,7 @@ namespace MadsKristensen.EditorExtensions
                     .SelectMany(p => GetChildProjects(p.SubProject));
         }
 
-        ///<summary>Indicates whether a Project is a Web Application or Web Site project.</summary>
+        ///<summary>Indicates whether a Project is a Web Application, Web Site, or WinJS project.</summary>
         public static bool IsWebProject(this Project project)
         {
             // Web site project
@@ -47,10 +58,8 @@ namespace MadsKristensen.EditorExtensions
             {
                 return project.Properties.Item("WebApplication.UseIISExpress") != null;
             }
-            catch (ArgumentException argumentException)
-            {
-                Logger.Log("Not a Web Application: " + argumentException.Message);
-            }
+            catch (ArgumentException)
+            { }
 
             return false;
         }
@@ -255,6 +264,17 @@ namespace MadsKristensen.EditorExtensions
             return (IComponentModel)ServiceProvider.GlobalProvider.GetService(typeof(SComponentModel));
         }
 
+        ///<summary>Gets the paths to all files included in the selection, including files within selected folders.</summary>
+        public static IEnumerable<string> GetSelectedFilePaths()
+        {
+            return GetSelectedItemPaths()
+                .SelectMany(p => Directory.Exists(p)
+                                 ? Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories)
+                                 : new[] { p }
+                           );
+        }
+
+
         ///<summary>Gets the full paths to the currently selected item(s) in the Solution Explorer.</summary>
         public static IEnumerable<string> GetSelectedItemPaths(DTE2 dte = null)
         {
@@ -282,28 +302,27 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        ///<summary>Attempts to ensure that a file is writable.</summary>
+        /// <returns>True if the file is not under source control or was checked out; false if the checkout failed or an error occurred.</returns>
         public static bool CheckOutFileFromSourceControl(string fileName)
         {
             try
             {
                 var dte = EditorExtensionsPackage.DTE;
 
-                if (File.Exists(fileName) && dte.Solution.FindProjectItem(fileName) != null)
-                {
-                    if (dte.SourceControl.IsItemUnderSCC(fileName) && !dte.SourceControl.IsItemCheckedOut(fileName))
-                    {
-                        dte.SourceControl.CheckOutItem(fileName);
-                    }
-
+                if (dte == null || !File.Exists(fileName) || dte.Solution.FindProjectItem(fileName) == null)
                     return true;
-                }
+                if (dte.SourceControl.IsItemUnderSCC(fileName) && !dte.SourceControl.IsItemCheckedOut(fileName))
+                    return dte.SourceControl.CheckOutItem(fileName);
+
+                return true;
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debugger.Launch();
                 Logger.Log(ex);
+                return false;
             }
-
-            return false;
         }
 
         ///<summary>Gets the directory containing the active solution file.</summary>

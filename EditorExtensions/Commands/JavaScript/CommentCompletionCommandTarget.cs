@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.JavaScriptCommentCompletion))
+            if (!WESettings.Instance.JavaScript.BlockCommentCompletion)
                 return false;
 
             char typedChar = (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);

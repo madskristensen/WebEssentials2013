@@ -18,7 +18,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
         private static readonly ConcurrentDictionary<string, bool> ContinuousSyncModeByProject = new ConcurrentDictionary<string, bool>();
         private readonly BrowserLinkConnection _connection;
         private readonly UploadHelper _uploadHelper;
-        private static bool _isPixelPushingModeEnabled = WESettings.GetBoolean(WESettings.Keys.PixelPushing_OnByDefault);
         private static List<Regex> _ignoreList;
         private bool _isDisconnecting;
         private int _expectSequenceNumber;
@@ -33,25 +32,23 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
         }
         public static bool IsPixelPushingModeEnabled
         {
-            get { return _isPixelPushingModeEnabled; }
+            get { return WESettings.Instance.BrowserLink.EnablePixelPushing; }
             set
             {
-                if (value ^ _isPixelPushingModeEnabled)
-                {
-                    Settings.SetValue(WESettings.Keys.PixelPushing_OnByDefault, value);
-                    Settings.Save();
-
-                    _isPixelPushingModeEnabled = value;
-                }
+                if (value == IsPixelPushingModeEnabled)
+                    return;
+                WESettings.Instance.BrowserLink.EnablePixelPushing = value;
+                SettingsStore.Save();
             }
         }
         public static IEnumerable<Regex> IgnoreList
         {
             get
             {
-                var ignorePatterns = WESettings.GetString(WESettings.Keys.UnusedCss_IgnorePatterns) ?? "";
+                var ignorePatterns = WESettings.Instance.BrowserLink.CssIgnorePatterns ?? "";
 
-                return _ignoreList ?? (_ignoreList = ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => new Regex(UnusedCssExtension.FilePatternToRegex(x.Trim()))).ToList());
+                return _ignoreList ?? (_ignoreList = ignorePatterns.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(x => new Regex(UnusedCssExtension.FilePatternToRegex(x.Trim()))).ToList());
             }
         }
 
@@ -60,8 +57,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             ExtensionByConnection[connection] = this;
             _uploadHelper = new UploadHelper();
             _connection = connection;
-            Settings.Updated += (sender, args) => _ignoreList = null;
-
+            Settings.BrowserLinkOptions.SettingsUpdated += (sender, args) => _ignoreList = null;
         }
 
         internal static void All(Action<PixelPushingMode> method)
@@ -325,8 +321,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
         public void EnterContinuousSyncMode(bool value)
         {
             var changed = false;
-            ContinuousSyncModeByProject.AddOrUpdate(_connection.Project.UniqueName, p => value, (p, x) =>
-            {
+            ContinuousSyncModeByProject.AddOrUpdate(_connection.Project.UniqueName, p => value, (p, x) => {
                 changed = x ^ value;
 
                 return value;

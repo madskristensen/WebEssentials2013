@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -16,26 +17,50 @@ namespace MadsKristensen.EditorExtensions
     public static class FileHelpers
     {
         public static SnapshotPoint? GetCurrentSelection(string contentType) { return ProjectHelpers.GetCurentTextView().GetSelection(contentType); }
-        ///<summary>Gets the currently selected span within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
+        ///<summary>Gets the currently selected point within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
         ///<param name="view">The TextView containing the selection</param>
         ///<param name="contentType">The ContentType to filter the selection by.</param>        
         public static SnapshotPoint? GetSelection(this ITextView view, string contentType)
         {
             return view.BufferGraph.MapDownToInsertionPoint(view.Caret.Position.BufferPosition, PointTrackingMode.Positive, ts => ts.ContentType.IsOfType(contentType));
         }
-        ///<summary>Gets the currently selected span within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
+        ///<summary>Gets the currently selected point within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
         ///<param name="view">The TextView containing the selection</param>
         ///<param name="contentTypes">The ContentTypes to filter the selection by.</param>        
         public static SnapshotPoint? GetSelection(this ITextView view, params string[] contentTypes)
         {
             return view.BufferGraph.MapDownToInsertionPoint(view.Caret.Position.BufferPosition, PointTrackingMode.Positive, ts => contentTypes.Any(c => ts.ContentType.IsOfType(c)));
         }
-        ///<summary>Gets the currently selected span within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
+        ///<summary>Gets the currently selected point within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
         ///<param name="view">The TextView containing the selection</param>
         ///<param name="contentTypeFilter">The ContentType to filter the selection by.</param>        
         public static SnapshotPoint? GetSelection(this ITextView view, Func<IContentType, bool> contentTypeFilter)
         {
             return view.BufferGraph.MapDownToInsertionPoint(view.Caret.Position.BufferPosition, PointTrackingMode.Positive, ts => contentTypeFilter(ts.ContentType));
+        }
+        ///<summary>Gets the first currently selected span within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
+        ///<param name="view">The TextView containing the selection</param>
+        ///<param name="contentTypeFilter">The ContentType to filter the selection by.</param>        
+        public static SnapshotSpan? GetSelectedSpan(this ITextView view, Func<IContentType, bool> contentTypeFilter)
+        {
+            return view.Selection.SelectedSpans.SelectMany(span =>
+                view.BufferGraph.MapDownToFirstMatch(
+                    span,
+                    SpanTrackingMode.EdgePositive,
+                    ts => contentTypeFilter(ts.ContentType)
+                ), (s, c) => (SnapshotSpan?)s
+            ).FirstOrDefault();
+        }
+
+        public static void GzipFile(string sourcePath)
+        {
+            var gzipPath = sourcePath + ".gzip";
+            ProjectHelpers.CheckOutFileFromSourceControl(gzipPath);
+
+            using (var sourceStream = File.OpenRead(sourcePath))
+            using (var targetStream = File.OpenWrite(gzipPath))
+            using (var gzipStream = new GZipStream(targetStream, CompressionMode.Compress))
+                sourceStream.CopyTo(gzipStream);
         }
 
         public static void OpenFileInPreviewTab(string file)
@@ -254,75 +279,6 @@ namespace MadsKristensen.EditorExtensions
             find.FilesOfType = types;
             find.MatchCase = matchCase;
             find.MatchWholeWord = matchWord;
-        }
-
-        internal static void WriteResult(CompilerResult result, string compileToFileName, string compileToExtension)
-        {
-            MinifyFile(result.FileName, result.Result, compileToExtension);
-
-            if (!File.Exists(compileToFileName))
-                return;
-
-            string old = File.ReadAllText(compileToFileName);
-
-            if (old == result.Result)
-                return;
-
-            ProjectHelpers.CheckOutFileFromSourceControl(compileToFileName);
-
-            try
-            {
-                using (StreamWriter writer = new StreamWriter(compileToFileName, false, new UTF8Encoding(true)))
-                {
-                    writer.Write(result.Result);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(ex);
-            }
-        }
-
-        internal static void MinifyFile(string sourceFileName, string source, string compileToExtension)
-        {
-            string content = MinifyFileMenu.MinifyString(compileToExtension, source);
-            string minFile = MarginBase.GetCompiledFileName(sourceFileName, ".min" + compileToExtension, Path.GetDirectoryName(sourceFileName));
-            bool fileExist = File.Exists(minFile);
-            string old = fileExist ? File.ReadAllText(minFile) : string.Empty;
-
-            if (old != content)
-            {
-                ProjectHelpers.CheckOutFileFromSourceControl(minFile);
-
-                using (StreamWriter writer = new StreamWriter(minFile, false, new UTF8Encoding(true)))
-                {
-                    writer.Write(content);
-                }
-
-                if (!fileExist)
-                    ProjectHelpers.AddFileToProject(sourceFileName, minFile);
-            }
-        }
-
-        internal static bool WriteFile(string content, string fileName)
-        {
-            bool fileWritten = false;
-
-            if (!File.Exists(fileName))
-                return false;
-
-            try
-            {
-                File.WriteAllText(fileName, content, new UTF8Encoding(true));
-                fileWritten = true;
-            }
-            catch (Exception ex)
-            {
-                Logger.ShowMessage("Could not write to " + Path.GetFileName(fileName)
-                                 + Environment.NewLine + ex.Message);
-            }
-
-            return fileWritten;
         }
     }
 }

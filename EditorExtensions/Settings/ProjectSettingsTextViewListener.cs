@@ -8,7 +8,8 @@ using Microsoft.VisualStudio.Utilities;
 namespace MadsKristensen.EditorExtensions.Options
 {
     [Export(typeof(IWpfTextViewCreationListener))]
-    [ContentType("XML")]
+    [ContentType("text")]   // TODO: Remove after JSON editor ships
+    [ContentType("JSON")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     public class ProjectSettingsTextViewListener : IWpfTextViewCreationListener
     {
@@ -26,12 +27,9 @@ namespace MadsKristensen.EditorExtensions.Options
 
         private void document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
-            if (e.FileActionType == FileActionTypes.ContentSavedToDisk && e.FilePath.EndsWith(Settings._fileName, StringComparison.OrdinalIgnoreCase))
+            if (e.FileActionType == FileActionTypes.ContentSavedToDisk && e.FilePath.EndsWith(SettingsStore.FileName, StringComparison.OrdinalIgnoreCase))
             {
-                Task.Run(() =>
-                {
-                    Settings.UpdateCache();
-                });
+                SettingsStore.Load();
             }
         }
     }

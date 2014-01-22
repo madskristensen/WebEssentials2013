@@ -1,14 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
 {
     public static class IVsExtensions
     {
+        ///<summary>Gets a case-insensitive HashSet of all extensions for a given ContentType, including the leading dot.</summary>
+        public static ISet<string> GetFileExtensionSet(this IFileExtensionRegistryService fers, IContentType contentType)
+        {
+            return new HashSet<string>(
+                fers.GetExtensionsForContentType(contentType)
+                    .Select(e => "." + e),
+                StringComparer.OrdinalIgnoreCase
+            );
+        }
+
         const uint DISP_E_MEMBERNOTFOUND = 0x80020003;
 
         public static void AddHierarchyItem(this ErrorTask task)

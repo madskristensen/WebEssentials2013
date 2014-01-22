@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+using MadsKristensen.EditorExtensions.Compilers;
 using Microsoft.CSS.Core;
 using Microsoft.Less.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,7 +14,8 @@ namespace WebEssentialsTests
     public class LessDocumentTests
     {
         [ClassInitialize]
-        public static void Initialize(TestContext c) { NodeExecutorBase.InUnitTests = true; }
+        public static void Initialize(TestContext c) { SettingsStore.EnterTestMode(); }
+
         [TestMethod]
         public async Task SelectorExpansionTest()
         {
@@ -213,7 +215,7 @@ a {
 
             foreach (var lessCode in testSources)
             {
-                var cssCode = await new LessCompiler().CompileString(lessCode, ".less", ".css");
+                var cssCode = await new LessCompiler().CompileSourceAsync(lessCode, ".less");
                 var lessDoc = new LessParser().Parse(lessCode, false);
                 var cssDoc = new CssParser().Parse(cssCode, false);
 

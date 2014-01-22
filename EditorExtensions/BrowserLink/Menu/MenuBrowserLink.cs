@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.Menu
     {
         public BrowserLinkExtension CreateExtensionInstance(BrowserLinkConnection connection)
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.EnableBrowserLinkMenu))
+            if (!WESettings.Instance.BrowserLink.EnableMenu)
                 return null;
 
             return new MenuBrowserLink();
@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.Menu
 
         public string GetScript()
         {
-            if (!WESettings.GetBoolean(WESettings.Keys.EnableBrowserLinkMenu))
+            if (!WESettings.Instance.BrowserLink.EnableMenu)
                 return null;
 
             using (Stream stream = GetType().Assembly.GetManifestResourceStream("MadsKristensen.EditorExtensions.BrowserLink.Menu.MenuBrowserLink.js"))
@@ -33,15 +33,15 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.Menu
     {
         public override void OnConnected(BrowserLinkConnection connection)
         {
-            Browsers.Client(connection).Invoke("setVisibility", WESettings.GetBoolean(WESettings.Keys.BrowserLink_ShowMenu));
+            Browsers.Client(connection).Invoke("setVisibility", WESettings.Instance.BrowserLink.ShowMenu);
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         [BrowserLinkCallback] // This method can be called from JavaScript
         public void ToggleVisibility(bool visible)
         {
-            Settings.SetValue(WESettings.Keys.BrowserLink_ShowMenu, visible);
-            Settings.Save();
+            WESettings.Instance.BrowserLink.ShowMenu = visible;
+            SettingsStore.Save();
         }
     }
 }
