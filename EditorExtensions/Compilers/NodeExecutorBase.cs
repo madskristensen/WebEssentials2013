@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
-            
+
             try
             {
 
@@ -135,20 +135,20 @@ namespace MadsKristensen.EditorExtensions
 
         protected IEnumerable<CompilerError> ParseErrorsWithRegex(string error)
         {
-            var match = ErrorParsingPattern.Match(error);
+            var matches = ErrorParsingPattern.Matches(error);
 
-            if (!match.Success)
+            if (matches.Count == 0)
             {
-                Logger.Log(ServiceName + " parse error: " + error);
-                yield return new CompilerError { Message = error };
+                Logger.Log(ServiceName + ": unparseable compilation error: " + error);
+                return new[] { new CompilerError { Message = error } };
             }
-            yield return new CompilerError
+            return matches.Cast<Match>().Select(match => new CompilerError
             {
                 FileName = match.Groups["fileName"].Value,
                 Message = match.Groups["message"].Value,
                 Column = string.IsNullOrEmpty(match.Groups["column"].Value) ? 1 : int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture),
                 Line = int.Parse(match.Groups["line"].Value, CultureInfo.CurrentCulture)
-            };
+            });
         }
 
         protected abstract string GetArguments(string sourceFileName, string targetFileName);
