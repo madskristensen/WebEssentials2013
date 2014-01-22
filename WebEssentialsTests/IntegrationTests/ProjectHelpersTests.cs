@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using EnvDTE;
@@ -34,13 +35,19 @@ namespace WebEssentialsTests.IntegrationTests
             ErrorHandler.ThrowOnFailure(solutionService.GetProjectOfUniqueName(project.UniqueName, out projHierarchy));
             ErrorHandler.ThrowOnFailure(solutionService.CloseSolutionElement((uint)__VSSLNCLOSEOPTIONS.SLNCLOSEOPT_UnloadProject, projHierarchy, 0));
 
+            // We target VS2013, which can only open WinStore
+            // apps when running on Win8.1. Therefore, I skip
+            // those projects when testing on older platforms
+            var isWin81 = Type.GetType("Windows.UI.Xaml.Controls.Flyout, Windows.UI.Xaml, ContentType=WindowsRuntime", false) != null;
+
             ProjectHelpers.GetAllProjects()
                           .Select(ProjectHelpers.GetRootFolder)
                           .Select(f => f.TrimEnd('\\'))
                           .Should()
                           .BeEquivalentTo(
                                 Directory.EnumerateDirectories(Path.Combine(VSHost.FixtureDirectory, "ProjectEnumeration"))
-                                     .Where(f => Path.GetFileName(f) != "CS-Normal")
+                                     .Where(f => Path.GetFileName(f) != "CS-Normal" && Path.GetFileName(f) != "Debug")  // Skip temp folder & unloaded project
+                                     .Where(f => isWin81 || !f.Contains("WinStore"))
                           );
         }
 
