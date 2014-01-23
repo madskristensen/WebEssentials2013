@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using EnvDTE;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
@@ -17,12 +18,13 @@ namespace WebEssentialsTests.IntegrationTests
     {
         [HostType("VS IDE")]
         [TestMethod]
-        public void SolutionSettingsMigrationTest()
+        public async Task SolutionSettingsMigrationTest()
         {
             SettingsStore.InTestMode = false;   // Enable settings load
             File.Delete(Path.Combine(VSHost.FixtureDirectory, "LegacySettings", SettingsStore.FileName));
-            //Debug.Assert(false);
+
             VSHost.EnsureSolution(@"LegacySettings\LegacySettings.sln");
+            await Task.Delay(750);  // Wait for things to load
             File.Exists(Path.Combine(VSHost.FixtureDirectory, "LegacySettings", SettingsStore.FileName))
                 .Should().BeTrue("opening solution with legacy settings file should create new settings file");
 
