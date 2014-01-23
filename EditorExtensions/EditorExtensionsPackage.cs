@@ -124,6 +124,18 @@ namespace MadsKristensen.EditorExtensions
 
         private void BuildEvents_OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
         {
+            bool success = _dte.Solution.SolutionBuild.LastBuildInfo == 0;
+            if (!success)
+            {
+                string text = _dte.StatusBar.Text; // respect localization of "Build failed"
+                Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+                {
+                    _dte.StatusBar.Text = text;
+                }), DispatcherPriority.ApplicationIdle, null);
+
+                return;
+            }
+
             if (Action != vsBuildAction.vsBuildActionClean)
             {
                 var compiler = WebEditor.Host.ExportProvider.GetExport<ProjectCompiler>();
@@ -140,6 +152,7 @@ namespace MadsKristensen.EditorExtensions
                 if (WESettings.Instance.JavaScript.LintOnBuild)
                     LintFileInvoker.RunOnAllFilesInProjectAsync(".js", f => new JsHintReporter(f))
                         .DontWait("running solution-wide JSHint");
+
                 if (WESettings.Instance.TypeScript.LintOnBuild)
                     LintFileInvoker.RunOnAllFilesInProjectAsync(".ts", f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f))
                         .DontWait("running solution-wide TSLint");
