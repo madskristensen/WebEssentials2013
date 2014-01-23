@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Projection;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -99,6 +100,12 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
             h = delegate
             {
                 // Make sure we don't set up ContainedLanguages until the buffer is ready
+                // When loading lots of Markdown files on solution load, we might need to
+                // wait for multiple idle cycles.
+                var doc = ServiceManager.GetService<HtmlEditorDocument>(editorBuffer);
+                if (doc == null) return;
+                if (doc.PrimaryView == null) return;
+
                 WebEditor.OnIdle -= h;
                 ContainedLanguageAdapter.ForBuffer(editorBuffer).AddIntellisenseProjectLanguage(projectionBuffer, FindGuid());
             };
@@ -138,7 +145,7 @@ namespace MadsKristensen.EditorExtensions.Classifications.Markdown
         {
             return new[] { @"partial class Entry
                             {
-                                  async Task<object> SampleMethod" + Guid.NewGuid().ToString("n") + @"() {",@"
+                                  async Task<object> SampleMethod" + Guid.NewGuid().ToString("n") + @"() {", @"
                                 return await Task.FromResult(new object());
                             }
                             }" };

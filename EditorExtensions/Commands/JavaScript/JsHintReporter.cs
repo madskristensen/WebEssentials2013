@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions
     {
         public JsHintReporter(string fileName) : base(new JsHintCompiler(), WESettings.Instance.JavaScript, fileName) { }
 
-        public override Task RunCompiler()
+        public override Task RunLinterAsync()
         {
             if (ShouldIgnore(FileName))
             {
@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions
                 _provider.Tasks.Clear();
                 return Task.FromResult(true);
             }
-            return base.RunCompiler();
+            return base.RunLinterAsync();
         }
 
         public static bool ShouldIgnore(string file)

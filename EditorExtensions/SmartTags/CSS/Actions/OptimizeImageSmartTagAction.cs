@@ -38,7 +38,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (_url.IsDataUri())
             {
-                string dataUri = await compressor.CompressDataUri(url);
+                string dataUri = await compressor.CompressDataUriAsync(url);
 
                 if (dataUri.Length < url.Length)
                 {
@@ -57,7 +57,7 @@ namespace MadsKristensen.EditorExtensions
                 if (string.IsNullOrEmpty(fileName) || !ImageCompressor.IsFileSupported(fileName) || !File.Exists(fileName))
                     return;
 
-                await compressor.CompressFiles(fileName);
+                await compressor.CompressFilesAsync(fileName);
             }
         }
     }

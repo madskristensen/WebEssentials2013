@@ -26,12 +26,12 @@ namespace MadsKristensen.EditorExtensions
         public void SetupCommands()
         {
             CommandID cmd = new CommandID(CommandGuids.guidImageCmdSet, (int)CommandId.SpriteImage);
-            OleMenuCommand menuCmd = new OleMenuCommand(async (s, e) => await CreateSprite(), cmd);
+            OleMenuCommand menuCmd = new OleMenuCommand(async (s, e) => await CreateSpriteAsync(), cmd);
             menuCmd.BeforeQueryStatus += BeforeQueryStatus;
             _mcs.AddCommand(menuCmd);
 
             CommandID update = new CommandID(CommandGuids.guidImageCmdSet, (int)CommandId.UpdateSprite);
-            OleMenuCommand menuUpdate = new OleMenuCommand(async (s, e) => await UpdateSprite(), update);
+            OleMenuCommand menuUpdate = new OleMenuCommand(async (s, e) => await UpdateSpriteAsync(), update);
             menuUpdate.BeforeQueryStatus += IsSpriteFile;
             _mcs.AddCommand(menuUpdate);
         }
@@ -55,7 +55,7 @@ namespace MadsKristensen.EditorExtensions
             button.Enabled = _files.Count() > 1;
         }
 
-        private async Task CreateSprite()
+        private async Task CreateSpriteAsync()
         {
             string spriteFile;
 
@@ -68,7 +68,7 @@ namespace MadsKristensen.EditorExtensions
                 doc.Save();
                 EditorExtensionsPackage.DTE.ItemOperations.OpenFile(spriteFile);
 
-                await Generate(doc);
+                await GenerateAsync(doc);
             }
             catch (Exception ex)
             {
@@ -78,14 +78,14 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private async Task UpdateSprite()
+        private async Task UpdateSpriteAsync()
         {
             try
             {
                 await Task.WhenAll(_sprites.Select(async file =>
                 {
                     SpriteDocument doc = SpriteDocument.FromFile(file);
-                    await Generate(doc);
+                    await GenerateAsync(doc);
                 }));
             }
             catch (FileNotFoundException ex)
@@ -101,7 +101,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private async Task Generate(SpriteDocument sprite)
+        private async Task GenerateAsync(SpriteDocument sprite)
         {
             _dte.StatusBar.Text = "Generating sprite...";
 
@@ -114,7 +114,7 @@ namespace MadsKristensen.EditorExtensions
             Export(fragments, imageFile);
 
             if (sprite.Optimize)
-                await new ImageCompressor().CompressFiles(imageFile);
+                await new ImageCompressor().CompressFilesAsync(imageFile);
 
             _dte.StatusBar.Text = "Sprite generated";
         }

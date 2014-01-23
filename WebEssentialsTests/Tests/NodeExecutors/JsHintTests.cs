@@ -16,21 +16,21 @@ namespace WebEssentialsTests.Tests.JsHint
         [TestMethod]
         public async Task JsHintIgnoreTest()
         {
-            var result = await new JsHintCompiler().Check(Path.Combine(SourcePath, "skip.js"));
+            var result = await new JsHintCompiler().CheckAsync(Path.Combine(SourcePath, "skip.js"));
             result.Errors.Should().BeEmpty();
         }
 
         [TestMethod]
         public async Task JsHintConfigTest()
         {
-            var result = await new JsHintCompiler().Check(Path.Combine(SourcePath, "config", "clean.js"));
+            var result = await new JsHintCompiler().CheckAsync(Path.Combine(SourcePath, "config", "clean.js"));
             result.Errors.Should().BeEmpty();
         }
 
         [TestMethod]
         public async Task JsHintErrorTest()
         {
-            var result = await new JsHintCompiler().Check(Path.Combine(SourcePath, "default.js"));
+            var result = await new JsHintCompiler().CheckAsync(Path.Combine(SourcePath, "default.js"));
             result.Errors.Select(e => e.Message.Substring(e.Message.IndexOf("): ") + 3))
                          .Should().BeEquivalentTo(new[] {
                             "'undef1' is not defined.",

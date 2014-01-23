@@ -122,12 +122,12 @@ namespace MadsKristensen.EditorExtensions
             }), DispatcherPriority.ApplicationIdle, null);
         }
 
-        private async void BuildEvents_OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
+        private void BuildEvents_OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
         {
             if (Action != vsBuildAction.vsBuildActionClean)
             {
                 var compiler = WebEditor.Host.ExportProvider.GetExport<ProjectCompiler>();
-                await ThreadingTask.Task.Run(() =>
+                ThreadingTask.Task.Run(() =>
                 {
                     Parallel.ForEach(
                         Mef.GetSupportedContentTypes<ICompilerRunnerProvider>()
@@ -135,13 +135,13 @@ namespace MadsKristensen.EditorExtensions
                         c => compiler.Value.CompileSolutionAsync(c).DontWait("compiling solution-wide " + c.DisplayName)
                     );
                     BuildMenu.UpdateBundleFiles();
-                });
+                }).DontWait("running solution-wide compilers");
 
                 if (WESettings.Instance.JavaScript.LintOnBuild)
-                    LintFileInvoker.RunOnAllFilesInProject(".js", f => new JsHintReporter(f))
+                    LintFileInvoker.RunOnAllFilesInProjectAsync(".js", f => new JsHintReporter(f))
                         .DontWait("running solution-wide JSHint");
                 if (WESettings.Instance.TypeScript.LintOnBuild)
-                    LintFileInvoker.RunOnAllFilesInProject(".ts", f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f))
+                    LintFileInvoker.RunOnAllFilesInProjectAsync(".ts", f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f))
                         .DontWait("running solution-wide TSLint");
             }
             else if (Action == vsBuildAction.vsBuildActionClean)

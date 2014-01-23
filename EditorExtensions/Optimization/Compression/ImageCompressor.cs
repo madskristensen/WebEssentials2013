@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions
             return GetArguments(fileName, string.Empty) != null;
         }
 
-        public async Task<string> CompressDataUri(string dataUri)
+        public async Task<string> CompressDataUriAsync(string dataUri)
         {
             string mimeType = FileHelpers.GetMimeTypeFromBase64(dataUri);
             string extension = FileHelpers.GetExtension(mimeType);
@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (isFileSaved)
             {
-                await CompressFiles(temp);
+                await CompressFilesAsync(temp);
                 string base64 = FileHelpers.ConvertToBase64(temp);
                 File.Delete(temp);
 
@@ -40,7 +40,7 @@ namespace MadsKristensen.EditorExtensions
             return dataUri;
         }
 
-        public async Task CompressFiles(params string[] fileNames)
+        public async Task CompressFilesAsync(params string[] fileNames)
         {
             EditorExtensionsPackage.DTE.StatusBar.Text = fileNames.Length == 1 ? "Optimizing " + Path.GetFileName(fileNames[0]) + "..." : "Optimizing " + fileNames.Length + " images...";
             EditorExtensionsPackage.DTE.StatusBar.Animate(true, vsStatusAnimation.vsStatusAnimationDeploy);

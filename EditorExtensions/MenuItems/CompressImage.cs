@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions
         public void SetupCommands()
         {
             CommandID cmd = new CommandID(CommandGuids.guidImageCmdSet, (int)CommandId.CompressImage);
-            OleMenuCommand menuCmd = new OleMenuCommand(async (s, e) => await Compress(), cmd);
+            OleMenuCommand menuCmd = new OleMenuCommand((s, e) => StartCompress(), cmd);
             menuCmd.BeforeQueryStatus += BeforeQueryStatus;
             _mcs.AddCommand(menuCmd);
         }
@@ -39,9 +39,9 @@ namespace MadsKristensen.EditorExtensions
             button.Enabled = items > 0;
         }
 
-        private async Task Compress()
+        private void StartCompress()
         {
-            await new ImageCompressor().CompressFiles(_selectedPaths.ToArray());
+            new ImageCompressor().CompressFilesAsync(_selectedPaths.ToArray()).DontWait("compressing " + string.Join(", ", _selectedPaths));
         }
     }
 }

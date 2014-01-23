@@ -208,7 +208,7 @@ namespace MadsKristensen.EditorExtensions
             }
 
             ImageCompressor compressor = new ImageCompressor();
-            await compressor.CompressFiles(fileName);
+            await compressor.CompressFilesAsync(fileName).HandleErrors("compressing " + fileName);
 
             ProjectHelpers.AddFileToActiveProject(fileName);
         }
