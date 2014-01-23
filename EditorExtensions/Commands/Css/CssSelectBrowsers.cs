@@ -5,17 +5,17 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class CssSelectBrowsers : CommandTargetBase
+    internal class CssSelectBrowsers : CommandTargetBase<MinifyCommandId>
     {
         private DTE2 _dte;
 
         public CssSelectBrowsers(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, CommandGuids.guidMinifyCmdSet, CommandId.SelectBrowsers)
+            : base(adapter, textView, MinifyCommandId.SelectBrowsers)
         {
             _dte = EditorExtensionsPackage.DTE;
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(MinifyCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             BrowserSelector selector = new BrowserSelector();
             selector.ShowDialog();

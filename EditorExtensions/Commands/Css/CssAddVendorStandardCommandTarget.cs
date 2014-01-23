@@ -12,14 +12,14 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class CssAddMissingVendor : CommandTargetBase
+    internal class CssAddMissingVendor : CommandTargetBase<CssCommandId>
     {
         public CssAddMissingVendor(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, CommandGuids.guidCssCmdSet, CommandId.AddMissingVendor)
+            : base(adapter, textView, CssCommandId.AddMissingVendor)
         {
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CssCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var point = TextView.GetSelection("css");
             if (point == null) return false;

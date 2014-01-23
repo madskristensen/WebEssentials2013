@@ -7,19 +7,19 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class SurroundWith : CommandTargetBase
+    internal class SurroundWith : CommandTargetBase<FormattingCommandId>
     {
         private IWpfTextView _view;
         private ITextBuffer _buffer;
 
         public SurroundWith(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, CommandGuids.guidFormattingCmdSet, CommandId.SurroundWith)
+            : base(adapter, textView, FormattingCommandId.SurroundWith)
         {
             _view = textView;
             _buffer = textView.TextBuffer;
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(FormattingCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             if (_view.Selection.IsEmpty)
             {

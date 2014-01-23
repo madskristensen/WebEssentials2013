@@ -8,19 +8,19 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class ContractSelection : CommandTargetBase
+    internal class ContractSelection : CommandTargetBase<FormattingCommandId>
     {
         private IWpfTextView _view;
         private ITextBuffer _buffer;
 
         public ContractSelection(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, CommandGuids.guidFormattingCmdSet, CommandId.ContractSelection)
+            : base(adapter, textView, FormattingCommandId.ContractSelection)
         {
             _view = textView;
             _buffer = textView.TextBuffer;
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(FormattingCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             HtmlEditorDocument document = HtmlEditorDocument.FromTextView(_view);
             var tree = document.HtmlEditorTree;

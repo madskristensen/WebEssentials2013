@@ -11,15 +11,15 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class CssRemoveDuplicates : CommandTargetBase
+    internal class CssRemoveDuplicates : CommandTargetBase<CssCommandId>
     {
 
         public CssRemoveDuplicates(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, CommandGuids.guidCssCmdSet, CommandId.CssRemoveDuplicates)
+            : base(adapter, textView, CssCommandId.RemoveDuplicates)
         {
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CssCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var point = TextView.GetSelection("CSS");
             if (point == null)

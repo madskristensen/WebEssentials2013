@@ -12,7 +12,7 @@ using ZenCoding;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class ZenCoding : CommandTargetBase
+    internal class ZenCoding : CommandTargetBase<VSConstants.VSStd2KCmdID>
     {
         private ICompletionBroker _broker;
 
@@ -20,14 +20,14 @@ namespace MadsKristensen.EditorExtensions
         private static Regex _quotes = new Regex("(=\"()\")", RegexOptions.IgnoreCase);
 
         public ZenCoding(IVsTextView adapter, IWpfTextView textView, ICompletionBroker broker)
-            : base(adapter, textView, typeof(VSConstants.VSStd2KCmdID).GUID, (uint)VSConstants.VSStd2KCmdID.TAB, (uint)VSConstants.VSStd2KCmdID.BACKTAB)
+            : base(adapter, textView, VSConstants.VSStd2KCmdID.TAB, VSConstants.VSStd2KCmdID.BACKTAB)
         {
             _broker = broker;
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(VSConstants.VSStd2KCmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if ((VSConstants.VSStd2KCmdID)commandId == VSConstants.VSStd2KCmdID.TAB && !_broker.IsCompletionActive(TextView))
+            if (commandId == VSConstants.VSStd2KCmdID.TAB && !_broker.IsCompletionActive(TextView))
             {
                 if (InvokeZenCoding())
                 {

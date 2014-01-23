@@ -6,14 +6,14 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class RemoveEmptyLines : CommandTargetBase
+    internal class RemoveEmptyLines : CommandTargetBase<LinesCommandId>
     {
         public RemoveEmptyLines(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, CommandGuids.guidEditorLinesCmdSet, CommandId.RemoveEmptyLines)
+            : base(adapter, textView, LinesCommandId.RemoveEmptyLines)
         {
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(LinesCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var span = GetSpan();
             var lines = span.GetText().Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);

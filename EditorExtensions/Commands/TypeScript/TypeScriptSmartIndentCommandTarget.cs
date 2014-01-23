@@ -8,17 +8,17 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class TypeScriptSmartIndent : CommandTargetBase
+    internal class TypeScriptSmartIndent : CommandTargetBase<VSConstants.VSStd2KCmdID>
     {
         private readonly ICompletionBroker _broker;
 
         public TypeScriptSmartIndent(IVsTextView adapter, IWpfTextView textView, ICompletionBroker broker)
-            : base(adapter, textView, typeof(VSConstants.VSStd2KCmdID).GUID, 3)
+            : base(adapter, textView, VSConstants.VSStd2KCmdID.RETURN)
         {
             _broker = broker;
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(VSConstants.VSStd2KCmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             if (_broker.IsCompletionActive(TextView))
                 return false;

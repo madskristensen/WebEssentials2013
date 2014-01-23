@@ -9,19 +9,19 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    class CommentIndentationCommandTarget : CommandTargetBase
+    class CommentIndentationCommandTarget : CommandTargetBase<VSConstants.VSStd2KCmdID>
     {
         private IClassifier _classifier;
         private ICompletionBroker _broker;
 
         public CommentIndentationCommandTarget(IVsTextView adapter, IWpfTextView textView, IClassifierAggregatorService classifier, ICompletionBroker broker)
-            : base(adapter, textView, typeof(VSConstants.VSStd2KCmdID).GUID, (uint)VSConstants.VSStd2KCmdID.RETURN)
+            : base(adapter, textView, VSConstants.VSStd2KCmdID.RETURN)
         {
             _classifier = classifier.GetClassifier(textView.TextBuffer);
             _broker = broker;
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(VSConstants.VSStd2KCmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             if (!WESettings.Instance.JavaScript.BlockCommentCompletion || _broker.IsCompletionActive(TextView))
                 return false;

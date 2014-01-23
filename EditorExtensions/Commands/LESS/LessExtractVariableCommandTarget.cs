@@ -8,15 +8,15 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class LessExtractVariableCommandTarget : CommandTargetBase
+    internal class LessExtractVariableCommandTarget : CommandTargetBase<ExtractCommandId>
     {
 
         public LessExtractVariableCommandTarget(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, CommandGuids.guidExtractCmdSet, CommandId.ExtractVariable)
+            : base(adapter, textView, ExtractCommandId.ExtractVariable)
         {
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(ExtractCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var point = TextView.GetSelection("LESS");
             if (point == null)

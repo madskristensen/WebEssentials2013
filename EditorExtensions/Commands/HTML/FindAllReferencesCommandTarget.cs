@@ -1,23 +1,24 @@
 ﻿using System;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class HtmlFindAllReferences : CommandTargetBase
+    internal class HtmlFindAllReferences : CommandTargetBase<VSConstants.VSStd97CmdID>
     {
         private readonly HtmlEditorTree _tree;
         private string _className;
 
         public HtmlFindAllReferences(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, typeof(Microsoft.VisualStudio.VSConstants.VSStd97CmdID).GUID, (uint)Microsoft.VisualStudio.VSConstants.VSStd97CmdID.FindReferences)
+            : base(adapter, textView, VSConstants.VSStd97CmdID.FindReferences)
         {
             _tree = HtmlEditorDocument.FromTextView(textView).HtmlEditorTree;
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(VSConstants.VSStd97CmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             if (!string.IsNullOrEmpty(_className))
             {

@@ -26,9 +26,9 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            _mcs.AddCommand(new MinifyFileCommand(ContentTypeManager.GetContentType("Css"), CommandId.MinifyCss).Command);
-            _mcs.AddCommand(new MinifyFileCommand(ContentTypeManager.GetContentType("HTMLX"), CommandId.MinifyHtml).Command);
-            _mcs.AddCommand(new MinifyFileCommand(ContentTypeManager.GetContentType("JavaScript"), CommandId.MinifyJs).Command);
+            _mcs.AddCommand(new MinifyFileCommand(ContentTypeManager.GetContentType("Css"), MinifyCommandId.MinifyCss).Command);
+            _mcs.AddCommand(new MinifyFileCommand(ContentTypeManager.GetContentType("HTMLX"), MinifyCommandId.MinifyHtml).Command);
+            _mcs.AddCommand(new MinifyFileCommand(ContentTypeManager.GetContentType("JavaScript"), MinifyCommandId.MinifyJs).Command);
         }
 
         //TODO: Add menu items for compilable files too
@@ -44,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
 
             private IEnumerable<string> selectedFiles;
 
-            public MinifyFileCommand(IContentType contentType, CommandId id)
+            public MinifyFileCommand(IContentType contentType, MinifyCommandId id)
             {
                 Mef.SatisfyImportsOnce(this);
                 ContentType = contentType;

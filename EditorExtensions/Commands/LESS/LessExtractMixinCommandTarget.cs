@@ -7,14 +7,14 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class LessExtractMixinCommandTarget : CommandTargetBase
+    internal class LessExtractMixinCommandTarget : CommandTargetBase<ExtractCommandId>
     {
         public LessExtractMixinCommandTarget(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, CommandGuids.guidExtractCmdSet, CommandId.ExtractMixin)
+            : base(adapter, textView, ExtractCommandId.ExtractMixin)
         {
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(ExtractCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var point = TextView.GetSelection("LESS");
             if (point == null)

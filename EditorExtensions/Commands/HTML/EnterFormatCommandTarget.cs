@@ -5,6 +5,7 @@ using System.Windows.Threading;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
 using Microsoft.Html.Schemas;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -15,21 +16,21 @@ using Microsoft.Web.Editor.Formatting;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class EnterFormat : CommandTargetBase
+    internal class EnterFormat : CommandTargetBase<VSConstants.VSStd2KCmdID>
     {
         private HtmlEditorTree _tree;
         private IEditorRangeFormatter _formatter;
         private ICompletionBroker _broker;
 
         public EnterFormat(IVsTextView adapter, IWpfTextView textView, IEditorFormatterProvider formatterProvider, ICompletionBroker broker)
-            : base(adapter, textView, typeof(Microsoft.VisualStudio.VSConstants.VSStd2KCmdID).GUID, 3)
+            : base(adapter, textView, VSConstants.VSStd2KCmdID.RETURN)
         {
             _tree = HtmlEditorDocument.FromTextView(textView).HtmlEditorTree;
             _formatter = formatterProvider.CreateRangeFormatter();
             _broker = broker;
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(VSConstants.VSStd2KCmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             if (_broker.IsCompletionActive(TextView) || !IsValidTextBuffer() || !WESettings.Instance.Html.EnableEnterFormat)
                 return false;
@@ -113,7 +114,8 @@ namespace MadsKristensen.EditorExtensions
             {
                 _formatter.FormatRange(TextView, buffer, span, true);
             }
-            catch { }
+            catch
+            { }
         }
 
         private ElementNode GetFirstBlockParent(ElementNode current, List<IHtmlSchema> schemas)

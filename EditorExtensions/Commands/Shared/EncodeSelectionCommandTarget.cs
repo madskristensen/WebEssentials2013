@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class EncodeSelection : CommandTargetBase
+    internal class EncodeSelection : CommandTargetBase<CommandId>
     {
         private DTE2 _dte;
         private static readonly IReadOnlyDictionary<CommandId, Replacement> _commands = new Dictionary<CommandId, Replacement> {
@@ -24,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
         private delegate string Replacement(string original);
 
         public EncodeSelection(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, CommandGuids.guidEditorExtensionsCmdSet, _commands.Keys.ToArray())
+            : base(adapter, textView, _commands.Keys.ToArray())
         {
             _dte = EditorExtensionsPackage.DTE;
         }
