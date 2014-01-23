@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Threading;
+using System.Windows.Forms;
 
 namespace WebEssentialsTests.IntegrationTests
 {
@@ -6,9 +7,8 @@ namespace WebEssentialsTests.IntegrationTests
     {
         public static void TypeString(string text)
         {
-            // TODO: Find a way to do this without using SendKeys
             SendKeys.SendWait(text);
-            System.Threading.Thread.Sleep(200);
+            Thread.Sleep(400);
         }
     }
 }

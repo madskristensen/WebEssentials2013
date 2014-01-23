@@ -29,7 +29,7 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
         }
 
         [HostType("VS IDE")]
-        [TestMethod]
+        [TestMethod, TestCategory("Completion")]
         public void BlockCommentCompletion()
         {
             SettingsStore.EnterTestMode(new WESettings
@@ -42,7 +42,7 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
         }
 
         [HostType("VS IDE")]
-        [TestMethod]
+        [TestMethod, TestCategory("Completion")]
         public void BlockCommentCompletionDisabled()
         {
             SettingsStore.EnterTestMode(new WESettings
@@ -55,7 +55,7 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
         }
 
         [HostType("VS IDE")]
-        [TestMethod]
+        [TestMethod, TestCategory("Completion")]
         public void BlockCommentStarCompletion()
         {
             SettingsStore.EnterTestMode(new WESettings
@@ -68,7 +68,7 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
         }
 
         [HostType("VS IDE")]
-        [TestMethod]
+        [TestMethod, TestCategory("Completion")]
         public void BlockCommentStarCompletionDisabled()
         {
             SettingsStore.EnterTestMode(new WESettings

@@ -101,6 +101,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="IntegrationTests\Completion\ZenCodingTest.cs" />
     <Compile Include="IntegrationTests\Completion\CommentsTest.cs" />
     <Compile Include="IntegrationTests\SettingsTests.cs" />
     <Compile Include="IntegrationTests\Utility.cs" />
