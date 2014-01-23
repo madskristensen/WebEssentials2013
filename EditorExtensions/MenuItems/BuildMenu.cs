@@ -89,7 +89,8 @@ namespace MadsKristensen.EditorExtensions
             Parallel.ForEach(files, file =>
                 minifyService.Value.ReMinify(
                     extensionService.Value.GetContentTypeForExtension(Path.GetExtension(file).TrimStart('.')),
-                    file
+                    file,
+                    false
                 )
             );
 

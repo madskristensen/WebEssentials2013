@@ -43,9 +43,11 @@ namespace MadsKristensen.EditorExtensions.Commands
                     {
                         if (e.FileActionType != FileActionTypes.ContentSavedToDisk)
                             return;
+
                         foreach (var listener in saveListeners)
-                            listener.FileSaved(document.TextBuffer.ContentType, e.FilePath);
+                            listener.FileSaved(document.TextBuffer.ContentType, e.FilePath, false);
                     };
+
                     document.FileActionOccurred += saveHandler;
                     textView.Closed += delegate { document.FileActionOccurred -= saveHandler; };
                 }

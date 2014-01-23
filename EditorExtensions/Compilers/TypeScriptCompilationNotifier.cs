@@ -82,7 +82,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
             {
                 RaiseReady();
                 foreach (var listener in _listeners)
-                    listener.FileSaved(ContentTypeManager.GetContentType("JavaScript"), TargetFilePath);
+                    listener.FileSaved(ContentTypeManager.GetContentType("JavaScript"), TargetFilePath, false);
             }
             _isReady = false;
         }

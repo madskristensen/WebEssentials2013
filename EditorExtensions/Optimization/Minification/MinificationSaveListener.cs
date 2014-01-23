@@ -13,21 +13,22 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     [ContentType("JavaScript")]
     class MinificationSaveListener : IFileSaveListener
     {
-        public void FileSaved(IContentType contentType, string path)
+        public void FileSaved(IContentType contentType, string path, bool forceSave)
         {
             // This will also be called for derived ContentTypes like LESS & Markdown.  Ignore those.
             var settings = WESettings.Instance.ForContentType<IMinifierSettings>(contentType);
             if (settings == null || !settings.AutoMinify)
                 return;
-            ReMinify(contentType, path, settings);
+            ReMinify(contentType, path, forceSave, settings);
         }
         ///<summary>Minifies an existing file if it should be minified.</summary>
-        public void ReMinify(IContentType contentType, string path, IMinifierSettings settings = null)
+        public void ReMinify(IContentType contentType, string path, bool forceSave, IMinifierSettings settings = null)
         {
             // Don't minify ".min" files
             if (!ShouldMinify(path))
                 return;
-            if (!File.Exists(GetMinFileName(path)))
+
+            if (!forceSave && !File.Exists(GetMinFileName(path)))
                 return;
 
             MinifyFile(contentType, path, settings ?? WESettings.Instance.ForContentType<IMinifierSettings>(contentType));
@@ -62,10 +63,14 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
 
         private void MinifyFile(IContentType contentType, string sourcePath, IMinifierSettings settings)
         {
-            var minifier = Mef.GetImport<IFileMinifier>(contentType);
-
-            var minPath = GetMinFileName(sourcePath);
+            IFileMinifier minifier = Mef.GetImport<IFileMinifier>(contentType);
+            string minPath = GetMinFileName(sourcePath);
+            bool minExist = File.Exists(minPath);
             bool changed = minifier.MinifyFile(sourcePath, minPath);
+            
+            if (!minExist)
+                ProjectHelpers.AddFileToProject(sourcePath, minPath);
+
             if (settings.GzipMinifiedFiles && (changed || !File.Exists(minPath + ".gzip")))
             {
                 FileHelpers.GzipFile(minPath);

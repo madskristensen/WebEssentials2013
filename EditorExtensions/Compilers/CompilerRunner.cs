@@ -109,11 +109,14 @@ namespace MadsKristensen.EditorExtensions.Compilers
             if (result.IsSuccess && !string.IsNullOrEmpty(targetPath))
             {
                 ProjectHelpers.AddFileToProject(sourcePath, targetPath);
+                
                 if (GenerateSourceMap && File.Exists(targetPath + ".map"))
-                    ProjectHelpers.AddFileToProject(sourcePath, targetPath + ".map");
+                    ProjectHelpers.AddFileToProject(targetPath, targetPath + ".map");
+
                 foreach (var listener in _listeners)
-                    listener.FileSaved(TargetContentType, result.TargetFileName);
+                    listener.FileSaved(TargetContentType, result.TargetFileName, true);
             }
+
             return result;
         }
 
