@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Windows.Forms;
 using EnvDTE;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
@@ -85,14 +84,13 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
         {
             string fileName = CreateJavaScriptFile();
             var window = _dte.ItemOperations.OpenFile(fileName);
-
-            SendKeys.SendWait("/");
-            System.Threading.Thread.Sleep(500);
-            SendKeys.SendWait("*");
+            
+            Utility.TypeString("/");
+            Utility.TypeString("*");
+            
             window.Document.Save();
 
-            string result = File.ReadAllText(fileName);
-            return result;
+            return File.ReadAllText(fileName);
         }
 
         private static string WriteBlockStarComment()
@@ -100,16 +98,13 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
             var fileName = CreateJavaScriptFile();
             var window = _dte.ItemOperations.OpenFile(fileName);
 
-            SendKeys.SendWait("/");
-            System.Threading.Thread.Sleep(500);
-            SendKeys.SendWait("*");
-            System.Threading.Thread.Sleep(500);
-            SendKeys.SendWait("{ENTER}");
+            Utility.TypeString("/");
+            Utility.TypeString("*");
+            Utility.TypeString("{ENTER}");
 
             window.Document.Save();
 
-            string result = File.ReadAllText(fileName);
-            return result;
+            return File.ReadAllText(fileName);
         }
 
         private static string CreateJavaScriptFile()
