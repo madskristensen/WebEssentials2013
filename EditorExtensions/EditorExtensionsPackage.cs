@@ -138,10 +138,10 @@ namespace MadsKristensen.EditorExtensions
                 }).DontWait("running solution-wide compilers");
 
                 if (WESettings.Instance.JavaScript.LintOnBuild)
-                    LintFileInvoker.RunOnAllFilesInProject(".js", f => new JsHintReporter(f))
+                    LintFileInvoker.RunOnAllFilesInProjectAsync(".js", f => new JsHintReporter(f))
                         .DontWait("running solution-wide JSHint");
                 if (WESettings.Instance.TypeScript.LintOnBuild)
-                    LintFileInvoker.RunOnAllFilesInProject(".ts", f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f))
+                    LintFileInvoker.RunOnAllFilesInProjectAsync(".ts", f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f))
                         .DontWait("running solution-wide TSLint");
             }
             else if (Action == vsBuildAction.vsBuildActionClean)

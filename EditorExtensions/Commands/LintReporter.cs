@@ -69,14 +69,14 @@ namespace MadsKristensen.EditorExtensions
         }
 
 
-        public virtual async Task RunCompiler()
+        public virtual async Task RunLinterAsync()
         {
             if (_isDisposed)
                 return;
 
             EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: Running " + _compiler.ServiceName + "...";
 
-            CompilerResult result = await _compiler.Check(FileName);
+            CompilerResult result = await _compiler.CheckAsync(FileName);
 
             EditorExtensionsPackage.DTE.StatusBar.Clear();
 

@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions
             if (_runner.Settings.LintOnSave)
             {
                 Dispatcher.CurrentDispatcher.InvokeAsync(
-                    () => _runner.RunCompiler().DontWait("linting " + _document.FilePath),
+                    () => _runner.RunLinterAsync().DontWait("linting " + _document.FilePath),
                     DispatcherPriority.ApplicationIdle
                 );
             }
@@ -52,7 +52,7 @@ namespace MadsKristensen.EditorExtensions
                     goto case FileActionTypes.ContentSavedToDisk;
                 case FileActionTypes.ContentSavedToDisk:
                     Dispatcher.CurrentDispatcher.InvokeAsync(
-                        () => _runner.RunCompiler().DontWait("linting " + _document.FilePath),
+                        () => _runner.RunLinterAsync().DontWait("linting " + _document.FilePath),
                         DispatcherPriority.ApplicationIdle
                     );
                     break;
@@ -60,7 +60,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        public static Task RunOnAllFilesInProject(string extension, Func<string, LintReporter> runnerFactory)
+        public static Task RunOnAllFilesInProjectAsync(string extension, Func<string, LintReporter> runnerFactory)
         {
             string dir = ProjectHelpers.GetRootFolder();
 
@@ -69,7 +69,7 @@ namespace MadsKristensen.EditorExtensions
 
             return Task.WhenAll(
                 Directory.EnumerateFiles(dir, "*" + extension, SearchOption.AllDirectories)
-                            .Select(f => runnerFactory(f).RunCompiler().HandleErrors("linting " + f))
+                            .Select(f => runnerFactory(f).RunLinterAsync().HandleErrors("linting " + f))
             );
         }
 

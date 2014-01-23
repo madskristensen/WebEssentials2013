@@ -23,12 +23,12 @@ namespace MadsKristensen.EditorExtensions
         public void SetupCommands()
         {
             CommandID JsId = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.CreateJavaScriptIntellisenseFile);
-            OleMenuCommand jsCommand = new OleMenuCommand(async (s, e) => await Execute(".js"), JsId);
+            OleMenuCommand jsCommand = new OleMenuCommand((s, e) =>  ExecuteAsync(".js").DontWait("creating JavaScript IntelliSense file"), JsId);
             jsCommand.BeforeQueryStatus += JavaScript_BeforeQueryStatus;
             _mcs.AddCommand(jsCommand);
 
             CommandID tsId = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.CreateTypeScriptIntellisenseFile);
-            OleMenuCommand tsCommand = new OleMenuCommand(async (s, e) => await Execute(".d.ts"), tsId);
+            OleMenuCommand tsCommand = new OleMenuCommand((s, e) => ExecuteAsync(".d.ts").DontWait("creating TypeScript IntelliSense file"), tsId);
             tsCommand.BeforeQueryStatus += TypeScript_BeforeQueryStatus;
             _mcs.AddCommand(tsCommand);
         }
@@ -61,10 +61,10 @@ namespace MadsKristensen.EditorExtensions
             menuCommand.Enabled = !string.IsNullOrEmpty(_file) && !File.Exists(_file + ".d.ts");
         }
 
-        protected async Task<bool> Execute(string extension)
+        protected async Task<bool> ExecuteAsync(string extension)
         {
             File.WriteAllText(_file + extension, string.Empty);
-            if (await ScriptIntellisenseListener.Process(_file))
+            if (await ScriptIntellisenseListener.ProcessAsync(_file))
                 return true;
             File.Delete(_file + extension);
             Logger.ShowMessage("An error occurred while processing " + Path.GetFileName(_file) + ".\nNo script file was generated.  For more details, see the output window.");

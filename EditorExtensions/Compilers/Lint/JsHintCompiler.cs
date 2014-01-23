@@ -8,7 +8,7 @@ namespace MadsKristensen.EditorExtensions
 {
     public interface ILintCompiler
     {
-        Task<CompilerResult> Check(string sourcePath);
+        Task<CompilerResult> CheckAsync(string sourcePath);
         string ServiceName { get; }
         string SourceExtension { get; }
     }
@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions
             get { return ParseErrorsWithJson; }
         }
 
-        public Task<CompilerResult> Check(string sourcePath)
+        public Task<CompilerResult> CheckAsync(string sourcePath)
         {
             return CompileAsync(sourcePath, null);
         }

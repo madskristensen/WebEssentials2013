@@ -65,7 +65,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
 
                 if (isDataUri)
                 {
-                    string dataUri = await compressor.CompressDataUri(src.Value);
+                    string dataUri = await compressor.CompressDataUriAsync(src.Value);
 
                     if (dataUri.Length < src.Value.Length)
                     {
@@ -83,7 +83,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
                     if (string.IsNullOrEmpty(fileName) || !ImageCompressor.IsFileSupported(fileName) || !File.Exists(fileName))
                         return;
 
-                    await compressor.CompressFiles(fileName);
+                    await compressor.CompressFilesAsync(fileName);
                 }
             }
         }
