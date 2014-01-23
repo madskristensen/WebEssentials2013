@@ -62,8 +62,8 @@ namespace MadsKristensen.EditorExtensions
             private void CheckVisible()
             {
                 selectedFiles = ProjectHelpers.GetSelectedFilePaths()
-                    .Where(p => _sourceExtensions.Contains(p)
-                             && !MinificationSaveListener.ShouldMinify(p)
+                    .Where(p => _sourceExtensions.Contains(Path.GetExtension(p))
+                             && MinificationSaveListener.ShouldMinify(p)
                              && !File.Exists(MinificationSaveListener.GetMinFileName(p))
                            );
                 Command.Enabled = selectedFiles.Any();
