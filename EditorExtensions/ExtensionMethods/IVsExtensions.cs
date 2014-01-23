@@ -21,6 +21,11 @@ namespace MadsKristensen.EditorExtensions
             );
         }
 
+        public static void Execute(this EnvDTE.Commands c, Enum commandId, object arg = null)
+        {
+            c.Raise(commandId.GetType().GUID.ToString(), Convert.ToInt32(commandId), arg, IntPtr.Zero);
+        }
+
         const uint DISP_E_MEMBERNOTFOUND = 0x80020003;
 
         public static void AddHierarchyItem(this ErrorTask task)

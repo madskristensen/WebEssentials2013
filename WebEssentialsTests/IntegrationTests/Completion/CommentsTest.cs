@@ -3,6 +3,7 @@ using System.IO;
 using EnvDTE;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VSSDK.Tools.VsIdeTesting;
 
@@ -85,9 +86,7 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
             string fileName = CreateJavaScriptFile();
             var window = _dte.ItemOperations.OpenFile(fileName);
 
-            Utility.TypeString("/");
-            Utility.TypeString("*");
-
+            VSHost.TypeString("/*");
             window.Document.Save();
 
             return File.ReadAllText(fileName);
@@ -98,9 +97,7 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
             var fileName = CreateJavaScriptFile();
             var window = _dte.ItemOperations.OpenFile(fileName);
 
-            Utility.TypeString("/");
-            Utility.TypeString("*");
-            Utility.TypeString("{ENTER}");
+            VSHost.TypeString("/*\n");
 
             window.Document.Save();
 
