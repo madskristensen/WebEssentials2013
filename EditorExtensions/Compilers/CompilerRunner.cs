@@ -161,7 +161,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
                 {
                     // If the compiler cannot compile to a random filename,
                     // generate a unique directory to avoid conflicts.
-                    targetPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + "-" + Environment.TickCount, Path.GetFileName(sourcePath) + Compiler.TargetExtension);
+                    targetPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + "-" + Environment.TickCount, Path.GetFileNameWithoutExtension(sourcePath) + Compiler.TargetExtension);
                     Directory.CreateDirectory(Path.GetDirectoryName(targetPath));
                 }
             }
