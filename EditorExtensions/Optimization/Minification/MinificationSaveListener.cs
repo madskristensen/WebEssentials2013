@@ -51,14 +51,19 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
 
             var minPath = GetMinFileName(sourcePath);
 
-            //TODO: Should be unnecessary: ProjectHelpers.AddFileToActiveProject(minPath);
             ProjectHelpers.AddFileToProject(sourcePath, minPath);
+         
             if (File.Exists(minPath + ".map"))
-                ProjectHelpers.AddFileToProject(sourcePath, minPath + ".map");
-            if (File.Exists(minPath + ".map.gzip"))
-                ProjectHelpers.AddFileToProject(sourcePath, minPath + ".map.gzip");
+            {
+                string mapPath = minPath + ".map";
+                ProjectHelpers.AddFileToProject(minPath, mapPath);
+                
+                if (File.Exists(mapPath + ".gzip"))
+                    ProjectHelpers.AddFileToProject(mapPath, mapPath + ".gzip");
+            }
+
             if (settings.GzipMinifiedFiles)
-                ProjectHelpers.AddFileToProject(sourcePath, minPath + ".gzip");
+                ProjectHelpers.AddFileToProject(minPath, minPath + ".gzip");
         }
 
         private void MinifyFile(IContentType contentType, string sourcePath, IMinifierSettings settings)

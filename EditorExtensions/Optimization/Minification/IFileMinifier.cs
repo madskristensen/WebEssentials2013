@@ -129,7 +129,10 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
                 sourceMap.StartPackage(Path.GetFileName(minFile), Path.GetFileName(mapPath));
 
                 // This fails when debugger is attached. Bug raised with Ron Logan
-                return MinifyFile(file, minFile, settings);
+                bool result = MinifyFile(file, minFile, settings);
+                ProjectHelpers.AddFileToProject(minFile, mapPath);
+
+                return result;
             }
         }
         private static bool MinifyFile(string file, string minFile, CodeSettings settings)
