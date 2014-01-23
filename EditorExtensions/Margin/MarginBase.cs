@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
 			if (settings.ShowPreviewPane)
 			{
 				_dispatcher.BeginInvoke(
-						new Action(CreateMarginControls), DispatcherPriority.ApplicationIdle, null);
+					new Action(CreateMarginControls), DispatcherPriority.ApplicationIdle, null);
 			}
 		}
 
