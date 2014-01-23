@@ -122,12 +122,12 @@ namespace MadsKristensen.EditorExtensions
             }), DispatcherPriority.ApplicationIdle, null);
         }
 
-        private async void BuildEvents_OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
+        private void BuildEvents_OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
         {
             if (Action != vsBuildAction.vsBuildActionClean)
             {
                 var compiler = WebEditor.Host.ExportProvider.GetExport<ProjectCompiler>();
-                await ThreadingTask.Task.Run(() =>
+                ThreadingTask.Task.Run(() =>
                 {
                     Parallel.ForEach(
                         Mef.GetSupportedContentTypes<ICompilerRunnerProvider>()
@@ -135,7 +135,7 @@ namespace MadsKristensen.EditorExtensions
                         c => compiler.Value.CompileSolutionAsync(c).DontWait("compiling solution-wide " + c.DisplayName)
                     );
                     BuildMenu.UpdateBundleFiles();
-                });
+                }).DontWait("running solution-wide compilers");
 
                 if (WESettings.Instance.JavaScript.LintOnBuild)
                     LintFileInvoker.RunOnAllFilesInProject(".js", f => new JsHintReporter(f))
