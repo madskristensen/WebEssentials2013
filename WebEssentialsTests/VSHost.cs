@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using EnvDTE;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VSSDK.Tools.VsIdeTesting;
 
 namespace WebEssentialsTests

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Xml;
-using EnvDTE80;
 using Microsoft.CSS.Editor.Schemas;
 
 namespace MadsKristensen.EditorExtensions

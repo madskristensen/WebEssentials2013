@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using MadsKristensen.EditorExtensions.Compilers;
-using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebEssentialsTests

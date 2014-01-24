@@ -100,7 +100,7 @@ namespace MadsKristensen.EditorExtensions
             // TSLint
             target.TypeScript.LintOnSave = GetBoolean("TsLintEnable");
             target.TypeScript.LintOnBuild = GetBoolean("TsLintRunOnBuild");
-            target.TypeScript.LintResultLocation = GetEnum<TaskErrorCategory>("TsLintErrorLocation")??target.TypeScript.LintResultLocation;
+            target.TypeScript.LintResultLocation = GetEnum<TaskErrorCategory>("TsLintErrorLocation") ?? target.TypeScript.LintResultLocation;
 
             // Browser Link
             target.BrowserLink.CssIgnorePatterns = GetString("UnusedCss_IgnorePatterns");

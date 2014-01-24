@@ -3,7 +3,6 @@ using System.ComponentModel.Design;
 using System.Linq;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
-using Task = System.Threading.Tasks.Task;
 
 namespace MadsKristensen.EditorExtensions
 {

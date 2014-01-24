@@ -8,7 +8,6 @@ using Microsoft.Html.Editor.ContainedLanguage;
 using Microsoft.Html.Editor.Projection;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using Microsoft.Web.Editor.Composition;
 
 namespace MadsKristensen.EditorExtensions.Classifications.Markdown
 {

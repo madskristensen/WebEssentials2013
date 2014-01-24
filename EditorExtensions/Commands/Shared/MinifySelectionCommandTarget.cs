@@ -25,7 +25,8 @@ namespace MadsKristensen.EditorExtensions
 
             if (result == null)
                 return false; // IFileMinifier already displayed an error
-            if (result == source) { 
+            if (result == source)
+            {
                 EditorExtensionsPackage.DTE.StatusBar.Text = "The selection is already minified";
                 return false;
             }

@@ -380,7 +380,7 @@ namespace MadsKristensen.EditorExtensions
             // If the bundle didn't change, don't re-minify, unless the user just enabled minification.
             if (!bundleChanged && File.Exists(minPath))
                 return;
-            
+
             var fers = WebEditor.ExportProvider.GetExport<IFileExtensionRegistryService>().Value;
             var contentType = fers.GetContentTypeForExtension(extension);
             var settings = WESettings.Instance.ForContentType<IMinifierSettings>(contentType);

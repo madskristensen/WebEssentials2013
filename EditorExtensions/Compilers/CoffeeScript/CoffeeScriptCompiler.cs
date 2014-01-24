@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Threading;
 using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions

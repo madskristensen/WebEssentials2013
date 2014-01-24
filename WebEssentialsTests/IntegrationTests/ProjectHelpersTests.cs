@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using EnvDTE;
@@ -8,7 +7,6 @@ using MadsKristensen.EditorExtensions;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.VSSDK.Tools.VsIdeTesting;
 
 namespace WebEssentialsTests.IntegrationTests
 {

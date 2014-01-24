@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions
         public void SetupCommands()
         {
             CommandID JsId = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.CreateJavaScriptIntellisenseFile);
-            OleMenuCommand jsCommand = new OleMenuCommand((s, e) =>  ExecuteAsync(".js").DontWait("creating JavaScript IntelliSense file"), JsId);
+            OleMenuCommand jsCommand = new OleMenuCommand((s, e) => ExecuteAsync(".js").DontWait("creating JavaScript IntelliSense file"), JsId);
             jsCommand.BeforeQueryStatus += JavaScript_BeforeQueryStatus;
             _mcs.AddCommand(jsCommand);
 

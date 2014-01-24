@@ -321,7 +321,8 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
         public void EnterContinuousSyncMode(bool value)
         {
             var changed = false;
-            ContinuousSyncModeByProject.AddOrUpdate(_connection.Project.UniqueName, p => value, (p, x) => {
+            ContinuousSyncModeByProject.AddOrUpdate(_connection.Project.UniqueName, p => value, (p, x) =>
+            {
                 changed = x ^ value;
 
                 return value;

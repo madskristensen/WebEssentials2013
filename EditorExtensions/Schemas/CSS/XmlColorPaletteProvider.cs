@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using EnvDTE;
-using EnvDTE80;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web.Helpers;
-using MadsKristensen.EditorExtensions.Helpers;
-using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions.Compilers

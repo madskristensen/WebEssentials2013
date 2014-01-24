@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Media.Imaging;
 using Microsoft.CSS.Core;
-using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
