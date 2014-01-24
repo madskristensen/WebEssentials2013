@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions.Commands
             {
                 string fileName = Path.GetFileName(document.FilePath);
 
-                if (fileName != ".jshintrc" && fileName != "tslint.json")
+                if (fileName != ".jshintrc" && fileName != "tslint.json" && fileName != ".jscs.json")
                     return;
 
                 document.Encoding = new UTF8Encoding(false);

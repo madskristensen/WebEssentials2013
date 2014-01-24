@@ -346,8 +346,10 @@
     <Compile Include="Commands\LintReporter.cs" />
     <Compile Include="Compilers\CompilerNotifierProviders.cs" />
     <Compile Include="Compilers\EditorCompilerInvoker.cs" />
+    <Compile Include="Compilers\Lint\JsCodeStyleCompiler.cs" />
     <Compile Include="Compilers\Lint\TsLintCompiler.cs" />
     <Compile Include="Compilers\ProjectCompiler.cs" />
+    <Compile Include="MenuItems\JsCodeStyle.cs" />
     <Compile Include="MenuItems\SpriteImage.cs" />
     <Compile Include="Compilers\Compilation Interfaces.cs" />
     <Compile Include="Compilers\CompilerRunner.cs" />
@@ -835,7 +837,9 @@
     <None Include="BrowserLink\_intellisense\jquery-1.8.2.js" />
     <EmbeddedResource Include="BrowserLink\DesignMode\DesignModeBrowserLink.js" />
     <EmbeddedResource Include="BrowserLink\BestPractices\BestPracticesBrowserLink.js" />
-    <CodeAnalysisDictionary Include="CustomDictionary.xml" />
+    <CodeAnalysisDictionary Include="CustomDictionary.xml">
+      <SubType>Designer</SubType>
+    </CodeAnalysisDictionary>
     <Resource Include="Resources\Images\numbers.png" />
     <Content Include="registry.pkgdef">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -859,10 +863,16 @@
     <Content Include="Resources\settings-defaults\tslint.json">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\settings-defaults\.jscs.json">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\Scripts\jshint-node-reporter.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\Scripts\tslintFormatter.js">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Scripts\jscs-node-reporter.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Resource Include="Resources\Images\graph_id.png" />
@@ -970,7 +980,7 @@
       <Content Include="Resources\nodejs\tools\**" Exclude="&#xD;&#xA; **\node-sass\**; **\less\**; &#xD;&#xA;               **\mocha\**; **\jade\**; &#xD;&#xA;               **\*.md; **\*.markdown; **\*.html; **\*.txt; **\LICENSE; **\README; **\CHANGELOG; **\CNAME; **\*.old; **\*.patch; **\*.ico; &#xD;&#xA;               **\*.json; **\.*; **\Makefile.*; **\Rakefile; **\*.yml; &#xD;&#xA;               **\test.*; **\generate-*; &#xD;&#xA;               **\*.min.js; **\*-min.js; &#xD;&#xA;               **\media\**; **\images\**; **\man\**; &#xD;&#xA;               **\.bin\**; **\benchmark\**; **\build\**; **\scripts\**; &#xD;&#xA;               **\vendor\**; &#xD;&#xA;               **\test\**; **\tst\**; **\tests\**; **\testing\**; &#xD;&#xA;               **\examples\**; **\example\**; **\tools\**\tools\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\tools\node_modules\node-sass\sass.js; Resources\nodejs\tools\node_modules\node-sass\bin\node-sass; Resources\nodejs\tools\node_modules\node-sass\lib\**; Resources\nodejs\tools\node_modules\node-sass\bin\win32-ia32-*\**; Resources\nodejs\tools\node_modules\tslint\**">
+      <Content Include="Resources\nodejs\tools\node_modules\node-sass\sass.js; Resources\nodejs\tools\node_modules\node-sass\bin\node-sass; Resources\nodejs\tools\node_modules\node-sass\lib\**; Resources\nodejs\tools\node_modules\node-sass\bin\win32-ia32-*\**; Resources\nodejs\tools\node_modules\tslint\**; Resources\nodejs\tools\node_modules\jscs\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <Content Include="Resources\nodejs\tools\node_modules\less\lib\**; Resources\nodejs\tools\node_modules\less\bin\**">

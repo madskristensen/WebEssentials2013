@@ -80,6 +80,7 @@ namespace MadsKristensen.EditorExtensions
                 BundleFilesMenu bundleMenu = new BundleFilesMenu(DTE, mcs);
                 JsHintMenu jsHintMenu = new JsHintMenu(DTE, mcs);
                 TsLintMenu tsLintMenu = new TsLintMenu(DTE, mcs);
+                JsCodeStyle jsCodeStyleMenu = new JsCodeStyle(DTE, mcs);
                 ProjectSettingsMenu projectSettingsMenu = new ProjectSettingsMenu(DTE, mcs);
                 SolutionColorsMenu solutionColorsMenu = new SolutionColorsMenu(mcs);
                 BuildMenu buildMenu = new BuildMenu(DTE, mcs);
@@ -102,6 +103,7 @@ namespace MadsKristensen.EditorExtensions
                 projectSettingsMenu.SetupCommands();
                 jsHintMenu.SetupCommands();
                 tsLintMenu.SetupCommands();
+                jsCodeStyleMenu.SetupCommands();
                 bundleMenu.SetupCommands();
                 minifyMenu.SetupCommands();
                 diffMenu.SetupCommands();
@@ -150,8 +152,12 @@ namespace MadsKristensen.EditorExtensions
                 }).DontWait("running solution-wide compilers");
 
                 if (WESettings.Instance.JavaScript.LintOnBuild)
+                {
                     LintFileInvoker.RunOnAllFilesInProjectAsync(".js", f => new JsHintReporter(f))
                         .DontWait("running solution-wide JSHint");
+                    LintFileInvoker.RunOnAllFilesInProjectAsync(".js", f => new LintReporter(new JsCodeStyleCompiler(), WESettings.Instance.JavaScript, f))
+                        .DontWait("running solution-wide JSCS");
+                }
 
                 if (WESettings.Instance.TypeScript.LintOnBuild)
                     LintFileInvoker.RunOnAllFilesInProjectAsync(".ts", f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f))

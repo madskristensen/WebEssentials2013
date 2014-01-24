@@ -40,6 +40,7 @@ namespace MadsKristensen.EditorExtensions
             );
 
             var moduleResults = Task.WhenAll(
+                InstallModuleAsync("jscs", "jscs"),
                 InstallModuleAsync("lessc", "less"),
                 InstallModuleAsync("jshint", "jshint"),
                 InstallModuleAsync("tslint", "tslint"),
