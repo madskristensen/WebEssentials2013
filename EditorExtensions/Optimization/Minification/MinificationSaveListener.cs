@@ -52,7 +52,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             var minPath = GetMinFileName(sourcePath);
 
             ProjectHelpers.AddFileToProject(sourcePath, minPath);
-         
+
             if (File.Exists(minPath + ".map"))
             {
                 string mapPath = minPath + ".map";
@@ -69,7 +69,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             string minPath = GetMinFileName(sourcePath);
             bool minExist = File.Exists(minPath);
             bool changed = minifier.MinifyFile(sourcePath, minPath);
-            
+
             if (!minExist)
                 ProjectHelpers.AddFileToProject(sourcePath, minPath);
 

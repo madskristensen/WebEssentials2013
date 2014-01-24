@@ -84,10 +84,10 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
         {
             string fileName = CreateJavaScriptFile();
             var window = _dte.ItemOperations.OpenFile(fileName);
-            
+
             Utility.TypeString("/");
             Utility.TypeString("*");
-            
+
             window.Document.Save();
 
             return File.ReadAllText(fileName);

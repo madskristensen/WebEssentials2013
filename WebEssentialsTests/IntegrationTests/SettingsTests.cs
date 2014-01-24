@@ -1,15 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Threading.Tasks;
-using EnvDTE;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.VSSDK.Tools.VsIdeTesting;
 
 namespace WebEssentialsTests.IntegrationTests
 {

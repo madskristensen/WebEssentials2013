@@ -62,7 +62,7 @@ namespace MadsKristensen.EditorExtensions
                         SetCaret(newSpan, false);
 
                         EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-                        selection.Clear();                        
+                        selection.Clear();
                     }
                 }), DispatcherPriority.ApplicationIdle, null);
 

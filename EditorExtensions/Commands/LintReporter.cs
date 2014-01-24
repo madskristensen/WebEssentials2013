@@ -112,7 +112,8 @@ namespace MadsKristensen.EditorExtensions
 
         private ErrorTask CreateTask(CompilerError error)
         {
-            ErrorTask task = new ErrorTask() {
+            ErrorTask task = new ErrorTask()
+            {
                 Line = error.Line,
                 Column = error.Column,
                 ErrorCategory = Settings.LintResultLocation,

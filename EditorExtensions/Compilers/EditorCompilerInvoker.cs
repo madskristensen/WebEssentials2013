@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using EnvDTE;
-using MarkdownSharp;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
-using Microsoft.Web.Editor.Composition;
 using Task = System.Threading.Tasks.Task;
 
 namespace MadsKristensen.EditorExtensions.Compilers
@@ -98,7 +90,8 @@ namespace MadsKristensen.EditorExtensions.Compilers
         private readonly ErrorListProvider _provider;
 
 
-        public ErrorReportingCompilerInvoker(ITextDocument doc, CompilerRunnerBase compilerRunner) : base(doc, compilerRunner)
+        public ErrorReportingCompilerInvoker(ITextDocument doc, CompilerRunnerBase compilerRunner)
+            : base(doc, compilerRunner)
         {
             _provider = new ErrorListProvider(EditorExtensionsPackage.Instance);
         }

@@ -1,15 +1,10 @@
 using System;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using EnvDTE;
-using EnvDTE80;
-using MarkdownSharp;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {

@@ -2,7 +2,6 @@
 using System.IO;
 using EnvDTE;
 using FluentAssertions;
-using MadsKristensen.EditorExtensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VSSDK.Tools.VsIdeTesting;
 
@@ -48,10 +47,10 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
         {
             string fileName = CreateHtmlFile(extension);
             var window = _dte.ItemOperations.OpenFile(fileName);
-            
+
             Utility.TypeString(text);
             Utility.TypeString("{TAB}");
-            
+
             window.Document.Save();
 
             return File.ReadAllText(fileName);

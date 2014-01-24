@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
 using System.IO;
@@ -7,13 +6,9 @@ using System.Linq;
 using System.Windows;
 using EnvDTE80;
 using MadsKristensen.EditorExtensions.Optimization.Minification;
-using Microsoft.Ajax.Utilities;
 using Microsoft.Html.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;
-using WebMarkupMin.Core;
-using WebMarkupMin.Core.Minifiers;
-using WebMarkupMin.Core.Settings;
 
 namespace MadsKristensen.EditorExtensions
 {

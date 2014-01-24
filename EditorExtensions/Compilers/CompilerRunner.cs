@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Commands;
 using MarkdownSharp;
-using Microsoft.Html.Editor;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;
 using Task = System.Threading.Tasks.Task;
 
@@ -109,7 +106,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
             if (result.IsSuccess && !string.IsNullOrEmpty(targetPath))
             {
                 ProjectHelpers.AddFileToProject(sourcePath, targetPath);
-                
+
                 if (GenerateSourceMap && File.Exists(targetPath + ".map"))
                     ProjectHelpers.AddFileToProject(targetPath, targetPath + ".map");
 
@@ -136,7 +133,8 @@ namespace MadsKristensen.EditorExtensions.Compilers
     ///<summary>Compiles files using <see cref="NodeExecutorBase"/> classes and reports the results.</summary>
     class NodeCompilerRunner : CompilerRunnerBase
     {
-        public NodeCompilerRunner(IContentType contentType) : base(contentType)
+        public NodeCompilerRunner(IContentType contentType)
+            : base(contentType)
         {
             Compiler = Mef.GetImport<NodeExecutorBase>(contentType);
         }

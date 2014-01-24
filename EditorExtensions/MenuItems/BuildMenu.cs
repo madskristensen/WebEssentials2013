@@ -5,7 +5,6 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using EnvDTE;
 using EnvDTE80;
 using MadsKristensen.EditorExtensions.Compilers;
 using MadsKristensen.EditorExtensions.Optimization.Minification;

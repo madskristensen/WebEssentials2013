@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class JsHintMenu
+    internal class JsCodeStyle
     {
         private DTE2 _dte;
         private OleMenuCommandService _mcs;
 
-        public JsHintMenu(DTE2 dte, OleMenuCommandService mcs)
+        public JsCodeStyle(DTE2 dte, OleMenuCommandService mcs)
         {
             _dte = dte;
             _mcs = mcs;
@@ -20,19 +21,19 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            CommandID commandId = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.RunJsHint);
-            OleMenuCommand menuCommand = new OleMenuCommand((s, e) => RunJsHint(), commandId);
+            CommandID commandId = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.RunJsCodeStyle);
+            OleMenuCommand menuCommand = new OleMenuCommand((s, e) => RunJsCodeStyle(), commandId);
             menuCommand.BeforeQueryStatus += menuCommand_BeforeQueryStatus;
             _mcs.AddCommand(menuCommand);
 
-            CommandID edit = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.EditGlobalJsHint);
-            OleMenuCommand editCommand = new OleMenuCommand((s, e) => EditGlobalJsHintFile(), edit);
+            CommandID edit = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.EditGlobalJsCodeStyle);
+            OleMenuCommand editCommand = new OleMenuCommand((s, e) => EditGlobalJsCodeStyleFile(), edit);
             _mcs.AddCommand(editCommand);
         }
 
-        private void EditGlobalJsHintFile()
+        private void EditGlobalJsCodeStyleFile()
         {
-            string fileName = JsHintCompiler.GetOrCreateGlobalSettings(".jshintrc");
+            string fileName = JsCodeStyleCompiler.GetOrCreateGlobalSettings(".jscs.json");
 
             _dte.ItemOperations.OpenFile(fileName);
         }
@@ -43,20 +44,21 @@ namespace MadsKristensen.EditorExtensions
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
 
-            var raw = ProjectHelpers.GetSelectedFilePaths();
-            files = raw.Where(f => !JsHintReporter.ShouldIgnore(f)).ToList();
+            files = ProjectHelpers.GetSelectedFilePaths()
+                    .Where(f => Path.GetExtension(f).Equals(".ts", System.StringComparison.OrdinalIgnoreCase))
+                    .ToList();
 
             menuCommand.Enabled = files.Count > 0;
         }
 
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        private void RunJsHint()
+        private void RunJsCodeStyle()
         {
             LintReporter.Reset();            // TODO: Why?
 
             foreach (string file in files)
             {
-                JsHintReporter runner = new JsHintReporter(file);
+                var runner = new LintReporter(new JsCodeStyleCompiler(), WESettings.Instance.JavaScript, file);
                 runner.RunLinterAsync().DontWait("linting " + file);
             }
         }

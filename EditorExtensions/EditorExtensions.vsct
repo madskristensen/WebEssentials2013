@@ -408,7 +408,15 @@
         </Strings>
       </Button>
 
-      <Button guid="guidDiffCmdSet" id="cmdSolutionColors" priority="0x0104" type="Button">
+      <Button guid="guidDiffCmdSet" id="cmdEditGlobalJsCodeStyle" priority="0x0104" type="Button">
+        <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
+        <Icon guid="guidMenuImages" id="bmpScript"/>
+        <Strings>
+          <ButtonText>Edit global JSCS settings (.jscs.json)...</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidDiffCmdSet" id="cmdSolutionColors" priority="0x0105" type="Button">
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -416,7 +424,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidDiffCmdSet" id="cmdMarkdownStylesheet" priority="0x0105" type="Button">
+      <Button guid="guidDiffCmdSet" id="cmdMarkdownStylesheet" priority="0x0106" type="Button">
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -453,6 +461,14 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Run TSLint</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidDiffCmdSet" id="cmdJsCodeStyle" priority="0x0106" type="Button">
+        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Run JSCS</ButtonText>
         </Strings>
       </Button>
 
@@ -822,6 +838,7 @@
       <IDSymbol name="cmdDiff" value="0x1041" />
       <IDSymbol name="cmdJsHint" value="0x1042" />
       <IDSymbol name="cmdTsLint" value="0x1092" />
+      <IDSymbol name="cmdJsCodeStyle" value="0x1095" />
       <IDSymbol name="cmdProjectSettings" value="0x1043" />
       <IDSymbol name="cmdSolutionSettings" value="0x1044" />
       <IDSymbol name="cmdSolutionColors" value="0x1045" />
@@ -831,6 +848,7 @@
       <IDSymbol name="MarkdownGroup" value="0x1049" />
       <IDSymbol name="cmdEditGlobalJsHint" value="0x1038" />
       <IDSymbol name="cmdEditGlobalTsLint" value="0x1098" />
+      <IDSymbol name="cmdEditGlobalJsCodeStyle" value="0x1099" />
       <IDSymbol name="cmdMarkdownCompile" value="0x1039" />
     </GuidSymbol>
 

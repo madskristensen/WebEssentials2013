@@ -14,6 +14,7 @@ namespace MadsKristensen.EditorExtensions
         public override string SourceExtension { get { return ".ts"; } }
         public override string ServiceName { get { return "TsLint"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
+
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
             GetOrCreateGlobalSettings(_settingsName); // Ensure that default settings exist
@@ -21,22 +22,22 @@ namespace MadsKristensen.EditorExtensions
             return String.Format(CultureInfo.CurrentCulture, "--formatters-dir \"{0}\" --format \"{1}\" --config \"{2}\" --file \"{3}\""
                                , _tsLintFormatterDirectory
                                , _tsLintFormatter
-                               , FindLocalSettings(sourceFileName) ?? GetOrCreateGlobalSettings("tslint.json")
+                               , FindLocalSettings(sourceFileName, _settingsName) ?? GetOrCreateGlobalSettings("tslint.json")
                                , sourceFileName);
         }
 
-        private static string FindLocalSettings(string sourcePath)
+        protected static string FindLocalSettings(string sourcePath, string settingsName)
         {
             string dir = Path.GetDirectoryName(sourcePath);
 
-            while (!File.Exists(Path.Combine(dir, _settingsName)))
+            while (!File.Exists(Path.Combine(dir, settingsName)))
             {
                 dir = Path.GetDirectoryName(dir);
                 if (String.IsNullOrEmpty(dir))
                     return null;
             }
 
-            return Path.Combine(dir, _settingsName);
+            return Path.Combine(dir, settingsName);
         }
     }
 }

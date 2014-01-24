@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using ConfOxide;
 using EnvDTE;
-using EnvDTE80;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell.Settings;
 
