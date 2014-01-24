@@ -296,6 +296,7 @@
     <Compile Include="Classifications\AppCache\AppCacheClassifier.cs" />
     <Compile Include="Classifications\AppCache\AppCacheClassifierProvider.cs" />
     <Compile Include="Classifications\AppCache\AppCacheContentTypeDefinition.cs" />
+    <Compile Include="Classifications\CSS\ImportantClassifier.cs" />
     <Compile Include="Classifications\CSS\VariableClassifier.cs" />
     <Compile Include="Classifications\HTML\HtmlRegionTagger.cs" />
     <Compile Include="Classifications\IcedCoffeeScript\IcedCoffeeScriptContentTypeDefinition.cs" />
