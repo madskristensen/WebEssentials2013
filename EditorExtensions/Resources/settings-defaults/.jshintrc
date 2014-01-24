@@ -41,7 +41,7 @@
     "es5"           : false,     // true: Allow ES5 syntax (ex: getters and setters)
     "esnext"        : false,     // true: Allow ES.next (ES6) syntax (ex: `const`)
     "moz"           : false,     // true: Allow Mozilla specific syntax (extends and overrides esnext features)
-                                 // (ex: `for each`, multiple try/catch, function expression…)
+                                 // (ex: `for each`, multiple try/catch, function expression...)
     "evil"          : false,     // true: Tolerate use of `eval` and `new Function()`
     "expr"          : true,     // true: Tolerate `ExpressionStatement` as Programs
     "funcscope"     : false,     // true: Tolerate defining variables inside control statements"
@@ -82,5 +82,5 @@
     "white"         : false,    // true: Check against strict whitespace and indentation rules
 
     // Custom Globals
-    "globals"       : {}        // additional predefined global variables
+    "globals"       : { "angular": false }  // additional predefined global variables
 }
