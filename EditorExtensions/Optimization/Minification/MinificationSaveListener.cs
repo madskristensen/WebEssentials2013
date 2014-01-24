@@ -57,9 +57,6 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             {
                 string mapPath = minPath + ".map";
                 ProjectHelpers.AddFileToProject(minPath, mapPath);
-                
-                if (File.Exists(mapPath + ".gzip"))
-                    ProjectHelpers.AddFileToProject(mapPath, mapPath + ".gzip");
             }
 
             if (settings.GzipMinifiedFiles)
@@ -79,8 +76,6 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             if (settings.GzipMinifiedFiles && (changed || !File.Exists(minPath + ".gzip")))
             {
                 FileHelpers.GzipFile(minPath);
-                if (minifier.GenerateSourceMap && File.Exists(minPath + ".map"))
-                    FileHelpers.GzipFile(minPath + ".map");
             }
         }
     }

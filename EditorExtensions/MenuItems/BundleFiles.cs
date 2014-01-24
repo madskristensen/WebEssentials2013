@@ -380,17 +380,17 @@ namespace MadsKristensen.EditorExtensions
             // If the bundle didn't change, don't re-minify, unless the user just enabled minification.
             if (!bundleChanged && File.Exists(minPath))
                 return;
+            
             var fers = WebEditor.ExportProvider.GetExport<IFileExtensionRegistryService>().Value;
             var contentType = fers.GetContentTypeForExtension(extension);
             var settings = WESettings.Instance.ForContentType<IMinifierSettings>(contentType);
             var minifier = Mef.GetImport<IFileMinifier>(contentType);
 
             bool changed = minifier.MinifyFile(filePath, minPath);
+
             if (settings.GzipMinifiedFiles && (changed || !File.Exists(minPath + ".gzip")))
             {
                 FileHelpers.GzipFile(minPath);
-                if (minifier.GenerateSourceMap && File.Exists(minPath + ".map"))
-                    FileHelpers.GzipFile(minPath + ".map");
             }
         }
     }

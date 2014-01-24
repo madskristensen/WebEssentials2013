@@ -34,12 +34,16 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         public virtual bool MinifyFile(string sourcePath, string targetPath)
         {
             var result = MinifyString(File.ReadAllText(sourcePath));
+
             if (result != null && (!File.Exists(targetPath) || result != File.ReadAllText(targetPath)))
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(targetPath);
                 File.WriteAllText(targetPath, result);
+                ProjectHelpers.AddFileToProject(sourcePath, targetPath);
+
                 return true;
             }
+
             return false;
         }
         public abstract string MinifyString(string source);
@@ -158,6 +162,8 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
 
             ProjectHelpers.CheckOutFileFromSourceControl(minFile);
             File.WriteAllText(minFile, content);
+            ProjectHelpers.AddFileToProject(file, minFile);
+
             return true;
         }
     }

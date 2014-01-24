@@ -61,6 +61,8 @@ namespace MadsKristensen.EditorExtensions
             using (var targetStream = File.OpenWrite(gzipPath))
             using (var gzipStream = new GZipStream(targetStream, CompressionMode.Compress))
                 sourceStream.CopyTo(gzipStream);
+
+            ProjectHelpers.AddFileToProject(sourcePath, gzipPath);
         }
 
         public static void OpenFileInPreviewTab(string file)
