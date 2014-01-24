@@ -1,10 +1,18 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using System.Windows.Threading;
 using EnvDTE;
 using MadsKristensen.EditorExtensions;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VSSDK.Tools.VsIdeTesting;
+using Task = System.Threading.Tasks.Task;
+using WebEditor = Microsoft.Web.Editor.WebEditor;
 
 namespace WebEssentialsTests
 {
@@ -14,7 +22,7 @@ namespace WebEssentialsTests
         public static readonly string FixtureDirectory = Path.Combine(BaseDirectory, "fixtures", "Visual Studio");
 
         public static DTE DTE { get { return VsIdeTestHostContext.Dte; } }
-        public static IServiceProvider ServiceProvider { get { return VsIdeTestHostContext.ServiceProvider; } }
+        public static System.IServiceProvider ServiceProvider { get { return VsIdeTestHostContext.ServiceProvider; } }
 
         public static T GetService<T>(Type idType) { return (T)ServiceProvider.GetService(idType); }
 
@@ -31,19 +39,23 @@ namespace WebEssentialsTests
             return solution;
         }
 
-        public static void TypeString(string s)
+        public static Task TypeString(string s)
         {
-            foreach (var ch in s) TypeChar(ch);
+            return Dispatcher.FromThread(WebEditor.UIThread).InvokeAsync(() =>
+            {
+                foreach (var ch in s) TypeChar(ch);
+            }).Task;
         }
+
 
         ///<summary>Sends a single keypress command to Visual Studio.</summary>
         public static void TypeChar(char c)
         {
-            // TODO: Register filter in active IVsTextView?
+            var target = (IOleCommandTarget)ProjectHelpers.GetCurrentNativeTextView();
             var special = GetSpecialCommand(c);
             if (special != null)
             {
-                DTE.Commands.Execute(special);
+                target.Execute(special);
                 return;
             }
             // Thanks @JaredPar
@@ -52,7 +64,7 @@ namespace WebEssentialsTests
             try
             {
                 Marshal.GetNativeVariantForObject(c, variantIn);
-                DTE.Commands.Execute(VSConstants.VSStd2KCmdID.TYPECHAR, variantIn);
+                target.Execute(VSConstants.VSStd2KCmdID.TYPECHAR, variantIn);
             }
             finally
             {

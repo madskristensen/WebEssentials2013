@@ -248,18 +248,18 @@ namespace MadsKristensen.EditorExtensions
         public static IWpfTextView GetCurentTextView()
         {
             var componentModel = GetComponentModel();
-            if (componentModel != null)
-            {
-                var editorAdapter = componentModel.GetService<IVsEditorAdaptersFactoryService>();
-                var textManager = (IVsTextManager)ServiceProvider.GlobalProvider.GetService(typeof(SVsTextManager));
+            if (componentModel == null) return null;
+            var editorAdapter = componentModel.GetService<IVsEditorAdaptersFactoryService>();
 
-                IVsTextView activeView = null;
-                ErrorHandler.ThrowOnFailure(textManager.GetActiveView(1, null, out activeView));
+            return editorAdapter.GetWpfTextView(GetCurrentNativeTextView());
+        }
+        public static IVsTextView GetCurrentNativeTextView()
+        {
+            var textManager = (IVsTextManager)ServiceProvider.GlobalProvider.GetService(typeof(SVsTextManager));
 
-                return editorAdapter.GetWpfTextView(activeView);
-            }
-
-            return null;
+            IVsTextView activeView = null;
+            ErrorHandler.ThrowOnFailure(textManager.GetActiveView(1, null, out activeView));
+            return activeView;
         }
 
         public static IComponentModel GetComponentModel()

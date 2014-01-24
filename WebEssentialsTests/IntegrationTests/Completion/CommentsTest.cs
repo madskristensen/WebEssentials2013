@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using EnvDTE;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VSSDK.Tools.VsIdeTesting;
 
@@ -31,73 +31,77 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
 
         [HostType("VS IDE")]
         [TestMethod, TestCategory("Completion")]
-        public void BlockCommentCompletion()
+        public async Task BlockCommentCompletion()
         {
             SettingsStore.EnterTestMode(new WESettings
             {
                 JavaScript = { BlockCommentCompletion = true }
             });
-
-            string result = WriteBlockComment();
+            string result = await WriteBlockComment();
             result.Should().Be("/**/");
         }
 
         [HostType("VS IDE")]
         [TestMethod, TestCategory("Completion")]
-        public void BlockCommentCompletionDisabled()
+        public async Task BlockCommentCompletionDisabled()
         {
             SettingsStore.EnterTestMode(new WESettings
             {
                 JavaScript = { BlockCommentCompletion = false }
             });
 
-            string result = WriteBlockComment();
+            string result = await WriteBlockComment();
             result.Should().Be("/*");
         }
 
         [HostType("VS IDE")]
         [TestMethod, TestCategory("Completion")]
-        public void BlockCommentStarCompletion()
+        public async Task BlockCommentStarCompletion()
         {
             SettingsStore.EnterTestMode(new WESettings
             {
                 JavaScript = { BlockCommentCompletion = true }
             });
 
-            string result = WriteBlockStarComment();
+            string result = await WriteBlockStarComment();
             result.Should().Be("/*\r\n * \r\n */");
         }
 
         [HostType("VS IDE")]
         [TestMethod, TestCategory("Completion")]
-        public void BlockCommentStarCompletionDisabled()
+        public async Task BlockCommentStarCompletionDisabled()
         {
             SettingsStore.EnterTestMode(new WESettings
             {
                 JavaScript = { BlockCommentCompletion = false }
             });
 
-            string result = WriteBlockStarComment();
+            string result = await WriteBlockStarComment();
             result.Should().Be("/*\r\n");
         }
 
-        private static string WriteBlockComment()
+        private static async Task<string> WriteBlockComment()
         {
             string fileName = CreateJavaScriptFile();
             var window = _dte.ItemOperations.OpenFile(fileName);
+            await Task.Delay(1500);
 
-            VSHost.TypeString("/*");
+            await VSHost.TypeString("/*");
+            await Task.Delay(500);
             window.Document.Save();
 
             return File.ReadAllText(fileName);
         }
 
-        private static string WriteBlockStarComment()
+
+
+        private static async Task<string> WriteBlockStarComment()
         {
             var fileName = CreateJavaScriptFile();
             var window = _dte.ItemOperations.OpenFile(fileName);
 
-            VSHost.TypeString("/*\n");
+            await VSHost.TypeString("/*\n");
+            await Task.Delay(500);
 
             window.Document.Save();
 
