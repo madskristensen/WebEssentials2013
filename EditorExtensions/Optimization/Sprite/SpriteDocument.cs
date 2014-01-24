@@ -33,7 +33,6 @@ namespace MadsKristensen.EditorExtensions
                 writer.WriteStartElement("sprite");
                 writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
                 writer.WriteAttributeString("xsi", "noNamespaceSchemaLocation", null, "http://vswebessentials.com/schemas/v1/sprite.xsd");
-                writer.WriteComment("The order of the <file> elements determines the order of the images in the sprite.");
 
                 // Settings
                 writer.WriteStartElement("settings");
@@ -44,6 +43,7 @@ namespace MadsKristensen.EditorExtensions
                 writer.WriteEndElement(); // </settings>
 
                 // Files
+                writer.WriteComment("The order of the <file> elements determines the order of the images in the sprite.");
                 writer.WriteStartElement("files");
 
                 string root = ProjectHelpers.GetRootFolder();
