@@ -152,7 +152,7 @@ namespace MadsKristensen.EditorExtensions
                     if (module.Name != ".bin" && !File.Exists(Path.Combine(module.FullName, "index.js")))
                     {
                         dynamic package = Json.Decode(File.ReadAllText(Path.Combine(module.FullName, "package.json")));
-                        string main = package.main;
+                        string main = package.main ?? "";
                         if (!main.StartsWith("."))
                             main = "./" + main;
                         File.WriteAllText(

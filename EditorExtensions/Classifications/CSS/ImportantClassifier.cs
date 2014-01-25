@@ -85,8 +85,8 @@ namespace MadsKristensen.EditorExtensions
             {
                 string text = token.Text;
 
-                    if (!_cache.Contains(token))
-                        _cache.Add(token);
+                if (!_cache.Contains(token))
+                    _cache.Add(token);
             }
         }
 
