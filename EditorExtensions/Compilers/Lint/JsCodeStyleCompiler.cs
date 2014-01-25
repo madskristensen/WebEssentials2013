@@ -43,7 +43,7 @@ namespace MadsKristensen.EditorExtensions
                                    FileName = fileName,
                                    Column = int.Parse(e.Attribute("column").Value),
                                    Line = int.Parse(e.Attribute("line").Value),
-                                   Message = e.Attribute("message").Value
+                                   Message = "JSCS: " + e.Attribute("message").Value
                                });
                 }).First();
             }
