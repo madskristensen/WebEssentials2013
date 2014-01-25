@@ -94,7 +94,7 @@ namespace MadsKristensen.EditorExtensions
             try
             {
                 _provider.SuspendRefresh();
-                _provider.Tasks.Clear();
+                //_provider.Tasks.Clear();  <-- JSHINT and JSCS both share the same list and execute with same event
 
                 foreach (CompilerError error in results.Where(r => r != null))
                 {
