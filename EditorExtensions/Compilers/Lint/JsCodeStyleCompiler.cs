@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions
         private const string _settingsName = ".jscs.json";
 
         public override string SourceExtension { get { return ".js"; } }
-        public override string ServiceName { get { return "JsCodeStyle"; } }
+        public override string ServiceName { get { return "JSCS"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
         protected override Func<string, IEnumerable<CompilerError>> ParseErrors
         {
@@ -43,7 +43,7 @@ namespace MadsKristensen.EditorExtensions
                                    FileName = fileName,
                                    Column = int.Parse(e.Attribute("column").Value),
                                    Line = int.Parse(e.Attribute("line").Value),
-                                   Message = "JSCS: " + e.Attribute("message").Value
+                                   Message = ServiceName + ": " + e.Attribute("message").Value
                                });
                 }).First();
             }

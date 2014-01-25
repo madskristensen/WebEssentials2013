@@ -94,14 +94,20 @@ namespace MadsKristensen.EditorExtensions
             try
             {
                 _provider.SuspendRefresh();
-                //_provider.Tasks.Clear();  <-- JSHINT and JSCS both share the same list and execute with same event
+
+                for (int i = _provider.Tasks.Count - 1; i > -1; i--)
+                {
+                    var task = _provider.Tasks[i];
+
+                    if (task.Text.StartsWith(_compiler.ServiceName, StringComparison.OrdinalIgnoreCase))
+                        _provider.Tasks.Remove(task);
+                }
 
                 foreach (CompilerError error in results.Where(r => r != null))
                 {
                     ErrorTask task = CreateTask(error);
                     _provider.Tasks.Add(task);
                 }
-
             }
             finally
             {
