@@ -273,7 +273,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static void WriteBundleFile(string filePath, XmlDocument doc)
+        private static void WriteBundleFile(string bundleFilePath, XmlDocument doc)
         {
             XmlNode bundleNode = doc.SelectSingleNode("//bundle");
             if (bundleNode == null)
@@ -290,10 +290,10 @@ namespace MadsKristensen.EditorExtensions
             Dictionary<string, string> files = new Dictionary<string, string>();
 
             // filePath must end in ".targetExtension.bundle"
-            string extension = Path.GetExtension(Path.GetFileNameWithoutExtension(filePath));
+            string extension = Path.GetExtension(Path.GetFileNameWithoutExtension(bundleFilePath));
             if (string.IsNullOrEmpty(extension))
             {
-                Logger.Log("Skipping bundle file " + filePath + " without extension.  Bundle files must end with the output extension, followed by '.bundle'.");
+                Logger.Log("Skipping bundle file " + bundleFilePath + " without extension.  Bundle files must end with the output extension, followed by '.bundle'.");
                 return;
             }
             XmlNodeList nodes = doc.SelectNodes("//file");
@@ -307,7 +307,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    absolute = ProjectHelpers.ToAbsoluteFilePath(node.InnerText, filePath);
+                    absolute = ProjectHelpers.ToAbsoluteFilePath(node.InnerText, bundleFilePath);
                 }
 
                 if (File.Exists(absolute))
@@ -317,14 +317,14 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    _dte.ItemOperations.OpenFile(filePath);
+                    _dte.ItemOperations.OpenFile(bundleFilePath);
                     Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "Bundle error: The file '{0}' doesn't exist", node.InnerText));
 
                     return;
                 }
             }
 
-            string bundlePath = outputAttr != null ? Path.Combine(Path.GetDirectoryName(filePath), outputAttr.InnerText) : filePath.Replace(_ext, string.Empty);
+            string bundleSourcePath = outputAttr != null ? Path.Combine(Path.GetDirectoryName(bundleFilePath), outputAttr.InnerText) : bundleFilePath.Replace(_ext, string.Empty);
             StringBuilder sb = new StringBuilder();
 
             foreach (string file in files.Keys)
@@ -346,37 +346,38 @@ namespace MadsKristensen.EditorExtensions
                 {
                     // If the bundle is in the same folder as the CSS,
                     // or if does not have URLs, no need to normalize.
-                    if (Path.GetDirectoryName(file) != Path.GetDirectoryName(bundlePath)
+                    if (Path.GetDirectoryName(file) != Path.GetDirectoryName(bundleSourcePath)
                      && source.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0
                      && WESettings.Instance.Css.AdjustRelativePaths)
                         source = CssUrlNormalizer.NormalizeUrls(
                             tree: new CssParser().Parse(source, true),
-                            targetFile: bundlePath,
+                            targetFile: bundleSourcePath,
                             oldBasePath: file
                         );
                 }
                 sb.AppendLine(source);
             }
 
-            bool bundleChanged = !File.Exists(bundlePath) || File.ReadAllText(bundlePath) != sb.ToString();
+            bool bundleChanged = !File.Exists(bundleSourcePath) || File.ReadAllText(bundleSourcePath) != sb.ToString();
             if (bundleChanged)
             {
-                ProjectHelpers.CheckOutFileFromSourceControl(bundlePath);
-                File.WriteAllText(bundlePath, sb.ToString(), new UTF8Encoding(true));
-                Logger.Log("Web Essentials: Updated bundle: " + Path.GetFileName(bundlePath));
+                ProjectHelpers.CheckOutFileFromSourceControl(bundleSourcePath);
+                File.WriteAllText(bundleSourcePath, sb.ToString(), new UTF8Encoding(true));
+                Logger.Log("Web Essentials: Updated bundle: " + Path.GetFileName(bundleSourcePath));
             }
 
-            ProjectHelpers.AddFileToProject(filePath, bundlePath);
+            ProjectHelpers.AddFileToProject(bundleFilePath, bundleSourcePath);
 
             if (bundleNode.Attributes["minify"] != null && bundleNode.Attributes["minify"].InnerText == "true")
             {
-                WriteMinFile(filePath, bundlePath, sb.ToString(), extension, bundleChanged);
+                WriteMinFile(bundleSourcePath, sb.ToString(), extension, bundleChanged);
             }
         }
 
-        private static void WriteMinFile(string filePath, string bundlePath, string content, string extension, bool bundleChanged)
+        private static void WriteMinFile(string bundleSourcePath, string content, string extension, bool bundleChanged)
         {
-            string minPath = Path.ChangeExtension(bundlePath, ".min" + Path.GetExtension(bundlePath));
+            string minPath = Path.ChangeExtension(bundleSourcePath, ".min" + Path.GetExtension(bundleSourcePath));
+
             // If the bundle didn't change, don't re-minify, unless the user just enabled minification.
             if (!bundleChanged && File.Exists(minPath))
                 return;
@@ -385,13 +386,10 @@ namespace MadsKristensen.EditorExtensions
             var contentType = fers.GetContentTypeForExtension(extension);
             var settings = WESettings.Instance.ForContentType<IMinifierSettings>(contentType);
             var minifier = Mef.GetImport<IFileMinifier>(contentType);
-
-            bool changed = minifier.MinifyFile(filePath, minPath);
+            bool changed = minifier.MinifyFile(bundleSourcePath, minPath);
 
             if (settings.GzipMinifiedFiles && (changed || !File.Exists(minPath + ".gzip")))
-            {
                 FileHelpers.GzipFile(minPath);
-            }
         }
     }
 }
