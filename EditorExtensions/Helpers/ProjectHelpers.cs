@@ -182,6 +182,9 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>Converts a relative URL to an absolute path on disk, as resolved from the specified file.</summary>
         private static string ToAbsoluteFilePath(string relativeUrl, ProjectItem file)
         {
+            if (file == null)
+                return null;
+
             var baseFolder = file.Properties == null ? null : Path.GetDirectoryName(file.Properties.Item("FullPath").Value.ToString());
             return ToAbsoluteFilePath(relativeUrl, GetProjectFolder(file), baseFolder);
         }
