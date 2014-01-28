@@ -44,7 +44,7 @@ namespace WebEssentialsTests
             return Dispatcher.FromThread(WebEditor.UIThread).InvokeAsync(() =>
             {
                 foreach (var ch in s) TypeChar(ch);
-            }).Task;
+            }, DispatcherPriority.ApplicationIdle).Task;    // Wait for ApplicationIdle to make sure that all targets have been registered
         }
 
 
