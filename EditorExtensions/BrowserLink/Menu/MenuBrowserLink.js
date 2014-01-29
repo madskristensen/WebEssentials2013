@@ -28,8 +28,7 @@
 
         AddStyles();
 
-        _fixed = _menu.addCheckbox("Auto-hide", "This will auto-hide this menu. Click the CTRL key to make it visible", true, function ()
-        {
+        _fixed = _menu.addCheckbox("Auto-hide", "This will auto-hide this menu. Click the CTRL key to make it visible", true, function () {
             browserLink.invoke("ToggleVisibility", !this.checked);
             if (this.checked) {
                 _menu.style.display = "none";
@@ -157,10 +156,9 @@
     window.browserLink.menu = CreateMenu();
 
     return {
-
         setVisibility: function (visible) { // Can be called from the server-side extension
             _menu.style.display = visible ? "block" : "none";
             _fixed.checked(!visible);
-        },
+        }
     };
 });
