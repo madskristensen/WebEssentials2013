@@ -352,6 +352,7 @@
     <Compile Include="ExtensionMethods\DispatcherPriorityAwaitable.cs" />
     <Compile Include="ExtensionMethods\DispatcherPriorityAwaiter.cs" />
     <Compile Include="MenuItems\JsCodeStyle.cs" />
+    <Compile Include="MenuItems\ChainCompilation.cs" />
     <Compile Include="MenuItems\SpriteImage.cs" />
     <Compile Include="Compilers\Compilation Interfaces.cs" />
     <Compile Include="Compilers\CompilerRunner.cs" />

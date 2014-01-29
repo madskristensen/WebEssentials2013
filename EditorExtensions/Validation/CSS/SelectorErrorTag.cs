@@ -6,15 +6,12 @@ namespace MadsKristensen.EditorExtensions
     internal class SelectorErrorTag : ICssError
     {
         private SortedRangeList<Selector> _range;
-        private string _errorMessage;
 
-        public SelectorErrorTag(SortedRangeList<Selector> range, string errorMessage)
+        public SelectorErrorTag(SortedRangeList<Selector> range)
         {
             _range = range;
-            _errorMessage = errorMessage;
             Flags = WESettings.Instance.Css.ValidationLocation.ToCssErrorFlags();
         }
-
 
         public ParseItem Item
         {

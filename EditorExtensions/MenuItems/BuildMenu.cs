@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using EnvDTE80;
 using MadsKristensen.EditorExtensions.Compilers;
 using MadsKristensen.EditorExtensions.Optimization.Minification;
+using Microsoft.Html.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
@@ -81,13 +82,12 @@ namespace MadsKristensen.EditorExtensions
                             .SelectMany(p => Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories))
                             .Where(f => extensions.Contains(Path.GetExtension(f)));
 
-            var extensionService = WebEditor.ExportProvider.GetExport<IFileExtensionRegistryService>();
             var minifyService = WebEditor.ExportProvider.GetExport<MinificationSaveListener>();
 
             // Perform expensive blocking work in parallel
             Parallel.ForEach(files, file =>
                 minifyService.Value.ReMinify(
-                    extensionService.Value.GetContentTypeForExtension(Path.GetExtension(file).TrimStart('.')),
+                    ContentTypeManager.GetContentType(Path.GetExtension(file).TrimStart('.')),
                     file,
                     false
                 )

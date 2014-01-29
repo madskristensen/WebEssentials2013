@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
@@ -29,6 +30,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         ///<summary>Releases all resources used by the EditorCompilerInvoker.</summary>
         public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+
         ///<summary>Releases the unmanaged resources used by the EditorCompilerInvoker and optionally releases the managed resources.</summary>
         ///<param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
@@ -38,6 +40,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
                 Document.FileActionOccurred -= Document_FileActionOccurred;
             }
         }
+
         private void Document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
             if (e.FileActionType == FileActionTypes.ContentSavedToDisk || e.FileActionType == FileActionTypes.DocumentRenamed)
@@ -46,6 +49,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         ///<summary>Occurs when the file has been compiled (on both success and failure).</summary>
         public event EventHandler<CompilerResultEventArgs> CompilationReady;
+
         ///<summary>Raises the CompilationReady event.</summary>
         ///<param name="e">A CompilerResultEventArgs object that provides the event data.</param>
         protected virtual void OnCompilationReady(CompilerResultEventArgs e)
@@ -72,6 +76,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
                         IsSuccess = true,
                         Result = File.ReadAllText(targetPath)
                     }));
+
                     return;
                 }
             }
@@ -81,6 +86,12 @@ namespace MadsKristensen.EditorExtensions.Compilers
         {
             var result = await CompilerRunner.CompileAsync(sourcePath, save);
             OnCompilationReady(new CompilerResultEventArgs(result));
+
+            if (WESettings.Instance.General.ChainCompilation && save && (Mef.GetChainCompilationContentTypes().Contains(CompilerRunner.SourceContentType)))
+                foreach (var source in ProjectHelpers.GetDependents(sourcePath))
+                {
+                    CompilerRunner.CompileToDefaultOutputAsync(source).DontWait("compiling " + source);
+                }
         }
     }
 

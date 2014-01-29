@@ -16,7 +16,6 @@ namespace MadsKristensen.EditorExtensions
     {
         private DTE2 _dte;
         private OleMenuCommandService _mcs;
-        private static List<string> _htmlExt = new List<string>() { ".html", ".htm", ".aspx", ".ascx", ".master", ".cshtml", ".vbhtml" };
 
         public MinifyFileMenu(DTE2 dte, OleMenuCommandService mcs)
         {

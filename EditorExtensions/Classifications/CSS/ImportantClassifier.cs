@@ -83,8 +83,6 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (TokenItem token in visitor.Items.Where(d => d.Important != null).Select(d => d.Important))
             {
-                string text = token.Text;
-
                 if (!_cache.Contains(token))
                     _cache.Add(token);
             }
