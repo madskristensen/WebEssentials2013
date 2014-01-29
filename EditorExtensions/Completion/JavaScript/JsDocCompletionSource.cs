@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions
 
         public override Span? GetInvocationSpan(string text, int linePosition, SnapshotPoint position)
         {
-            if (!IsComment(position) || !text.Substring(0, linePosition - 1).Contains('*'))
+            if (!IsComment(position) || (linePosition > 0 && !text.Substring(0, linePosition - 1).Contains('*')))
                 return null;
 
             int startIndex = text.LastIndexOf('@', linePosition - 1);
