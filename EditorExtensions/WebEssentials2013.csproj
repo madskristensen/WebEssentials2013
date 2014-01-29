@@ -349,6 +349,8 @@
     <Compile Include="Compilers\Lint\JsCodeStyleCompiler.cs" />
     <Compile Include="Compilers\Lint\TsLintCompiler.cs" />
     <Compile Include="Compilers\ProjectCompiler.cs" />
+    <Compile Include="ExtensionMethods\DispatcherPriorityAwaitable.cs" />
+    <Compile Include="ExtensionMethods\DispatcherPriorityAwaiter.cs" />
     <Compile Include="MenuItems\JsCodeStyle.cs" />
     <Compile Include="MenuItems\SpriteImage.cs" />
     <Compile Include="Compilers\Compilation Interfaces.cs" />

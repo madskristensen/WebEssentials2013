@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
+using System.Windows.Threading;
 using EnvDTE;
 using FluentAssertions;
+using MadsKristensen.EditorExtensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VSSDK.Tools.VsIdeTesting;
 
@@ -29,28 +33,27 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
 
         [HostType("VS IDE")]
         [TestMethod, TestCategory("Completion")]
-        public void HtmlZenCodingTest()
+        public async Task HtmlZenCodingTest()
         {
-            string result = WriteZenCoding("#id.class", ".html");
+            string result = await WriteZenCoding("#id.class", ".html");
             result.Should().Be("<div id=\"id\" class=\"class\"></div>");
         }
 
         [HostType("VS IDE")]
         //[TestMethod, TestCategory("Completion")]
-        public void AspxZenCodingTest()
+        public async Task AspxZenCodingTest()
         {
-            string result = WriteZenCoding("#id.class", ".aspx");
+            string result = await WriteZenCoding("#id.class", ".aspx");
             result.Should().Be("<div id=\"id\" class=\"class\"></div>");
         }
 
-        private static string WriteZenCoding(string text, string extension)
+        private static async Task<string> WriteZenCoding(string text, string extension)
         {
             string fileName = CreateHtmlFile(extension);
             var window = _dte.ItemOperations.OpenFile(fileName);
 
-            Utility.TypeString(text);
-            Utility.TypeString("{TAB}");
-
+            await VSHost.TypeString(text + "\t");
+            await VSHost.Dispatcher.NextFrame(DispatcherPriority.ApplicationIdle);
             window.Document.Save();
 
             return File.ReadAllText(fileName);

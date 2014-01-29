@@ -108,7 +108,6 @@
     <Compile Include="IntegrationTests\Completion\ZenCodingTest.cs" />
     <Compile Include="IntegrationTests\Completion\CommentsTest.cs" />
     <Compile Include="IntegrationTests\SettingsTests.cs" />
-    <Compile Include="IntegrationTests\Utility.cs" />
     <Compile Include="VSHost.cs" />
     <None Include="ExtractZipTask.cs" />
     <Compile Include="IntegrationTests\Compilation\CompileOnSaveTests.cs" />

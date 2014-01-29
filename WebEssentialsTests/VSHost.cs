@@ -41,10 +41,15 @@ namespace WebEssentialsTests
 
         public static Task TypeString(string s)
         {
-            return Dispatcher.FromThread(WebEditor.UIThread).InvokeAsync(() =>
+            return Dispatcher.InvokeAsync(() =>
             {
                 foreach (var ch in s) TypeChar(ch);
             }, DispatcherPriority.ApplicationIdle).Task;    // Wait for ApplicationIdle to make sure that all targets have been registered
+        }
+
+        public static Dispatcher Dispatcher
+        {
+            get { return Dispatcher.FromThread(WebEditor.UIThread); }
         }
 
 

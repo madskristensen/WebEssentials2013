@@ -26,11 +26,11 @@ namespace MadsKristensen.EditorExtensions
             CommandIds = new ReadOnlyCollection<uint>(commandIds);
             TextView = textView;
 
-            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+            Dispatcher.CurrentDispatcher.InvokeAsync(() =>
             {
                 // Add the target later to make sure it makes it in before other command handlers
                 ErrorHandler.ThrowOnFailure(adapter.AddCommandFilter(this, out _nextCommandTarget));
-            }), DispatcherPriority.ApplicationIdle, null);
+            }, DispatcherPriority.ApplicationIdle);
         }
 
         protected abstract bool IsEnabled();
