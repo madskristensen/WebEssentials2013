@@ -75,7 +75,7 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
 
         private bool IsParentApp(ElementNode element)
         {
-            if (element.GetAttribute("ng-app") != null)
+            if (element.GetAttribute("ng-app") != null || element.GetAttribute("data-ng-app") != null)
                 return true;
 
             if (element.Parent != null)
