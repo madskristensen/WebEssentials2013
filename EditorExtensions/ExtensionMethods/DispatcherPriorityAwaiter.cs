@@ -1,8 +1,5 @@
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
-using MS.Internal.WindowsBase;
 using System.Windows.Threading;
 
 namespace MadsKristensen.EditorExtensions

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using Microsoft.Html.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 using Microsoft.Web.Editor.Composition;
@@ -29,6 +30,23 @@ namespace MadsKristensen.EditorExtensions
                         .SelectMany(fers.Value.GetExtensionsForContentType)
                         .Select(e => "." + e);
         }
+
+        public static IEnumerable<IContentType> GetChainCompilationContentTypes()
+        {
+            return new[] {
+                ContentTypeManager.GetContentType("LESS"),
+                ContentTypeManager.GetContentType("SASS")
+            };
+        }
+
+        public static ISet<string> GetChainedCompileExtensions()
+        {
+            var fers = WebEditor.ExportProvider.GetExport<IFileExtensionRegistryService>();
+            return new HashSet<string>(GetChainCompilationContentTypes()
+                    .SelectMany(fers.Value.GetExtensionsForContentType)
+                    .Select(e => "*." + e));
+        }
+
         public static T GetImport<T>(IContentType contentType) where T : class
         {
             return new ContentTypeImportComposer<T>(CompositionService).GetImport(contentType);

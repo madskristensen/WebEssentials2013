@@ -370,11 +370,11 @@ namespace MadsKristensen.EditorExtensions
 
             if (bundleNode.Attributes["minify"] != null && bundleNode.Attributes["minify"].InnerText == "true")
             {
-                WriteMinFile(bundleSourcePath, sb.ToString(), extension, bundleChanged);
+                WriteMinFile(bundleSourcePath, extension, bundleChanged);
             }
         }
 
-        private static void WriteMinFile(string bundleSourcePath, string content, string extension, bool bundleChanged)
+        private static void WriteMinFile(string bundleSourcePath, string extension, bool bundleChanged)
         {
             string minPath = Path.ChangeExtension(bundleSourcePath, ".min" + Path.GetExtension(bundleSourcePath));
 

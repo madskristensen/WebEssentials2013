@@ -40,6 +40,12 @@ namespace MadsKristensen.EditorExtensions
         [DefaultValue(false)]
         public bool AllMessagesToOutputWindow { get; set; }
 
+        [Category("CSS")]
+        [DisplayName("Chain Compilation")]
+        [Description("Compile the dependents chain when a LESS or SASS file is saved.")]
+        [DefaultValue(false)]
+        public bool ChainCompilation { get; set; }
+
         [Category("SVG Files")]
         [DisplayName("Show preview pane")]
         [Description("Show a preview pane when editing SVG files.")]

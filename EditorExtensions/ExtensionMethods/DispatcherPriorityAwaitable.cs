@@ -1,8 +1,4 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Threading;
-using MS.Internal.WindowsBase;
 
 namespace MadsKristensen.EditorExtensions
 {

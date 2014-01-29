@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
                 int lineNo = FindLineNumber(dupe);
 
                 string errorMessage = string.Format(CultureInfo.InvariantCulture, Resources.BestPracticeDuplicateSelectors, lineNo);
-                SelectorErrorTag tag = new SelectorErrorTag(rule.Selectors, errorMessage);
+                SelectorErrorTag tag = new SelectorErrorTag(rule.Selectors);
                 context.AddError(tag);
             }
 

@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 using EnvDTE;
 using MadsKristensen.EditorExtensions;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VSSDK.Tools.VsIdeTesting;
 using Task = System.Threading.Tasks.Task;
 using WebEditor = Microsoft.Web.Editor.WebEditor;
