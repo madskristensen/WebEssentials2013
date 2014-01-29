@@ -84,10 +84,8 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
         {
             string fileName = CreateJavaScriptFile();
             var window = _dte.ItemOperations.OpenFile(fileName);
-            await Task.Delay(1500);
 
             await VSHost.TypeString("/*");
-            await Task.Delay(500);
             window.Document.Save();
 
             return File.ReadAllText(fileName);
@@ -101,7 +99,6 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
             var window = _dte.ItemOperations.OpenFile(fileName);
 
             await VSHost.TypeString("/*\n");
-            await Task.Delay(500);
 
             window.Document.Save();
 
