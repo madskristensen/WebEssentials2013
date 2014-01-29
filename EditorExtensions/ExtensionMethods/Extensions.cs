@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using ConfOxide.MemberAccess;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
@@ -70,6 +71,13 @@ namespace MadsKristensen.EditorExtensions
                 image.DownloadCompleted += (s, e) => callback();
             else
                 callback();
+        }
+
+        ///<summary>Returns an awaitable object that resumes execution on the specified Dispatcher.</summary>
+        /// <remarks>Copied from <see cref="Dispatcher.Yield"/>, which can only be called on the Dispatcher thread.</remarks>
+        public static DispatcherPriorityAwaitable NextFrame(this Dispatcher dispatcher, DispatcherPriority priority = DispatcherPriority.Background)
+        {
+            return new DispatcherPriorityAwaitable(dispatcher, priority);
         }
 
         ///<summary>Replaces a TextBuffer's entire content with the specified text.</summary>

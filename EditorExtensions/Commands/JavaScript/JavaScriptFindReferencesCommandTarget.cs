@@ -8,17 +8,17 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class JavaScriptFindReferences : CommandTargetBase
+    internal class JavaScriptFindReferences : CommandTargetBase<VSConstants.VSStd97CmdID>
     {
         private ITextStructureNavigator _navigator;
 
         public JavaScriptFindReferences(IVsTextView adapter, IWpfTextView textView, ITextStructureNavigatorSelectorService navigator)
-            : base(adapter, textView, typeof(VSConstants.VSStd97CmdID).GUID, (uint)VSConstants.VSStd97CmdID.FindReferences)
+            : base(adapter, textView, VSConstants.VSStd97CmdID.FindReferences)
         {
             _navigator = navigator.GetTextStructureNavigator(textView.TextBuffer);
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(VSConstants.VSStd97CmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             SnapshotPoint? point = TextView.Caret.Position.Point.GetPoint(TextView.TextBuffer, PositionAffinity.Predecessor);
 

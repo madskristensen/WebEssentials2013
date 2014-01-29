@@ -14,18 +14,18 @@ using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class PasteImage : CommandTargetBase
+    internal class PasteImage : CommandTargetBase<VSConstants.VSStd97CmdID>
     {
         private string _format;
         private static string _lastPath;
 
         public PasteImage(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, typeof(VSConstants.VSStd97CmdID).GUID, 26)
+            : base(adapter, textView, VSConstants.VSStd97CmdID.Paste)
         {
             EditorExtensionsPackage.DTE.Events.SolutionEvents.AfterClosing += delegate { _lastPath = null; };
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(VSConstants.VSStd97CmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             IDataObject data = Clipboard.GetDataObject();
 

@@ -10,13 +10,13 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class F1Help : CommandTargetBase
+    internal class F1Help : CommandTargetBase<VSConstants.VSStd97CmdID>
     {
         public F1Help(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, typeof(VSConstants.VSStd97CmdID).GUID, (uint)VSConstants.VSStd97CmdID.F1Help)
+            : base(adapter, textView, VSConstants.VSStd97CmdID.F1Help)
         { }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(VSConstants.VSStd97CmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var selection = TextView.GetSelection("css");
             if (selection == null)

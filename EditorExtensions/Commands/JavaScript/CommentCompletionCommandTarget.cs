@@ -9,16 +9,16 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    class CommentCompletionCommandTarget : CommandTargetBase
+    class CommentCompletionCommandTarget : CommandTargetBase<VSConstants.VSStd2KCmdID>
     {
         private IClassifier _classifier;
         public CommentCompletionCommandTarget(IVsTextView adapter, IWpfTextView textView, IClassifierAggregatorService classifier)
-            : base(adapter, textView, typeof(VSConstants.VSStd2KCmdID).GUID, (uint)VSConstants.VSStd2KCmdID.TYPECHAR)
+            : base(adapter, textView, VSConstants.VSStd2KCmdID.TYPECHAR)
         {
             _classifier = classifier.GetClassifier(textView.TextBuffer);
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(VSConstants.VSStd2KCmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             if (!WESettings.Instance.JavaScript.BlockCommentCompletion)
                 return false;

@@ -7,15 +7,15 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class CssFindReferences : CommandTargetBase
+    internal class CssFindReferences : CommandTargetBase<VSConstants.VSStd97CmdID>
     {
 
         public CssFindReferences(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, typeof(VSConstants.VSStd97CmdID).GUID, (uint)VSConstants.VSStd97CmdID.FindReferences)
+            : base(adapter, textView, VSConstants.VSStd97CmdID.FindReferences)
         {
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(VSConstants.VSStd97CmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var point = TextView.GetSelection("css");
             if (point == null) return false;

@@ -8,14 +8,14 @@ using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class NodeModuleGoToDefinition : CommandTargetBase
+    internal class NodeModuleGoToDefinition : CommandTargetBase<VSConstants.VSStd97CmdID>
     {
         public NodeModuleGoToDefinition(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, typeof(VSConstants.VSStd97CmdID).GUID, (uint)VSConstants.VSStd97CmdID.GotoDefn)
+            : base(adapter, textView, VSConstants.VSStd97CmdID.GotoDefn)
         {
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(VSConstants.VSStd97CmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var path = FindRequirePath();
             if (path == null)

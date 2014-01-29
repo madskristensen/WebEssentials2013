@@ -7,14 +7,14 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class RemoveDuplicateLines : CommandTargetBase
+    internal class RemoveDuplicateLines : CommandTargetBase<LinesCommandId>
     {
         public RemoveDuplicateLines(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, CommandGuids.guidEditorLinesCmdSet, CommandId.RemoveDuplicateLines)
+            : base(adapter, textView, LinesCommandId.RemoveDuplicateLines)
         {
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(LinesCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var span = GetSpan();
             var lines = span.GetText().Split(new[] { Environment.NewLine }, StringSplitOptions.None);

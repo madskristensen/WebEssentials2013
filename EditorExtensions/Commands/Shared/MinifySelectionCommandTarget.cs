@@ -6,16 +6,16 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class MinifySelection : CommandTargetBase
+    internal class MinifySelection : CommandTargetBase<MinifyCommandId>
     {
 
         public MinifySelection(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, CommandGuids.guidMinifyCmdSet, CommandId.MinifySelection)
+            : base(adapter, textView, MinifyCommandId.MinifySelection)
         {
         }
 
         SnapshotSpan? span;
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(MinifyCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             if (span == null)
                 return false;

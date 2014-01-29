@@ -13,15 +13,15 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class CssAddMissingStandard : CommandTargetBase
+    internal class CssAddMissingStandard : CommandTargetBase<CssCommandId>
     {
 
         public CssAddMissingStandard(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, CommandGuids.guidCssCmdSet, CommandId.AddMissingStandard)
+            : base(adapter, textView, CssCommandId.AddMissingStandard)
         {
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(CssCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             var point = TextView.GetSelection("css");
             if (point == null) return false;

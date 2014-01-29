@@ -7,23 +7,23 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class CommentCommandTarget : CommandTargetBase
+    internal class CommentCommandTarget : CommandTargetBase<VSConstants.VSStd2KCmdID>
     {
         private string _symbol;
 
         public CommentCommandTarget(IVsTextView adapter, IWpfTextView textView, string commentSymbol)
-            : base(adapter, textView, typeof(VSConstants.VSStd2KCmdID).GUID, 136, 137)
+            : base(adapter, textView, VSConstants.VSStd2KCmdID.COMMENT_BLOCK, VSConstants.VSStd2KCmdID.UNCOMMENT_BLOCK)
         {
             _symbol = commentSymbol;
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(VSConstants.VSStd2KCmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             StringBuilder sb = new StringBuilder();
             SnapshotSpan span = GetSpan();
             string[] lines = span.GetText().Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
-            switch ((VSConstants.VSStd2KCmdID)commandId)
+            switch (commandId)
             {
                 case VSConstants.VSStd2KCmdID.COMMENT_BLOCK:
                     Comment(sb, lines);

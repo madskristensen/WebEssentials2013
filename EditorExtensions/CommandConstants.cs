@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -36,6 +37,49 @@ namespace MadsKristensen.EditorExtensions
         public static readonly Guid guidTopMenu = new Guid(guidTopMenuString);
     }
 
+    [Guid(CommandGuids.guidMinifyCmdSetString)]
+    enum MinifyCommandId
+    {
+        MinifyCss = 0x1051,
+        MinifyJs = 0x1052,
+        MinifyHtml = 0x1058,
+        MinifySelection = 0x1053,
+
+        SelectBrowsers = 0x1055,
+    }
+    [Guid(CommandGuids.guidEditorLinesCmdSetString)]
+    enum LinesCommandId
+    {
+        SortAsc = 0x0003,
+        SortDesc = 0x0004,
+        RemoveDuplicateLines = 0x0005,
+        RemoveEmptyLines = 0x0007,
+    }
+    [Guid(CommandGuids.guidCssCmdSetString)]
+    enum CssCommandId
+    {
+        RemoveDuplicates = 0x129,
+        HideUnsupported = 0x1033,
+        HideInheritInitial = 0x1035,
+        SortProperties = 0x125,
+        AddMissingVendor = 0x127,
+        AddMissingStandard = 0x128,
+    }
+    [Guid(CommandGuids.guidFormattingCmdSetString)]
+    enum FormattingCommandId
+    {
+        SurroundWith = 0x334,
+        ExpandSelection = 0x335,
+        ContractSelection = 0x336,
+    }
+    [Guid(CommandGuids.guidExtractCmdSetString)]
+    enum ExtractCommandId
+    {
+        ExtractSelection = 0x1054,
+        ExtractVariable = 0x1056,
+        ExtractMixin = 0x1057,
+    }
+    [Guid(CommandGuids.guidEditorExtensionsCmdSetString)]
     enum CommandId
     {
         TopMenu = 0x3001,
@@ -53,15 +97,6 @@ namespace MadsKristensen.EditorExtensions
         SHA256Transform = 0x122,
         SHA384Transform = 0x123,
         SHA512Transform = 0x124,
-        SortCssProperties = 0x125,
-        AddMissingVendor = 0x127,
-        AddMissingStandard = 0x128,
-        CssRemoveDuplicates = 0x129,
-        CssHideUnsupported = 0x1033,
-        CssHideInheritInitial = 0x1035,
-        SurroundWith = 0x334,
-        ExpandSelection = 0x335,
-        ContractSelection = 0x336,
         RunDiff = 0x1041,
         RunJsHint = 0x1042,
         RunTsLint = 0x1092,
@@ -76,24 +111,10 @@ namespace MadsKristensen.EditorExtensions
         EditGlobalTsLint = 0x1098,
         EditGlobalJsCodeStyle = 0x1099,
         CssIntellisenseSubMenu = 0x1031,
-        MinifyCss = 0x1051,
-        MinifyJs = 0x1052,
-        MinifyHtml = 0x1058,
-        MinifySelection = 0x1053,
-        ExtractSelection = 0x1054,
-        SelectBrowsers = 0x1055,
-        ExtractVariable = 0x1056,
-        ExtractMixin = 0x1057,
         BundleCss = 0x1071,
         BundleJs = 0x1072,
         BundleHtml = 0x1074,
         ReferenceJs = 0x333,
-
-        // Lines
-        SortAsc = 0x0003,
-        SortDesc = 0x0004,
-        RemoveDuplicateLines = 0x0005,
-        RemoveEmptyLines = 0x0007,
 
         // Build
         BuildBundles = 0x1083,

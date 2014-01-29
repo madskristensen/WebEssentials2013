@@ -14,18 +14,18 @@ using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class HtmlGoToDefinition : CommandTargetBase
+    internal class HtmlGoToDefinition : CommandTargetBase<VSConstants.VSStd97CmdID>
     {
         private HtmlEditorTree _tree;
         private string _path, _className;
 
         public HtmlGoToDefinition(IVsTextView adapter, IWpfTextView textView)
-            : base(adapter, textView, typeof(Microsoft.VisualStudio.VSConstants.VSStd97CmdID).GUID, (uint)Microsoft.VisualStudio.VSConstants.VSStd97CmdID.GotoDefn)
+            : base(adapter, textView, VSConstants.VSStd97CmdID.GotoDefn)
         {
             _tree = HtmlEditorDocument.FromTextView(textView).HtmlEditorTree;
         }
 
-        protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+        protected override bool Execute(VSConstants.VSStd97CmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
             if (!string.IsNullOrEmpty(_path))
             {
