@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.Html.Core;
@@ -43,6 +44,21 @@ namespace MadsKristensen.EditorExtensions
                 if (pUnk != IntPtr.Zero)
                     Marshal.Release(pUnk);
             }
+        }
+
+        public static bool HasClass(this ElementNode element, string className)
+        {
+            AttributeNode attr = element.GetAttribute("class", true);
+            if (attr == null)
+                return false;
+
+            string[] names = attr.Value.Split(' ');
+            return names.Contains(className);
+        }
+
+        public static bool HasAttribute(this ElementNode element, string attributeName, bool ignoreCase = true)
+        {
+            return element.GetAttribute(attributeName, ignoreCase) != null;
         }
     }
 }

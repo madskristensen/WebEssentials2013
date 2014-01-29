@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions
     {
         public IHtmlSmartTag TryCreateSmartTag(ITextView textView, ITextBuffer textBuffer, ElementNode element, AttributeNode attribute, int caretPosition, HtmlPositionType positionType)
         {
-            if (element.GetAttribute("ng-controller") != null)
+            if (element.HasAttribute("ng-controller"))
             {
                 return new HtmlAngularControllerSmartTag(textView, textBuffer, element);
             }

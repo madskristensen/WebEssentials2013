@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
             if (element.Name != "img")
                 return false;
 
-            return element.GetAttribute("src", true) != null;
+            return element.HasAttribute("src");
         }
     }
 

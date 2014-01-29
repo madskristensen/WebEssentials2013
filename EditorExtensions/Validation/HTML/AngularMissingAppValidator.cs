@@ -51,7 +51,7 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
                 return true;
 
             // Ignore everything bug <ng-*> elements and ng-* attributes
-            if (!element.Name.StartsWith("ng-", StringComparison.Ordinal) && (attr == null || attr.Name == "ng-app"))
+            if (!element.Name.StartsWith("ng-", StringComparison.Ordinal) && (attr == null || attr.Name == "ng-app" || attr.Name == "data-ng-app"))
                 return true;
 
             // Ignore if <html> isn't present in the document (probably a partial or similar)
@@ -59,7 +59,7 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
                 return true;
 
             // Follow the parent chain to find any ng-app attributes
-            return IsParentApp(element);
+            return IsParentNgApp(element);
         }
 
         private bool HasHtmlElement(ElementNode element)
@@ -73,13 +73,13 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
             return false;
         }
 
-        private bool IsParentApp(ElementNode element)
+        private bool IsParentNgApp(ElementNode element)
         {
-            if (element.GetAttribute("ng-app") != null || element.GetAttribute("data-ng-app") != null)
+            if (element.HasAttribute("ng-app") || element.HasAttribute("data-ng-app") || element.HasClass("ng-app"))
                 return true;
 
             if (element.Parent != null)
-                return IsParentApp(element.Parent);
+                return IsParentNgApp(element.Parent);
 
             return false;
         }

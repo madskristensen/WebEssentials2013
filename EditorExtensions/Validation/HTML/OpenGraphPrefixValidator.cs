@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
         {
             var results = new ValidationErrorCollection();
 
-            if (element.Name != "meta" || element.GetAttribute("property") == null)
+            if (element.Name != "meta" || !element.HasAttribute("property"))
                 return results;
 
             AttributeNode property = element.GetAttribute("property");
