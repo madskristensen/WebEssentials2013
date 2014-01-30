@@ -59,10 +59,11 @@ namespace MadsKristensen.EditorExtensions.Compilers
         }
 
         private static ISet<string> _disallowedParentExtensions = new HashSet<string> { ".png", ".jpg", ".jpeg", ".gif" };
+
         ///<summary>Checks whether a file should never be compiled to disk, based on filename conventions.</summary>
-        public bool ShouldCompile(string sourcePath)
+        public static bool ShouldCompile(string sourcePath)
         {
-            if (Path.GetFileName(sourcePath).StartsWith("_"))
+            if (Path.GetFileName(sourcePath).StartsWith("_", StringComparison.OrdinalIgnoreCase))
                 return false;
 
             var parentExtension = Path.GetExtension(Path.GetFileNameWithoutExtension(sourcePath));

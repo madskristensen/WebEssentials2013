@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Globalization;
 using System.Linq;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Utilities;
@@ -47,7 +46,6 @@ namespace MadsKristensen.EditorExtensions
             {
                 int lineNo = FindLineNumber(dupe);
 
-                string errorMessage = string.Format(CultureInfo.InvariantCulture, Resources.BestPracticeDuplicateSelectors, lineNo);
                 SelectorErrorTag tag = new SelectorErrorTag(rule.Selectors);
                 context.AddError(tag);
             }
