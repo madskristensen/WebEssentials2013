@@ -64,9 +64,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static void UpdateBundleFiles()
         {
-            EditorExtensionsPackage.DTE.StatusBar.Text = "Updating bundles...";
             BundleFilesMenu.UpdateBundles(null, true);
-            EditorExtensionsPackage.DTE.StatusBar.Clear();
         }
 
         private void Minify()
