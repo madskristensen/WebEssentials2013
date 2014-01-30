@@ -683,14 +683,14 @@
         </Strings>
       </Button>
 
-      <Button guid="guidEditorExtensionsCmdSet" id="cmdChainCompile" priority="0x2201" type="Button">
+      <!--<Button guid="guidEditorExtensionsCmdSet" id="cmdChainCompile" priority="0x2201" type="Button">
         <Parent guid="guidSolutionExplorerCmdSet" id="MySubGroup"/>
         <Icon guid="guidImages" id="bmpLogo"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Don't auto-compile when saving dependencies</ButtonText>
         </Strings>
-      </Button>
+      </Button>-->
     </Buttons>
 
     <Bitmaps>
@@ -806,7 +806,7 @@
       <IDSymbol name="cmdidSha384Transform" value="0x0123" />
       <IDSymbol name="cmdidSha512Transform" value="0x0124" />
       <IDSymbol name="ReferenceJs" value="0x333" />
-      <IDSymbol name="cmdChainCompile" value="0x337" />
+      <!--<IDSymbol name="cmdChainCompile" value="0x337" />-->
     </GuidSymbol>
 
     <GuidSymbol name="guidEditorLinesCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e67}">
