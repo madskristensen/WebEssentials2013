@@ -41,8 +41,8 @@ namespace MadsKristensen.EditorExtensions
                     return file.Descendants("error").Select(e => new CompilerError
                                {
                                    FileName = fileName,
-                                   Column = int.Parse(e.Attribute("column").Value),
-                                   Line = int.Parse(e.Attribute("line").Value),
+                                   Column = int.Parse(e.Attribute("column").Value, CultureInfo.InvariantCulture),
+                                   Line = int.Parse(e.Attribute("line").Value, CultureInfo.InvariantCulture),
                                    Message = ServiceName + ": " + e.Attribute("message").Value
                                });
                 }).First();

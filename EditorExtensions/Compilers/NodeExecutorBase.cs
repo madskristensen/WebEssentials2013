@@ -95,7 +95,7 @@ namespace MadsKristensen.EditorExtensions
         {
             try
             {                             /* Temporary hack see; //github.com/mdevils/node-jscs/issues/212 */
-                if (process.ExitCode == 0 && !errorText.StartsWith("<?xml version="))
+                if (process.ExitCode == 0 && !errorText.StartsWith("<?xml version=", StringComparison.CurrentCulture))
                 {
                     if (!string.IsNullOrEmpty(outputFile))
                         result.Result = File.ReadAllText(outputFile);
@@ -139,7 +139,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (matches.Count == 0)
             {
-                Logger.Log(ServiceName + ": unparseable compilation error: " + error);
+                Logger.Log(ServiceName + ": unparsable compilation error: " + error);
                 return new[] { new CompilerError { Message = error } };
             }
             return matches.Cast<Match>().Select(match => new CompilerError

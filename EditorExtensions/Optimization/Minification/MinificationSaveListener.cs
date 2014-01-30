@@ -63,7 +63,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
                 ProjectHelpers.AddFileToProject(minPath, minPath + ".gzip");
         }
 
-        private void MinifyFile(IContentType contentType, string sourcePath, IMinifierSettings settings)
+        private static void MinifyFile(IContentType contentType, string sourcePath, IMinifierSettings settings)
         {
             IFileMinifier minifier = Mef.GetImport<IFileMinifier>(contentType);
             string minPath = GetMinFileName(sourcePath);
