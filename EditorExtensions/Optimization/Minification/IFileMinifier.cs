@@ -147,7 +147,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
                       .SkipWhile(string.IsNullOrWhiteSpace)
                       .FirstOrDefault() ?? "")
                       .Trim()
-                      .StartsWith("///#source"))
+                      .StartsWith("///#source", StringComparison.CurrentCulture))
             {
                 minifier.FileName = Path.GetFileName(file);
             }

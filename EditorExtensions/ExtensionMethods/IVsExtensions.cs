@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using EnvDTE;
@@ -24,12 +25,12 @@ namespace MadsKristensen.EditorExtensions
 
         public static void Execute(this EnvDTE.Commands c, Enum commandId, object arg = null)
         {
-            c.Raise(commandId.GetType().GUID.ToString(), Convert.ToInt32(commandId), arg, IntPtr.Zero);
+            c.Raise(commandId.GetType().GUID.ToString(), Convert.ToInt32(commandId, CultureInfo.InvariantCulture), arg, IntPtr.Zero);
         }
         public static void Execute(this IOleCommandTarget t, Enum commandId, IntPtr inVar = default(IntPtr), IntPtr outVar = default(IntPtr))
         {
             var c = commandId.GetType().GUID;
-            t.Exec(ref c, Convert.ToUInt32(commandId), 0, inVar, outVar);
+            t.Exec(ref c, Convert.ToUInt32(commandId, CultureInfo.InvariantCulture), 0, inVar, outVar);
         }
 
         const uint DISP_E_MEMBERNOTFOUND = 0x80020003;
