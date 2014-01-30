@@ -280,6 +280,7 @@ namespace MadsKristensen.EditorExtensions
                 // In either case, if there is a closing parenthesis, move past it
                 var prevChar = position.GetChar();
                 if ((prevChar == '"' || prevChar == '\'')
+                 && TextView.Caret.Position.BufferPosition < TextView.TextBuffer.CurrentSnapshot.Length
                  && TextView.Caret.Position.BufferPosition.GetChar() == ')')
                     TextView.Caret.MoveToNextCaretPosition();
                 return completion;
