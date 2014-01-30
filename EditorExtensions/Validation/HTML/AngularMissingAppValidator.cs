@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.Validation.Html
             if (!WESettings.Instance.Html.EnableAngularValidation)
                 return results;
 
-            AttributeNode attr = element.Attributes.SingleOrDefault(a => a.Name.StartsWith("ng-", StringComparison.Ordinal));
+            AttributeNode attr = element.Attributes.SingleOrDefault(a => a.Name.StartsWith("ng-", StringComparison.Ordinal) || a.Name.StartsWith("data-ng-", StringComparison.Ordinal));
 
             if (ShouldIgnore(element, attr))
                 return results;
