@@ -41,10 +41,13 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
         [TestMethod, TestCategory("Completion")]
         public async Task UseAsmFunction()
         {
-            string result = await TypeText("var a=function(){\n\"use a\t");
-            result.Should().Contain("\"use asm\";");
+            string result = await TypeText("var a=function(){\n\"use a\"");
+            result.Should().EndWith("\"use asm\"\r\n}");
         }
-        // TODO: Test that "use strict" completion doesn't trigger elsewhere
+        // TODO: Test that "use strict" completion doesn't trigger elsewhere, and that deleting the quote closes completion.
+        // To do this, we need to check whether the completion window is open.
+
+        // TODO: Test require() completion with fixtures, including nested paths
 
         [HostType("VS IDE")]
         [TestMethod, TestCategory("Completion")]

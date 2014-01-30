@@ -148,6 +148,16 @@ namespace MadsKristensen.EditorExtensions
                         // If the user commits a completion from a closing quote, do
                         // not immediately re-open the completion window below.
                         closedCompletion = _currentSession != null;
+
+                        // If the user typed a closing quote, remove any trailing semicolon to match
+                        if (_currentSession != null)
+                        {
+
+                            var s = _currentSession.SelectedCompletionSet.SelectionStatus;
+                            if (s.IsSelected && s.Completion.InsertionText.EndsWith(ch + ";"))
+                                s.Completion.InsertionText = s.Completion.InsertionText.TrimEnd(';');
+                        }
+
                         var c = Complete(force: false, dontAdvance: true);
                         // If the completion inserted a quote, don't add another one
                         handled = c != null && c.InsertionText.EndsWith(ch.ToString(), StringComparison.Ordinal);
