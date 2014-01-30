@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using EnvDTE;
 using MadsKristensen.EditorExtensions.Commands;
 using Microsoft.Html.Editor;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions.Compilers
@@ -14,9 +16,52 @@ namespace MadsKristensen.EditorExtensions.Compilers
         private readonly FileSystemWatcher _watcher;
         public ITextDocument Document { get; private set; }
         public string SourceFilePath { get { return Document.FilePath; } }
-        public string TargetFilePath { get { return Path.ChangeExtension(SourceFilePath, ".js"); } }
+        public string TargetFilePath { get { return GetOutputFileName(); } }
 
         private bool _isReady;
+
+        private string _outputFile;
+
+        private string GetOutputFileName()
+        {
+            if (!string.IsNullOrEmpty(_outputFile))
+                return _outputFile;
+
+            IVsSolution solution = EditorExtensionsPackage.GetGlobalService<IVsSolution>(typeof(SVsSolution));
+            Project project = ProjectHelpers.GetProject(SourceFilePath);
+            IVsHierarchy hierarchy;
+            solution.GetProjectOfUniqueName(project.UniqueName, out hierarchy);
+
+            IVsBuildPropertyStorage buildPropertyStorage = hierarchy as IVsBuildPropertyStorage;
+
+            if (buildPropertyStorage == null)
+            {
+                _outputFile = Path.ChangeExtension(SourceFilePath, ".js");
+            }
+            else
+            {
+                string outputFile, outputDir;
+                string config = EditorExtensionsPackage.DTE.Solution.SolutionBuild.ActiveConfiguration.Name;
+                buildPropertyStorage.GetPropertyValue("TypeScriptOutFile", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputFile);
+                buildPropertyStorage.GetPropertyValue("TypeScriptOutDir", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputDir);
+
+                if (!string.IsNullOrEmpty(outputFile))
+                {
+                    _outputFile = Path.Combine(ProjectHelpers.GetRootFolder(project), outputFile);
+                }
+                else if (!string.IsNullOrEmpty(outputDir))
+                {
+                    string dir = Path.Combine(ProjectHelpers.GetRootFolder(project), outputDir);
+                    string file = Path.ChangeExtension(Path.GetFileName(SourceFilePath), ".js");
+                    _outputFile = Path.Combine(dir, file);
+                }
+            }
+
+            if (string.IsNullOrEmpty(_outputFile))
+                _outputFile = Path.ChangeExtension(SourceFilePath, ".js");
+
+            return _outputFile;
+        }
 
         public TypeScriptCompilationNotifier(ITextDocument doc)
         {
