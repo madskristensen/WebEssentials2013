@@ -222,7 +222,15 @@ namespace MadsKristensen.EditorExtensions
                 case VSConstants.VSStd2KCmdID.BACKSPACE:
                     if (_currentSession == null)
                         StartSession();
-
+                    else
+                    {
+                        var p = _currentSession.GetTriggerPoint(TextView.TextBuffer.CurrentSnapshot);
+                        if (p != null
+                            && (p.Value.Position >= p.Value.Snapshot.Length
+                             || p.Value.GetChar() != _currentSession.CompletionSets[0].Completions[0].InsertionText[0])
+                            )
+                            Cancel();
+                    }
                     Filter();
                     break;
             }

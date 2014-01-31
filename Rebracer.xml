@@ -154,7 +154,7 @@
         <PropertyValue name="InsertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis">false</PropertyValue>
         <PropertyValue name="InsertSpaceAfterSemicolonInForStatements">true</PropertyValue>
         <PropertyValue name="InsertSpaceBeforeAndAfterBinaryOperators">true</PropertyValue>
-        <PropertyValue name="OnlyUseTaborEnterToCommit">true</PropertyValue>
+        <PropertyValue name="OnlyUseTaborEnterToCommit">false</PropertyValue>
         <PropertyValue name="PlaceOpenBraceOnNewLineForControlBlocks">false</PropertyValue>
         <PropertyValue name="PlaceOpenBraceOnNewLineForFunctions">false</PropertyValue>
         <PropertyValue name="ShowErrorsAsWarnings">true</PropertyValue>
@@ -267,7 +267,7 @@
       <ToolsOptionsSubCategory name="HTMLX Specific">
         <PropertyValue name="EnableValidation">true</PropertyValue>
         <PropertyValue name="ErrorsAsWarnings">true</PropertyValue>
-        <PropertyValue name="FormatOnPaste">true</PropertyValue>
+        <PropertyValue name="FormatOnPaste">false</PropertyValue>
         <PropertyValue name="InsertAttributeValueQuotes">true</PropertyValue>
         <PropertyValue name="InsertClosingTag">true</PropertyValue>
         <PropertyValue name="XHtmlCodingStyle">true</PropertyValue>

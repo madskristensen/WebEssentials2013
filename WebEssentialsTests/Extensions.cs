@@ -4,11 +4,23 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.Web.Editor;
 
 namespace WebEssentialsTests
 {
     static class Extensions
     {
+        ///<summary>Gets the current text in a <see cref="ITextView"/>.</summary>
+        public static string GetText(this ITextView textView) { return textView.TextBuffer.CurrentSnapshot.GetText(); }
+
+        public static bool IsCompletionOpen(this ITextView textView)
+        {
+            return WebEditor.ExportProvider.GetExport<ICompletionBroker>().Value.IsCompletionActive(textView);
+        }
+
+
         ///<summary>Compiles an existing file on disk to a string.</summary>
         public static async Task<string> CompileToStringAsync(this NodeExecutorBase compiler, string sourceFileName)
         {
