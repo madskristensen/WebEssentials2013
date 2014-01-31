@@ -1,12 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using EnvDTE;
 using MadsKristensen.EditorExtensions;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VSSDK.Tools.VsIdeTesting;
 using Task = System.Threading.Tasks.Task;
 using WebEditor = Microsoft.Web.Editor.WebEditor;
@@ -35,6 +37,14 @@ namespace WebEssentialsTests
                 solution.Open(fileName);
             return solution;
         }
+
+        public static async Task<IWpfTextView> TypeText(string extension, string keystrokes)
+        {
+            DTE.ItemOperations.NewFile(Name: Guid.NewGuid() + "." + extension.TrimStart('.'));
+            await TypeString(keystrokes);
+            return ProjectHelpers.GetCurentTextView();
+        }
+
 
         public static Task TypeString(string s)
         {

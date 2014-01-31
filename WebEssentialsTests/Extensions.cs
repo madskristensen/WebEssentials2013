@@ -4,11 +4,15 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace WebEssentialsTests
 {
     static class Extensions
     {
+        ///<summary>Gets the current text in a <see cref="ITextView"/>.</summary>
+        public static string GetText(this ITextView textView) { return textView.TextBuffer.CurrentSnapshot.GetText(); }
+
         ///<summary>Compiles an existing file on disk to a string.</summary>
         public static async Task<string> CompileToStringAsync(this NodeExecutorBase compiler, string sourceFileName)
         {
