@@ -13,8 +13,11 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
         [TestMethod, TestCategory("Completion")]
         public async Task UseStrictEmptyFile()
         {
-            var textView = await VSHost.TypeText(".js", "'u\t");
+            var textView = await VSHost.TypeText(".js", "'");
+            textView.IsCompletionOpen().Should().BeTrue();
+            await VSHost.TypeString("\t");
             textView.GetText().Should().Be("'use strict';");
+            textView.IsCompletionOpen().Should().BeFalse();
         }
         [HostType("VS IDE")]
         [TestMethod, TestCategory("Completion")]
@@ -23,10 +26,26 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
             var textView = await VSHost.TypeText(".js", "var a=function(){\n\"use a\"");
             textView.GetText().Should().EndWith("\"use asm\"\r\n}");
         }
-        // TODO: Test that "use strict" completion doesn't trigger elsewhere, and that deleting the quote closes completion.
-        // To do this, we need to check whether the completion window is open.
+        [HostType("VS IDE")]
+        [TestMethod, TestCategory("Completion")]
+        public async Task DontActivateElsewhere()
+        {
+            var textView = await VSHost.TypeText(".js", "var x = {\n'u");
+            textView.IsCompletionOpen().Should().BeFalse();
+        }
+        [HostType("VS IDE")]
+        [TestMethod, TestCategory("Completion")]
+        public async Task BackspaceDismisses()
+        {
+            var textView = await VSHost.TypeText(".js", "'u");
+            textView.IsCompletionOpen().Should().BeTrue();
+            await VSHost.TypeString("\b");
+            textView.IsCompletionOpen().Should().BeTrue();
+            await VSHost.TypeString("\b");
+            textView.IsCompletionOpen().Should().BeFalse();
+        }
 
-        // TODO: Test require() completion with fixtures, including nested paths
+        // TODO: Test JsDoc, require() completion with fixtures, including nested paths
 
         [HostType("VS IDE")]
         [TestMethod, TestCategory("Completion")]

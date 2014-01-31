@@ -97,6 +97,8 @@ namespace WebEssentialsTests
             {
                 case '\n':
                     return VSConstants.VSStd2KCmdID.RETURN;
+                case '\b':
+                    return VSConstants.VSStd2KCmdID.BACKSPACE;
                 case '\t':
                     return VSConstants.VSStd2KCmdID.TAB;
                 //? VSConstants.VSStd2KCmdID.BACKTAB
@@ -106,8 +108,6 @@ namespace WebEssentialsTests
                 //    return VSConstants.VSStd2KCmdID.CANCEL;
                 //case VimKey.Delete:
                 //    return VSConstants.VSStd2KCmdID.DELETE;
-                //case VimKey.Back:
-                //    return VSConstants.VSStd2KCmdID.BACKSPACE;
                 //case VimKey.Up:
                 //    return simulateStandardKeyBindings && hasShift
                 //        ? VSConstants.VSStd2KCmdID.UP_EXT
