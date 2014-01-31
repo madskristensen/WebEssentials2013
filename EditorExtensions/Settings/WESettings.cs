@@ -106,7 +106,7 @@ namespace MadsKristensen.EditorExtensions
         [Category("Linter")]
         [DisplayName("Run on build")]
         [Description("Lint all files when building the solution.")]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool LintOnBuild { get; set; }
 
         [Category("Linter")]
