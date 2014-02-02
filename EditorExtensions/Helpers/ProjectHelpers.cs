@@ -482,8 +482,8 @@ namespace MadsKristensen.EditorExtensions
             return null;
         }
 
-        //public static HashSet<string> ChainIgnoreList = new HashSet<string>();
-        //static ConcurrentDictionary<string, IEnumerable<string>> DependencyDictionary = BuildDependencies();
+        public static HashSet<string> ChainIgnoreList = new HashSet<string>();
+        static ConcurrentDictionary<string, HashSet<string>> DependencyDictionary = BuildDependencies();
 
         // <summary>
         //          Call it once on project load,
@@ -495,56 +495,61 @@ namespace MadsKristensen.EditorExtensions
         //          filenames under the Solution as keys and the
         //          list of their corresponding dependents as values.
         // </returns>
-        //public static ConcurrentDictionary<string, IEnumerable<string>> BuildDependencies()
-        //{
-        //    var dependencies = new ConcurrentDictionary<string, IEnumerable<string>>();
-        //    var files = Mef.GetChainedCompileExtensions().SelectMany(e =>
-        //                Directory.EnumerateFiles(GetSolutionFolderPath(), e, SearchOption.AllDirectories));
+        public static ConcurrentDictionary<string, HashSet<string>> BuildDependencies()
+        {
+            var dependencies = new ConcurrentDictionary<string, HashSet<string>>();
+            var files = Mef.GetChainedCompileExtensions().SelectMany(e =>
+                        Directory.EnumerateFiles(GetSolutionFolderPath(), e, SearchOption.AllDirectories));
 
-        //    foreach (var file in files)
-        //    {
-        //        var dependants = TraverseDependents(file).Where(d => !d.Equals(file));
+            foreach (var file in files)
+            {
+                var imports = TraverseImports(file).Where(d => !d.Equals(file));
 
-        //        if (!dependants.Any())
-        //            continue;
+                foreach (var import in imports)
+                {
+                    if (import == file) continue;
 
-        //        dependencies.GetOrAdd(file, dependants);
-        //    }
+                    var dependents = new HashSet<string>();
 
-        //    return dependencies;
-        //}
+                    dependents.Add(file);
+                    DependencyDictionary.GetOrAdd(import, dependents);
+                }
+            }
+
+            return dependencies;
+        }
 
         // <summary>
         //          Depth-first-search to collect all
-        //          dependents of a document.
+        //          imports of a document.
         // </summary>
         // <param name="fileName">Full path to LESS or SASS file.</param>
         // <returns>List of file paths depending on this document.</returns>
-        //private static IEnumerable<string> TraverseDependents(string fileName)
-        //{
-        //    var visited = new HashSet<string>();
-        //    var stack = new Stack<string>();
+        private static IEnumerable<string> TraverseImports(string fileName)
+        {
+            var visited = new HashSet<string>();
+            var stack = new Stack<string>();
 
-        //    stack.Push(fileName);
+            stack.Push(fileName);
 
-        //    while (stack.Count != 0)
-        //    {
-        //        var current = stack.Pop();
+            while (stack.Count != 0)
+            {
+                var current = stack.Pop();
 
-        //        if (!visited.Add(current))
-        //            continue;
+                if (!visited.Add(current))
+                    continue;
 
-        //        yield return current;
+                yield return current;
 
-        //        var distinctNeighbors = new CssItemAggregator<string> { (ImportDirective i) => i.FileName == null ? i.Url.UrlString.Text : i.FileName.Text }
-        //                                   .Crawl(new CssParser().Parse(File.ReadAllText(current), false))
-        //                                   .Select(s => Path.GetFullPath(Path.Combine(Path.GetDirectoryName(current), s.Trim("\"".ToCharArray()))))
-        //                                   .Where(n => !ChainIgnoreList.Contains(n) && !visited.Contains(n));
+                var distinctNeighbors = new CssItemAggregator<string> { (ImportDirective i) => i.FileName == null ? i.Url.UrlString.Text : i.FileName.Text }
+                                           .Crawl(new CssParser().Parse(File.ReadAllText(current), false))
+                                           .Select(s => Path.GetFullPath(Path.Combine(Path.GetDirectoryName(current), s.Trim("\"".ToCharArray()))))
+                                           .Where(n => !ChainIgnoreList.Contains(n) && !visited.Contains(n));
 
-        //        foreach (var neighbor in distinctNeighbors)
-        //            stack.Push(neighbor);
-        //    }
-        //}
+                foreach (var neighbor in distinctNeighbors)
+                    stack.Push(neighbor);
+            }
+        }
 
         // <summary>
         //          When file is saved with Chain Compilation setting
@@ -553,16 +558,17 @@ namespace MadsKristensen.EditorExtensions
         // </summary>
         // <param name="fileName">Full path to LESS or SASS file.</param>
         // <returns>List of file paths of the dependent documents.</returns>
-        //public static IEnumerable<string> GetDependents(string fileName)
-        //{
-        //    var dependants = TraverseDependents(fileName).Where(d => !d.Equals(fileName));
+        public static IEnumerable<string> GetDependents(string fileName)
+        {
+            var imports = new CssItemAggregator<string> { (ImportDirective i) => i.FileName == null ? i.Url.UrlString.Text : i.FileName.Text }
+                             .Crawl(new CssParser().Parse(File.ReadAllText(fileName), false))
+                             .Select(s => Path.GetFullPath(Path.Combine(Path.GetDirectoryName(fileName), s.Trim("\"".ToCharArray()))))
+                             .Where(n => !ChainIgnoreList.Contains(n)) as HashSet<string>;
 
-        //    if (!dependants.Any())
-        //        return new string[] { };
+            if (!imports.SetEquals(DependencyDictionary[fileName]))
+                DependencyDictionary[fileName] = imports;
 
-        //    DependencyDictionary[fileName] = dependants;
-
-        //    return DependencyDictionary.Where(s => s.Value.Contains(fileName)).Select(s => s.Key);
-        //}
+            return DependencyDictionary.AsParallel().Where(s => s.Value.Contains(fileName)).Select(s => s.Key);
+        }
     }
 }
