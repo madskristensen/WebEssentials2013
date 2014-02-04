@@ -80,7 +80,13 @@ namespace MadsKristensen.EditorExtensions
 
             if (result.IsSuccess)
             {
-                result.Result = PostProcessResult(result.Result, sourceFileName, targetFileName);
+                var renewedResult = PostProcessResult(result.Result, sourceFileName, targetFileName);
+
+                if (!ReferenceEquals(result.Result, renewedResult))
+                {
+                    File.WriteAllText(targetFileName, renewedResult);
+                    result.Result = renewedResult;
+                }
             }
             else
             {

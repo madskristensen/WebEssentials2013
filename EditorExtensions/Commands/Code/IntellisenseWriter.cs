@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions
             else
                 WriteJavaScript(objects, sb);
 
-            WriteFileToDisk(file, sb);
+            File.WriteAllText(file, sb.ToString());
         }
 
         private static string CamelCasePropertyName(string name)
@@ -157,20 +157,6 @@ namespace MadsKristensen.EditorExtensions
             }
 
             sb.Append(prefix).Append("}");
-        }
-
-        private static void WriteFileToDisk(string fileName, StringBuilder sb)
-        {
-            //string current = string.Empty;
-            //if (File.Exists(fileName))
-            //{
-            //    current = File.ReadAllText(fileName);
-            //}
-
-            //if (current != sb.ToString())
-            //{
-            File.WriteAllText(fileName, sb.ToString(), Encoding.UTF8);
-            //}
         }
     }
 }
