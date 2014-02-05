@@ -52,6 +52,11 @@
       <Word>fileOverview</Word>
       <Word>memberOf</Word>
       <Word>Scss</Word>
+      <Word>Minifier</Word>
+      <Word>Minification</Word>
+      <Word>Notifier</Word>
+      <Word>Awaitable</Word>
+      <Word>Awaiter</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,8 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         [Import]
         public IFileExtensionRegistryService FileExtensionRegistry { get; set; }
+
+        [SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors", Justification = "I can't think of a better design.  (this is ugly)")]
         protected CompilerRunnerBase(IContentType contentType)
         {
             Mef.SatisfyImportsOnce(this);

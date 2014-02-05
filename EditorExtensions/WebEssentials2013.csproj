@@ -351,6 +351,8 @@
     <Compile Include="Compilers\ProjectCompiler.cs" />
     <Compile Include="ExtensionMethods\DispatcherPriorityAwaitable.cs" />
     <Compile Include="ExtensionMethods\DispatcherPriorityAwaiter.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Helpers\DependencyGraph.cs" />
     <Compile Include="MenuItems\JsCodeStyle.cs" />
     <Compile Include="MenuItems\ChainCompilation.cs" />
     <Compile Include="MenuItems\SpriteImage.cs" />
