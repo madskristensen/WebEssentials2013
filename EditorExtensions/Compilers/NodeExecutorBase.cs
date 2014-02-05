@@ -31,7 +31,6 @@ namespace MadsKristensen.EditorExtensions
             if (RequireMatchingFileName && Path.GetFileName(targetFileName) != Path.GetFileNameWithoutExtension(sourceFileName) + TargetExtension)
                 throw new ArgumentException(ServiceName + " cannot compile to a targetFileName with a different name.  Only the containing directory can be different.", "targetFileName");
 
-
             var scriptArgs = GetArguments(sourceFileName, targetFileName);
 
             var errorOutputFile = Path.GetTempFileName();
@@ -51,8 +50,8 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-
                 ProjectHelpers.CheckOutFileFromSourceControl(targetFileName);
+
                 if (GenerateSourceMap)
                     ProjectHelpers.CheckOutFileFromSourceControl(targetFileName + ".map");
 

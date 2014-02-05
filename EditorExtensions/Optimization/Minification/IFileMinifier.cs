@@ -62,6 +62,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
 
             var minifier = new HtmlMinifier(settings);
             MarkupMinificationResult result = minifier.Minify(source, generateStatistics: true);
+
             if (result.Errors.Count == 0)
             {
                 EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: HTML minified by " + result.Statistics.SavedInPercent + "%";
@@ -83,6 +84,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         public override string MinifyString(string source)
         {
             Minifier minifier = new Minifier();
+
             var settings = new Microsoft.Ajax.Utilities.CssSettings
             {
                 CommentMode = WESettings.Instance.General.KeepImportantComments ? CssComment.Hacks : CssComment.Important
@@ -97,6 +99,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     public class JavaScriptFileMinifer : InMemoryMinifier
     {
         public override bool GenerateSourceMap { get { return WESettings.Instance.JavaScript.GenerateSourceMaps; } }
+
         static CodeSettings CreateSettings()
         {
             return new CodeSettings()
@@ -106,6 +109,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
                 PreserveImportantComments = WESettings.Instance.General.KeepImportantComments
             };
         }
+
         public override string MinifyString(string source)
         {
             return new Minifier().MinifyJavaScript(source, CreateSettings());
@@ -118,6 +122,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             else
                 return base.MinifyFile(sourcePath, targetPath);
         }
+
         private static bool MinifyFileWithSourceMap(string file, string minFile)
         {
             string mapPath = minFile + ".map";
@@ -137,6 +142,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
                 return result;
             }
         }
+
         private static bool MinifyFile(string file, string minFile, CodeSettings settings)
         {
             Minifier minifier = new Minifier();

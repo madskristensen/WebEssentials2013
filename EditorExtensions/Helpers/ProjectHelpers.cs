@@ -438,8 +438,9 @@ namespace MadsKristensen.EditorExtensions
 
         public static ProjectItem AddFileToProject(string parentFileName, string fileName)
         {
-            if (!File.Exists(fileName))
+            if (Path.GetFullPath(parentFileName) == Path.GetFullPath(fileName) || !File.Exists(fileName))
                 return null;
+
             fileName = Path.GetFullPath(fileName);  // WAP projects don't like paths with forward slashes
 
             var item = ProjectHelpers.GetProjectItem(parentFileName);

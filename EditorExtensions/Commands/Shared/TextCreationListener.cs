@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions.Commands
                             return;
 
                         foreach (var listener in saveListeners)
-                            listener.FileSaved(document.TextBuffer.ContentType, e.FilePath, false);
+                            listener.FileSaved(document.TextBuffer.ContentType, e.FilePath, false, false);
                     };
 
                     document.FileActionOccurred += saveHandler;

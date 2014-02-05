@@ -68,6 +68,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     MinificationService.CreateMinFile(ContentType, file);
                 }
+
                 CheckEnableSync();
             }
 

@@ -26,6 +26,7 @@ namespace MadsKristensen.EditorExtensions
         public CoffeeScriptSettings CoffeeScript { get; private set; }
         public MarkdownSettings Markdown { get; private set; }
     }
+
     public sealed class GeneralSettings : SettingsBase<GeneralSettings>, IMarginSettings
     {
         [Category("Minification")]
@@ -54,6 +55,7 @@ namespace MadsKristensen.EditorExtensions
 
         bool IMarginSettings.ShowPreviewPane { get { return SvgPreviewPane; } }
     }
+
     public sealed class BrowserLinkSettings : SettingsBase<BrowserLinkSettings>
     {
         [Category("Browser Link")]
@@ -77,6 +79,7 @@ namespace MadsKristensen.EditorExtensions
         [DefaultValue(true)]
         public bool ShowMenu { get; set; }
     }
+
     public sealed class CodeGenSettings : SettingsBase<CodeGenSettings>
     {
         [DisplayName("Use LowerCamelCase for property names")]
@@ -96,6 +99,7 @@ namespace MadsKristensen.EditorExtensions
         bool LintOnBuild { get; }
         TaskErrorCategory LintResultLocation { get; }
     }
+
     public class LinterSettings<T> : SettingsBase<T>, ILinterSettings where T : LinterSettings<T>
     {
         [Category("Linter")]
@@ -115,6 +119,7 @@ namespace MadsKristensen.EditorExtensions
         [DefaultValue(TaskErrorCategory.Message)]
         public TaskErrorCategory LintResultLocation { get; set; }
     }
+
     public sealed class TypeScriptSettings : LinterSettings<TypeScriptSettings>, IMarginSettings
     {
         [Category("Editor")]
@@ -141,6 +146,7 @@ namespace MadsKristensen.EditorExtensions
         [Description("Update any .min.html file when saving the corresponding .html file.  To create a .min.html file, right-click a .html file.")]
         [DefaultValue(false)]
         public bool AutoMinify { get; set; }
+
         [Category("Minification")]
         [DisplayName("Create gzipped files")]
         [Description("Also save separate gzipped files when minifying.  This option has no effect when Minify on save is disabled.")]
@@ -162,6 +168,7 @@ namespace MadsKristensen.EditorExtensions
             ImageDropFormats.Add(new ImageDropFormat("Inline CSS", @"<div style=""background-image=url('{0}')""></div>"));
         }
     }
+
     public sealed class ImageDropFormat : SettingsBase<ImageDropFormat>
     {
         public ImageDropFormat() { }
@@ -173,6 +180,7 @@ namespace MadsKristensen.EditorExtensions
         public string Name { get; set; }
         public string HtmlFormat { get; set; }
     }
+
     public sealed class JavaScriptSettings : LinterSettings<JavaScriptSettings>, IMinifierSettings
     {
         #region Minification
@@ -201,6 +209,7 @@ namespace MadsKristensen.EditorExtensions
         [DefaultValue(true)]
         public bool BlockCommentCompletion { get; set; }
     }
+
     public sealed class CssSettings : SettingsBase<CssSettings>, IMinifierSettings
     {
         #region Minification
@@ -294,6 +303,7 @@ namespace MadsKristensen.EditorExtensions
         [Description("Compile files when saving them, if a compiled file already exists.")]
         [DefaultValue(true)]
         public bool CompileOnSave { get; set; }
+
         [Category("Compilation")]
         [DisplayName("Compile files on build")]
         [Description("Compile all files that have matching compiled files when building the project.")]
@@ -311,6 +321,12 @@ namespace MadsKristensen.EditorExtensions
         [Description("Generate source map files when minifying.  This option has no effect when Minify is disabled.")]
         [DefaultValue(true)]
         public bool GenerateSourceMaps { get; set; }
+
+        [Category("Compilation")]
+        [DisplayName("Don't save raw compilation output")]
+        [Description("Don't save separate unminified compiler output. This option has no effect when Minify On Save is disabled for the output format.")]
+        [DefaultValue(false)]
+        public bool MinifyInPlace { get; set; }
     }
 
     public sealed class SassSettings : CompilationSettings<SassSettings> { }
@@ -387,6 +403,13 @@ namespace MadsKristensen.EditorExtensions
         [DefaultValue(false)]
         public bool StrictBoldItalic { get; set; }
         string IMarkdownOptions.EmptyElementSuffix { get { return GenerateXHTML ? " />" : ">"; } }
+
+        [Category("Compilation")]
+        [DisplayName("Don't save raw compilation output")]
+        [Description("Don't save separate unminified compiler output. This option has no effect when Minify On Save is disabled for HTML.")]
+        [DefaultValue(false)]
+        public bool MinifyInPlace { get; set; }
+
     }
 
     public interface IMarginSettings
@@ -399,6 +422,7 @@ namespace MadsKristensen.EditorExtensions
         bool CompileOnSave { get; }
         bool CompileOnBuild { get; }
         string OutputDirectory { get; }
+        bool MinifyInPlace { get; }
     }
     public interface IMinifierSettings
     {

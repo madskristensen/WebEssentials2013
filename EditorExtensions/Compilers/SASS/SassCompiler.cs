@@ -16,11 +16,10 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         public override string ServiceName { get { return "SASS"; } }
         public override string TargetExtension { get { return ".css"; } }
-
         protected override string CompilerPath { get { return _compilerPath; } }
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
-
         public override bool GenerateSourceMap { get { return WESettings.Instance.Sass.GenerateSourceMaps; } }
+
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
             var args = new StringBuilder();

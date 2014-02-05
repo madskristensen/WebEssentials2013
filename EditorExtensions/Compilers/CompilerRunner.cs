@@ -73,10 +73,15 @@ namespace MadsKristensen.EditorExtensions.Compilers
         ///<summary>Gets the default save location for the compiled results of the specified file, based on user settings.</summary>
         public string GetTargetPath(string sourcePath)
         {
-            if (string.IsNullOrEmpty(Settings.OutputDirectory))
-                return Path.ChangeExtension(sourcePath, TargetExtension);
+            var ext = TargetExtension;
 
-            string compiledFileName = Path.GetFileName(Path.ChangeExtension(sourcePath, TargetExtension));
+            if (Settings.MinifyInPlace && WESettings.Instance.ForContentType<IMinifierSettings>(TargetContentType).AutoMinify)
+                ext = ".min" + ext;
+
+            if (string.IsNullOrEmpty(Settings.OutputDirectory))
+                return Path.ChangeExtension(sourcePath, ext);
+
+            string compiledFileName = Path.GetFileName(Path.ChangeExtension(sourcePath, ext));
             string sourceDir = Path.GetDirectoryName(sourcePath);
 
             // If the output path is not project-relative, combine it directly.
@@ -112,7 +117,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
                     ProjectHelpers.AddFileToProject(targetPath, targetPath + ".map");
 
                 foreach (var listener in _listeners)
-                    listener.FileSaved(TargetContentType, result.TargetFileName, true);
+                    listener.FileSaved(TargetContentType, result.TargetFileName, true, Settings.MinifyInPlace);
             }
 
             return result;
