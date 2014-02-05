@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Collections.Immutable;
 using Microsoft.CSS.Core;
 using Microsoft.Less.Core;
+using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions.Helpers
@@ -15,8 +14,19 @@ namespace MadsKristensen.EditorExtensions.Helpers
     ///<summary>Maintains a graph of dependencies among files in the solution.</summary>
     public abstract class DependencyGraph
     {
+        // This dictionary and graph also contains nodes
+        // for files that do not (yet) exist, as well as
+        // files that have been deleted.  This allows us
+        // to handle such files after they're recreated,
+        // including untouched imports from other files.
+        // In other words, you can never remove from the
+        // graph, except by clearing & re-scanning.
+        // This is synchronized by rwLock.
         readonly Dictionary<string, GraphNode> nodes = new Dictionary<string, GraphNode>(StringComparer.OrdinalIgnoreCase);
         readonly ISet<string> extensions;
+
+
+        readonly AsyncReaderWriterLock rwLock = new AsyncReaderWriterLock();
 
         ///<summary>Gets the ContentType of the files analyzed by this instance.</summary>
         public IContentType ContentType { get; private set; }
@@ -29,39 +39,48 @@ namespace MadsKristensen.EditorExtensions.Helpers
 
         #region Graph Consumption
         ///<summary>Gets all files that directly depend on the specified file.</summary>
-        public IEnumerable<string> GetDirectDependents(string filename)
+        public async Task<IEnumerable<string>> GetDirectDependentsAsync(string fileName)
         {
-            filename = Path.GetFullPath(filename);
-            GraphNode fileNode;
-            if (!nodes.TryGetValue(filename, out fileNode))
-                return Enumerable.Empty<string>();
-            return fileNode.Dependents.Select(d => d.FileName);
-        }
-        ///<summary>Gets all files that indirectly depend on the specified file.</summary>
-        public IEnumerable<string> GetRecursiveDependents(string filename)
-        {
-            filename = Path.GetFullPath(filename);
-            GraphNode rootNode;
-            if (!nodes.TryGetValue(filename, out rootNode))
-                yield break;
+            fileName = Path.GetFullPath(fileName);
 
-            // Don't return the root node.
-            var stack = new Stack<GraphNode>();
-            var visited = new HashSet<GraphNode> { rootNode };
-            stack.Push(rootNode);
-            while (stack.Count > 0)
+            using (await rwLock.ReadLockAsync())
             {
-                foreach (var child in stack.Pop().Dependents)
-                {
-                    if (!visited.Add(child)) continue;
-                    yield return child.FileName;
-                    stack.Push(child);
-                }
+                GraphNode fileNode;
+                if (!nodes.TryGetValue(fileName, out fileNode))
+                    return Enumerable.Empty<string>();
+                return fileNode.Dependents.Select(d => d.FileName);
             }
         }
+        ///<summary>Gets all files that indirectly depend on the specified file.</summary>
+        public async Task<IEnumerable<string>> GetRecursiveDependentsAsync(string fileName)
+        {
+            HashSet<GraphNode> visited;
+            fileName = Path.GetFullPath(fileName);
+            using (await rwLock.ReadLockAsync())
+            {
+                GraphNode rootNode;
+                if (!nodes.TryGetValue(fileName, out rootNode))
+                    return Enumerable.Empty<string>();
 
+                var stack = new Stack<GraphNode>();
+                stack.Push(rootNode);
+                visited = new HashSet<GraphNode> { rootNode };
+                while (stack.Count > 0)
+                {
+                    foreach (var child in stack.Pop().Dependents)
+                    {
+                        if (!visited.Add(child)) continue;
+                        stack.Push(child);
+                    }
+                }
+                // Don't return the original file.
+                visited.Remove(rootNode);
+            }
+            return visited.Select(n => n.FileName);
+        }
         private class GraphNode
         {
+            // Protected by parent graph's rwLock
             readonly HashSet<GraphNode> dependencies = new HashSet<GraphNode>();
             readonly HashSet<GraphNode> dependents = new HashSet<GraphNode>();
 
@@ -88,14 +107,23 @@ namespace MadsKristensen.EditorExtensions.Helpers
                 node.dependents.Add(this);
                 return true;
             }
+
+            ///<summary>Removes all edges for nodes that this file depends on.  Call this method, inside a write lock, before reparsing the file.</summary>
+            public void ClearDependencies()
+            {
+                foreach (var child in Dependencies)
+                    child.dependents.Remove(this);
+                dependencies.Clear();
+            }
         }
         #endregion
 
         #region Graph Creation
         ///<summary>Gets the full paths to all files that the given file depends on.  (the dependencies need not exist).</summary>
-        protected abstract IEnumerable<string> GetDependencyPaths(string filename);
+        protected abstract IEnumerable<string> GetDependencyPaths(string fileName);
         ///<summary>Rescans all nodes from the filesystem.</summary>
-        public void Rescan()
+        ///<remarks>Although this method is async, it performs lots of synchronous work, and should not be called on a UI thread.</remarks>
+        public async Task Rescan()
         {
             var sourceFiles = ProjectHelpers.GetAllProjects()
                 .Select(ProjectHelpers.GetRootFolder)
@@ -107,12 +135,15 @@ namespace MadsKristensen.EditorExtensions.Helpers
             var dependencies = sourceFiles
                 .AsParallel()
                 .Select(f => new { FileName = f, dependencies = GetDependencyPaths(f) });
-            nodes.Clear();
-            foreach (var item in dependencies)
+            using (await rwLock.WriteLockAsync())
             {
-                var parentNode = GetNode(item.FileName);
-                foreach (var dependency in item.dependencies)
-                    parentNode.AddDependency(GetNode(dependency));
+                nodes.Clear();
+                foreach (var item in dependencies)
+                {
+                    var parentNode = GetNode(item.FileName);
+                    foreach (var dependency in item.dependencies)
+                        parentNode.AddDependency(GetNode(dependency));
+                }
             }
 #if false
             nodes.Clear();
@@ -141,6 +172,10 @@ namespace MadsKristensen.EditorExtensions.Helpers
             return node;
         }
         #endregion
+
+        #region Graph Updates
+
+        #endregion
     }
 
     public class CssDependencyGraph<TParser> : DependencyGraph where TParser : CssParser, new()
@@ -152,11 +187,11 @@ namespace MadsKristensen.EditorExtensions.Helpers
             Extension = extension;
         }
 
-        protected override IEnumerable<string> GetDependencyPaths(string filename)
+        protected override IEnumerable<string> GetDependencyPaths(string fileName)
         {
             return new CssItemAggregator<string> { (ImportDirective i) => i.FileName == null ? i.Url.UrlString.Text : i.FileName.Text }
-                            .Crawl(new TParser().Parse(File.ReadAllText(filename), false))
-                            .Select(f => Path.Combine(Path.GetDirectoryName(filename), f.Trim('"', '\'')))
+                            .Crawl(new TParser().Parse(File.ReadAllText(fileName), false))
+                            .Select(f => Path.Combine(Path.GetDirectoryName(fileName), f.Trim('"', '\'')))
                             .Select(f => f.EndsWith(Extension, StringComparison.OrdinalIgnoreCase) ? f : f + Extension);
         }
     }
