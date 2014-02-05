@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio;
@@ -457,9 +458,15 @@ namespace MadsKristensen.EditorExtensions
                 if (item == null)
                     return null;
 
-                var addedItem = item.ProjectItems.AddFromFile(fileName);
+                ProjectItem addedItem = null;
 
-                if (Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
+                try
+                {
+                    addedItem = item.ProjectItems.AddFromFile(fileName);
+                }
+                catch (COMException) { }
+
+                if (addedItem != null && Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
                 {
                     // create nesting
                     var dependentUponProperty = addedItem.Properties.Item("DependentUpon");
@@ -470,11 +477,19 @@ namespace MadsKristensen.EditorExtensions
             }
             else if (item.ContainingProject.GetType().Name != "OAProject" && item.ProjectItems != null && Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
             {   // WAP
-                return item.ProjectItems.AddFromFile(fileName);
+                try
+                {
+                    return item.ProjectItems.AddFromFile(fileName);
+                }
+                catch (COMException) { }
             }
             else if (Path.GetFullPath(fileName).StartsWith(GetRootFolder(item.ContainingProject), StringComparison.OrdinalIgnoreCase))
             {   // Website
-                return item.ContainingProject.ProjectItems.AddFromFile(fileName);
+                try
+                {
+                    return item.ContainingProject.ProjectItems.AddFromFile(fileName);
+                }
+                catch (COMException) { }
             }
 
             return null;
