@@ -28,7 +28,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         [Import]
         public IFileExtensionRegistryService FileExtensionRegistry { get; set; }
-        public CompilerRunnerBase(IContentType contentType)
+        protected CompilerRunnerBase(IContentType contentType)
         {
             Mef.SatisfyImportsOnce(this);
             SourceContentType = contentType;

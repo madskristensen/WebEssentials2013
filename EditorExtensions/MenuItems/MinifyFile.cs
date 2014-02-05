@@ -14,12 +14,10 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class MinifyFileMenu
     {
-        private DTE2 _dte;
         private OleMenuCommandService _mcs;
 
-        public MinifyFileMenu(DTE2 dte, OleMenuCommandService mcs)
+        public MinifyFileMenu(OleMenuCommandService mcs)
         {
-            _dte = dte;
             _mcs = mcs;
         }
 

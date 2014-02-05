@@ -8,12 +8,10 @@ namespace MadsKristensen.EditorExtensions
     ///<summary>Migrates settings from legacy XML settings files to the new ConfOxide-based settings objects.</summary>
     public class SettingsMigrator
     {
-        readonly XDocument sourceFile;
         readonly XElement settingsElement;
         public SettingsMigrator(string sourcePath) : this(XDocument.Load(sourcePath)) { }
         public SettingsMigrator(XDocument source)
         {
-            sourceFile = source;
             settingsElement = source.Root.Element("settings");
         }
 
