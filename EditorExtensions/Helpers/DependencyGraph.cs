@@ -120,6 +120,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
 
         #region Graph Creation
         ///<summary>Gets the full paths to all files that the given file depends on.  (the dependencies need not exist).</summary>
+        ///<remarks>This method will be called concurrently on arbitrary threads.</remarks>
         protected abstract IEnumerable<string> GetDependencyPaths(string fileName);
         ///<summary>Rescans all nodes from the filesystem.</summary>
         ///<remarks>Although this method is async, it performs lots of synchronous work, and should not be called on a UI thread.</remarks>
@@ -165,16 +166,41 @@ namespace MadsKristensen.EditorExtensions.Helpers
         }
         GraphNode GetNode(string filename)
         {
+            bool unused;
+            return GetNode(filename, out unused);
+        }
+        GraphNode GetNode(string filename, out bool created)
+        {
             filename = Path.GetFullPath(filename);
             GraphNode node;
-            if (!nodes.TryGetValue(filename, out node))
+            created = nodes.TryGetValue(filename, out node);
+            if (created)
                 nodes.Add(filename, node = new GraphNode(filename));
             return node;
         }
         #endregion
 
         #region Graph Updates
-
+        ///<summary>Reparses dependencies for a single file and updates the graph.</summary>
+        ///<remarks>Although this method is async, it performs synchronous work, and should not be called on a UI thread.</remarks>
+        public Task RescanFile(string fileName) { return RescanFile(fileName, hasLock: false); }
+        private async Task RescanFile(string fileName, bool hasLock)
+        {
+            fileName = Path.GetFullPath(fileName);
+            var dependencies = GetDependencyPaths(fileName);
+            using (hasLock ? new AsyncReaderWriterLock.Releaser() : await rwLock.WriteLockAsync())
+            {
+                var parentNode = GetNode(fileName);
+                bool created;
+                foreach (var dependency in dependencies)
+                {
+                    var childNode = GetNode(dependency, out created);
+                    parentNode.AddDependency(childNode);
+                    if (created)    // This will (and must) run synchronously, since it doesn't acquire the lock
+                        await RescanFile(childNode.FileName, hasLock: true);
+                }
+            }
+        }
         #endregion
     }
 
