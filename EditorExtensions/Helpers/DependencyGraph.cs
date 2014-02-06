@@ -4,6 +4,8 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using EnvDTE;
+using EnvDTE80;
 using Microsoft.CSS.Core;
 using Microsoft.Less.Core;
 using Microsoft.VisualStudio.Threading;
@@ -191,6 +193,10 @@ namespace MadsKristensen.EditorExtensions.Helpers
         ///<summary>Gets the ContentType of the files analyzed by this instance.</summary>
         public IContentType ContentType { get; private set; }
 
+        private readonly DocumentEvents documentEvents = EditorExtensionsPackage.DTE.Events.DocumentEvents;
+        private readonly SolutionEvents solutionEvents = EditorExtensionsPackage.DTE.Events.SolutionEvents;
+        private readonly ProjectItemsEvents projectItemEvents = ((Events2)EditorExtensionsPackage.DTE.Events).ProjectItemsEvents;
+
         protected VsDependencyGraph(IContentType contentType, IFileExtensionRegistryService fileExtensionRegistry)
         {
             ContentType = contentType;
@@ -209,6 +215,76 @@ namespace MadsKristensen.EditorExtensions.Helpers
                 .Where(f => extensions.Contains(Path.GetExtension(f)));
             return RescanAllAsync(sourceFiles);
         }
+
+        bool isEnabled;
+        public bool IsEnabled
+        {
+            get { return isEnabled; }
+            set
+            {
+                if (isEnabled == value) return;
+                isEnabled = value;
+                if (value)
+                {
+                    AddEventHandlers();
+                    if (EditorExtensionsPackage.DTE.Solution.IsOpen)
+                        Task.Run(() => RescanSolutionAsync()).DontWait("scanning solution for " + ContentType + " dependencies");
+                }
+                else
+                    RemoveEventHandlers();
+            }
+        }
+
+        private void AddEventHandlers()
+        {
+            solutionEvents.Opened += SolutionEvents_Opened;
+            solutionEvents.ProjectAdded += SolutionEvents_ProjectAdded;
+            projectItemEvents.ItemAdded += ProjectItemEvents_ItemAdded;
+            documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
+            projectItemEvents.ItemRenamed += ProjectItemEvents_ItemRenamed;
+        }
+
+
+        private void RemoveEventHandlers()
+        {
+            solutionEvents.Opened -= SolutionEvents_Opened;
+            solutionEvents.ProjectAdded -= SolutionEvents_ProjectAdded;
+            projectItemEvents.ItemAdded -= ProjectItemEvents_ItemAdded;
+            documentEvents.DocumentSaved -= DocumentEvents_DocumentSaved;
+            projectItemEvents.ItemRenamed -= ProjectItemEvents_ItemRenamed;
+        }
+
+        #region Event Handlers
+        private void ProjectItemEvents_ItemRenamed(ProjectItem ProjectItem, string OldName)
+        {
+            var fileName = ProjectItem.FileNames[1];
+            if (extensions.Contains(Path.GetExtension(fileName)))
+                Task.Run(() => RescanFileAsync(fileName)).DontWait("parsing " + ProjectItem.Name + " for dependencies");
+        }
+        private void DocumentEvents_DocumentSaved(Document Document)
+        {
+            var fileName = Document.Path;
+            if (extensions.Contains(Path.GetExtension(fileName)))
+                Task.Run(() => RescanFileAsync(fileName)).DontWait("parsing " + Document.Name + " for dependencies");
+        }
+
+        private void ProjectItemEvents_ItemAdded(ProjectItem ProjectItem)
+        {
+            var fileName = ProjectItem.FileNames[1];
+            if (extensions.Contains(Path.GetExtension(fileName)))
+                Task.Run(() => RescanFileAsync(fileName)).DontWait("parsing " + ProjectItem.Name + " for dependencies");
+        }
+
+        private void SolutionEvents_ProjectAdded(Project Project)
+        {
+            Task.Run(() => RescanSolutionAsync()).DontWait("scanning solution for " + ContentType + " dependencies");
+        }
+
+        private void SolutionEvents_Opened()
+        {
+            Task.Run(() => RescanSolutionAsync()).DontWait("scanning new solution for " + ContentType + " dependencies");
+        }
+        #endregion
     }
     public class CssDependencyGraph<TParser> : VsDependencyGraph where TParser : CssParser, new()
     {
