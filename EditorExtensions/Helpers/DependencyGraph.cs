@@ -187,7 +187,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
         #endregion
     }
     ///<summary>A DependencyGraph that reads Visual Studio solutions.</summary>
-    public abstract class VsDependencyGraph : DependencyGraph
+    public abstract class VsDependencyGraph : DependencyGraph, IDisposable
     {
         readonly ISet<string> extensions;
         ///<summary>Gets the ContentType of the files analyzed by this instance.</summary>
@@ -201,7 +201,12 @@ namespace MadsKristensen.EditorExtensions.Helpers
         {
             ContentType = contentType;
             extensions = fileExtensionRegistry.GetFileExtensionSet(contentType);
+            RescanComplete = TplExtensions.CompletedTask;
         }
+
+        ///<summary>Gets a task that notifies callers when all rescanning is finished.  This property will always be assigned synchronously.</summary>
+        /// <remarks>This is primarily meant for unit tests, to inspect the graph after async event handlers are finished.</remarks>
+        public Task RescanComplete { get; private set; }
 
 
         ///<summary>Rescans all the entire graph from the source files in the current Visual Studio solution.</summary>
@@ -228,7 +233,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
                 {
                     AddEventHandlers();
                     if (EditorExtensionsPackage.DTE.Solution.IsOpen)
-                        Task.Run(() => RescanSolutionAsync()).DontWait("scanning solution for " + ContentType + " dependencies");
+                        RescanComplete = Task.Run(() => RescanSolutionAsync()).HandleErrors("scanning solution for " + ContentType + " dependencies");
                 }
                 else
                     RemoveEventHandlers();
@@ -254,35 +259,48 @@ namespace MadsKristensen.EditorExtensions.Helpers
             projectItemEvents.ItemRenamed -= ProjectItemEvents_ItemRenamed;
         }
 
+
+        ///<summary>Releases all resources used by the VsDependencyGraph.</summary>
+        public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+        ///<summary>Releases the unmanaged resources used by the VsDependencyGraph and optionally releases the managed resources.</summary>
+        ///<param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                IsEnabled = false;  // Remove event handlers
+            }
+        }
+
         #region Event Handlers
         private void ProjectItemEvents_ItemRenamed(ProjectItem ProjectItem, string OldName)
         {
             var fileName = ProjectItem.FileNames[1];
             if (extensions.Contains(Path.GetExtension(fileName)))
-                Task.Run(() => RescanFileAsync(fileName)).DontWait("parsing " + ProjectItem.Name + " for dependencies");
+                RescanComplete = Task.Run(() => RescanFileAsync(fileName)).HandleErrors("parsing " + ProjectItem.Name + " for dependencies");
         }
         private void DocumentEvents_DocumentSaved(Document Document)
         {
             var fileName = Document.Path;
             if (extensions.Contains(Path.GetExtension(fileName)))
-                Task.Run(() => RescanFileAsync(fileName)).DontWait("parsing " + Document.Name + " for dependencies");
+                RescanComplete = Task.Run(() => RescanFileAsync(fileName)).HandleErrors("parsing " + Document.Name + " for dependencies");
         }
 
         private void ProjectItemEvents_ItemAdded(ProjectItem ProjectItem)
         {
             var fileName = ProjectItem.FileNames[1];
             if (extensions.Contains(Path.GetExtension(fileName)))
-                Task.Run(() => RescanFileAsync(fileName)).DontWait("parsing " + ProjectItem.Name + " for dependencies");
+                RescanComplete = Task.Run(() => RescanFileAsync(fileName)).HandleErrors("parsing " + ProjectItem.Name + " for dependencies");
         }
 
         private void SolutionEvents_ProjectAdded(Project Project)
         {
-            Task.Run(() => RescanSolutionAsync()).DontWait("scanning solution for " + ContentType + " dependencies");
+            RescanComplete = Task.Run(() => RescanSolutionAsync()).HandleErrors("scanning solution for " + ContentType + " dependencies");
         }
 
         private void SolutionEvents_Opened()
         {
-            Task.Run(() => RescanSolutionAsync()).DontWait("scanning new solution for " + ContentType + " dependencies");
+            RescanComplete = Task.Run(() => RescanSolutionAsync()).HandleErrors("scanning new solution for " + ContentType + " dependencies");
         }
         #endregion
     }
@@ -304,6 +322,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
         }
     }
     [Export]
+    [ContentType("LESS")]
     public class LessDependencyGraph : CssDependencyGraph<LessParser>
     {
         [ImportingConstructor]
