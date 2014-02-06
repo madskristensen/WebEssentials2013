@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.Utilities;
 namespace MadsKristensen.EditorExtensions.Helpers
 {
     ///<summary>Maintains a graph of dependencies among files in the solution.</summary>
+    /// <remarks>This class is completely decoupled from all Visual Studio concepts.</remarks>
     public abstract class DependencyGraph
     {
         // This dictionary and graph also contains nodes
@@ -23,19 +24,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
         // graph, except by clearing & re-scanning.
         // This is synchronized by rwLock.
         readonly Dictionary<string, GraphNode> nodes = new Dictionary<string, GraphNode>(StringComparer.OrdinalIgnoreCase);
-        readonly ISet<string> extensions;
-
-
         readonly AsyncReaderWriterLock rwLock = new AsyncReaderWriterLock();
-
-        ///<summary>Gets the ContentType of the files analyzed by this instance.</summary>
-        public IContentType ContentType { get; private set; }
-
-        protected DependencyGraph(IContentType contentType, IFileExtensionRegistryService fileExtensionRegistry)
-        {
-            ContentType = contentType;
-            extensions = fileExtensionRegistry.GetFileExtensionSet(contentType);
-        }
 
         #region Graph Consumption
         ///<summary>Gets all files that directly depend on the specified file.</summary>
@@ -122,16 +111,10 @@ namespace MadsKristensen.EditorExtensions.Helpers
         ///<summary>Gets the full paths to all files that the given file depends on.  (the dependencies need not exist).</summary>
         ///<remarks>This method will be called concurrently on arbitrary threads.</remarks>
         protected abstract IEnumerable<string> GetDependencyPaths(string fileName);
-        ///<summary>Rescans all nodes from the filesystem.</summary>
+        ///<summary>Rescans the entire graph from a collection of source files, replacing the entire graph.</summary>
         ///<remarks>Although this method is async, it performs lots of synchronous work, and should not be called on a UI thread.</remarks>
-        public async Task Rescan()
+        public async Task RescanAllAsync(IEnumerable<string> sourceFiles)
         {
-            var sourceFiles = ProjectHelpers.GetAllProjects()
-                .Select(ProjectHelpers.GetRootFolder)
-                .Where(p => !string.IsNullOrEmpty(p))
-                .SelectMany(p => Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories))
-                .Where(f => extensions.Contains(Path.GetExtension(f)));
-
             // Parse all of the files in the background, then update the dictionary on one thread
             var dependencies = sourceFiles
                 .AsParallel()
@@ -178,13 +161,11 @@ namespace MadsKristensen.EditorExtensions.Helpers
                 nodes.Add(filename, node = new GraphNode(filename));
             return node;
         }
-        #endregion
 
-        #region Graph Updates
         ///<summary>Reparses dependencies for a single file and updates the graph.</summary>
         ///<remarks>Although this method is async, it performs synchronous work, and should not be called on a UI thread.</remarks>
-        public Task RescanFile(string fileName) { return RescanFile(fileName, hasLock: false); }
-        private async Task RescanFile(string fileName, bool hasLock)
+        public Task RescanFileAsync(string fileName) { return RescanFileAsync(fileName, hasLock: false); }
+        private async Task RescanFileAsync(string fileName, bool hasLock)
         {
             fileName = Path.GetFullPath(fileName);
             var dependencies = GetDependencyPaths(fileName);
@@ -197,14 +178,39 @@ namespace MadsKristensen.EditorExtensions.Helpers
                     var childNode = GetNode(dependency, out created);
                     parentNode.AddDependency(childNode);
                     if (created)    // This will (and must) run synchronously, since it doesn't acquire the lock
-                        await RescanFile(childNode.FileName, hasLock: true);
+                        await RescanFileAsync(childNode.FileName, hasLock: true);
                 }
             }
         }
         #endregion
     }
+    ///<summary>A DependencyGraph that reads Visual Studio solutions.</summary>
+    public abstract class VsDependencyGraph : DependencyGraph
+    {
+        readonly ISet<string> extensions;
+        ///<summary>Gets the ContentType of the files analyzed by this instance.</summary>
+        public IContentType ContentType { get; private set; }
 
-    public class CssDependencyGraph<TParser> : DependencyGraph where TParser : CssParser, new()
+        protected VsDependencyGraph(IContentType contentType, IFileExtensionRegistryService fileExtensionRegistry)
+        {
+            ContentType = contentType;
+            extensions = fileExtensionRegistry.GetFileExtensionSet(contentType);
+        }
+
+
+        ///<summary>Rescans all the entire graph from the source files in the current Visual Studio solution.</summary>
+        ///<remarks>Although this method is async, it performs lots of synchronous work, and should not be called on a UI thread.</remarks>
+        public Task RescanSolutionAsync()
+        {
+            var sourceFiles = ProjectHelpers.GetAllProjects()
+                .Select(ProjectHelpers.GetRootFolder)
+                .Where(p => !string.IsNullOrEmpty(p))
+                .SelectMany(p => Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories))
+                .Where(f => extensions.Contains(Path.GetExtension(f)));
+            return RescanAllAsync(sourceFiles);
+        }
+    }
+    public class CssDependencyGraph<TParser> : VsDependencyGraph where TParser : CssParser, new()
     {
         public string Extension { get; private set; }
         public CssDependencyGraph(string extension, IFileExtensionRegistryService fileExtensionRegistry)
