@@ -126,8 +126,9 @@ namespace MadsKristensen.EditorExtensions.Compilers
             if (File.Exists(TargetFilePath))
             {
                 RaiseReady();
+
                 foreach (var listener in _listeners)
-                    listener.FileSaved(ContentTypeManager.GetContentType("JavaScript"), TargetFilePath, false);
+                    listener.FileSaved(ContentTypeManager.GetContentType("JavaScript"), TargetFilePath, false, false);
             }
             _isReady = false;
         }

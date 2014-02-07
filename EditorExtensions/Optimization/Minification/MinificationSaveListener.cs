@@ -13,14 +13,20 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     [ContentType("JavaScript")]
     class MinificationSaveListener : IFileSaveListener
     {
-        public void FileSaved(IContentType contentType, string path, bool forceSave)
+        public void FileSaved(IContentType contentType, string path, bool forceSave, bool minifyInPlace)
         {
             // This will also be called for derived ContentTypes like LESS & Markdown.  Ignore those.
             var settings = WESettings.Instance.ForContentType<IMinifierSettings>(contentType);
+
             if (settings == null || !settings.AutoMinify)
                 return;
-            ReMinify(contentType, path, forceSave, settings);
+
+            if (minifyInPlace)
+                MinifyFile(contentType, path, path, settings);
+            else
+                ReMinify(contentType, path, forceSave, settings);
         }
+
         ///<summary>Minifies an existing file if it should be minified.</summary>
         public void ReMinify(IContentType contentType, string path, bool forceSave, IMinifierSettings settings = null)
         {
@@ -28,15 +34,19 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             if (!ShouldMinify(path))
                 return;
 
-            if (!forceSave && !File.Exists(GetMinFileName(path)))
+            string minPath = GetMinFileName(path);
+
+            if (!forceSave && !File.Exists(minPath))
                 return;
 
-            MinifyFile(contentType, path, settings ?? WESettings.Instance.ForContentType<IMinifierSettings>(contentType));
+            MinifyFile(contentType, path, minPath, settings ?? WESettings.Instance.ForContentType<IMinifierSettings>(contentType));
         }
+
         public static string GetMinFileName(string path)
         {
             return path.Insert(path.Length - Path.GetExtension(path).Length, ".min");
         }
+
         public static bool ShouldMinify(string path)
         {
             var baseName = Path.GetFileNameWithoutExtension(path);
@@ -47,36 +57,22 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         public void CreateMinFile(IContentType contentType, string sourcePath)
         {
             var settings = WESettings.Instance.ForContentType<IMinifierSettings>(contentType);
-            MinifyFile(contentType, sourcePath, settings);
-
             var minPath = GetMinFileName(sourcePath);
 
-            ProjectHelpers.AddFileToProject(sourcePath, minPath);
-
-            if (File.Exists(minPath + ".map"))
-            {
-                string mapPath = minPath + ".map";
-                ProjectHelpers.AddFileToProject(minPath, mapPath);
-            }
+            MinifyFile(contentType, sourcePath, minPath, settings);
 
             if (settings.GzipMinifiedFiles)
                 ProjectHelpers.AddFileToProject(minPath, minPath + ".gzip");
         }
 
-        private static void MinifyFile(IContentType contentType, string sourcePath, IMinifierSettings settings)
+        private static void MinifyFile(IContentType contentType, string sourcePath, string minPath, IMinifierSettings settings)
         {
             IFileMinifier minifier = Mef.GetImport<IFileMinifier>(contentType);
-            string minPath = GetMinFileName(sourcePath);
             bool minExist = File.Exists(minPath);
             bool changed = minifier.MinifyFile(sourcePath, minPath);
 
-            if (!minExist)
-                ProjectHelpers.AddFileToProject(sourcePath, minPath);
-
             if (settings.GzipMinifiedFiles && (changed || !File.Exists(minPath + ".gzip")))
-            {
                 FileHelpers.GzipFile(minPath);
-            }
         }
     }
 }

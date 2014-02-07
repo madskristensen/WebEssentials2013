@@ -29,11 +29,9 @@ namespace MadsKristensen.EditorExtensions
         {
             IDataObject data = Clipboard.GetDataObject();
 
-            // This is to check if the image is text copied from PowerPoint etc. 
-            bool trueBitmap = data.GetFormats().Contains("DeviceIndependentBitmap");
             bool hasBitmap = data.GetDataPresent("System.Drawing.Bitmap") || data.GetDataPresent(DataFormats.FileDrop);
 
-            if (!hasBitmap || !trueBitmap || !IsValidTextBuffer())
+            if (!hasBitmap || !IsValidTextBuffer())
                 return false;
 
             string fileName = null;

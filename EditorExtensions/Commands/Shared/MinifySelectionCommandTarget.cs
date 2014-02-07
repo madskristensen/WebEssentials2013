@@ -8,7 +8,6 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class MinifySelection : CommandTargetBase<MinifyCommandId>
     {
-
         public MinifySelection(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, MinifyCommandId.MinifySelection)
         {

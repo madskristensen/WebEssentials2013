@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions
 
     public class HtmlImageDropHandler : IDropHandler
     {
-        const string HtmlTemplate = "<IMG src=\"{2}\" alt=\"\" />";
+        const string HtmlTemplate = "<img src=\"{2}\" alt=\"\" />";
         const string MarkdownTemplate = "![{0}]({1})";
         static readonly HashSet<string> _imageExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".bmp", ".png", ".gif", ".svg", ".tif", ".tiff" };
 
