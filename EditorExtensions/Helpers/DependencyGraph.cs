@@ -106,6 +106,11 @@ namespace MadsKristensen.EditorExtensions.Helpers
                     child.dependents.Remove(this);
                 dependencies.Clear();
             }
+
+            public override string ToString()
+            {
+                return FileName + " (" + dependencies.Count + " dependencies; " + dependents.Count + " dependents)";
+            }
         }
         #endregion
 
@@ -159,7 +164,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
             filename = Path.GetFullPath(filename);
             GraphNode node;
             created = nodes.TryGetValue(filename, out node);
-            if (created)
+            if (!created)
                 nodes.Add(filename, node = new GraphNode(filename));
             return node;
         }

@@ -23,6 +23,9 @@ namespace WebEssentialsTests.IntegrationTests.Dependencies
         [TestInitialize]
         public void CreateGraph()
         {
+            // Make sure VS has loaded before using MEF (prevents native access violations!)
+            VSHost.EnsureSolution(@"LessDependencies\LessDependencies.sln");
+
             // Don't create the instance using MEF, to ensure that I get a fresh graph for each test.
             graph = new LessDependencyGraph(WebEditor.ExportProvider.GetExport<IFileExtensionRegistryService>().Value);
             graph.IsEnabled = true;
@@ -33,6 +36,7 @@ namespace WebEssentialsTests.IntegrationTests.Dependencies
             graph.Dispose();
         }
 
+        [HostType("VS IDE")]
         [TestMethod]
         public async Task ExistingDependenciesFromSolution()
         {
@@ -47,12 +51,12 @@ namespace WebEssentialsTests.IntegrationTests.Dependencies
                 .BeEquivalentTo(new[] { "_admin.less", "Manager.less", "Home.less" });
 
             var adminDeps = await graph.GetRecursiveDependentsAsync(
-                Path.Combine(VSHost.FixtureDirectory, "LessDependencies", "_admin.less")
+                Path.Combine(VSHost.FixtureDirectory, "LessDependencies", "Areas", "_admin.less")
             );
             adminDeps
                 .Select(Path.GetFileName)
                 .Should()
-                .BeEquivalentTo(new[] { "_admin.less", "Manager.less" });
+                .BeEquivalentTo(new[] { "Manager.less" });
 
             var homeDeps = await graph.GetRecursiveDependentsAsync(
                 Path.Combine(VSHost.FixtureDirectory, "LessDependencies", "Home.less")
