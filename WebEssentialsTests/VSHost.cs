@@ -48,10 +48,8 @@ namespace WebEssentialsTests
 
         public static Task TypeString(string s)
         {
-            return Dispatcher.InvokeAsync(() =>
-            {
-                foreach (var ch in s) TypeChar(ch);
-            }, DispatcherPriority.ApplicationIdle).Task;    // Wait for ApplicationIdle to make sure that all targets have been registered
+            // Wait for ApplicationIdle to make sure that all targets have been registered
+            return Dispatcher.InvokeAsync(() => TypeChars(s), DispatcherPriority.ApplicationIdle).Task;
         }
 
         public static Dispatcher Dispatcher
@@ -59,32 +57,42 @@ namespace WebEssentialsTests
             get { return Dispatcher.FromThread(WebEditor.UIThread); }
         }
 
-
-        ///<summary>Sends a single keypress command to Visual Studio.</summary>
-        public static void TypeChar(char c)
+        ///<summary>Sends a series of keypress command to Visual Studio.</summary>
+        public static void TypeChars(string s)
         {
             var target = (IOleCommandTarget)ProjectHelpers.GetCurrentNativeTextView();
-            var special = GetSpecialCommand(c);
-            if (special != null)
-            {
-                target.Execute(special);
-                return;
-            }
-            // Thanks @JaredPar
-            var variantIn = Marshal.AllocCoTaskMem(32); // size of(VARIANT), 16 may be enough
-            VariantInit(variantIn);
+
+            IntPtr variantIn = IntPtr.Zero;
             try
             {
-                Marshal.GetNativeVariantForObject(c, variantIn);
-                target.Execute(VSConstants.VSStd2KCmdID.TYPECHAR, variantIn);
+                // Thanks @JaredPar
+                variantIn = Marshal.AllocCoTaskMem(16); // size of(VARIANT)
+                VariantInit(variantIn);
+
+                foreach (var c in s)
+                {
+                    var special = GetSpecialCommand(c);
+                    if (special != null)
+                    {
+                        target.Execute(special.Value);
+                    }
+                    else
+                    {
+                        Marshal.GetNativeVariantForObject(c, variantIn);
+                        target.Execute(VSConstants.VSStd2KCmdID.TYPECHAR, variantIn);
+                    }
+                }
             }
             finally
             {
-                VariantClear(variantIn);
-                Marshal.FreeCoTaskMem(variantIn);
+                if (variantIn != IntPtr.Zero)
+                {
+                    VariantClear(variantIn);
+                    Marshal.FreeCoTaskMem(variantIn);
+                }
             }
-
         }
+
         [DllImport("oleaut32")]
         internal static extern void VariantClear(IntPtr variant);
         [DllImport("oleaut32")]

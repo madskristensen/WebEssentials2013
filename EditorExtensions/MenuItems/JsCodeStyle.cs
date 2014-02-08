@@ -45,8 +45,7 @@ namespace MadsKristensen.EditorExtensions
             OleMenuCommand menuCommand = sender as OleMenuCommand;
 
             files = ProjectHelpers.GetSelectedFilePaths()
-                    .Where(f => Path.GetExtension(f).Equals(".ts", System.StringComparison.OrdinalIgnoreCase))
-                    .ToList();
+                    .Where(f => !JsHintReporter.NotJsOrIsMinifiedOrNotExists(f)).ToList();
 
             menuCommand.Enabled = files.Count > 0;
         }

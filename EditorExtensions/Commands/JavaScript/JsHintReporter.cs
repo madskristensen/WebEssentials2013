@@ -21,14 +21,19 @@ namespace MadsKristensen.EditorExtensions
             return base.RunLinterAsync();
         }
 
-        public static bool ShouldIgnore(string file)
+        public static bool NotJsOrIsMinifiedOrNotExists(string file)
         {
-            if (!Path.GetExtension(file).Equals(".js", StringComparison.OrdinalIgnoreCase) ||
+            return !Path.GetExtension(file).Equals(".js", StringComparison.OrdinalIgnoreCase) ||
                 file.EndsWith(".min.js", StringComparison.OrdinalIgnoreCase) ||
                 file.EndsWith(".debug.js", StringComparison.OrdinalIgnoreCase) ||
                 file.EndsWith(".intellisense.js", StringComparison.OrdinalIgnoreCase) ||
                 file.Contains("-vsdoc.js") ||
-                !File.Exists(file))
+                !File.Exists(file);
+        }
+
+        public static bool ShouldIgnore(string file)
+        {
+            if (NotJsOrIsMinifiedOrNotExists(file))
             {
                 return true;
             }
