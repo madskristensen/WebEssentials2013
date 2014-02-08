@@ -69,6 +69,7 @@ namespace MadsKristensen.EditorExtensions
 
             return Task.WhenAll(
                 Directory.EnumerateFiles(dir, "*" + extension, SearchOption.AllDirectories)
+                            .Where(f => ProjectHelpers.GetProjectItem(f) != null)
                             .Select(f => runnerFactory(f).RunLinterAsync().HandleErrors("linting " + f))
             );
         }
