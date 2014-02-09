@@ -111,7 +111,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    result.Errors = ParseErrors(errorText.Replace("\n", ""));
+                    result.Errors = ParseErrors(errorText);
                 }
             }
             catch (FileNotFoundException missingFileException)
