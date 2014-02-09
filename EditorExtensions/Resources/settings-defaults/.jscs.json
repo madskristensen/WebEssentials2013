@@ -9,7 +9,7 @@
     "disallowKeywords": ["with"],
     "disallowMultipleLineBreaks": true,
     "disallowKeywordsOnNewLine": ["else"],
-    "excludeFiles": ["**/*.min.js", "**/*.debug.js", "**/*.intellisense.js", "**/*-vsdoc.js"],
+    "excludeFiles": [],
     "validateJSDoc": {
         "checkParamNames": true,
         "requireParamTypes": true

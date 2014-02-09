@@ -6,9 +6,10 @@ using Task = System.Threading.Tasks.Task;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class JsHintReporter : LintReporter
+    internal class JsLintReporter : LintReporter
     {
-        public JsHintReporter(string fileName) : base(new JsHintCompiler(), WESettings.Instance.JavaScript, fileName) { }
+        public JsLintReporter(ILintCompiler lintCompiler, string fileName) :
+            base(lintCompiler, WESettings.Instance.JavaScript, fileName) { }
 
         public override Task RunLinterAsync()
         {
@@ -21,7 +22,7 @@ namespace MadsKristensen.EditorExtensions
             return base.RunLinterAsync();
         }
 
-        public static bool NotJsOrIsMinifiedOrNotExists(string file)
+        public static bool NotJsOrMinifiedOrDocumentOrNotExists(string file)
         {
             return !Path.GetExtension(file).Equals(".js", StringComparison.OrdinalIgnoreCase) ||
                 file.EndsWith(".min.js", StringComparison.OrdinalIgnoreCase) ||
@@ -33,20 +34,20 @@ namespace MadsKristensen.EditorExtensions
 
         public static bool ShouldIgnore(string file)
         {
-            if (NotJsOrIsMinifiedOrNotExists(file))
+            if (NotJsOrMinifiedOrDocumentOrNotExists(file))
             {
                 return true;
             }
 
             ProjectItem item = ProjectHelpers.GetProjectItem(file);
 
-            if (item == null)
-                return true;
-
-            // Ignore files nested under other files such as bundle or TypeScript output
-            ProjectItem parent = item.Collection.Parent as ProjectItem;
-            if (parent != null && !Directory.Exists(parent.FileNames[1]) || File.Exists(item.FileNames[1] + ".bundle"))
-                return true;
+            if (item != null)
+            {
+                // Ignore files nested under other files such as bundle or TypeScript output
+                ProjectItem parent = item.Collection.Parent as ProjectItem;
+                if (parent != null && !Directory.Exists(parent.FileNames[1]) || File.Exists(item.FileNames[1] + ".bundle"))
+                    return true;
+            }
 
             string name = Path.GetFileName(file);
             return _builtInIgnoreRegex.IsMatch(name);
@@ -61,19 +62,19 @@ namespace MadsKristensen.EditorExtensions
             @"dojo\.js",
             @"ember\.js",
             @"ext-core\.js",
-            @"handlebars\.*",
+            @"handlebars.*",
             @"highlight\.js",
             @"history\.js",
             @"jquery-([0-9\.]+)\.js",
-            @"jquery\.blockui\.*",
-            @"jquery\.validate\.*",
-            @"jquery\.unobtrusive\.*",
+            @"jquery.blockui.*",
+            @"jquery.validate.*",
+            @"jquery.unobtrusive.*",
             @"jquery-ui-([0-9\.]+)\.js",
             @"json2\.js",
             @"knockout-([0-9\.]+)\.js",
             @"MicrosoftAjax([a-z]+)\.js",
             @"modernizr-([0-9\.]+)\.js",
-            @"mustache\.*",
+            @"mustache.*",
             @"prototype\.js ",
             @"qunit-([0-9a-z\.]+)\.js",
             @"require\.js",

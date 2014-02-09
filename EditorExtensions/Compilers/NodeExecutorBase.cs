@@ -99,8 +99,11 @@ namespace MadsKristensen.EditorExtensions
         private void ValidateResult(Process process, string outputFile, string errorText, CompilerResult result)
         {
             try
-            {                             /* Temporary hack see; //github.com/mdevils/node-jscs/issues/212 */
-                if (process.ExitCode == 0 && !errorText.StartsWith("<?xml version=", StringComparison.CurrentCulture))
+            {                             
+                if (process.ExitCode == 0 &&
+                    /* Temporary hack see; //github.com/mdevils/node-jscs/issues/212 */
+                    (!errorText.StartsWith("<?xml version=", StringComparison.CurrentCulture) ||
+                     errorText == "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<checkstyle version=\"4.3\">\n</checkstyle>"))
                 {
                     if (!string.IsNullOrEmpty(outputFile))
                         result.Result = File.ReadAllText(outputFile);
@@ -108,7 +111,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    result.Errors = ParseErrors(errorText.Replace("\r", ""));
+                    result.Errors = ParseErrors(errorText.Replace("\n", ""));
                 }
             }
             catch (FileNotFoundException missingFileException)
