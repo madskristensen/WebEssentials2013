@@ -437,7 +437,7 @@
     <Compile Include="Commands\JavaScript\JavaScriptFindReferencesCommandTarget.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Commands\JavaScript\JsLintReporter.cs">
+    <Compile Include="Commands\JavaScript\JavaScriptLintReporter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Commands\LESS\LessExtractMixinCommandTarget.cs" />
