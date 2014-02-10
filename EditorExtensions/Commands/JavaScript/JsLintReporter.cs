@@ -8,10 +8,6 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class JsLintReporter : LintReporter
     {
-        // JsLintReporter inherit from LintReporter,
-        // that means it read as `Js LintReporter`, not `JsLint Reporter`.
-        // Means it's all JavaScript's `LintReporter`, for it shares with both JsHint and JSCS.
-        // No relation to the popular `JsLint` library that we don't included.
         public JsLintReporter(ILintCompiler lintCompiler, string fileName) :
             base(lintCompiler, WESettings.Instance.JavaScript, fileName) { }
 
