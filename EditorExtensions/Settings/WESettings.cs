@@ -307,7 +307,7 @@ namespace MadsKristensen.EditorExtensions
         [Category("Compilation")]
         [DisplayName("Compile files on build")]
         [Description("Compile all files that have matching compiled files when building the project.")]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool CompileOnBuild { get; set; }
 
         [Category("Compilation")]
@@ -357,7 +357,7 @@ namespace MadsKristensen.EditorExtensions
         [Category("Compilation")]
         [DisplayName("Compile files on build")]
         [Description("Compile all files that have matching compiled files when building the project.")]
-        [DefaultValue(true)]
+        [DefaultValue(false)]
         public bool CompileOnBuild { get; set; }
 
         [Category("Compilation")]
