@@ -44,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
             OleMenuCommand menuCommand = sender as OleMenuCommand;
 
             var raw = ProjectHelpers.GetSelectedFilePaths();
-            files = raw.Where(f => !JsLintReporter.NotJsOrMinifiedOrDocumentOrNotExists(f)).ToList();
+            files = raw.Where(f => !JavaScriptLintReporter.NotJsOrMinifiedOrDocumentOrNotExists(f)).ToList();
 
             menuCommand.Enabled = files.Count > 0;
         }
@@ -56,7 +56,7 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (string file in files)
             {
-                JsLintReporter runner = new JsLintReporter(new JsHintCompiler(), file);
+                JavaScriptLintReporter runner = new JavaScriptLintReporter(new JsHintCompiler(), file);
                 runner.RunLinterAsync().DontWait("linting " + file);
             }
         }

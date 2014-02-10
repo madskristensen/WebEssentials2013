@@ -6,9 +6,9 @@ using Task = System.Threading.Tasks.Task;
 
 namespace MadsKristensen.EditorExtensions
 {
-    internal class JsLintReporter : LintReporter
+    internal class JavaScriptLintReporter : LintReporter
     {
-        public JsLintReporter(ILintCompiler lintCompiler, string fileName) :
+        public JavaScriptLintReporter(ILintCompiler lintCompiler, string fileName) :
             base(lintCompiler, WESettings.Instance.JavaScript, fileName) { }
 
         public override Task RunLinterAsync()

@@ -45,12 +45,12 @@ namespace MadsKristensen.EditorExtensions
             ITextDocument document;
             if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
             {
-                var jsHintLintInvoker = new LintFileInvoker(f => new JsLintReporter(new JsHintCompiler(), f), document);
+                var jsHintLintInvoker = new LintFileInvoker(f => new JavaScriptLintReporter(new JsHintCompiler(), f), document);
                 textView.Closed += (s, e) => jsHintLintInvoker.Dispose();
 
                 textView.TextBuffer.Properties.GetOrCreateSingletonProperty(() => jsHintLintInvoker);
 
-                var jsCodeStyleLintInvoker = new LintFileInvoker(f => new JsLintReporter(new JsCodeStyleCompiler(), f), document);
+                var jsCodeStyleLintInvoker = new LintFileInvoker(f => new JavaScriptLintReporter(new JsCodeStyleCompiler(), f), document);
                 textView.Closed += (s, e) => jsCodeStyleLintInvoker.Dispose();
 
                 textView.TextBuffer.Properties.GetOrCreateSingletonProperty(() => jsCodeStyleLintInvoker);
