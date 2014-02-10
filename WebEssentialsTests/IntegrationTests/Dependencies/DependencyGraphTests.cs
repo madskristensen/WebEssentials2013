@@ -1,6 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using EnvDTE80;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using MadsKristensen.EditorExtensions.Helpers;
@@ -13,9 +16,14 @@ namespace WebEssentialsTests.IntegrationTests.Dependencies
     [TestClass]
     public class DependencyGraphTests
     {
+        static string TestCaseDirectory { get; set; }
+
         [ClassInitialize]
         public static void Initialize(TestContext c)
         {
+            TestCaseDirectory = Path.Combine(Path.GetTempPath(), "Web Essentials Test Files", c.FullyQualifiedTestClassName + "-" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
+            Directory.CreateDirectory(TestCaseDirectory);
+
             SettingsStore.EnterTestMode();
         }
 
@@ -62,6 +70,53 @@ namespace WebEssentialsTests.IntegrationTests.Dependencies
                 Path.Combine(VSHost.FixtureDirectory, "LessDependencies", "Home.less")
             );
             homeDeps.Should().BeEmpty();
+        }
+        [HostType("VS IDE")]
+        [TestMethod]
+        public async Task DependenciesFromNewFiles()
+        {
+            Debugger.Launch();
+            var s2 = (Solution2)VSHost.DTE.Solution;
+            s2.Create(TestCaseDirectory, "DependencyCreationTests");
+            var template = s2.GetProjectTemplate("EmptyWebApplicationProject40.zip", "CSharp");
+            s2.AddFromTemplate(template, Path.Combine(TestCaseDirectory, "WebAppProject"), "WebAppProject.csproj");
+
+            // To be discovered on save of dependent file
+            File.WriteAllText(Path.Combine(TestCaseDirectory, "WebAppProject", "_mixins.less"), "// Content...");
+
+            AddProjectFile(Path.Combine(TestCaseDirectory, "WebAppProject", "base.less"), "body { font: sans-serif }");
+
+            AddProjectFile(Path.Combine(TestCaseDirectory, "WebAppProject", "page.less"), "@import base");
+
+            await graph.RescanComplete;
+
+            var deps = await graph.GetRecursiveDependentsAsync(
+                Path.Combine(VSHost.FixtureDirectory, "WebAppProject", "page.less")
+            );
+            deps
+               .Select(Path.GetFileName)
+               .Should()
+               .BeEquivalentTo(new[] { "base.less" });
+
+            var window = VSHost.DTE.ItemOperations.OpenFile(Path.Combine(TestCaseDirectory, "WebAppProject", "base.less"));
+            await VSHost.TypeString("@import _mixins");
+            window.Document.Save();
+
+            await graph.RescanComplete;
+
+            deps = await graph.GetRecursiveDependentsAsync(
+                Path.Combine(VSHost.FixtureDirectory, "WebAppProject", "page.less")
+            );
+            deps
+               .Select(Path.GetFileName)
+               .Should()
+               .BeEquivalentTo(new[] { "base.less", "_mixins.less" });
+        }
+
+        static void AddProjectFile(string path, string contents)
+        {
+            File.WriteAllText(path, contents);
+            ProjectHelpers.GetActiveProject().ProjectItems.AddFromFile(path);
         }
     }
 }
