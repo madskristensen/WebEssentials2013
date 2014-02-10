@@ -103,9 +103,27 @@ namespace MadsKristensen.EditorExtensions
                         _provider.Tasks.Remove(task);
                 }
 
+                // HACK: stop JSCS (and any other) from output more than 500 items, hope JSCS can do this
+                int errorLimit = 500;
+                int resultCount = results.Count();
+                int count = 0;
                 foreach (CompilerError error in results.Where(r => r != null))
                 {
-                    ErrorTask task = CreateTask(error);
+                    ErrorTask task;
+
+                    // JSHint has build in limit up to 500
+                    // the 501 one is "too many" one, no need to replace it with this hack
+                    if (++count > errorLimit &&
+                        !(_compiler is JsHintCompiler && resultCount == 501))
+                    {
+                        task = CreateTask(error,
+                            string.Format("{0}: Too many errors. Only shows {1} errors from {2}.",
+                                _compiler.ServiceName, errorLimit, results.Count()));
+                        _provider.Tasks.Add(task);
+                        break;
+                    }
+
+                    task = CreateTask(error);
                     _provider.Tasks.Add(task);
                 }
             }
@@ -116,7 +134,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private ErrorTask CreateTask(CompilerError error)
+        private ErrorTask CreateTask(CompilerError error, string message = null)
         {
             ErrorTask task = new ErrorTask()
             {
@@ -126,7 +144,7 @@ namespace MadsKristensen.EditorExtensions
                 Category = TaskCategory.Html,
                 Document = error.FileName,
                 Priority = TaskPriority.Low,
-                Text = error.Message,
+                Text = message ?? error.Message,
             };
 
             task.AddHierarchyItem();

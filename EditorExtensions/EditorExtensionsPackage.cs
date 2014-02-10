@@ -155,9 +155,9 @@ namespace MadsKristensen.EditorExtensions
 
                 if (WESettings.Instance.JavaScript.LintOnBuild)
                 {
-                    LintFileInvoker.RunOnAllFilesInProjectAsync(".js", f => new JsHintReporter(f))
+                    LintFileInvoker.RunOnAllFilesInProjectAsync(".js", f => new JavaScriptLintReporter(new JsHintCompiler(), f))
                         .DontWait("running solution-wide JSHint");
-                    LintFileInvoker.RunOnAllFilesInProjectAsync(".js", f => new LintReporter(new JsCodeStyleCompiler(), WESettings.Instance.JavaScript, f))
+                    LintFileInvoker.RunOnAllFilesInProjectAsync(".js", f => new JavaScriptLintReporter(new JsCodeStyleCompiler(), f))
                         .DontWait("running solution-wide JSCS");
                 }
 
