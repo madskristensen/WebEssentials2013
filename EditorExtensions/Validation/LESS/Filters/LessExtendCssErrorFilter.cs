@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 ICssError error = errors[i];
 
-                if (error.Item.StyleSheet is LessStyleSheet && error.Text.Contains(":extend("))
+                if (error.Item.StyleSheet is LessStyleSheet && !string.IsNullOrEmpty(error.Text) && error.Text.Contains(":extend("))
                 {
                     errors.RemoveAt(i);
                 }

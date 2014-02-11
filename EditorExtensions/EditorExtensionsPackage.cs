@@ -119,14 +119,14 @@ namespace MadsKristensen.EditorExtensions
             // Hook up event handlers
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
-                DTE.Events.BuildEvents.OnBuildDone += BuildEvents_OnBuildDone;
+                DTE.Events.BuildEvents.OnBuildBegin += BuildEvents_OnBuildBegin;
                 DTE.Events.SolutionEvents.Opened += delegate { SettingsStore.Load(); ShowTopMenu(); };
                 DTE.Events.SolutionEvents.AfterClosing += delegate { DTE.StatusBar.Clear(); ShowTopMenu(); };
 
             }), DispatcherPriority.ApplicationIdle, null);
         }
 
-        private void BuildEvents_OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
+        private void BuildEvents_OnBuildBegin(vsBuildScope Scope, vsBuildAction Action)
         {
             bool success = _dte.Solution.SolutionBuild.LastBuildInfo == 0;
             if (!success)

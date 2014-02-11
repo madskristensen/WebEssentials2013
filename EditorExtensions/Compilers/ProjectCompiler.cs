@@ -26,19 +26,24 @@ namespace MadsKristensen.EditorExtensions.Compilers
         {
             var exts = FileExtensionRegistry.GetFileExtensionSet(contentType);
             var runner = Mef.GetImport<ICompilerRunnerProvider>(contentType).GetCompiler(contentType);
+            var filesToCheck = paths.Where(f => exts.Contains(Path.GetExtension(f)))
+                .ToDictionary(fileName => fileName, filePath => runner.GetTargetPath(filePath))
+                .Where(kvp => File.Exists(kvp.Value));
 
-            return Task.WhenAll(
-                paths.Where(f => exts.Contains(Path.GetExtension(f)))
+            bool shouldRecompile = filesToCheck.Any(kvp => File.GetLastWriteTime(kvp.Key) > File.GetLastWriteTime(kvp.Value));
+
+            if (shouldRecompile)
+            {
+                return Task.WhenAll(
+                    filesToCheck
                     .AsParallel()
-                    .Select(fileName =>
-                        {
-                            string targetPath = runner.GetTargetPath(fileName);
-                            if (File.Exists(targetPath))
-                                return runner.CompileAsync(fileName, targetPath).HandleErrors("compiling" + fileName);
-                            else
-                                return Task.FromResult<CompilerResult>(null);
-                        })
-            );
+                    .Select(kvp =>
+                    {
+                        return runner.CompileAsync(kvp.Key, kvp.Value).HandleErrors("compiling" + kvp.Key);
+                    })
+                );
+            }
+            return Task.FromResult<CompilerResult>(null);
         }
     }
 }
