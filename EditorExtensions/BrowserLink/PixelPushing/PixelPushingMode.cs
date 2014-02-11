@@ -270,12 +270,12 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 
             var oldSnapshotOnChange = doc.IsProcessingUnusedCssRules;
             var window = EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
+            window.Activate();
             var buffer = ProjectHelpers.GetCurentTextBuffer();
             var flattenedRules = FlattenRules(doc);
             var allEdits = new List<CssRuleBlockSyncAction>();
 
             doc.IsProcessingUnusedCssRules = false;
-            window.Activate();
             doc.Reparse(buffer.CurrentSnapshot.GetText());
 
             foreach (var item in set)
