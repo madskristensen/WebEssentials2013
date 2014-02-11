@@ -45,6 +45,9 @@ namespace MadsKristensen.EditorExtensions
             ITextDocument document;
             if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
             {
+                if (ProjectHelpers.GetProjectItem(document.FilePath) == null)
+                    return;
+
                 var jsHintLintInvoker = new LintFileInvoker(f => new JavaScriptLintReporter(new JsHintCompiler(), f), document);
                 textView.Closed += (s, e) => jsHintLintInvoker.Dispose();
 
