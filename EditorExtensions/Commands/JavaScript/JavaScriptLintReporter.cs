@@ -28,6 +28,7 @@ namespace MadsKristensen.EditorExtensions
                 file.EndsWith(".min.js", StringComparison.OrdinalIgnoreCase) ||
                 file.EndsWith(".debug.js", StringComparison.OrdinalIgnoreCase) ||
                 file.EndsWith(".intellisense.js", StringComparison.OrdinalIgnoreCase) ||
+                file.EndsWith("_references.js", StringComparison.OrdinalIgnoreCase) ||
                 file.Contains("-vsdoc.js") ||
                 !File.Exists(file);
         }
