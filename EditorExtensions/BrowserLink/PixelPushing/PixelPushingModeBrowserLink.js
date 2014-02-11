@@ -197,13 +197,13 @@
             }
         }
 
-        if (continuousSyncMode && deltaLog.length > 0) {
+        if (deltaLog.length > 0) {
             shipUpdate();
         }
 
         lastRunSheets = current;
 
-        if (isInPixelPusingMode) {
+        if (continuousSyncMode) {
             setTimeout(performAudit, 100);
         }
     }
@@ -237,7 +237,7 @@
             return;
 
         takeChangesNowMenuItem = window.browserLink.menu.addButton("Save F12 changes", "Use CTRL+ALT+T to sync the current CSS changes into Visual Studio", function () {
-            shipUpdate();
+            performAudit();
         });
 
         continuouslyTakeChangesMenuItem = window.browserLink.menu.addCheckbox("F12 auto-sync", "Use CTRL+ALT+U to continuously sync CSS changes into Visual Studio", false, function () {
@@ -249,7 +249,7 @@
 
     return {
         setPixelPusingMode: setPixelPushingModeInternal,
-        pullStyleData: shipUpdate,
+        pullStyleData: performAudit,
         setContinuousSync: setContinuousSyncMode,
         onConnected: function () {
             AddToMenu();

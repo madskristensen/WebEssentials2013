@@ -14,6 +14,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private readonly string _localFileName;
         private string _lastParsedText;
         private readonly object _parseSync = new object();
+        private bool _isDisposed;
 
         public object ParseSync
         {
@@ -52,6 +53,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public void Dispose()
         {
+            _isDisposed = true;
             _watcher.Changed -= Reparse;
             _watcher.Renamed -= ProxyRename;
 
@@ -62,7 +64,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         private void ProxyRename(object sender, RenamedEventArgs e)
         {
-            if (e.Name.ToLowerInvariant() == _localFileName)
+            if (!_isDisposed && e.Name.ToLowerInvariant() == _localFileName)
             {
                 Reparse();
             }

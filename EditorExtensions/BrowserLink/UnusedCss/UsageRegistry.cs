@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using EnvDTE;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Shell;
@@ -48,7 +49,14 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         {
             SessionResult data;
 
-            if (!UsageDataByProject.TryGetValue(project.UniqueName, out data))
+            try
+            {
+                if (!UsageDataByProject.TryGetValue(project.UniqueName, out data))
+                {
+                    return new Task[0];
+                }
+            }
+            catch (COMException)
             {
                 return new Task[0];
             }
