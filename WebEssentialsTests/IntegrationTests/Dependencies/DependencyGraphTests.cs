@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,11 +39,13 @@ namespace WebEssentialsTests.IntegrationTests.Dependencies
             // Don't create the instance using MEF, to ensure that I get a fresh graph for each test.
             graph = new LessDependencyGraph(WebEditor.ExportProvider.GetExport<IFileExtensionRegistryService>().Value);
             graph.IsEnabled = true;
+            ((CompositionContainer)WebEditor.CompositionService).ComposeExportedValue(graph);
         }
         [TestCleanup]
         public void DisposeGraph()
         {
             graph.Dispose();
+            ((CompositionContainer)WebEditor.CompositionService).ReleaseExport(new Lazy<VsDependencyGraph>(() => graph));
         }
 
         [HostType("VS IDE")]

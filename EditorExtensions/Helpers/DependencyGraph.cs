@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnvDTE;
 using EnvDTE80;
+using MadsKristensen.EditorExtensions.Commands;
 using Microsoft.CSS.Core;
 using Microsoft.Less.Core;
 using Microsoft.VisualStudio.Threading;
@@ -192,7 +193,16 @@ namespace MadsKristensen.EditorExtensions.Helpers
         #endregion
     }
     ///<summary>A DependencyGraph that reads Visual Studio solutions.</summary>
-    public abstract class VsDependencyGraph : DependencyGraph, IDisposable
+    ///<remarks>
+    /// Derived classes must contain the following attributes:
+    /// <code>
+    ///     [Export(typeof(DependencyGraph))]
+    ///     [Export(typeof(IFileSaveListener))]
+    ///     [ContentType("YourTypeName")]
+    /// </code>
+    /// They must pass the same <see cref="IContentType"/> to the base constructor.
+    ///</remarks>
+    public abstract class VsDependencyGraph : DependencyGraph, IDisposable, IFileSaveListener
     {
         readonly ISet<string> extensions;
         ///<summary>Gets the ContentType of the files analyzed by this instance.</summary>
@@ -307,6 +317,13 @@ namespace MadsKristensen.EditorExtensions.Helpers
         {
             RescanComplete = Task.Run(() => RescanSolutionAsync()).HandleErrors("scanning new solution for " + ContentType + " dependencies");
         }
+
+        // This is triggered by the derived class' ContentType-specific [Export(typeof(IFileSaveListener))]
+        public void FileSaved(IContentType contentType, string path, bool forceSave, bool minifyInPlace)
+        {
+            if (IsEnabled)
+                RescanComplete = Task.Run(() => RescanFileAsync(path)).HandleErrors("parsing " + path + " for dependencies");
+        }
         #endregion
     }
     public class CssDependencyGraph<TParser> : VsDependencyGraph where TParser : CssParser, new()
@@ -323,7 +340,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
             return new CssItemAggregator<string> { new Func<ImportDirective, string>(GetImportPath) }
                             .Crawl(new TParser().Parse(File.ReadAllText(fileName), false))
                             .Where(s => s != null)
-                            .Select(f => Path.Combine(Path.GetDirectoryName(fileName), f.Trim('"', '\'')))
+                            .Select(f => Path.Combine(Path.GetDirectoryName(fileName), f.Replace('/', '\\').Trim('"', '\'')))
                             .Select(f => f.EndsWith(Extension, StringComparison.OrdinalIgnoreCase) ? f : f + Extension);
         }
         private static string GetImportPath(ImportDirective importDirective)
@@ -349,7 +366,8 @@ namespace MadsKristensen.EditorExtensions.Helpers
             }
         }
     }
-    [Export]
+    [Export(typeof(DependencyGraph))]
+    [Export(typeof(IFileSaveListener))]
     [ContentType("LESS")]
     public class LessDependencyGraph : CssDependencyGraph<LessParser>
     {
