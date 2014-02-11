@@ -46,7 +46,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             }
 
             IDocument currentDocument;
-            if (DocumentLookup.TryGetValue(fileName, out currentDocument))
+            if (DocumentLookup.TryGetValue(fileName, out currentDocument) || !createIfRequired)
             {
                 return currentDocument;
             }
@@ -58,7 +58,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 return null;
             }
 
-            currentDocument = factory(fullPath, createIfRequired);
+            currentDocument = factory(fullPath, true);
 
             if (currentDocument == null)
             {
