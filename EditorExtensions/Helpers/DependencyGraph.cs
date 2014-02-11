@@ -320,10 +320,33 @@ namespace MadsKristensen.EditorExtensions.Helpers
 
         protected override IEnumerable<string> GetDependencyPaths(string fileName)
         {
-            return new CssItemAggregator<string> { (ImportDirective i) => i.FileName == null ? i.Url.UrlString.Text : i.FileName.Text }
+            return new CssItemAggregator<string> { new Func<ImportDirective, string>(GetImportPath) }
                             .Crawl(new TParser().Parse(File.ReadAllText(fileName), false))
+                            .Where(s => s != null)
                             .Select(f => Path.Combine(Path.GetDirectoryName(fileName), f.Trim('"', '\'')))
                             .Select(f => f.EndsWith(Extension, StringComparison.OrdinalIgnoreCase) ? f : f + Extension);
+        }
+        private static string GetImportPath(ImportDirective importDirective)
+        {
+            // Copied from Microsoft.CSS.Editor.GlobalDocumentCache.GetSourceUriFromImport()
+            TokenItem tokenItem;
+            if (!importDirective.IsValid)
+                return null;
+            if (importDirective.FileName != null && importDirective.FileName.TokenType == CssTokenType.String)
+                tokenItem = importDirective.FileName;
+            else if (importDirective.Url != null)
+                tokenItem = (TokenItem)importDirective.Url.UrlString;
+            else
+                return null;
+            switch (tokenItem.Token.TokenType)
+            {
+                case CssTokenType.String:
+                    return importDirective.StyleSheet.TextProvider.Substring(tokenItem.Start + 1, tokenItem.Length - 2).Trim();
+                case CssTokenType.UnquotedUrlString:
+                    return tokenItem.Text.Trim();
+                default:
+                    return null;
+            }
         }
     }
     [Export]
