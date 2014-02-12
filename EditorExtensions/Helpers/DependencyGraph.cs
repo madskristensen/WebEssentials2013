@@ -264,7 +264,6 @@ namespace MadsKristensen.EditorExtensions.Helpers
             projectItemEvents.ItemRenamed += ProjectItemEvents_ItemRenamed;
         }
 
-
         private void RemoveEventHandlers()
         {
             solutionEvents.Opened -= SolutionEvents_Opened;
