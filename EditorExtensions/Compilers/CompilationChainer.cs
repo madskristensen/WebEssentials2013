@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.IO;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text;
@@ -30,30 +31,46 @@ namespace MadsKristensen.EditorExtensions.Compilers
             if (!TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
                 return;
 
+            var settings = WESettings.Instance.ForContentType<IChainableCompilerSettings>(contentType);
+
             var notifierProvider = Mef.GetImport<ICompilationNotifierProvider>(contentType);
             var notifier = notifierProvider.GetCompilationNotifier(document);
 
             var compilerProvider = Mef.GetImport<ICompilerRunnerProvider>(contentType);
             var compilerRunner = compilerProvider.GetCompiler(contentType);
 
-            var graph = Mef.GetImport<DependencyGraph>(contentType);
+            var graph = GetGraph(contentType);
             notifier.CompilationReady += async (s, e) =>
             {
-                if (!e.CompilerResult.IsSuccess || string.IsNullOrEmpty(e.CompilerResult.TargetFileName))
+                if (!settings.CompileOnSave || !settings.EnableChainCompilation)
                     return;
+
+                var count = 0;
                 foreach (var file in await graph.GetRecursiveDependentsAsync(e.CompilerResult.SourceFileName))
-                    compilerRunner.CompileToDefaultOutputAsync(file).DontWait("compiling " + file);
+                {
+                    if (File.Exists(compilerRunner.GetTargetPath(file)))
+                    {
+                        compilerRunner.CompileToDefaultOutputAsync(file).DontWait("compiling " + file);
+                        count++;
+                    }
+                }
+                EditorExtensionsPackage.DTE.StatusBar.Text = "Compiling " + count + " dependent file" + (count == 1 ? "s" : "")
+                                                           + " for " + Path.GetFileName(e.CompilerResult.SourceFileName);
             };
         }
 
         readonly HashSet<IContentType> registeredContentTypes = new HashSet<IContentType>();
         private DependencyGraph GetGraph(IContentType contentType)
         {
-            var graph = Mef.GetImport<DependencyGraph>(contentType);
-            if (registeredContentTypes.Add(contentType))
+            var graph = (VsDependencyGraph)Mef.GetImport<DependencyGraph>(contentType);
+            if (!registeredContentTypes.Add(contentType))
                 return graph;
 
-            // TODO: Add settings change event handler, once per content type
+            // Add this event handler only once per ContentType
+            var settings = WESettings.Instance.ForContentType<IChainableCompilerSettings>(contentType);
+            graph.IsEnabled = settings.EnableChainCompilation;
+            settings.EnableChainCompilationChanged += delegate { graph.IsEnabled = settings.EnableChainCompilation; };
+
             return graph;
         }
     }

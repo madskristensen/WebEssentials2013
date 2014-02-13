@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using ConfOxide;
 using MarkdownSharp;
@@ -329,8 +330,31 @@ namespace MadsKristensen.EditorExtensions
         public bool MinifyInPlace { get; set; }
     }
 
+    public abstract class ChainableCompilationSettings<T> : CompilationSettings<T>, IChainableCompilerSettings where T : ChainableCompilationSettings<T>
+    {
+        private bool enableChainCompilation;
+
+        [Category("Compilation")]
+        [DisplayName("Auto-compile dependent files on save")]
+        [Description("Compile all files that depend @import the current file on save.  This feature will only compile files that already have compiled output.  This option has no effect when Compile on Save is disabled.")]
+        [DefaultValue(true)]
+        public bool EnableChainCompilation
+        {
+            get { return enableChainCompilation; }
+            set { enableChainCompilation = value; OnEnableChainCompilationChanged(); }
+        }
+        public event EventHandler EnableChainCompilationChanged;
+        void OnEnableChainCompilationChanged() { OnEnableChainCompilationChanged(EventArgs.Empty); }
+        void OnEnableChainCompilationChanged(EventArgs e)
+        {
+            if (EnableChainCompilationChanged != null)
+                EnableChainCompilationChanged(this, e);
+        }
+    }
+
+
+    public sealed class LessSettings : ChainableCompilationSettings<LessSettings> { }
     public sealed class SassSettings : CompilationSettings<SassSettings> { }
-    public sealed class LessSettings : CompilationSettings<LessSettings> { }
     public sealed class CoffeeScriptSettings : CompilationSettings<CoffeeScriptSettings>
     {
         [DisplayName("Wrap generated JavaScript files")]
@@ -409,7 +433,6 @@ namespace MadsKristensen.EditorExtensions
         [Description("Don't save separate unminified compiler output. This option has no effect when Minify On Save is disabled for HTML.")]
         [DefaultValue(false)]
         public bool MinifyInPlace { get; set; }
-
     }
 
     public interface IMarginSettings
@@ -423,6 +446,11 @@ namespace MadsKristensen.EditorExtensions
         bool CompileOnBuild { get; }
         string OutputDirectory { get; }
         bool MinifyInPlace { get; }
+    }
+    public interface IChainableCompilerSettings : ICompilerInvocationSettings
+    {
+        bool EnableChainCompilation { get; }
+        event EventHandler EnableChainCompilationChanged;
     }
     public interface IMinifierSettings
     {

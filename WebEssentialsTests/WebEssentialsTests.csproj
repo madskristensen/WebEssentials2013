@@ -114,6 +114,7 @@
     <Compile Include="IntegrationTests\Completion\JsIntelliSenseTest.cs" />
     <Compile Include="IntegrationTests\Completion\ZenCodingTest.cs" />
     <Compile Include="IntegrationTests\Completion\CommentsTest.cs" />
+    <Compile Include="IntegrationTests\Dependencies\ChainCompilationTests.cs" />
     <Compile Include="IntegrationTests\Dependencies\DependencyGraphTests.cs" />
     <Compile Include="IntegrationTests\SettingsTests.cs" />
     <Compile Include="VSHost.cs" />
