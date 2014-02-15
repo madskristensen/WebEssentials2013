@@ -46,8 +46,6 @@ namespace MadsKristensen.EditorExtensions
             this.buffer = buffer;
             this.view = view;
             this.snapshot = buffer.CurrentSnapshot;
-
-            //this.view.LayoutChanged += HandleLayoutChanged;
             this.buffer.Changed += HandleBufferChanged;
         }
 
@@ -148,26 +146,6 @@ namespace MadsKristensen.EditorExtensions
                 handler(this, new SnapshotSpanEventArgs(span));
         }
 
-        private void HandleLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
-        {
-            if (!_isProcessing)
-            {
-                SnapshotSpan visibleSpan = this.view.TextViewLines.FormattedSpan;
-                // Filter out the adornments that are no longer visible.
-                HashSet<SnapshotSpan> toRemove = new HashSet<SnapshotSpan>(
-                    from keyValuePair
-                    in this.adornmentCache
-                    where !keyValuePair.Key.TranslateTo(visibleSpan.Snapshot, SpanTrackingMode.EdgeExclusive).IntersectsWith(visibleSpan)
-                    select keyValuePair.Key);
-
-                _isProcessing = true;
-
-                foreach (var span in toRemove)
-                    this.adornmentCache.Remove(span);
-            }
-
-            _isProcessing = false;
-        }
 
         // Produces tags on the snapshot that the tag consumer asked for.
         public virtual IEnumerable<ITagSpan<IntraTextAdornmentTag>> GetTags(NormalizedSnapshotSpanCollection spans)
