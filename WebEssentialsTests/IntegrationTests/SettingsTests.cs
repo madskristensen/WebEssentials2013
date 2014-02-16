@@ -28,7 +28,7 @@ namespace WebEssentialsTests.IntegrationTests
 
             // Check default values for new settings
             WESettings.Instance.Html.GzipMinifiedFiles.Should().BeFalse();
-            WESettings.Instance.Markdown.CompileOnBuild.Should().BeTrue();
+            WESettings.Instance.Less.EnableChainCompilation.Should().BeTrue();
         }
     }
 }
