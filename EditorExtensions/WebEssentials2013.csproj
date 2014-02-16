@@ -98,10 +98,20 @@
     <Reference Include="CssSorter">
       <HintPath>..\CssSorter.dll</HintPath>
     </Reference>
+    <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="EnvDTE80, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="EnvDTE90, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
     <Reference Include="MarkdownSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=86ca04712d6fe173, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MarkdownSharp.1.13.0.0\lib\35\MarkdownSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Collections.Immutable, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.JSLS" />
     <Reference Include="Microsoft.VisualStudio.Language.StandardClassification" />
@@ -137,6 +147,7 @@
     <Reference Include="Microsoft.VisualStudio.Text.UI, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.VisualStudio.Threading, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Web.BrowserLink.12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Web.Extensions">
       <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Languages\Microsoft.VisualStudio.Web.Extensions.dll</HintPath>
@@ -191,33 +202,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="EnvDTE">
-      <Guid>{80CC9F66-E7D8-4DDD-85B6-D9E6CD0E93E2}</Guid>
-      <VersionMajor>8</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="EnvDTE80">
-      <Guid>{1A31287A-4D7D-413E-8E32-3B374931BD89}</Guid>
-      <VersionMajor>8</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="EnvDTE90">
-      <Guid>{2CE2370E-D744-4936-A090-3FFFE667B0E1}</Guid>
-      <VersionMajor>9</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
     <COMReference Include="stdole">
       <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
       <VersionMajor>2</VersionMajor>
@@ -340,6 +324,7 @@
     <Compile Include="Commands\JavaScript\CommentCompletionCommandTarget.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptFindReferencesCommandTarget.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptCreationListener.cs" />
+    <Compile Include="Compilers\CompilationChainer.cs" />
     <Compile Include="Compilers\CssCompilerBase.cs" />
     <Compile Include="Compilers\Lint\LintConfigEncodingFix.cs" />
     <Compile Include="Commands\LintFileInvoker.cs" />
@@ -351,6 +336,8 @@
     <Compile Include="Compilers\ProjectCompiler.cs" />
     <Compile Include="ExtensionMethods\DispatcherPriorityAwaitable.cs" />
     <Compile Include="ExtensionMethods\DispatcherPriorityAwaiter.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Helpers\DependencyGraph.cs" />
     <Compile Include="MenuItems\JsCodeStyle.cs" />
     <Compile Include="MenuItems\ChainCompilation.cs" />
     <Compile Include="MenuItems\SpriteImage.cs" />

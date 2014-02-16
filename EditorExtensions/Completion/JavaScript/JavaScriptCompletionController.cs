@@ -154,7 +154,7 @@ namespace MadsKristensen.EditorExtensions
                         {
 
                             var s = _currentSession.SelectedCompletionSet.SelectionStatus;
-                            if (s.IsSelected && s.Completion.InsertionText.EndsWith(ch + ";"))
+                            if (s.IsSelected && s.Completion.InsertionText.EndsWith(ch + ";", StringComparison.Ordinal))
                                 s.Completion.InsertionText = s.Completion.InsertionText.TrimEnd(';');
                         }
 

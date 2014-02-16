@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using EnvDTE;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -30,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
         public static void Execute(this IOleCommandTarget t, Enum commandId, IntPtr inVar = default(IntPtr), IntPtr outVar = default(IntPtr))
         {
             var c = commandId.GetType().GUID;
-            t.Exec(ref c, Convert.ToUInt32(commandId, CultureInfo.InvariantCulture), 0, inVar, outVar);
+            ErrorHandler.ThrowOnFailure(t.Exec(ref c, Convert.ToUInt32(commandId, CultureInfo.InvariantCulture), 0, inVar, outVar));
         }
 
         const uint DISP_E_MEMBERNOTFOUND = 0x80020003;

@@ -4,6 +4,7 @@ using System.IO;
 using EnvDTE;
 using MadsKristensen.EditorExtensions.Commands;
 using Microsoft.Html.Editor;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 
@@ -30,7 +31,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
             IVsSolution solution = EditorExtensionsPackage.GetGlobalService<IVsSolution>(typeof(SVsSolution));
             Project project = ProjectHelpers.GetProject(SourceFilePath);
             IVsHierarchy hierarchy;
-            solution.GetProjectOfUniqueName(project.UniqueName, out hierarchy);
+           ErrorHandler.ThrowOnFailure( solution.GetProjectOfUniqueName(project.UniqueName, out hierarchy));
 
             IVsBuildPropertyStorage buildPropertyStorage = hierarchy as IVsBuildPropertyStorage;
 
@@ -42,8 +43,8 @@ namespace MadsKristensen.EditorExtensions.Compilers
             {
                 string outputFile, outputDir;
                 string config = EditorExtensionsPackage.DTE.Solution.SolutionBuild.ActiveConfiguration.Name;
-                buildPropertyStorage.GetPropertyValue("TypeScriptOutFile", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputFile);
-                buildPropertyStorage.GetPropertyValue("TypeScriptOutDir", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputDir);
+                ErrorHandler.ThrowOnFailure(buildPropertyStorage.GetPropertyValue("TypeScriptOutFile", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputFile));
+                ErrorHandler.ThrowOnFailure(buildPropertyStorage.GetPropertyValue("TypeScriptOutDir", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputDir));
 
                 if (!string.IsNullOrEmpty(outputFile))
                 {

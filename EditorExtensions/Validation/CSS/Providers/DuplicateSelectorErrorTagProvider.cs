@@ -44,22 +44,13 @@ namespace MadsKristensen.EditorExtensions
 
             if (dupe != null)
             {
-                int lineNo = FindLineNumber(dupe);
-
                 SelectorErrorTag tag = new SelectorErrorTag(rule.Selectors);
                 context.AddError(tag);
             }
 
             return ItemCheckResult.Continue;
         }
-
-        // TODO: Is there a better way to find the line number?
-        private static int FindLineNumber(RuleResult ost)
-        {
-            string text = ost.Rule.StyleSheet.Text.Substring(0, ost.Start);
-            return text.Count(t => t == '\n') + 1;
-        }
-
+        
         private static string GetSelectorText(RuleSet rule)
         {
             var selectorsText = rule.Selectors.OrderBy(s => s.Text.Trim(',')).Select(s => s.Text.Trim(','));

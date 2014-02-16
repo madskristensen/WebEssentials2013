@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions
             get { return _range.First(); }
         }
 
-        public string Text { get; private set; }
+        public string Text { get { return null; } } // TODO: Add text?
 
         public int AfterEnd
         {

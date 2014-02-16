@@ -85,12 +85,6 @@ namespace MadsKristensen.EditorExtensions.Compilers
         {
             var result = await CompilerRunner.CompileAsync(sourcePath, save);
             OnCompilationReady(new CompilerResultEventArgs(result));
-
-            //if (WESettings.Instance.General.ChainCompilation && save && (Mef.GetChainCompilationContentTypes().Contains(CompilerRunner.SourceContentType)))
-            //    foreach (var source in ProjectHelpers.GetDependents(sourcePath))
-            //    {
-            //        CompilerRunner.CompileToDefaultOutputAsync(source).DontWait("compiling " + source);
-            //    }
         }
     }
 

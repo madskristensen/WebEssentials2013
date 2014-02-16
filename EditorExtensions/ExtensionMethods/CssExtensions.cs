@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Schemas;
 
@@ -29,6 +30,8 @@ namespace MadsKristensen.EditorExtensions
 
             return item.UrlString.Text.Contains(";base64,");
         }
+
+        [SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Flags", Justification = "Match enum name")]
         public static CssErrorFlags ToCssErrorFlags(this WarningLocation location)
         {
             switch (location)
