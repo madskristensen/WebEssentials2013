@@ -626,6 +626,14 @@
         </Strings>
       </Button>
 
+      <Button guid="guidBuildCmdSet" id="cmdBuildSweetJs" priority="0x0106" type="Button">
+        <Parent guid="guidBuildCmdSet" id="MyCompileMenuGroup"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Re-compile All Sweet.js Files</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guidFormattingCmdSet" id="SurroundWith" priority="0x0005" type="Button">
         <Parent guid="guidFormattingCmdSet" id="FormattingGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -732,6 +740,7 @@
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildSass" mod1="Shift Alt" key1="Q" editor="guidVSStd97"/>
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildMinify" mod1="Shift Alt" key1="F" editor="guidVSStd97"/>
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildCoffeeScript" mod1="Shift Alt" key1="Z" editor="guidVSStd97"/>
+    <KeyBinding guid="guidBuildCmdSet" id="cmdBuildSweetJs" mod1="Shift Alt" key1="J" editor="guidVSStd97"/>
     <KeyBinding guid="guidFormattingCmdSet" id="SurroundWith" mod1="Shift Alt" key1="W" editor="guidVSStd97"/>
     <KeyBinding guid="guidFormattingCmdSet" id="ExpandSelection" mod1="Alt" key1="1" editor="guidVSStd97"/>
     <KeyBinding guid="guidFormattingCmdSet" id="ContractSelection" mod1="Alt" key1="2" editor="guidVSStd97"/>
@@ -903,7 +912,8 @@
       <IDSymbol name="cmdBuildSass" value="0x1085" />
       <IDSymbol name="cmdBuildMinify" value="0x1086" />
       <IDSymbol name="cmdBuildCoffeeScript" value="0x1087" />
-      <IDSymbol name="MyCompileMenuGroup" value="0x1088" />
+      <IDSymbol name="cmdBuildSweetJs" value="0x1088" />
+      <IDSymbol name="MyCompileMenuGroup" value="0x1089" />
     </GuidSymbol>
 
     <GuidSymbol name="guidBundleCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e63}">
