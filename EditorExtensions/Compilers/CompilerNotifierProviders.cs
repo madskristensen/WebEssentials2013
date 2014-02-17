@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
+using MadsKristensen.EditorExtensions.Classifications.Sweet.js;
 
 namespace MadsKristensen.EditorExtensions.Compilers
 {
@@ -27,6 +28,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     [ContentType("SASS")]
     [ContentType("CoffeeScript")]
     [ContentType("IcedCoffeeScript")]
+    [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
     class NodeCompilerNotifierProvider : ICompilationNotifierProvider
     {
         public ICompilationNotifier GetCompilationNotifier(ITextDocument doc)

@@ -305,6 +305,7 @@
     <Compile Include="Classifications\SASS\SassClassifier.cs" />
     <Compile Include="Classifications\SASS\SassClassifierProvider.cs" />
     <Compile Include="Classifications\SASS\SassContentTypeDefinition.cs" />
+    <Compile Include="Classifications\Sweet.js\SweetJsContentTypeDefinition.cs" />
     <Compile Include="Classifications\WebVTT\WebVttContentTypeDefinition.cs" />
     <Compile Include="Classifications\WebVTT\WebVttClassificationTypes.cs" />
     <Compile Include="Classifications\WebVTT\WebVttClassifier.cs" />

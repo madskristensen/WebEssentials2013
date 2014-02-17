@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+using MadsKristensen.EditorExtensions.Classifications.Sweet.js;
 
 namespace MadsKristensen.EditorExtensions.Margin
 {
@@ -17,6 +18,7 @@ namespace MadsKristensen.EditorExtensions.Margin
     [ContentType(IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType)]
     [ContentType("TypeScript")]
     [ContentType("Markdown")]
+    [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
     [ContentType(SvgContentTypeDefinition.SvgContentType)]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
     public sealed class MarginFactory : IWpfTextViewMarginProvider
@@ -33,7 +35,8 @@ namespace MadsKristensen.EditorExtensions.Margin
             { "CoffeeScript",      (document) => new TextViewMargin("JavaScript", document) },
             { "IcedCoffeeScript",  (document) => new TextViewMargin("JavaScript", document) },
             { "TypeScript",        (document) => document.FilePath.EndsWith(".d.ts", StringComparison.OrdinalIgnoreCase) 
-                                                ? null : new TextViewMargin("JavaScript", document) }
+                                                ? null : new TextViewMargin("JavaScript", document) },
+            { "SweetJs",  (document) => new TextViewMargin("JavaScript", document) }
         };
 
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)

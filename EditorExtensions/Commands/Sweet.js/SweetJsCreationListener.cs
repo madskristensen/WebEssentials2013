@@ -3,11 +3,12 @@ using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
+using MadsKristensen.EditorExtensions.Classifications.Sweet.js;
 
 namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(IVsTextViewCreationListener))]
-    [ContentType("SweetJs")]
+    [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     public class SweetJsCreationListener : IVsTextViewCreationListener
     {
