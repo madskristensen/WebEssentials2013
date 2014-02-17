@@ -19,7 +19,7 @@ namespace MadsKristensen.EditorExtensions.Compilers.Sweet.js
         public override bool GenerateSourceMap { get { return WESettings.Instance.Sweetjs.GenerateSourceMaps; } }
         public override string ServiceName { get { return "Sweetjs"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
-        public override bool RequireMatchingFileName { get { return true; } }
+        public override bool RequireMatchingFileName { get { return false; } }
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
 
         protected override string GetArguments(string sourceFileName, string targetFileName)
@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions.Compilers.Sweet.js
             if (GenerateSourceMap)
                 args.Append("--sourcemap ");
 
-            args.AppendFormat(CultureInfo.CurrentCulture, "--output \"{0}\" \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
+            args.AppendFormat(CultureInfo.CurrentCulture, "--output \"{0}\" \"{1}\"", targetFileName, sourceFileName);
             return args.ToString();
         }
 
