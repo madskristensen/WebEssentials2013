@@ -10,21 +10,21 @@ using MadsKristensen.EditorExtensions.Compilers.Sweet.js;
 namespace WebEssentialsTests.Tests.NodeExecutors
 {
     [TestClass]
-    public class SweetjsCompilationTests
+    public class SweetJsCompilationTests
     {
         [ClassInitialize]
         public static void Initialize(TestContext c)
         {
             SettingsStore.EnterTestMode(new WESettings
             {
-                Sweetjs = { GenerateSourceMaps = false }
+                SweetJs = { GenerateSourceMaps = false }
             });
         }
 
         private static readonly string BaseDirectory = Path.GetDirectoryName(typeof(NodeModuleImportedTests).Assembly.Location);
 
         [TestMethod]
-        public async Task SweetjsBasicCompilationTest()
+        public async Task SweetJsBasicCompilationTest()
         {
             foreach (var sweetFileName in Directory.EnumerateFiles(Path.Combine(BaseDirectory, "fixtures", "sweet.js", "source"), "*.sjs", SearchOption.AllDirectories))
             {
@@ -35,7 +35,7 @@ namespace WebEssentialsTests.Tests.NodeExecutors
 
                 var expectedLines = File.ReadLines(compiledFile);
 
-                var compiledCode = await new SweetjsCompiler().CompileToStringAsync(sweetFileName);
+                var compiledCode = await new SweetJsCompiler().CompileToStringAsync(sweetFileName);
 
                 compiledCode.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).Should().Equal(expectedLines);
             }

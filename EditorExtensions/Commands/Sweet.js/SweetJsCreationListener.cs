@@ -9,7 +9,7 @@ namespace MadsKristensen.EditorExtensions
     [Export(typeof(IVsTextViewCreationListener))]
     [ContentType("SweetJs")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    public class SweetjsCreationListener : IVsTextViewCreationListener
+    public class SweetJsCreationListener : IVsTextViewCreationListener
     {
         [Import]
         public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }

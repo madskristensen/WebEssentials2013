@@ -322,7 +322,7 @@
     <Compile Include="Commands\IFileSaveListener.cs" />
     <Compile Include="Commands\JavaScript\CommentIndentationCommandTarget.cs" />
     <Compile Include="Commands\JavaScript\CommentCompletionCommandTarget.cs" />
-    <Compile Include="Commands\Sweet.js\SweetjsCreationListener.cs" />
+    <Compile Include="Commands\Sweet.js\SweetJsCreationListener.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptFindReferencesCommandTarget.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptCreationListener.cs" />
     <Compile Include="Compilers\CompilationChainer.cs" />
@@ -336,7 +336,7 @@
     <Compile Include="Compilers\Lint\JsCodeStyleCompiler.cs" />
     <Compile Include="Compilers\Lint\TsLintCompiler.cs" />
     <Compile Include="Compilers\ProjectCompiler.cs" />
-    <Compile Include="Compilers\Sweet.js\SweetjsCompiler.cs" />
+    <Compile Include="Compilers\Sweet.js\SweetJsCompiler.cs" />
     <Compile Include="ExtensionMethods\DispatcherPriorityAwaitable.cs" />
     <Compile Include="ExtensionMethods\DispatcherPriorityAwaiter.cs" />
     <Compile Include="GlobalSuppressions.cs" />
