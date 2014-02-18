@@ -80,6 +80,7 @@ namespace MadsKristensen.EditorExtensions
                 BundleFilesMenu bundleMenu = new BundleFilesMenu(DTE, mcs);
                 JsHintMenu jsHintMenu = new JsHintMenu(DTE, mcs);
                 TsLintMenu tsLintMenu = new TsLintMenu(DTE, mcs);
+                CoffeeLintMenu coffeeLintMenu = new CoffeeLintMenu(DTE, mcs);
                 JsCodeStyle jsCodeStyleMenu = new JsCodeStyle(DTE, mcs);
                 ProjectSettingsMenu projectSettingsMenu = new ProjectSettingsMenu(DTE, mcs);
                 SolutionColorsMenu solutionColorsMenu = new SolutionColorsMenu(mcs);
@@ -104,6 +105,7 @@ namespace MadsKristensen.EditorExtensions
                 projectSettingsMenu.SetupCommands();
                 jsHintMenu.SetupCommands();
                 tsLintMenu.SetupCommands();
+                coffeeLintMenu.SetupCommands();
                 jsCodeStyleMenu.SetupCommands();
                 bundleMenu.SetupCommands();
                 minifyMenu.SetupCommands();
@@ -155,15 +157,19 @@ namespace MadsKristensen.EditorExtensions
 
                 if (WESettings.Instance.JavaScript.LintOnBuild)
                 {
-                    LintFileInvoker.RunOnAllFilesInProjectAsync(".js", f => new JavaScriptLintReporter(new JsHintCompiler(), f))
+                    LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.js" }, f => new JavaScriptLintReporter(new JsHintCompiler(), f))
                         .DontWait("running solution-wide JSHint");
-                    LintFileInvoker.RunOnAllFilesInProjectAsync(".js", f => new JavaScriptLintReporter(new JsCodeStyleCompiler(), f))
+                    LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.js" }, f => new JavaScriptLintReporter(new JsCodeStyleCompiler(), f))
                         .DontWait("running solution-wide JSCS");
                 }
 
                 if (WESettings.Instance.TypeScript.LintOnBuild)
-                    LintFileInvoker.RunOnAllFilesInProjectAsync(".ts", f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f))
+                    LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.ts" }, f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f))
                         .DontWait("running solution-wide TSLint");
+
+                if (WESettings.Instance.CoffeeScript.LintOnBuild)
+                    LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.coffee", "*.iced" }, f => new LintReporter(new CoffeeLintCompiler(), WESettings.Instance.CoffeeScript, f))
+                        .DontWait("running solution-wide CoffeeLint");
             }
             else if (Action == vsBuildAction.vsBuildActionClean)
             {

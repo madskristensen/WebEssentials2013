@@ -26,13 +26,12 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
             TestCaseDirectory = Path.Combine(Path.GetTempPath(), "Web Essentials Test Files", c.FullyQualifiedTestClassName + "-" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
             Directory.CreateDirectory(TestCaseDirectory);
         }
+
         [ClassCleanup]
         public static void DeleteTestCase()
         {
             Directory.Delete(TestCaseDirectory, true);
         }
-
-
 
         static async Task WaitFor(Func<bool> test, int maxSeconds)
         {
@@ -58,6 +57,7 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
             await WaitFor(() => File.Exists(Path.ChangeExtension(fileName, ".css")), 10);
             File.Exists(Path.ChangeExtension(fileName, ".min.css")).Should().BeFalse("Should not minify by default");
         }
+
         [HostType("VS IDE")]
         [TestMethod]
         public async Task DontCompileOnOpen()
@@ -70,6 +70,7 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
             await Task.Delay(TimeSpan.FromSeconds(5));
             File.Exists(Path.ChangeExtension(fileName, ".js")).Should().BeFalse("Should not compile without saving");
         }
+
         [HostType("VS IDE")]
         [TestMethod]
         public async Task SkippableFiles()
@@ -85,6 +86,7 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
                 File.Exists(Path.ChangeExtension(fileName, ".css")).Should().BeFalse("Should not compile " + baseName + ".less");
             }
         }
+
         [HostType("VS IDE")]
         [TestMethod]
         public async Task MinifyOnSave()

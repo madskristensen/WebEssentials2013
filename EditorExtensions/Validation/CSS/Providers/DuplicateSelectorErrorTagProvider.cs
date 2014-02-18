@@ -50,7 +50,7 @@ namespace MadsKristensen.EditorExtensions
 
             return ItemCheckResult.Continue;
         }
-        
+
         private static string GetSelectorText(RuleSet rule)
         {
             var selectorsText = rule.Selectors.OrderBy(s => s.Text.Trim(',')).Select(s => s.Text.Trim(','));

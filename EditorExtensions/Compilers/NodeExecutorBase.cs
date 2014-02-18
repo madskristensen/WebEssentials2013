@@ -99,7 +99,7 @@ namespace MadsKristensen.EditorExtensions
         private void ValidateResult(Process process, string outputFile, string errorText, CompilerResult result)
         {
             try
-            {                             
+            {
                 if (process.ExitCode == 0 &&
                     /* Temporary hack see; //github.com/mdevils/node-jscs/issues/212 */
                     (!errorText.StartsWith("<?xml version=", StringComparison.CurrentCulture) ||

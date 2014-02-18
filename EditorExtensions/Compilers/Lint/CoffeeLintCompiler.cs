@@ -7,14 +7,13 @@ using System.Xml.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
-    public class JsCodeStyleCompiler : JsHintCompiler
+    public class CoffeeLintCompiler : JsHintCompiler
     {
-        private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\jscs\bin\jscs");
-        //private static readonly string _jscsReporter = Path.Combine(WebEssentialsResourceDirectory, @"Scripts\jscs-node-reporter.js");
-        public new static string ConfigFileName = ".jscs.json";
+        private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\coffeelint\bin\coffeelint");
+        public new static string ConfigFileName = "coffeelint.json";
 
-        public override IEnumerable<string> SourceExtensions { get { return new[] { ".js" }; } }
-        public override string ServiceName { get { return "JSCS"; } }
+        public override IEnumerable<string> SourceExtensions { get { return new[] { ".coffee", ".iced" }; } }
+        public override string ServiceName { get { return "CoffeeLint"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
         protected override Func<string, IEnumerable<CompilerError>> ParseErrors
         {
@@ -25,8 +24,7 @@ namespace MadsKristensen.EditorExtensions
         {
             GetOrCreateGlobalSettings(ConfigFileName); // Ensure that default settings exist
 
-            return String.Format(CultureInfo.CurrentCulture, "--reporter \"{0}\" \"{1}\""
-                               , "checkstyle"//_jscsReporter https://github.com/mdevils/node-jscs/issues/211
+            return String.Format(CultureInfo.CurrentCulture, "--checkstyle \"{0}\""
                                , sourceFileName);
         }
 
@@ -40,7 +38,7 @@ namespace MadsKristensen.EditorExtensions
                     return file.Descendants("error").Select(e => new CompilerError
                     {
                         FileName = fileName,
-                        Column = int.Parse(e.Attribute("column").Value, CultureInfo.InvariantCulture),
+                        // Column number is currently unavailable in their compiler
                         Line = int.Parse(e.Attribute("line").Value, CultureInfo.InvariantCulture),
                         Message = ServiceName + ": " + e.Attribute("message").Value
                     });

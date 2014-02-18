@@ -326,6 +326,7 @@
     <Compile Include="Commands\TypeScript\TypeScriptCreationListener.cs" />
     <Compile Include="Compilers\CompilationChainer.cs" />
     <Compile Include="Compilers\CssCompilerBase.cs" />
+    <Compile Include="Compilers\Lint\CoffeeLintCompiler.cs" />
     <Compile Include="Compilers\Lint\LintConfigEncodingFix.cs" />
     <Compile Include="Commands\LintFileInvoker.cs" />
     <Compile Include="Commands\LintReporter.cs" />
@@ -346,6 +347,7 @@
     <Compile Include="Helpers\Mef.cs" />
     <Compile Include="Margin\TextViewMargin.cs" />
     <Compile Include="MenuItems\CompressImage.cs" />
+    <Compile Include="MenuItems\CoffeeLint.cs" />
     <Compile Include="MenuItems\TsLint.cs" />
     <Compile Include="Optimization\Compression\CompressionResult.cs" />
     <Compile Include="Optimization\Compression\ImageCompressor.cs" />
@@ -853,6 +855,9 @@
     <Content Include="Resources\settings-defaults\tslint.json">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\settings-defaults\coffeelint.json">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\settings-defaults\.jscs.json">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -970,7 +975,7 @@
       <Content Include="Resources\nodejs\tools\**" Exclude="&#xD;&#xA; **\node-sass\**; **\less\**; &#xD;&#xA;               **\mocha\**; **\jade\**; &#xD;&#xA;               **\*.md; **\*.markdown; **\*.html; **\*.txt; **\LICENSE; **\README; **\CHANGELOG; **\CNAME; **\*.old; **\*.patch; **\*.ico; &#xD;&#xA;               **\*.json; **\.*; **\Makefile.*; **\Rakefile; **\*.yml; &#xD;&#xA;               **\test.*; **\generate-*; &#xD;&#xA;               **\*.min.js; **\*-min.js; &#xD;&#xA;               **\media\**; **\images\**; **\man\**; &#xD;&#xA;               **\.bin\**; **\benchmark\**; **\build\**; **\scripts\**; &#xD;&#xA;               **\vendor\**; &#xD;&#xA;               **\test\**; **\tst\**; **\tests\**; **\testing\**; &#xD;&#xA;               **\examples\**; **\example\**; **\tools\**\tools\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\tools\node_modules\node-sass\sass.js; Resources\nodejs\tools\node_modules\node-sass\bin\node-sass; Resources\nodejs\tools\node_modules\node-sass\lib\**; Resources\nodejs\tools\node_modules\node-sass\bin\win32-ia32-*\**; Resources\nodejs\tools\node_modules\tslint\**; Resources\nodejs\tools\node_modules\jscs\**">
+      <Content Include="Resources\nodejs\tools\node_modules\node-sass\sass.js; Resources\nodejs\tools\node_modules\node-sass\bin\node-sass; Resources\nodejs\tools\node_modules\node-sass\lib\**; Resources\nodejs\tools\node_modules\node-sass\bin\win32-ia32-*\**; Resources\nodejs\tools\node_modules\tslint\**; Resources\nodejs\tools\node_modules\jscs\**; Resources\nodejs\tools\node_modules\coffeelint\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <Content Include="Resources\nodejs\tools\node_modules\less\lib\**; Resources\nodejs\tools\node_modules\less\bin\**">

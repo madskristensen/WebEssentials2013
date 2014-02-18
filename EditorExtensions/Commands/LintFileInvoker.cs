@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -60,7 +61,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        public static Task RunOnAllFilesInProjectAsync(string extension, Func<string, LintReporter> runnerFactory)
+        public static Task RunOnAllFilesInProjectAsync(IEnumerable<string> extensionsPattern, Func<string, LintReporter> runnerFactory)
         {
             string dir = ProjectHelpers.GetRootFolder();
 
@@ -68,10 +69,9 @@ namespace MadsKristensen.EditorExtensions
                 return Task.FromResult(true);
 
             return Task.WhenAll(
-                Directory.EnumerateFiles(dir, "*" + extension, SearchOption.AllDirectories)
-                            .Where(f => ProjectHelpers.GetProjectItem(f) != null)
-                            .Select(f => runnerFactory(f).RunLinterAsync().HandleErrors("linting " + f))
-            );
+               extensionsPattern.SelectMany(x => Directory.EnumerateFiles(dir, x, SearchOption.AllDirectories))
+                                .Where(f => ProjectHelpers.GetProjectItem(f) != null)
+                                .Select(f => runnerFactory(f).RunLinterAsync().HandleErrors("linting " + f)));
         }
 
         public void Dispose()

@@ -108,6 +108,7 @@ namespace MadsKristensen.EditorExtensions
         [Description("Run linter when saving each source file.")]
         [DefaultValue(true)]
         public bool LintOnSave { get; set; }
+
         [Category("Linter")]
         [DisplayName("Run on build")]
         [Description("Lint all files when building the solution.")]
@@ -352,16 +353,35 @@ namespace MadsKristensen.EditorExtensions
         }
     }
 
-
     public sealed class LessSettings : ChainableCompilationSettings<LessSettings> { }
+
     public sealed class SassSettings : CompilationSettings<SassSettings> { }
-    public sealed class CoffeeScriptSettings : CompilationSettings<CoffeeScriptSettings>
+
+    public sealed class CoffeeScriptSettings : CompilationSettings<CoffeeScriptSettings>, ILinterSettings
     {
         [DisplayName("Wrap generated JavaScript files")]
         [Description("Wrap the generated JavaScript source in an anonymous function.  This prevents variables from leaking into the global scope.")]
         [Category("CoffeeScript")]
         [DefaultValue(true)]
         public bool WrapClosure { get; set; }
+
+        [Category("Linter")]
+        [DisplayName("Run on save")]
+        [Description("Run linter when saving each source file.")]
+        [DefaultValue(true)]
+        public bool LintOnSave { get; set; }
+
+        [Category("Linter")]
+        [DisplayName("Run on build")]
+        [Description("Lint all files when building the solution.")]
+        [DefaultValue(false)]
+        public bool LintOnBuild { get; set; }
+
+        [Category("Linter")]
+        [DisplayName("Results location")]
+        [Description("Where to show messages from the linter.")]
+        [DefaultValue(TaskErrorCategory.Message)]
+        public TaskErrorCategory LintResultLocation { get; set; }
     }
 
     public sealed class MarkdownSettings : SettingsBase<MarkdownSettings>, ICompilerInvocationSettings, IMarginSettings, IMarkdownOptions
