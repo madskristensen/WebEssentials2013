@@ -76,7 +76,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 TransformMenu transform = new TransformMenu(DTE, mcs);
                 DiffMenu diffMenu = new DiffMenu(mcs);
-                MinifyFileMenu minifyMenu = new MinifyFileMenu(DTE, mcs);
+                MinifyFileMenu minifyMenu = new MinifyFileMenu(mcs);
                 BundleFilesMenu bundleMenu = new BundleFilesMenu(DTE, mcs);
                 JsHintMenu jsHintMenu = new JsHintMenu(DTE, mcs);
                 TsLintMenu tsLintMenu = new TsLintMenu(DTE, mcs);
@@ -89,7 +89,7 @@ namespace MadsKristensen.EditorExtensions
                 UnusedCssMenu unusedCssMenu = new UnusedCssMenu(mcs);
                 PixelPushingMenu pixelPushingMenu = new PixelPushingMenu(mcs);
                 ReferenceJsMenu referenceJsMenu = new ReferenceJsMenu(mcs);
-                CompressImageMenu compressImageMenu = new CompressImageMenu(DTE, mcs);
+                CompressImageMenu compressImageMenu = new CompressImageMenu(mcs);
                 SpriteImageMenu spriteImageMenu = new SpriteImageMenu(DTE, mcs);
                 //ChainCompilationMenu chainCompilationMenu = new ChainCompilationMenu(DTE, mcs);
 

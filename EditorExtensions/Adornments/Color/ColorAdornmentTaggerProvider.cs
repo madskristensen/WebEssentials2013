@@ -36,6 +36,9 @@ namespace MadsKristensen.EditorExtensions
             if (buffer == null)
                 throw new ArgumentNullException("buffer");
 
+            if (textView.Roles.Contains("DIFF"))
+                return null;
+
             return ColorAdornmentTagger.GetTagger(
                 textView, buffer,
                 new Lazy<ITagAggregator<ColorTag>>(

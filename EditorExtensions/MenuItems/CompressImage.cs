@@ -8,13 +8,11 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class CompressImageMenu
     {
-        private DTE2 _dte;
         private OleMenuCommandService _mcs;
         private IEnumerable<string> _selectedPaths;
 
-        public CompressImageMenu(DTE2 dte, OleMenuCommandService mcs)
+        public CompressImageMenu(OleMenuCommandService mcs)
         {
-            _dte = dte;
             _mcs = mcs;
         }
 
