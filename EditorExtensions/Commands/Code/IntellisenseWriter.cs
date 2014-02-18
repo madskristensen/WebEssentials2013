@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions
             else
                 WriteJavaScript(objects, sb);
 
-            File.WriteAllText(file, sb.ToString());
+            File.WriteAllText(file, sb.ToString(), Encoding.UTF8);
         }
 
         private static string CamelCasePropertyName(string name)
