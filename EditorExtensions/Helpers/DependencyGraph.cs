@@ -371,7 +371,8 @@ namespace MadsKristensen.EditorExtensions.Helpers
     public class LessDependencyGraph : CssDependencyGraph<LessParser>
     {
         [ImportingConstructor]
-        public LessDependencyGraph(IFileExtensionRegistryService fileExtensionRegistry) : base(".less", fileExtensionRegistry)
+        public LessDependencyGraph(IFileExtensionRegistryService fileExtensionRegistry)
+            : base(".less", fileExtensionRegistry)
         {
         }
     }

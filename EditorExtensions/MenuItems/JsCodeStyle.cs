@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;

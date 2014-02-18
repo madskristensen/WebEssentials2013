@@ -45,7 +45,6 @@ namespace WebEssentialsTests
             return ProjectHelpers.GetCurentTextView();
         }
 
-
         public static Task TypeString(string s)
         {
             // Wait for ApplicationIdle to make sure that all targets have been registered

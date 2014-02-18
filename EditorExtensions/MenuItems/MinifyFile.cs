@@ -4,7 +4,6 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using EnvDTE80;
 using MadsKristensen.EditorExtensions.Optimization.Minification;
 using Microsoft.Html.Editor;
 using Microsoft.VisualStudio.Shell;
