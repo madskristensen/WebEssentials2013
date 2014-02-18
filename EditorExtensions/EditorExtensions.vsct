@@ -408,6 +408,14 @@
         </Strings>
       </Button>
 
+      <Button guid="guidDiffCmdSet" id="cmdEditGlobalCoffeeLint" priority="0x0103" type="Button">
+        <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
+        <Icon guid="guidMenuImages" id="bmpScript"/>
+        <Strings>
+          <ButtonText>Edit global CoffeeLint settings (coffeelint.json)...</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guidDiffCmdSet" id="cmdEditGlobalJsCodeStyle" priority="0x0104" type="Button">
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <Icon guid="guidMenuImages" id="bmpScript"/>
@@ -464,6 +472,14 @@
         </Strings>
       </Button>
 
+      <Button guid="guidDiffCmdSet" id="cmdCoffeeLint" priority="0x0106" type="Button">
+        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Run CoffeeLint</ButtonText>
+        </Strings>
+      </Button>
+      
       <Button guid="guidDiffCmdSet" id="cmdJsCodeStyle" priority="0x0106" type="Button">
         <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -848,6 +864,7 @@
       <IDSymbol name="cmdDiff" value="0x1041" />
       <IDSymbol name="cmdJsHint" value="0x1042" />
       <IDSymbol name="cmdTsLint" value="0x1092" />
+      <IDSymbol name="cmdCoffeeLint" value="0x1096" />
       <IDSymbol name="cmdJsCodeStyle" value="0x1095" />
       <IDSymbol name="cmdProjectSettings" value="0x1043" />
       <IDSymbol name="cmdSolutionSettings" value="0x1044" />
@@ -858,6 +875,7 @@
       <IDSymbol name="MarkdownGroup" value="0x1049" />
       <IDSymbol name="cmdEditGlobalJsHint" value="0x1038" />
       <IDSymbol name="cmdEditGlobalTsLint" value="0x1098" />
+      <IDSymbol name="cmdEditGlobalCoffeeLint" value="0x1100" />
       <IDSymbol name="cmdEditGlobalJsCodeStyle" value="0x1099" />
       <IDSymbol name="cmdMarkdownCompile" value="0x1039" />
     </GuidSymbol>

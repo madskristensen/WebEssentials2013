@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions
     {
         Task<CompilerResult> CheckAsync(string sourcePath);
         string ServiceName { get; }
-        string SourceExtension { get; }
+        IEnumerable<string> SourceExtensions { get; }
     }
 
     public class JsHintCompiler : NodeExecutorBase, ILintCompiler
@@ -18,9 +18,10 @@ namespace MadsKristensen.EditorExtensions
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\jshint\bin\jshint");
         // JsHint Reported is located in Resources\Scripts\ directory. Read more at http://www.jshint.com/docs/reporters/
         private static readonly string _jsHintReporter = Path.Combine(WebEssentialsResourceDirectory, @"Scripts\jshint-node-reporter.js");
+        public static string ConfigFileName = ".jshintrc";
 
         public override string TargetExtension { get { return null; } }
-        public virtual string SourceExtension { get { return ".js"; } }
+        public virtual IEnumerable<string> SourceExtensions { get { return new[] { ".js" }; } }
         public override string ServiceName { get { return "JsHint"; } }
         public override bool GenerateSourceMap { get { return false; } }
         protected override string CompilerPath { get { return _compilerPath; } }
@@ -50,7 +51,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
-            GetOrCreateGlobalSettings(".jshintrc"); // Ensure that default settings exist
+            GetOrCreateGlobalSettings(ConfigFileName); // Ensure that default settings exist
 
             return String.Format(CultureInfo.CurrentCulture, "--reporter \"{0}\" \"{1}\""
                                , _jsHintReporter
