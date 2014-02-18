@@ -8,11 +8,11 @@ namespace MadsKristensen.EditorExtensions.Classifications.Sweet.js
         public const string SweetJsContentType = "sweetjs";
 
         /// <summary>
-        /// Exports the WebVTT HTML content type
+        /// Exports the Sweet.js content type
         /// </summary>
         [Export(typeof(ContentTypeDefinition))]
         [Name(SweetJsContentType)]
-        [BaseDefinition("plaintext")]
+        [BaseDefinition("JavaScript")]
         public ContentTypeDefinition ISweetJsContentType { get; set; }
 
         [Export(typeof(FileExtensionToContentTypeDefinition))]
