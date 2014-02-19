@@ -25,9 +25,24 @@ namespace MadsKristensen.EditorExtensions
         {
             GetOrCreateGlobalSettings(ConfigFileName); // Ensure that default settings exist
 
-            return String.Format(CultureInfo.CurrentCulture, "--reporter \"{0}\" \"{1}\""
+            return String.Format(CultureInfo.CurrentCulture, "--reporter \"{0}\" --config \"{1}\" \"{2}\""
                                , "checkstyle"//_jscsReporter https://github.com/mdevils/node-jscs/issues/211
+                               , FindLocalSettings(sourceFileName, ConfigFileName) ?? GetOrCreateGlobalSettings(".jscs.json")
                                , sourceFileName);
+        }
+
+        protected static string FindLocalSettings(string sourcePath, string settingsName)
+        {
+            string dir = Path.GetDirectoryName(sourcePath);
+
+            while (!File.Exists(Path.Combine(dir, settingsName)))
+            {
+                dir = Path.GetDirectoryName(dir);
+                if (String.IsNullOrEmpty(dir))
+                    return null;
+            }
+
+            return Path.Combine(dir, settingsName);
         }
 
         private IEnumerable<CompilerError> ParseErrorsWithXml(string error)
