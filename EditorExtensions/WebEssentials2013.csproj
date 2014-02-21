@@ -365,6 +365,7 @@
     </Compile>
     <Compile Include="Settings\SettingsStore.cs" />
     <Compile Include="Settings\WESettings.cs" />
+    <Compile Include="SmartTags\HTML\RemoteDownloaderSmartTag.cs" />
     <Compile Include="SmartTags\HTML\OptimizeImageSmartTag.cs" />
     <Compile Include="Commands\Shared\PasteImageCommandTarget.cs" />
     <Compile Include="Commands\Shared\WebEditorsCreationListener.cs" />

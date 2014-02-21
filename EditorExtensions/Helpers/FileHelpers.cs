@@ -85,13 +85,13 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public static string ShowDialog(string extension)
+        public static string ShowDialog(string extension, string fileName = "file.")
         {
             var initialPath = Path.GetDirectoryName(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
 
             using (var dialog = new SaveFileDialog())
             {
-                dialog.FileName = "file." + extension;
+                dialog.FileName = fileName + extension;
                 dialog.DefaultExt = extension;
                 dialog.Filter = extension.ToUpperInvariant() + " files | *." + extension;
                 dialog.InitialDirectory = initialPath;
