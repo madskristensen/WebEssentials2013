@@ -258,7 +258,7 @@ namespace MadsKristensen.EditorExtensions
             sb.Replace(Encoding.Unicode.WebName, Encoding.UTF8.WebName);
 
             ProjectHelpers.CheckOutFileFromSourceControl(filePath);
-            File.WriteAllText(filePath, sb.ToString());
+            File.WriteAllText(filePath, sb.ToString(), Encoding.UTF8);
             ProjectHelpers.AddFileToActiveProject(filePath, "None");
 
             _dte.ItemOperations.OpenFile(filePath);

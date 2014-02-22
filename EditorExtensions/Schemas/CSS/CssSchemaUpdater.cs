@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.CSS.Editor.Schemas;
@@ -81,7 +82,7 @@ namespace MadsKristensen.EditorExtensions
                     string fileName = node.Attributes["fileName"].InnerText;
                     string path = Path.Combine(folder, fileName);
 
-                    File.WriteAllText(path, node.OuterXml);
+                    File.WriteAllText(path, node.OuterXml, Encoding.UTF8);
                     WriteLog("Updating module: " + fileName);
                 }
 

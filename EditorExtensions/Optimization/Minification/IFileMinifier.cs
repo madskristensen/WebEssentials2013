@@ -36,7 +36,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             if (result != null && (!File.Exists(targetPath) || result != File.ReadAllText(targetPath)))
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(targetPath);
-                File.WriteAllText(targetPath, result);
+                File.WriteAllText(targetPath, result, Encoding.UTF8);
                 ProjectHelpers.AddFileToProject(sourcePath, targetPath);
 
                 return true;
@@ -165,7 +165,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
                 return false;
 
             ProjectHelpers.CheckOutFileFromSourceControl(minFile);
-            File.WriteAllText(minFile, content);
+            File.WriteAllText(minFile, content, Encoding.UTF8);
             ProjectHelpers.AddFileToProject(file, minFile);
 
             return true;
