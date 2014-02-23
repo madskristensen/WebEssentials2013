@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.IO;
-using System.Net;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.SmartTags;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -10,6 +5,11 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.IO;
+using System.Net;
 
 namespace MadsKristensen.EditorExtensions.SmartTags.HTML
 {
@@ -21,36 +21,30 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
     {
         public IHtmlSmartTag TryCreateSmartTag(ITextView textView, ITextBuffer textBuffer, ElementNode element, AttributeNode attribute, int caretPosition, HtmlPositionType positionType)
         {
-            AttributeNode attr = GetAttribute(element);
-            string url = NormalizeUrl(attr.Value);
+            AttributeNode attr = element.GetAttribute("src") ?? element.GetAttribute("href");
 
-            if (attr != null && !string.IsNullOrEmpty(url))
-            {
-                return new RemoteDownloaderSmartTag(textView, textBuffer, element, attr);
-            }
+            if (attr == null)
+                return null;
 
-            return null;
+            Uri url = NormalizeUrl(attr);
+
+            if (url == null || (!attr.Value.StartsWith("//") && !attr.Value.Contains("://")))
+                return null;
+
+            return new RemoteDownloaderSmartTag(textView, textBuffer, element, attr);
         }
 
-        private static AttributeNode GetAttribute(ElementNode element)
+        public static Uri NormalizeUrl(AttributeNode attribute)
         {
-            if (element.Name.Equals("link"))
-                return element.GetAttribute("href");
+            string value = attribute.Value;
 
-            return element.GetAttribute("src");
-
-        }
-
-        public static string NormalizeUrl(string value)
-        {
             if (value.StartsWith("//", StringComparison.Ordinal))
                 value = "http:" + value;
 
             Uri url;
-            if (Uri.TryCreate(value, UriKind.Absolute, out url))
-                return url.ToString();
+            Uri.TryCreate(value, UriKind.Absolute, out url);
 
-            return null;
+            return url;
         }
     }
 
@@ -82,50 +76,39 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
             public override void Invoke()
             {
                 ITextBuffer textBuffer = this.HtmlSmartTag.TextBuffer;
-                string url = RemoteDownloaderSmartTagProvider.NormalizeUrl(_attribute.Value);
-                string cleanUrl = CleanUrl(url);
+                Uri url = RemoteDownloaderSmartTagProvider.NormalizeUrl(_attribute);
+                string cleanUrl = url.GetLeftPart(UriPartial.Path);
                 string extension = Path.GetExtension(cleanUrl).TrimStart('.');
                 string name = Path.GetFileNameWithoutExtension(cleanUrl);
-                string fileName = FileHelpers.ShowDialog(extension, name);
+                string fileName = FileHelpers.ShowDialog(extension, name + ".");
 
                 if (!string.IsNullOrEmpty(fileName))
                 {
-                    DownloadFile(fileName);
+                    DownloadFile(url, fileName);
                     ReplaceUrlValue(fileName, textBuffer, _attribute);
                 }
             }
 
-            private static string CleanUrl(string url)
-            {
-                int index = url.IndexOf('?');
-                if (index > -1)
-                {
-                    return url.Substring(0, index);
-                }
-
-                return url;
-            }
-
-            private void DownloadFile(string fileName)
+            private async void DownloadFile(Uri url, string fileName)
             {
                 try
                 {
                     using (WebClient client = new WebClient())
                     {
-                        client.DownloadFile(_attribute.Value, fileName);
+                        await client.DownloadFileTaskAsync(url, fileName);
                     }
 
                     ProjectHelpers.AddFileToActiveProject(fileName);
                 }
                 catch (Exception ex)
                 {
-                    System.Windows.Forms.MessageBox.Show(ex.Message);
+                    Logger.ShowMessage(ex.Message);
                 }
             }
 
             private static void ReplaceUrlValue(string fileName, ITextBuffer buffer, AttributeNode src)
             {
-                string relative = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, fileName);
+                string relative = FileHelpers.RelativePath(buffer.GetFileName(), fileName);
                 Span span = new Span(src.ValueRangeUnquoted.Start, src.ValueRangeUnquoted.Length);
                 buffer.Replace(span, relative.ToLowerInvariant());
             }
