@@ -125,6 +125,7 @@ namespace MadsKristensen.EditorExtensions
         BuildSass = 0x1085,
         BuildMinify = 0x1086,
         BuildCoffeeScript = 0x1087,
+        BuildSweetJs = 0x1088,
 
         // Images
         CompressImage = 0x1091,

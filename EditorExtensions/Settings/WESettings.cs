@@ -28,6 +28,7 @@ namespace MadsKristensen.EditorExtensions
         public SassSettings Sass { get; private set; }
         public CoffeeScriptSettings CoffeeScript { get; private set; }
         public MarkdownSettings Markdown { get; private set; }
+        public SweetJsSettings SweetJs { get; private set; }
     }
 
     public sealed class GeneralSettings : SettingsBase<GeneralSettings>, IMarginSettings
@@ -385,6 +386,7 @@ namespace MadsKristensen.EditorExtensions
         [DefaultValue(TaskErrorCategory.Message)]
         public TaskErrorCategory LintResultLocation { get; set; }
     }
+    public sealed class SweetJsSettings : CompilationSettings<SweetJsSettings> { }
 
     public sealed class MarkdownSettings : SettingsBase<MarkdownSettings>, ICompilerInvocationSettings, IMarginSettings, IMarkdownOptions
     {

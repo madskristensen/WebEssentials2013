@@ -9,6 +9,7 @@ using MadsKristensen.EditorExtensions.Commands;
 using MarkdownSharp;
 using Microsoft.VisualStudio.Utilities;
 using Task = System.Threading.Tasks.Task;
+using MadsKristensen.EditorExtensions.Classifications.Sweet.js;
 
 namespace MadsKristensen.EditorExtensions.Compilers
 {
@@ -134,6 +135,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     [ContentType("SASS")]
     [ContentType("CoffeeScript")]
     [ContentType("IcedCoffeeScript")]
+    [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
     public class NodeCompilerRunnerProvider : ICompilerRunnerProvider
     {
         public CompilerRunnerBase GetCompiler(IContentType contentType) { return new NodeCompilerRunner(contentType); }

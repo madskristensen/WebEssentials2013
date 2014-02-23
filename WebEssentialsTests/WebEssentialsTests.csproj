@@ -117,6 +117,7 @@
     <Compile Include="IntegrationTests\Dependencies\ChainCompilationTests.cs" />
     <Compile Include="IntegrationTests\Dependencies\DependencyGraphTests.cs" />
     <Compile Include="IntegrationTests\SettingsTests.cs" />
+    <Compile Include="Tests\NodeExecutors\SweetJsCompilationTests.cs" />
     <Compile Include="VSHost.cs" />
     <None Include="ExtractZipTask.cs" />
     <Compile Include="IntegrationTests\Compilation\CompileOnSaveTests.cs" />
@@ -158,6 +159,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="fixtures\coffee\compiled\test.js" />
+    <Content Include="fixtures\coffee\source\test.js">
+      <DependentUpon>test.coffee</DependentUpon>
+    </Content>
     <Content Include="fixtures\iced\compiled\test.js" />
     <Content Include="fixtures\jshint\config\clean.js" />
     <Content Include="fixtures\jshint\skip.js" />
@@ -195,6 +199,7 @@
     <Content Include="fixtures\module-resolution\node_modules\node_modules\bar.js" />
     <Content Include="fixtures\module-resolution\packages\main-index\package-main-module\index.js" />
     <Content Include="fixtures\module-resolution\packages\main\package-main-module.js" />
+    <Content Include="fixtures\sweet.js\compiled\test.js" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -215,6 +220,7 @@
     <None Include="fixtures\coffee\source\test.coffee" />
     <Content Include="fixtures\sass\extend.css" />
     <None Include="fixtures\sass\extend.scss" />
+    <None Include="fixtures\sweet.js\source\test.sjs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
