@@ -31,8 +31,6 @@ namespace MadsKristensen.EditorExtensions
         class MinifyFileCommand
         {
             [Import]
-            public MinificationSaveListener MinificationService { get; set; }
-            [Import]
             public IFileExtensionRegistryService FileExtensionRegistry { get; set; }
             public OleMenuCommand Command { get; private set; }
             public IContentType ContentType { get; private set; }
@@ -63,7 +61,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 foreach (var file in selectedFiles)
                 {
-                    MinificationService.CreateMinFile(ContentType, file);
+                    MinificationSaveListener.CreateMinFile(ContentType, file);
                 }
 
                 CheckEnableSync();

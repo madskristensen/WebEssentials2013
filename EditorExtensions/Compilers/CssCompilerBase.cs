@@ -69,12 +69,12 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         // Overridden to work around SASS bug
         // TODO: Remove when https://github.com/hcatlin/libsass/issues/242 is fixed
-        protected virtual string ReadMapFile(string sourceMapFilename) { return File.ReadAllText(sourceMapFilename); }
+        protected virtual string ReadMapFile(string sourceMapFileName) { return File.ReadAllText(sourceMapFileName); }
 
-        private string GetUpdatedSourceMapFileContent(string cssFileName, string sourceMapFilename)
+        private string GetUpdatedSourceMapFileContent(string cssFileName, string sourceMapFileName)
         {
             // Read JSON map file and deserialize.
-            dynamic jsonSourceMap = Json.Decode(ReadMapFile(sourceMapFilename));
+            dynamic jsonSourceMap = Json.Decode(ReadMapFile(sourceMapFileName));
 
             if (jsonSourceMap == null)
                 return null;

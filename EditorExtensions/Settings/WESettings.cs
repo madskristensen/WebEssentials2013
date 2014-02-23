@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using ConfOxide;
 using MarkdownSharp;
 using Microsoft.VisualStudio.Shell;
@@ -9,6 +10,7 @@ namespace MadsKristensen.EditorExtensions
 {
     public sealed class WESettings : SettingsBase<WESettings>
     {
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly WESettings Instance = new WESettings();
 
         public GeneralSettings General { get; private set; }
@@ -245,7 +247,7 @@ namespace MadsKristensen.EditorExtensions
         [Description("Warn on selectors that contain the universal selector (*).")]
         [DefaultValue(true)]
         public bool ValidateStarSelector { get; set; }
-        [DisplayName("Disallow over-qualified ID selector")]
+        [DisplayName("Disallow overqualified ID selector")]
         [Description("Warn on selectors that unnecessarily qualify an ID selector with classes or tag names.")]
         [DefaultValue(true)]
         public bool ValidateOverQualifiedSelector { get; set; }

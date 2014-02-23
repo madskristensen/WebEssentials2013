@@ -56,7 +56,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags
 
                 ITextRange range = element.InnerRange;
                 string text = textBuffer.CurrentSnapshot.GetText(range.Start, range.Length);
-                IFileMinifier minifier = element.IsScriptBlock() ? (IFileMinifier)new JavaScriptFileMinifer() : new CssFileMinifer();
+                IFileMinifier minifier = element.IsScriptBlock() ? (IFileMinifier)new JavaScriptFileMinifier() : new CssFileMinifier();
                 string result = minifier.MinifyString(text);
 
                 using (EditorExtensionsPackage.UndoContext((this.DisplayText)))

@@ -33,10 +33,11 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
             return args.ToString();
         }
+
         //https://github.com/hcatlin/libsass/issues/242
-        protected override string ReadMapFile(string sourceMapFilename)
+        protected override string ReadMapFile(string sourceMapFileName)
         {
-            return File.ReadAllText(sourceMapFilename).Replace("\\", "\\\\");
+            return File.ReadAllText(sourceMapFileName).Replace("\\", "\\\\");
         }
     }
 }

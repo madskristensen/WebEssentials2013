@@ -28,7 +28,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         }
 
         ///<summary>Minifies an existing file if it should be minified.</summary>
-        public void ReMinify(IContentType contentType, string path, bool forceSave, IMinifierSettings settings = null)
+        public static void ReMinify(IContentType contentType, string path, bool forceSave, IMinifierSettings settings = null)
         {
             // Don't minify ".min" files
             if (!ShouldMinify(path))
@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
                 && !baseName.EndsWith(".bundle", StringComparison.OrdinalIgnoreCase);
         }
 
-        public void CreateMinFile(IContentType contentType, string sourcePath)
+        public static void CreateMinFile(IContentType contentType, string sourcePath)
         {
             var settings = WESettings.Instance.ForContentType<IMinifierSettings>(contentType);
             var minPath = GetMinFileName(sourcePath);
@@ -68,7 +68,6 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         private static void MinifyFile(IContentType contentType, string sourcePath, string minPath, IMinifierSettings settings)
         {
             IFileMinifier minifier = Mef.GetImport<IFileMinifier>(contentType);
-            bool minExist = File.Exists(minPath);
             bool changed = minifier.MinifyFile(sourcePath, minPath);
 
             if (settings.GzipMinifiedFiles && (changed || !File.Exists(minPath + ".gzip")))

@@ -71,10 +71,8 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
             _listeners = Mef.GetAllImports<IFileSaveListener>(ContentTypeManager.GetContentType("JavaScript"));
 
-            _watcher = new FileSystemWatcher(Path.GetDirectoryName(TargetFilePath))
-            {
-                Filter = Path.GetFileName(TargetFilePath)
-            };
+            _watcher = new FileSystemWatcher(Path.GetDirectoryName(TargetFilePath));
+            _watcher.Filter = Path.GetFileName(TargetFilePath);
             _watcher.EnableRaisingEvents = true;
             _watcher.Created += FileTouched;
             _watcher.Changed += FileTouched;
@@ -84,6 +82,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         {
             if (e.FileActionType != FileActionTypes.DocumentRenamed)
                 return;
+
             _watcher.Path = Path.GetDirectoryName(TargetFilePath);
             _watcher.Filter = Path.GetFileName(TargetFilePath);
         }
