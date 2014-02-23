@@ -78,6 +78,10 @@ namespace MadsKristensen.EditorExtensions.Settings
     {
         public MarkdownOptions() : base(s => s.Markdown) { }
     }
+    class SweetJsOptions : SettingsOptionPage<SweetJsSettings>
+    {
+        public SweetJsOptions() : base(s => s.SweetJs) { }
+    }
 
     class BrowserLinkOptions : SettingsOptionPage<BrowserLinkSettings>
     {

@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 using Task = System.Threading.Tasks.Task;
+using MadsKristensen.EditorExtensions.Classifications.Sweet.js;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -38,6 +39,7 @@ namespace MadsKristensen.EditorExtensions
             AddCommand(CommandId.BuildLess, ContentTypes.GetContentType("LESS"));
             AddCommand(CommandId.BuildSass, ContentTypes.GetContentType("SASS"));
             AddCommand(CommandId.BuildCoffeeScript, ContentTypes.GetContentType("CoffeeScript"));
+            AddCommand(CommandId.BuildSweetJs, ContentTypes.GetContentType(SweetJsContentTypeDefinition.SweetJsContentType));
             //TODO: Iced CoffeeScript?
 
             CommandID cmdBundles = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildBundles);
