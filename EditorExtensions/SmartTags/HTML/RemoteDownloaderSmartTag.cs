@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions.SmartTags.HTML
 {
@@ -84,12 +85,12 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
 
                 if (!string.IsNullOrEmpty(fileName))
                 {
-                    DownloadFile(url, fileName);
+                    DownloadFileAsync(url, fileName).DontWait("Download a file from a remote source to the local file system.");
                     ReplaceUrlValue(fileName, textBuffer, _attribute);
                 }
             }
 
-            private async void DownloadFile(Uri url, string fileName)
+            private async Task DownloadFileAsync(Uri url, string fileName)
             {
                 try
                 {
