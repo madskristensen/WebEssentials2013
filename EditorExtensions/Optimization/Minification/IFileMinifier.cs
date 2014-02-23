@@ -79,7 +79,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
 
     [Export(typeof(IFileMinifier))]
     [ContentType("CSS")]
-    public class CssFileMinifer : InMemoryMinifier
+    public class CssFileMinifier : InMemoryMinifier
     {
         public override string MinifyString(string source)
         {
@@ -96,7 +96,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
 
     [Export(typeof(IFileMinifier))]
     [ContentType("JavaScript")]
-    public class JavaScriptFileMinifer : InMemoryMinifier
+    public class JavaScriptFileMinifier : InMemoryMinifier
     {
         public override bool GenerateSourceMap { get { return WESettings.Instance.JavaScript.GenerateSourceMaps; } }
 

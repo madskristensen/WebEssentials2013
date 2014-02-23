@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\jscs\bin\jscs");
         //private static readonly string _jscsReporter = Path.Combine(WebEssentialsResourceDirectory, @"Scripts\jscs-node-reporter.js");
-        public new static string ConfigFileName = ".jscs.json";
+        public new static readonly string ConfigFileName = ".jscs.json";
 
         public override IEnumerable<string> SourceExtensions { get { return new[] { ".js" }; } }
         public override string ServiceName { get { return "JSCS"; } }

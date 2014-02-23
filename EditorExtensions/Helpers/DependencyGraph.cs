@@ -81,7 +81,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
             // The LINQ Contains() extension method will call into the underlying HashSet<T>.
 
             ///<summary>Gets the nodes that this file depends on.</summary>
-            public IEnumerable<GraphNode> Dependencies { get { return dependencies; } }
+            //public IEnumerable<GraphNode> Dependencies { get { return dependencies; } }
             ///<summary>Gets the nodes that depend on this file.</summary>
             public IEnumerable<GraphNode> Dependents { get { return dependents; } }
 
@@ -101,12 +101,12 @@ namespace MadsKristensen.EditorExtensions.Helpers
             }
 
             ///<summary>Removes all edges for nodes that this file depends on.  Call this method, inside a write lock, before reparsing the file.</summary>
-            public void ClearDependencies()
-            {
-                foreach (var child in Dependencies)
-                    child.dependents.Remove(this);
-                dependencies.Clear();
-            }
+            //public void ClearDependencies()
+            //{
+            //    foreach (var child in Dependencies)
+            //        child.dependents.Remove(this);
+            //    dependencies.Clear();
+            //}
 
             public override string ToString()
             {

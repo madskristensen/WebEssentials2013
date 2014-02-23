@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.IO;
+using System.Net;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.SmartTags;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -5,11 +10,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.IO;
-using System.Net;
 
 namespace MadsKristensen.EditorExtensions.SmartTags.HTML
 {
@@ -82,7 +82,6 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
             public override void Invoke()
             {
                 ITextBuffer textBuffer = this.HtmlSmartTag.TextBuffer;
-                ElementNode element = this.HtmlSmartTag.Element;
                 string url = RemoteDownloaderSmartTagProvider.NormalizeUrl(_attribute.Value);
                 string cleanUrl = CleanUrl(url);
                 string extension = Path.GetExtension(cleanUrl).TrimStart('.');
@@ -96,7 +95,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
                 }
             }
 
-            private string CleanUrl(string url)
+            private static string CleanUrl(string url)
             {
                 int index = url.IndexOf('?');
                 if (index > -1)

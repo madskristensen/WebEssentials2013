@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\tslint\bin\tslint");
         private static readonly string _tsLintFormatterDirectory = Path.Combine(WebEssentialsResourceDirectory, @"Scripts");
         private const string _tsLintFormatter = "tslint";
-        public new static string ConfigFileName = "tslint.json";
+        public new readonly static string ConfigFileName = "tslint.json";
 
         public override IEnumerable<string> SourceExtensions { get { return new[] { ".ts" }; } }
         public override string ServiceName { get { return "TsLint"; } }

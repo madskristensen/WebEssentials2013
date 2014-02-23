@@ -80,11 +80,9 @@ namespace MadsKristensen.EditorExtensions
                             .SelectMany(p => Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories))
                             .Where(f => extensions.Contains(Path.GetExtension(f)));
 
-            var minifyService = WebEditor.ExportProvider.GetExport<MinificationSaveListener>();
-
             // Perform expensive blocking work in parallel
             Parallel.ForEach(files, file =>
-                minifyService.Value.ReMinify(
+                MinificationSaveListener.ReMinify(
                     ContentTypeManager.GetContentType(Path.GetExtension(file).TrimStart('.')),
                     file,
                     false

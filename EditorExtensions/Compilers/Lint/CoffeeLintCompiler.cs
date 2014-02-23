@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions
     public class CoffeeLintCompiler : JsHintCompiler
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\coffeelint\bin\coffeelint");
-        public new static string ConfigFileName = "coffeelint.json";
+        public new readonly static string ConfigFileName = "coffeelint.json";
 
         public override IEnumerable<string> SourceExtensions { get { return new[] { ".coffee", ".iced" }; } }
         public override string ServiceName { get { return "CoffeeLint"; } }
