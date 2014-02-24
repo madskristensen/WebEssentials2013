@@ -2,6 +2,7 @@
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.SmartTags;
@@ -74,7 +75,7 @@ namespace MadsKristensen.EditorExtensions
                 using (EditorExtensionsPackage.UndoContext((this.DisplayText)))
                 {
                     string script = GetScript(value);
-                    File.WriteAllText(file, script);
+                    File.WriteAllText(file, script, Encoding.UTF8);
 
                     ProjectHelpers.AddFileToActiveProject(file);
                     EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
