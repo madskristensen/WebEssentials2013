@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions.Classifications.Sweet.js
+namespace MadsKristensen.EditorExtensions
 {
     public class SweetJsContentTypeDefinition
     {

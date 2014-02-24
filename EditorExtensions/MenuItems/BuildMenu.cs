@@ -13,7 +13,6 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 using Task = System.Threading.Tasks.Task;
-using MadsKristensen.EditorExtensions.Classifications.Sweet.js;
 
 namespace MadsKristensen.EditorExtensions
 {

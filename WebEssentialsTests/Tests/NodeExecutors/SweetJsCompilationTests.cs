@@ -1,11 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MadsKristensen.EditorExtensions.Compilers.Sweet.js;
 
 namespace WebEssentialsTests.Tests.NodeExecutors
 {
