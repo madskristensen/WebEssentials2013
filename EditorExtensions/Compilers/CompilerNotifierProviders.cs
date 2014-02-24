@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
-using MadsKristensen.EditorExtensions.Classifications.Sweet.js;
 
 namespace MadsKristensen.EditorExtensions.Compilers
 {

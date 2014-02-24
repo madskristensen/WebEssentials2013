@@ -1,13 +1,11 @@
-﻿using System;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.Utilities;
-using MadsKristensen.EditorExtensions.Classifications.Sweet.js;
 
-namespace MadsKristensen.EditorExtensions.Compilers.Sweet.js
+namespace MadsKristensen.EditorExtensions
 {
     [Export(typeof(NodeExecutorBase))]
     [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]

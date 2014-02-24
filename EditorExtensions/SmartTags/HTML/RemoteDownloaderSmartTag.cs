@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.IO;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.SmartTags;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -5,12 +11,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.IO;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions.SmartTags.HTML
 {
@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
 
             Uri url = NormalizeUrl(attr);
 
-            if (url == null || (!attr.Value.StartsWith("//") && !attr.Value.Contains("://")))
+            if (url == null || (!attr.Value.StartsWith("//", StringComparison.Ordinal) && !attr.Value.Contains("://")))
                 return null;
 
             return new RemoteDownloaderSmartTag(textView, textBuffer, element, attr);
