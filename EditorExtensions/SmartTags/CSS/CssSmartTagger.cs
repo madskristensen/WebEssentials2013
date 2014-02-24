@@ -124,7 +124,7 @@ namespace MadsKristensen.EditorExtensions
                     IEnumerable<ICssSmartTagProvider> providers = _smartTagProviders.GetHandlers(currentItem.GetType());
                     List<ISmartTagAction> actions = new List<ISmartTagAction>();
 
-                    if (providers != null)
+                    if (providers != null && _textBuffer.CurrentSnapshot.Length >= currentItem.AfterEnd)
                     {
                         ITrackingSpan trackingSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(currentItem.Start, currentItem.Length, SpanTrackingMode.EdgeInclusive);
 
