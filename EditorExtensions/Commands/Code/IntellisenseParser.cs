@@ -187,13 +187,30 @@ namespace MadsKristensen.EditorExtensions
         {
             var references = new HashSet<string>();
             var properties = GetProperties(cc.Members, new HashSet<string>(), references).ToList();
+            var DataContractAttribute = cc.Attributes.Cast<CodeAttribute>().Where(a => a.Name == "DataContract");
+            string className = cc.Name;
+            string nsName = GetNamespace(cc);
+
+            if (DataContractAttribute.Any())
+            {
+                var keyValues = DataContractAttribute.First().Children.OfType<CodeAttributeArgument>()
+                               .Where(a => a.Name != "IsReference")
+                               .Select(a => new KeyValuePair<string, string>(a.Name, a.Value.Split('"', '\'')[1]))
+                               .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+                if (keyValues.ContainsKey("Name"))
+                    className = keyValues["Name"];
+
+                if (keyValues.ContainsKey("Namespace"))
+                    nsName = keyValues["Namespace"];
+            }
 
             if (properties.Any())
             {
                 var intellisenseObject = new IntellisenseObject(properties, references.ToList())
                 {
-                    Namespace = GetNamespace(cc),
-                    Name = cc.Name,
+                    Namespace = nsName,
+                    Name = className,
                     FullName = cc.FullName,
                     Summary = GetSummary(cc)
                 };
