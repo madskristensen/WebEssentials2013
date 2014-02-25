@@ -194,9 +194,7 @@ namespace MadsKristensen.EditorExtensions
             if (dataContractAttribute.Any())
             {
                 var keyValues = dataContractAttribute.First().Children.OfType<CodeAttributeArgument>()
-                               .Where(a => a.Name != "IsReference")
-                               .Select(a => new KeyValuePair<string, string>(a.Name, a.Value.Split('"', '\'')[1]))
-                               .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+                               .ToDictionary(a => a.Name, a => (a.Value ?? "").Trim('\"', '\''));
 
                 if (keyValues.ContainsKey("Name"))
                     className = keyValues["Name"];
