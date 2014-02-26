@@ -7,6 +7,7 @@ using System.Web;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.DragDrop;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor.EditorHelpers;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -37,7 +38,7 @@ namespace MadsKristensen.EditorExtensions
         public StylesheetDropHandler(IWpfTextView view)
         {
             this._view = view;
-            _targetFileName = Microsoft.Web.Editor.TextBufferExtensions.GetFileName(view.TextBuffer);
+            _targetFileName = view.TextBuffer.GetFileName();
         }
 
         public DragDropPointerEffects HandleDataDropped(DragDropInfo dragDropInfo)

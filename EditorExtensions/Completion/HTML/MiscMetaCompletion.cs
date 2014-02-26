@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions
     {
         protected override string KeyProperty { get { return "name"; } }
         public MiscMetaCompletion()
-            : base(new Dictionary<string, IList<HtmlCompletion>>(StringComparer.OrdinalIgnoreCase)
+            : base(new Dictionary<string, IEnumerable<string>>(StringComparer.OrdinalIgnoreCase)
             {
                 { "generator",  Values("Visual Studio") },
                 { "robots",     Values("index", "noindex", "follow", "nofollow", "noindex, nofollow", "noindex, follow", "index, nofollow") }

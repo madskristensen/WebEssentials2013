@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.CSS.Core;
 using Microsoft.Web.Editor;
+using Microsoft.Web.Editor.EditorHelpers;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
 {

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CSS.Core;
+using Microsoft.CSS.Editor;
 using Microsoft.Less.Core;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 {
@@ -14,7 +16,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         protected override ICssParser CreateParser()
         {
-            return new LessParser();
+            return CssParserLocator.FindComponent(Mef.GetContentType(LessContentTypeDefinition.LessContentType)).CreateParser();
         }
 
         internal static IDocument For(string fullPath, bool createIfRequired)

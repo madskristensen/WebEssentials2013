@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions
 
             context.Document.HtmlEditorTree.RootNode.Accept(this, list);
 
-            return list.Select(s => new SimpleHtmlCompletion(s)).ToList<HtmlCompletion>();
+            return list.Select(s => new SimpleHtmlCompletion(s, context.Session)).ToList<HtmlCompletion>();
         }
 
         public bool Visit(ElementNode element, object parameter)

@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions.Margin
     [Order(After = PredefinedMarginNames.RightControl)]
     [MarginContainer(PredefinedMarginNames.Right)]
     [ContentType("LESS")]
-    [ContentType("SASS")]
+    [ContentType("SCSS")]
     [ContentType("CoffeeScript")]
     [ContentType(IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType)]
     [ContentType("TypeScript")]
@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions.Margin
             { "Svg",               (document) => new SvgMargin(document) },
             { "Markdown",          (document) => new MarkdownMargin(document) },
             { "LESS",              (document) => new TextViewMargin("CSS", document) },
-            { "SASS",              (document) => new TextViewMargin("CSS", document) },
+            { "SCSS",              (document) => new TextViewMargin("CSS", document) },
             { "CoffeeScript",      (document) => new TextViewMargin("JavaScript", document) },
             { "IcedCoffeeScript",  (document) => new TextViewMargin("JavaScript", document) },
             { "TypeScript",        (document) => document.FilePath.EndsWith(".d.ts", StringComparison.OrdinalIgnoreCase) 

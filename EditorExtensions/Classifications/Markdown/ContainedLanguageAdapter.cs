@@ -21,6 +21,7 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Web.Editor;
 using Microsoft.VisualStudio.Web.Editor.Workspace;
 using Microsoft.Web.Editor;
+using Microsoft.Web.Editor.EditorHelpers;
 using Microsoft.Web.Editor.ContainedLanguage;
 using VSConstants = Microsoft.VisualStudio.VSConstants;
 

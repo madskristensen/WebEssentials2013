@@ -68,5 +68,35 @@ namespace MadsKristensen.EditorExtensions
         {
             return true;
         }
+
+        public ITrackingSpan ApplicableTo
+        {
+            get { return null; }
+        }
+
+        public Microsoft.Web.Editor.Intellisense.CompletionEntryFilterTypes FilterType
+        {
+            get { return Microsoft.Web.Editor.Intellisense.CompletionEntryFilterTypes.AlwaysVisible; }
+        }
+
+        public System.Windows.Media.ImageSource Icon
+        {
+            get { return null; }
+        }
+
+        public bool IsCommitChar(char typedCharacter)
+        {
+            return false;
+        }
+
+        public bool IsMuteCharacter(char typedCharacter)
+        {
+            return false;
+        }
+
+        public bool RetriggerIntellisense
+        {
+            get { return false; }
+        }
     }
 }

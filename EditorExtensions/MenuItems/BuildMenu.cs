@@ -35,9 +35,9 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            AddCommand(CommandId.BuildLess, ContentTypes.GetContentType("LESS"));
-            AddCommand(CommandId.BuildSass, ContentTypes.GetContentType("SASS"));
-            AddCommand(CommandId.BuildCoffeeScript, ContentTypes.GetContentType("CoffeeScript"));
+            AddCommand(CommandId.BuildLess, ContentTypes.GetContentType(LessContentTypeDefinition.LessContentType));
+            AddCommand(CommandId.BuildSass, ContentTypes.GetContentType(ScssContentTypeDefinition.ScssContentType));
+            AddCommand(CommandId.BuildCoffeeScript, ContentTypes.GetContentType(CoffeeContentTypeDefinition.CoffeeContentType));
             AddCommand(CommandId.BuildSweetJs, ContentTypes.GetContentType(SweetJsContentTypeDefinition.SweetJsContentType));
             //TODO: Iced CoffeeScript?
 

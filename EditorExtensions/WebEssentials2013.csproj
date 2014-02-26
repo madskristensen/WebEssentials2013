@@ -301,10 +301,6 @@
     <Compile Include="Classifications\Markdown\MarkdownOutlineTagger.cs" />
     <Compile Include="Classifications\Markdown\MarkdownLanguageSupport.cs" />
     <Compile Include="Classifications\Markdown\MarkdownParser.cs" />
-    <Compile Include="Classifications\SASS\SassClassificationTypes.cs" />
-    <Compile Include="Classifications\SASS\SassClassifier.cs" />
-    <Compile Include="Classifications\SASS\SassClassifierProvider.cs" />
-    <Compile Include="Classifications\SASS\SassContentTypeDefinition.cs" />
     <Compile Include="Classifications\Sweet.js\SweetJsContentTypeDefinition.cs" />
     <Compile Include="Classifications\WebVTT\WebVttContentTypeDefinition.cs" />
     <Compile Include="Classifications\WebVTT\WebVttClassificationTypes.cs" />
@@ -461,19 +457,16 @@
     <Compile Include="Completion\CSS\CompletionProviders\ImportantCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\FontCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\AttributeNameCompletionProvider.cs" />
-    <Compile Include="Completion\CSS\CompletionProviders\UrlPickerCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\IdCompletionProvider.cs" />
     <Compile Include="Completion\CSS\CompletionProviders\TagCompletionProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\ClassContextProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\AttributeValueContextCompletionProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\LessPseudoContextProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\AttributeNameContextProvider.cs" />
-    <Compile Include="Completion\CSS\ContextProviders\UrlPickerContextProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\IdContextProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\TagContextProvider.cs" />
     <Compile Include="Completion\CSS\CustomCompletionListEntry.cs" />
     <Compile Include="Completion\CSS\Filter\GradientCompletionListFilter.cs" />
-    <Compile Include="Completion\CSS\Filter\LessImportOnceCompletionListFilter.cs" />
     <Compile Include="Completion\HTML\AppleLinkCompletion.cs" />
     <Compile Include="Completion\HTML\StaticListCompletion.cs" />
     <Compile Include="Completion\HTML\MiscMetaCompletion.cs" />
@@ -490,7 +483,6 @@
     <Compile Include="Completion\CSS\Filter\WebkitScrollbarCompletionListFilter.cs" />
     <Compile Include="Completion\CSS\Filter\HideUnsupportedCompletionListFilter.cs" />
     <Compile Include="Completion\CSS\FontFamilyCompletionListEntry.cs" />
-    <Compile Include="Completion\CSS\UrlPickerCompletionListEntry.cs" />
     <Compile Include="Completion\CSS\Filter\HideInheritInitialCompletionListFilter.cs" />
     <Compile Include="Completion\JavaScript\HTML CompletionSources.cs" />
     <Compile Include="Completion\JavaScript\NodeModuleCompletionSourceProvider.cs" />
@@ -700,7 +692,6 @@
     <Compile Include="Validation\HTML\OpenGraphPrefixValidator.cs" />
     <Compile Include="Validation\HTML\ItemTypeValidator.cs" />
     <Compile Include="Validation\LESS\Providers\ImportOnceErrorTagProvider.cs" />
-    <Compile Include="Validation\SASS\Filters\SassErrorFilter.cs" />
     <None Include="PreBuildTask.cs" />
     <Content Include="Resources\Icons\Bundle.ico">
       <IncludeInVSIX>true</IncludeInVSIX>

@@ -15,7 +15,7 @@ namespace WebEssentialsTests
         {
             SettingsStore.EnterTestMode(new WESettings
             {
-                Sass = { GenerateSourceMaps = false }
+                Scss = { GenerateSourceMaps = false }
             });
         }
 

@@ -131,7 +131,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
     [Export(typeof(ICompilerRunnerProvider))]
     [ContentType("LESS")]
-    [ContentType("SASS")]
+    [ContentType("SCSS")]
     [ContentType("CoffeeScript")]
     [ContentType("IcedCoffeeScript")]
     [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]

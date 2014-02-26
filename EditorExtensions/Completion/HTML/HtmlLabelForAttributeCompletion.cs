@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
 
             context.Document.HtmlEditorTree.RootNode.Accept(this, list);
 
-            return list.Select(s => new HtmlCompletion(s, s, s, glyph, HtmlIconAutomationText.AttributeIconText)).ToList();
+            return list.Select(s => new HtmlCompletion(s, s, s, glyph, HtmlIconAutomationText.AttributeIconText, null)).ToList();
         }
 
         public bool Visit(ElementNode element, object parameter)

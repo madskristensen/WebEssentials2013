@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
         public JavaScriptSettings JavaScript { get; private set; }
 
         public LessSettings Less { get; private set; }
-        public SassSettings Sass { get; private set; }
+        public ScssSettings Scss { get; private set; }
         public CoffeeScriptSettings CoffeeScript { get; private set; }
         public MarkdownSettings Markdown { get; private set; }
         [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -359,7 +359,7 @@ namespace MadsKristensen.EditorExtensions
 
     public sealed class LessSettings : ChainableCompilationSettings<LessSettings> { }
 
-    public sealed class SassSettings : CompilationSettings<SassSettings> { }
+    public sealed class ScssSettings : CompilationSettings<ScssSettings> { }
 
     public sealed class CoffeeScriptSettings : CompilationSettings<CoffeeScriptSettings>, ILinterSettings
     {

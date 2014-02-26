@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions
     {
         protected override string KeyProperty { get { return "property"; } }
         public OpenGraphTypeCompletion()
-            : base(new Dictionary<string, IList<HtmlCompletion>>(StringComparer.OrdinalIgnoreCase)
+            : base(new Dictionary<string, IEnumerable<string>>(StringComparer.OrdinalIgnoreCase)
             {
                 { "og:type",            Values("article", "book", "music", "music.album", "music.playlist", 
                                                "music.radio_station", "music.song", "profile", "video",
@@ -32,16 +32,16 @@ namespace MadsKristensen.EditorExtensions
             if (attr == null)
                 return Empty;
 
-            if (attr.Value.Equals("og:site_name", StringComparison.OrdinalIgnoreCase)
-             || attr.Value.Equals("og:title", StringComparison.OrdinalIgnoreCase))
-            {
-                if (context.Element.Parent == null)
-                    return Empty;
+            //if (attr.Value.Equals("og:site_name", StringComparison.OrdinalIgnoreCase)
+            // || attr.Value.Equals("og:title", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    if (context.Element.Parent == null)
+            //        return Empty;
 
-                var list = new HashSet<string>();
-                context.Element.Parent.Accept(this, list);
-                return Values(list);
-            }
+            //    var list = new HashSet<string>();
+            //    context.Element.Parent.Accept(this, list);
+            //    return Values(list);
+            //}
 
             return base.GetEntries(context);
         }

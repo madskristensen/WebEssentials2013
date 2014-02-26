@@ -12,6 +12,7 @@ using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.Web.Editor;
+using Microsoft.Web.Editor.EditorHelpers;
 
 namespace MadsKristensen.EditorExtensions
 {

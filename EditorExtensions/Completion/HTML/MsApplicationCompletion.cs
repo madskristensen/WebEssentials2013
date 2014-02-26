@@ -10,11 +10,11 @@ namespace MadsKristensen.EditorExtensions
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
     public class MSApplicationCompletion : StaticListCompletion, IHtmlTreeVisitor
     {
-        private static readonly IList<HtmlCompletion> BooleanValues = Values("false", "true");
+        private static readonly IEnumerable<string> BooleanValues = Values("false", "true");
 
         protected override string KeyProperty { get { return "name"; } }
         public MSApplicationCompletion()
-            : base(new Dictionary<string, IList<HtmlCompletion>>(StringComparer.OrdinalIgnoreCase)
+            : base(new Dictionary<string, IEnumerable<string>>(StringComparer.OrdinalIgnoreCase)
             {
                 { "MSApplication-AllowDomainApiCalls",  BooleanValues },
                 { "MSApplication-AllowDomainMetaTags",  BooleanValues },
@@ -30,17 +30,17 @@ namespace MadsKristensen.EditorExtensions
             if (attr == null)
                 return Empty;
 
-            if (attr.Value.Equals("application-name", StringComparison.OrdinalIgnoreCase)
-             || attr.Value.Equals("msapplication-tooltip", StringComparison.OrdinalIgnoreCase))
-            {
-                if (context.Element.Parent == null)
-                    return Empty;
+            //if (attr.Value.Equals("application-name", StringComparison.OrdinalIgnoreCase)
+            // || attr.Value.Equals("msapplication-tooltip", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    if (context.Element.Parent == null)
+            //        return Empty;
 
-                var list = new HashSet<string>();
+            //    var list = new HashSet<string>();
 
-                context.Element.Parent.Accept(this, list);
-                return Values(list);
-            }
+            //    context.Element.Parent.Accept(this, list);
+            //    return Values(list);
+            //}
 
             return base.GetEntries(context);
         }

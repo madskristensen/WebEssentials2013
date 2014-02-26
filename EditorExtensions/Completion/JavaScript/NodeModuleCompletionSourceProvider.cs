@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
+using Microsoft.Web.Editor.EditorHelpers;
 using Newtonsoft.Json.Linq;
 using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
@@ -51,7 +52,7 @@ namespace MadsKristensen.EditorExtensions
 
             var callingFilename = _buffer.GetFileName();
             var baseFolder = Path.GetDirectoryName(callingFilename);
-
+            
             IEnumerable<Intel.Completion> results;
             if (String.IsNullOrWhiteSpace(info.Item1))
                 results = GetRootCompletions(baseFolder);
