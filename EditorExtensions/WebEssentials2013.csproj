@@ -466,7 +466,6 @@
     <Compile Include="Completion\CSS\ContextProviders\IdContextProvider.cs" />
     <Compile Include="Completion\CSS\ContextProviders\TagContextProvider.cs" />
     <Compile Include="Completion\CSS\CustomCompletionListEntry.cs" />
-    <Compile Include="Completion\CSS\Filter\GradientCompletionListFilter.cs" />
     <Compile Include="Completion\HTML\AppleLinkCompletion.cs" />
     <Compile Include="Completion\HTML\StaticListCompletion.cs" />
     <Compile Include="Completion\HTML\MiscMetaCompletion.cs" />
