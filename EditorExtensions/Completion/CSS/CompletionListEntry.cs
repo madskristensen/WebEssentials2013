@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Windows.Media;
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
+using Microsoft.Web.Editor;
+using Microsoft.Web.Editor.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -29,12 +32,7 @@ namespace MadsKristensen.EditorExtensions
         {
             return string.Empty;
         }
-
-        public StandardGlyphGroup StandardGlyph
-        {
-            get { return _glyph; }
-        }
-
+        
         public string GetAttribute(string name)
         {
             return string.Empty;
@@ -78,14 +76,14 @@ namespace MadsKristensen.EditorExtensions
             get { return null; }
         }
 
-        public Microsoft.Web.Editor.Intellisense.CompletionEntryFilterTypes FilterType
+        public CompletionEntryFilterTypes FilterType
         {
-            get { return Microsoft.Web.Editor.Intellisense.CompletionEntryFilterTypes.AlwaysVisible; }
+            get { return CompletionEntryFilterTypes.MatchTyping; }
         }
 
-        public System.Windows.Media.ImageSource Icon
+        public ImageSource Icon
         {
-            get { return null; }
+            get { return GlyphService.GetGlyph(_glyph, StandardGlyphItem.GlyphItemPublic);  }
         }
 
         public bool IsCommitChar(char typedCharacter)
