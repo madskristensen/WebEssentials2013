@@ -346,27 +346,8 @@ namespace MadsKristensen.EditorExtensions.Helpers
         private static IEnumerable<string> GetImportPaths(Uri sourceUri, ImportDirective importDirective)
         {
             return CssDocumentHelpers.GetSourceUrisFromImport(sourceUri, importDirective)
-                                     .Select(t => t.Item1.AbsolutePath);
-
-            //    // Copied from Microsoft.CSS.Editor.GlobalDocumentCache.GetSourceUriFromImport()
-            //    TokenItem tokenItem;
-            //    if (!importDirective.IsValid)
-            //        return null;
-            //    if (importDirective.FileName != null && importDirective.FileName.TokenType == CssTokenType.String)
-            //        tokenItem = importDirective.FileName;
-            //    else if (importDirective.Url != null)
-            //        tokenItem = (TokenItem)importDirective.Url.UrlString;
-            //    else
-            //        return null;
-            //    switch (tokenItem.Token.TokenType)
-            //    {
-            //        case CssTokenType.String:
-            //            return importDirective.StyleSheet.TextProvider.Substring(tokenItem.Start + 1, tokenItem.Length - 2).Trim();
-            //        case CssTokenType.UnquotedUrlString:
-            //            return tokenItem.Text.Trim();
-            //        default:
-            //            return null;
-            //    }
+                                     .Where(t => t.Item1.IsFile)
+                                     .Select(t => t.Item1.LocalPath);
         }
     }
     [Export(typeof(DependencyGraph))]
@@ -379,6 +360,5 @@ namespace MadsKristensen.EditorExtensions.Helpers
             : base(".less", fileExtensionRegistry)
         {
         }
-
     }
 }
