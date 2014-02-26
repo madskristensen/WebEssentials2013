@@ -81,7 +81,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
             // The LINQ Contains() extension method will call into the underlying HashSet<T>.
 
             ///<summary>Gets the nodes that this file depends on.</summary>
-            //public IEnumerable<GraphNode> Dependencies { get { return dependencies; } }
+            public IEnumerable<GraphNode> Dependencies { get { return dependencies; } }
             ///<summary>Gets the nodes that depend on this file.</summary>
             public IEnumerable<GraphNode> Dependents { get { return dependents; } }
 
@@ -101,12 +101,12 @@ namespace MadsKristensen.EditorExtensions.Helpers
             }
 
             ///<summary>Removes all edges for nodes that this file depends on.  Call this method, inside a write lock, before reparsing the file.</summary>
-            //public void ClearDependencies()
-            //{
-            //    foreach (var child in Dependencies)
-            //        child.dependents.Remove(this);
-            //    dependencies.Clear();
-            //}
+            public void ClearDependencies()
+            {
+                foreach (var child in Dependencies)
+                    child.dependents.Remove(this);
+                dependencies.Clear();
+            }
 
             public override string ToString()
             {
@@ -180,6 +180,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
             using (hasLock ? new AsyncReaderWriterLock.Releaser() : await rwLock.WriteLockAsync())
             {
                 var parentNode = GetNode(fileName);
+                parentNode.ClearDependencies();
                 bool created;
                 foreach (var dependency in dependencies)
                 {
@@ -346,7 +347,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
         private static IEnumerable<string> GetImportPaths(Uri sourceUri, ImportDirective importDirective)
         {
             return CssDocumentHelpers.GetSourceUrisFromImport(sourceUri, importDirective)
-                                     .Where(t => t.Item1.IsFile)
+                                     .Where(t => t.Item1.IsFile && !t.Item1.OriginalString.StartsWith("//"))    // Skip protocol-relative paths
                                      .Select(t => t.Item1.LocalPath);
         }
     }

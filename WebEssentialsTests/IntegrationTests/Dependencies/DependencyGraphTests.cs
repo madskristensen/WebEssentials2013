@@ -9,6 +9,7 @@ using EnvDTE80;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using MadsKristensen.EditorExtensions.Helpers;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
@@ -94,7 +95,7 @@ namespace WebEssentialsTests.IntegrationTests.Dependencies
             // To be discovered on save of dependent file
             File.WriteAllText(Path.Combine(TestCaseDirectory, "WebAppProject", "_mixins.less"), "// Content...");
 
-            AddProjectFile(Path.Combine(TestCaseDirectory, "WebAppProject", "base.less"), "body { font: sans-serif }");
+            AddProjectFile(Path.Combine(TestCaseDirectory, "WebAppProject", "base.less"), "@import url('//google.com/webfonts'); body { font: sans-serif }");
 
             AddProjectFile(Path.Combine(TestCaseDirectory, "WebAppProject", "page.less"), "@import 'base';");
 
@@ -121,6 +122,48 @@ namespace WebEssentialsTests.IntegrationTests.Dependencies
                .Select(Path.GetFileName)
                .Should()
                .BeEquivalentTo(new[] { "base.less", "page.less" });
+        }
+        [HostType("VS IDE")]
+        [TestMethod]
+        public async Task DeletedImports()
+        {
+            var s2 = (Solution2)VSHost.DTE.Solution;
+            s2.Create(TestCaseDirectory, "ImportDeleteTests");
+            var template = s2.GetProjectTemplate("EmptyWebApplicationProject40.zip", "CSharp");
+            s2.AddFromTemplate(template, Path.Combine(TestCaseDirectory, "WebAppProject2"), "WebAppProject.csproj");
+
+            // To be discovered on save of dependent file
+            File.WriteAllText(Path.Combine(TestCaseDirectory, "WebAppProject2", "_mixins.less"), "// Content...");
+
+            AddProjectFile(Path.Combine(TestCaseDirectory, "WebAppProject2", "page.less"), "@import '_mixins';");
+
+            await graph.RescanComplete;
+
+            var deps = await graph.GetRecursiveDependentsAsync(
+                Path.Combine(TestCaseDirectory, "WebAppProject2", "_mixins.less")
+            );
+            deps
+               .Select(Path.GetFileName)
+               .Should()
+               .BeEquivalentTo(new[] { "page.less" });
+
+            var window = VSHost.DTE.ItemOperations.OpenFile(Path.Combine(TestCaseDirectory, "WebAppProject2", "page.less"));
+
+            await VSHost.Dispatcher.NextFrame();    // Text editoro commands must be sent from the UI thread
+            var target = (IOleCommandTarget)ProjectHelpers.GetCurrentNativeTextView();
+            target.Execute(VSConstants.VSStd97CmdID.SelectAll);
+            await VSHost.TypeString("// Import was removed");
+            window.Document.Save();
+
+            await graph.RescanComplete;
+
+            deps = await graph.GetRecursiveDependentsAsync(
+                Path.Combine(TestCaseDirectory, "WebAppProject2", "_mixins.less")
+            );
+            deps
+               .Select(Path.GetFileName)
+               .Should()
+               .BeEmpty();
         }
 
         static void AddProjectFile(string path, string contents)
