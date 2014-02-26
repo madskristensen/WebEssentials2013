@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions

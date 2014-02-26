@@ -29,11 +29,14 @@ namespace MadsKristensen.EditorExtensions
         {
             IDataObject data = Clipboard.GetDataObject();
 
+            var formats = data.GetFormats();
+
             // This is to check if the image is text copied from PowerPoint etc. 
-            bool trueBitmap = data.GetFormats().Contains("DeviceIndependentBitmap");
+            bool trueBitmap = formats.Any(x => new[] { "DeviceIndependentBitmap", "PNG", "JPG", "System.Drawing.Bitmap" }.Contains(x));
+            bool textFormat = formats.Any(x => new[] { "Text", "Rich Text Format" }.Contains(x));
             bool hasBitmap = data.GetDataPresent("System.Drawing.Bitmap") || data.GetDataPresent(DataFormats.FileDrop);
 
-            if (!hasBitmap || !trueBitmap || !IsValidTextBuffer())
+            if (!hasBitmap || !trueBitmap || textFormat || !IsValidTextBuffer())
                 return false;
 
             string fileName = null;
@@ -168,7 +171,7 @@ namespace MadsKristensen.EditorExtensions
         private void UpdateTextBuffer(string fileName)
         {
             int position = TextView.Caret.Position.BufferPosition.Position;
-            string relative = "/" + FileHelpers.RelativePath(ProjectHelpers.GetRootFolder(), fileName);
+            string relative = FileHelpers.RelativePath(ProjectHelpers.GetRootFolder() ?? "/", fileName);
             string text = string.Format(CultureInfo.InvariantCulture, _format, relative);
 
             using (EditorExtensionsPackage.UndoContext("Insert Image"))
