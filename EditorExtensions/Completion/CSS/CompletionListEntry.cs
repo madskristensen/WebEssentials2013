@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
         {
             return string.Empty;
         }
-        
+
         public string GetAttribute(string name)
         {
             return string.Empty;
@@ -83,7 +83,7 @@ namespace MadsKristensen.EditorExtensions
 
         public ImageSource Icon
         {
-            get { return GlyphService.GetGlyph(_glyph, StandardGlyphItem.GlyphItemPublic);  }
+            get { return GlyphService.GetGlyph(_glyph, StandardGlyphItem.GlyphItemPublic); }
         }
 
         public bool IsCommitChar(char typedCharacter)
