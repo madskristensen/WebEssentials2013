@@ -62,3 +62,40 @@ document.mozExitFullscreen = document.msExitFullscreen;
 document.webkitExitFullscreen = document.msExitFullscreen;
 
 //#endregion
+
+//#region Canvas
+
+Element.prototype.getContext = HTMLCanvasElement.prototype.getContext;
+
+//#endregion
+
+//#region Server-Sent Events
+
+function EventSource(url) {
+    /// <signature>
+    ///   <param name="url" type="String">An absolute URI.</param>
+    ///   <returns type="EventSource" />
+    /// </signature>
+    /// <signature>
+    ///   <param name="url" type="String">An absolute URI.</param>
+    ///   <param name="eventSourceInitDict" type="dictionary" />
+    ///   <returns type="EventSource" />
+    /// </signature>
+
+    this.url = url;
+    this.withCredentials = false;
+    this.readyState = 0;
+
+    this.close = function () { }
+
+
+    this.onopen = function (event) { }
+    this.onerror = function (event) { }
+    this.onmessage = function (event) { }
+}
+
+EventSource.CONNECTING = 0;
+EventSource.OPEN = 1;
+EventSource.CLOSED = 2;
+
+//#endregion
