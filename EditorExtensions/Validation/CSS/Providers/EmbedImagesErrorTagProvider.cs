@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions
         {
             UrlItem url = (UrlItem)item;
 
-            if (!WESettings.Instance.Css.ValidateEmbedImages || !url.IsValid || url.UrlString.Text.Contains("base64,") || context == null)
+            if (!WESettings.Instance.Css.ValidateEmbedImages || !url.IsValid || url.UrlString == null || url.UrlString.Text.Contains("base64,") || context == null)
                 return ItemCheckResult.Continue;
 
             string fileName = ImageQuickInfo.GetFullUrl(url.UrlString.Text, EditorExtensionsPackage.DTE.ActiveDocument.FullName);
