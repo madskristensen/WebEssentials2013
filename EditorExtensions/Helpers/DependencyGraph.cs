@@ -8,6 +8,7 @@ using EnvDTE;
 using EnvDTE80;
 using MadsKristensen.EditorExtensions.Commands;
 using Microsoft.CSS.Core;
+using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Utilities;
 
@@ -324,55 +325,60 @@ namespace MadsKristensen.EditorExtensions.Helpers
         }
         #endregion
     }
-    public class CssDependencyGraph<TParser> : VsDependencyGraph where TParser : CssParser, new()
+    public class CssDependencyGraph : VsDependencyGraph
     {
         public string Extension { get; private set; }
+
+        readonly ICssParserFactory parserFactory;
         public CssDependencyGraph(string extension, IFileExtensionRegistryService fileExtensionRegistry)
             : base(fileExtensionRegistry.GetContentTypeForExtension(extension.TrimStart('.')), fileExtensionRegistry)
         {
             Extension = extension;
+            parserFactory = CssParserLocator.FindComponent(ContentType);
         }
 
         protected override IEnumerable<string> GetDependencyPaths(string fileName)
         {
-            return new CssItemAggregator<string> { new Func<ImportDirective, string>(GetImportPath) }
-                            .Crawl(new TParser().Parse(File.ReadAllText(fileName), false))
-                            .Where(s => s != null)
-                            .Select(f => Path.Combine(Path.GetDirectoryName(fileName), f.Replace('/', '\\').Trim('"', '\'')))
-                            .Select(f => f.EndsWith(Extension, StringComparison.OrdinalIgnoreCase) ? f : f + Extension);
+            var sourceUri = new Uri(fileName);
+            return new CssItemAggregator<string> { (ImportDirective id) => GetImportPaths(sourceUri, id) }
+                            .Crawl(parserFactory.CreateParser().Parse(File.ReadAllText(fileName), false));
         }
-        private static string GetImportPath(ImportDirective importDirective)
+        private static IEnumerable<string> GetImportPaths(Uri sourceUri, ImportDirective importDirective)
         {
-            // Copied from Microsoft.CSS.Editor.GlobalDocumentCache.GetSourceUriFromImport()
-            TokenItem tokenItem;
-            if (!importDirective.IsValid)
-                return null;
-            if (importDirective.FileName != null && importDirective.FileName.TokenType == CssTokenType.String)
-                tokenItem = importDirective.FileName;
-            else if (importDirective.Url != null)
-                tokenItem = (TokenItem)importDirective.Url.UrlString;
-            else
-                return null;
-            switch (tokenItem.Token.TokenType)
-            {
-                case CssTokenType.String:
-                    return importDirective.StyleSheet.TextProvider.Substring(tokenItem.Start + 1, tokenItem.Length - 2).Trim();
-                case CssTokenType.UnquotedUrlString:
-                    return tokenItem.Text.Trim();
-                default:
-                    return null;
-            }
+            return CssDocumentHelpers.GetSourceUrisFromImport(sourceUri, importDirective)
+                                     .Select(t => t.Item1.AbsolutePath);
+
+            //    // Copied from Microsoft.CSS.Editor.GlobalDocumentCache.GetSourceUriFromImport()
+            //    TokenItem tokenItem;
+            //    if (!importDirective.IsValid)
+            //        return null;
+            //    if (importDirective.FileName != null && importDirective.FileName.TokenType == CssTokenType.String)
+            //        tokenItem = importDirective.FileName;
+            //    else if (importDirective.Url != null)
+            //        tokenItem = (TokenItem)importDirective.Url.UrlString;
+            //    else
+            //        return null;
+            //    switch (tokenItem.Token.TokenType)
+            //    {
+            //        case CssTokenType.String:
+            //            return importDirective.StyleSheet.TextProvider.Substring(tokenItem.Start + 1, tokenItem.Length - 2).Trim();
+            //        case CssTokenType.UnquotedUrlString:
+            //            return tokenItem.Text.Trim();
+            //        default:
+            //            return null;
+            //    }
         }
     }
     [Export(typeof(DependencyGraph))]
     [Export(typeof(IFileSaveListener))]
     [ContentType("LESS")]
-    public class LessDependencyGraph : CssDependencyGraph<LessParser>
+    public class LessDependencyGraph : CssDependencyGraph
     {
         [ImportingConstructor]
         public LessDependencyGraph(IFileExtensionRegistryService fileExtensionRegistry)
             : base(".less", fileExtensionRegistry)
         {
         }
+
     }
 }

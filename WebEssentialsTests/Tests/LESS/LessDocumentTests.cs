@@ -5,7 +5,10 @@ using MadsKristensen.EditorExtensions;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using MadsKristensen.EditorExtensions.Compilers;
 using Microsoft.CSS.Core;
+using Microsoft.CSS.Editor;
+using Microsoft.Html.Editor;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.Web.Editor;
 
 namespace WebEssentialsTests
 {
@@ -212,10 +215,11 @@ a {
 "};
             #endregion
 
+            var lessFactory = CssParserLocator.FindComponent(ContentTypeManager.GetContentType(LessContentTypeDefinition.LessContentType));
             foreach (var lessCode in testSources)
             {
                 var cssCode = await new LessCompiler().CompileSourceAsync(lessCode, ".less");
-                var lessDoc = new LessParser().Parse(lessCode, false);
+                var lessDoc = lessFactory.CreateParser().Parse(lessCode, false);
                 var cssDoc = new CssParser().Parse(cssCode, false);
 
                 var cssSelectors = new CssItemAggregator<string>(false) { (Selector s) => CssExtensions.SelectorText(s) }.Crawl(cssDoc);
@@ -232,6 +236,7 @@ a {
         [TestMethod]
         public void TestMixinExpansion()
         {
+            var lessFactory = CssParserLocator.FindComponent(ContentTypeManager.GetContentType(LessContentTypeDefinition.LessContentType));
             var lessCode = @"a {
                                 .myMixin(@p) {
                                     b, code {
@@ -239,7 +244,7 @@ a {
                                 }
                             }";
 
-            var lessDoc = new LessParser().Parse(lessCode, false);
+            var lessDoc = lessFactory.CreateParser().Parse(lessCode, false);
             var lessBlocks = new CssItemAggregator<RuleSet>(true) { (RuleSet rs) => rs }.Crawl(lessDoc).ToList();
             // Remove all but the deepest blocks
             while (0 < lessBlocks.RemoveAll(c => lessBlocks.Any(c.IsParentOf)))
