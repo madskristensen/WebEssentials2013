@@ -319,7 +319,7 @@
     <Compile Include="Commands\IFileSaveListener.cs" />
     <Compile Include="Commands\JavaScript\CommentIndentationCommandTarget.cs" />
     <Compile Include="Commands\JavaScript\CommentCompletionCommandTarget.cs" />
-    <Compile Include="Commands\JavaScript\JsDocRegistry.cs" />
+    <Compile Include="Commands\JavaScript\JavaScriptIntellisense.cs" />
     <Compile Include="Commands\Sweet.js\SweetJsCreationListener.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptFindReferencesCommandTarget.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptCreationListener.cs" />
@@ -723,6 +723,9 @@
     </Content>
     <Content Include="Resources\Images\WebEssentials2012logo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Scripts\Modern.Intellisense.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\Scripts\JSDocComments.js">

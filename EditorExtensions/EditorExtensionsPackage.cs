@@ -70,7 +70,7 @@ namespace MadsKristensen.EditorExtensions
             Instance = this;
 
             SettingsStore.Load();
-            JsDocComments.Register();
+            JavaScriptIntellisense.Register();
 
             OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
 
