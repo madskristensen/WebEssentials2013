@@ -27,3 +27,38 @@ Element.prototype.createShadowRoot = function () {
 Element.prototype.webkitCreateShadowRoot = Element.prototype.createShadowRoot;
 
 //#endregion
+
+//#region Vibration API
+
+Navigator.prototype.vibrate = function () {
+    /// <signature>
+    ///   <param name="time" type="Number">The number of miliseconds to vibrate.</param>
+    ///   <returns type="Boolean" />
+    /// </signature>
+    /// <signature>
+    ///   <param name="pattern" type="Array">An array of miliseconds that makes up the pattern of vibration.</param>
+    ///   <returns type="Boolean" />
+    /// </signature>
+}
+
+//#endregion
+
+//#region Fullscreen API
+
+Element.prototype.requestFullscreen = Element.prototype.msRequestFullscreen;
+Element.prototype.mozRequestFullscreen = Element.prototype.msRequestFullscreen;
+Element.prototype.webkitRequestFullscreen = Element.prototype.msRequestFullscreen;
+
+document.fullscreenElement = document.msFullscreenElement;
+document.mozFullscreenElement = document.msFullscreenElement;
+document.webkitFullscreenElement = document.msFullscreenElement;
+
+document.fullscreenEnabled = document.msFullscreenEnabled;
+document.mozFullscreenEnabled = document.msFullscreenEnabled;
+document.webkitFullscreenEnabled = document.msFullscreenEnabled;
+
+document.exitFullscreen = document.msExitFullscreen;
+document.mozExitFullscreen = document.msExitFullscreen;
+document.webkitExitFullscreen = document.msExitFullscreen;
+
+//#endregion
