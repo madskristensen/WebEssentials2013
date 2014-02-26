@@ -6,6 +6,7 @@ using System.Windows.Media.Imaging;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
 using Microsoft.Web.Editor;
+using Microsoft.Web.Editor.EditorHelpers;
 
 namespace MadsKristensen.EditorExtensions
 {

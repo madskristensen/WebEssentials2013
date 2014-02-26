@@ -29,7 +29,6 @@ namespace MadsKristensen.EditorExtensions
                 switch (typedChar)
                 {
                     case '!':
-                    case '(':
                     case '=':
                     case '/':
                     case '[':

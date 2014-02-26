@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
@@ -33,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void EditGlobalJsCodeStyleFile()
         {
-            string fileName = JsCodeStyleCompiler.GetOrCreateGlobalSettings(".jscs.json");
+            string fileName = JsCodeStyleCompiler.GetOrCreateGlobalSettings(JsCodeStyleCompiler.ConfigFileName);
 
             _dte.ItemOperations.OpenFile(fileName);
         }

@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
                 tooltip = "Extracted from a <label> element in this document";
             }
 
-            return list.Select(s => new HtmlCompletion(s, s, tooltip, _glyph, HtmlIconAutomationText.AttributeIconText)).ToList();
+            return list.Select(s => new HtmlCompletion(s, s, tooltip, _glyph, HtmlIconAutomationText.AttributeIconText, null)).ToList();
         }
 
         public bool Visit(ElementNode element, object parameter)

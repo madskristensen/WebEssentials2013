@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using EnvDTE;
@@ -117,7 +118,7 @@ namespace MadsKristensen.EditorExtensions
                         !(_compiler is JsHintCompiler && resultCount == 501))
                     {
                         task = CreateTask(error,
-                            string.Format("{0}: Too many errors. Only shows {1} errors from {2}.",
+                            string.Format(CultureInfo.InvariantCulture, "{0}: Too many errors. Only shows {1} errors from {2}.",
                                 _compiler.ServiceName, errorLimit, results.Count()));
                         _provider.Tasks.Add(task);
                         break;

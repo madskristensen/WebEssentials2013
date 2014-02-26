@@ -131,9 +131,10 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
     [Export(typeof(ICompilerRunnerProvider))]
     [ContentType("LESS")]
-    [ContentType("SASS")]
+    [ContentType("SCSS")]
     [ContentType("CoffeeScript")]
     [ContentType("IcedCoffeeScript")]
+    [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
     public class NodeCompilerRunnerProvider : ICompilerRunnerProvider
     {
         public CompilerRunnerBase GetCompiler(IContentType contentType) { return new NodeCompilerRunner(contentType); }

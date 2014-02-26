@@ -70,13 +70,17 @@ namespace MadsKristensen.EditorExtensions.Settings
     {
         public LessOptions() : base(s => s.Less) { }
     }
-    class SassOptions : SettingsOptionPage<SassSettings>
+    class ScssOptions : SettingsOptionPage<ScssSettings>
     {
-        public SassOptions() : base(s => s.Sass) { }
+        public ScssOptions() : base(s => s.Scss) { }
     }
     class MarkdownOptions : SettingsOptionPage<MarkdownSettings>
     {
         public MarkdownOptions() : base(s => s.Markdown) { }
+    }
+    class SweetJsOptions : SettingsOptionPage<SweetJsSettings>
+    {
+        public SweetJsOptions() : base(s => s.SweetJs) { }
     }
 
     class BrowserLinkOptions : SettingsOptionPage<BrowserLinkSettings>

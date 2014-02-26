@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Web;
@@ -44,6 +45,7 @@ namespace MadsKristensen.EditorExtensions
             _view = view;
         }
 
+        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "img")]
         public DragDropPointerEffects HandleDataDropped(DragDropInfo dragDropInfo)
         {
             string reference = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, _imageFilename);
@@ -52,7 +54,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 int index = reference.IndexOf('/', 12);
                 if (index > -1)
-                    reference = reference.Substring(index).ToLowerInvariant();
+                    reference = reference.Substring(index);
             }
             reference = HttpUtility.UrlPathEncode(reference);
 
@@ -60,7 +62,7 @@ namespace MadsKristensen.EditorExtensions
             if (!_documentFactory.TryGetTextDocument(_view.TextDataModel.DocumentBuffer, out document))
                 return DragDropPointerEffects.None;
 
-            string template = document.TextBuffer.ContentType.IsOfType("Markdown") ? MarkdownTemplate : HtmlTemplate;
+            string template = document.TextBuffer.ContentType.IsOfType("Markdown") ? MarkdownTemplate : HtmlTemplate.ToLowerInvariant();
 
             _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(CultureInfo.CurrentCulture, template, Path.GetFileName(reference), reference, HttpUtility.HtmlAttributeEncode(reference)));
 

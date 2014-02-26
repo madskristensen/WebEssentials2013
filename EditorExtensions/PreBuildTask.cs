@@ -46,7 +46,9 @@ namespace MadsKristensen.EditorExtensions
                 InstallModuleAsync("tslint", "tslint"),
                 InstallModuleAsync("node-sass", "node-sass"),
                 InstallModuleAsync("coffee", "coffee-script"),
-                InstallModuleAsync("iced", "iced-coffee-script")
+                InstallModuleAsync("iced", "iced-coffee-script"),
+                InstallModuleAsync("coffeelint", "coffeelint"),
+                InstallModuleAsync("sjs", "sweet.js")
             ).Result.Where(r => r != ModuleInstallResult.AlreadyPresent);
 
             if (moduleResults.Contains(ModuleInstallResult.Error))

@@ -87,6 +87,6 @@ namespace MadsKristensen.EditorExtensions
             @"webfont\.js",
             @"yepnope\.js",
             @"zepto\.js",
-        }) + ")", RegexOptions.IgnoreCase);
+        }) + ")", RegexOptions.IgnoreCase | RegexOptions.Compiled);
     }
 }

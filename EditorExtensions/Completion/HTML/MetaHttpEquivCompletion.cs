@@ -14,9 +14,9 @@ namespace MadsKristensen.EditorExtensions
     {
         protected override string KeyProperty { get { return "http-equiv"; } }
         public MetaHttpEquivCompletion()
-            : base(new Dictionary<string, IList<HtmlCompletion>>(StringComparer.OrdinalIgnoreCase)
+            : base(new Dictionary<string, IEnumerable<string>>(StringComparer.OrdinalIgnoreCase)
             {
-                { "X-UA-Compatible",    Values("IE=edge", "IE=7", "IE=8", "IE=9", "FF=3").WithDescription("Separate multiple values with commas if needed") },
+                { "X-UA-Compatible",    Values("IE=edge", "IE=7", "IE=8", "IE=9", "FF=3")},//.WithDescription("Separate multiple values with commas if needed") },
                 { "Content-Type",       Values(GetAttributeValue("meta", "charset").Select(c => "text/html; charset=" + c)) },
                 { "refresh",            Values("3", "3; url=http://example.com") },
                 { "Content-Language",       Values(GetAttributeValue("html", "lang")) },

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using ConfOxide;
 using MarkdownSharp;
 using Microsoft.VisualStudio.Shell;
@@ -9,6 +10,7 @@ namespace MadsKristensen.EditorExtensions
 {
     public sealed class WESettings : SettingsBase<WESettings>
     {
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly WESettings Instance = new WESettings();
 
         public GeneralSettings General { get; private set; }
@@ -23,9 +25,11 @@ namespace MadsKristensen.EditorExtensions
         public JavaScriptSettings JavaScript { get; private set; }
 
         public LessSettings Less { get; private set; }
-        public SassSettings Sass { get; private set; }
+        public ScssSettings Scss { get; private set; }
         public CoffeeScriptSettings CoffeeScript { get; private set; }
         public MarkdownSettings Markdown { get; private set; }
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        public SweetJsSettings SweetJs { get; private set; }
     }
 
     public sealed class GeneralSettings : SettingsBase<GeneralSettings>, IMarginSettings
@@ -108,6 +112,7 @@ namespace MadsKristensen.EditorExtensions
         [Description("Run linter when saving each source file.")]
         [DefaultValue(true)]
         public bool LintOnSave { get; set; }
+
         [Category("Linter")]
         [DisplayName("Run on build")]
         [Description("Lint all files when building the solution.")]
@@ -244,7 +249,7 @@ namespace MadsKristensen.EditorExtensions
         [Description("Warn on selectors that contain the universal selector (*).")]
         [DefaultValue(true)]
         public bool ValidateStarSelector { get; set; }
-        [DisplayName("Disallow over-qualified ID selector")]
+        [DisplayName("Disallow overqualified ID selector")]
         [Description("Warn on selectors that unnecessarily qualify an ID selector with classes or tag names.")]
         [DefaultValue(true)]
         public bool ValidateOverQualifiedSelector { get; set; }
@@ -352,17 +357,37 @@ namespace MadsKristensen.EditorExtensions
         }
     }
 
-
     public sealed class LessSettings : ChainableCompilationSettings<LessSettings> { }
-    public sealed class SassSettings : CompilationSettings<SassSettings> { }
-    public sealed class CoffeeScriptSettings : CompilationSettings<CoffeeScriptSettings>
+
+    public sealed class ScssSettings : CompilationSettings<ScssSettings> { }
+
+    public sealed class CoffeeScriptSettings : CompilationSettings<CoffeeScriptSettings>, ILinterSettings
     {
         [DisplayName("Wrap generated JavaScript files")]
         [Description("Wrap the generated JavaScript source in an anonymous function.  This prevents variables from leaking into the global scope.")]
         [Category("CoffeeScript")]
         [DefaultValue(true)]
         public bool WrapClosure { get; set; }
+
+        [Category("Linter")]
+        [DisplayName("Run on save")]
+        [Description("Run linter when saving each source file.")]
+        [DefaultValue(true)]
+        public bool LintOnSave { get; set; }
+
+        [Category("Linter")]
+        [DisplayName("Run on build")]
+        [Description("Lint all files when building the solution.")]
+        [DefaultValue(false)]
+        public bool LintOnBuild { get; set; }
+
+        [Category("Linter")]
+        [DisplayName("Results location")]
+        [Description("Where to show messages from the linter.")]
+        [DefaultValue(TaskErrorCategory.Message)]
+        public TaskErrorCategory LintResultLocation { get; set; }
     }
+    public sealed class SweetJsSettings : CompilationSettings<SweetJsSettings> { }
 
     public sealed class MarkdownSettings : SettingsBase<MarkdownSettings>, ICompilerInvocationSettings, IMarginSettings, IMarkdownOptions
     {

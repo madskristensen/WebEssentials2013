@@ -18,6 +18,7 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
             textView.GetText().Should().Be("'use strict';");
             textView.IsCompletionOpen().Should().BeFalse();
         }
+
         [HostType("VS IDE")]
         [TestMethod, TestCategory("Completion")]
         public async Task UseAsmFunction()
@@ -25,6 +26,7 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
             var textView = await VSHost.TypeText(".js", "var a=function(){\n\"use a\"");
             textView.GetText().Should().EndWith("\"use asm\"\r\n}");
         }
+
         [HostType("VS IDE")]
         [TestMethod, TestCategory("Completion")]
         public async Task DontActivateElsewhere()
@@ -32,6 +34,7 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
             var textView = await VSHost.TypeText(".js", "var x = {\n'u");
             textView.IsCompletionOpen().Should().BeFalse();
         }
+
         [HostType("VS IDE")]
         [TestMethod, TestCategory("Completion")]
         public async Task BackspaceDismisses()

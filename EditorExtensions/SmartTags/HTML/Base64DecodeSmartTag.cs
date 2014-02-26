@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
+using Microsoft.Web.Editor.EditorHelpers;
 
 namespace MadsKristensen.EditorExtensions.SmartTags.HTML
 {
@@ -80,7 +81,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
 
             private static void ReplaceUrlValue(string fileName, ITextBuffer buffer, AttributeNode src)
             {
-                string relative = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, fileName);
+                string relative = FileHelpers.RelativePath(buffer.GetFileName(), fileName);
                 Span span = new Span(src.ValueRangeUnquoted.Start, src.ValueRangeUnquoted.Length);
                 buffer.Replace(span, relative.ToLowerInvariant());
             }

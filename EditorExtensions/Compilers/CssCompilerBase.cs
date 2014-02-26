@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web.Helpers;
 using MadsKristensen.EditorExtensions.Helpers;
@@ -62,19 +63,19 @@ namespace MadsKristensen.EditorExtensions.Compilers
             if (updatedFileContent == null)
                 return content;
 
-            File.WriteAllText(sourceMapFilename, updatedFileContent);
+            File.WriteAllText(sourceMapFilename, updatedFileContent, Encoding.UTF8);
 
             return UpdateSourceLinkInCssComment(content, FileHelpers.RelativePath(compiledFileName, sourceMapFilename));
         }
 
         // Overridden to work around SASS bug
         // TODO: Remove when https://github.com/hcatlin/libsass/issues/242 is fixed
-        protected virtual string ReadMapFile(string sourceMapFilename) { return File.ReadAllText(sourceMapFilename); }
+        protected virtual string ReadMapFile(string sourceMapFileName) { return File.ReadAllText(sourceMapFileName); }
 
-        private string GetUpdatedSourceMapFileContent(string cssFileName, string sourceMapFilename)
+        private string GetUpdatedSourceMapFileContent(string cssFileName, string sourceMapFileName)
         {
             // Read JSON map file and deserialize.
-            dynamic jsonSourceMap = Json.Decode(ReadMapFile(sourceMapFilename));
+            dynamic jsonSourceMap = Json.Decode(ReadMapFile(sourceMapFileName));
 
             if (jsonSourceMap == null)
                 return null;

@@ -4,7 +4,6 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using EnvDTE80;
 using MadsKristensen.EditorExtensions.Optimization.Minification;
 using Microsoft.Html.Editor;
 using Microsoft.VisualStudio.Shell;
@@ -31,8 +30,6 @@ namespace MadsKristensen.EditorExtensions
         //TODO: Add menu items for compilable files too
         class MinifyFileCommand
         {
-            [Import]
-            public MinificationSaveListener MinificationService { get; set; }
             [Import]
             public IFileExtensionRegistryService FileExtensionRegistry { get; set; }
             public OleMenuCommand Command { get; private set; }
@@ -64,7 +61,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 foreach (var file in selectedFiles)
                 {
-                    MinificationService.CreateMinFile(ContentType, file);
+                    MinificationSaveListener.CreateMinFile(ContentType, file);
                 }
 
                 CheckEnableSync();

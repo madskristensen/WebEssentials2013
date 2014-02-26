@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions
     {
         protected override string KeyProperty { get { return "name"; } }
         public TwitterCardCompletion()
-            : base(new Dictionary<string, IList<HtmlCompletion>>(StringComparer.OrdinalIgnoreCase)
+            : base(new Dictionary<string, IEnumerable<string>>(StringComparer.OrdinalIgnoreCase)
             {
                 { "twitter:card",  Values("app", "gallery", "photo", "player", "product", "summary", "summary_large-image") }
             }) { }

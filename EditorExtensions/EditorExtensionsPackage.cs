@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions
     [ProvideOptionPage(typeof(Settings.GeneralOptions), "Web Essentials", "General", 101, 101, true, new[] { "ZenCoding", "Mustache", "Handlebars", "Comments", "Bundling", "Bundle" })]
     [ProvideOptionPage(typeof(Settings.CssOptions), "Web Essentials", "CSS", 101, 102, true, new[] { "Minify", "Minification", "W3C", "CSS3" })]
     [ProvideOptionPage(typeof(Settings.LessOptions), "Web Essentials", "LESS", 101, 105, true, new[] { "LESS", "Complier", "Minification", "Minify" })]
-    [ProvideOptionPage(typeof(Settings.SassOptions), "Web Essentials", "SASS", 101, 113, true, new[] { "SASS", "Complier", "Minification", "Minify" })]
+    [ProvideOptionPage(typeof(Settings.ScssOptions), "Web Essentials", "SASS", 101, 113, true, new[] { "SASS", "Complier", "Minification", "Minify" })]
     [ProvideOptionPage(typeof(Settings.CoffeeScriptOptions), "Web Essentials", "CoffeeScript", 101, 106, true, new[] { "Iced", "JavaScript", "JS", "JScript" })]
     [ProvideOptionPage(typeof(Settings.JavaScriptOptions), "Web Essentials", "JavaScript", 101, 107, true, new[] { "JScript", "JS", "Minify", "Minification", "EcmaScript" })]
     [ProvideOptionPage(typeof(Settings.BrowserLinkOptions), "Web Essentials", "Browser Link", 101, 108, true, new[] { "HTML menu", "BrowserLink" })]
@@ -33,6 +33,7 @@ namespace MadsKristensen.EditorExtensions
     [ProvideOptionPage(typeof(Settings.CodeGenOptions), "Web Essentials", "Code Generation", 101, 210, true, new[] { "CodeGeneration", "codeGeneration" })]
     [ProvideOptionPage(typeof(Settings.TypeScriptOptions), "Web Essentials", "TypeScript", 101, 210, true, new[] { "TypeScript", "TS" })]
     [ProvideOptionPage(typeof(Settings.HtmlOptions), "Web Essentials", "HTML", 101, 111, true, new[] { "html", "angular", "xhtml" })]
+    [ProvideOptionPage(typeof(Settings.SweetJsOptions), "Web Essentials", "Sweet.js", 101, 111, true, new[] { "Sweet", "SJS", "Sweet.js" })]
     public sealed class EditorExtensionsPackage : Package
     {
         private static DTE2 _dte;
@@ -80,6 +81,7 @@ namespace MadsKristensen.EditorExtensions
                 BundleFilesMenu bundleMenu = new BundleFilesMenu(DTE, mcs);
                 JsHintMenu jsHintMenu = new JsHintMenu(DTE, mcs);
                 TsLintMenu tsLintMenu = new TsLintMenu(DTE, mcs);
+                CoffeeLintMenu coffeeLintMenu = new CoffeeLintMenu(DTE, mcs);
                 JsCodeStyle jsCodeStyleMenu = new JsCodeStyle(DTE, mcs);
                 ProjectSettingsMenu projectSettingsMenu = new ProjectSettingsMenu(DTE, mcs);
                 SolutionColorsMenu solutionColorsMenu = new SolutionColorsMenu(mcs);
@@ -104,6 +106,7 @@ namespace MadsKristensen.EditorExtensions
                 projectSettingsMenu.SetupCommands();
                 jsHintMenu.SetupCommands();
                 tsLintMenu.SetupCommands();
+                coffeeLintMenu.SetupCommands();
                 jsCodeStyleMenu.SetupCommands();
                 bundleMenu.SetupCommands();
                 minifyMenu.SetupCommands();
@@ -155,15 +158,19 @@ namespace MadsKristensen.EditorExtensions
 
                 if (WESettings.Instance.JavaScript.LintOnBuild)
                 {
-                    LintFileInvoker.RunOnAllFilesInProjectAsync(".js", f => new JavaScriptLintReporter(new JsHintCompiler(), f))
+                    LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.js" }, f => new JavaScriptLintReporter(new JsHintCompiler(), f))
                         .DontWait("running solution-wide JSHint");
-                    LintFileInvoker.RunOnAllFilesInProjectAsync(".js", f => new JavaScriptLintReporter(new JsCodeStyleCompiler(), f))
+                    LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.js" }, f => new JavaScriptLintReporter(new JsCodeStyleCompiler(), f))
                         .DontWait("running solution-wide JSCS");
                 }
 
                 if (WESettings.Instance.TypeScript.LintOnBuild)
-                    LintFileInvoker.RunOnAllFilesInProjectAsync(".ts", f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f))
+                    LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.ts" }, f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f))
                         .DontWait("running solution-wide TSLint");
+
+                if (WESettings.Instance.CoffeeScript.LintOnBuild)
+                    LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.coffee", "*.iced" }, f => new LintReporter(new CoffeeLintCompiler(), WESettings.Instance.CoffeeScript, f))
+                        .DontWait("running solution-wide CoffeeLint");
             }
             else if (Action == vsBuildAction.vsBuildActionClean)
             {

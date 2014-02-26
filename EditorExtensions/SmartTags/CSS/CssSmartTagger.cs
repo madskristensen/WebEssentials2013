@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.Web.Editor;
+using Microsoft.Web.Editor.EditorHelpers;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -124,7 +125,7 @@ namespace MadsKristensen.EditorExtensions
                     IEnumerable<ICssSmartTagProvider> providers = _smartTagProviders.GetHandlers(currentItem.GetType());
                     List<ISmartTagAction> actions = new List<ISmartTagAction>();
 
-                    if (providers != null)
+                    if (providers != null && _textBuffer.CurrentSnapshot.Length >= currentItem.AfterEnd)
                     {
                         ITrackingSpan trackingSpan = _textBuffer.CurrentSnapshot.CreateTrackingSpan(currentItem.Start, currentItem.Length, SpanTrackingMode.EdgeInclusive);
 

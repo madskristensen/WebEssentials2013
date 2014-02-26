@@ -73,7 +73,7 @@ namespace MadsKristensen.EditorExtensions
             string outputFile = GetFileName(imageFile, format);
 
             ProjectHelpers.CheckOutFileFromSourceControl(outputFile);
-            File.WriteAllText(outputFile, sb.ToString().Replace("-0px", "0"));
+            File.WriteAllText(outputFile, sb.ToString().Replace("-0px", "0"), Encoding.UTF8);
 
             return outputFile;
         }

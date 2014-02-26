@@ -22,6 +22,13 @@ namespace MadsKristensen.EditorExtensions
                             .SelectMany(o => o.Metadata.ContentTypes)
                             .Select(ctr.Value.GetContentType);
         }
+
+        public static IContentType GetContentType(string name)
+        {
+            var ctr = WebEditor.ExportProvider.GetExport<IContentTypeRegistryService>().Value;
+            return ctr.GetContentType(name);
+        }
+
         ///<summary>Gets all extensions (including leading dot) that export a given service.  Does not return derived content types.</summary>
         public static IEnumerable<string> GetSupportedExtensions<T>()
         {
@@ -35,7 +42,7 @@ namespace MadsKristensen.EditorExtensions
         {
             return new[] {
                 ContentTypeManager.GetContentType("LESS"),
-                ContentTypeManager.GetContentType("SASS")
+                ContentTypeManager.GetContentType("SCSS")
             };
         }
 

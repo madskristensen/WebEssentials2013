@@ -15,23 +15,24 @@ namespace MadsKristensen.EditorExtensions
     public static class IVsExtensions
     {
         ///<summary>Gets a case-insensitive HashSet of all extensions for a given ContentType, including the leading dot.</summary>
-        public static ISet<string> GetFileExtensionSet(this IFileExtensionRegistryService fers, IContentType contentType)
+        public static ISet<string> GetFileExtensionSet(this IFileExtensionRegistryService extService, IContentType contentType)
         {
             return new HashSet<string>(
-                fers.GetExtensionsForContentType(contentType)
+                extService.GetExtensionsForContentType(contentType)
                     .Select(e => "." + e),
                 StringComparer.OrdinalIgnoreCase
             );
         }
 
-        public static void Execute(this EnvDTE.Commands c, Enum commandId, object arg = null)
+        public static void Execute(this EnvDTE.Commands command, Enum commandId, object arg = null)
         {
-            c.Raise(commandId.GetType().GUID.ToString(), Convert.ToInt32(commandId, CultureInfo.InvariantCulture), arg, IntPtr.Zero);
+            command.Raise(commandId.GetType().GUID.ToString(), Convert.ToInt32(commandId, CultureInfo.InvariantCulture), arg, IntPtr.Zero);
         }
-        public static void Execute(this IOleCommandTarget t, Enum commandId, IntPtr inVar = default(IntPtr), IntPtr outVar = default(IntPtr))
+
+        public static void Execute(this IOleCommandTarget target, Enum commandId, IntPtr inHandle = default(IntPtr), IntPtr outHandle = default(IntPtr))
         {
             var c = commandId.GetType().GUID;
-            ErrorHandler.ThrowOnFailure(t.Exec(ref c, Convert.ToUInt32(commandId, CultureInfo.InvariantCulture), 0, inVar, outVar));
+            ErrorHandler.ThrowOnFailure(target.Exec(ref c, Convert.ToUInt32(commandId, CultureInfo.InvariantCulture), 0, inHandle, outHandle));
         }
 
         const uint DISP_E_MEMBERNOTFOUND = 0x80020003;

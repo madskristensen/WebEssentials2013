@@ -12,11 +12,12 @@ namespace MadsKristensen.EditorExtensions.Margin
     [Order(After = PredefinedMarginNames.RightControl)]
     [MarginContainer(PredefinedMarginNames.Right)]
     [ContentType("LESS")]
-    [ContentType("SASS")]
+    [ContentType("SCSS")]
     [ContentType("CoffeeScript")]
     [ContentType(IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType)]
     [ContentType("TypeScript")]
     [ContentType("Markdown")]
+    [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
     [ContentType(SvgContentTypeDefinition.SvgContentType)]
     [TextViewRole(PredefinedTextViewRoles.Debuggable)]
     public sealed class MarginFactory : IWpfTextViewMarginProvider
@@ -29,11 +30,12 @@ namespace MadsKristensen.EditorExtensions.Margin
             { "Svg",               (document) => new SvgMargin(document) },
             { "Markdown",          (document) => new MarkdownMargin(document) },
             { "LESS",              (document) => new TextViewMargin("CSS", document) },
-            { "SASS",              (document) => new TextViewMargin("CSS", document) },
+            { "SCSS",              (document) => new TextViewMargin("CSS", document) },
             { "CoffeeScript",      (document) => new TextViewMargin("JavaScript", document) },
             { "IcedCoffeeScript",  (document) => new TextViewMargin("JavaScript", document) },
             { "TypeScript",        (document) => document.FilePath.EndsWith(".d.ts", StringComparison.OrdinalIgnoreCase) 
-                                                ? null : new TextViewMargin("JavaScript", document) }
+                                                ? null : new TextViewMargin("JavaScript", document) },
+            { "SweetJs",  (document) => new TextViewMargin("JavaScript", document) }
         };
 
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)

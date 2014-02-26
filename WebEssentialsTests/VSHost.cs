@@ -45,7 +45,6 @@ namespace WebEssentialsTests
             return ProjectHelpers.GetCurentTextView();
         }
 
-
         public static Task TypeString(string s)
         {
             // Wait for ApplicationIdle to make sure that all targets have been registered
@@ -67,7 +66,7 @@ namespace WebEssentialsTests
             {
                 // Thanks @JaredPar
                 variantIn = Marshal.AllocCoTaskMem(16); // size of(VARIANT)
-                VariantInit(variantIn);
+                NativeMethods.VariantInit(variantIn);
 
                 foreach (var c in s)
                 {
@@ -87,16 +86,22 @@ namespace WebEssentialsTests
             {
                 if (variantIn != IntPtr.Zero)
                 {
-                    VariantClear(variantIn);
+                    NativeMethods.VariantClear(variantIn);
                     Marshal.FreeCoTaskMem(variantIn);
                 }
             }
         }
 
-        [DllImport("oleaut32")]
-        internal static extern void VariantClear(IntPtr variant);
-        [DllImport("oleaut32")]
-        private static extern void VariantInit(IntPtr pObject);
+        internal static class NativeMethods
+        {
+            [DllImport("oleaut32", CharSet = CharSet.Auto)]
+            [return: MarshalAs(UnmanagedType.I4)]
+            internal static extern Int32 VariantClear(IntPtr variant);
+
+            [DllImport("oleaut32", CharSet = CharSet.Auto)]
+            [return: MarshalAs(UnmanagedType.AsAny)]
+            internal static extern void VariantInit(IntPtr pObject);
+        }
 
         // https://github.com/jaredpar/VsVim/blob/31d9222647ee8008808b8002ab64f4c4230fb81c/Src/VsVimShared/OleCommandUtil.cs#L330
         private static VSConstants.VSStd2KCmdID? GetSpecialCommand(char c)

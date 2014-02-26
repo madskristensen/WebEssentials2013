@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Threading;
@@ -23,7 +24,6 @@ namespace MadsKristensen.EditorExtensions
     {
         private const string DefaultModuleName = "server";
         private const string ModuleNameAttributeName = "TypeScriptModule";
-
         private static readonly Regex IsNumber = new Regex("^[0-9a-fx]+[ul]{0,2}$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         internal static class Ext
@@ -164,7 +164,7 @@ namespace MadsKristensen.EditorExtensions
                 IsEnum = element.Kind == vsCMElement.vsCMElementEnum,
                 FullName = element.FullName,
                 Namespace = GetNamespace(element),
-                Summary = GetSummary(element),
+                Summary = GetSummary(element)
             };
 
             foreach (var codeEnum in element.Members.OfType<CodeVariable>())
@@ -185,23 +185,39 @@ namespace MadsKristensen.EditorExtensions
 
         private static void ProcessClass(CodeClass cc, List<IntellisenseObject> list)
         {
-            var properties = GetProperties(cc.Members, new HashSet<string>()).ToList();
+            var references = new HashSet<string>();
+            var properties = GetProperties(cc.Members, new HashSet<string>(), references).ToList();
+            var dataContractAttribute = cc.Attributes.Cast<CodeAttribute>().Where(a => a.Name == "DataContract");
+            string className = cc.Name;
+            string nsName = GetNamespace(cc);
+
+            if (dataContractAttribute.Any())
+            {
+                var keyValues = dataContractAttribute.First().Children.OfType<CodeAttributeArgument>()
+                               .ToDictionary(a => a.Name, a => (a.Value ?? "").Trim('\"', '\''));
+
+                if (keyValues.ContainsKey("Name"))
+                    className = keyValues["Name"];
+
+                if (keyValues.ContainsKey("Namespace"))
+                    nsName = keyValues["Namespace"];
+            }
 
             if (properties.Any())
             {
-                var intellisenseObject = new IntellisenseObject(properties)
+                var intellisenseObject = new IntellisenseObject(properties, references.ToList())
                 {
-                    Namespace = GetNamespace(cc),
-                    Name = cc.Name,
+                    Namespace = nsName,
+                    Name = className,
                     FullName = cc.FullName,
-                    Summary = GetSummary(cc),
+                    Summary = GetSummary(cc)
                 };
 
                 list.Add(intellisenseObject);
             }
         }
 
-        private static IEnumerable<IntellisenseProperty> GetProperties(CodeElements props, HashSet<string> traversedTypes)
+        private static IEnumerable<IntellisenseProperty> GetProperties(CodeElements props, HashSet<string> traversedTypes, HashSet<string> references = null)
         {
             return from p in props.OfType<CodeProperty>()
                    where !p.Attributes.Cast<CodeAttribute>().Any(a => a.Name == "IgnoreDataMember")
@@ -209,7 +225,7 @@ namespace MadsKristensen.EditorExtensions
                    select new IntellisenseProperty
                    {
                        Name = GetName(p),
-                       Type = GetType(p.Parent, p.Type, traversedTypes),
+                       Type = GetType(p.Parent, p.Type, traversedTypes, references),
                        Summary = GetSummary(p)
                    };
         }
@@ -230,7 +246,7 @@ namespace MadsKristensen.EditorExtensions
             return namespaceFromAttr.FirstOrDefault() ?? DefaultModuleName;
         }
 
-        private static IntellisenseType GetType(CodeClass rootElement, CodeTypeRef codeTypeRef, HashSet<string> traversedTypes)
+        private static IntellisenseType GetType(CodeClass rootElement, CodeTypeRef codeTypeRef, HashSet<string> traversedTypes, HashSet<string> references)
         {
             var isArray = codeTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefArray;
             var isCollection = codeTypeRef.AsString.StartsWith("System.Collections", StringComparison.Ordinal);
@@ -251,15 +267,15 @@ namespace MadsKristensen.EditorExtensions
                     effectiveTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType &&
                     effectiveTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject
                     ?
-                        (codeClass != null && HasIntellisense(codeClass.ProjectItem, Ext.TypeScript) ? (GetNamespace(codeClass) + "." + codeClass.Name) : null) ??
-                        (codeEnum != null && HasIntellisense(codeEnum.ProjectItem, Ext.TypeScript) ? (GetNamespace(codeEnum) + "." + codeEnum.Name) : null)
+                        (codeClass != null && HasIntellisense(codeClass.ProjectItem, Ext.TypeScript, references) ? (GetNamespace(codeClass) + "." + codeClass.Name) : null) ??
+                        (codeEnum != null && HasIntellisense(codeEnum.ProjectItem, Ext.TypeScript, references) ? (GetNamespace(codeEnum) + "." + codeEnum.Name) : null)
                     : null
             };
 
             if (!isPrimitive && codeClass != null && !traversedTypes.Contains(effectiveTypeRef.CodeType.FullName) && !isCollection)
             {
                 traversedTypes.Add(effectiveTypeRef.CodeType.FullName);
-                result.Shape = GetProperties(effectiveTypeRef.CodeType.Members, traversedTypes).ToList();
+                result.Shape = GetProperties(effectiveTypeRef.CodeType.Members, traversedTypes, references).ToList();
                 traversedTypes.Remove(effectiveTypeRef.CodeType.FullName);
             }
 
@@ -280,7 +296,17 @@ namespace MadsKristensen.EditorExtensions
             //     and use the project CodeModel to retrieve it by full name
             //  4) if CodeModel returns null - well, bad luck, don't have any more guesses
             var typeNameAsInCode = codeTypeRef2.AsString.Split('<', '>').ElementAtOrDefault(1) ?? "";
-            var projCodeModel = rootElement.ProjectItem.ContainingProject.CodeModel;
+            CodeModel projCodeModel;
+
+            try
+            {
+                projCodeModel = rootElement.ProjectItem.ContainingProject.CodeModel;
+            }
+            catch (COMException)
+            {
+                projCodeModel = ProjectHelpers.GetActiveProject().CodeModel;
+            }
+
             var codeType = projCodeModel.CodeTypeFromFullName(TryToGuessFullName(typeNameAsInCode));
 
             if (codeType != null) return projCodeModel.CreateCodeTypeRef(codeType);
@@ -320,11 +346,17 @@ namespace MadsKristensen.EditorExtensions
             return false;
         }
 
-        private static bool HasIntellisense(ProjectItem projectItem, string ext)
+        private static bool HasIntellisense(ProjectItem projectItem, string ext, HashSet<string> references)
         {
             for (short i = 0; i < projectItem.FileCount; i++)
             {
-                if (File.Exists(projectItem.FileNames[i] + ext)) return true;
+                var fileName = projectItem.FileNames[i] + ext;
+
+                if (File.Exists(fileName))
+                {
+                    references.Add(fileName);
+                    return true;
+                }
             }
             return false;
         }

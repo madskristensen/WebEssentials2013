@@ -2,6 +2,7 @@
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Web;
 using System.Windows.Forms;
 using Microsoft.Html.Core;
@@ -92,7 +93,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags
                 using (EditorExtensionsPackage.UndoContext((this.DisplayText)))
                 {
                     textBuffer.Replace(new Span(element.Start, element.Length), reference);
-                    File.WriteAllText(fileName, text);
+                    File.WriteAllText(fileName, text, Encoding.UTF8);
                     EditorExtensionsPackage.DTE.ItemOperations.OpenFile(fileName);
                     ProjectHelpers.AddFileToActiveProject(fileName);
                 }

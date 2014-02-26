@@ -36,11 +36,11 @@ namespace MadsKristensen.EditorExtensions
             target.Less.OutputDirectory = GetNonBooleanString("LessCompileToLocation");
 
             // SASS
-            target.Sass.CompileOnSave = GetBoolean("SassGenerateCssFile");
-            target.Sass.ShowPreviewPane = GetBoolean("SassShowPreviewWindow");
-            target.Sass.CompileOnBuild = GetBoolean("SassCompileOnBuild");
-            target.Sass.GenerateSourceMaps = GetBoolean("SassSourceMaps");
-            target.Sass.OutputDirectory = GetNonBooleanString("SassCompileToLocation");
+            target.Scss.CompileOnSave = GetBoolean("SassGenerateCssFile");
+            target.Scss.ShowPreviewPane = GetBoolean("SassShowPreviewWindow");
+            target.Scss.CompileOnBuild = GetBoolean("SassCompileOnBuild");
+            target.Scss.GenerateSourceMaps = GetBoolean("SassSourceMaps");
+            target.Scss.OutputDirectory = GetNonBooleanString("SassCompileToLocation");
 
             // TypeScript
             target.TypeScript.ShowPreviewPane = GetBoolean("TypeScriptShowPreviewWindow");

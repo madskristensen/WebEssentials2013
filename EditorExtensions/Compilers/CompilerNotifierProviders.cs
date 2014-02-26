@@ -24,9 +24,10 @@ namespace MadsKristensen.EditorExtensions.Compilers
     }
     [Export(typeof(ICompilationNotifierProvider))]
     [ContentType("LESS")]
-    [ContentType("SASS")]
+    [ContentType("SCSS")]
     [ContentType("CoffeeScript")]
     [ContentType("IcedCoffeeScript")]
+    [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
     class NodeCompilerNotifierProvider : ICompilationNotifierProvider
     {
         public ICompilationNotifier GetCompilationNotifier(ITextDocument doc)

@@ -7,13 +7,13 @@ using System.Xml.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
-    public class JsCodeStyleCompiler : TsLintCompiler
+    public class JsCodeStyleCompiler : JsHintCompiler
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\jscs\bin\jscs");
         //private static readonly string _jscsReporter = Path.Combine(WebEssentialsResourceDirectory, @"Scripts\jscs-node-reporter.js");
-        private const string _settingsName = ".jscs.json";
+        public new static readonly string ConfigFileName = ".jscs.json";
 
-        public override string SourceExtension { get { return ".js"; } }
+        public override IEnumerable<string> SourceExtensions { get { return new[] { ".js" }; } }
         public override string ServiceName { get { return "JSCS"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
         protected override Func<string, IEnumerable<CompilerError>> ParseErrors
@@ -23,12 +23,26 @@ namespace MadsKristensen.EditorExtensions
 
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
-            GetOrCreateGlobalSettings(_settingsName); // Ensure that default settings exist
+            GetOrCreateGlobalSettings(ConfigFileName); // Ensure that default settings exist
 
             return String.Format(CultureInfo.CurrentCulture, "--reporter \"{0}\" --config \"{1}\" \"{2}\""
                                , "checkstyle"//_jscsReporter https://github.com/mdevils/node-jscs/issues/211
-                               , FindLocalSettings(sourceFileName, _settingsName) ?? GetOrCreateGlobalSettings(".jscs.json")
+                               , FindLocalSettings(sourceFileName, ConfigFileName) ?? GetOrCreateGlobalSettings(".jscs.json")
                                , sourceFileName);
+        }
+
+        protected static string FindLocalSettings(string sourcePath, string settingsName)
+        {
+            string dir = Path.GetDirectoryName(sourcePath);
+
+            while (!File.Exists(Path.Combine(dir, settingsName)))
+            {
+                dir = Path.GetDirectoryName(dir);
+                if (String.IsNullOrEmpty(dir))
+                    return null;
+            }
+
+            return Path.Combine(dir, settingsName);
         }
 
         private IEnumerable<CompilerError> ParseErrorsWithXml(string error)

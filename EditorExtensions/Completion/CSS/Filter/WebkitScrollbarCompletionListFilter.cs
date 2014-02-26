@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor.Intellisense;
 
 namespace MadsKristensen.EditorExtensions
 {

@@ -57,6 +57,7 @@
       <Word>Notifier</Word>
       <Word>Awaitable</Word>
       <Word>Awaiter</Word>
+      <Word>unparsable</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>
@@ -66,10 +67,13 @@
       <Term>TsLint</Term>
       <Term>madskristensen</Term>
       <Term>MadsKristensen</Term>
+      <Term>LintOn</Term>
+      <Term>overqualified</Term>
     </DiscreteExceptions>
   </Words>
   <Acronyms>
     <CasingExceptions>
+      <Acronym>XHTML</Acronym>
     </CasingExceptions>
   </Acronyms>
 </Dictionary>

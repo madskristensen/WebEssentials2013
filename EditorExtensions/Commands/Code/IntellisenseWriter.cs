@@ -16,11 +16,11 @@ namespace MadsKristensen.EditorExtensions
             StringBuilder sb = new StringBuilder();
 
             if (Path.GetExtension(file).Equals(".ts", StringComparison.OrdinalIgnoreCase))
-                WriteTypeScript(objects, sb);
+                WriteTypeScript(objects, sb, file);
             else
                 WriteJavaScript(objects, sb);
 
-            File.WriteAllText(file, sb.ToString());
+            File.WriteAllText(file, sb.ToString(), Encoding.UTF8);
         }
 
         private static string CamelCasePropertyName(string name)
@@ -90,8 +90,11 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        internal static void WriteTypeScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb)
+        internal static void WriteTypeScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb, string file = null)
         {
+            bool extraLineFeed = false;
+            StringBuilder references = new StringBuilder();
+
             foreach (var ns in objects.GroupBy(o => o.Namespace))
             {
                 sb.AppendFormat("declare module {0} {{\r\n", ns.Key);
@@ -122,6 +125,26 @@ namespace MadsKristensen.EditorExtensions
                         sb.Append("\tinterface ").Append(CamelCaseClassName(io.Name)).Append(" ");
                         WriteTSInterfaceDefinition(sb, "\t", io.Properties);
                         sb.AppendLine();
+
+                        if (file != null)
+                        {
+                            foreach (var reference in io.References.SkipWhile(r => r == file))
+                            {
+                                references.Insert(0, string.Format(CultureInfo.InvariantCulture, "/// <reference path=\"{0}\" />\r\n", FileHelpers.RelativePath(file, reference)));
+                            }
+
+                            if (references.Length > 0)
+                            {
+                                if (!extraLineFeed)
+                                {
+                                    references.AppendLine();
+                                    extraLineFeed = true;
+                                }
+
+                                sb.Insert(0, references);
+                                references.Clear();
+                            }
+                        }
                     }
                 }
 
