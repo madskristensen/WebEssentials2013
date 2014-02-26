@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Intellisense;
 using Microsoft.VisualStudio.Utilities;
@@ -7,6 +8,7 @@ using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
+    [HtmlCompletionProvider(CompletionType.Values, "meta", "content")]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
     public class MSApplicationCompletion : StaticListCompletion, IHtmlTreeVisitor
     {
@@ -23,24 +25,24 @@ namespace MadsKristensen.EditorExtensions
             }) { }
 
 
-        public new IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
+        public override IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
         {
             var attr = context.Element.GetAttribute("name");
 
             if (attr == null)
                 return Empty;
 
-            //if (attr.Value.Equals("application-name", StringComparison.OrdinalIgnoreCase)
-            // || attr.Value.Equals("msapplication-tooltip", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    if (context.Element.Parent == null)
-            //        return Empty;
+            if (attr.Value.Equals("application-name", StringComparison.OrdinalIgnoreCase)
+             || attr.Value.Equals("msapplication-tooltip", StringComparison.OrdinalIgnoreCase))
+            {
+                if (context.Element.Parent == null)
+                    return Empty;
 
-            //    var list = new HashSet<string>();
+                var list = new HashSet<string>();
 
-            //    context.Element.Parent.Accept(this, list);
-            //    return Values(list);
-            //}
+                context.Element.Parent.Accept(this, list);
+                return new List<HtmlCompletion>(list.Select(l => new SimpleHtmlCompletion(l, context.Session)));
+            }
 
             return base.GetEntries(context);
         }

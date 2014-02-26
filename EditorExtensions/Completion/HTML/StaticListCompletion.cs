@@ -36,7 +36,7 @@ namespace MadsKristensen.EditorExtensions
             return staticValues;
         }
 
-        public IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
+        public virtual IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
         {
             IEnumerable<string> result;
             var attr = context.Element.GetAttribute(KeyProperty);
