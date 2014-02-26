@@ -52,7 +52,7 @@ namespace MadsKristensen.EditorExtensions
 
             var callingFilename = _buffer.GetFileName();
             var baseFolder = Path.GetDirectoryName(callingFilename);
-            
+
             IEnumerable<Intel.Completion> results;
             if (String.IsNullOrWhiteSpace(info.Item1))
                 results = GetRootCompletions(baseFolder);

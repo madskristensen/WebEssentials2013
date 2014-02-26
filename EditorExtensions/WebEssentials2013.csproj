@@ -852,7 +852,7 @@
     <Content Include="Resources\settings-defaults\coffeelint.json">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\settings-defaults\.jscs.json">
+    <Content Include="Resources\settings-defaults\.jscsrc">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\Scripts\jshint-node-reporter.js">

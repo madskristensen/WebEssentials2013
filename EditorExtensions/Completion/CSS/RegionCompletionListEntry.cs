@@ -23,11 +23,6 @@ namespace MadsKristensen.EditorExtensions
             return string.Empty;
         }
 
-        public StandardGlyphGroup StandardGlyph
-        {
-            get { return StandardGlyphGroup.GlyphCSharpExpansion; }
-        }
-
         public string GetAttribute(string name)
         {
             return string.Empty;

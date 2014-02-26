@@ -7,7 +7,6 @@ using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
-using Microsoft.Less.Core;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -77,7 +76,7 @@ namespace MadsKristensen.EditorExtensions
         private string FindFile(IEnumerable<string> extensions, out int position)
         {
             ICssParser parser = CssParserLocator.FindComponent(Mef.GetContentType(LessContentTypeDefinition.LessContentType)).CreateParser();
-            
+
             string root = ProjectHelpers.GetProjectFolder(TextView.TextBuffer.GetFileName());
             position = -1;
             string result = null;

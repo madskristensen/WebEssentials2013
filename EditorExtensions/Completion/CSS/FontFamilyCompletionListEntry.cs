@@ -78,11 +78,6 @@ namespace MadsKristensen.EditorExtensions
             return text;
         }
 
-        public StandardGlyphGroup StandardGlyph
-        {
-            get { return StandardGlyphGroup.GlyphGroupEnumMember; }
-        }
-
         public bool AllowQuotedString
         {
             get { return true; }
