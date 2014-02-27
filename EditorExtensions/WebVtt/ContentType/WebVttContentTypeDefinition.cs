@@ -1,11 +1,8 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.WebVtt
 {
-    /// <summary>
-    /// Exports the WebVTT content type and file extension
-    /// </summary>
     public class WebVttContentTypeDefinition
     {
         public const string WebVttContentType = "webvtt";

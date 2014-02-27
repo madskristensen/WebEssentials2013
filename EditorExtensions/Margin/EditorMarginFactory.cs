@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using MadsKristensen.EditorExtensions.IcedCoffeeScript;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions.Margin
 {
@@ -11,9 +13,9 @@ namespace MadsKristensen.EditorExtensions.Margin
     [Name("MarginFactory")]
     [Order(After = PredefinedMarginNames.RightControl)]
     [MarginContainer(PredefinedMarginNames.Right)]
-    [ContentType("LESS")]
-    [ContentType("SCSS")]
-    [ContentType("CoffeeScript")]
+    [ContentType(LessContentTypeDefinition.LessContentType)]
+    [ContentType(ScssContentTypeDefinition.ScssContentType)]
+    [ContentType(CoffeeContentTypeDefinition.CoffeeContentType)]
     [ContentType(IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType)]
     [ContentType("TypeScript")]
     [ContentType("Markdown")]

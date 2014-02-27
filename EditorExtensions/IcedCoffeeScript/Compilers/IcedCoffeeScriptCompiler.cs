@@ -2,10 +2,10 @@
 using System.IO;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.IcedCoffeeScript
 {
     [Export(typeof(NodeExecutorBase))]
-    [ContentType("IcedCoffeeScript")]
+    [ContentType(IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType)]
     public class IcedCoffeeScriptCompiler : CoffeeScriptCompiler
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\iced-coffee-script\bin\coffee");

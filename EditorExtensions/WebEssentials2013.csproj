@@ -276,14 +276,14 @@
     <Compile Include="BrowserLink\UnusedCss\UnusedCssMenu.cs" />
     <Compile Include="BrowserLink\UnusedCss\UsageRegistry.cs" />
     <Compile Include="BrowserLink\UploadHelper.cs" />
-    <Compile Include="Classifications\AppCache\AppCacheClassificationTypes.cs" />
-    <Compile Include="Classifications\AppCache\AppCacheClassifier.cs" />
-    <Compile Include="Classifications\AppCache\AppCacheClassifierProvider.cs" />
-    <Compile Include="Classifications\AppCache\AppCacheContentTypeDefinition.cs" />
+    <Compile Include="AppCache\Classify\AppCacheClassificationTypes.cs" />
+    <Compile Include="AppCache\Classify\AppCacheClassifier.cs" />
+    <Compile Include="AppCache\Classify\AppCacheClassifierProvider.cs" />
+    <Compile Include="AppCache\ContentType\AppCacheContentTypeDefinition.cs" />
     <Compile Include="Classifications\CSS\ImportantClassifier.cs" />
     <Compile Include="Classifications\CSS\VariableClassifier.cs" />
     <Compile Include="Classifications\HTML\HtmlRegionTagger.cs" />
-    <Compile Include="Classifications\IcedCoffeeScript\IcedCoffeeScriptContentTypeDefinition.cs" />
+    <Compile Include="IcedCoffeeScript\ContentType\IcedCoffeeScriptContentTypeDefinition.cs" />
     <Compile Include="Classifications\JavaScript\JavaScriptArrayOutlining.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -302,10 +302,10 @@
     <Compile Include="Classifications\Markdown\MarkdownLanguageSupport.cs" />
     <Compile Include="Classifications\Markdown\MarkdownParser.cs" />
     <Compile Include="Classifications\Sweet.js\SweetJsContentTypeDefinition.cs" />
-    <Compile Include="Classifications\WebVTT\WebVttContentTypeDefinition.cs" />
-    <Compile Include="Classifications\WebVTT\WebVttClassificationTypes.cs" />
-    <Compile Include="Classifications\WebVTT\WebVttClassifier.cs" />
-    <Compile Include="Classifications\WebVTT\WebVttClassifierProvider.cs" />
+    <Compile Include="WebVtt\ContentType\WebVttContentTypeDefinition.cs" />
+    <Compile Include="WebVtt\Classify\WebVttClassificationTypes.cs" />
+    <Compile Include="WebVtt\Classify\WebVttClassifier.cs" />
+    <Compile Include="WebVtt\Classify\WebVttClassifierProvider.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassificationTypes.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifier.cs" />
     <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifierProvider.cs" />
@@ -314,7 +314,7 @@
     <Compile Include="Classifications\Markdown\MarkdownContentTypeDefinition.cs" />
     <Compile Include="Classifications\CSS\ModernizrClassifier.cs" />
     <Compile Include="Classifications\SVG\SvgContentTypeDefinition.cs" />
-    <Compile Include="Commands\AppCache\AppCacheCreationListener.cs" />
+    <Compile Include="AppCache\Commands\AppCacheCreationListener.cs" />
     <Compile Include="Commands\CoffeeScript\CoffeeScriptCreationListener.cs" />
     <Compile Include="Commands\IFileSaveListener.cs" />
     <Compile Include="Commands\JavaScript\CommentIndentationCommandTarget.cs" />
@@ -372,7 +372,7 @@
     <Compile Include="Commands\TypeScript\TypeScriptSmartIndentCommandTarget.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptTypeThroughControllerProvider.cs" />
     <Compile Include="Commands\TypeScript\TypeThroughController.cs" />
-    <Compile Include="Commands\WebVTT\WebVttCreationListener.cs" />
+    <Compile Include="WebVtt\Commands\WebVttCreationListener.cs" />
     <Compile Include="Commands\Shared\CommentCommandTarget.cs" />
     <Compile Include="Commands\CoffeeScript\EnterIndentationCommandTarget.cs" />
     <Compile Include="Commands\Code\IntellisenseObject.cs" />
@@ -397,7 +397,7 @@
     <Compile Include="Helpers\Disposable.cs" />
     <Compile Include="ExtensionMethods\Extensions.cs" />
     <Compile Include="Helpers\TabAwareCharacterStream.cs" />
-    <Compile Include="Compilers\CoffeeScript\IcedCoffeeScriptCompiler.cs" />
+    <Compile Include="IcedCoffeeScript\Compilers\IcedCoffeeScriptCompiler.cs" />
     <Compile Include="Compilers\NodeExecutorBase.cs" />
     <Compile Include="Margin\SvgMargin.cs" />
     <Compile Include="Compilers\TypeScriptCompilationNotifier.cs" />
@@ -941,7 +941,9 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Commands\WebVTT\" />
+  </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>

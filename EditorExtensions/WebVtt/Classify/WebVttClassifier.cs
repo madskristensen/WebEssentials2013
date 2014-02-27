@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.WebVtt
 {
     public class WebVttClassifier : IClassifier
     {
