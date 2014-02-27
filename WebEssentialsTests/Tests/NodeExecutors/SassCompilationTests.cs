@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
-using MadsKristensen.EditorExtensions.Compilers;
 using MadsKristensen.EditorExtensions.Scss;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
