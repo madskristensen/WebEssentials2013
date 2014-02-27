@@ -529,8 +529,6 @@
     <Compile Include="Validation\CSS\Providers\UnusedCssTagProvider.cs" />
     <Compile Include="Validation\HTML\BootstrapClassValidator.cs" />
     <Compile Include="Validation\HTML\AngularMissingAppValidator.cs" />
-    <Compile Include="Validation\LESS\Filters\LessAmpersandCssErrorFilter.cs" />
-    <Compile Include="Validation\LESS\Filters\LessExtendCssErrorFilter.cs" />
     <Compile Include="Validation\CSS\Providers\ColorValuesInRangeErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -940,9 +938,7 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Classifications\Markdown\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>
