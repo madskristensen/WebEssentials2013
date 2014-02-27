@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.RobotsTxt
 {
     [Export(typeof(IVsTextViewCreationListener))]
     [Export(typeof(IClassifierProvider))]

@@ -26,7 +26,7 @@ using Microsoft.Web.Editor.EditorHelpers;
 using VSConstants = Microsoft.VisualStudio.VSConstants;
 
 
-namespace MadsKristensen.EditorExtensions.Classifications.Markdown
+namespace MadsKristensen.EditorExtensions.Markdown
 {
     // Abandon all hope ye who enters here.
     // https://twitter.com/Schabse/status/393092191356076032

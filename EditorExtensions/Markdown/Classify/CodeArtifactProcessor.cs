@@ -5,7 +5,7 @@ using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.Html.Core;
 using Microsoft.Web.Core;
 
-namespace MadsKristensen.EditorExtensions.Classifications.Markdown
+namespace MadsKristensen.EditorExtensions.Markdown
 {
     public class MarkdownCodeArtifactProcessor : IArtifactProcessor
     {

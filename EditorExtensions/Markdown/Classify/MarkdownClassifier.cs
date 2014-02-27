@@ -12,7 +12,7 @@ using Microsoft.Web.Core;
 using Microsoft.Web.Editor;
 using Microsoft.Web.Editor.Extensions.Text;
 
-namespace MadsKristensen.EditorExtensions.Classifications.Markdown
+namespace MadsKristensen.EditorExtensions.Markdown
 {
     [Export(typeof(IClassifierProvider))]
     [Order(After = "Microsoft.Html.Editor.Classification.HtmlClassificationProvider")]

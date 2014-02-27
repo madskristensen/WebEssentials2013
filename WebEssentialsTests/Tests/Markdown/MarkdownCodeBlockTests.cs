@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using FluentAssertions;
-using MadsKristensen.EditorExtensions.Classifications.Markdown;
+using MadsKristensen.EditorExtensions.Markdown;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

@@ -9,7 +9,7 @@ using Microsoft.Html.Editor.ContainedLanguage;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor.Formatting;
 
-namespace MadsKristensen.EditorExtensions.Classifications.Markdown
+namespace MadsKristensen.EditorExtensions.Markdown
 {
     [Export(typeof(IContentTypeHandlerProvider))]
     [ContentType(MarkdownContentTypeDefinition.MarkdownContentType)]

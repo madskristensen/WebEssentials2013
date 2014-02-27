@@ -3,7 +3,7 @@ using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.Html.Core;
 using Microsoft.Web.Core;
 
-namespace MadsKristensen.EditorExtensions.Classifications.Markdown
+namespace MadsKristensen.EditorExtensions.Markdown
 {
     // To work properly with the HTML editor, we must return an
     // Artifact as soon as the user types the start characters.

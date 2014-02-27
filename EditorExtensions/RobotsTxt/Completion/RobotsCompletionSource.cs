@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.RobotsTxt
 {
     [Export(typeof(ICompletionSourceProvider))]
     [ContentType("plaintext")]

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using FluentAssertions;
-using MadsKristensen.EditorExtensions.Classifications.Markdown;
+using MadsKristensen.EditorExtensions.Markdown;
 using Microsoft.Html.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Text;

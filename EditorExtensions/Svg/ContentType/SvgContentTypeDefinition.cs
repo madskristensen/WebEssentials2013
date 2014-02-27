@@ -1,11 +1,8 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Svg
 {
-    /// <summary>
-    /// Exports the Svg content type and file extension
-    /// </summary>
     public class SvgContentTypeDefinition
     {
         public const string SvgContentType = "svg";

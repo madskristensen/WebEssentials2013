@@ -21,7 +21,7 @@ using Microsoft.Web.Editor;
 using Microsoft.Web.Editor.ContainedLanguage;
 using Microsoft.Web.Editor.Workspace;
 
-namespace MadsKristensen.EditorExtensions.Classifications.Markdown
+namespace MadsKristensen.EditorExtensions.Markdown
 {
     // Abandon all hope ye who enters here.
     // https://twitter.com/Schabse/status/393092191356076032

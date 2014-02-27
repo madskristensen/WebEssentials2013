@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using MadsKristensen.EditorExtensions.Classifications.Markdown;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions.Completion.Markdown
+namespace MadsKristensen.EditorExtensions.Markdown
 {
     [ContentType(MarkdownContentTypeDefinition.MarkdownContentType)]
     [Order(After = "HTML Completion Source Provider")]

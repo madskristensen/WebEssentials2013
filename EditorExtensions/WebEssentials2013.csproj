@@ -293,27 +293,27 @@
     <Compile Include="Classifications\JavaScript\JavaScriptRegionTagger.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Classifications\Markdown\BufferGenerator.cs" />
-    <Compile Include="Classifications\Markdown\CodeArtifactProcessor.cs" />
-    <Compile Include="Classifications\Markdown\CodeLanguageEmbedders.cs" />
-    <Compile Include="Classifications\Markdown\ContainedLanguageAdapter.cs" />
-    <Compile Include="Classifications\Markdown\ContentTypeHandler.cs" />
-    <Compile Include="Classifications\Markdown\MarkdownOutlineTagger.cs" />
-    <Compile Include="Classifications\Markdown\MarkdownLanguageSupport.cs" />
-    <Compile Include="Classifications\Markdown\MarkdownParser.cs" />
+    <Compile Include="Markdown\Classify\BufferGenerator.cs" />
+    <Compile Include="Markdown\Classify\CodeArtifactProcessor.cs" />
+    <Compile Include="Markdown\Classify\CodeLanguageEmbedders.cs" />
+    <Compile Include="Markdown\Classify\ContainedLanguageAdapter.cs" />
+    <Compile Include="Markdown\ContentType\MarkdownContentTypeHandler.cs" />
+    <Compile Include="Markdown\Outlining\MarkdownOutlineTagger.cs" />
+    <Compile Include="Markdown\Classify\MarkdownLanguageSupport.cs" />
+    <Compile Include="Markdown\Classify\MarkdownParser.cs" />
     <Compile Include="Classifications\Sweet.js\SweetJsContentTypeDefinition.cs" />
+    <Compile Include="RobotsTxt\Classify\RobotsTxtClassificationTypes.cs" />
+    <Compile Include="RobotsTxt\Classify\RobotsTxtClassifier.cs" />
+    <Compile Include="RobotsTxt\Classify\RobotsTxtClassifierProvider.cs" />
     <Compile Include="WebVtt\ContentType\WebVttContentTypeDefinition.cs" />
     <Compile Include="WebVtt\Classify\WebVttClassificationTypes.cs" />
     <Compile Include="WebVtt\Classify\WebVttClassifier.cs" />
     <Compile Include="WebVtt\Classify\WebVttClassifierProvider.cs" />
-    <Compile Include="Classifications\RobotsTxt\RobotsTxtClassificationTypes.cs" />
-    <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifier.cs" />
-    <Compile Include="Classifications\RobotsTxt\RobotsTxtClassifierProvider.cs" />
-    <Compile Include="Classifications\Markdown\MarkdownClassificationTypes.cs" />
-    <Compile Include="Classifications\Markdown\MarkdownClassifier.cs" />
-    <Compile Include="Classifications\Markdown\MarkdownContentTypeDefinition.cs" />
+    <Compile Include="Markdown\Classify\MarkdownClassificationTypes.cs" />
+    <Compile Include="Markdown\Classify\MarkdownClassifier.cs" />
+    <Compile Include="Markdown\ContentType\MarkdownContentTypeDefinition.cs" />
     <Compile Include="Classifications\CSS\ModernizrClassifier.cs" />
-    <Compile Include="Classifications\SVG\SvgContentTypeDefinition.cs" />
+    <Compile Include="Svg\ContentType\SvgContentTypeDefinition.cs" />
     <Compile Include="AppCache\Commands\AppCacheCreationListener.cs" />
     <Compile Include="Commands\CoffeeScript\CoffeeScriptCreationListener.cs" />
     <Compile Include="Commands\IFileSaveListener.cs" />
@@ -392,14 +392,14 @@
     <Compile Include="Completion\CSS\ContextProviders\VariableContextProvider.cs" />
     <Compile Include="Completion\HTML\InputIdAttributeCompletion.cs" />
     <Compile Include="Completion\JavaScript\JsDocCompletionSource.cs" />
-    <Compile Include="Completion\Markdown\MarkdownCompletionFilter.cs" />
+    <Compile Include="Markdown\Completion\MarkdownCompletionFilter.cs" />
     <Compile Include="DropTargets\HtmlImageDrop.cs" />
     <Compile Include="Helpers\Disposable.cs" />
     <Compile Include="ExtensionMethods\Extensions.cs" />
     <Compile Include="Helpers\TabAwareCharacterStream.cs" />
     <Compile Include="IcedCoffeeScript\Compilers\IcedCoffeeScriptCompiler.cs" />
     <Compile Include="Compilers\NodeExecutorBase.cs" />
-    <Compile Include="Margin\SvgMargin.cs" />
+    <Compile Include="Svg\Margin\SvgMargin.cs" />
     <Compile Include="Compilers\TypeScriptCompilationNotifier.cs" />
     <Compile Include="MenuItems\AddIntellisenseFile.cs" />
     <Compile Include="Commands\Code\IntellisenseWriter.cs" />
@@ -490,8 +490,8 @@
     <Compile Include="Completion\JavaScript\StringCompletionSource.cs" />
     <Compile Include="Completion\JavaScript\JavaScriptCompletionSourceProvider.cs" />
     <Compile Include="Completion\JavaScript\JavaScriptCompletionController.cs" />
-    <Compile Include="Completion\RobotsTxt\RobotsCompletionController.cs" />
-    <Compile Include="Completion\RobotsTxt\RobotsCompletionSource.cs" />
+    <Compile Include="RobotsTxt\Completion\RobotsCompletionController.cs" />
+    <Compile Include="RobotsTxt\Completion\RobotsCompletionSource.cs" />
     <Compile Include="DropTargets\BundleDrop.cs" />
     <Compile Include="DropTargets\StylesheetDrop.cs" />
     <Compile Include="DropTargets\FontDrop.cs" />
@@ -591,13 +591,13 @@
     <Compile Include="Compilers\CoffeeScript\CoffeeScriptCompiler.cs" />
     <Compile Include="Helpers\FileHelpers.cs" />
     <Compile Include="Compilers\CompilerResult.cs" />
-    <Compile Include="Margin\MarkdownMargin.cs" />
+    <Compile Include="Markdown\Margin\MarkdownMargin.cs" />
     <Compile Include="Helpers\OptionHelpers.cs" />
     <Compile Include="Margin\MarginBase.cs" />
     <Compile Include="Margin\EditorMarginFactory.cs" />
     <Compile Include="MenuItems\BundleFiles.cs" />
     <Compile Include="MenuItems\BuildMenu.cs" />
-    <Compile Include="MenuItems\Markdown.cs" />
+    <Compile Include="Markdown\MenuItems\Markdown.cs" />
     <Compile Include="MenuItems\SolutionColors.cs" />
     <Compile Include="MenuItems\ProjectSettings.cs" />
     <Compile Include="MenuItems\JsHint.cs" />
@@ -809,8 +809,7 @@
     <EmbeddedResource Include="BrowserLink\UnusedCss\UnusedCss.js" />
     <EmbeddedResource Include="BrowserLink\PixelPushing\PixelPushingModeBrowserLink.js" />
     <EmbeddedResource Include="BrowserLink\Menu\MenuBrowserLink.js" />
-    <Content Include="Classifications\RobotsTxt\robots.txt" />
-    <None Include="Classifications\Markdown\Sample.md" />
+    <None Include="Markdown\Classify\Sample.md" />
   </ItemGroup>
   <ItemGroup>
     <VSCTCompile Include="EditorExtensions.vsct">
@@ -942,7 +941,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Commands\WebVTT\" />
+    <Folder Include="Classifications\Markdown\" />
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>

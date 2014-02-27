@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 using Microsoft.Web.Editor.Extensions.Text;
 
-namespace MadsKristensen.EditorExtensions.Classifications.Markdown
+namespace MadsKristensen.EditorExtensions.Markdown
 {
     [Export(typeof(ITaggerProvider))]
     [TagType(typeof(IOutliningRegionTag))]

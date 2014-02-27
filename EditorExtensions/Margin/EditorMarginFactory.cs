@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using MadsKristensen.EditorExtensions.IcedCoffeeScript;
+using MadsKristensen.EditorExtensions.Markdown;
+using MadsKristensen.EditorExtensions.Svg;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;

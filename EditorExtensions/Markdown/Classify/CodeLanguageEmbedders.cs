@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
-namespace MadsKristensen.EditorExtensions.Classifications.Markdown
+namespace MadsKristensen.EditorExtensions.Markdown
 {
     ///<summary>Preprocesses embedded code Markdown blocks before creating projection buffers.</summary>
     ///<remarks>

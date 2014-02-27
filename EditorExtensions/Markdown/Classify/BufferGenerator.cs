@@ -9,7 +9,7 @@ using Microsoft.Html.Editor.Projection;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
-namespace MadsKristensen.EditorExtensions.Classifications.Markdown
+namespace MadsKristensen.EditorExtensions.Markdown
 {
     class MarkdownBufferGenerator : ArtifactBasedBufferGenerator
     {

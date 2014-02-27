@@ -9,6 +9,7 @@ using EnvDTE80;
 using MadsKristensen.EditorExtensions.BrowserLink.PixelPushing;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using MadsKristensen.EditorExtensions.Compilers;
+using MadsKristensen.EditorExtensions.Markdown;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;

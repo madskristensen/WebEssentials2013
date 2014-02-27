@@ -6,8 +6,9 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Commands;
-using MarkdownSharp;
+using MadsKristensen.EditorExtensions.IcedCoffeeScript;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
 using Task = System.Threading.Tasks.Task;
 
 namespace MadsKristensen.EditorExtensions.Compilers
@@ -130,10 +131,10 @@ namespace MadsKristensen.EditorExtensions.Compilers
     }
 
     [Export(typeof(ICompilerRunnerProvider))]
-    [ContentType("LESS")]
-    [ContentType("SCSS")]
-    [ContentType("CoffeeScript")]
-    [ContentType("IcedCoffeeScript")]
+    [ContentType(LessContentTypeDefinition.LessContentType)]
+    [ContentType(ScssContentTypeDefinition.ScssContentType)]
+    [ContentType(CoffeeContentTypeDefinition.CoffeeContentType)]
+    [ContentType(IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType)]
     [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
     public class NodeCompilerRunnerProvider : ICompilerRunnerProvider
     {
@@ -192,7 +193,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     }
 
     [Export(typeof(ICompilerRunnerProvider))]
-    [ContentType("Markdown")]
+    [ContentType(Markdown.MarkdownContentTypeDefinition.MarkdownContentType)]
     public class MarkdownCompilerRunnerProvider : ICompilerRunnerProvider
     {
         public CompilerRunnerBase GetCompiler(IContentType contentType) { return new MarkdownCompilerRunner(contentType); }
@@ -205,7 +206,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         public override string TargetExtension { get { return ".html"; } }
         protected override Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
         {
-            var result = new Markdown(WESettings.Instance.Markdown).Transform(File.ReadAllText(sourcePath));
+            var result = new MarkdownSharp.Markdown(WESettings.Instance.Markdown).Transform(File.ReadAllText(sourcePath));
             if (!string.IsNullOrEmpty(targetPath))
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(targetPath);   // TODO: Only if output changed?

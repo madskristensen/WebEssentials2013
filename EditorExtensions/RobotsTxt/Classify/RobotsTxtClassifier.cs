@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.RobotsTxt
 {
     public class RobotsTxtClassifier : IClassifier
     {

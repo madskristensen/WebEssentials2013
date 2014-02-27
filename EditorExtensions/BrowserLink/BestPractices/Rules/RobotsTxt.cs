@@ -6,11 +6,11 @@ using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions
 {
-    public class RobotsTxt : IRule
+    public class RobotsTxtRule : IRule
     {
         private BestPractices _extension;
 
-        public RobotsTxt(BestPractices extension)
+        public RobotsTxtRule(BestPractices extension)
         {
             _extension = extension;
         }

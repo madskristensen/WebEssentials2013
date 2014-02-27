@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.VisualStudio.Text;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Markdown
 {
     internal class MarkdownMargin : CompilingMarginBase
     {
