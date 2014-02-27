@@ -36,7 +36,7 @@ namespace MadsKristensen.EditorExtensions
             if (document.TextBuffer == null || e.FileActionType != FileActionTypes.ContentSavedToDisk)
                 return;
 
-            ProcessAsync(e.FilePath).DontWait("Creating IntelliSense file(s) for " + e.FilePath);
+            ProcessAsync(e.FilePath).DontWait("creating IntelliSense file(s) for " + e.FilePath);
         }
         public static Task<bool> ProcessAsync(string filePath)
         {

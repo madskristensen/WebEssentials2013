@@ -86,7 +86,7 @@ namespace MadsKristensen.EditorExtensions.SmartTags.HTML
 
                 if (!string.IsNullOrEmpty(fileName))
                 {
-                    DownloadFileAsync(url, fileName).DontWait("Download a file from a remote source to the local file system.");
+                    DownloadFileAsync(url, fileName).DontWait("downloading " + url + " to disk");
                     ReplaceUrlValue(fileName, textBuffer, _attribute);
                 }
             }
