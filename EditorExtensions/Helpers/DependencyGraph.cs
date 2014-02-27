@@ -193,6 +193,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
         }
         #endregion
     }
+
     ///<summary>A DependencyGraph that reads Visual Studio solutions.</summary>
     ///<remarks>
     /// Derived classes must contain the following attributes:
@@ -326,6 +327,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
         }
         #endregion
     }
+
     public class CssDependencyGraph : VsDependencyGraph
     {
         public string Extension { get; private set; }
@@ -347,10 +349,11 @@ namespace MadsKristensen.EditorExtensions.Helpers
         private static IEnumerable<string> GetImportPaths(Uri sourceUri, ImportDirective importDirective)
         {
             return CssDocumentHelpers.GetSourceUrisFromImport(sourceUri, importDirective)
-                                     .Where(t => t.Item1.IsFile && !t.Item1.OriginalString.StartsWith("//"))    // Skip protocol-relative paths
+                                     .Where(t => t.Item1.IsFile && !t.Item1.OriginalString.StartsWith("//", StringComparison.Ordinal))    // Skip protocol-relative paths
                                      .Select(t => t.Item1.LocalPath);
         }
     }
+
     [Export(typeof(DependencyGraph))]
     [Export(typeof(IFileSaveListener))]
     [ContentType("LESS")]
@@ -361,6 +364,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
             : base(".less", fileExtensionRegistry)
         { }
     }
+
     [Export(typeof(DependencyGraph))]
     [Export(typeof(IFileSaveListener))]
     [ContentType("SCSS")]

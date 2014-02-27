@@ -21,15 +21,15 @@ namespace MadsKristensen.EditorExtensions
 
                 //if (!File.Exists(userPath))
                 //{
-                    string assembly = Assembly.GetExecutingAssembly().Location;
-                    string folder = Path.GetDirectoryName(assembly).ToLowerInvariant();
-                    string file = Path.Combine(folder, path);
+                string assembly = Assembly.GetExecutingAssembly().Location;
+                string folder = Path.GetDirectoryName(assembly).ToLowerInvariant();
+                string file = Path.Combine(folder, path);
 
-                    if (!File.Exists(file))
-                        return;
+                if (!File.Exists(file))
+                    return;
 
-                    File.Copy(file, userPath, true);
-                    UpdateRegistry(userPath);
+                File.Copy(file, userPath, true);
+                UpdateRegistry(userPath);
                 //}
             }
             catch
@@ -59,7 +59,7 @@ namespace MadsKristensen.EditorExtensions
                     return;
 
                 string newValue = value;
-                int index = value.IndexOf(fileName);
+                int index = value.IndexOf(fileName, StringComparison.OrdinalIgnoreCase);
 
                 if (index > -1)
                 {
@@ -70,7 +70,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    int startWeb = value.IndexOf("Implicit (Web)");
+                    int startWeb = value.IndexOf("Implicit (Web)", StringComparison.OrdinalIgnoreCase);
                     int semicolon = value.IndexOf(';', startWeb);
 
                     if (semicolon > -1)
