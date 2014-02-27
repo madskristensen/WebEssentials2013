@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.Composition;
 using System.IO;
 using System.Text;
+using MadsKristensen.EditorExtensions.CoffeeScript;
+using MadsKristensen.EditorExtensions.TypeScript;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;

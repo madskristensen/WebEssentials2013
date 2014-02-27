@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Commands;
 using MadsKristensen.EditorExtensions.IcedCoffeeScript;
+using MadsKristensen.EditorExtensions.SweetJs;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 using Task = System.Threading.Tasks.Task;

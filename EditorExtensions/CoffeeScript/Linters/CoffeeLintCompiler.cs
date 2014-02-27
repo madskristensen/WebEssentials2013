@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.CoffeeScript
 {
     public class CoffeeLintCompiler : JsHintCompiler
     {

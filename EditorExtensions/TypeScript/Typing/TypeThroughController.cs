@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.Web.Editor;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.TypeScript
 {
     public class TypeThroughController : IIntellisenseController
     {

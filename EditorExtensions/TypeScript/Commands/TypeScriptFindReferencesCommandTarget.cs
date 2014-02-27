@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.TextManager.Interop;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.TypeScript
 {
     internal class TypeScriptFindReferences : CommandTargetBase<VSConstants.VSStd97CmdID>
     {

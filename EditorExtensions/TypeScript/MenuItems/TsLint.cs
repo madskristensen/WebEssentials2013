@@ -6,14 +6,14 @@ using System.Linq;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.TypeScript
 {
-    internal class CoffeeLintMenu
+    internal class TsLintMenu
     {
         private DTE2 _dte;
         private OleMenuCommandService _mcs;
 
-        public CoffeeLintMenu(DTE2 dte, OleMenuCommandService mcs)
+        public TsLintMenu(DTE2 dte, OleMenuCommandService mcs)
         {
             _dte = dte;
             _mcs = mcs;
@@ -21,43 +21,42 @@ namespace MadsKristensen.EditorExtensions
 
         public void SetupCommands()
         {
-            CommandID commandId = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.RunCoffeeLint);
-            OleMenuCommand menuCommand = new OleMenuCommand((s, e) => RunCoffeeLint(), commandId);
+            CommandID commandId = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.RunTsLint);
+            OleMenuCommand menuCommand = new OleMenuCommand((s, e) => RunTsLint(), commandId);
             menuCommand.BeforeQueryStatus += menuCommand_BeforeQueryStatus;
             _mcs.AddCommand(menuCommand);
 
-            CommandID edit = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.EditGlobalCoffeeLint);
-            OleMenuCommand editCommand = new OleMenuCommand((s, e) => EditGlobalCoffeeLintFile(), edit);
+            CommandID edit = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.EditGlobalTsLint);
+            OleMenuCommand editCommand = new OleMenuCommand((s, e) => EditGlobalTsLintFile(), edit);
             _mcs.AddCommand(editCommand);
         }
 
-        private void EditGlobalCoffeeLintFile()
+        private void EditGlobalTsLintFile()
         {
-            string fileName = CoffeeLintCompiler.GetOrCreateGlobalSettings(CoffeeLintCompiler.ConfigFileName);
+            string fileName = TsLintCompiler.GetOrCreateGlobalSettings(TsLintCompiler.ConfigFileName);
             _dte.ItemOperations.OpenFile(fileName);
         }
 
         private List<string> files;
-        private static IEnumerable<string> _sourceExtensions = new CoffeeLintCompiler().SourceExtensions;
 
         void menuCommand_BeforeQueryStatus(object sender, System.EventArgs e)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
             files = ProjectHelpers.GetSelectedFilePaths()
-                    .Where(f => _sourceExtensions.Contains(Path.GetExtension(f)))
+                    .Where(f => Path.GetExtension(f).Equals(".ts", System.StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
             menuCommand.Enabled = files.Count > 0;
         }
 
         [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        private void RunCoffeeLint()
+        private void RunTsLint()
         {
             LintReporter.Reset();            // TODO: Why?
 
             foreach (string file in files)
             {
-                var runner = new LintReporter(new CoffeeLintCompiler(), WESettings.Instance.CoffeeScript, file);
+                var runner = new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, file);
                 runner.RunLinterAsync().DontWait("linting " + file);
             }
         }

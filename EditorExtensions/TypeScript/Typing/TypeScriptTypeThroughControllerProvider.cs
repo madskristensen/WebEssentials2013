@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.TypeScript
 {
     [Export(typeof(IIntellisenseControllerProvider))]
     [ContentType("TypeScript")]

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.TypeScript
 {
     public class TsLintCompiler : JsHintCompiler
     {

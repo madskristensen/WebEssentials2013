@@ -5,30 +5,33 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.CoffeeScript
 {
     [Export(typeof(NodeExecutorBase))]
-    [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
-    public class SweetJsCompiler : NodeExecutorBase
+    [ContentType("CoffeeScript")]
+    public class CoffeeScriptCompiler : NodeExecutorBase
     {
-        private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\sweet.js\bin\sjs");
+        private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\coffee-script\bin\coffee");
         private static readonly Regex _errorParsingPattern = new Regex(@"(?<fileName>.*):(?<line>.\d*):(?<column>.\d*): error: (?<message>.*\n.*)", RegexOptions.Multiline);
 
         public override string TargetExtension { get { return ".js"; } }
-        public override bool GenerateSourceMap { get { return WESettings.Instance.SweetJs.GenerateSourceMaps; } }
-        public override string ServiceName { get { return SweetJsContentTypeDefinition.SweetJsContentType; } }
+        public override bool GenerateSourceMap { get { return WESettings.Instance.CoffeeScript.GenerateSourceMaps; } }
+        public override string ServiceName { get { return "CoffeeScript"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
-        public override bool RequireMatchingFileName { get { return false; } }
+        public override bool RequireMatchingFileName { get { return true; } }
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
 
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
             var args = new StringBuilder();
 
-            if (GenerateSourceMap)
-                args.Append("--sourcemap ");
+            if (!WESettings.Instance.CoffeeScript.WrapClosure)
+                args.Append("--bare ");
 
-            args.AppendFormat(CultureInfo.CurrentCulture, "--output \"{0}\" \"{1}\"", targetFileName, sourceFileName);
+            if (GenerateSourceMap)
+                args.Append("--map ");
+
+            args.AppendFormat(CultureInfo.CurrentCulture, "--output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
             return args.ToString();
         }
 

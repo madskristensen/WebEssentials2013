@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.CoffeeScript
 {
     [Export(typeof(IVsTextViewCreationListener))]
     [ContentType(CoffeeContentTypeDefinition.CoffeeContentType)]

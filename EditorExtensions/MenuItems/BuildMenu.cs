@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using EnvDTE80;
 using MadsKristensen.EditorExtensions.Compilers;
 using MadsKristensen.EditorExtensions.Optimization.Minification;
+using MadsKristensen.EditorExtensions.SweetJs;
 using Microsoft.Html.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;
