@@ -46,7 +46,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             if (parentBlock == null)
                 return ruleSet.Selectors.Select(CssExtensions.SelectorText);
 
-            var parentSet = parentBlock.Parent as RuleSet;
+            var parentSet = parentBlock.FindType<RuleSet>();
 
             if (parentSet == null)
                 return ruleSet.Selectors.Select(CssExtensions.SelectorText);

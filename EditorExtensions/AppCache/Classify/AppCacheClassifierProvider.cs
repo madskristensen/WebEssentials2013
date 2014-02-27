@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.AppCache
 {
     [Export(typeof(IClassifierProvider))]
     [ContentType(AppCacheContentTypeDefinition.AppCacheContentType)]

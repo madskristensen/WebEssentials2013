@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.IcedCoffeeScript
 {
     /// <summary>
     /// Exports the IcedCoffeeScript content type and file extension
