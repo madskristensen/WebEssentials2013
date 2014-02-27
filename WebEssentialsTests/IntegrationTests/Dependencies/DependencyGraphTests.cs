@@ -9,6 +9,7 @@ using EnvDTE80;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using MadsKristensen.EditorExtensions.Helpers;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VisualStudio.Utilities;

@@ -1,6 +1,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions.Svg

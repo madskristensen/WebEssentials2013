@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions.CoffeeScript

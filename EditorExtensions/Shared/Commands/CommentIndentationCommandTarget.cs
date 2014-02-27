@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using EnvDTE;
 using MadsKristensen.EditorExtensions.JavaScript;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 

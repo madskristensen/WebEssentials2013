@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;

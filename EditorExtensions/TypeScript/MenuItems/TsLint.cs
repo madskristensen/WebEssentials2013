@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using EnvDTE80;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions.TypeScript

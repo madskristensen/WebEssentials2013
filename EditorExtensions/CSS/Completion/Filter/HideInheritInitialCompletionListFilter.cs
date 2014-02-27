@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor.Intellisense;

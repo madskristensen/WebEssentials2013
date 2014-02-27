@@ -4,6 +4,7 @@ using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using MadsKristensen.EditorExtensions.Less;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.Html.Editor;

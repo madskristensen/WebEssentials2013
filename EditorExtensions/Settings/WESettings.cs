@@ -6,7 +6,7 @@ using ConfOxide;
 using MarkdownSharp;
 using Microsoft.VisualStudio.Shell;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Settings
 {
     public sealed class WESettings : SettingsBase<WESettings>
     {

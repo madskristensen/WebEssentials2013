@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ConfOxide.MemberAccess;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using MadsKristensen.EditorExtensions.Optimization.Minification;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.Html.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Utilities;

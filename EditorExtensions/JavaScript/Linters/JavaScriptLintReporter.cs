@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 using EnvDTE;
+using MadsKristensen.EditorExtensions.Settings;
 using Task = System.Threading.Tasks.Task;
 
 namespace MadsKristensen.EditorExtensions.JavaScript

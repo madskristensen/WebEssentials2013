@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using EnvDTE;
 using FluentAssertions;
-using MadsKristensen.EditorExtensions;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.VSSDK.Tools.VsIdeTesting;
 

@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
-using MadsKristensen.EditorExtensions;
 using MadsKristensen.EditorExtensions.Scss;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebEssentialsTests

@@ -3,6 +3,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using EnvDTE80;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions.JavaScript

@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using MadsKristensen.EditorExtensions;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebEssentialsTests.Tests.IntellisenseGeneration
