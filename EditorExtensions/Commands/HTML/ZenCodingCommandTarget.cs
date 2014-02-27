@@ -59,9 +59,10 @@ namespace MadsKristensen.EditorExtensions
                         ITextSelection selection = UpdateTextBuffer(zenSpan, result);
 
                         Span newSpan = new Span(zenSpan.Start, selection.SelectedSpans[0].Length);
-                        SetCaret(newSpan, false);
 
                         EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                        SetCaret(newSpan, false);
+
                         selection.Clear();
                     }
                 }), DispatcherPriority.ApplicationIdle, null);
