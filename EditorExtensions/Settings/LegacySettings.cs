@@ -3,7 +3,7 @@ using System;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.Shell;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Settings
 {
     ///<summary>Migrates settings from legacy XML settings files to the new ConfOxide-based settings objects.</summary>
     public class SettingsMigrator

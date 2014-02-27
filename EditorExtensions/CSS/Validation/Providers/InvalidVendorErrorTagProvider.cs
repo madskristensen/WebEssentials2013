@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Schemas;
 using Microsoft.VisualStudio.Utilities;
@@ -13,13 +14,6 @@ namespace MadsKristensen.EditorExtensions.Css
     [Order(After = "Ie10PrefixErrorTagProvider")]
     internal class InvalidVendorDeclarationErrorTagProvider : ICssItemChecker
     {
-        //private HashSet<string> _deprecated = new HashSet<string>()
-        //{
-        //    "-moz-opacity",
-        //    "-moz-outline",
-        //    "-moz-outline-style",
-        //};
-
         public ItemCheckResult CheckItem(ParseItem item, ICssCheckerContext context)
         {
             if (!WESettings.Instance.Css.ValidateVendorSpecifics)
@@ -33,12 +27,6 @@ namespace MadsKristensen.EditorExtensions.Css
             ICssSchemaInstance rootSchema = CssSchemaManager.SchemaManager.GetSchemaRoot(null);
             ICssSchemaInstance schema = CssSchemaManager.SchemaManager.GetSchemaForItem(rootSchema, item);
 
-            //if (_deprecated.Contains(dec.PropertyName.Text))
-            //{
-            //    string message = string.Format(Resources.ValidationDeprecatedVendorDeclaration, dec.PropertyName.Text);
-            //    context.AddError(new SimpleErrorTag(dec.PropertyName, message));
-            //    return ItemCheckResult.CancelCurrentItem;
-            //}
             if (schema.GetProperty(dec.PropertyName.Text) == null)
             {
                 string message = string.Format(CultureInfo.CurrentCulture, Resources.ValidationVendorDeclarations, dec.PropertyName.Text);

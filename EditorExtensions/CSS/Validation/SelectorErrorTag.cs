@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions.Css

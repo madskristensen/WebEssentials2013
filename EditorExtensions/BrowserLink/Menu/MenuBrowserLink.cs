@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.Menu

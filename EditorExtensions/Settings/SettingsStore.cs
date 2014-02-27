@@ -5,7 +5,7 @@ using EnvDTE;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell.Settings;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Settings
 {
     internal static class SettingsStore
     {

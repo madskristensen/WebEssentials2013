@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Windows.Forms;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 

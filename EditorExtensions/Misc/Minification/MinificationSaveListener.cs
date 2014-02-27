@@ -2,6 +2,7 @@
 using System.ComponentModel.Composition;
 using System.IO;
 using MadsKristensen.EditorExtensions.Commands;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions.Optimization.Minification

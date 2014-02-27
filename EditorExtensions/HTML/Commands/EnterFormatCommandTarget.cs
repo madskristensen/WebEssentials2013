@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Threading;
 using MadsKristensen.EditorExtensions.Css;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
 using Microsoft.Html.Schemas;

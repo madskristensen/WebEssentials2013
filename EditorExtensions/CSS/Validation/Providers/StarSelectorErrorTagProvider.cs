@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Utilities;
 

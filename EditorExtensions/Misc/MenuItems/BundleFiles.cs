@@ -12,6 +12,7 @@ using EnvDTE;
 using EnvDTE80;
 using MadsKristensen.EditorExtensions.Helpers;
 using MadsKristensen.EditorExtensions.Optimization.Minification;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;

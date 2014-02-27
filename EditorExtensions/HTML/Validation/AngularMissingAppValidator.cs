@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Validation.Validators;
 using Microsoft.Html.Validation;
