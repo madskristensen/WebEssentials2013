@@ -4,11 +4,12 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
 
-namespace MadsKristensen.EditorExtensions.Compilers
+namespace MadsKristensen.EditorExtensions.Scss
 {
     [Export(typeof(NodeExecutorBase))]
-    [ContentType("SCSS")]
+    [ContentType(ScssContentTypeDefinition.ScssContentType)]
     public class SassCompiler : CssCompilerBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\node-sass\bin\node-sass");

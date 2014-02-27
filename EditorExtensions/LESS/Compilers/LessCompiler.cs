@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions.Compilers
+namespace MadsKristensen.EditorExtensions.Less
 {
     [Export(typeof(NodeExecutorBase))]
     [ContentType("LESS")]

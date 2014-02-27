@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Drawing;
+using MadsKristensen.EditorExtensions.Css;
 using Microsoft.CSS.Core;
 using Microsoft.Less.Core;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -9,7 +10,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions.Css
+namespace MadsKristensen.EditorExtensions.Less
 {
     [Export(typeof(ICssSmartTagProvider))]
     [Name("LessExtractHexVariableSmartTagProvider")]

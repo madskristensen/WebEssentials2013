@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Less
 {
     [Export(typeof(IWpfTextViewConnectionListener))]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]

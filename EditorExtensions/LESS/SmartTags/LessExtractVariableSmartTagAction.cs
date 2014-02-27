@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media.Imaging;
+using MadsKristensen.EditorExtensions.Css;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
 
-namespace MadsKristensen.EditorExtensions.Css
+namespace MadsKristensen.EditorExtensions.Less
 {
     internal class LessExtractVariableSmartTagAction : CssSmartTagActionBase
     {

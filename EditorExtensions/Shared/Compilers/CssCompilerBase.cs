@@ -9,7 +9,7 @@ using System.Web.Helpers;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.CSS.Core;
 
-namespace MadsKristensen.EditorExtensions.Compilers
+namespace MadsKristensen.EditorExtensions
 {
     ///<summary>A base class for a compiler that rewrites CSS source maps.</summary>
     public abstract class CssCompilerBase : NodeExecutorBase

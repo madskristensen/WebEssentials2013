@@ -5,7 +5,7 @@ using MadsKristensen.EditorExtensions.Css;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Less
 {
     [Export(typeof(ICssItemChecker))]
     [Name("ImportOnceErrorTagProvider")]
