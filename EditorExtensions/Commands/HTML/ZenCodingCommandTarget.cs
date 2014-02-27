@@ -111,11 +111,9 @@ namespace MadsKristensen.EditorExtensions
             Span quote = FindTabSpan(zenSpan, isReverse, text, _quotes);
             Span bracket = FindTabSpan(zenSpan, isReverse, text, _bracket);
 
-            if (!isReverse && bracket.Start > 0 && (bracket.Start < quote.Start || quote.Start == 0))
-            {
-                quote = bracket;
-            }
-            else if (isReverse && bracket.Start > 0 && (bracket.Start > quote.Start || quote.Start == 0))
+            if (bracket.Start > 0 && (quote.Start == 0 ||
+                                      (!isReverse && (bracket.Start < quote.Start)) ||
+                                      (isReverse && (bracket.Start > quote.Start))))
             {
                 quote = bracket;
             }
