@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     [Export(typeof(IVsTextViewCreationListener))]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     [ContentType("LESS")]
-    //[ContentType("SASS")]
+    [ContentType("SCSS")]
 
     class CompilationChainer : IVsTextViewCreationListener
     {
@@ -40,8 +40,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
             var compilerRunner = compilerProvider.GetCompiler(contentType);
 
             var graph = GetGraph(contentType);
-            notifier.CompilationReady += async (s, e) =>
-            {
+            notifier.CompilationReady += async (s, e) => {
                 if (!settings.CompileOnSave || !settings.EnableChainCompilation)
                     return;
 

@@ -358,7 +358,7 @@ namespace MadsKristensen.EditorExtensions
 
     public sealed class LessSettings : ChainableCompilationSettings<LessSettings> { }
 
-    public sealed class ScssSettings : CompilationSettings<ScssSettings> { }
+    public sealed class ScssSettings : ChainableCompilationSettings<ScssSettings> { }
 
     public sealed class CoffeeScriptSettings : CompilationSettings<CoffeeScriptSettings>, ILinterSettings
     {

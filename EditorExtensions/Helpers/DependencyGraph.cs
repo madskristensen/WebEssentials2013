@@ -359,7 +359,16 @@ namespace MadsKristensen.EditorExtensions.Helpers
         [ImportingConstructor]
         public LessDependencyGraph(IFileExtensionRegistryService fileExtensionRegistry)
             : base(".less", fileExtensionRegistry)
-        {
-        }
+        { }
+    }
+    [Export(typeof(DependencyGraph))]
+    [Export(typeof(IFileSaveListener))]
+    [ContentType("SCSS")]
+    public class ScssDependencyGraph : CssDependencyGraph
+    {
+        [ImportingConstructor]
+        public ScssDependencyGraph(IFileExtensionRegistryService fileExtensionRegistry)
+            : base(".scss", fileExtensionRegistry)
+        { }
     }
 }
