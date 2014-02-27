@@ -64,7 +64,7 @@ namespace MadsKristensen.EditorExtensions
             _browser.NavigateToString(html);
         }
 
-        protected override FrameworkElement CreatePreviewControl(double width)
+        protected override FrameworkElement CreatePreviewControl()
         {
             _browser = new WebBrowser();
             _browser.HorizontalAlignment = HorizontalAlignment.Stretch;
