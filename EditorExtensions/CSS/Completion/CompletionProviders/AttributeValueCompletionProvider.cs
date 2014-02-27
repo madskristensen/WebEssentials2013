@@ -7,7 +7,7 @@ using Microsoft.Html.Schemas;
 using Microsoft.Html.Schemas.Model;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Css
 {
     [Export(typeof(ICssCompletionProvider))]
     [Name("AttributeValueCompletionProvider")]

@@ -5,7 +5,7 @@ using Microsoft.CSS.Editor.Schemas;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Css
 {
     [Export(typeof(ICssSchemaFilterProvider))]
     [Name("HideUnsupportedSchemaFilterProvider")]

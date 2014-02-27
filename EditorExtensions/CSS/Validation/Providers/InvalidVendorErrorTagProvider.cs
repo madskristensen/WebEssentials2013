@@ -6,7 +6,7 @@ using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Schemas;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Css
 {
     [Export(typeof(ICssItemChecker))]
     [Name("InvalidVendorDeclarationErrorTagProvider")]

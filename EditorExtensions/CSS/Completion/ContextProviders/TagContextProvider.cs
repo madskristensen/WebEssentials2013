@@ -5,7 +5,7 @@ using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Css
 {
     [Export(typeof(ICssCompletionContextProvider))]
     [Name("TagCompletionContextProvider")]

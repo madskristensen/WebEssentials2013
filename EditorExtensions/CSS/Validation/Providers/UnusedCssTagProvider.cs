@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor.EditorHelpers;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Css
 {
     internal class UnusedCssTag : IErrorTag, IRange, ITagSpan<IErrorTag>
     {

@@ -8,7 +8,7 @@ using Microsoft.CSS.Editor.Schemas;
 using Microsoft.CSS.Editor.SyntaxCheck;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Css
 {
     [Export(typeof(ICssItemChecker))]
     [Name("MissingVendorDirectiveErrorTagProvider")]

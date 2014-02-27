@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using MadsKristensen.EditorExtensions.Css;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Utilities;
 

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.CSS.Core;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Css
 {
     internal class SelectorErrorTag : ICssError
     {

@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.Web.Editor;
 using Microsoft.Web.Editor.Intellisense;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Css
 {
     internal class CompletionListEntry : ICssCompletionListEntry
     {

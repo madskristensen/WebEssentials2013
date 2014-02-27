@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Css
 {
     [Export(typeof(IWpfTextViewConnectionListener))]
     [ContentType(Microsoft.Web.Editor.CssContentTypeDefinition.CssContentType)]

@@ -6,7 +6,7 @@ using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor.Intellisense;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Css
 {
     [Export(typeof(ICssCompletionListFilter))]
     [Name("WebkitScrollbarCompletionListFilter")]

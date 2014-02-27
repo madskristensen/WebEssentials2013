@@ -3,7 +3,7 @@ using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Text;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Css
 {
     /// <summary>
     /// This represents a font family in the completion list

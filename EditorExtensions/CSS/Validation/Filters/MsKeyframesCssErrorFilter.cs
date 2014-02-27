@@ -3,7 +3,7 @@ using System.ComponentModel.Composition;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Css
 {
     [Export(typeof(ICssErrorFilter))]
     [Name("MsKeyframesCssErrorFilter")]

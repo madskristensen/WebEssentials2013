@@ -6,7 +6,7 @@ using System.IO;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Css
 {
     [Export(typeof(ICssItemChecker))]
     [Name("EmbedImagesErrorTagProvider")]
