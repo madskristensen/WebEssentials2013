@@ -59,9 +59,10 @@ namespace MadsKristensen.EditorExtensions
                         ITextSelection selection = UpdateTextBuffer(zenSpan, result);
 
                         Span newSpan = new Span(zenSpan.Start, selection.SelectedSpans[0].Length);
-                        SetCaret(newSpan, false);
 
                         EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                        SetCaret(newSpan, false);
+
                         selection.Clear();
                     }
                 }), DispatcherPriority.ApplicationIdle, null);
@@ -111,11 +112,9 @@ namespace MadsKristensen.EditorExtensions
             Span quote = FindTabSpan(zenSpan, isReverse, text, _quotes);
             Span bracket = FindTabSpan(zenSpan, isReverse, text, _bracket);
 
-            if (!isReverse && bracket.Start > 0 && (bracket.Start < quote.Start || quote.Start == 0))
-            {
-                quote = bracket;
-            }
-            else if (isReverse && bracket.Start > 0 && (bracket.Start > quote.Start || quote.Start == 0))
+            if (bracket.Start > 0 && (quote.Start == 0 ||
+                                      (!isReverse && (bracket.Start < quote.Start)) ||
+                                      (isReverse && (bracket.Start > quote.Start))))
             {
                 quote = bracket;
             }
