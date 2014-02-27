@@ -35,7 +35,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        protected abstract FrameworkElement CreatePreviewControl(double width);
+        protected abstract FrameworkElement CreatePreviewControl();
 
         protected virtual void CreateMarginControls()
         {
@@ -51,10 +51,10 @@ namespace MadsKristensen.EditorExtensions
             Grid grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0, GridUnitType.Star) });
             grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(5, GridUnitType.Pixel) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(0, GridUnitType.Auto) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(width, GridUnitType.Pixel) });
             grid.RowDefinitions.Add(new RowDefinition());
 
-            _previewControl = CreatePreviewControl(width);
+            _previewControl = CreatePreviewControl();
             grid.Children.Add(_previewControl);
             Children.Add(grid);
 

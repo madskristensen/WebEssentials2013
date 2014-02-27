@@ -18,10 +18,9 @@ namespace MadsKristensen.EditorExtensions.Margin
             _previewContentType = targetContentType;
         }
 
-        protected override FrameworkElement CreatePreviewControl(double width)
+        protected override FrameworkElement CreatePreviewControl()
         {
             _previewTextHost = CreateTextViewHost(_previewContentType);
-            _previewTextHost.TextView.VisualElement.MinWidth = width;
             _previewTextHost.TextView.VisualElement.HorizontalAlignment = HorizontalAlignment.Stretch;
             _previewTextHost.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.GlyphMarginId, false);
             _previewTextHost.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.LineNumberMarginId, true);
