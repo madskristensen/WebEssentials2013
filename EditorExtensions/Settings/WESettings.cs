@@ -28,7 +28,6 @@ namespace MadsKristensen.EditorExtensions
         public ScssSettings Scss { get; private set; }
         public CoffeeScriptSettings CoffeeScript { get; private set; }
         public MarkdownSettings Markdown { get; private set; }
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public SweetJsSettings SweetJs { get; private set; }
     }
 

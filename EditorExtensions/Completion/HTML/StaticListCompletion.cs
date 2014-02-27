@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.Html.Editor.Intellisense;
@@ -37,7 +36,7 @@ namespace MadsKristensen.EditorExtensions
             return staticValues;
         }
 
-        public IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
+        public virtual IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
         {
             IEnumerable<string> result;
             var attr = context.Element.GetAttribute(KeyProperty);

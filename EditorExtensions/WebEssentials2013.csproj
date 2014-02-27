@@ -319,6 +319,7 @@
     <Compile Include="Commands\IFileSaveListener.cs" />
     <Compile Include="Commands\JavaScript\CommentIndentationCommandTarget.cs" />
     <Compile Include="Commands\JavaScript\CommentCompletionCommandTarget.cs" />
+    <Compile Include="Commands\JavaScript\JavaScriptIntellisense.cs" />
     <Compile Include="Commands\Sweet.js\SweetJsCreationListener.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptFindReferencesCommandTarget.cs" />
     <Compile Include="Commands\TypeScript\TypeScriptCreationListener.cs" />
@@ -724,6 +725,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\Scripts\Modern.Intellisense.js">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Scripts\JSDocComments.js">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\Tools\gifsicle.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -852,7 +859,7 @@
     <Content Include="Resources\settings-defaults\coffeelint.json">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\settings-defaults\.jscs.json">
+    <Content Include="Resources\settings-defaults\.jscsrc">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\Scripts\jshint-node-reporter.js">

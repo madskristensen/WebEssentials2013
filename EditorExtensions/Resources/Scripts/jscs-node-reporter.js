@@ -11,5 +11,5 @@ module.exports = function (fileCollection) {
           , FileName: fileName
         };
     });
-    process.stdout.write(JSON.stringify(messageItems));
+    process.stdout.write(JSON.stringify(errorItems));
 };

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Html.Editor.Intellisense;
 using Microsoft.Html.Schemas;
 using Microsoft.Html.Schemas.Model;
 using Microsoft.VisualStudio.Utilities;

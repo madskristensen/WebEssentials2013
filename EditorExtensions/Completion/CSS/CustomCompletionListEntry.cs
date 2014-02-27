@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions
@@ -24,11 +23,6 @@ namespace MadsKristensen.EditorExtensions
         public string GetSyntax(Version version)
         {
             return string.Empty;
-        }
-
-        public StandardGlyphGroup StandardGlyph
-        {
-            get { return StandardGlyphGroup.GlyphGroupEnumMember; }
         }
 
         public string GetAttribute(string name)

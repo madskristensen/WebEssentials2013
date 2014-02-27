@@ -420,7 +420,7 @@
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <Icon guid="guidMenuImages" id="bmpScript"/>
         <Strings>
-          <ButtonText>Edit global JSCS settings (.jscs.json)...</ButtonText>
+          <ButtonText>Edit global JSCS settings (.jscsrc)...</ButtonText>
         </Strings>
       </Button>
 

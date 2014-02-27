@@ -25,23 +25,23 @@ namespace MadsKristensen.EditorExtensions
                 { "apple-mobile-web-app-status-bar-style",  Values("default", "black", "black-translucent") }
             }) { }
 
-        public new IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
+        public override IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
         {
             var attr = context.Element.GetAttribute("property");
 
             if (attr == null)
                 return Empty;
 
-            //if (attr.Value.Equals("og:site_name", StringComparison.OrdinalIgnoreCase)
-            // || attr.Value.Equals("og:title", StringComparison.OrdinalIgnoreCase))
-            //{
-            //    if (context.Element.Parent == null)
-            //        return Empty;
+            if (attr.Value.Equals("og:site_name", StringComparison.OrdinalIgnoreCase)
+             || attr.Value.Equals("og:title", StringComparison.OrdinalIgnoreCase))
+            {
+                if (context.Element.Parent == null)
+                    return Empty;
 
-            //    var list = new HashSet<string>();
-            //    context.Element.Parent.Accept(this, list);
-            //    return Values(list);
-            //}
+                var list = new HashSet<string>();
+                context.Element.Parent.Accept(this, list);
+                return new List<HtmlCompletion>(list.Select(l => new SimpleHtmlCompletion(l, context.Session)));
+            }
 
             return base.GetEntries(context);
         }
