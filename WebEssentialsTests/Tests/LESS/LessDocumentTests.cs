@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
-using MadsKristensen.EditorExtensions.Compilers;
 using MadsKristensen.EditorExtensions.Less;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
