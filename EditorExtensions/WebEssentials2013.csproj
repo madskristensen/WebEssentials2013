@@ -301,6 +301,7 @@
     <Compile Include="Markdown\Outlining\MarkdownOutlineTagger.cs" />
     <Compile Include="Markdown\Classify\MarkdownLanguageSupport.cs" />
     <Compile Include="Markdown\Classify\MarkdownParser.cs" />
+    <Compile Include="SCSS\SmartTags\ScssExtractVariableSmartTagProvider.cs" />
     <Compile Include="SweetJs\ContentType\SweetJsContentTypeDefinition.cs" />
     <Compile Include="RobotsTxt\Classify\RobotsTxtClassificationTypes.cs" />
     <Compile Include="RobotsTxt\Classify\RobotsTxtClassifier.cs" />

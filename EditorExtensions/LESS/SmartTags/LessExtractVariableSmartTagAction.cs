@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media.Imaging;
 using MadsKristensen.EditorExtensions.Css;
+using Microsoft.Css.Extensions;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
 
@@ -12,11 +13,13 @@ namespace MadsKristensen.EditorExtensions.Less
     {
         private ITrackingSpan _span;
         private ParseItem _item;
+        private string _variableToken;
 
-        public LessExtractVariableSmartTagAction(ITrackingSpan span, ParseItem item)
+        public LessExtractVariableSmartTagAction(ITrackingSpan span, ParseItem item, string variableToken)
         {
             _span = span;
             _item = item;
+            _variableToken = variableToken;
 
             if (Icon == null)
             {
@@ -31,7 +34,7 @@ namespace MadsKristensen.EditorExtensions.Less
 
         public override void Invoke()
         {
-            ParseItem rule = LessExtractVariableCommandTarget.FindParent(_item);
+            ParseItem rule = FindParent(_item);
             string text = _item.Text;
             string name = Microsoft.VisualBasic.Interaction.InputBox("Name of the variable", "Web Essentials");
 
@@ -42,12 +45,27 @@ namespace MadsKristensen.EditorExtensions.Less
                     foreach (ParseItem item in FindItems())
                     {
                         Span span = new Span(item.Start, item.Length);
-                        _span.TextBuffer.Replace(span, "@" + name);
+                        _span.TextBuffer.Replace(span, _variableToken + name);
                     }
 
-                    _span.TextBuffer.Insert(rule.Start, "@" + name + ": " + text + ";" + Environment.NewLine + Environment.NewLine);
+                    _span.TextBuffer.Insert(rule.Start, _variableToken + name + ": " + text + ";" + Environment.NewLine + Environment.NewLine);
                 }
             }
+        }
+
+        private static ParseItem FindParent(ParseItem item)
+        {
+            ParseItem parent = item.Parent;
+
+            while (true)
+            {
+                if (parent.Parent == null || parent.Parent is CssStyleSheet || parent.Parent is AtDirective)
+                    break;
+
+                parent = parent.Parent;
+            }
+
+            return parent;
         }
 
         private IList<ParseItem> FindItems()
