@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using MadsKristensen.EditorExtensions.CoffeeScript;
+using MadsKristensen.EditorExtensions.JavaScript;
 using MadsKristensen.EditorExtensions.TypeScript;
 using Microsoft.Win32;
 

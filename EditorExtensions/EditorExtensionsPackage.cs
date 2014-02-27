@@ -11,6 +11,7 @@ using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using MadsKristensen.EditorExtensions.CoffeeScript;
 using MadsKristensen.EditorExtensions.Compilers;
 using MadsKristensen.EditorExtensions.Css;
+using MadsKristensen.EditorExtensions.JavaScript;
 using MadsKristensen.EditorExtensions.Markdown;
 using MadsKristensen.EditorExtensions.TypeScript;
 using Microsoft.VisualStudio.ComponentModelHost;

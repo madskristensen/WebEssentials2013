@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using EnvDTE;
+using MadsKristensen.EditorExtensions.JavaScript;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
 
