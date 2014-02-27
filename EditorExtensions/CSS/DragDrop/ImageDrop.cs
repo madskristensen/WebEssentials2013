@@ -1,36 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
-using MadsKristensen.EditorExtensions.Css;
+using System.Web;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.DragDrop;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions.TypeScript
+namespace MadsKristensen.EditorExtensions.Css
 {
     [Export(typeof(IDropHandlerProvider))]
+    [DropFormat("FileDrop")]
     [DropFormat("CF_VSSTGPROJECTITEMS")]
-    [Name("TypeScriptDropHandler")]
-    [ContentType("TypeScript")]
+    [Name("ImageDropHandler")]
+    [ContentType("CSS")]
+    [ContentType("LESS")]
+    [ContentType("SCSS")]
     [Order(Before = "DefaultFileDropHandler")]
-    internal class TypeScriptDropHandlerProvider : IDropHandlerProvider
+    internal class ImageDropHandlerProvider : IDropHandlerProvider
     {
         public IDropHandler GetAssociatedDropHandler(IWpfTextView view)
         {
-            return view.Properties.GetOrCreateSingletonProperty<TypeScriptDropHandler>(() => new TypeScriptDropHandler(view));
+            return view.Properties.GetOrCreateSingletonProperty<ImageDropHandler>(() => new ImageDropHandler(view));
         }
     }
 
-    internal class TypeScriptDropHandler : IDropHandler
+    internal class ImageDropHandler : IDropHandler
     {
         IWpfTextView _view;
-        private readonly List<string> _imageExtensions = new List<string> { ".ts", ".js" };
+        private readonly HashSet<string> _imageExtensions = new HashSet<string> { ".jpg", ".jpeg", ".bmp", ".png", ".gif", ".svg", ".tif", ".tiff" };
         private string _imageFilename;
-        string _background = "/// <reference path=\"{0}\" />";
+        string _background = "background-image: url({0});";
 
-        public TypeScriptDropHandler(IWpfTextView view)
+        public ImageDropHandler(IWpfTextView view)
         {
             this._view = view;
         }
@@ -39,17 +41,15 @@ namespace MadsKristensen.EditorExtensions.TypeScript
         {
             string reference = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, _imageFilename);
 
-            if (reference.StartsWith("http://localhost:", StringComparison.OrdinalIgnoreCase))
+            if (reference.Contains("://"))
             {
-                int index = reference.IndexOf('/', 24);
+                int index = reference.IndexOf('/', 12);
                 if (index > -1)
                     reference = reference.Substring(index).ToLowerInvariant();
             }
+            reference = HttpUtility.UrlPathEncode(reference);
 
-            reference = reference.Trim('/');
-            string comment = string.Format(CultureInfo.CurrentCulture, _background, reference);
-
-            _view.TextBuffer.Insert(0, comment + Environment.NewLine);
+            _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(CultureInfo.CurrentCulture, _background, reference));
 
             return DragDropPointerEffects.Copy;
         }

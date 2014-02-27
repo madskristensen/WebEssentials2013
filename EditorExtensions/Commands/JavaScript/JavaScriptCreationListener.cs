@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Composition;
+using MadsKristensen.EditorExtensions.Css;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
