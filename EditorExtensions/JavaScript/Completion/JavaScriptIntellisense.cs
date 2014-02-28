@@ -28,9 +28,9 @@ namespace MadsKristensen.EditorExtensions.JavaScript
                 File.Copy(file, userPath, true);
                 UpdateRegistry(userPath);
             }
-            catch
+            catch (Exception ex)
             {
-                Logger.Log("Error registering JavaScript Intellisense references");
+                Logger.Log(ex);
             }
         }
 
