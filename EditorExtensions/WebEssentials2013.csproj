@@ -691,7 +691,6 @@
     <Compile Include="Settings\LegacySettings.cs" />
     <Compile Include="HTML\Validation\OpenGraphPrefixValidator.cs" />
     <Compile Include="HTML\Validation\ItemTypeValidator.cs" />
-    <Compile Include="LESS\Validation\ImportOnceErrorTagProvider.cs" />
     <Content Include="CSS\Snippets\snippets.pkgdef">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
