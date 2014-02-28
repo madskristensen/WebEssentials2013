@@ -18,9 +18,6 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             try
             {
                 string userPath = GetUserFilePath(Path.GetFileName(path));
-
-                //if (!File.Exists(userPath))
-                //{
                 string assembly = Assembly.GetExecutingAssembly().Location;
                 string folder = Path.GetDirectoryName(assembly).ToLowerInvariant();
                 string file = Path.Combine(folder, path);
@@ -30,11 +27,10 @@ namespace MadsKristensen.EditorExtensions.JavaScript
 
                 File.Copy(file, userPath, true);
                 UpdateRegistry(userPath);
-                //}
             }
             catch
             {
-                Logger.Log("Error registering JSDoc comments with Visual Studio");
+                Logger.Log("Error registering JavaScript Intellisense references");
             }
         }
 
@@ -48,7 +44,8 @@ namespace MadsKristensen.EditorExtensions.JavaScript
         private static void UpdateRegistry(string file)
         {
             string fileName = Path.GetFileName(file);
-
+            
+            // The APIs for setting the references are all internal, so we need to go directly through the registry.
             using (RegistryKey key = EditorExtensionsPackage.Instance.UserRegistryRoot.OpenSubKey("JavaScriptLanguageService", true))
             {
                 if (key == null)
@@ -71,6 +68,10 @@ namespace MadsKristensen.EditorExtensions.JavaScript
                 else
                 {
                     int startWeb = value.IndexOf("Implicit (Web)", StringComparison.OrdinalIgnoreCase);
+                    
+                    if (startWeb == -1)
+                        return;
+
                     int semicolon = value.IndexOf(';', startWeb);
 
                     if (semicolon > -1)
