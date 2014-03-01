@@ -44,8 +44,8 @@ namespace MadsKristensen.EditorExtensions.TypeScript
             {
                 string outputFile, outputDir;
                 string config = EditorExtensionsPackage.DTE.Solution.SolutionBuild.ActiveConfiguration.Name;
-                ErrorHandler.ThrowOnFailure(buildPropertyStorage.GetPropertyValue("TypeScriptOutFile", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputFile));
-                ErrorHandler.ThrowOnFailure(buildPropertyStorage.GetPropertyValue("TypeScriptOutDir", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputDir));
+                buildPropertyStorage.GetPropertyValue("TypeScriptOutFile", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputFile);
+                buildPropertyStorage.GetPropertyValue("TypeScriptOutDir", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputDir);
 
                 if (!string.IsNullOrEmpty(outputFile))
                 {
