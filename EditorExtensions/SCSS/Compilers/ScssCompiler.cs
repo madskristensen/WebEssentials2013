@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions.Scss
 {
     [Export(typeof(NodeExecutorBase))]
     [ContentType(ScssContentTypeDefinition.ScssContentType)]
-    public class SassCompiler : CssCompilerBase
+    public class ScssCompiler : CssCompilerBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\node-sass\bin\node-sass");
         private static readonly Regex _errorParsingPattern = new Regex(@"(?<fileName>.*):(?<line>.\d*): error: (?<message>.*\n.*)", RegexOptions.Multiline);
