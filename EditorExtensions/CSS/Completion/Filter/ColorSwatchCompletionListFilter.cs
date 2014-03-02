@@ -29,17 +29,19 @@ namespace MadsKristensen.EditorExtensions.Css
 
                 if (color.IsKnownColor)
                 {
-                    if (color.IsSystemColor)
-                        entry.FilterType = CompletionEntryFilterTypes.NeverVisible;
-                    else
-                        entry.IconSource = GetColorSwatch(entry.DisplayText);
+                    entry.IconSource = GetColorSwatch(color);
+                }
+                else if (entry.DisplayText.Contains("grey") || entry.DisplayText.Contains("3D"))
+                {
+                    // Hides old IE entries from poluting Intellisense.
+                    entry.FilterType = CompletionEntryFilterTypes.NeverVisible;
                 }
             }
         }
 
-        private ImageSource GetColorSwatch(string value)
+        public static ImageSource GetColorSwatch(System.Drawing.Color value)
         {
-            Color color = (Color)ColorConverter.ConvertFromString(value);
+            Color color = Color.FromArgb(value.A, value.R, value.G, value.B);
 
             GeometryGroup group = new GeometryGroup();
             group.Children.Add(new RectangleGeometry(new Rect(new Size(50, 50))));
