@@ -28,8 +28,8 @@ namespace MadsKristensen.EditorExtensions.Shared
         {
             if (context != null && context.ContextItem != null && context.ContextItem.StyleSheet is CssStyleSheet)
             {
-                Declaration decl = context.ContextItem.Parent as Declaration;
-                string propertyName = (decl != null && decl.PropertyName != null) ? decl.PropertyNameText : string.Empty;
+                Declaration dec = context.ContextItem.FindType<Declaration>();
+                string propertyName = (dec != null && dec.PropertyName != null) ? dec.PropertyNameText : string.Empty;
 
                 if (_elegibleTags.Contains(propertyName))
                 {
@@ -50,7 +50,7 @@ namespace MadsKristensen.EditorExtensions.Shared
             var declarations = helper.FindDeclaredVariables(styleSheet, context.SpanStart);
 
             // First collect variables from current documents
-            foreach (CssVariableDeclaration color in declarations.Where(c => !IsValidColor(c.Value.Text)))
+            foreach (CssVariableDeclaration color in declarations.Where(c => IsValidColor(c.Value.Text)))
             {
                 yield return new ColorSwatchIntellisense(color.VariableName.Text, color.Value.Text);
             }
@@ -62,7 +62,7 @@ namespace MadsKristensen.EditorExtensions.Shared
                 {
                     declarations = helper.FindDeclaredVariables(importedStyleSheet, importedStyleSheet.AfterEnd);
 
-                    foreach (CssVariableDeclaration color in declarations.Where(c => !IsValidColor(c.Value.Text)))
+                    foreach (CssVariableDeclaration color in declarations.Where(c => IsValidColor(c.Value.Text)))
                     {
                         yield return new ColorSwatchIntellisense(color.VariableName.Text, color.Value.Text);
                     }
