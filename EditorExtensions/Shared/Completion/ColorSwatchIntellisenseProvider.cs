@@ -73,7 +73,7 @@ namespace MadsKristensen.EditorExtensions.Shared
         protected static bool IsValidColor(string color)
         {
             color = color.Trim();
-            return color.StartsWith("#") ||
+            return color.StartsWith("#", StringComparison.Ordinal) ||
                    Regex.IsMatch(color, @"[\/\\*|\-|\+].*#") || // Test case when there is color math involved: like @light-blue: @nice-blue + #111;
                    ColorParser.TryParseColor(color, ColorParser.Options.AllowNames | ColorParser.Options.LooseParsing) != null;
         }

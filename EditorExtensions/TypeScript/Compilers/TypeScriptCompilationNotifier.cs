@@ -44,14 +44,14 @@ namespace MadsKristensen.EditorExtensions.TypeScript
             {
                 string outputFile, outputDir;
                 string config = EditorExtensionsPackage.DTE.Solution.SolutionBuild.ActiveConfiguration.Name;
-                buildPropertyStorage.GetPropertyValue("TypeScriptOutFile", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputFile);
-                buildPropertyStorage.GetPropertyValue("TypeScriptOutDir", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputDir);
+                int resultFile = buildPropertyStorage.GetPropertyValue("TypeScriptOutFile", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputFile);
+                int resultDir = buildPropertyStorage.GetPropertyValue("TypeScriptOutDir", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputDir);
 
-                if (!string.IsNullOrEmpty(outputFile))
+                if (!string.IsNullOrEmpty(outputFile) && resultFile == VSConstants.S_OK)
                 {
                     _outputFile = Path.Combine(ProjectHelpers.GetRootFolder(project), outputFile);
                 }
-                else if (!string.IsNullOrEmpty(outputDir))
+                else if (!string.IsNullOrEmpty(outputDir) && resultDir == VSConstants.S_OK)
                 {
                     string dir = Path.Combine(ProjectHelpers.GetRootFolder(project), outputDir);
                     string file = Path.ChangeExtension(Path.GetFileName(SourceFilePath), ".js");

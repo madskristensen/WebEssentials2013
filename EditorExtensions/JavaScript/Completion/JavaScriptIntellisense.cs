@@ -44,7 +44,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
         private static void UpdateRegistry(string file)
         {
             string fileName = Path.GetFileName(file);
-            
+
             // The APIs for setting the references are all internal, so we need to go directly through the registry.
             using (RegistryKey key = EditorExtensionsPackage.Instance.UserRegistryRoot.OpenSubKey("JavaScriptLanguageService", true))
             {
@@ -68,7 +68,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
                 else
                 {
                     int startWeb = value.IndexOf("Implicit (Web)", StringComparison.OrdinalIgnoreCase);
-                    
+
                     if (startWeb == -1)
                         return;
 
