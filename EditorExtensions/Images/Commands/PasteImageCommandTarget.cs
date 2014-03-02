@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.Web.Editor;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Images
 {
     internal class PasteImage : CommandTargetBase<VSConstants.VSStd97CmdID>
     {

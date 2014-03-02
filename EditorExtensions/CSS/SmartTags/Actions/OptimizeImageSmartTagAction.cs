@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Media.Imaging;
+using MadsKristensen.EditorExtensions.Images;
 using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Text;
 using Microsoft.Web.Editor.EditorHelpers;

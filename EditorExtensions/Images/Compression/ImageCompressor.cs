@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnvDTE;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Images
 {
     internal class ImageCompressor
     {

@@ -1,5 +1,5 @@
 ﻿
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Images
 {
     public enum ExportFormat
     {

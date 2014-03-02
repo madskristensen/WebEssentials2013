@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Images
 {
     class CompressionResult
     {

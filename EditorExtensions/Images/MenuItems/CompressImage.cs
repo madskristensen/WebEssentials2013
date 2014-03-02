@@ -3,7 +3,7 @@ using System.ComponentModel.Design;
 using System.Linq;
 using Microsoft.VisualStudio.Shell;
 
-namespace MadsKristensen.EditorExtensions
+namespace MadsKristensen.EditorExtensions.Images
 {
     internal class CompressImageMenu
     {
