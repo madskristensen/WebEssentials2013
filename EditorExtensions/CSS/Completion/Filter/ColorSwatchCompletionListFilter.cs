@@ -2,6 +2,7 @@
 using System.ComponentModel.Composition;
 using System.Windows;
 using System.Windows.Media;
+using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor.Intellisense;
@@ -15,6 +16,11 @@ namespace MadsKristensen.EditorExtensions.Css
         public void FilterCompletionList(IList<CssCompletionEntry> completions, CssCompletionContext context)
         {
             if (context.ContextType != CssCompletionContextType.PropertyValue)
+                return;
+
+            // Check if the property name has the word color in it. Schema only list colors for these properties.
+            Declaration dec = context.ContextItem.FindType<Declaration>();
+            if (dec == null || dec.PropertyName == null || !dec.PropertyNameText.Contains("color"))
                 return;
 
             foreach (CssCompletionEntry entry in completions)
