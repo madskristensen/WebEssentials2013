@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace WebEssentialsTests
 {
     [TestClass]
-    public class SassCompilationTests
+    public class ScssCompilationTests
     {
         [ClassInitialize]
         public static void Initialize(TestContext c)
@@ -19,13 +19,12 @@ namespace WebEssentialsTests
             });
         }
 
-
-        private static readonly string BaseDirectory = Path.GetDirectoryName(typeof(SassCompilationTests).Assembly.Location);
+        private static readonly string BaseDirectory = Path.GetDirectoryName(typeof(ScssCompilationTests).Assembly.Location);
 
         [TestMethod]
-        public async Task SassBasicCompilationTest()
+        public async Task ScssBasicCompilationTest()
         {
-            foreach (var sourceFile in Directory.EnumerateFiles(Path.Combine(BaseDirectory, "fixtures", "sass"), "*.scss", SearchOption.AllDirectories))
+            foreach (var sourceFile in Directory.EnumerateFiles(Path.Combine(BaseDirectory, "fixtures", "scss"), "*.scss", SearchOption.AllDirectories))
             {
                 var compiledFile = Path.ChangeExtension(sourceFile, ".css");
 
@@ -34,7 +33,7 @@ namespace WebEssentialsTests
 
                 var expected = File.ReadAllText(compiledFile)
                                    .Replace("\r", "");
-                var compiled = await new SassCompiler().CompileToStringAsync(sourceFile);
+                var compiled = await new ScssCompiler().CompileToStringAsync(sourceFile);
 
                 compiled.Should().Be(expected);
             }

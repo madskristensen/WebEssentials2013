@@ -293,6 +293,7 @@
     <Compile Include="JavaScript\Outlining\JavaScriptRegionTagger.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Shared\Completion\ColorSwatchIntellisense.cs" />
     <Compile Include="Markdown\Classify\BufferGenerator.cs" />
     <Compile Include="Markdown\Classify\CodeArtifactProcessor.cs" />
     <Compile Include="Markdown\Classify\CodeLanguageEmbedders.cs" />
@@ -302,6 +303,7 @@
     <Compile Include="Markdown\Classify\MarkdownLanguageSupport.cs" />
     <Compile Include="Markdown\Classify\MarkdownParser.cs" />
     <Compile Include="SCSS\SmartTags\ScssExtractVariableSmartTagProvider.cs" />
+    <Compile Include="Shared\Completion\ColorSwatchIntellisenseProvider.cs" />
     <Compile Include="SweetJs\ContentType\SweetJsContentTypeDefinition.cs" />
     <Compile Include="RobotsTxt\Classify\RobotsTxtClassificationTypes.cs" />
     <Compile Include="RobotsTxt\Classify\RobotsTxtClassifier.cs" />
@@ -384,7 +386,7 @@
     <Compile Include="Shared\Commands\CommandExceptionFilter.cs" />
     <Compile Include="JavaScript\Linters\JsHintCompiler.cs" />
     <Compile Include="LESS\Compilers\LessCompiler.cs" />
-    <Compile Include="SCSS\Compilers\SassCompiler.cs" />
+    <Compile Include="SCSS\Compilers\ScssCompiler.cs" />
     <Compile Include="CSS\Completion\CompletionProviders\MediaTypeCompletionProvider.cs" />
     <Compile Include="CSS\Completion\CompletionProviders\MediaValueCompletionProvider.cs" />
     <Compile Include="CSS\Completion\CompletionProviders\MediaCompletionProvider.cs" />
