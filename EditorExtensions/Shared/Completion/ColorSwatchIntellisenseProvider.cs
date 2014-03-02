@@ -70,7 +70,7 @@ namespace MadsKristensen.EditorExtensions.Shared
             }
         }
 
-        protected static bool IsValidColor(string color)
+        private static bool IsValidColor(string color)
         {
             color = color.Trim();
             return color.StartsWith("#", StringComparison.Ordinal) ||

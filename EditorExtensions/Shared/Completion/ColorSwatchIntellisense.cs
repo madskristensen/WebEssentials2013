@@ -107,19 +107,18 @@ namespace MadsKristensen.EditorExtensions.Shared
                 new RectangleGeometry(new Rect(new Size(50, 50)))
                 );
 
-            GeometryDrawing aGeometryDrawing = new GeometryDrawing();
-            aGeometryDrawing.Geometry = group;
+            GeometryDrawing drawing = new GeometryDrawing();
+            drawing.Geometry = group;
 
-            aGeometryDrawing.Brush = new SolidColorBrush(color);
+            drawing.Brush = new SolidColorBrush(color);
 
-            aGeometryDrawing.Pen = new Pen(Brushes.Black, 1);
+            drawing.Pen = new Pen(Brushes.Black, 1);
 
-            DrawingImage geometryImage = new DrawingImage(aGeometryDrawing);
+            DrawingImage image = new DrawingImage(drawing);
 
-            geometryImage.Freeze();
+            image.Freeze();
 
-            return geometryImage;
-
+            return image;
         }
 
         public ImageSource Icon
