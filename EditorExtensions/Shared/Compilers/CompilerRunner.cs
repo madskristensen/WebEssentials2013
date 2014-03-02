@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using EnvDTE;
 using MadsKristensen.EditorExtensions.Commands;
 using MadsKristensen.EditorExtensions.IcedCoffeeScript;
 using MadsKristensen.EditorExtensions.Settings;
@@ -71,6 +72,17 @@ namespace MadsKristensen.EditorExtensions.Compilers
         {
             if (Path.GetFileName(sourcePath).StartsWith("_", StringComparison.OrdinalIgnoreCase))
                 return false;
+
+            ProjectItem item = ProjectHelpers.GetProjectItem(sourcePath);
+
+            if (item != null)
+            {
+                // Ignore files nested under other files such as bundle or TypeScript output
+                ProjectItem parent = item.Collection.Parent as ProjectItem;
+
+                if (parent != null && parent.Kind == EnvDTE.Constants.vsProjectItemKindPhysicalFile)
+                    return false;
+            }
 
             var parentExtension = Path.GetExtension(Path.GetFileNameWithoutExtension(sourcePath));
             return !_disallowedParentExtensions.Contains(parentExtension);
