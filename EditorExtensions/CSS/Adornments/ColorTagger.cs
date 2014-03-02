@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Threading;
+using Microsoft.Css.Extensions;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
@@ -46,7 +47,7 @@ namespace MadsKristensen.EditorExtensions.Css
         private static IEnumerable<ParseItem> GetColors(CssTree tree, SnapshotSpan span)
         {
             ParseItem complexItem = tree.StyleSheet.ItemFromRange(span.Start, span.Length);
-            if (complexItem == null || (!(complexItem is AtDirective) && !(complexItem is RuleBlock) && !(complexItem is LessVariableDeclaration) && !(complexItem is FunctionArgument)))
+            if (complexItem == null || (!(complexItem is AtDirective) && !(complexItem is RuleBlock) && !(complexItem is CssVariableDeclaration) && !(complexItem is FunctionArgument)))
                 return Enumerable.Empty<ParseItem>();
 
             var colorCrawler = new CssItemAggregator<ParseItem>(filter: e => e.AfterEnd > span.Start && e.Start < span.End)
@@ -55,7 +56,7 @@ namespace MadsKristensen.EditorExtensions.Css
                 (FunctionColor c) => c,
                 (TokenItem i) => (i.PreviousSibling == null || (i.PreviousSibling.Text != "@" && i.PreviousSibling.Text != "$"))    // Ignore variable names that happen to be colors
                                && i.TokenType == CssTokenType.Identifier
-                               && (i.FindType<Declaration>() != null || i.FindType<LessExpression>() != null)                       // Ignore classnames that happen to be colors
+                               && (i.FindType<Declaration>() != null || i.FindType<CssExpression>() != null)                       // Ignore classnames that happen to be colors
                                && Color.FromName(i.Text).IsNamedColor
                                ? i : null
             };
