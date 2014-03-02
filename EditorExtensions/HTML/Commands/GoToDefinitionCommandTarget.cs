@@ -44,7 +44,7 @@ namespace MadsKristensen.EditorExtensions.Html
             else if (!string.IsNullOrEmpty(_className))
             {
                 int position;
-                string file = FindFile(new[] { ".less", ".css" }, out position);
+                string file = FindFile(new[] { ".less", ".scss", ".css" }, out position);
 
                 if (!string.IsNullOrEmpty(file))
                 {
