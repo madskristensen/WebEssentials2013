@@ -66,7 +66,7 @@ namespace MadsKristensen.EditorExtensions
         {
             using (EditorExtensionsPackage.UndoContext("Comment/Uncomment"))
             {
-                TextView.TextBuffer.Replace(span.Span, text.Trim());
+                TextView.TextBuffer.Replace(span.Span, text);
             }
         }
 
