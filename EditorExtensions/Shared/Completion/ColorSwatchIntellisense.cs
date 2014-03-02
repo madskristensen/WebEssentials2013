@@ -103,17 +103,15 @@ namespace MadsKristensen.EditorExtensions.Shared
             }
 
             GeometryGroup group = new GeometryGroup();
-            group.Children.Add(
-                new RectangleGeometry(new Rect(new Size(50, 50)))
-                );
 
-            GeometryDrawing drawing = new GeometryDrawing();
-            drawing.Geometry = group;
+            group.Children.Add(new RectangleGeometry(new Rect(new Size(50, 50))));
 
-            drawing.Brush = new SolidColorBrush(color);
-
-            drawing.Pen = new Pen(Brushes.Black, 1);
-
+            GeometryDrawing drawing = new GeometryDrawing()
+            {
+                Geometry = group,
+                Brush = new SolidColorBrush(color),
+                Pen = new Pen(Brushes.Transparent, 10)
+            };
             DrawingImage image = new DrawingImage(drawing);
 
             image.Freeze();
