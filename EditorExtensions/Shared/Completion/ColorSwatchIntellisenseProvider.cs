@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions.Shared
 {
     [Export(typeof(ICssCompletionProvider))]
     [Name("ColorSwatchIntellisenseProvider")]
-    internal class ColorSwatchIntellisenseProvider : ICssCompletionListProvider, ICssCompletionCommitListener
+    internal class ColorSwatchIntellisenseProvider : ICssCompletionListProvider
     {
         readonly static IEnumerable<string> _elegibleTags = new[] { "color", "background-color" };
 
@@ -77,8 +77,5 @@ namespace MadsKristensen.EditorExtensions.Shared
                    Regex.IsMatch(color, @"[\/\\*|\-|\+].*#") || // Test case when there is color math involved: like @light-blue: @nice-blue + #111;
                    ColorParser.TryParseColor(color, ColorParser.Options.AllowNames | ColorParser.Options.LooseParsing) != null;
         }
-
-        public void OnCommitted(ICssCompletionListEntry entry, ITrackingSpan contextSpan, SnapshotPoint caret, ITextView textView)
-        { }
     }
 }

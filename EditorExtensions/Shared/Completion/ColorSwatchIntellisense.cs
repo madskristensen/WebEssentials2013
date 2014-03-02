@@ -86,7 +86,7 @@ namespace MadsKristensen.EditorExtensions.Shared
 
         public CompletionEntryFilterTypes FilterType
         {
-            get { return CompletionEntryFilterTypes.AlwaysVisible; }
+            get { return CompletionEntryFilterTypes.MatchTyping; }
         }
 
         private ImageSource GetColorIcon()
