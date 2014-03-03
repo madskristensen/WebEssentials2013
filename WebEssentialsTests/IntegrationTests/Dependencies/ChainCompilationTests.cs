@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using EnvDTE80;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebEssentialsTests.IntegrationTests.Dependencies

@@ -8,7 +8,7 @@ namespace MadsKristensen.EditorExtensions
             switch (id)
             {
                 case "robotstxt":
-                    return new RobotsTxt(extension);
+                    return new RobotsTxtRule(extension);
                 //case "favicon":
                 //    return new Favicon();
                 case "microdata":

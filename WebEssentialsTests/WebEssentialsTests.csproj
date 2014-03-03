@@ -145,7 +145,7 @@
     <Compile Include="Tests\Markdown\MarkdownOutlinerTests.cs" />
     <Compile Include="Tests\Markdown\MarkdownCodeBlockTests.cs" />
     <Compile Include="Tests\Markdown\TabAwareCharacterStreamTests.cs" />
-    <Compile Include="Tests\NodeExecutors\SassCompilationTests.cs" />
+    <Compile Include="Tests\NodeExecutors\ScssCompilationTests.cs" />
     <Compile Include="Tests\Shared\MockSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\NodeModules\NodeModuleImportedTests.cs" />
@@ -219,8 +219,8 @@
     <None Include="fixtures\module-resolution\packages\main-index\package.json" />
     <None Include="fixtures\module-resolution\packages\main\package.json" />
     <None Include="fixtures\coffee\source\test.coffee" />
-    <Content Include="fixtures\sass\extend.css" />
-    <None Include="fixtures\sass\extend.scss" />
+    <Content Include="fixtures\scss\extend.css" />
+    <None Include="fixtures\scss\extend.scss" />
     <None Include="fixtures\sweet.js\source\test.sjs" />
     <None Include="packages.config" />
   </ItemGroup>

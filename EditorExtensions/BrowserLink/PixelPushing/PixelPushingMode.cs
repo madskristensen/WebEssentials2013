@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EnvDTE;
 using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing

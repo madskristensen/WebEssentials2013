@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using FluentAssertions;
-using MadsKristensen.EditorExtensions.Classifications.Markdown;
 using MadsKristensen.EditorExtensions.Helpers;
+using MadsKristensen.EditorExtensions.Markdown;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace WebEssentialsTests

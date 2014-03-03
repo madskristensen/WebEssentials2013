@@ -4,6 +4,7 @@ using System.Linq;
 using EnvDTE;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

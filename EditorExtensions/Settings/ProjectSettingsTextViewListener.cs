@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions.Options
+namespace MadsKristensen.EditorExtensions.Settings
 {
     [Export(typeof(IWpfTextViewCreationListener))]
     [ContentType("text")]   // TODO: Remove after JSON editor ships
