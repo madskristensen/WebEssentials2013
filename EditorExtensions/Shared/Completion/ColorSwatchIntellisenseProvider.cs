@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Data;
 using System.Globalization;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Css.Extensions;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Utilities;
-using NCalc;
 
 namespace MadsKristensen.EditorExtensions.Shared
 {
@@ -71,8 +71,9 @@ namespace MadsKristensen.EditorExtensions.Shared
         private class CssColorVariableCollector
         {
             private List<CssVariable> _variableList;
-            private static readonly char[] _operators = new[] { '+', '-', '*', '/' };
-            private static readonly char[] _variableSigns = new[] { '@', '$' };
+            private static readonly char[] _grammerCharacters = new[] { ' ', '(', ')' };
+            private static readonly Regex _colorTokenRegex = new Regex(@"\d+|#\w+|\w+", RegexOptions.Compiled);
+            private static readonly Regex _colorVariableRegex = new Regex(@"@\w+(?:-\w+)*|$\w+(?:-\w+)*", RegexOptions.Compiled);
 
             internal CssColorVariableCollector(IEnumerable<CssVariable> variableCollection)
             {
@@ -87,115 +88,113 @@ namespace MadsKristensen.EditorExtensions.Shared
             internal IEnumerable<CssVariable> GetEvaluatedColorVariables()
             {
                 bool hasColorValue;
-                List<string> value;
+                string[] values;
+                string value;
 
                 foreach (var variable in _variableList.Reverse<CssVariable>())
                 {
                     hasColorValue = false;
-                    value = Flatten(variable.Value, new[] { variable.Name }.ToList(), ref hasColorValue);
+                    values = Flatten(variable.Value, new[] { variable.Name }.ToList(), ref hasColorValue);
 
-                    if (!hasColorValue || value.Any(v => string.IsNullOrEmpty(v)))
+                    if (!hasColorValue || values == null || values.Any(v => string.IsNullOrEmpty(v)))
                         continue;
 
-                    yield return new CssVariable(variable.Name, Evaluate(value));
+                    value = Evaluate(values);
+
+                    if (value == null)
+                        continue;
+
+                    yield return new CssVariable(variable.Name, value);
                 }
             }
 
-            private static string Evaluate(List<string> expressions)
+            private static int? Evaluate(string expression)
             {
-                StringBuilder retString = new StringBuilder("#");
+                try
+                {
+                    using (var dataTable = new DataTable())
+                    {
+                        dataTable.Locale = CultureInfo.CurrentCulture;
 
-                Expression expression = new Expression(expressions[0]);
-                int result = (int)double.Parse(expression.Evaluate().ToString(), CultureInfo.CurrentCulture);
-                retString.Append(Math.Min(result, 255).ToString("X", CultureInfo.CurrentCulture));
+                        var dataColumn = new DataColumn("Eval", typeof(double), expression);
 
-                expression = new Expression(expressions[1]);
-                result = (int)double.Parse(expression.Evaluate().ToString(), CultureInfo.CurrentCulture);
-                retString.Append(Math.Min(result, 255).ToString("X", CultureInfo.CurrentCulture));
+                        dataTable.Columns.Add(dataColumn);
+                        dataTable.Rows.Add(0);
 
-                expression = new Expression(expressions[2]);
-                result = (int)double.Parse(expression.Evaluate().ToString(), CultureInfo.CurrentCulture);
-                retString.Append(Math.Min(result, 255).ToString("X", CultureInfo.CurrentCulture));
-
-                return retString.ToString();
+                        return (int)(double)(dataTable.Rows[0]["Eval"]);
+                    }
+                }
+                catch
+                {
+                    return null;
+                }
             }
 
-            private List<string> Flatten(string variableValue, List<string> variables, ref bool hasColorValue)
+            private static string Evaluate(string[] expressions)
             {
-                if (variableValue == null)
+                var R = Evaluate(expressions[0]);
+                var G = Evaluate(expressions[1]);
+                var B = Evaluate(expressions[2]);
+
+                if (!R.HasValue || !G.HasValue || !B.HasValue)
                     return null;
 
-                var retValue = new List<StringBuilder> { new StringBuilder(), new StringBuilder(), new StringBuilder() };
-                var token = new StringBuilder();
+                return "#" + Math.Min(R.Value, 255).ToString("X", CultureInfo.CurrentCulture) +
+                             Math.Min(G.Value, 255).ToString("X", CultureInfo.CurrentCulture) +
+                             Math.Min(B.Value, 255).ToString("X", CultureInfo.CurrentCulture);
+            }
 
-                for (int i = 0; i < variableValue.Length; i++)
+            private string[] Flatten(string variableValue, List<string> alreadyProcessed, ref bool hasColorValue)
+            {
+                var invalid = ">>INVALID<<";
+
+                while (_colorVariableRegex.IsMatch(variableValue))
                 {
-                    var character = variableValue[i];
-
-                    if (i == variableValue.Length - 1 || (_operators.Contains(character) && token.Length > 0 && variableValue[i - 1] == ' '))
+                    variableValue = _colorVariableRegex.Replace(variableValue, new MatchEvaluator(match =>
                     {
-                        if (i == variableValue.Length - 1)
-                            token.Append(character);
+                        if (alreadyProcessed.Contains(match.Value) || !_variableList.Any(v => v.Name == match.Value))
+                            return invalid;
 
-                        if (_variableSigns.Contains(token[0]))
-                        {
-                            if (variables.Contains(token.ToString()))
-                                return null;
+                        return _variableList.Where(v => v.Name == match.Value).FirstOrDefault().Value;
+                    }));
 
-                            variables.Add(token.ToString());
-
-                            var list = _variableList.Where(v => v.Name == token.ToString()).FirstOrDefault();
-
-                            if (list == null)
-                                return null;
-
-                            var flattenedValue = Flatten(list.Value, variables, ref hasColorValue);
-
-                            if (flattenedValue == null)
-                                return null;
-
-                            retValue[0].Append(flattenedValue[0]);
-                            retValue[1].Append(flattenedValue[1]);
-                            retValue[2].Append(flattenedValue[2]);
-                        }
-                        else
-                        {
-                            var color = ColorParser.TryParseColor(token.ToString(), ColorParser.Options.AllowNames | ColorParser.Options.LooseParsing);
-                            int num = 0;
-
-                            if (color == null && !int.TryParse(token.ToString(), out num))
-                                return null;
-                            else if (color != null)
-                            {
-                                hasColorValue = true;
-                                retValue[0].Append(color.Color.R);
-                                retValue[1].Append(color.Color.G);
-                                retValue[2].Append(color.Color.B);
-                            }
-                            else
-                            {
-                                num = Math.Min(num, 255);
-
-                                retValue[0].Append(num);
-                                retValue[1].Append(num);
-                                retValue[2].Append(num);
-                            }
-                        }
-
-                        if (i < variableValue.Length - 1)
-                        {
-                            retValue[0].Append(character);
-                            retValue[1].Append(character);
-                            retValue[2].Append(character);
-                        }
-
-                        token.Clear();
-                    }
-                    else if (character != ' ')
-                        token.Append(character);
+                    if (variableValue.Contains(invalid))
+                        return null;
                 }
 
-                return retValue.Select(b => b.ToString()).ToList();
+                var parsedItems = variableValue.Split(_grammerCharacters);
+
+                if (parsedItems.Any(i => ColorParser.TryParseColor(i, ColorParser.Options.AllowNames | ColorParser.Options.LooseParsing) != null))
+                    hasColorValue = true;
+
+                var retValue = new[]{
+                    _colorTokenRegex.Replace(variableValue, new MatchEvaluator(match => GetChannelExpression(match, 1) ?? invalid)),
+                    _colorTokenRegex.Replace(variableValue, new MatchEvaluator(match => GetChannelExpression(match, 2) ?? invalid)),
+                    _colorTokenRegex.Replace(variableValue, new MatchEvaluator(match => GetChannelExpression(match, 3) ?? invalid))
+                };
+
+                return retValue.Any(v => v.Contains(invalid)) ? null : retValue;
+            }
+
+            private static string GetChannelExpression(Match match, int channelNumber)
+            {
+                var color = ColorParser.TryParseColor(match.Value, ColorParser.Options.AllowNames | ColorParser.Options.LooseParsing);
+                int num = 0;
+
+                if (color == null && !int.TryParse(match.Value, out num))
+                    return null;
+                else if (color != null)
+                {
+                    if (channelNumber == 1)
+                        return color.Color.R.ToString(CultureInfo.CurrentCulture);
+
+                    if (channelNumber == 2)
+                        return color.Color.G.ToString(CultureInfo.CurrentCulture);
+
+                    return color.Color.B.ToString(CultureInfo.CurrentCulture);
+                }
+
+                return Math.Min(num, 255).ToString(CultureInfo.CurrentCulture);
             }
         }
 
