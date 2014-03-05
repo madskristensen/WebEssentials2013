@@ -16,6 +16,8 @@ namespace MadsKristensen.EditorExtensions.Css
     [Name("VendorOrderSmartTagProvider")]
     internal class VendorOrderSmartTagProvider : ICssSmartTagProvider
     {
+        private ICssSchemaInstance _schema;
+
         public Type ItemType
         {
             get { return typeof(Declaration); }
@@ -25,18 +27,16 @@ namespace MadsKristensen.EditorExtensions.Css
         {
             Declaration dec = (Declaration)item;
 
-            if (!item.IsValid || position > dec.Colon.Start)
+            if (!item.IsValid || position > dec.Colon.Start || !EnsureInitialized(itemTrackingSpan.TextBuffer))
                 yield break;
 
             RuleBlock rule = dec.FindType<RuleBlock>();
             if (!rule.IsValid)
                 yield break;
 
-            ICssSchemaInstance schema = CssSchemaManager.SchemaManager.GetSchemaRootForBuffer(itemTrackingSpan.TextBuffer);
-
             if (!dec.IsVendorSpecific())
             {
-                IEnumerable<Declaration> vendors = VendorHelpers.GetMatchingVendorEntriesInRule(dec, rule, schema);
+                IEnumerable<Declaration> vendors = VendorHelpers.GetMatchingVendorEntriesInRule(dec, rule, _schema);
                 if (vendors.Any(v => v.Start > dec.Start))
                 {
                     yield return new VendorOrderSmartTagAction(itemTrackingSpan, vendors.Last(), dec);
@@ -44,12 +44,28 @@ namespace MadsKristensen.EditorExtensions.Css
             }
             else
             {
-                ICssCompletionListEntry entry = VendorHelpers.GetMatchingStandardEntry(dec, schema);
+                ICssCompletionListEntry entry = VendorHelpers.GetMatchingStandardEntry(dec, _schema);
                 if (entry != null && !rule.Declarations.Any(d => d.PropertyName != null && d.PropertyName.Text == entry.DisplayText))
                 {
                     yield return new MissingStandardSmartTagAction(itemTrackingSpan, dec, entry.DisplayText);
                 }
             }
+        }
+
+        public bool EnsureInitialized(ITextBuffer buffer)
+        {
+            if (_schema == null)
+            {
+                try
+                {
+                    _schema = CssSchemaManager.SchemaManager.GetSchemaRootForBuffer(buffer);
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            return _schema != null;
         }
     }
 }
