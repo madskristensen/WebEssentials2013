@@ -2,6 +2,7 @@
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Text;
+using Microsoft.Web.Editor.Intellisense;
 
 namespace MadsKristensen.EditorExtensions.Css
 {
@@ -39,7 +40,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
         public string GetVersionedAttribute(string name, System.Version version)
         {
-            return string.Empty;
+            return GetAttribute(name);
         }
 
         public string GetInsertionText(CssTextSource textSource, ITrackingSpan typingSpan)
@@ -84,12 +85,12 @@ namespace MadsKristensen.EditorExtensions.Css
 
         public bool IsBuilder
         {
-            get { return DisplayText == "Pick from file..."; }
+            get { return false; }
         }
 
         public int SortingPriority
         {
-            get { return 0; }
+            get { return 2; }
         }
 
 
@@ -108,9 +109,9 @@ namespace MadsKristensen.EditorExtensions.Css
             get { return null; }
         }
 
-        public Microsoft.Web.Editor.Intellisense.CompletionEntryFilterTypes FilterType
+        public CompletionEntryFilterTypes FilterType
         {
-            get { return Microsoft.Web.Editor.Intellisense.CompletionEntryFilterTypes.AlwaysVisible; }
+            get { return CompletionEntryFilterTypes.DefaultBuilder; }
         }
 
         public System.Windows.Media.ImageSource Icon
