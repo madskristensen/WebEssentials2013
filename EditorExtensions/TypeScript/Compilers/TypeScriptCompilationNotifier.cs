@@ -72,7 +72,12 @@ namespace MadsKristensen.EditorExtensions.TypeScript
 
             _listeners = Mef.GetAllImports<IFileSaveListener>(ContentTypeManager.GetContentType("JavaScript"));
 
-            _watcher = new FileSystemWatcher(Path.GetDirectoryName(TargetFilePath));
+            string dir = Path.GetDirectoryName(TargetFilePath);
+
+            if (!Directory.Exists(dir))
+                return;
+
+            _watcher = new FileSystemWatcher(dir);
             _watcher.Filter = Path.GetFileName(TargetFilePath);
             _watcher.EnableRaisingEvents = true;
             _watcher.Created += FileTouched;
