@@ -7,7 +7,6 @@ using Microsoft.Css.Extensions;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
-using Microsoft.Less.Core;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.Web.Editor;
