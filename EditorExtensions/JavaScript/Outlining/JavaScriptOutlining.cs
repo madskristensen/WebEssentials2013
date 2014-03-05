@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions.JavaScript
 {
-    [Export(typeof(ITaggerProvider))]
+    //[Export(typeof(ITaggerProvider))]
     [TagType(typeof(IOutliningRegionTag))]
     [ContentType("JavaScript")]
     [ContentType("TypeScript")]
