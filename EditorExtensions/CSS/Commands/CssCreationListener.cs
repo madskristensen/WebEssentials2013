@@ -41,10 +41,6 @@ namespace MadsKristensen.EditorExtensions.Css
             textView.Properties.GetOrCreateSingletonProperty<CssSelectBrowsers>(() => new CssSelectBrowsers(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<RetriggerTarget>(() => new RetriggerTarget(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<ArrowsCommandTarget>(() => new ArrowsCommandTarget(textViewAdapter, textView));
-
-            uint cssFormatProperties;
-            ErrorHandler.ThrowOnFailure(EditorExtensionsPackage.PriorityCommandTarget.RegisterPriorityCommandTarget(0, new CssFormatProperties(textView), out cssFormatProperties));
-            textView.Closed += delegate { ErrorHandler.ThrowOnFailure(EditorExtensionsPackage.PriorityCommandTarget.UnregisterPriorityCommandTarget(cssFormatProperties)); };
         }
 
         public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)

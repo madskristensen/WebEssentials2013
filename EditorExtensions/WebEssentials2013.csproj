@@ -412,7 +412,6 @@
     <Compile Include="Misc\CodeGeneration\ScriptIntellisenseListener.cs" />
     <Compile Include="Shared\Commands\CommandTargetBase.cs" />
     <Compile Include="CSS\Commands\CssSelectBrowsers.cs" />
-    <Compile Include="CSS\Commands\CssFormatCommandTarget.cs" />
     <Compile Include="CSS\Commands\F1HelpCommandTarget.cs" />
     <Compile Include="CSS\Commands\CssRemoveDuplicatesCommandTarget.cs" />
     <Compile Include="CSS\Commands\CssAddVendorStandardCommandTarget.cs" />
