@@ -75,14 +75,17 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
             ProjectItem item = ProjectHelpers.GetProjectItem(sourcePath);
 
-            if (item != null)
-            {
-                // Ignore files nested under other files such as bundle or TypeScript output
-                ProjectItem parent = item.Collection.Parent as ProjectItem;
 
-                if (parent != null && parent.Kind == EnvDTE.Constants.vsProjectItemKindPhysicalFile)
-                    return false;
-            }
+            if (item != null)
+                try
+                {
+                    // Ignore files nested under other files such as bundle or TypeScript output
+                    ProjectItem parent = item.Collection.Parent as ProjectItem;
+
+                    if (parent != null && parent.Kind == EnvDTE.Constants.vsProjectItemKindPhysicalFile)
+                        return false;
+                }
+                catch (InvalidOperationException) { }
 
             var parentExtension = Path.GetExtension(Path.GetFileNameWithoutExtension(sourcePath));
             return !_disallowedParentExtensions.Contains(parentExtension);

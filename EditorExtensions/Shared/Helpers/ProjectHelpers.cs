@@ -450,11 +450,9 @@ namespace MadsKristensen.EditorExtensions
 
             var dependentItem = ProjectHelpers.GetProjectItem(fileName);
 
-            if (item.ContainingProject.GetType().Name == "OAProject" && item.ProjectItems != null)
+            if (dependentItem != null && item.ContainingProject.GetType().Name == "OAProject" && item.ProjectItems != null)
             {
                 // WinJS
-                if (dependentItem == null)
-                    return null;
 
                 // check if the file already added ( adding second time fails with ADDRESULT_Cancel )
                 if (dependentItem.Kind != Guid.Empty.ToString("B"))
