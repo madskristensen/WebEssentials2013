@@ -168,15 +168,15 @@ namespace MadsKristensen.EditorExtensions.Shared
                     hasColorValue = true;
 
                 var retValue = new[]{
-                    _colorTokenRegex.Replace(variableValue, new MatchEvaluator(match => GetChannelExpression(match, 1) ?? invalid)),
-                    _colorTokenRegex.Replace(variableValue, new MatchEvaluator(match => GetChannelExpression(match, 2) ?? invalid)),
-                    _colorTokenRegex.Replace(variableValue, new MatchEvaluator(match => GetChannelExpression(match, 3) ?? invalid))
+                    _colorTokenRegex.Replace(variableValue, new MatchEvaluator(match => GetChannelExpression(match, 'R') ?? invalid)),
+                    _colorTokenRegex.Replace(variableValue, new MatchEvaluator(match => GetChannelExpression(match, 'G') ?? invalid)),
+                    _colorTokenRegex.Replace(variableValue, new MatchEvaluator(match => GetChannelExpression(match, 'B') ?? invalid))
                 };
 
                 return retValue.Any(v => v.Contains(invalid)) ? null : retValue;
             }
 
-            private static string GetChannelExpression(Match match, int channelNumber)
+            private static string GetChannelExpression(Match match, char channel)
             {
                 var color = ColorParser.TryParseColor(match.Value, ColorParser.Options.AllowNames | ColorParser.Options.LooseParsing);
                 int num = 0;
@@ -185,10 +185,10 @@ namespace MadsKristensen.EditorExtensions.Shared
                     return null;
                 else if (color != null)
                 {
-                    if (channelNumber == 1)
+                    if (channel == 'R')
                         return color.Color.R.ToString(CultureInfo.CurrentCulture);
 
-                    if (channelNumber == 2)
+                    if (channel == 'G')
                         return color.Color.G.ToString(CultureInfo.CurrentCulture);
 
                     return color.Color.B.ToString(CultureInfo.CurrentCulture);
