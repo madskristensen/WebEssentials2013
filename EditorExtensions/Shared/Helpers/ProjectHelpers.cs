@@ -448,34 +448,35 @@ namespace MadsKristensen.EditorExtensions
             if (item == null || item.ContainingProject == null || string.IsNullOrEmpty(item.ContainingProject.FullName))
                 return null;
 
+            var dependentItem = ProjectHelpers.GetProjectItem(fileName);
+
             if (item.ContainingProject.GetType().Name == "OAProject" && item.ProjectItems != null)
             {
                 // WinJS
-                var currentItem = ProjectHelpers.GetProjectItem(fileName);
-                // check if the file already added ( adding second time fails with ADDRESULT_Cancel )
-                if (currentItem != null && currentItem.Kind != Guid.Empty.ToString("B")) return currentItem;
-
-                item = ProjectHelpers.GetProjectItem(fileName);
-                if (item == null)
+                if (dependentItem == null)
                     return null;
+
+                // check if the file already added ( adding second time fails with ADDRESULT_Cancel )
+                if (dependentItem.Kind != Guid.Empty.ToString("B"))
+                    return dependentItem;
 
                 ProjectItem addedItem = null;
 
                 try
                 {
-                    addedItem = item.ProjectItems.AddFromFile(fileName);
+                    addedItem = dependentItem.ProjectItems.AddFromFile(fileName);
+
+                    // create nesting
+                    if (Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
+                        addedItem.Properties.Item("DependentUpon").Value = Path.GetFileName(parentFileName);
                 }
                 catch (COMException) { }
 
-                if (addedItem != null && Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
-                {
-                    // create nesting
-                    var dependentUponProperty = addedItem.Properties.Item("DependentUpon");
-                    dependentUponProperty.Value = Path.GetFileName(parentFileName);
-                }
-
                 return addedItem;
             }
+
+            if (dependentItem != null) // File already exists in the project
+                return null;
             else if (item.ContainingProject.GetType().Name != "OAProject" && item.ProjectItems != null && Path.GetDirectoryName(parentFileName) == Path.GetDirectoryName(fileName))
             {   // WAP
                 try
