@@ -66,8 +66,8 @@ namespace MadsKristensen.EditorExtensions.Markdown
         private void AddHtmlFiles()
         {
             var paths = ProjectHelpers.GetSelectedItemPaths(_dte);
-            var compiler = WebEditor.ExportProvider.GetExport<ICompilerRunnerProvider>()
-                       .Value.GetCompiler(ContentTypeManager.GetContentType("Markdown"));
+            var contentType = ContentTypeManager.GetContentType("Markdown");
+            var compiler = Mef.GetImport<ICompilerRunnerProvider>(contentType).GetCompiler(contentType);
 
             Parallel.ForEach(paths, f => compiler.CompileToDefaultOutputAsync(f).DontWait("compiling " + f));
         }
