@@ -184,10 +184,10 @@ namespace MadsKristensen.EditorExtensions
         /// <returns>Null if the process exited successfully; the process' full output if it failed.</returns>
         static async Task<string> ExecWithOutputAsync(string filename, string args, string workingDirectory = null)
         {
-            var output = new StringWriter();
-            int result = await ExecAsync(filename, args, workingDirectory);
+            var error = new StringWriter();
+            int result = await ExecAsync(filename, args, workingDirectory, null, error);
 
-            return result == 0 ? null : output.ToString().Trim();
+            return result == 0 ? null : error.ToString().Trim();
         }
 
         /// <summary>Invokes a command-line process asynchronously.</summary>
