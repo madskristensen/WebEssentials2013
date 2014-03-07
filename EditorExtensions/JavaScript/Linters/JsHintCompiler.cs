@@ -60,8 +60,6 @@ namespace MadsKristensen.EditorExtensions.JavaScript
 
         protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
-            Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " checked.");
-
             return resultSource;
         }
     }
