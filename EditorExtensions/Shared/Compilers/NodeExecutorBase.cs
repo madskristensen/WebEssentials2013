@@ -101,10 +101,7 @@ namespace MadsKristensen.EditorExtensions
         {
             try
             {
-                if (process.ExitCode == 0 &&
-                    /* Temporary hack see; //github.com/mdevils/node-jscs/issues/212 */
-                    (!errorText.StartsWith("<?xml version=", StringComparison.CurrentCulture) ||
-                     errorText == "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<checkstyle version=\"4.3\">\n</checkstyle>"))
+                if (process.ExitCode == 0)
                 {
                     if (!string.IsNullOrEmpty(outputFile))
                         result.Result = File.ReadAllText(outputFile);
