@@ -168,7 +168,7 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>Converts a relative URL to an absolute path on disk, as resolved from the specified file.</summary>
         public static string ToAbsoluteFilePath(string relativeUrl, string relativeToFile)
         {
-            var file = ProjectHelpers.GetProjectItem(relativeToFile);
+            var file = GetProjectItem(relativeToFile);
             if (file == null || file.Properties == null)
                 return ToAbsoluteFilePath(relativeUrl, GetRootFolder(), Path.GetDirectoryName(relativeToFile));
             return ToAbsoluteFilePath(relativeUrl, file);
@@ -355,7 +355,7 @@ namespace MadsKristensen.EditorExtensions
             if (string.IsNullOrEmpty(fileNameOrFolder))
                 return GetRootFolder();
 
-            ProjectItem item = ProjectHelpers.GetProjectItem(fileNameOrFolder);
+            ProjectItem item = GetProjectItem(fileNameOrFolder);
             string projectFolder = null;
 
             if (item != null)
@@ -401,7 +401,7 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>Gets the Project containing the specified file.</summary>
         public static Project GetProject(string item)
         {
-            var projectItem = ProjectHelpers.GetProjectItem(item);
+            var projectItem = GetProjectItem(item);
 
             if (projectItem == null)
                 return null;
@@ -443,12 +443,12 @@ namespace MadsKristensen.EditorExtensions
 
             fileName = Path.GetFullPath(fileName);  // WAP projects don't like paths with forward slashes
 
-            var item = ProjectHelpers.GetProjectItem(parentFileName);
+            var item = GetProjectItem(parentFileName);
 
             if (item == null || item.ContainingProject == null || string.IsNullOrEmpty(item.ContainingProject.FullName))
                 return null;
 
-            var dependentItem = ProjectHelpers.GetProjectItem(fileName);
+            var dependentItem = GetProjectItem(fileName);
 
             if (dependentItem != null && item.ContainingProject.GetType().Name == "OAProject" && item.ProjectItems != null)
             {
