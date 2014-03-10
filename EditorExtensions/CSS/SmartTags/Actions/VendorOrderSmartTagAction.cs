@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Media.Imaging;
 using Microsoft.CSS.Core;
+using Microsoft.CSS.Editor;
 using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions.Css
@@ -30,7 +31,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
         public override void Invoke()
         {
-            string separator = Microsoft.CSS.Editor.CssSettings.FormatterBlockBracePosition == BracePosition.Compact ? " " : Environment.NewLine;
+            string separator = CssSettings.Get(_span.TextBuffer).FormatterBlockBracePosition == BracePosition.Compact ? " " : Environment.NewLine;
             string insert = _lastVendor.Text + separator + _standard.Text;
 
             using (EditorExtensionsPackage.UndoContext((DisplayText)))
