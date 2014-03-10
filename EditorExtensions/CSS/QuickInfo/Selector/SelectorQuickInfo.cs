@@ -11,6 +11,7 @@ namespace MadsKristensen.EditorExtensions
     internal class SelectorQuickInfo : IQuickInfoSource
     {
         private ITextBuffer _buffer;
+        private static readonly HashSet<string> _ignoreSelectorList = new HashSet<string> { "{", "}" };
 
         public SelectorQuickInfo(ITextBuffer subjectBuffer)
         {
@@ -43,8 +44,49 @@ namespace MadsKristensen.EditorExtensions
 
             applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(item.Start, item.Length, SpanTrackingMode.EdgeNegative);
 
-            string content = GenerateContent(sel);
+            string content = GenerateContent(Preprocess(sel));
             qiContent.Add(content);
+        }
+
+        private static Selector Preprocess(Selector sel)
+        {
+            ComplexItem parent = sel.Parent;
+            List<string> selectionCollection = new List<string>();
+
+            while (parent.Parent != null)
+            {
+                if (parent is MediaDirective)
+                {
+                    parent = parent.Parent;
+                    continue;
+                }
+
+                var slug = parent.Children[0].Text;
+
+                if (!_ignoreSelectorList.Contains(slug))
+                    selectionCollection.Add(slug);
+
+                parent = parent.Parent;
+            }
+
+            if (selectionCollection.Count == 0)
+                return sel;
+
+            selectionCollection.Reverse();
+
+            var blockString = new StringBuilder();
+
+            foreach (var item in selectionCollection)
+            {
+                if (item[0] == '&')
+                    blockString.Append(item.Substring(1));
+                else
+                    blockString.Append(" ").Append(item);
+            }
+
+            blockString.Append("{color: red}");
+
+            return new CssParser().Parse(blockString.ToString(), false).RuleSets[0].Selectors[0];
         }
 
         private static string GenerateContent(Selector sel)
