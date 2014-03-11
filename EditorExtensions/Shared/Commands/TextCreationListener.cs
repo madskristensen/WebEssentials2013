@@ -21,8 +21,34 @@ namespace MadsKristensen.EditorExtensions.Commands
         [Import]
         public ITextUndoHistoryRegistry UndoRegistry { get; set; }
 
-
         public void VsTextViewCreated(IVsTextView textViewAdapter)
+        {
+            var textView = GetInitializedTextView(textViewAdapter);
+
+            ITextDocument document;
+
+            if (!TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
+                return;
+
+            var saveListeners = Mef.GetAllImports<IFileSaveListener>(document.TextBuffer.ContentType);
+
+            if (saveListeners.Count == 0)
+                return;
+
+            EventHandler<TextDocumentFileActionEventArgs> saveHandler = (s, e) =>
+            {
+                if (e.FileActionType != FileActionTypes.ContentSavedToDisk)
+                    return;
+
+                foreach (var listener in saveListeners)
+                    listener.FileSaved(document.TextBuffer.ContentType, e.FilePath, false, false);
+            };
+
+            document.FileActionOccurred += saveHandler;
+            textView.Closed += delegate { document.FileActionOccurred -= saveHandler; };
+        }
+
+        private IWpfTextView GetInitializedTextView(IVsTextView textViewAdapter)
         {
             var textView = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
 
@@ -30,28 +56,9 @@ namespace MadsKristensen.EditorExtensions.Commands
             textView.Properties.GetOrCreateSingletonProperty(() => new SortSelectedLines(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty(() => new RemoveDuplicateLines(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty(() => new RemoveEmptyLines(textViewAdapter, textView));
-
             textView.Properties.GetOrCreateSingletonProperty(() => new CommandExceptionFilter(textViewAdapter, textView, UndoRegistry));
 
-            ITextDocument document;
-            if (TextDocumentFactoryService.TryGetTextDocument(textView.TextDataModel.DocumentBuffer, out document))
-            {
-                var saveListeners = Mef.GetAllImports<IFileSaveListener>(document.TextBuffer.ContentType);
-                if (saveListeners.Count > 0)
-                {
-                    EventHandler<TextDocumentFileActionEventArgs> saveHandler = (s, e) =>
-                    {
-                        if (e.FileActionType != FileActionTypes.ContentSavedToDisk)
-                            return;
-
-                        foreach (var listener in saveListeners)
-                            listener.FileSaved(document.TextBuffer.ContentType, e.FilePath, false, false);
-                    };
-
-                    document.FileActionOccurred += saveHandler;
-                    textView.Closed += delegate { document.FileActionOccurred -= saveHandler; };
-                }
-            }
+            return textView;
         }
     }
 }

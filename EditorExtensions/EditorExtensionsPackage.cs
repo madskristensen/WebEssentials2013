@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -24,23 +25,23 @@ using ThreadingTask = System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
 {
-    [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
-    [Guid(CommandGuids.guidEditorExtensionsPkgString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
+    [Guid(CommandGuids.guidEditorExtensionsPkgString)]
     [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
-    [ProvideOptionPage(typeof(Settings.GeneralOptions), "Web Essentials", "General", 101, 101, true, new[] { "ZenCoding", "Mustache", "Handlebars", "Comments", "Bundling", "Bundle" })]
+    [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     [ProvideOptionPage(typeof(Settings.CssOptions), "Web Essentials", "CSS", 101, 102, true, new[] { "Minify", "Minification", "W3C", "CSS3" })]
     [ProvideOptionPage(typeof(Settings.LessOptions), "Web Essentials", "LESS", 101, 105, true, new[] { "LESS", "Complier", "Minification", "Minify" })]
+    [ProvideOptionPage(typeof(Settings.HtmlOptions), "Web Essentials", "HTML", 101, 111, true, new[] { "html", "angular", "xhtml" })]
     [ProvideOptionPage(typeof(Settings.ScssOptions), "Web Essentials", "SASS", 101, 113, true, new[] { "SASS", "Complier", "Minification", "Minify" })]
-    [ProvideOptionPage(typeof(Settings.CoffeeScriptOptions), "Web Essentials", "CoffeeScript", 101, 106, true, new[] { "Iced", "JavaScript", "JS", "JScript" })]
+    [ProvideOptionPage(typeof(Settings.SweetJsOptions), "Web Essentials", "Sweet.js", 101, 111, true, new[] { "Sweet", "SJS", "Sweet.js" })]
+    [ProvideOptionPage(typeof(Settings.GeneralOptions), "Web Essentials", "General", 101, 101, true, new[] { "ZenCoding", "Mustache", "Handlebars", "Comments", "Bundling", "Bundle" })]
+    [ProvideOptionPage(typeof(Settings.CodeGenOptions), "Web Essentials", "Code Generation", 101, 210, true, new[] { "CodeGeneration", "codeGeneration" })]
+    [ProvideOptionPage(typeof(Settings.MarkdownOptions), "Web Essentials", "Markdown", 101, 109, true, new[] { "markdown", "Markdown", "md" })]
+    [ProvideOptionPage(typeof(Settings.TypeScriptOptions), "Web Essentials", "TypeScript", 101, 210, true, new[] { "TypeScript", "TS" })]
     [ProvideOptionPage(typeof(Settings.JavaScriptOptions), "Web Essentials", "JavaScript", 101, 107, true, new[] { "JScript", "JS", "Minify", "Minification", "EcmaScript" })]
     [ProvideOptionPage(typeof(Settings.BrowserLinkOptions), "Web Essentials", "Browser Link", 101, 108, true, new[] { "HTML menu", "BrowserLink" })]
-    [ProvideOptionPage(typeof(Settings.MarkdownOptions), "Web Essentials", "Markdown", 101, 109, true, new[] { "markdown", "Markdown", "md" })]
-    [ProvideOptionPage(typeof(Settings.CodeGenOptions), "Web Essentials", "Code Generation", 101, 210, true, new[] { "CodeGeneration", "codeGeneration" })]
-    [ProvideOptionPage(typeof(Settings.TypeScriptOptions), "Web Essentials", "TypeScript", 101, 210, true, new[] { "TypeScript", "TS" })]
-    [ProvideOptionPage(typeof(Settings.HtmlOptions), "Web Essentials", "HTML", 101, 111, true, new[] { "html", "angular", "xhtml" })]
-    [ProvideOptionPage(typeof(Settings.SweetJsOptions), "Web Essentials", "Sweet.js", 101, 111, true, new[] { "Sweet", "SJS", "Sweet.js" })]
+    [ProvideOptionPage(typeof(Settings.CoffeeScriptOptions), "Web Essentials", "CoffeeScript", 101, 106, true, new[] { "Iced", "JavaScript", "JS", "JScript" })]
+    [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling"), PackageRegistration(UseManagedResourcesOnly = true)]
     public sealed class EditorExtensionsPackage : Package
     {
         private static DTE2 _dte;
@@ -139,8 +140,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void BuildEvents_OnBuildDone(vsBuildScope Scope, vsBuildAction Action)
         {
-            bool success = _dte.Solution.SolutionBuild.LastBuildInfo == 0;
-            if (!success)
+            if (_dte.Solution.SolutionBuild.LastBuildInfo != 0)
             {
                 string text = _dte.StatusBar.Text; // respect localization of "Build failed"
                 Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
@@ -151,54 +151,58 @@ namespace MadsKristensen.EditorExtensions
                 return;
             }
 
-            if (Action != vsBuildAction.vsBuildActionClean)
-            {
-                var compiler = WebEditor.Host.ExportProvider.GetExport<ProjectCompiler>();
-                ThreadingTask.Task.Run(() =>
-                {
-                    Parallel.ForEach(
-                        Mef.GetSupportedContentTypes<ICompilerRunnerProvider>()
-                           .Where(c => WESettings.Instance.ForContentType<ICompilerInvocationSettings>(c).CompileOnBuild),
-                        c => compiler.Value.CompileSolutionAsync(c).DontWait("compiling solution-wide " + c.DisplayName)
-                    );
-                    BuildMenu.UpdateBundleFiles();
-                }).DontWait("running solution-wide compilers");
-
-                if (WESettings.Instance.JavaScript.LintOnBuild)
-                {
-                    LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.js" }, f => new JavaScriptLintReporter(new JsHintCompiler(), f))
-                        .DontWait("running solution-wide JSHint");
-                    LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.js" }, f => new JavaScriptLintReporter(new JsCodeStyleCompiler(), f))
-                        .DontWait("running solution-wide JSCS");
-                }
-
-                if (WESettings.Instance.TypeScript.LintOnBuild)
-                    LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.ts" }, f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f))
-                        .DontWait("running solution-wide TSLint");
-
-                if (WESettings.Instance.CoffeeScript.LintOnBuild)
-                    LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.coffee", "*.iced" }, f => new LintReporter(new CoffeeLintCompiler(), WESettings.Instance.CoffeeScript, f))
-                        .DontWait("running solution-wide CoffeeLint");
-            }
-            else if (Action == vsBuildAction.vsBuildActionClean)
+            if (Action == vsBuildAction.vsBuildActionClean)
             {
                 LintReporter.Reset();
+                return;
             }
+
+            InitiateExecutors();
+        }
+
+        private static void InitiateExecutors()
+        {
+            var compiler = WebEditor.Host.ExportProvider.GetExport<ProjectCompiler>();
+
+            ThreadingTask.Task.Run(() =>
+            {
+                Parallel.ForEach(
+                    Mef.GetSupportedContentTypes<ICompilerRunnerProvider>()
+                       .Where(c => WESettings.Instance.ForContentType<ICompilerInvocationSettings>(c).CompileOnBuild),
+                    c => compiler.Value.CompileSolutionAsync(c).DontWait("compiling solution-wide " + c.DisplayName)
+                );
+                BuildMenu.UpdateBundleFiles();
+            }).DontWait("running solution-wide compilers");
+
+            if (WESettings.Instance.JavaScript.LintOnBuild)
+            {
+                LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.js" }, f => new JavaScriptLintReporter(new JsHintCompiler(), f))
+                    .DontWait("running solution-wide JSHint");
+                LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.js" }, f => new JavaScriptLintReporter(new JsCodeStyleCompiler(), f))
+                    .DontWait("running solution-wide JSCS");
+            }
+
+            if (WESettings.Instance.TypeScript.LintOnBuild)
+                LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.ts" }, f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f))
+                    .DontWait("running solution-wide TSLint");
+
+            if (WESettings.Instance.CoffeeScript.LintOnBuild)
+                LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.coffee", "*.iced" }, f => new LintReporter(new CoffeeLintCompiler(), WESettings.Instance.CoffeeScript, f))
+                    .DontWait("running solution-wide CoffeeLint");
         }
 
         public static void ExecuteCommand(string commandName, string commandArgs = "")
         {
             var command = EditorExtensionsPackage.DTE.Commands.Item(commandName);
 
-            if (command.IsAvailable)
+            if (!command.IsAvailable)
+                return;
+
+            try
             {
-                try
-                {
-                    EditorExtensionsPackage.DTE.ExecuteCommand(commandName, commandArgs);
-                }
-                catch
-                { }
+                EditorExtensionsPackage.DTE.ExecuteCommand(commandName, commandArgs);
             }
+            catch { }
         }
 
         private void HandleMenuVisibility(OleMenuCommandService mcs)
