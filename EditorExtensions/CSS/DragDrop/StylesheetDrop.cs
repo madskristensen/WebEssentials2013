@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions.Css
         private string _filename;
         private string _targetFileName;
         const string _cssImport = "@import url('{0}');";
-        const string _lessImport = "@import '{0}';";
+        const string _preprocessorImport = "@import '{0}';";
 
         public StylesheetDropHandler(IWpfTextView view)
         {
@@ -54,16 +54,13 @@ namespace MadsKristensen.EditorExtensions.Css
 
             reference = HttpUtility.UrlPathEncode(FileHelpers.RelativePath(_targetFileName, reference));
 
-            string import = Path.GetExtension(_filename).Equals(".less", StringComparison.OrdinalIgnoreCase) ? _lessImport : _cssImport;
+            string import = Path.GetExtension(_filename).Equals(".css", StringComparison.OrdinalIgnoreCase) ? _cssImport : _preprocessorImport;
             _view.TextBuffer.Insert(dragDropInfo.VirtualBufferPosition.Position.Position, string.Format(CultureInfo.CurrentCulture, import, reference));
 
             return DragDropPointerEffects.Copy;
         }
 
-        public void HandleDragCanceled()
-        {
-
-        }
+        public void HandleDragCanceled() { }
 
         public DragDropPointerEffects HandleDragStarted(DragDropInfo dragDropInfo)
         {
