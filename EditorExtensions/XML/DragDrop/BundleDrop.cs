@@ -48,10 +48,7 @@ namespace MadsKristensen.EditorExtensions
             return DragDropPointerEffects.Copy;
         }
 
-        public void HandleDragCanceled()
-        {
-
-        }
+        public void HandleDragCanceled() { }
 
         public DragDropPointerEffects HandleDragStarted(DragDropInfo dragDropInfo)
         {

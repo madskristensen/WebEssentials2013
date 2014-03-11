@@ -214,6 +214,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BrowserLink\UnusedCss\ScssDocument.cs" />
     <Compile Include="CSS\Adornments\ColorAdornment.cs" />
     <Compile Include="CSS\Adornments\ColorAdornmentTagger.cs" />
     <Compile Include="CSS\Adornments\ColorAdornmentTaggerProvider.cs" />
