@@ -37,11 +37,11 @@ namespace MadsKristensen.EditorExtensions.TypeScript
 
         void TextBuffer_PostChanged(object sender, System.EventArgs e)
         {
-            if (!_processing && _typedChar != '\0')
-            {
-                OnPostTypeChar(_typedChar);
-                _typedChar = '\0';
-            }
+            if (_processing || _typedChar == '\0')
+                return;
+
+            OnPostTypeChar(_typedChar);
+            _typedChar = '\0';
         }
 
         void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
@@ -51,52 +51,56 @@ namespace MadsKristensen.EditorExtensions.TypeScript
 
             _typedChar = '\0';
 
-            if (e.Changes.Count == 1 && e.AfterVersion.ReiteratedVersionNumber > _bufferVersionWaterline)
-            {
-                var change = e.Changes[0];
+            if (e.Changes.Count != 1 || e.AfterVersion.ReiteratedVersionNumber <= _bufferVersionWaterline)
+                return;
 
-                _bufferVersionWaterline = e.AfterVersion.ReiteratedVersionNumber;
+            var change = e.Changes[0];
 
-                // Change length may be > 1 in autoformatting languages.
-                // However, there will be only one non-ws character in the change.
-                // Be careful when </script> is inserted: the change won't
-                // actually be in this buffer.
+            _bufferVersionWaterline = e.AfterVersion.ReiteratedVersionNumber;
 
-                var snapshot = _textBuffer.CurrentSnapshot;
-                if (change.NewSpan.End <= snapshot.Length)
-                {
-                    var text = _textBuffer.CurrentSnapshot.GetText(change.NewSpan);
-                    text = text.Trim();
+            // Change length may be > 1 in autoformatting languages.
+            // However, there will be only one non-ws character in the change.
+            // Be careful when </script> is inserted: the change won't
+            // actually be in this buffer.
 
-                    if (text.Length == 1)
-                    {
-                        // Allow completion of different characters inside spans, but not when
-                        // character and its completion pair is the same. For example, we do
-                        // want to complete () in foo(bar|) when user types ( after bar. However,
-                        // we do not want to complete " when user is typing in a string which
-                        // was already completed and instead " should be a terminating type-through.
+            var snapshot = _textBuffer.CurrentSnapshot;
 
-                        var typedChar = text[0];
-                        var completionChar = GetCompletionCharacter(typedChar);
+            if (change.NewSpan.End > snapshot.Length)
+                return;
 
-                        var caretPosition = GetCaretPositionInBuffer();
-                        if (caretPosition.HasValue)
-                        {
-                            bool compatible = true;
+            var text = _textBuffer.CurrentSnapshot.GetText(change.NewSpan);
 
-                            var innerText = GetInnerProvisionalText();
-                            if (innerText != null)
-                                compatible = IsCompatibleCharacter(innerText.ProvisionalChar, typedChar);
+            text = text.Trim();
 
-                            if (!IsPositionInProvisionalText(caretPosition.Value) || typedChar != completionChar || compatible)
-                            {
-                                _typedChar = typedChar;
-                                _caretPosition = caretPosition.Value;
-                            }
-                        }
-                    }
-                }
-            }
+            if (text.Length != 1)
+                return;
+
+            // Allow completion of different characters inside spans, but not when
+            // character and its completion pair is the same. For example, we do
+            // want to complete () in foo(bar|) when user types ( after bar. However,
+            // we do not want to complete " when user is typing in a string which
+            // was already completed and instead " should be a terminating type-through.
+
+            var typedChar = text[0];
+            var completionChar = GetCompletionCharacter(typedChar);
+
+            var caretPosition = GetCaretPositionInBuffer();
+
+            if (!caretPosition.HasValue)
+                return;
+
+            bool compatible = true;
+
+            var innerText = GetInnerProvisionalText();
+
+            if (innerText != null)
+                compatible = IsCompatibleCharacter(innerText.ProvisionalChar, typedChar);
+
+            if (IsPositionInProvisionalText(caretPosition.Value) && typedChar == completionChar && !compatible)
+                return;
+
+            _typedChar = typedChar;
+            _caretPosition = caretPosition.Value;
         }
 
         protected virtual char GetCompletionCharacter(char typedCharacter)
@@ -121,50 +125,47 @@ namespace MadsKristensen.EditorExtensions.TypeScript
 
         private void OnPostTypeChar(char typedCharacter)
         {
+            if (!WESettings.Instance.TypeScript.BraceCompletion)
+                return;
+
             // When language autoformats, like JS, caret may be in a very different
             // place by now. Check if store caret position still makes sense and
             // if not, reacquire it. In contained language scenario
             // current caret position may be beyond projection boundary like when
             // typing at the end of onclick="return foo(".
 
-            if (WESettings.Instance.TypeScript.BraceCompletion)
+            char completionCharacter = GetCompletionCharacter(typedCharacter);
+
+            if (completionCharacter == '\0')
+                return;
+
+            var viewCaretPosition = _textView.Caret.Position.BufferPosition;
+
+            _processing = true;
+
+            var bufferCaretPosition = GetCaretPositionInBuffer();
+
+            if (bufferCaretPosition.HasValue)
+                _caretPosition = bufferCaretPosition.Value;
+            else if (viewCaretPosition.Position == _textView.TextBuffer.CurrentSnapshot.Length)
+                _caretPosition = _textBuffer.CurrentSnapshot.Length;
+
+            if (_caretPosition > 0 && CanComplete(_textBuffer, _caretPosition - 1))
             {
-                char completionCharacter = GetCompletionCharacter(typedCharacter);
-                if (completionCharacter != '\0')
-                {
-                    var viewCaretPosition = _textView.Caret.Position.BufferPosition;
-                    _processing = true;
+                ProvisionalText.IgnoreChange = true;
+                _textView.TextBuffer.Replace(new Span(viewCaretPosition, 0), completionCharacter.ToString());
+                ProvisionalText.IgnoreChange = false;
 
-                    var bufferCaretPosition = GetCaretPositionInBuffer();
-                    if (bufferCaretPosition.HasValue)
-                    {
-                        _caretPosition = bufferCaretPosition.Value;
-                    }
-                    else if (viewCaretPosition.Position == _textView.TextBuffer.CurrentSnapshot.Length)
-                    {
-                        _caretPosition = _textBuffer.CurrentSnapshot.Length;
-                    }
+                var provisionalText = new ProvisionalText(_textView, new Span(viewCaretPosition - 1, 2));
+                provisionalText.Closing += OnCloseProvisionalText;
 
-                    if (_caretPosition > 0)
-                    {
-                        if (CanComplete(_textBuffer, _caretPosition - 1))
-                        {
-                            ProvisionalText.IgnoreChange = true;
-                            _textView.TextBuffer.Replace(new Span(viewCaretPosition, 0), completionCharacter.ToString());
-                            ProvisionalText.IgnoreChange = false;
+                _provisionalTexts.Add(provisionalText);
 
-                            _textView.Caret.MoveTo(new SnapshotPoint(_textView.TextBuffer.CurrentSnapshot, viewCaretPosition));
-
-                            var provisionalText = new ProvisionalText(_textView, new Span(viewCaretPosition - 1, 2));
-                            provisionalText.Closing += OnCloseProvisionalText;
-
-                            _provisionalTexts.Add(provisionalText);
-                        }
-                    }
-                }
-
-                _processing = false;
+                _textView.Caret.MoveTo(new SnapshotPoint(_textView.TextBuffer.CurrentSnapshot, viewCaretPosition));
+                _textView.QueueSpaceReservationStackRefresh();
             }
+
+            _processing = false;
         }
 
         private SnapshotPoint? GetCaretPositionInBuffer()
