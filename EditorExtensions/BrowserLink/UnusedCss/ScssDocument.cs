@@ -10,9 +10,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     public class ScssDocument : DocumentBase
     {
         private ScssDocument(string file)
-            : base(file)
-        {
-        }
+            : base(file) { }
 
         protected override ICssParser CreateParser()
         {
@@ -27,7 +25,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public static IEnumerable<string> GetSelectorNames(RuleSet ruleSet, ScssMixinAction mixinAction)
         {
-            if (ruleSet.Selectors.Any(s => s.SimpleSelectors.Any(ss => ss.SubSelectors.Any(sss => sss is ScssMixinDeclaration))))
+            if (ruleSet.Block.Directives.Any(d => d is ScssMixinDirective))
             {
                 switch (mixinAction)
                 {
@@ -35,9 +33,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                         return Enumerable.Empty<string>();
                     case ScssMixinAction.Literal:
                         break;
-                    case ScssMixinAction.NestedOnly:
-                        var mixinDecl = ruleSet.Selectors.SelectMany(s => s.SimpleSelectors.SelectMany(ss => ss.SubSelectors.OfType<ScssMixinDeclaration>())).First();
-                        return Enumerable.Repeat("«mixin " + mixinDecl.MixinName.Name + "»", 1);
                 }
             }
 
@@ -65,38 +60,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             if (!child.Contains("&"))
                 return parents.Select(p => p + " " + child);
 
-            // Build a chained LINQ query that expands every ampersand
-            // into each parent to get every permutation of selectors.
-            var result = Enumerable.Repeat("", 1);
-            int lastIndex = 0;
-
-            while (true)
-            {
-                int nextIndex = child.IndexOf('&', lastIndex);
-
-                if (nextIndex < 0)
-                {
-                    // If the child selector does not end in an ampersand, append the last chunk directly
-                    var chunk = child.Substring(lastIndex);
-
-                    return result.Select(c => c + chunk);
-                }
-                else
-                {
-                    // If we got up to an ampersand, append the chunk followed by every parent selector.
-                    var chunk = child.Substring(lastIndex, nextIndex - lastIndex);
-
-                    result = result.SelectMany(c => parents.Select(p => c + chunk + p));
-                }
-
-                nextIndex++;    // Skip the ampersand
-
-                if (nextIndex == child.Length)
-                    break;
-                else
-                    lastIndex = nextIndex;
-            }
-            return result;
+            return parents.Select(p => child.Replace("&", p));
         }
 
         public override string GetSelectorName(RuleSet ruleSet)
@@ -117,7 +81,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
                 }
             }
 
-            string name = string.Join(",\r\n", GetSelectorNames(ruleSet, includeShellSelectors ? ScssMixinAction.NestedOnly : ScssMixinAction.Skip));
+            string name = string.Join(",\r\n", GetSelectorNames(ruleSet, ScssMixinAction.Skip));
 
             if (name.Length == 0)
                 return null;
@@ -138,8 +102,6 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         ///<summary>Return null for any selector in a mixin.</summary>
         Skip,
         ///<summary>Return the literal text of the mixin declaration.  (this is not very useful)</summary>
-        Literal,
-        ///<summary>Return the text of any selectors nested within a mixin (until the mixin itself), and return null for the mixin itself.</summary>
-        NestedOnly
+        Literal
     }
 }
