@@ -152,15 +152,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
 
             if (_caretPosition > 0 && CanComplete(_textBuffer, _caretPosition - 1))
             {
-                ProvisionalText.IgnoreChange = true;
                 _textView.TextBuffer.Replace(new Span(viewCaretPosition, 0), completionCharacter.ToString());
-                ProvisionalText.IgnoreChange = false;
-
-                var provisionalText = new ProvisionalText(_textView, new Span(viewCaretPosition - 1, 2));
-                provisionalText.Closing += OnCloseProvisionalText;
-
-                _provisionalTexts.Add(provisionalText);
-
                 _textView.Caret.MoveTo(new SnapshotPoint(_textView.TextBuffer.CurrentSnapshot, viewCaretPosition));
                 _textView.QueueSpaceReservationStackRefresh();
             }
@@ -199,43 +191,36 @@ namespace MadsKristensen.EditorExtensions.TypeScript
 
             foreach (var pt in _provisionalTexts)
             {
-                if (pt.CurrentSpan.Length < minLength)
-                {
-                    minLength = pt.CurrentSpan.Length;
-                    innerText = pt;
-                }
+                if (pt.CurrentSpan.Length >= minLength)
+                    continue;
+
+                minLength = pt.CurrentSpan.Length;
+                innerText = pt;
             }
 
             return innerText;
-        }
-
-        private void OnCloseProvisionalText(object sender, EventArgs e)
-        {
-            _provisionalTexts.Remove(sender as ProvisionalText);
         }
 
         #region IIntellisenseController Members
 
         public void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
         {
-            if (_textBuffer != null)
-            {
-                _textBuffer.Changed += TextBuffer_Changed;
-                _textBuffer.PostChanged += TextBuffer_PostChanged;
-            }
+            if (_textBuffer == null)
+                return;
+
+            _textBuffer.Changed += TextBuffer_Changed;
+            _textBuffer.PostChanged += TextBuffer_PostChanged;
         }
 
-        public void Detach(ITextView textView)
-        {
-        }
+        public void Detach(ITextView textView) { }
 
         public void DisconnectSubjectBuffer(ITextBuffer subjectBuffer)
         {
-            if (_textBuffer != null)
-            {
-                _textBuffer.Changed -= TextBuffer_Changed;
-                _textBuffer.PostChanged -= TextBuffer_PostChanged;
-            }
+            if (_textBuffer == null)
+                return;
+
+            _textBuffer.Changed -= TextBuffer_Changed;
+            _textBuffer.PostChanged -= TextBuffer_PostChanged;
         }
 
         #endregion
