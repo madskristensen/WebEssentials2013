@@ -203,6 +203,10 @@ namespace MadsKristensen.EditorExtensions.Css
                 // The drag and drop operation came from the VS solution explorer
                 return data.GetText();
             }
+            else if (info.Data.GetDataPresent("MultiURL"))
+            {
+                return data.GetText();
+            }
 
             return null;
         }

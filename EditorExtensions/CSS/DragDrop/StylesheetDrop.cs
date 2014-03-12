@@ -13,6 +13,7 @@ namespace MadsKristensen.EditorExtensions.Css
 {
     [Export(typeof(IDropHandlerProvider))]
     [DropFormat("StylesheetDrop")]
+    [DropFormat("MultiURL")]
     [DropFormat("CF_VSSTGPROJECTITEMS")]
     [Name("StylesheetDropDropHandler")]
     [ContentType("CSS")]
