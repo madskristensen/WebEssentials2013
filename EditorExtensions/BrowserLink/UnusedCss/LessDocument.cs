@@ -10,9 +10,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
     public class LessDocument : DocumentBase
     {
         private LessDocument(string file)
-            : base(file)
-        {
-        }
+            : base(file) { }
 
         protected override ICssParser CreateParser()
         {
