@@ -119,6 +119,7 @@
     <Compile Include="IntegrationTests\Dependencies\DependencyGraphTests.cs" />
     <Compile Include="IntegrationTests\SettingsTests.cs" />
     <Compile Include="Tests\NodeExecutors\SweetJsCompilationTests.cs" />
+    <Compile Include="Tests\SCSS\ScssDocumentTests.cs" />
     <Compile Include="VSHost.cs" />
     <None Include="ExtractZipTask.cs" />
     <Compile Include="IntegrationTests\Compilation\CompileOnSaveTests.cs" />
