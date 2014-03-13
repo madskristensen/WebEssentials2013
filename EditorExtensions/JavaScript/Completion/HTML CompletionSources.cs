@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
         static readonly ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphXmlItem, StandardGlyphItem.GlyphItemPublic);
         protected override string FunctionName { get { return "getElementsByTagName"; } }
 
-        static ReadOnlyCollection<Tuple<string, string>> tagNames = TagCompletionProvider.GetListEntriesCache(includeUnstyled: true)
+        static ReadOnlyCollection<Tuple<string, string>> tagNames = UnknownTagErrorTagProvider.GetListEntriesCache(includeUnstyled: true)
                                     .Select(c => Tuple.Create(c.DisplayText, c.Description))
                                     .Distinct()
                                     .OrderBy(s => s)

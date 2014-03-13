@@ -7,6 +7,7 @@ using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor;
 using Microsoft.Html.Schemas;
+using Microsoft.Html.Schemas.Model;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -105,7 +106,7 @@ namespace MadsKristensen.EditorExtensions.Html
 
         private void FormatTag(ElementNode element)
         {
-            var schemas = AttributeNameCompletionProvider.GetSchemas();
+            var schemas = GetSchemas();
 
             element = GetFirstBlockParent(element, schemas);
 
@@ -118,6 +119,17 @@ namespace MadsKristensen.EditorExtensions.Html
             }
             catch
             { }
+        }
+
+        public static List<IHtmlSchema> GetSchemas()
+        {
+            HtmlSchemaManager mng = new HtmlSchemaManager();
+            IHtmlSchema html = mng.GetSchema("http://schemas.microsoft.com/intellisense/html");
+
+            var schemas = mng.CustomAttributePrefixes.SelectMany(p => mng.GetSupplementalSchemas(p)).ToList();
+            schemas.Insert(0, html);
+
+            return schemas;
         }
 
         private ElementNode GetFirstBlockParent(ElementNode current, List<IHtmlSchema> schemas)
