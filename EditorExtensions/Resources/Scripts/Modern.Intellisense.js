@@ -100,6 +100,12 @@ EventSource.CLOSED = 2;
 
 //#endregion
 
+//#region HTML Import
+
+Element.prototype.import = Element.prototype;
+
+//#endregion
+
 //#region Angular.js
 
 
