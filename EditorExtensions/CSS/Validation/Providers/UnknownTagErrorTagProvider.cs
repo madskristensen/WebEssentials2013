@@ -32,9 +32,8 @@ namespace MadsKristensen.EditorExtensions.Css
         public static IEnumerable<ICssCompletionListEntry> GetListEntriesCache(bool includeUnstyled)
         {
             var ignoreList = includeUnstyled ? _cssIgnore : _basicIgnore;
-            var schemas = GetSchemas();
 
-            foreach (var schema in schemas)
+            foreach (var schema in Schemas)
                 foreach (var element in schema.GetTopLevelElements())
                 {
                     if (!ignoreList.Contains(element.Name))
@@ -48,15 +47,18 @@ namespace MadsKristensen.EditorExtensions.Css
                 }
         }
 
-        public static List<IHtmlSchema> GetSchemas()
+        public static IEnumerable<IHtmlSchema> Schemas
         {
-            HtmlSchemaManager mng = new HtmlSchemaManager();
-            IHtmlSchema html = mng.GetSchema("http://schemas.microsoft.com/intellisense/html");
+            get
+            {
+                HtmlSchemaManager mng = new HtmlSchemaManager();
+                IHtmlSchema html = mng.GetSchema("http://schemas.microsoft.com/intellisense/html");
 
-            var schemas = mng.CustomAttributePrefixes.SelectMany(p => mng.GetSupplementalSchemas(p)).ToList();
-            schemas.Insert(0, html);
+                var schemas = mng.CustomAttributePrefixes.SelectMany(p => mng.GetSupplementalSchemas(p)).ToList();
+                schemas.Insert(0, html);
 
-            return schemas;
+                return schemas;
+            }
         }
 
         public ItemCheckResult CheckItem(ParseItem item, ICssCheckerContext context)

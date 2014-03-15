@@ -42,7 +42,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         private void Document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
-            if (e.FileActionType == FileActionTypes.ContentSavedToDisk || e.FileActionType == FileActionTypes.DocumentRenamed)
+            if (e.FileActionType == FileActionTypes.ContentSavedToDisk)
                 CompileAsync(e.FilePath).DontWait("compiling " + e.FilePath);
         }
 

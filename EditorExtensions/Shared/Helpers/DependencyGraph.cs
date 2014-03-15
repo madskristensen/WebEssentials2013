@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -289,27 +290,48 @@ namespace MadsKristensen.EditorExtensions.Helpers
         }
 
         #region Event Handlers
-        private void ProjectItemEvents_ItemRenamed(ProjectItem ProjectItem, string OldName)
+        private void ProjectItemEvents_ItemRenamed(ProjectItem projectItem, string oldName)
         {
-            var fileName = ProjectItem.FileNames[1];
+            var fileName = projectItem.FileNames[1];
+            RenameNestedItems(projectItem, fileName);
+
             if (extensions.Contains(Path.GetExtension(fileName)))
-                RescanComplete = Task.Run(() => RescanFileAsync(fileName)).HandleErrors("parsing " + ProjectItem.Name + " for dependencies");
-        }
-        private void DocumentEvents_DocumentSaved(Document Document)
-        {
-            var fileName = Document.Path;
-            if (extensions.Contains(Path.GetExtension(fileName)))
-                RescanComplete = Task.Run(() => RescanFileAsync(fileName)).HandleErrors("parsing " + Document.Name + " for dependencies");
+                RescanComplete = Task.Run(() => RescanFileAsync(fileName)).HandleErrors("parsing " + projectItem.Name + " for dependencies");
         }
 
-        private void ProjectItemEvents_ItemAdded(ProjectItem ProjectItem)
+        private static void RenameNestedItems(ProjectItem projectItem, string fileName)
         {
-            var fileName = ProjectItem.FileNames[1];
-            if (extensions.Contains(Path.GetExtension(fileName)))
-                RescanComplete = Task.Run(() => RescanFileAsync(fileName)).HandleErrors("parsing " + ProjectItem.Name + " for dependencies");
+            var path = Path.GetDirectoryName(fileName);
+            var fileNameWithoutPath = Path.GetFileName(fileName);
+            var trueNameWithoutExtension = Path.GetFileNameWithoutExtension(fileNameWithoutPath).Substring(0, fileNameWithoutPath.IndexOf('.'));
+
+            foreach (var item in projectItem.ProjectItems.Cast<ProjectItem>())
+            {
+                var trueExtension = string.Join("", item.Name.SkipWhile(x => x != '.'));
+                var newFileName = string.Format(CultureInfo.CurrentCulture, "{0}{1}", trueNameWithoutExtension, trueExtension);
+
+                if (File.Exists(Path.Combine(path, newFileName)))
+                    continue;
+
+                item.Name = newFileName;
+            }
         }
 
-        private void SolutionEvents_ProjectAdded(Project Project)
+        private void DocumentEvents_DocumentSaved(Document document)
+        {
+            var fileName = document.Path;
+            if (extensions.Contains(Path.GetExtension(fileName)))
+                RescanComplete = Task.Run(() => RescanFileAsync(fileName)).HandleErrors("parsing " + document.Name + " for dependencies");
+        }
+
+        private void ProjectItemEvents_ItemAdded(ProjectItem projectItem)
+        {
+            var fileName = projectItem.FileNames[1];
+            if (extensions.Contains(Path.GetExtension(fileName)))
+                RescanComplete = Task.Run(() => RescanFileAsync(fileName)).HandleErrors("parsing " + projectItem.Name + " for dependencies");
+        }
+
+        private void SolutionEvents_ProjectAdded(Project project)
         {
             RescanComplete = Task.Run(() => RescanSolutionAsync()).HandleErrors("scanning solution for " + ContentType + " dependencies");
         }
