@@ -59,6 +59,7 @@
       <Word>Awaiter</Word>
       <Word>unparsable</Word>
       <Word>JSDoc</Word>
+      <Word>Unstyled</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>
