@@ -7,6 +7,7 @@ namespace MadsKristensen.EditorExtensions
 {
     public class DecodedMap
     {
+        public string SourceFilePath { get; set; }
         public int GeneratedColumn { get; set; }
         public int GeneratedLine { get; set; }
         public int OriginalColumn { get; set; }
@@ -41,6 +42,17 @@ namespace MadsKristensen.EditorExtensions
         const int VLQ_CONTINUATION_BIT = VLQ_BASE;
 
         private static Regex _mappingSeparator = new Regex("^[,;]", RegexOptions.Compiled);
+
+        private static string GetName(int index, params string[] sources)
+        {
+            if (sources.Length == 0)
+                return string.Empty;
+
+            if (sources.Length > index)
+                return sources[index];
+
+            throw new VlqException("Invalid index received.");
+        }
 
         /**
          * Converts from a two-complement value to a value where the sign bit is
@@ -96,10 +108,10 @@ namespace MadsKristensen.EditorExtensions
             return encoded;
         }
 
-        public static IEnumerable<DecodedMap> Decode(string vlqValue)
+        public static IEnumerable<DecodedMap> Decode(string vlqValue, params string[] sources)
         {
-            int generatedLine = 1, previousGeneratedColumn, previousOriginalLine, previousOriginalColumn;
-            previousGeneratedColumn = previousOriginalLine = previousOriginalColumn = 0;
+            int generatedLine = 1, previousSource, previousGeneratedColumn, previousOriginalLine, previousOriginalColumn;
+            previousSource = previousGeneratedColumn = previousOriginalLine = previousOriginalColumn = 0;
 
             while (vlqValue.Length > 0)
             {
@@ -132,6 +144,8 @@ namespace MadsKristensen.EditorExtensions
 
                 // Original source.
                 temp = VlqDecode(vlqValue);
+                previousSource += temp.value;
+                result.SourceFilePath = GetName(previousSource, sources);
                 vlqValue = temp.rest;
 
                 if (vlqValue.Length == 0 || _mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
