@@ -40,7 +40,7 @@ namespace MadsKristensen.EditorExtensions
         // binary: 100000
         const int VLQ_CONTINUATION_BIT = VLQ_BASE;
 
-        private static Regex mappingSeparator = new Regex("^[,;]", RegexOptions.Compiled);
+        private static Regex _mappingSeparator = new Regex("^[,;]", RegexOptions.Compiled);
 
         /**
          * Converts from a two-complement value to a value where the sign bit is
@@ -117,7 +117,7 @@ namespace MadsKristensen.EditorExtensions
                     continue;
                 }
 
-                var temp = Base64VLQDecode(vlqValue);
+                var temp = VlqDecode(vlqValue);
                 var result = new DecodedMap();
 
                 // Generated column.
@@ -127,34 +127,34 @@ namespace MadsKristensen.EditorExtensions
 
                 vlqValue = temp.rest;
 
-                if (vlqValue.Length < 1 || mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
+                if (vlqValue.Length < 1 || _mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
                     yield break;
 
                 // Original source.
-                temp = Base64VLQDecode(vlqValue);
+                temp = VlqDecode(vlqValue);
                 vlqValue = temp.rest;
 
-                if (vlqValue.Length == 0 || mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
+                if (vlqValue.Length == 0 || _mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
                     throw new VlqException("Found a source, but no line and column");
 
                 // Original line.
-                temp = Base64VLQDecode(vlqValue);
+                temp = VlqDecode(vlqValue);
                 result.OriginalLine = previousOriginalLine + temp.value;
                 previousOriginalLine = result.OriginalLine;
                 // Lines are stored 0-based
                 result.OriginalLine += 1;
                 vlqValue = temp.rest;
 
-                if (vlqValue.Length == 0 || mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
+                if (vlqValue.Length == 0 || _mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
                     throw new VlqException("Found a source and line, but no column");
 
                 // Original column.
-                temp = Base64VLQDecode(vlqValue);
+                temp = VlqDecode(vlqValue);
                 result.OriginalColumn = previousOriginalColumn + temp.value;
                 previousOriginalColumn = result.OriginalColumn;
                 vlqValue = temp.rest;
 
-                if (vlqValue.Length > 0 && !mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
+                if (vlqValue.Length > 0 && !_mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
                     // Skip Original Name bit; we are not using it.
                     vlqValue = vlqValue.Substring(1);
 
@@ -166,10 +166,10 @@ namespace MadsKristensen.EditorExtensions
          * Decodes the next base 64 VLQ value from the given string and returns the
          * value and the rest of the string.
          */
-        public static dynamic Base64VLQDecode(string aStr)
+        public static dynamic VlqDecode(string slug)
         {
             var i = 0;
-            var strLen = aStr.Length;
+            var strLen = slug.Length;
             var result = 0;
             var shift = 0;
             bool continuation;
@@ -180,7 +180,7 @@ namespace MadsKristensen.EditorExtensions
                 if (i >= strLen)
                     throw new VlqException("Expected more digits in base 64 VLQ value.");
 
-                digit = Base64.Base64Decode(aStr[i++]);
+                digit = Base64.Base64Decode(slug[i++]);
                 continuation = (digit & VLQ_CONTINUATION_BIT) != 0;
                 digit &= VLQ_BASE_MASK;
                 result = result + (digit << shift);
@@ -190,7 +190,7 @@ namespace MadsKristensen.EditorExtensions
             return new
             {
                 value = FromVLQSigned(result),
-                rest = aStr.Substring(i)
+                rest = slug.Substring(i)
             };
         }
 
