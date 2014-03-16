@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Linq;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.Html.Schemas;
 using Microsoft.Html.Schemas.Model;
-using System.Linq;
 using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions.Css
