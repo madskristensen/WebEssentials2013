@@ -60,6 +60,7 @@
       <Word>unparsable</Word>
       <Word>JSDoc</Word>
       <Word>Unstyled</Word>
+      <Word>Vlq</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>
