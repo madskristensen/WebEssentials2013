@@ -1,19 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 
 namespace MadsKristensen.EditorExtensions
 {
-    public class DecodedMap
-    {
-        public string SourceFilePath { get; set; }
-        public int GeneratedColumn { get; set; }
-        public int GeneratedLine { get; set; }
-        public int OriginalColumn { get; set; }
-        public int OriginalLine { get; set; }
-    }
-
     ///<summary>Variable Length Quantity (VLQ) Base 64 Serializer</summary>
     ///<remarks>Inspired by <see cref="https://github.com/mozilla/source-map"/></remarks>
     public static class Base64Vlq
@@ -43,13 +35,13 @@ namespace MadsKristensen.EditorExtensions
 
         private static Regex _mappingSeparator = new Regex("^[,;]", RegexOptions.Compiled);
 
-        private static string GetName(int index, params string[] sources)
+        private static string GetName(int index, string basePath, params string[] sources)
         {
             if (sources.Length == 0)
                 return string.Empty;
 
             if (sources.Length > index)
-                return sources[index];
+                return Path.Combine(basePath, sources[index]);
 
             throw new VlqException("Invalid index received.");
         }
@@ -108,7 +100,7 @@ namespace MadsKristensen.EditorExtensions
             return encoded;
         }
 
-        public static IEnumerable<DecodedMap> Decode(string vlqValue, params string[] sources)
+        public static IEnumerable<CssSourceMapNode> Decode(string vlqValue, string basePath, params string[] sources)
         {
             int generatedLine = 1, previousSource, previousGeneratedColumn, previousOriginalLine, previousOriginalColumn;
             previousSource = previousGeneratedColumn = previousOriginalLine = previousOriginalColumn = 0;
@@ -130,7 +122,7 @@ namespace MadsKristensen.EditorExtensions
                 }
 
                 var temp = VlqDecode(vlqValue);
-                var result = new DecodedMap();
+                var result = new CssSourceMapNode();
 
                 // Generated column.
                 result.GeneratedColumn = previousGeneratedColumn + temp.value;
@@ -145,7 +137,7 @@ namespace MadsKristensen.EditorExtensions
                 // Original source.
                 temp = VlqDecode(vlqValue);
                 previousSource += temp.value;
-                result.SourceFilePath = GetName(previousSource, sources);
+                result.SourceFilePath = GetName(previousSource, basePath, sources);
                 vlqValue = temp.rest;
 
                 if (vlqValue.Length == 0 || _mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))

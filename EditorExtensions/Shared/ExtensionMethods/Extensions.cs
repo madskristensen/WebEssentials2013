@@ -92,6 +92,25 @@ namespace MadsKristensen.EditorExtensions
         {
             return input.All(digit => char.IsDigit(digit) || digit.Equals('.'));
         }
+        //<summary>Find the nth occurance of needle in haystack.</summary>.
+        public static int NthIndexOfCharInString(this string strHaystack, char charNeedle, int intOccurrenceToFind)
+        {
+            if (intOccurrenceToFind < 1) return 0;
+
+            int intReturn = -1;
+            int count = 0;
+            int n = 0;
+
+            while (count < intOccurrenceToFind && (n = strHaystack.IndexOf(charNeedle, n)) != -1)
+            {
+                n++;
+                count++;
+            }
+
+            if (count == intOccurrenceToFind) intReturn = n;
+
+            return intReturn;
+        }
 
         ///<summary>Execute process asynchronously.</summary>
         public static Task<Process> ExecuteAsync(this ProcessStartInfo startInfo)
