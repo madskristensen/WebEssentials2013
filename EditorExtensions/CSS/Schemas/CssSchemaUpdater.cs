@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -7,25 +6,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.CSS.Editor.Schemas;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions.Css
 {
-    [Export(typeof(IWebTextBufferListener))]
-    [Name("CssSchemaUpdater")]
-    [ExportMetadata("ContentType", CssContentTypeDefinition.CssContentType)]
-    internal class CssSchemaUpdater : IWebTextBufferListener
+    internal class CssSchemaUpdater
     {
         private static string _path = Path.Combine(WebEditor.Host.UserFolder, @"schemas\css");
         private static DateTime _lastRequest;
         private const int _days = 1;
 
-        public void OnTextBufferDisposed(ITextBuffer textBuffer)
-        { }
-
-        public void OnTextBufferCreated(ITextBuffer textBuffer)
+        public static void CheckForUpdates()
         {
             if (_lastRequest.AddDays(_days) > DateTime.UtcNow)
                 return;
