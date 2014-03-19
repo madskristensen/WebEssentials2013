@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions.Css
     {
         private static string _path = Path.Combine(WebEditor.Host.UserFolder, @"schemas\css");
         private static DateTime _lastRequest;
-        private const int _days = 1;
+        private const int _days = 3;
 
         public static void CheckForUpdates()
         {
