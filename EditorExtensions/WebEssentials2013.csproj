@@ -307,6 +307,8 @@
     <Compile Include="Markdown\Classify\MarkdownParser.cs" />
     <Compile Include="SCSS\SmartTags\ScssExtractVariableSmartTagProvider.cs" />
     <Compile Include="Shared\Completion\ColorSwatchIntellisenseProvider.cs" />
+    <Compile Include="Shared\Helpers\SourceMapNode.cs" />
+    <Compile Include="Shared\Helpers\CssSourceMap.cs" />
     <Compile Include="Shared\Helpers\Base64Vlq.cs" />
     <Compile Include="SweetJs\ContentType\SweetJsContentTypeDefinition.cs" />
     <Compile Include="RobotsTxt\Classify\RobotsTxtClassificationTypes.cs" />

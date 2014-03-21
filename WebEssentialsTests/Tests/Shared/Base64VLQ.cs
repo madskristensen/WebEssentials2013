@@ -12,7 +12,7 @@ namespace WebEssentialsTests.Tests.Shared
         {
             var testString = @"AASA;EACI,aAAa,2BAAb;EACA,SAAS,kEAAT";
             var expected = new[] { 1, 2, 2, 2, 3, 3, 3 };
-            var collection = Vlq.Decode(testString).ToArray();
+            var collection = Vlq.Decode(testString, "./").ToArray();
 
             for (var i = 0; i < collection.Count(); ++i)
             {
@@ -25,7 +25,7 @@ namespace WebEssentialsTests.Tests.Shared
         {
             var testString = @"AAIA,CAAC;EACG,WAAA";
             var expected = new[] { 0, 1, 2, 13 };
-            var collection = Vlq.Decode(testString).ToArray();
+            var collection = Vlq.Decode(testString, "./").ToArray();
 
             for (var i = 0; i < collection.Count(); ++i)
             {
@@ -38,7 +38,7 @@ namespace WebEssentialsTests.Tests.Shared
         {
             var testString = @"AASA;EACI,aAAa,2BAAb;EACA,SAAS,kEAAT";
             var expected = new[] { 10, 11, 11, 11, 12, 12, 12 };
-            var collection = Vlq.Decode(testString).ToArray();
+            var collection = Vlq.Decode(testString, "./").ToArray();
 
             for (var i = 0; i < collection.Count(); ++i)
             {
@@ -51,7 +51,7 @@ namespace WebEssentialsTests.Tests.Shared
         {
             var testString = @"AAIA,CAAC;EACG,WAAA";
             var expected = new[] { 0, 1, 4, 4 };
-            var collection = Vlq.Decode(testString).ToArray();
+            var collection = Vlq.Decode(testString, "./").ToArray();
 
             for (var i = 0; i < collection.Count(); ++i)
             {
@@ -70,7 +70,7 @@ namespace WebEssentialsTests.Tests.Shared
                                 new[] { 00, 04, 17, 04, 04, 13, 04 },
                                 new[] { 10, 11, 11, 11, 12, 12, 12 }
                            };
-            var collection = Vlq.Decode(testString).ToArray();
+            var collection = Vlq.Decode(testString, "./").ToArray();
 
             for (var i = 0; i < collection.Count(); ++i)
             {
