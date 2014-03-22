@@ -102,7 +102,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static IEnumerable<CssSourceMapNode> Decode(string vlqValue, string basePath, params string[] sources)
         {
-            int generatedLine = 1, previousSource, previousGeneratedColumn, previousOriginalLine, previousOriginalColumn;
+            int generatedLine = 0, previousSource, previousGeneratedColumn, previousOriginalLine, previousOriginalColumn;
             previousSource = previousGeneratedColumn = previousOriginalLine = previousOriginalColumn = 0;
 
             while (vlqValue.Length > 0)
@@ -147,8 +147,6 @@ namespace MadsKristensen.EditorExtensions
                 temp = VlqDecode(vlqValue);
                 result.OriginalLine = previousOriginalLine + temp.value;
                 previousOriginalLine = result.OriginalLine;
-                // Lines are stored 0-based
-                result.OriginalLine += 1;
                 vlqValue = temp.rest;
 
                 if (vlqValue.Length == 0 || _mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))

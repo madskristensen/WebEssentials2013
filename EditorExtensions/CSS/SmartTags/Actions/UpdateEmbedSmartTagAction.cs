@@ -3,7 +3,6 @@ using System.Globalization;
 using System.IO;
 using System.Windows.Media.Imaging;
 using Microsoft.VisualStudio.Text;
-using Microsoft.Web.Editor.EditorHelpers;
 
 namespace MadsKristensen.EditorExtensions.Css
 {

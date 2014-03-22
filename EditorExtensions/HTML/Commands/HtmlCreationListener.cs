@@ -5,7 +5,6 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using Microsoft.Web.Editor.EditorHelpers;
 using Microsoft.Web.Editor.Formatting;
 
 namespace MadsKristensen.EditorExtensions.Html
