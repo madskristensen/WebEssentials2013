@@ -8,6 +8,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
@@ -97,6 +98,29 @@ namespace MadsKristensen.EditorExtensions
                 c.Description = tooltipGenerator(c);
             }
             return completions;
+        }
+
+        public static string GetFileName(this IPropertyOwner owner)
+        {
+            IVsTextBuffer bufferAdapter;
+
+            owner.Properties.TryGetProperty(typeof(IVsTextBuffer), out bufferAdapter);
+
+            if (bufferAdapter == null)
+                return null;
+
+            var persistFileFormat = bufferAdapter as IPersistFileFormat;
+            string ppzsFilename = null;
+            uint pnFormatIndex;
+            int returnCode = -1;
+
+            if (persistFileFormat != null)
+                returnCode = persistFileFormat.GetCurFile(out ppzsFilename, out pnFormatIndex);
+
+            if (returnCode != VSConstants.S_OK)
+                return null;
+
+            return ppzsFilename;
         }
     }
 }

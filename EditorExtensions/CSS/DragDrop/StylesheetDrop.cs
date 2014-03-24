@@ -7,7 +7,6 @@ using System.Web;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.DragDrop;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor.EditorHelpers;
 
 namespace MadsKristensen.EditorExtensions.Css
 {

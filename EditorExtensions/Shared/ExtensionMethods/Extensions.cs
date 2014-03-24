@@ -92,6 +92,13 @@ namespace MadsKristensen.EditorExtensions
         {
             return input.All(digit => char.IsDigit(digit) || digit.Equals('.'));
         }
+
+        ///<summary>Find the cloumn position in the last line.</summary>
+        public static int GetLineColumn(this string text, int start, int line)
+        {
+            return start - text.NthIndexOfCharInString('\n', line) - 1;
+        }
+
         //<summary>Find the nth occurance of needle in haystack.</summary>.
         public static int NthIndexOfCharInString(this string strHaystack, char charNeedle, int intOccurrenceToFind)
         {

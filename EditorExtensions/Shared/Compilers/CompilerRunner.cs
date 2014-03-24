@@ -134,8 +134,15 @@ namespace MadsKristensen.EditorExtensions.Compilers
             {
                 ProjectHelpers.AddFileToProject(sourcePath, targetPath);
 
-                if (GenerateSourceMap && File.Exists(targetPath + ".map"))
-                    ProjectHelpers.AddFileToProject(targetPath, targetPath + ".map");
+                var mapFile = targetPath + ".map";
+
+                if (GenerateSourceMap && File.Exists(mapFile))
+                {
+                    ProjectHelpers.AddFileToProject(targetPath, mapFile);
+
+                    if (TargetContentType.IsOfType("CSS"))
+                        CssSourceMap.GenerateMaps(mapFile);
+                }
 
                 foreach (var listener in _listeners)
                     listener.FileSaved(TargetContentType, result.TargetFileName, true, Settings.MinifyInPlace);

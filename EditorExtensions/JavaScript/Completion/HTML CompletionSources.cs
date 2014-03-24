@@ -7,7 +7,6 @@ using MadsKristensen.EditorExtensions.Css;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.Web.Editor;
-using Microsoft.Web.Editor.EditorHelpers;
 using Microsoft.Web.Editor.Intellisense;
 using Intel = Microsoft.VisualStudio.Language.Intellisense;
 

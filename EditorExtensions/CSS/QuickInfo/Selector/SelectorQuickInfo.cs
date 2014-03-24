@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.Less.Core;
@@ -55,17 +55,20 @@ namespace MadsKristensen.EditorExtensions
 
             applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(item.Start, item.Length, SpanTrackingMode.EdgeNegative);
 
-            qiContent.Add(GenerateContent(Preprocess(sel, _buffer.ContentType.DisplayName)));
-        }
+            if (_buffer.ContentType.DisplayName.Equals("css", StringComparison.OrdinalIgnoreCase))
+            {
+                qiContent.Add(GenerateContent(sel));
+                return;
+            }
 
-        private static Selector Preprocess(Selector sel, string contentType)
-        {
-            if (contentType == "SCSS")
-                return new CssParser().Parse(ScssDocument.GetScssSelectorName(sel.FindType<RuleSet>()) + "{color: red}",
-                                             false).RuleSets[0].Selectors[0];
+            var line = point.Value.GetContainingLine().LineNumber;
 
-            return new CssParser().Parse(LessDocument.GetLessSelectorName(sel.FindType<RuleSet>()) + "{color: red}",
-                                         false).RuleSets[0].Selectors[0];
+            var selector = CssSourceMap.GetGeneratedSelector(_buffer.GetFileName(), "", line, tree.StyleSheet.Text.GetLineColumn(item.Start, line));
+
+            if (selector == null)
+                return;
+
+            qiContent.Add(GenerateContent(selector));
         }
 
         private static string GenerateContent(Selector sel)
