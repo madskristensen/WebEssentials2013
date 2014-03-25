@@ -30,22 +30,22 @@ namespace MadsKristensen.EditorExtensions.Margin
         [Import]
         public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
-        static readonly Dictionary<string, Func<ITextDocument, IWpfTextViewMargin>> marginFactories = new Dictionary<string, Func<ITextDocument, IWpfTextViewMargin>>(StringComparer.OrdinalIgnoreCase)
+        static readonly Dictionary<string, Func<ITextDocument, IWpfTextView, IWpfTextViewMargin>> marginFactories = new Dictionary<string, Func<ITextDocument, IWpfTextView, IWpfTextViewMargin>>(StringComparer.OrdinalIgnoreCase)
         {
-            { "Svg",               (document) => new SvgMargin(document) },
-            { "Markdown",          (document) => new MarkdownMargin(document) },
-            { "LESS",              (document) => new TextViewMargin("CSS", document) },
-            { "SCSS",              (document) => new TextViewMargin("CSS", document) },
-            { "CoffeeScript",      (document) => new TextViewMargin("JavaScript", document) },
-            { "IcedCoffeeScript",  (document) => new TextViewMargin("JavaScript", document) },
-            { "TypeScript",        (document) => document.FilePath.EndsWith(".d.ts", StringComparison.OrdinalIgnoreCase) 
-                                                ? null : new TextViewMargin("JavaScript", document) },
-            { "SweetJs",  (document) => new TextViewMargin("JavaScript", document) }
+            { "CoffeeScript",      (document, sourceView) => new TextViewMargin("JavaScript", document, sourceView) },
+            { "IcedCoffeeScript",  (document, sourceView) => new TextViewMargin("JavaScript", document, sourceView) },
+            { "LESS",              (document, sourceView) => new CssTextViewMargin("CSS", document, sourceView) },
+            { "Markdown",          (document, sourceView) => new MarkdownMargin(document) },
+            { "SCSS",              (document, sourceView) => new CssTextViewMargin("CSS", document, sourceView) },
+            { "Svg",               (document, sourceView) => new SvgMargin(document) },
+            { "SweetJs",  (document, sourceView) => new TextViewMargin("JavaScript", document, sourceView) },
+            { "TypeScript",        (document, sourceView) => document.FilePath.EndsWith(".d.ts", StringComparison.OrdinalIgnoreCase) 
+                                                             ? null : new TextViewMargin("JavaScript", document, sourceView) }
         };
 
         public IWpfTextViewMargin CreateMargin(IWpfTextViewHost wpfTextViewHost, IWpfTextViewMargin marginContainer)
         {
-            Func<ITextDocument, IWpfTextViewMargin> creator;
+            Func<ITextDocument, IWpfTextView, IWpfTextViewMargin> creator;
             if (!marginFactories.TryGetValue(wpfTextViewHost.TextView.TextDataModel.DocumentBuffer.ContentType.TypeName, out creator))
                 return null;
 
@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions.Margin
             if (!TextDocumentFactoryService.TryGetTextDocument(wpfTextViewHost.TextView.TextDataModel.DocumentBuffer, out document))
                 return null;
 
-            return creator(document);
+            return creator(document, wpfTextViewHost.TextView);
         }
     }
 }

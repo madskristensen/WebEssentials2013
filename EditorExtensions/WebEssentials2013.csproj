@@ -310,6 +310,7 @@
     <Compile Include="Shared\Helpers\SourceMapNode.cs" />
     <Compile Include="Shared\Helpers\CssSourceMap.cs" />
     <Compile Include="Shared\Helpers\Base64Vlq.cs" />
+    <Compile Include="Shared\Margins\CssTextViewMargin.cs" />
     <Compile Include="SweetJs\ContentType\SweetJsContentTypeDefinition.cs" />
     <Compile Include="RobotsTxt\Classify\RobotsTxtClassificationTypes.cs" />
     <Compile Include="RobotsTxt\Classify\RobotsTxtClassifier.cs" />
