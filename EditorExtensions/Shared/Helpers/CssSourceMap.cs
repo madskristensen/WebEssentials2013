@@ -38,6 +38,17 @@ namespace MadsKristensen.EditorExtensions
         private CssSourceMap()
         { }
 
+        public async static Task<bool> Exists(string targetFileName)
+        {
+            if (string.IsNullOrEmpty(targetFileName))
+                return false;
+
+            using (await _rwLock.ReadLockAsync())
+            {
+                return _sourceMaps.ContainsKey(targetFileName);
+            }
+        }
+
         public static dynamic GetSourcePosition(string targetFileName, int line, int column)
         {
             var node = GetSourceMapNode(targetFileName, line, column).Result;
