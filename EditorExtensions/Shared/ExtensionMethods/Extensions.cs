@@ -96,7 +96,9 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>Find the cloumn position in the last line.</summary>
         public static int GetLineColumn(this string text, int start, int line)
         {
-            return start - text.NthIndexOfCharInString('\n', line) - 1;
+            var result = start - text.NthIndexOfCharInString('\n', line) - 1;
+
+            return Math.Max(0, result);
         }
 
         //<summary>Find the nth occurance of needle in haystack.</summary>.

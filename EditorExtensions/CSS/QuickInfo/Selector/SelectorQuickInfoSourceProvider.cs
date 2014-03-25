@@ -11,9 +11,12 @@ namespace MadsKristensen.EditorExtensions
     [ContentType("CSS")]
     internal class SelectorQuickInfoSourceProvider : IQuickInfoSourceProvider
     {
+        [Import]
+        public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+
         public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer)
         {
-            return new SelectorQuickInfo(textBuffer);
+            return new SelectorQuickInfo(textBuffer, TextDocumentFactoryService);
         }
     }
 }

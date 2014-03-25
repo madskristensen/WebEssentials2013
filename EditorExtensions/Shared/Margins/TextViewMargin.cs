@@ -12,29 +12,38 @@ namespace MadsKristensen.EditorExtensions.Margin
 {
     public class TextViewMargin : CompilingMarginBase
     {
-        protected IWpfTextViewHost _previewTextHost;
-        protected IWpfTextView _sourceView;
-        protected readonly string _previewContentType;
-        protected string _targetFileName;
+        private readonly string _previewContentType;
+
+        protected IWpfTextViewHost PreviewTextHost { get; set; }
+        protected IWpfTextView SourceView { get; set; }
+        protected string TargetFileName { get; set; }
 
         public TextViewMargin(string targetContentType, ITextDocument document, IWpfTextView sourceView)
             : base(WESettings.Instance.ForContentType<IMarginSettings>(document.TextBuffer.ContentType), document)
         {
-            _sourceView = sourceView;
+            SourceView = sourceView;
             _previewContentType = targetContentType;
         }
 
         protected override FrameworkElement CreatePreviewControl()
         {
-            _previewTextHost = CreateTextViewHost(_previewContentType);
-            _previewTextHost.TextView.VisualElement.HorizontalAlignment = HorizontalAlignment.Stretch;
-            _previewTextHost.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.GlyphMarginId, false);
-            _previewTextHost.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.LineNumberMarginId, true);
-            _previewTextHost.TextView.VisualElement.KeyDown += TextView_KeyUp;
-            _previewTextHost.TextView.VisualElement.ContextMenu = GetContextMenu();
-            _previewTextHost.TextView.VisualElement.PreviewMouseRightButtonUp += new MouseButtonEventHandler(OnMenuClicked);
+            PreviewTextHost = CreateTextViewHost(_previewContentType);
+            PreviewTextHost.TextView.VisualElement.HorizontalAlignment = HorizontalAlignment.Stretch;
+            PreviewTextHost.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.GlyphMarginId, false);
+            PreviewTextHost.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.LineNumberMarginId, true);
+            PreviewTextHost.TextView.VisualElement.KeyDown += TextView_KeyUp;
+            PreviewTextHost.TextView.VisualElement.PreviewMouseRightButtonUp += new MouseButtonEventHandler(OnMenuClicked);
 
-            return _previewTextHost.HostControl;
+            var menu = new ContextMenu();
+
+            SetupCommands(menu);
+            menu.Items.Add(new MenuItem() { Command = ApplicationCommands.Copy });
+            menu.Items.Add(new MenuItem() { Command = ApplicationCommands.SelectAll });
+            AddSpecialItems(menu);
+
+            PreviewTextHost.TextView.VisualElement.ContextMenu = menu;
+
+            return PreviewTextHost.HostControl;
         }
 
         private static IWpfTextViewHost CreateTextViewHost(string contentType)
@@ -57,17 +66,17 @@ namespace MadsKristensen.EditorExtensions.Margin
         void TextView_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.PageDown)
-                _previewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByPage(ScrollDirection.Down);
+                PreviewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByPage(ScrollDirection.Down);
             else if (e.Key == Key.PageUp)
-                _previewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByPage(ScrollDirection.Up);
+                PreviewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByPage(ScrollDirection.Up);
             else if (e.Key == Key.Down)
-                _previewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByLine(ScrollDirection.Down);
+                PreviewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByLine(ScrollDirection.Down);
             else if (e.Key == Key.Up)
-                _previewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByLine(ScrollDirection.Up);
+                PreviewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByLine(ScrollDirection.Up);
             else if (e.Key == Key.Home)
-                _previewTextHost.TextView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(_previewTextHost.TextView.TextBuffer.CurrentSnapshot, 0, 0));
+                PreviewTextHost.TextView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(PreviewTextHost.TextView.TextBuffer.CurrentSnapshot, 0, 0));
             else if (e.Key == Key.End)
-                _previewTextHost.TextView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(_previewTextHost.TextView.TextBuffer.CurrentSnapshot, _previewTextHost.TextView.TextBuffer.CurrentSnapshot.Length, 0));
+                PreviewTextHost.TextView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(PreviewTextHost.TextView.TextBuffer.CurrentSnapshot, PreviewTextHost.TextView.TextBuffer.CurrentSnapshot.Length, 0));
         }
 
         protected void SetText(string text)
@@ -76,21 +85,21 @@ namespace MadsKristensen.EditorExtensions.Margin
                 return;
 
             // Prevents race conditions when the file is saved before the preview is open.
-            if (_previewTextHost == null) return;
+            if (PreviewTextHost == null) return;
 
             if (string.IsNullOrEmpty(text))
             {
-                _previewTextHost.HostControl.Opacity = 0.3;
+                PreviewTextHost.HostControl.Opacity = 0.3;
                 return;
             }
-            int position = _previewTextHost.TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
-            _previewTextHost.TextView.TextBuffer.SetText(text);
+            int position = PreviewTextHost.TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
+            PreviewTextHost.TextView.TextBuffer.SetText(text);
 
             try
             {
-                _previewTextHost.HostControl.Opacity = 1;
-                _previewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, _previewTextHost.TextView.TextSnapshot.GetLineNumberFromPosition(position));
-                _previewTextHost.TextView.ViewScroller.ScrollViewportHorizontallyByPixels(-9999);
+                PreviewTextHost.HostControl.Opacity = 1;
+                PreviewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, PreviewTextHost.TextView.TextSnapshot.GetLineNumberFromPosition(position));
+                PreviewTextHost.TextView.ViewScroller.ScrollViewportHorizontallyByPixels(-9999);
             }
             catch
             {
@@ -100,11 +109,11 @@ namespace MadsKristensen.EditorExtensions.Margin
 
         protected override void UpdateMargin(CompilerResult result)
         {
-            _targetFileName = null;
+            TargetFileName = null;
 
             if (result.IsSuccess)
             {
-                _targetFileName = result.TargetFileName;
+                TargetFileName = result.TargetFileName;
                 SetText(result.Result);
             }
             else
@@ -115,43 +124,24 @@ namespace MadsKristensen.EditorExtensions.Margin
 
         private void OnMenuClicked(object sender, RoutedEventArgs e)
         {
-            ContextMenuService.GetContextMenu(_previewTextHost.TextView.VisualElement).IsOpen = true;
+            ContextMenuService.GetContextMenu(PreviewTextHost.TextView.VisualElement).IsOpen = true;
         }
 
-        protected virtual ContextMenu GetContextMenu()
-        {
-            var menu = new ContextMenu();
+        protected virtual void AddSpecialItems(ItemsControl menu) { }
 
-            SetupCommands(menu);
-
-            menu.Items.Add(new MenuItem()
-            {
-                Command = ApplicationCommands.Copy,
-                CommandTarget = menu
-            });
-
-            menu.Items.Add(new MenuItem()
-            {
-                Command = ApplicationCommands.SelectAll,
-                CommandTarget = menu
-            });
-
-            return menu;
-        }
-
-        protected void SetupCommands(ContextMenu menu)
+        protected void SetupCommands(UIElement menu)
         {
             var copyCommand = new CommandBinding(ApplicationCommands.Copy,
                 (sender, e) =>
                 {
-                    string contentString = string.Join(Environment.NewLine, _previewTextHost.TextView.Selection.SelectedSpans.Select(s => s.GetText()));
+                    string contentString = string.Join(Environment.NewLine, PreviewTextHost.TextView.Selection.SelectedSpans.Select(s => s.GetText()));
                     Clipboard.SetDataObject(contentString);
 
                     e.Handled = true;
                 },
                 (sender, e) =>
                 {
-                    e.CanExecute = !_previewTextHost.TextView.Selection.IsEmpty;
+                    e.CanExecute = !PreviewTextHost.TextView.Selection.IsEmpty;
 
                     e.Handled = true;
                 });
@@ -159,7 +149,7 @@ namespace MadsKristensen.EditorExtensions.Margin
             var selectAllCommand = new CommandBinding(ApplicationCommands.SelectAll,
                 (sender, e) =>
                 {
-                    _previewTextHost.TextView.Selection.Select(new SnapshotSpan(_previewTextHost.TextView.TextBuffer.CurrentSnapshot, 0, _previewTextHost.TextView.TextBuffer.CurrentSnapshot.GetText().Length - 1), false);
+                    PreviewTextHost.TextView.Selection.Select(new SnapshotSpan(PreviewTextHost.TextView.TextBuffer.CurrentSnapshot, 0, PreviewTextHost.TextView.TextBuffer.CurrentSnapshot.GetText().Length - 1), false);
 
                     e.Handled = true;
                 },
@@ -174,8 +164,8 @@ namespace MadsKristensen.EditorExtensions.Margin
             menu.CommandBindings.Add(selectAllCommand);
 
             // For key gestures.
-            _previewTextHost.TextView.VisualElement.CommandBindings.Add(copyCommand);
-            _previewTextHost.TextView.VisualElement.CommandBindings.Add(selectAllCommand);
+            PreviewTextHost.TextView.VisualElement.CommandBindings.Add(copyCommand);
+            PreviewTextHost.TextView.VisualElement.CommandBindings.Add(selectAllCommand);
         }
     }
 }

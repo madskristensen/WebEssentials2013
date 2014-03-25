@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -16,39 +17,21 @@ namespace MadsKristensen.EditorExtensions.Margin
             : base(targetContentType, document, sourceView)
         { }
 
-        protected override ContextMenu GetContextMenu()
+        protected override void AddSpecialItems(ItemsControl menu)
         {
-            var menu = new ContextMenu();
-
-            SetupCommands(menu);
-
-            menu.Items.Add(new MenuItem()
-            {
-                Command = ApplicationCommands.Copy,
-                CommandTarget = menu
-            });
-
-            menu.Items.Add(new MenuItem()
-            {
-                Command = ApplicationCommands.SelectAll,
-                CommandTarget = menu
-            });
-
             menu.Items.Add(new MenuItem()
             {
                 Header = "Go To Definition",
                 InputGestureText = "F12",
-                Command = new GoToDefinitionCommand(GoToDefinitionCommandHandler,
-                              () => { return CssSourceMap.Exists(_targetFileName).Result; })
+                Command = new GoToDefinitionCommand(GoToDefinitionCommandHandler, () =>
+                              { return CssSourceMap.ExistsAsync(TargetFileName); })
             });
-
-            return menu;
         }
 
-        private void GoToDefinitionCommandHandler()
+        private async void GoToDefinitionCommandHandler()
         {
-            var buffer = _previewTextHost.TextView.TextBuffer;
-            var position = _previewTextHost.TextView.Selection.Start.Position;
+            var buffer = PreviewTextHost.TextView.TextBuffer;
+            var position = PreviewTextHost.TextView.Selection.Start.Position;
             var containingLine = position.GetContainingLine();
             int line = containingLine.LineNumber;
             var tree = CssEditorDocument.FromTextBuffer(buffer);
@@ -60,7 +43,7 @@ namespace MadsKristensen.EditorExtensions.Margin
             int start = selector.Start;
             int column = start - containingLine.Start;
 
-            var sourceInfo = CssSourceMap.GetSourcePosition(_targetFileName, line, column);
+            var sourceInfo = await CssSourceMap.GetSourcePositionAsync(TargetFileName, line, column);
 
             if (sourceInfo == null)
                 return;
@@ -82,7 +65,7 @@ namespace MadsKristensen.EditorExtensions.Margin
                 try
                 {
                     IWpfTextView view;
-                    view = (file != Document.FilePath) ? ProjectHelpers.GetCurentTextView() : _sourceView;
+                    view = (file != Document.FilePath) ? ProjectHelpers.GetCurentTextView() : SourceView;
                     ITextSnapshot snapshot = view.TextBuffer.CurrentSnapshot;
                     view.Caret.MoveTo(new SnapshotPoint(snapshot, positionInFile));
                     view.ViewScroller.EnsureSpanVisible(new SnapshotSpan(snapshot, positionInFile, 1), EnsureSpanVisibleOptions.AlwaysCenter);
@@ -95,17 +78,20 @@ namespace MadsKristensen.EditorExtensions.Margin
         private class GoToDefinitionCommand : ICommand
         {
             private readonly Action _goToAction;
-            private readonly Func<bool> _canExecuteAction;
+            private readonly Func<Task<bool>> _canExecuteAction;
+            private bool _canExecute;
 
-            public GoToDefinitionCommand(Action executeAction, Func<bool> canExecuteAction)
+            public GoToDefinitionCommand(Action executeAction, Func<Task<bool>> canExecuteAction)
             {
                 _goToAction = executeAction;
                 _canExecuteAction = canExecuteAction;
+                _canExecute = false;
             }
 
             public bool CanExecute(object parameter)
             {
-                return _canExecuteAction();
+                CanExecuteChanged += async (sender, e) => { _canExecute = await _canExecuteAction(); };
+                return _canExecute;
             }
 
             public event EventHandler CanExecuteChanged

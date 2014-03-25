@@ -1,21 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using MadsKristensen.EditorExtensions.Compilers;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.Less.Core;
 using Microsoft.Scss.Core;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class SelectorQuickInfo : IQuickInfoSource
     {
         private ITextBuffer _buffer;
+        private ITextDocumentFactoryService _documentFactory;
 
-        public SelectorQuickInfo(ITextBuffer subjectBuffer)
+        public SelectorQuickInfo(ITextBuffer subjectBuffer, ITextDocumentFactoryService documentFactory)
         {
             _buffer = subjectBuffer;
+            _documentFactory = documentFactory;
         }
 
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> qiContent, out ITrackingSpan applicableToSpan)
@@ -61,14 +65,34 @@ namespace MadsKristensen.EditorExtensions
                 return;
             }
 
-            var line = point.Value.GetContainingLine().LineNumber;
+            HandlePreprocessor(session, point, item, tree, qiContent);
+        }
 
-            var selector = CssSourceMap.GetGeneratedSelector(_buffer.GetFileName(), "", line, tree.StyleSheet.Text.GetLineColumn(item.Start, line));
+        private void HandlePreprocessor(IQuickInfoSession session, SnapshotPoint? point, ParseItem item, CssEditorDocument tree, IList<object> qiContent)
+        {
+            ITextDocument document;
 
-            if (selector == null)
+            if (!_documentFactory.TryGetTextDocument(session.TextView.TextDataModel.DocumentBuffer, out document))
                 return;
 
-            qiContent.Add(GenerateContent(selector));
+            var notifierProvider = Mef.GetImport<ICompilationNotifierProvider>(_buffer.ContentType);
+            var notifier = notifierProvider.GetCompilationNotifier(document);
+            var result = WebEditor.ExportProvider.GetExport<ITextBufferFactoryService>().Value.CreateTextBuffer();
+            var line = point.Value.GetContainingLine().LineNumber;
+
+            qiContent.Add(result);
+
+            notifier.CompilationReady += async (s, e) =>
+            {
+                var selector = await CssSourceMap.GetGeneratedSelectorAsync(_buffer.GetFileName(), e.CompilerResult.TargetFileName, line, tree.StyleSheet.Text.GetLineColumn(item.Start, line));
+
+                if (selector == null)
+                    return;
+
+                result.SetText(GenerateContent(selector));
+            };
+
+            notifier.RequestCompilationResult(true);
         }
 
         private static string GenerateContent(Selector sel)

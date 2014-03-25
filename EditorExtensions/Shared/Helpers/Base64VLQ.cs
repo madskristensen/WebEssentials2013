@@ -41,7 +41,7 @@ namespace MadsKristensen.EditorExtensions
                 return string.Empty;
 
             if (sources.Length > index)
-                return Path.Combine(basePath, sources[index]);
+                return Path.GetFullPath(Path.Combine(basePath, sources[index]));
 
             throw new VlqException("Invalid index received.");
         }
