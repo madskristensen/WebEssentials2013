@@ -34,9 +34,6 @@ namespace MadsKristensen.EditorExtensions.Margin
                 CommandTarget = menu
             });
 
-            if (!_previewContentType.Equals("CSS", StringComparison.OrdinalIgnoreCase))
-                return menu;
-
             menu.Items.Add(new MenuItem()
             {
                 Header = "Go To Definition",
