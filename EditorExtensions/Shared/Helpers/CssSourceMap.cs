@@ -38,7 +38,7 @@ namespace MadsKristensen.EditorExtensions
         private CssSourceMap()
         { }
 
-        public async static Task<bool> Exists(string targetFileName)
+        public async static Task<bool> ExistsAsync(string targetFileName)
         {
             if (string.IsNullOrEmpty(targetFileName))
                 return false;
@@ -49,9 +49,9 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public static dynamic GetSourcePosition(string targetFileName, int line, int column)
+        public async static Task<dynamic> GetSourcePositionAsync(string targetFileName, int line, int column)
         {
-            var node = GetSourceMapNode(targetFileName, line, column).Result;
+            var node = await GetSourceMapNodeAsync(targetFileName, line, column);
 
             if (node == null)
                 return null;
@@ -64,9 +64,9 @@ namespace MadsKristensen.EditorExtensions
             };
         }
 
-        public static dynamic GetGeneratedPosition(string sourceFileName, string targetFileName, int line, int column)
+        public async static Task<dynamic> GetGeneratedPositionAsync(string sourceFileName, string targetFileName, int line, int column)
         {
-            var node = GetGeneratedMapNode(sourceFileName, targetFileName, line, column, string.IsNullOrEmpty(targetFileName)).Result;
+            var node = await GetGeneratedMapNodeAsync(sourceFileName, targetFileName, line, column, string.IsNullOrEmpty(targetFileName));
 
             if (node == null)
                 return null;
@@ -78,9 +78,9 @@ namespace MadsKristensen.EditorExtensions
             };
         }
 
-        public static Selector GetSourceSelector(string targetFileName, int line, int column)
+        public async static Task<Selector> GetSourceSelectorAsync(string targetFileName, int line, int column)
         {
-            var node = GetSourceMapNode(targetFileName, line, column).Result;
+            var node = await GetSourceMapNodeAsync(targetFileName, line, column);
 
             if (node == null)
                 return null;
@@ -88,9 +88,9 @@ namespace MadsKristensen.EditorExtensions
             return node.OriginalSelector;
         }
 
-        public static Selector GetGeneratedSelector(string sourceFileName, string targetFileName, int line, int column)
+        public async static Task<Selector> GetGeneratedSelectorAsync(string sourceFileName, string targetFileName, int line, int column)
         {
-            var node = GetGeneratedMapNode(sourceFileName, targetFileName, line, column, string.IsNullOrEmpty(targetFileName)).Result;
+            var node = await GetGeneratedMapNodeAsync(sourceFileName, targetFileName, line, column, string.IsNullOrEmpty(targetFileName));
 
             if (node == null)
                 return null;
@@ -98,8 +98,10 @@ namespace MadsKristensen.EditorExtensions
             return node.GeneratedSelector;
         }
 
-        private async static Task<CssSourceMapNode> GetSourceMapNode(string targetFileName, int line, int column)
+        private async static Task<CssSourceMapNode> GetSourceMapNodeAsync(string targetFileName, int line, int column)
         {
+            targetFileName = Path.GetFullPath(targetFileName);
+
             using (await _rwLock.ReadLockAsync())
             {
                 return _sourceMaps.Where(s => s.Key == targetFileName)
@@ -108,8 +110,11 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private async static Task<CssSourceMapNode> GetGeneratedMapNode(string sourceFileName, string targetFileName, int line, int column, bool anyTarget)
+        private async static Task<CssSourceMapNode> GetGeneratedMapNodeAsync(string sourceFileName, string targetFileName, int line, int column, bool anyTarget)
         {
+            sourceFileName = Path.GetFullPath(sourceFileName);
+            targetFileName = Path.GetFullPath(targetFileName);
+
             if (sourceFileName.EndsWith("scss", StringComparison.OrdinalIgnoreCase))
                 line--;
 
@@ -168,7 +173,7 @@ namespace MadsKristensen.EditorExtensions
         {
             var map = new CssSourceMap();
 
-            map.Initialize(sourceFileName, targetFileName, mapFileName, contentType);
+            map.Initialize(targetFileName, mapFileName, contentType);
 
             if (map.IsDirty)
                 return;
@@ -184,10 +189,10 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private void Initialize(string sourceFileName, string targetFileName, string mapFileName, IContentType contentType)
+        private void Initialize(string targetFileName, string mapFileName, IContentType contentType)
         {
             _parser = CssParserLocator.FindComponent(contentType).CreateParser();
-            _directory = Path.GetDirectoryName(sourceFileName);
+            _directory = Path.GetDirectoryName(mapFileName);
             IsDirty = !PopulateMap(targetFileName, mapFileName); // Begin two-steps initialization.
         }
 

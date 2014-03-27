@@ -11,8 +11,8 @@ namespace WebEssentialsTests.Tests.Shared
         public void VlqGeneratedLine()
         {
             var testString = @"AASA;EACI,aAAa,2BAAb;EACA,SAAS,kEAAT";
-            var expected = new[] { 1, 2, 2, 2, 3, 3, 3 };
-            var collection = Vlq.Decode(testString, "./").ToArray();
+            var expected = new[] { 0, 1, 1, 1, 2, 2, 2 };
+            var collection = Vlq.Decode(testString, "").ToArray();
 
             for (var i = 0; i < collection.Count(); ++i)
             {
@@ -25,7 +25,7 @@ namespace WebEssentialsTests.Tests.Shared
         {
             var testString = @"AAIA,CAAC;EACG,WAAA";
             var expected = new[] { 0, 1, 2, 13 };
-            var collection = Vlq.Decode(testString, "./").ToArray();
+            var collection = Vlq.Decode(testString, "").ToArray();
 
             for (var i = 0; i < collection.Count(); ++i)
             {
@@ -37,8 +37,8 @@ namespace WebEssentialsTests.Tests.Shared
         public void VlqSourceLine()
         {
             var testString = @"AASA;EACI,aAAa,2BAAb;EACA,SAAS,kEAAT";
-            var expected = new[] { 10, 11, 11, 11, 12, 12, 12 };
-            var collection = Vlq.Decode(testString, "./").ToArray();
+            var expected = new[] { 09, 10, 10, 10, 11, 11, 11 };
+            var collection = Vlq.Decode(testString, "").ToArray();
 
             for (var i = 0; i < collection.Count(); ++i)
             {
@@ -51,7 +51,7 @@ namespace WebEssentialsTests.Tests.Shared
         {
             var testString = @"AAIA,CAAC;EACG,WAAA";
             var expected = new[] { 0, 1, 4, 4 };
-            var collection = Vlq.Decode(testString, "./").ToArray();
+            var collection = Vlq.Decode(testString, "").ToArray();
 
             for (var i = 0; i < collection.Count(); ++i)
             {
@@ -66,11 +66,11 @@ namespace WebEssentialsTests.Tests.Shared
             var expected = new[]
                            {
                                 new[] { 00, 02, 15, 42, 02, 11, 77 },
-                                new[] { 01, 02, 02, 02, 03, 03, 03 },
+                                new[] { 00, 01, 01, 01, 02, 02, 02 },
                                 new[] { 00, 04, 17, 04, 04, 13, 04 },
-                                new[] { 10, 11, 11, 11, 12, 12, 12 }
+                                new[] { 09, 10, 10, 10, 11, 11, 11 }
                            };
-            var collection = Vlq.Decode(testString, "./").ToArray();
+            var collection = Vlq.Decode(testString, "").ToArray();
 
             for (var i = 0; i < collection.Count(); ++i)
             {
