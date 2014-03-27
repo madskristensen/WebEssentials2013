@@ -68,19 +68,18 @@ namespace MadsKristensen.EditorExtensions.Compilers
             if (cached && CompilerRunner.Settings.CompileOnSave)
             {
                 var targetPath = CompilerRunner.GetTargetPath(Document.FilePath);
+
                 if (File.Exists(targetPath))
                 {
-                    OnCompilationReady(new CompilerResultEventArgs(new CompilerResult(Document.FilePath, targetPath)
-                    {
-                        IsSuccess = true,
-                        Result = File.ReadAllText(targetPath)
-                    }));
+                    OnCompilationReady(new CompilerResultEventArgs(CompilerResultFactory.GenerateResult(Document.FilePath, targetPath)));
 
                     return;
                 }
             }
+
             InitiateCompilationAsync(Document.FilePath, save: false).DontWait("compiling " + Document.FilePath);
         }
+
         async Task InitiateCompilationAsync(string sourcePath, bool save)
         {
             var result = await CompilerRunner.CompileAsync(sourcePath, save);

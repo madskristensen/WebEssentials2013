@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -13,9 +13,29 @@ namespace MadsKristensen.EditorExtensions.Margin
 {
     public class CssTextViewMargin : TextViewMargin
     {
+        private CssCompilerResult _compilerResult { get; set; }
+
         public CssTextViewMargin(string targetContentType, ITextDocument document, IWpfTextView sourceView)
             : base(targetContentType, document, sourceView)
         { }
+
+        protected override void UpdateMargin(CompilerResult result)
+        {
+            if (result.IsSuccess)
+            {
+                _compilerResult = result as CssCompilerResult;
+
+                if (SourceTextView.Properties.ContainsProperty("CssCompilerResult"))
+                    SourceTextView.Properties.RemoveProperty("CssCompilerResult");
+
+                SourceTextView.Properties.AddProperty("CssCompilerResult", _compilerResult);
+                SetText(result.Result);
+            }
+            else
+                SetText("/*\r\n\r\nCompilation Error. \r\nSee error list for details\r\n"
+                      + string.Join("\r\n", result.Errors.Select(e => e.Message))
+                      + "\r\n\r\n*/");
+        }
 
         protected override void AddSpecialItems(ItemsControl menu)
         {
@@ -24,11 +44,11 @@ namespace MadsKristensen.EditorExtensions.Margin
                 Header = "Go To Definition",
                 InputGestureText = "F12",
                 Command = new GoToDefinitionCommand(GoToDefinitionCommandHandler, () =>
-                              { return CssSourceMap.ExistsAsync(TargetFileName); })
+                { return _compilerResult != null && _compilerResult.SourceMap != null; })
             });
         }
 
-        private async void GoToDefinitionCommandHandler()
+        private void GoToDefinitionCommandHandler()
         {
             var buffer = PreviewTextHost.TextView.TextBuffer;
             var position = PreviewTextHost.TextView.Selection.Start.Position;
@@ -43,19 +63,19 @@ namespace MadsKristensen.EditorExtensions.Margin
             int start = selector.Start;
             int column = start - containingLine.Start;
 
-            var sourceInfo = await CssSourceMap.GetSourcePositionAsync(TargetFileName, line, column);
+            var sourceInfo = _compilerResult.SourceMap.MapNodes.FirstOrDefault(s => s.GeneratedLine == line && s.GeneratedColumn == column);
 
             if (sourceInfo == null)
                 return;
 
-            if (sourceInfo.file != Document.FilePath)
-                FileHelpers.OpenFileInPreviewTab(sourceInfo.file);
+            if (sourceInfo.SourceFilePath != Document.FilePath)
+                FileHelpers.OpenFileInPreviewTab(sourceInfo.SourceFilePath);
 
-            string content = File.ReadAllText(sourceInfo.file);
+            string content = File.ReadAllText(sourceInfo.SourceFilePath);
 
-            var finalPositionInSource = content.NthIndexOfCharInString('\n', (int)sourceInfo.line) + sourceInfo.column;
+            var finalPositionInSource = content.NthIndexOfCharInString('\n', (int)sourceInfo.OriginalLine) + sourceInfo.OriginalColumn;
 
-            Dispatch(sourceInfo.file, finalPositionInSource);
+            Dispatch(sourceInfo.SourceFilePath, finalPositionInSource);
         }
 
         private void Dispatch(string file, int positionInFile)
@@ -65,7 +85,7 @@ namespace MadsKristensen.EditorExtensions.Margin
                 try
                 {
                     IWpfTextView view;
-                    view = (file != Document.FilePath) ? ProjectHelpers.GetCurentTextView() : SourceView;
+                    view = (file != Document.FilePath) ? ProjectHelpers.GetCurentTextView() : SourceTextView;
                     ITextSnapshot snapshot = view.TextBuffer.CurrentSnapshot;
                     view.Caret.MoveTo(new SnapshotPoint(snapshot, positionInFile));
                     view.ViewScroller.EnsureSpanVisible(new SnapshotSpan(snapshot, positionInFile, 1), EnsureSpanVisibleOptions.AlwaysCenter);
@@ -78,20 +98,17 @@ namespace MadsKristensen.EditorExtensions.Margin
         private class GoToDefinitionCommand : ICommand
         {
             private readonly Action _goToAction;
-            private readonly Func<Task<bool>> _canExecuteAction;
-            private bool _canExecute;
+            private readonly Func<bool> _canExecuteAction;
 
-            public GoToDefinitionCommand(Action executeAction, Func<Task<bool>> canExecuteAction)
+            public GoToDefinitionCommand(Action executeAction, Func<bool> canExecuteAction)
             {
                 _goToAction = executeAction;
                 _canExecuteAction = canExecuteAction;
-                _canExecute = false;
             }
 
             public bool CanExecute(object parameter)
             {
-                CanExecuteChanged += async (sender, e) => { _canExecute = await _canExecuteAction(); };
-                return _canExecute;
+                return _canExecuteAction();
             }
 
             public event EventHandler CanExecuteChanged

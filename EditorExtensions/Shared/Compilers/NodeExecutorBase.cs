@@ -74,48 +74,70 @@ namespace MadsKristensen.EditorExtensions
 
         private CompilerResult ProcessResult(Process process, string errorText, string sourceFileName, string targetFileName)
         {
-            CompilerResult result = new CompilerResult(sourceFileName, targetFileName);
+            var result = ValidateResult(process, targetFileName, errorText);
+            var resultText = result.Result;
+            bool success = result.IsSuccess;
 
-            ValidateResult(process, targetFileName, errorText, result);
-
-            if (result.IsSuccess)
+            if (success)
             {
-                var renewedResult = PostProcessResult(result.Result, sourceFileName, targetFileName);
+                var renewedResult = PostProcessResult(resultText, sourceFileName, targetFileName);
 
-                if (!ReferenceEquals(result.Result, renewedResult))
+                if (!ReferenceEquals(resultText, renewedResult))
                 {
                     File.WriteAllText(targetFileName, renewedResult, Encoding.UTF8);
-                    result.Result = renewedResult;
+                    resultText = renewedResult;
                 }
             }
-            else
+
+            IEnumerable<CompilerError> errors = result.Errors;
+
+            var compilerResult = CompilerResultFactory.GenerateResult(
+                                     sourceFileName: sourceFileName,
+                                     targetFileName: targetFileName,
+                                     isSuccess: success,
+                                     result: resultText,
+                                     errors: errors
+                                 ) as CompilerResult;
+
+            if (!success)
             {
                 Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName)
-                         + " compilation failed: " + result.Errors.Select(e => e.Message).FirstOrDefault());
+                         + " compilation failed: " + compilerResult.Errors.Select(e => e.Message).FirstOrDefault());
             }
 
-            return result;
+            return compilerResult;
         }
 
-        private void ValidateResult(Process process, string outputFile, string errorText, CompilerResult result)
+        private dynamic ValidateResult(Process process, string outputFile, string errorText)
         {
+            string result = null;
+            var isSuccess = false;
+            IEnumerable<CompilerError> errors = null;
+
             try
             {
                 if (process.ExitCode == 0)
                 {
                     if (!string.IsNullOrEmpty(outputFile))
-                        result.Result = File.ReadAllText(outputFile);
-                    result.IsSuccess = true;
+                        result = File.ReadAllText(outputFile);
+                    isSuccess = true;
                 }
                 else
                 {
-                    result.Errors = ParseErrors(errorText);
+                    errors = ParseErrors(errorText);
                 }
             }
             catch (FileNotFoundException missingFileException)
             {
                 Logger.Log(ServiceName + ": " + Path.GetFileName(outputFile) + " compilation failed. " + missingFileException.Message);
             }
+
+            return new
+            {
+                Result = result,
+                IsSuccess = isSuccess,
+                Errors = errors
+            };
         }
 
         protected IEnumerable<CompilerError> ParseErrorsWithJson(string error)

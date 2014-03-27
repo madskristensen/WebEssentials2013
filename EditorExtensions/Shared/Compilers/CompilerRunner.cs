@@ -137,12 +137,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
                 var mapFile = targetPath + ".map";
 
                 if (GenerateSourceMap && File.Exists(mapFile))
-                {
                     ProjectHelpers.AddFileToProject(targetPath, mapFile);
-
-                    if (TargetContentType.IsOfType("CSS"))
-                        CssSourceMap.GenerateMaps(mapFile);
-                }
 
                 foreach (var listener in _listeners)
                     listener.FileSaved(TargetContentType, result.TargetFileName, true, Settings.MinifyInPlace);
@@ -228,16 +223,20 @@ namespace MadsKristensen.EditorExtensions.Compilers
         public MarkdownCompilerRunner(IContentType contentType) : base(contentType) { }
         public override bool GenerateSourceMap { get { return false; } }
         public override string TargetExtension { get { return ".html"; } }
+
         protected override Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
         {
             var result = new MarkdownSharp.Markdown(WESettings.Instance.Markdown).Transform(File.ReadAllText(sourcePath));
+
             if (!string.IsNullOrEmpty(targetPath))
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(targetPath);   // TODO: Only if output changed?
                 File.WriteAllText(targetPath, result, new UTF8Encoding(false));
             }
 
-            return Task.FromResult(new CompilerResult(sourcePath, targetPath) { IsSuccess = true, Result = result });
+            var compilerResult = CompilerResultFactory.GenerateResult(sourcePath, targetPath, true, result, null);
+
+            return Task.FromResult(compilerResult);
         }
     }
 }

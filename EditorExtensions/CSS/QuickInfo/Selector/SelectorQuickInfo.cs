@@ -1,25 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using MadsKristensen.EditorExtensions.Compilers;
+using System.Linq;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.Less.Core;
 using Microsoft.Scss.Core;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal class SelectorQuickInfo : IQuickInfoSource
     {
         private ITextBuffer _buffer;
-        private ITextDocumentFactoryService _documentFactory;
 
-        public SelectorQuickInfo(ITextBuffer subjectBuffer, ITextDocumentFactoryService documentFactory)
+        public SelectorQuickInfo(ITextBuffer subjectBuffer)
         {
             _buffer = subjectBuffer;
-            _documentFactory = documentFactory;
         }
 
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> qiContent, out ITrackingSpan applicableToSpan)
@@ -70,29 +67,21 @@ namespace MadsKristensen.EditorExtensions
 
         private void HandlePreprocessor(IQuickInfoSession session, SnapshotPoint? point, ParseItem item, CssEditorDocument tree, IList<object> qiContent)
         {
-            ITextDocument document;
+            var line = point.Value.GetContainingLine().LineNumber;
+            var compilerResult = session.TextView.Properties.GetProperty("CssCompilerResult") as CssCompilerResult;
 
-            if (!_documentFactory.TryGetTextDocument(session.TextView.TextDataModel.DocumentBuffer, out document))
+            if (compilerResult == null)
                 return;
 
-            var notifierProvider = Mef.GetImport<ICompilationNotifierProvider>(_buffer.ContentType);
-            var notifier = notifierProvider.GetCompilationNotifier(document);
-            var result = WebEditor.ExportProvider.GetExport<ITextBufferFactoryService>().Value.CreateTextBuffer();
-            var line = point.Value.GetContainingLine().LineNumber;
+            var node = compilerResult.SourceMap.MapNodes.FirstOrDefault(s =>
+                        s.SourceFilePath == _buffer.GetFileName() &&
+                        s.OriginalLine == line &&
+                        s.OriginalColumn == tree.StyleSheet.Text.GetLineColumn(item.Start, line));
 
-            qiContent.Add(result);
+            if (node == null)
+                return;
 
-            notifier.CompilationReady += async (s, e) =>
-            {
-                var selector = await CssSourceMap.GetGeneratedSelectorAsync(_buffer.GetFileName(), e.CompilerResult.TargetFileName, line, tree.StyleSheet.Text.GetLineColumn(item.Start, line));
-
-                if (selector == null)
-                    return;
-
-                result.SetText(GenerateContent(selector));
-            };
-
-            notifier.RequestCompilationResult(true);
+            qiContent.Add(GenerateContent(node.GeneratedSelector));
         }
 
         private static string GenerateContent(Selector sel)
@@ -100,11 +89,6 @@ namespace MadsKristensen.EditorExtensions
             SelectorSpecificity specificity = new SelectorSpecificity(sel);
 
             return "Selector specificity:\t\t" + specificity.ToString().Trim();
-
-            //sb.AppendLine(" - IDs:\t\t\t\t" + specificity.IDs);
-            //sb.AppendLine(" - Classes:\t\t\t" + (specificity.Classes + specificity.PseudoClasses));
-            //sb.AppendLine(" - Attributes:\t\t" + specificity.Attributes);
-            //sb.AppendLine(" - Elements:\t\t" + (specificity.Elements + specificity.PseudoElements));
         }
 
         public void Dispose() { }

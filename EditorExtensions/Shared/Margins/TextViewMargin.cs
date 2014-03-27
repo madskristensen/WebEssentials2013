@@ -15,13 +15,12 @@ namespace MadsKristensen.EditorExtensions.Margin
         private readonly string _previewContentType;
 
         protected IWpfTextViewHost PreviewTextHost { get; set; }
-        protected IWpfTextView SourceView { get; set; }
-        protected string TargetFileName { get; set; }
+        protected IWpfTextView SourceTextView { get; set; }
 
         public TextViewMargin(string targetContentType, ITextDocument document, IWpfTextView sourceView)
             : base(WESettings.Instance.ForContentType<IMarginSettings>(document.TextBuffer.ContentType), document)
         {
-            SourceView = sourceView;
+            SourceTextView = sourceView;
             _previewContentType = targetContentType;
         }
 
@@ -109,11 +108,8 @@ namespace MadsKristensen.EditorExtensions.Margin
 
         protected override void UpdateMargin(CompilerResult result)
         {
-            TargetFileName = null;
-
             if (result.IsSuccess)
             {
-                TargetFileName = result.TargetFileName;
                 SetText(result.Result);
             }
             else
