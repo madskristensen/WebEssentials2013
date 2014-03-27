@@ -100,6 +100,9 @@ namespace MadsKristensen.EditorExtensions
 
             var item = ProjectHelpers.AddFileToProject(filePath, resultPath);
 
+            if (item == null)
+                return;
+
             if (extension.Equals(Ext.TypeScript, StringComparison.OrdinalIgnoreCase))
                 item.Properties.Item("ItemType").Value = "TypeScriptCompile";
             else

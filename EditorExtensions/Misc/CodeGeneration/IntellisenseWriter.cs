@@ -127,25 +127,25 @@ namespace MadsKristensen.EditorExtensions
                         WriteTSInterfaceDefinition(sb, "\t", io.Properties);
                         sb.AppendLine();
 
-                        if (file != null)
+                        if (file == null)
+                            continue;
+
+                        foreach (var reference in io.References.Where(r => r != file))
                         {
-                            foreach (var reference in io.References.Where(r => r != file))
-                            {
-                                references.Insert(0, string.Format(CultureInfo.InvariantCulture, "/// <reference path=\"{0}\" />\r\n", FileHelpers.RelativePath(file, reference)));
-                            }
-
-                            if (references.Length > 0)
-                            {
-                                if (!extraLineFeed)
-                                {
-                                    references.AppendLine();
-                                    extraLineFeed = true;
-                                }
-
-                                sb.Insert(0, references);
-                                references.Clear();
-                            }
+                            references.Insert(0, string.Format(CultureInfo.InvariantCulture, "/// <reference path=\"{0}\" />\r\n", FileHelpers.RelativePath(file, reference)));
                         }
+
+                        if (references.Length < 1)
+                            continue;
+
+                        if (!extraLineFeed)
+                        {
+                            references.AppendLine();
+                            extraLineFeed = true;
+                        }
+
+                        sb.Insert(0, references);
+                        references.Clear();
                     }
                 }
 
