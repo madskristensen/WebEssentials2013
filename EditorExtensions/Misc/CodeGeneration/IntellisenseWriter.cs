@@ -129,7 +129,7 @@ namespace MadsKristensen.EditorExtensions
 
                         if (file != null)
                         {
-                            foreach (var reference in io.References.SkipWhile(r => r == file))
+                            foreach (var reference in io.References.Where(r => r != file))
                             {
                                 references.Insert(0, string.Format(CultureInfo.InvariantCulture, "/// <reference path=\"{0}\" />\r\n", FileHelpers.RelativePath(file, reference)));
                             }
