@@ -11,9 +11,12 @@ namespace MadsKristensen.EditorExtensions.Compilers
     {
         public ICompilationNotifier GetCompilationNotifier(ITextDocument doc)
         {
-            return new EditorCompilerInvoker(doc, new MarkdownCompilerRunner(doc.TextBuffer.ContentType));
+            return doc.TextBuffer.Properties.GetOrCreateSingletonProperty<EditorCompilerInvoker>(
+                       () => new EditorCompilerInvoker(doc, new MarkdownCompilerRunner(doc.TextBuffer.ContentType))
+                   );
         }
     }
+
     [Export(typeof(ICompilationNotifierProvider))]
     [ContentType("LESS")]
     [ContentType("SCSS")]
@@ -24,7 +27,9 @@ namespace MadsKristensen.EditorExtensions.Compilers
     {
         public ICompilationNotifier GetCompilationNotifier(ITextDocument doc)
         {
-            return new ErrorReportingCompilerInvoker(doc, new NodeCompilerRunner(doc.TextBuffer.ContentType));
+            return doc.TextBuffer.Properties.GetOrCreateSingletonProperty<ErrorReportingCompilerInvoker>(
+                       () => new ErrorReportingCompilerInvoker(doc, new NodeCompilerRunner(doc.TextBuffer.ContentType))
+                   );
         }
     }
 }
