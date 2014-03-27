@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Helpers;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
-using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
@@ -29,174 +27,24 @@ namespace MadsKristensen.EditorExtensions
         private string _directory;
         private ICssParser _parser;
 
-        private static Dictionary<string, IEnumerable<CssSourceMapNode>> _sourceMaps = new Dictionary<string, IEnumerable<CssSourceMapNode>>();
-        private static readonly AsyncReaderWriterLock _rwLock = new AsyncReaderWriterLock();
-
         public IEnumerable<CssSourceMapNode> MapNodes { get; private set; }
-        public bool IsDirty { get; private set; }
 
         private CssSourceMap()
         { }
 
-        public async static Task<bool> ExistsAsync(string targetFileName)
+        public CssSourceMap(string targetFileName, string mapFileName, IContentType contentType)
         {
-            if (string.IsNullOrEmpty(targetFileName))
-                return false;
-
-            using (await _rwLock.ReadLockAsync())
-            {
-                return _sourceMaps.ContainsKey(targetFileName);
-            }
-        }
-
-        public async static Task<dynamic> GetSourcePositionAsync(string targetFileName, int line, int column)
-        {
-            var node = await GetSourceMapNodeAsync(targetFileName, line, column);
-
-            if (node == null)
-                return null;
-
-            return new
-            {
-                file = node.SourceFilePath,
-                line = node.OriginalLine,
-                column = node.OriginalColumn
-            };
-        }
-
-        public async static Task<dynamic> GetGeneratedPositionAsync(string sourceFileName, string targetFileName, int line, int column)
-        {
-            var node = await GetGeneratedMapNodeAsync(sourceFileName, targetFileName, line, column, string.IsNullOrEmpty(targetFileName));
-
-            if (node == null)
-                return null;
-
-            return new
-            {
-                line = node.GeneratedLine,
-                column = node.GeneratedColumn
-            };
-        }
-
-        public async static Task<Selector> GetSourceSelectorAsync(string targetFileName, int line, int column)
-        {
-            var node = await GetSourceMapNodeAsync(targetFileName, line, column);
-
-            if (node == null)
-                return null;
-
-            return node.OriginalSelector;
-        }
-
-        public async static Task<Selector> GetGeneratedSelectorAsync(string sourceFileName, string targetFileName, int line, int column)
-        {
-            var node = await GetGeneratedMapNodeAsync(sourceFileName, targetFileName, line, column, string.IsNullOrEmpty(targetFileName));
-
-            if (node == null)
-                return null;
-
-            return node.GeneratedSelector;
-        }
-
-        private async static Task<CssSourceMapNode> GetSourceMapNodeAsync(string targetFileName, int line, int column)
-        {
-            targetFileName = Path.GetFullPath(targetFileName);
-
-            using (await _rwLock.ReadLockAsync())
-            {
-                return _sourceMaps.Where(s => s.Key == targetFileName)
-                                  .SelectMany(s => s.Value)
-                                  .FirstOrDefault(s => s.GeneratedColumn == column && s.GeneratedLine == line);
-            }
-        }
-
-        private async static Task<CssSourceMapNode> GetGeneratedMapNodeAsync(string sourceFileName, string targetFileName, int line, int column, bool anyTarget)
-        {
-            sourceFileName = Path.GetFullPath(sourceFileName);
-            targetFileName = Path.GetFullPath(targetFileName);
-
-            if (sourceFileName.EndsWith("scss", StringComparison.OrdinalIgnoreCase))
-                line--;
-
-            using (await _rwLock.ReadLockAsync())
-            {
-                if (!anyTarget && !_sourceMaps.ContainsKey(targetFileName))
-                    return null;
-
-                var map = _sourceMaps.FirstOrDefault(s => (anyTarget || s.Key == targetFileName) && s.Value.Any(k => k.SourceFilePath == sourceFileName)).Value;
-
-                if (map == null)
-                    return null;
-
-                var node = map.FirstOrDefault(n => n.OriginalLine == line && n.OriginalColumn == column);
-
-                if (node != null)
-                    return node;
-
-                // In case of SCSS, white-spaces are not discounted.
-                var nodeSet = map.Where(n => n.OriginalLine == line && n.OriginalColumn < column);
-
-                if (nodeSet.Count() == 0)
-                    return null;
-
-                return nodeSet.OrderBy(o => o.OriginalColumn).Last();
-            }
-        }
-
-        public static void GenerateMaps(string mapFileName)
-        {
-            var json = Json.Decode<SourceMapDefinition>(File.ReadAllText(mapFileName));
-            string extension = Path.GetExtension(json.sources[0]);
-
-            if (!extension.Equals(".less", StringComparison.OrdinalIgnoreCase) &&
-                !extension.Equals(".scss", StringComparison.OrdinalIgnoreCase))
-                return;
-
-            var source = json.sources.Where(s => Path.GetFileNameWithoutExtension(s) == Path.GetFileName(mapFileName.Substring(0, mapFileName.IndexOf(".", StringComparison.Ordinal))));
-
-            if (!source.Any())
-                return;
-
-            var directory = Path.GetDirectoryName(mapFileName);
-            var sourceName = Path.GetFullPath(Path.Combine(directory, source.First()));
-            string targetName = Path.GetFullPath(Path.Combine(directory, json.file));
-
-            if (!File.Exists(sourceName) || !File.Exists(targetName))
-                return;
-
-            var contentType = Mef.GetContentType(extension.TrimStart('.'));
-
-            GenerateMaps(sourceName, targetName, mapFileName, contentType);
-        }
-
-        public static void GenerateMaps(string sourceFileName, string targetFileName, string mapFileName, IContentType contentType)
-        {
-            var map = new CssSourceMap();
-
-            map.Initialize(targetFileName, mapFileName, contentType);
-
-            if (map.IsDirty)
-                return;
-
-            AddToDictionary(map, sourceFileName, targetFileName);
-        }
-
-        private async static void AddToDictionary(CssSourceMap map, string sourceFileName, string targetFileName)
-        {
-            using (await _rwLock.WriteLockAsync())
-            {
-                _sourceMaps[targetFileName] = map.MapNodes;
-            }
+            Initialize(targetFileName, mapFileName, contentType);
         }
 
         private void Initialize(string targetFileName, string mapFileName, IContentType contentType)
         {
             _parser = CssParserLocator.FindComponent(contentType).CreateParser();
             _directory = Path.GetDirectoryName(mapFileName);
-            IsDirty = !PopulateMap(targetFileName, mapFileName); // Begin two-steps initialization.
+            PopulateMap(targetFileName, mapFileName); // Begin two-steps initialization.
         }
 
-        private bool PopulateMap(string targetFileName, string mapFileName)
+        private void PopulateMap(string targetFileName, string mapFileName)
         {
             var map = new SourceMapDefinition();
 
@@ -206,18 +54,18 @@ namespace MadsKristensen.EditorExtensions
             }
             catch
             {
-                return false;
+                return;
             }
 
             MapNodes = Base64Vlq.Decode(map.mappings, _directory, map.sources);
 
             if (MapNodes.Count() == 0)
-                return false;
+                return;
 
-            return CollectRules(targetFileName);
+            CollectRules(targetFileName);
         }
 
-        private bool CollectRules(string targetFileName)
+        private void CollectRules(string targetFileName)
         {
             // Sort collection for generated file.
             MapNodes = MapNodes.OrderBy(x => x.GeneratedLine)
@@ -232,7 +80,7 @@ namespace MadsKristensen.EditorExtensions
 
             MapNodes = ProcessCollection();
 
-            return MapNodes.Any();
+            MapNodes.Any();
         }
 
         private IEnumerable<CssSourceMapNode> ProcessCollection(string fileContents = null)
@@ -271,6 +119,9 @@ namespace MadsKristensen.EditorExtensions
                     // Cache file contents for LESS/SCSS.
                     if (!contentCollection.ContainsKey(node.SourceFilePath))
                     {
+                        if (!File.Exists(node.SourceFilePath))
+                            continue;
+
                         fileContents = File.ReadAllText(node.SourceFilePath);
 
                         contentCollection.Add(node.SourceFilePath, fileContents);

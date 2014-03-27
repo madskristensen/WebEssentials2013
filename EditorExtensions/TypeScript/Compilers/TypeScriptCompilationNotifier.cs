@@ -144,20 +144,26 @@ namespace MadsKristensen.EditorExtensions.TypeScript
             if (File.Exists(TargetFilePath))
                 RaiseReady();
             else
-                OnCompilationReady(new CompilerResultEventArgs(new CompilerResult(SourceFilePath, null)
-                {
-                    IsSuccess = true,   // HACK: Set IsSuccess to true to force margin to display result
-                    Result = "// Not compiled to disk yet"
-                }));
+                OnCompilationReady(new CompilerResultEventArgs(
+                    CompilerResultFactory.GenerateResult(
+                        sourceFileName: SourceFilePath,
+                        targetFileName: null,
+                        isSuccess: true,   // HACK: Set IsSuccess to true to force margin to display result
+                        result: "// Not compiled to disk yet",
+                        errors: null
+                    )));
         }
 
         private void RaiseReady()
         {
-            OnCompilationReady(new CompilerResultEventArgs(new CompilerResult(SourceFilePath, TargetFilePath)
-            {
-                IsSuccess = true,
-                Result = File.ReadAllText(TargetFilePath)
-            }));
+            OnCompilationReady(new CompilerResultEventArgs(
+                CompilerResultFactory.GenerateResult(
+                    sourceFileName: SourceFilePath,
+                    targetFileName: TargetFilePath,
+                    isSuccess: true,
+                    result: File.ReadAllText(TargetFilePath),
+                    errors: null
+                )));
         }
     }
 }

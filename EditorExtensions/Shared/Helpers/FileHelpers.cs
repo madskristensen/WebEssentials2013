@@ -213,8 +213,11 @@ namespace MadsKristensen.EditorExtensions
         }
 
         static char[] pathSplit = { '/', '\\' };
+
         public static string RelativePath(string absolutePath, string relativeTo)
         {
+            relativeTo = relativeTo.Replace("\\/", "\\");
+
             string[] absDirs = absolutePath.Split(pathSplit);
             string[] relDirs = relativeTo.Split(pathSplit);
 
