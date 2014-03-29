@@ -17,6 +17,9 @@ namespace MadsKristensen.EditorExtensions
 
             var mapFileName = targetFileName + ".map";
 
+            if (result == null && File.Exists(targetFileName))
+                result = File.ReadAllText(targetFileName);
+
             if (targetFileName != null && Path.GetExtension(targetFileName).Equals(".css", StringComparison.OrdinalIgnoreCase) && File.Exists(mapFileName))
                 instance = CssCompilerResult.GenerateResult(sourceFileName, targetFileName, mapFileName, isSuccess, result, errors);
             else
