@@ -62,21 +62,26 @@ namespace MadsKristensen.EditorExtensions
                 return;
             }
 
-            HandlePreprocessor(session, point, item, tree, qiContent);
+            HandlePreprocessor(session, point.Value, item.FindType<Selector>(), qiContent);
         }
 
-        private void HandlePreprocessor(IQuickInfoSession session, SnapshotPoint? point, ParseItem item, CssEditorDocument tree, IList<object> qiContent)
+        private void HandlePreprocessor(IQuickInfoSession session, SnapshotPoint point, Selector item, IList<object> qiContent)
         {
-            var line = point.Value.GetContainingLine().LineNumber;
+            if (item == null)
+                return;
+
             var compilerResult = session.TextView.Properties.GetProperty("CssCompilerResult") as CssCompilerResult;
 
             if (compilerResult == null)
                 return;
 
+            var line = point.GetContainingLine().LineNumber;
+            var column = item.Start - point.Snapshot.GetLineFromPosition(item.Start).Start;
+
             var node = compilerResult.SourceMap.MapNodes.FirstOrDefault(s =>
                         s.SourceFilePath == _buffer.GetFileName() &&
                         s.OriginalLine == line &&
-                        s.OriginalColumn == tree.StyleSheet.Text.GetLineColumn(item.Start, line));
+                        s.OriginalColumn == column);
 
             if (node == null)
                 return;
