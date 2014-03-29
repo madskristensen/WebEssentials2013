@@ -113,6 +113,12 @@
     </Reference>
     <Reference Include="Microsoft.Collections.Immutable, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.JSON.Core">
+      <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Languages\Microsoft.JSON.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.JSON.Editor">
+      <HintPath>$(DevEnvDir)\Extensions\Microsoft\Web Tools\Languages\Microsoft.JSON.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.JSLS" />
     <Reference Include="Microsoft.VisualStudio.Language.StandardClassification" />
     <Reference Include="Microsoft.CSS.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -297,6 +303,20 @@
     <Compile Include="JavaScript\Outlining\JavaScriptRegionTagger.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="JSON-LD\Completion\ContextCompletionProvider.cs" />
+    <Compile Include="JSON-LD\Completion\PropertyNameCompletionProvider.cs" />
+    <Compile Include="JSON-LD\Completion\TypeCompletionProvider.cs" />
+    <Compile Include="JSON-LD\ContentType\JsonLdContentTypeDefinition.cs" />
+    <Compile Include="JSON-LD\Schemas\SchemaExporter.cs" />
+    <Compile Include="JSON-LD\Vocabularies\Helpers.cs" />
+    <Compile Include="JSON-LD\Vocabularies\IVocabulary.cs" />
+    <Compile Include="JSON-LD\Vocabularies\SchemaOrgVocabulary.cs" />
+    <Compile Include="JSON-LD\Vocabularies\VocabularyFactory.cs" />
+    <Compile Include="JSON\Completion\SchemaValueCompletionProvider.cs" />
+    <Compile Include="JSON\Helpers\JsonTreeVisitor.cs" />
+    <Compile Include="JSON\Schemas\SchemaExporter.cs" />
+    <Compile Include="JSON\Validation\JsonErrorTag.cs" />
+    <Compile Include="JSON\Validation\RefMemberNameItemValidator.cs" />
     <Compile Include="Shared\Compilers\Result\CompilerResultFactory.cs" />
     <Compile Include="Shared\Compilers\Result\CompilerError.cs" />
     <Compile Include="Shared\Compilers\Result\CssCompilerResult.cs" />
