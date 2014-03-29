@@ -385,8 +385,6 @@
     <Compile Include="Images\Commands\PasteImageCommandTarget.cs" />
     <Compile Include="Images\Commands\WebEditorsCreationListener.cs" />
     <Compile Include="TypeScript\Indent\TypeScriptSmartIndentCommandTarget.cs" />
-    <Compile Include="TypeScript\Typing\TypeScriptTypeThroughControllerProvider.cs" />
-    <Compile Include="TypeScript\Typing\TypeThroughController.cs" />
     <Compile Include="WebVtt\Commands\WebVttCreationListener.cs" />
     <Compile Include="Shared\Commands\CommentCommandTarget.cs" />
     <Compile Include="Shared\Commands\EnterIndentationCommandTarget.cs" />
