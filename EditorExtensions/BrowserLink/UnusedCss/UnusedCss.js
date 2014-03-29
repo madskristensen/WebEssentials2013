@@ -16,8 +16,7 @@
             var sheet = document.styleSheets[i];
             if (sheet.href && sheet.href.length > 0) {
                 sheets.push(sheet.href);
-            }
-            else {
+            } else {
                 sheets.push(null);
             }
         }
@@ -26,8 +25,7 @@
 
     var currentPatterns = [];
 
-    function getLinkedStyleSheets()
-    {
+    function getLinkedStyleSheets() {
         var rxs = [];
         var validSheetIndexes = [];
         for (var p = 0; p < currentPatterns.length; ++p) {
@@ -72,8 +70,7 @@
             var target = jqElem[i];
             if (browserLink.sourceMapping.canMapToSource(target)) {
                 ret.push(browserLink.sourceMapping.getCompleteRange(target));
-            }
-            else {
+            } else {
                 ret.push(null);
             }
         }
@@ -112,7 +109,7 @@
 
     function submitChunkedData(method, data, operationId) {
         var chunked = chunk(data);
-        for(var i = 0; i < chunked.length; ++i){
+        for (var i = 0; i < chunked.length; ++i) {
             browserLink.invoke(method, operationId, chunked[i], i, chunked.length);
         }
     }
@@ -170,7 +167,7 @@
 
         //Merge
         var rawFrameData = frameData.RawUsageData;
-        for(var i = 0; i < rawFrameData.length; ++i){
+        for (var i = 0; i < rawFrameData.length; ++i) {
             var selector = rawFrameData[i].Selector;
             if (!recordingSelectorLookup.hasOwnProperty(selector)) {
                 dataUpdated = true;
@@ -185,11 +182,10 @@
                 finishRecording(true);
             }
 
-            setTimeout(function() {
+            setTimeout(function () {
                 record(operationId);
             }, 50);
-        }
-        else {
+        } else {
             isRecording = false;
             currentRecordingOperationId = false;
             finishRecording(false);
@@ -217,8 +213,8 @@
 
     $(document).keydown(function (e) {
         if (e.ctrlKey && e.altKey && e.keyCode === 82) { // 82 = r
-                toggleRecordingMode();
-                return false;
+            toggleRecordingMode();
+            return false;
         }
 
         return true;
@@ -242,7 +238,7 @@
         }
 
         recordImage.title = (isRecording ? "Stop Recording" : "Start Recording") + " CSS Usage (CTRL+ALT+R)";
-        
+
         if (isRecording) {
             base64ToImage(pauseIconData, recordImage);
         } else {
@@ -267,7 +263,7 @@
 
         startRecording: function (operationId) {
             isRecording = true;
-            
+
             finishRecording = function (doContinue) {
                 var sheets = getLinkedStyleSheets().sheets;
                 var result = { "RawUsageData": recordingState, "Continue": !!doContinue, "Sheets": sheets };
@@ -293,8 +289,8 @@
         installIgnorePatterns: function (patterns) {
             currentPatterns = patterns;
         },
-        
-        blipRecording: function() {
+
+        blipRecording: function () {
             recordingState = [];
             recordingSelectorLookup = {};
         },
