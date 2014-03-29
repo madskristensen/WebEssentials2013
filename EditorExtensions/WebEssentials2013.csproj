@@ -285,6 +285,7 @@
     <Compile Include="CSS\Classify\ImportantClassifier.cs" />
     <Compile Include="CSS\Classify\VariableClassifier.cs" />
     <Compile Include="CSS\Completion\Filter\ColorSwatchCompletionListFilter.cs" />
+    <Compile Include="CSS\Completion\Filter\HideUncommonCompletionListFilter.cs" />
     <Compile Include="HTML\Outlining\HtmlRegionTagger.cs" />
     <Compile Include="IcedCoffeeScript\ContentType\IcedCoffeeScriptContentTypeDefinition.cs" />
     <Compile Include="JavaScript\Outlining\JavaScriptArrayOutlining.cs">
