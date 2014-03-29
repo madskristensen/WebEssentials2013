@@ -62,10 +62,10 @@ namespace MadsKristensen.EditorExtensions
                 return;
             }
 
-            HandlePreprocessor(session, point, item.FindType<Selector>(), qiContent);
+            HandlePreprocessor(session, point.Value, item.FindType<Selector>(), qiContent);
         }
 
-        private void HandlePreprocessor(IQuickInfoSession session, SnapshotPoint? point, Selector item, IList<object> qiContent)
+        private void HandlePreprocessor(IQuickInfoSession session, SnapshotPoint point, Selector item, IList<object> qiContent)
         {
             if (item == null)
                 return;
@@ -75,8 +75,8 @@ namespace MadsKristensen.EditorExtensions
             if (compilerResult == null)
                 return;
 
-            var line = point.Value.GetContainingLine().LineNumber;
-            var column = item.Start - point.Value.Snapshot.GetLineFromPosition(item.Start).Start;
+            var line = point.GetContainingLine().LineNumber;
+            var column = item.Start - point.Snapshot.GetLineFromPosition(item.Start).Start;
 
             var node = compilerResult.SourceMap.MapNodes.FirstOrDefault(s =>
                         s.SourceFilePath == _buffer.GetFileName() &&
