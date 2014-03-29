@@ -35,7 +35,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
 
             if (project != null)
                 solution.GetProjectOfUniqueName(project.UniqueName, out hierarchy);
-            
+
             IVsBuildPropertyStorage buildPropertyStorage = hierarchy as IVsBuildPropertyStorage;
 
             if (buildPropertyStorage == null)
