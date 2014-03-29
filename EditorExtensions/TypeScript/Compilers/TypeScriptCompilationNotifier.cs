@@ -31,9 +31,11 @@ namespace MadsKristensen.EditorExtensions.TypeScript
 
             IVsSolution solution = EditorExtensionsPackage.GetGlobalService<IVsSolution>(typeof(SVsSolution));
             Project project = ProjectHelpers.GetProject(SourceFilePath);
-            IVsHierarchy hierarchy;
-            ErrorHandler.ThrowOnFailure(solution.GetProjectOfUniqueName(project.UniqueName, out hierarchy));
+            IVsHierarchy hierarchy = null;
 
+            if (project != null)
+                solution.GetProjectOfUniqueName(project.UniqueName, out hierarchy);
+            
             IVsBuildPropertyStorage buildPropertyStorage = hierarchy as IVsBuildPropertyStorage;
 
             if (buildPropertyStorage == null)

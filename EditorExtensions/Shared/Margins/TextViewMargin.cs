@@ -26,6 +26,9 @@ namespace MadsKristensen.EditorExtensions.Margin
 
         protected override FrameworkElement CreatePreviewControl()
         {
+            if (_previewContentType == null)
+                return null;
+
             PreviewTextHost = CreateTextViewHost(_previewContentType);
             PreviewTextHost.TextView.VisualElement.HorizontalAlignment = HorizontalAlignment.Stretch;
             PreviewTextHost.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.GlyphMarginId, false);
@@ -47,6 +50,9 @@ namespace MadsKristensen.EditorExtensions.Margin
 
         private static IWpfTextViewHost CreateTextViewHost(string contentType)
         {
+            if (contentType == null)
+                return null;
+
             var componentModel = ProjectHelpers.GetComponentModel();
             var service = componentModel.GetService<IContentTypeRegistryService>();
             var type = service.GetContentType(contentType);

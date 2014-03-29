@@ -56,6 +56,10 @@ namespace MadsKristensen.EditorExtensions
             grid.RowDefinitions.Add(new RowDefinition());
 
             _previewControl = CreatePreviewControl();
+
+            if (_previewControl == null)
+                return;
+
             grid.Children.Add(_previewControl);
             Children.Add(grid);
 
