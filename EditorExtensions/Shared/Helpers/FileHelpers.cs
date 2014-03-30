@@ -204,6 +204,9 @@ namespace MadsKristensen.EditorExtensions
 
         public static string ConvertToBase64(string fileName)
         {
+            if (!File.Exists(fileName))
+                return string.Empty;
+
             string format = "data:{0};base64,{1}";
             byte[] buffer = File.ReadAllBytes(fileName);
             string extension = Path.GetExtension(fileName).Substring(1);

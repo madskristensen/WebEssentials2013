@@ -277,6 +277,12 @@ namespace MadsKristensen.EditorExtensions.Settings
         public bool SyncVendorValues { get; set; }
 
         [Category("IntelliSense")]
+        [DisplayName("Sync embedded image values")]
+        [Description("Synchronize base64 embedded background image property values when modifying the fallback property.")]
+        [DefaultValue(true)]
+        public bool SyncBase64ImageValues { get; set; }
+
+        [Category("IntelliSense")]
         [DisplayName("Show initial/inherit")]
         [Description("Show the global property values 'initial' and 'inherit' in IntelliSense.  Disabling this will not warn if you use them.")]
         [DefaultValue(false)]
