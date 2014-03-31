@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
@@ -60,7 +60,7 @@ namespace MadsKristensen.EditorExtensions
             //If the selector's full name would require computation (it's nested), compute it and add it to the output
             if (ruleSet != null && ruleSet.Parent.FindType<RuleSet>() != null)
             {
-                qiContent.Add(LessDocument.GetLessSelectorName(ruleSet));
+                qiContent.Add(GetSelectorText(session, point.Value, ruleSet));
             }
 
             applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(tipItem.Start, tipItem.Length, SpanTrackingMode.EdgeNegative);
@@ -83,6 +83,37 @@ namespace MadsKristensen.EditorExtensions
 
             Dictionary<string, string> browsers = GetBrowsers(b);
             qiContent.Add(CreateBrowserList(browsers));
+        }
+
+        private string GetSelectorText(IQuickInfoSession session, SnapshotPoint point, RuleSet rules)
+        {
+            if (rules == null || rules.Selectors.Count == 0)
+                return null;
+
+            var compilerResult = session.TextView.Properties.GetProperty("CssCompilerResult") as CssCompilerResult;
+
+            if (compilerResult == null)
+                return null;
+
+            StringBuilder result = new StringBuilder();
+
+            foreach (Selector item in rules.Selectors)
+            {
+                var line = point.GetContainingLine().LineNumber - 1;
+                var column = item.Start - point.Snapshot.GetLineFromPosition(item.Start).Start;
+
+                var node = compilerResult.SourceMap.MapNodes.FirstOrDefault(s =>
+                            s.SourceFilePath == _buffer.GetFileName() &&
+                            s.OriginalLine == line &&
+                            s.OriginalColumn == column);
+
+                if (node == null)
+                    return null;
+
+                result.Append(node.GeneratedSelector.Text).Append(" ");
+            }
+
+            return result.ToString();
         }
 
         private static Tuple<ParseItem, ICssCompletionListEntry> GetEntriesAndPoint(ParseItem item, SnapshotPoint point, ICssSchemaInstance schema)

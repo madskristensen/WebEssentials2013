@@ -6,6 +6,7 @@ using System.Text;
 using System.Web.Helpers;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
+using Microsoft.Scss.Core;
 using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions
@@ -102,9 +103,10 @@ namespace MadsKristensen.EditorExtensions
 
             ParseItem item = null;
             Selector selector = null;
+            SimpleSelector simple = null;
             StyleSheet styleSheet = null, cssStyleSheet = null;
             int start = 0, indexInCollection, targetDepth;
-            string fileContents = null;
+            string fileContents = null, simpleText = "";
             var result = new List<CssSourceMapNode>();
             var contentCollection = new Dictionary<string, string>(); // So we don't have to read file for each map item.
             var parser = new CssParser();
@@ -131,13 +133,16 @@ namespace MadsKristensen.EditorExtensions
 
                 item = cssStyleSheet.ItemAfterPosition(start);
                 selector = item.FindType<Selector>();
+                simple = item.FindType<SimpleSelector>();
 
-                if (selector == null)
+                if (selector == null || simple == null)
                     continue;
+
+                simpleText = simple.Text;
 
                 indexInCollection = sortedForGenerated.FindIndex(e => e.Equals(node));//sortedForGenerated.IndexOf(node);
 
-                targetDepth = 1;
+                targetDepth = 0;
 
                 for (int i = indexInCollection;
                      i >= 0 && node.GeneratedLine == sortedForGenerated[i].GeneratedLine;
@@ -153,10 +158,35 @@ namespace MadsKristensen.EditorExtensions
                     item = item.Parent;
                 }
 
-                selector = item.FindType<RuleSet>().Selectors.First();
+                // selector = item.FindType<RuleSet>().Selectors.First();
+
+                RuleSet rule;
+                ScssRuleBlock scssRuleBlock = item as ScssRuleBlock;
+
+                if (scssRuleBlock == null)
+                    rule = item as RuleSet;
+                else
+                    rule = scssRuleBlock.RuleSets.First();
+
+                // Because even on the same TreeDepth, there may be mulitple ruleblocks
+                // and the selector names may include & or other symbols which are diff
+                // fromt he generated counterpart, here is the guess work
+                item = rule.Children.FirstOrDefault(r => r is Selector && r.Text.Trim() == simpleText) as Selector;
+
+                selector = item == null ? null : item as Selector;
 
                 if (selector == null)
-                    continue;
+                {
+                    // One more try; dive deep and sniff then skip.
+                    var items = rule.Children.Where(r => r is RuleBlock)
+                                             .SelectMany(r => (r as RuleBlock).Children
+                                             .Where(s => s is RuleSet)
+                                             .Select(s => (s as RuleSet).Selectors.FirstOrDefault(sel => sel.Text.Trim() == simpleText)));
+                    selector = items.Any() ? items.First() : null;
+
+                    if (selector == null)
+                        continue;
+                }
 
                 node.OriginalLine = fileContents.Substring(0, selector.Start).Count(s => s == '\n');
                 node.OriginalColumn = fileContents.GetLineColumn(selector.Start, node.OriginalLine);
