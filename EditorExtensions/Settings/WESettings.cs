@@ -132,12 +132,6 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Show a preview pane containing the generated JavaScript when editing TypeScript files.")]
         [DefaultValue(true)]
         public bool ShowPreviewPane { get; set; }
-
-        [Category("Editor")]
-        [DisplayName("Enable brace completion")]
-        [Description("Insert a closing brace when typing an opening brace. This setting also enables Smart Indent.")]
-        [DefaultValue(true)]
-        public bool BraceCompletion { get; set; }
     }
 
     public sealed class HtmlSettings : SettingsBase<HtmlSettings>, IMinifierSettings
