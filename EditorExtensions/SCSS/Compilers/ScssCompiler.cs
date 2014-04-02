@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
@@ -24,16 +23,10 @@ namespace MadsKristensen.EditorExtensions.Scss
 
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
-            var args = new StringBuilder();
+            MapFileName = targetFileName + ".map";
+            MapFileName = GenerateSourceMap ? MapFileName : Path.Combine(Path.GetTempPath(), Path.GetFileName(MapFileName));
 
-            if (GenerateSourceMap)
-            {
-                args.Append("--source-map ");
-            }
-
-            args.AppendFormat(CultureInfo.CurrentCulture, "--output-style=expanded \"{0}\" --output \"{1}\"", sourceFileName, targetFileName);
-
-            return args.ToString();
+            return string.Format(CultureInfo.CurrentCulture, "--source-map \"{0}\" --output-style=expanded \"{1}\" --output \"{2}\"", MapFileName, sourceFileName, targetFileName);
         }
 
         //https://github.com/hcatlin/libsass/issues/242
