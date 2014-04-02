@@ -60,13 +60,27 @@ namespace MadsKristensen.EditorExtensions.Margin
             if (selector == null)
                 return;
 
-            int start = selector.Start;
-            int column = start - containingLine.Start;
+            int column = Math.Max(0, selector.SimpleSelectors.Last().Start - containingLine.Start - 1);
 
-            var sourceInfo = _compilerResult.SourceMap.MapNodes.FirstOrDefault(s => s.GeneratedLine == line && s.GeneratedColumn == column);
+            var sourceInfoCollection = _compilerResult.SourceMap.MapNodes.Where(s => s.GeneratedLine == line && s.GeneratedColumn == column);
 
-            if (sourceInfo == null)
-                return;
+            if (!sourceInfoCollection.Any())
+            {
+                if (selector.SimpleSelectors.Last().PreviousSibling == null)
+                    return;
+
+                // In case previous selector had > or + sign at the end,
+                // LESS compiler does count it as well.
+                var point = selector.SimpleSelectors.Last().PreviousSibling.AfterEnd - 1;
+
+                column = Math.Max(0, point - containingLine.Start - 1);
+                sourceInfoCollection = _compilerResult.SourceMap.MapNodes.Where(s => s.GeneratedLine == line && s.GeneratedColumn == column);
+
+                if (!sourceInfoCollection.Any())
+                    return;
+            }
+
+            var sourceInfo = sourceInfoCollection.First();
 
             if (sourceInfo.SourceFilePath != Document.FilePath)
                 FileHelpers.OpenFileInPreviewTab(sourceInfo.SourceFilePath);
