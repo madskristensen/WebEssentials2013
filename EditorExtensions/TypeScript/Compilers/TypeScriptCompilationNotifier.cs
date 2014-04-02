@@ -33,8 +33,8 @@ namespace MadsKristensen.EditorExtensions.TypeScript
             Project project = ProjectHelpers.GetProject(SourceFilePath);
             IVsHierarchy hierarchy = null;
 
-            if (project != null)
-                solution.GetProjectOfUniqueName(project.UniqueName, out hierarchy);
+            if (project != null && solution.GetProjectOfUniqueName(project.UniqueName, out hierarchy) != VSConstants.S_OK)
+                return string.Empty;
 
             IVsBuildPropertyStorage buildPropertyStorage = hierarchy as IVsBuildPropertyStorage;
 

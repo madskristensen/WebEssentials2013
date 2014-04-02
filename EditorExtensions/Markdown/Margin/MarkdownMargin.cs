@@ -6,18 +6,22 @@ using System.Windows;
 using System.Windows.Controls;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Text;
+using mshtml;
 
 namespace MadsKristensen.EditorExtensions.Markdown
 {
     internal class MarkdownMargin : CompilingMarginBase
     {
+        private HTMLDocument _document;
         private WebBrowser _browser;
         private const string _stylesheet = "WE-Markdown.css";
+        private double _cachedPosition = 0,
+                       _cachedHeight = 0,
+                       _positionPercentage = 0;
 
         public MarkdownMargin(ITextDocument document)
             : base(WESettings.Instance.Markdown, document)
         { }
-
 
         public static string GetStylesheet()
         {
@@ -62,6 +66,17 @@ namespace MadsKristensen.EditorExtensions.Markdown
                                     </head>
                                     <body>{1}</body></html>", GetStylesheet(), result.Result);
 
+            if (_document == null)
+            {
+                _browser.NavigateToString(html);
+
+                return;
+            }
+
+            _cachedPosition = _document.documentElement.getAttribute("scrollTop");
+            _cachedHeight = Math.Max(1.0, _document.body.offsetHeight);
+            _positionPercentage = _cachedPosition * 100 / _cachedHeight;
+
             _browser.NavigateToString(html);
         }
 
@@ -69,6 +84,13 @@ namespace MadsKristensen.EditorExtensions.Markdown
         {
             _browser = new WebBrowser();
             _browser.HorizontalAlignment = HorizontalAlignment.Stretch;
+            _browser.Navigated += (s, e) =>
+            {
+                _document = _browser.Document as HTMLDocument;
+                _cachedHeight = _document.body.offsetHeight;
+                _document.documentElement.setAttribute("scrollTop", _positionPercentage * _cachedHeight / 100);
+            };
+
             return _browser;
         }
     }
