@@ -8,14 +8,19 @@ namespace MadsKristensen.EditorExtensions
     {
         public static CompilerResult GenerateResult(string sourceFileName, string targetFileName)
         {
-            return GenerateResult(sourceFileName, targetFileName, true, null, null);
+            return GenerateResult(sourceFileName, targetFileName, null, true, null, null);
         }
 
         public static CompilerResult GenerateResult(string sourceFileName, string targetFileName, bool isSuccess, string result, IEnumerable<CompilerError> errors)
         {
+            return GenerateResult(sourceFileName, targetFileName, null, isSuccess, result, errors);
+        }
+
+        public static CompilerResult GenerateResult(string sourceFileName, string targetFileName, string mapFileName, bool isSuccess, string result, IEnumerable<CompilerError> errors)
+        {
             CompilerResult instance;
 
-            var mapFileName = targetFileName + ".map";
+            mapFileName = mapFileName ?? targetFileName + ".map";
 
             if (result == null && File.Exists(targetFileName))
                 result = File.ReadAllText(targetFileName);

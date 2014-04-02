@@ -16,16 +16,17 @@ namespace MadsKristensen.EditorExtensions
         protected static readonly string WebEssentialsResourceDirectory = Path.Combine(Path.GetDirectoryName(typeof(NodeExecutorBase).Assembly.Location), @"Resources");
         private static readonly string NodePath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node.exe");
 
-        public abstract string TargetExtension { get; }
-        public abstract string ServiceName { get; }
-        ///<summary>Indicates whether this compiler will emit a source map file.  Will only return true if aupported and enabled in user settings.</summary>
-        public abstract bool GenerateSourceMap { get; }
-
+        protected string MapFileName { get; set; }
         protected abstract string CompilerPath { get; }
-        ///<summary>Indicates whether this compiler is capable of compiling to a filename that doesn't match the source filename.</summary>
-        public virtual bool RequireMatchingFileName { get { return false; } }
         protected virtual Regex ErrorParsingPattern { get { return null; } }
         protected virtual Func<string, IEnumerable<CompilerError>> ParseErrors { get { return ParseErrorsWithRegex; } }
+
+        ///<summary>Indicates whether this compiler will emit a source map file.  Will only return true if aupported and enabled in user settings.</summary>
+        public abstract bool GenerateSourceMap { get; }
+        public abstract string TargetExtension { get; }
+        public abstract string ServiceName { get; }
+        ///<summary>Indicates whether this compiler is capable of compiling to a filename that doesn't match the source filename.</summary>
+        public virtual bool RequireMatchingFileName { get { return false; } }
 
         public async Task<CompilerResult> CompileAsync(string sourceFileName, string targetFileName)
         {
@@ -53,8 +54,10 @@ namespace MadsKristensen.EditorExtensions
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(targetFileName);
 
+                MapFileName = MapFileName ?? targetFileName + ".map";
+
                 if (GenerateSourceMap)
-                    ProjectHelpers.CheckOutFileFromSourceControl(targetFileName + ".map");
+                    ProjectHelpers.CheckOutFileFromSourceControl(MapFileName);
 
                 using (var process = await start.ExecuteAsync())
                 {
@@ -62,7 +65,8 @@ namespace MadsKristensen.EditorExtensions
                                             process,
                                             File.ReadAllText(errorOutputFile).Trim(),
                                             sourceFileName,
-                                            targetFileName
+                                            targetFileName,
+                                            MapFileName
                                         );
                 }
             }
@@ -72,7 +76,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private CompilerResult ProcessResult(Process process, string errorText, string sourceFileName, string targetFileName)
+        private CompilerResult ProcessResult(Process process, string errorText, string sourceFileName, string targetFileName, string mapFileName)
         {
             var result = ValidateResult(process, targetFileName, errorText);
             var resultText = result.Result;
@@ -94,6 +98,7 @@ namespace MadsKristensen.EditorExtensions
             var compilerResult = CompilerResultFactory.GenerateResult(
                                      sourceFileName: sourceFileName,
                                      targetFileName: targetFileName,
+                                     mapFileName: mapFileName,
                                      isSuccess: success,
                                      result: resultText,
                                      errors: errors

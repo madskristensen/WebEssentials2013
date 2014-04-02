@@ -16,7 +16,6 @@ namespace MadsKristensen.EditorExtensions
     {
         private static readonly Regex _sourceMapInCss = new Regex(@"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", RegexOptions.Multiline);
 
-
         protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
             // Inserts an empty row between each rule and replace two space indentation with 4 space indentation

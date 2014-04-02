@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
@@ -23,17 +22,13 @@ namespace MadsKristensen.EditorExtensions.Less
 
         protected override string GetArguments(string sourceFileName, string targetFileName)
         {
-            var args = new StringBuilder("--no-color --relative-urls ");
+            MapFileName = targetFileName + ".map";
+            MapFileName = GenerateSourceMap ? MapFileName : Path.Combine(Path.GetTempPath(), Path.GetFileName(MapFileName));
 
-            if (WESettings.Instance.Less.GenerateSourceMaps)
-            {
-                args.AppendFormat(CultureInfo.CurrentCulture, "--source-map-basepath=\"{0}\" --source-map=\"{1}.map\" ",
-                                  Path.GetDirectoryName(targetFileName), targetFileName);
-            }
+            string mapDirectory = Path.GetDirectoryName(MapFileName);
 
-            args.AppendFormat(CultureInfo.CurrentCulture, "\"{0}\" \"{1}\"", sourceFileName, targetFileName);
-
-            return args.ToString();
+            return string.Format(CultureInfo.CurrentCulture, "--no-color --relative-urls --source-map-basepath=\"{0}\" --source-map=\"{1}\" \"{2}\" \"{3}\"",
+                                 mapDirectory, MapFileName, sourceFileName, targetFileName);
         }
     }
 }
