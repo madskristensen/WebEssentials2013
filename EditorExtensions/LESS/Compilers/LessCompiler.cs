@@ -26,9 +26,15 @@ namespace MadsKristensen.EditorExtensions.Less
             MapFileName = GenerateSourceMap ? MapFileName : Path.Combine(Path.GetTempPath(), Path.GetFileName(MapFileName));
 
             string mapDirectory = Path.GetDirectoryName(MapFileName);
-
-            return string.Format(CultureInfo.CurrentCulture, "--no-color --relative-urls --source-map-basepath=\"{0}\" --source-map=\"{1}\" \"{2}\" \"{3}\"",
-                                 mapDirectory, MapFileName, sourceFileName, targetFileName);
+            if (WESettings.Instance.Less.GenerateSourceMaps)
+            {
+                return string.Format(CultureInfo.CurrentCulture, "--no-color --relative-urls --source-map-basepath=\"{0}\" --source-map=\"{1}\" \"{2}\" \"{3}\"",
+                                     mapDirectory, MapFileName, sourceFileName, targetFileName);
+            }
+            else
+            {
+                return string.Format(CultureInfo.CurrentCulture, "--no-color --relative-urls \"{0}\" \"{1}\"", sourceFileName, targetFileName);
+            }
         }
     }
 }
