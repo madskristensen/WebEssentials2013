@@ -299,6 +299,7 @@
     <Compile Include="AppCache\ContentType\AppCacheContentTypeDefinition.cs" />
     <Compile Include="CSS\Classify\ImportantClassifier.cs" />
     <Compile Include="CSS\Classify\VariableClassifier.cs" />
+    <Compile Include="CSS\Classify\EmbeddedImageClassifier.cs" />
     <Compile Include="CSS\Completion\Filter\ColorSwatchCompletionListFilter.cs" />
     <Compile Include="CSS\Completion\Filter\HideUncommonCompletionListFilter.cs" />
     <Compile Include="HTML\Outlining\HtmlRegionTagger.cs" />
