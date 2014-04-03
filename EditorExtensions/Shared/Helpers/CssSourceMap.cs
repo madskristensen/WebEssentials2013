@@ -227,6 +227,9 @@ namespace MadsKristensen.EditorExtensions
 
                 item = styleSheet.ItemAfterPosition(start);
 
+                if (item == null)
+                    continue;
+
                 selector = item.FindType<Selector>();
 
                 if (selector == null)
@@ -267,17 +270,23 @@ namespace MadsKristensen.EditorExtensions
 
                 if (depth < selector.SimpleSelectors.Count)
                 {
-                    simple = item.FindType<SimpleSelector>();
+                    simple = selector.SimpleSelectors.First();
 
                     if (simple == null)
-                        simple = item.Parent.FindType<SimpleSelector>();
+                        simple = item.Parent != null ? item.Parent.FindType<SimpleSelector>() : null;
+
+                    if (simple == null)
+                        continue;
 
                     var selectorText = new StringBuilder();
 
                     for (int i = 0; i < node.OriginalSelector.SimpleSelectors.Count; i++)
                     {
-
                         selectorText.Append(simple.Text).Append(" ");
+
+                        if (simple.NextSibling == null)
+                            continue;
+
                         simple = simple.NextSibling as SimpleSelector;
                     }
 
