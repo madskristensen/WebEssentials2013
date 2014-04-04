@@ -49,8 +49,11 @@ namespace MadsKristensen.EditorExtensions
 
         private string UpdateSourceMapUrls(string content, string compiledFileName)
         {
-            if (!GenerateSourceMap || !File.Exists(compiledFileName))
+            if (!File.Exists(compiledFileName))
                 return content;
+
+            if (!GenerateSourceMap)
+                return _sourceMapInCss.Replace(content, string.Empty);
 
             string sourceMapFilename = compiledFileName + ".map";
 
