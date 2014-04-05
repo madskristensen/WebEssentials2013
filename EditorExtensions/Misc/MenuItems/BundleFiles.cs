@@ -58,17 +58,77 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        public static void BindAllBundlesAssets(string path)
+        {
+            foreach (var file in Directory.EnumerateFiles(Path.GetDirectoryName(path), "*.bundle", SearchOption.AllDirectories))
+            {
+                ObserveBundleFileObjects(file);
+            }
+        }
+
+        private static void ObserveBundleFileObjects(string file)
+        {
+            XmlDocument doc = GetXmlDocument(file);
+
+            if (doc != null)
+            {
+                XmlNode bundleNode = doc.SelectSingleNode("//bundle");
+
+                if (bundleNode == null)
+                    return;
+
+                XmlNodeList nodes = doc.SelectNodes("//file");
+
+                foreach (XmlNode node in nodes)
+                {
+                    AttachFileObserverEvent(ProjectHelpers.ToAbsoluteFilePath(node.InnerText, file));
+                }
+            }
+        }
+
+        private static HashSet<string> _watchedFiles = new HashSet<string>();
+
+        private static void AttachFileObserverEvent(string fileName)
+        {
+            if (!File.Exists(fileName))
+                return;
+
+            fileName = Path.GetFullPath(fileName);
+
+            if (_watchedFiles.Contains(fileName))
+                return;
+
+            _watchedFiles.Add(fileName);
+
+            FileSystemWatcher watcher = new FileSystemWatcher();
+
+            watcher.Path = Path.GetDirectoryName(fileName);
+            watcher.Filter = Path.GetFileName(fileName);
+            watcher.NotifyFilter = NotifyFilters.Attributes | NotifyFilters.LastWrite | NotifyFilters.Size;
+
+            watcher.Changed += (s, e) => UpdateBundles(null, true);
+
+            watcher.EnableRaisingEvents = true;
+        }
+
         private void document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
-            if (e.FileActionType == FileActionTypes.ContentSavedToDisk)
-            {
-                string file = e.FilePath.EndsWith(_ext, StringComparison.OrdinalIgnoreCase) ? e.FilePath : null;
+            if (!new[] { ".bundle", ".css", ".js" }.Any(x => Path.GetExtension(e.FilePath).Equals(x, StringComparison.OrdinalIgnoreCase)) ||
+                e.FileActionType != FileActionTypes.ContentLoadedFromDisk && e.FileActionType != FileActionTypes.ContentSavedToDisk)
+                return;
 
-                System.Threading.Tasks.Task.Run(() =>
-                {
-                    UpdateBundles(file, true);
-                });
+            string file = null;
+
+            if (e.FilePath.EndsWith(_ext, StringComparison.OrdinalIgnoreCase))
+            {
+                ObserveBundleFileObjects(e.FilePath);
+                file = e.FilePath;
             }
+
+            System.Threading.Tasks.Task.Run(() =>
+            {
+                UpdateBundles(file, true);
+            });
         }
 
         public static void UpdateBundles(string changedFile, bool isBuild)
@@ -341,6 +401,8 @@ namespace MadsKristensen.EditorExtensions
 
                 if (!File.Exists(file))
                     continue;
+
+                AttachFileObserverEvent(file);
 
                 var source = File.ReadAllText(file);
                 if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase))
