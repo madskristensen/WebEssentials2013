@@ -23,7 +23,6 @@ namespace WebEssentialsTests.IntegrationTests
 
             // Check some non-default values from the legacy XML
             WESettings.Instance.Less.CompileOnSave.Should().BeFalse();
-            WESettings.Instance.TypeScript.BraceCompletion.Should().BeFalse();
             WESettings.Instance.TypeScript.LintOnSave.Should().BeFalse();
 
             // Check default values for new settings
