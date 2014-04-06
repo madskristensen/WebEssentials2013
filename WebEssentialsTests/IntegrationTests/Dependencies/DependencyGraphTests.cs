@@ -84,6 +84,7 @@ namespace WebEssentialsTests.IntegrationTests.Dependencies
             );
             homeDeps.Should().BeEmpty();
         }
+
         [HostType("VS IDE")]
         [TestMethod]
         public async Task DependenciesFromNewFiles()
@@ -124,6 +125,50 @@ namespace WebEssentialsTests.IntegrationTests.Dependencies
                .Should()
                .BeEquivalentTo(new[] { "base.less", "page.less" });
         }
+
+        [HostType("VS IDE")]
+        [TestMethod]
+        public async Task DependenciesForRecursiveImports()
+        {
+            var s2 = (Solution2)VSHost.DTE.Solution;
+            s2.Create(TestCaseDirectory, "DependencyCreationTests");
+            var template = s2.GetProjectTemplate("EmptyWebApplicationProject40.zip", "CSharp");
+            s2.AddFromTemplate(template, Path.Combine(TestCaseDirectory, "WebAppProject"), "WebAppProject.csproj");
+
+            AddProjectFile(Path.Combine(TestCaseDirectory, "WebAppProject", "a.less"), "@import 'b';");
+            AddProjectFile(Path.Combine(TestCaseDirectory, "WebAppProject", "b.less"), "@import 'a';");
+            AddProjectFile(Path.Combine(TestCaseDirectory, "WebAppProject", "c.less"), "@import 'c';");
+
+            await graph.RescanComplete;
+
+            var deps = await graph.GetRecursiveDependentsAsync(
+                Path.Combine(TestCaseDirectory, "WebAppProject", "a.less")
+            );
+
+            deps
+               .Select(Path.GetFileName)
+               .Should()
+               .BeEquivalentTo(new[] { "b.less" });
+
+            deps = await graph.GetRecursiveDependentsAsync(
+                Path.Combine(TestCaseDirectory, "WebAppProject", "b.less")
+            );
+
+            deps
+               .Select(Path.GetFileName)
+               .Should()
+               .BeEquivalentTo(new[] { "a.less" });
+
+            deps = await graph.GetRecursiveDependentsAsync(
+                    Path.Combine(TestCaseDirectory, "WebAppProject", "c.less")
+            );
+
+            deps
+               .Count()
+               .Should()
+               .Be(0);
+        }
+
         [HostType("VS IDE")]
         [TestMethod]
         public async Task DeletedImports()
