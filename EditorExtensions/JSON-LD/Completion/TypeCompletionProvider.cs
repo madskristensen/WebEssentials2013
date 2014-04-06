@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions.JSONLD
             if (member == null || member.Name == null || member.Name.Text != "\"@type\"")
                 yield break;
 
-            
+
             foreach (IVocabulary vocabulary in VocabularyFactory.GetVocabularies(member))
             {
                 foreach (string key in vocabulary.Cache.Keys)

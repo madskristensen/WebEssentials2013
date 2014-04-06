@@ -156,11 +156,13 @@ namespace MadsKristensen.EditorExtensions.Helpers
              );
 #endif
         }
+
         GraphNode GetNode(string filename)
         {
             bool unused;
             return GetNode(filename, out unused);
         }
+
         GraphNode GetNode(string filename, out bool created)
         {
             filename = Path.GetFullPath(filename);
@@ -173,22 +175,39 @@ namespace MadsKristensen.EditorExtensions.Helpers
 
         ///<summary>Reparses dependencies for a single file and updates the graph.</summary>
         ///<remarks>Although this method is async, it performs synchronous work, and should not be called on a UI thread.</remarks>
-        public Task RescanFileAsync(string fileName) { return RescanFileAsync(fileName, hasLock: false); }
-        private async Task RescanFileAsync(string fileName, bool hasLock)
+        public Task RescanFileAsync(string fileName)
+        {
+            var visited = new HashSet<string>();
+
+            return RescanFileAsync(fileName, false, visited);
+        }
+
+        private async Task RescanFileAsync(string fileName, bool hasLock, HashSet<string> visited)
         {
             fileName = Path.GetFullPath(fileName);
+
+            if (visited.Contains(fileName))
+                return;
+
+            visited.Add(fileName);
+
             var dependencies = GetDependencyPaths(fileName);
+
             using (hasLock ? new AsyncReaderWriterLock.Releaser() : await rwLock.WriteLockAsync())
             {
-                var parentNode = GetNode(fileName);
-                parentNode.ClearDependencies();
+
                 bool created;
+                var parentNode = GetNode(fileName);
+
+                parentNode.ClearDependencies();
+
                 foreach (var dependency in dependencies)
                 {
                     var childNode = GetNode(dependency, out created);
                     parentNode.AddDependency(childNode);
+
                     if (created)    // This will (and must) run synchronously, since it doesn't acquire the lock
-                        await RescanFileAsync(childNode.FileName, hasLock: true);
+                        await RescanFileAsync(childNode.FileName, true, visited);
                 }
             }
         }
@@ -365,8 +384,10 @@ namespace MadsKristensen.EditorExtensions.Helpers
         protected override IEnumerable<string> GetDependencyPaths(string fileName)
         {
             var sourceUri = new Uri(fileName);
+            var cachedFileContent = File.ReadAllText(fileName);
+
             return new CssItemAggregator<string> { (ImportDirective id) => GetImportPaths(sourceUri, id) }
-                            .Crawl(parserFactory.CreateParser().Parse(File.ReadAllText(fileName), false));
+                            .Crawl(parserFactory.CreateParser().Parse(cachedFileContent, false));
         }
         private static IEnumerable<string> GetImportPaths(Uri sourceUri, ImportDirective importDirective)
         {

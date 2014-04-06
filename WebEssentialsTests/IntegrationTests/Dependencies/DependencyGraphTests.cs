@@ -84,6 +84,7 @@ namespace WebEssentialsTests.IntegrationTests.Dependencies
             );
             homeDeps.Should().BeEmpty();
         }
+
         [HostType("VS IDE")]
         [TestMethod]
         public async Task DependenciesFromNewFiles()
@@ -124,6 +125,50 @@ namespace WebEssentialsTests.IntegrationTests.Dependencies
                .Should()
                .BeEquivalentTo(new[] { "base.less", "page.less" });
         }
+
+        [HostType("VS IDE")]
+        [TestMethod]
+        public async Task DependenciesForRecursiveImports()
+        {
+            var s2 = (Solution2)VSHost.DTE.Solution;
+            s2.Create(TestCaseDirectory, "LessDependencyRecursionTests");
+            var template = s2.GetProjectTemplate("EmptyWebApplicationProject40.zip", "CSharp");
+            s2.AddFromTemplate(template, Path.Combine(TestCaseDirectory, "LessDependencyRecursionProject"), "LessDependencyRecursionProject.csproj");
+
+            AddProjectFile(Path.Combine(TestCaseDirectory, "LessDependencyRecursionProject", "a.less"), "@import 'b';");
+            AddProjectFile(Path.Combine(TestCaseDirectory, "LessDependencyRecursionProject", "b.less"), "@import 'a';");
+            AddProjectFile(Path.Combine(TestCaseDirectory, "LessDependencyRecursionProject", "c.less"), "@import 'c';");
+
+            await graph.RescanComplete;
+
+            var deps = await graph.GetRecursiveDependentsAsync(
+                Path.Combine(TestCaseDirectory, "LessDependencyRecursionProject", "a.less")
+            );
+
+            deps
+               .Select(Path.GetFileName)
+               .Should()
+               .BeEquivalentTo(new[] { "b.less" });
+
+            deps = await graph.GetRecursiveDependentsAsync(
+                Path.Combine(TestCaseDirectory, "LessDependencyRecursionProject", "b.less")
+            );
+
+            deps
+               .Select(Path.GetFileName)
+               .Should()
+               .BeEquivalentTo(new[] { "a.less" });
+
+            deps = await graph.GetRecursiveDependentsAsync(
+                    Path.Combine(TestCaseDirectory, "LessDependencyRecursionProject", "c.less")
+            );
+
+            deps
+               .Count()
+               .Should()
+               .Be(0);
+        }
+
         [HostType("VS IDE")]
         [TestMethod]
         public async Task DeletedImports()

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.JSON.Core.Parser;
 
 namespace MadsKristensen.EditorExtensions.JSONLD
@@ -16,7 +13,7 @@ namespace MadsKristensen.EditorExtensions.JSONLD
         {
             get { return _cache; }
         }
-        
+
         public string DisplayName
         {
             get { return "http://schema.org"; }
@@ -29,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.JSONLD
 
             return contextNode.Value.Text.Contains("schema.org");
         }
-        
+
         private static Dictionary<string, IEnumerable<Entry>> BuildCache()
         {
             Dictionary<string, IEnumerable<Entry>> cache = new Dictionary<string, IEnumerable<Entry>>();

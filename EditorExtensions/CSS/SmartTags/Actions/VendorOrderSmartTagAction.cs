@@ -31,7 +31,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
         public override void Invoke()
         {
-             string separator = CssSettings.Get(_span.TextBuffer).FormatterBlockBracePosition == BracePosition.Compact ? " " : Environment.NewLine;
+            string separator = CssSettings.Get(_span.TextBuffer).FormatterBlockBracePosition == BracePosition.Compact ? " " : Environment.NewLine;
             //string separator = CssSettings.FormatterBlockBracePosition == BracePosition.Compact ? " " : Environment.NewLine;
             string insert = _lastVendor.Text + separator + _standard.Text;
 
