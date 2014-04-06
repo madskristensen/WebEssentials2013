@@ -132,6 +132,10 @@ namespace MadsKristensen.EditorExtensions
                 start += node.GeneratedColumn;
 
                 item = cssStyleSheet.ItemAfterPosition(start);
+
+                if (item == null)
+                    continue;
+
                 selector = item.FindType<Selector>();
                 simple = item.FindType<SimpleSelector>();
 
@@ -261,6 +265,10 @@ namespace MadsKristensen.EditorExtensions
                 start += node.GeneratedColumn;
 
                 item = styleSheet.ItemAfterPosition(start);
+
+                if (item == null)
+                    continue;
+
                 selector = item.FindType<Selector>();
 
                 if (selector == null)
