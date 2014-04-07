@@ -115,7 +115,14 @@ namespace MadsKristensen.EditorExtensions
             int returnCode = -1;
 
             if (persistFileFormat != null)
-                returnCode = persistFileFormat.GetCurFile(out ppzsFilename, out pnFormatIndex);
+                try
+                {
+                    returnCode = persistFileFormat.GetCurFile(out ppzsFilename, out pnFormatIndex);
+                }
+                catch (NotImplementedException)
+                {
+                    return null;
+                }
 
             if (returnCode != VSConstants.S_OK)
                 return null;
