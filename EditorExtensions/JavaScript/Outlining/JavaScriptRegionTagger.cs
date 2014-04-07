@@ -13,6 +13,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
     [Export(typeof(ITaggerProvider))]
     [TagType(typeof(IOutliningRegionTag))]
     [ContentType("javascript")]
+    [ContentType("node.js")]
     [ContentType("TypeScript")]
     internal sealed class RegionTaggerProvider : ITaggerProvider
     {

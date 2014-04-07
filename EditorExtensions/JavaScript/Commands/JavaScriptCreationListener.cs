@@ -13,6 +13,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
 {
     [Export(typeof(IVsTextViewCreationListener))]
     [ContentType("JavaScript")]
+    [ContentType("node.js")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     public class JavaScriptSortPropertiesViewCreationListener : IVsTextViewCreationListener
     {

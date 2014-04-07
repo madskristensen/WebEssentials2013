@@ -25,6 +25,7 @@ namespace MadsKristensen.EditorExtensions
     [Export(typeof(IWpfTextViewCreationListener))]
     [ContentType("CSS")]
     [ContentType("JavaScript")]
+    [ContentType("node.js")]
     [ContentType("htmlx")]
     [ContentType("XML")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
