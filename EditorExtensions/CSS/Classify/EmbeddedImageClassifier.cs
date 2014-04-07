@@ -106,7 +106,7 @@ namespace MadsKristensen.EditorExtensions.Css
                 if (rule == null || rules.Contains(rule))
                     continue;
 
-                var images = rule.Declarations.Where(d => d.PropertyName.Text.Contains("background"));
+                var images = rule.Declarations.Where(d => d.PropertyName != null && d.PropertyName.Text.Contains("background"));
 
                 foreach (Declaration image in images)
                 {
