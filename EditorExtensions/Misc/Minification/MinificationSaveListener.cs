@@ -12,6 +12,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     [ContentType("HTMLX")]
     [ContentType("CSS")]
     [ContentType("JavaScript")]
+    [ContentType("node.js")]
     class MinificationSaveListener : IFileSaveListener
     {
         public void FileSaved(IContentType contentType, string path, bool forceSave, bool minifyInPlace)

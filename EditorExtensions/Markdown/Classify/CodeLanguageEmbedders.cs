@@ -68,6 +68,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
     }
     [Export(typeof(ICodeLanguageEmbedder))]
     [ContentType("Javascript")]
+    [ContentType("node.js")]
     public class JavaScriptEmbedder : ICodeLanguageEmbedder
     {
         // Statements like return or arguments can only appear inside a function.

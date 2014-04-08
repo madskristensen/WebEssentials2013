@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.JSLS;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -15,16 +16,16 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using Intel = Microsoft.VisualStudio.Language.Intellisense;
 
 namespace MadsKristensen.EditorExtensions.JavaScript
 {
-    [Export(typeof(IVsTextViewCreationListener))]
+    [Export(typeof(IWpfTextViewConnectionListener))]
     [ContentType("javascript")]
+    [ContentType("node.js")]
     [TextViewRole(PredefinedTextViewRoles.Interactive)]
-    internal sealed class JsTextViewCreationListener : IVsTextViewCreationListener
+    internal sealed class JsTextViewCreationListener : IWpfTextViewConnectionListener
     {
         [Import]
         IVsEditorAdaptersFactoryService AdaptersFactory = null;
@@ -35,10 +36,19 @@ namespace MadsKristensen.EditorExtensions.JavaScript
         [Import]
         IStandardClassificationService _standardClassifications = null;
 
-        public async void VsTextViewCreated(IVsTextView textViewAdapter)
+        [Import]
+        internal IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
+
+        public async void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
-            IWpfTextView view = AdaptersFactory.GetWpfTextView(textViewAdapter);
-            Debug.Assert(view != null);
+            if (textView.Properties.ContainsProperty("JsCommandFilter"))
+                return;
+
+            if (!subjectBuffers.Any(b => b.ContentType.IsOfType("JavaScript")))
+                return;
+
+            var adapter = EditorAdaptersFactoryService.GetViewAdapter(textView);
+            var filter = textView.Properties.GetOrCreateSingletonProperty<JsCommandFilter>("JsCommandFilter", () => new JsCommandFilter(textView, CompletionBroker, _standardClassifications));
 
             int tries = 0;
 
@@ -48,17 +58,16 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             // To confirm this, click Debug, New Breakpoint, Break at Function, type
             // Microsoft.VisualStudio.JSLS.TextView.TextView.CreateCommandFilter,
             // then make sure that our last filter is added after that runs.
-            JsCommandFilter filter = new JsCommandFilter(view, CompletionBroker, _standardClassifications);
             while (true)
             {
                 IOleCommandTarget next;
-                textViewAdapter.AddCommandFilter(filter, out next);
+                adapter.AddCommandFilter(filter, out next);
                 filter.Next = next;
 
                 if (IsJSLSInstalled(next) || ++tries > 10)
                     return;
                 await Task.Delay(500);
-                textViewAdapter.RemoveCommandFilter(filter);    // Remove the too-early filter and try again.
+                adapter.RemoveCommandFilter(filter);    // Remove the too-early filter and try again.
             }
         }
 
@@ -79,21 +88,16 @@ namespace MadsKristensen.EditorExtensions.JavaScript
                 return false;
             }
         }
+
+        public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
+        { }
     }
 
     internal sealed class JsCommandFilter : IOleCommandTarget
     {
         private readonly IStandardClassificationService _standardClassifications;
         private ICompletionSession _currentSession;
-
-        public JsCommandFilter(IWpfTextView textView, ICompletionBroker broker, IStandardClassificationService standardClassifications)
-        {
-            _currentSession = null;
-
-            TextView = textView;
-            Broker = broker;
-            _standardClassifications = standardClassifications;
-        }
+        static readonly Type jsTaggerType = typeof(JavaScriptLanguageService).Assembly.GetType("Microsoft.VisualStudio.JSLS.Classification.Tagger");
 
         public IWpfTextView TextView { get; private set; }
         public ICompletionBroker Broker { get; private set; }
@@ -104,11 +108,22 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             return (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
         }
 
-        static readonly Type jsTaggerType = typeof(Microsoft.VisualStudio.JSLS.JavaScriptLanguageService).Assembly.GetType("Microsoft.VisualStudio.JSLS.Classification.Tagger");
+        public JsCommandFilter(IWpfTextView textView, ICompletionBroker CompletionBroker, IStandardClassificationService standardClassifications)
+        {
+            TextView = textView;
+            Broker = CompletionBroker;
+            _standardClassifications = standardClassifications;
+        }
 
         IEnumerable<IClassificationType> GetCaretClassifications()
         {
-            var tagger = TextView.TextBuffer.Properties.GetProperty<ITagger<ClassificationTag>>(jsTaggerType);
+            var buffers = TextView.BufferGraph.GetTextBuffers(b => b.ContentType.IsOfType("JavaScript") && TextView.GetSelection("JavaScript").HasValue && TextView.GetSelection("JavaScript").Value.Snapshot.TextBuffer == b);
+
+            if (!buffers.Any())
+                return Enumerable.Empty<IClassificationType>();
+
+            var tagger = buffers.First().Properties.GetProperty<ITagger<ClassificationTag>>(jsTaggerType);
+
             return tagger.GetTags(new NormalizedSnapshotSpanCollection(new SnapshotSpan(TextView.Caret.Position.BufferPosition, 0)))
                     .Select(s => s.Tag.ClassificationType);
         }

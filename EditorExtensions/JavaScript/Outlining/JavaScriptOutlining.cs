@@ -11,6 +11,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
     //[Export(typeof(ITaggerProvider))]
     [TagType(typeof(IOutliningRegionTag))]
     [ContentType("JavaScript")]
+    [ContentType("node.js")]
     [ContentType("TypeScript")]
     internal sealed class OutliningTaggerProvider : ITaggerProvider
     {
