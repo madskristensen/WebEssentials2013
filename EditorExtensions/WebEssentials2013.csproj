@@ -493,7 +493,6 @@
     <Compile Include="CSS\Completion\CompletionListEntry.cs" />
     <Compile Include="CSS\Completion\CompletionProviders\AnimationNameCompletionProvider.cs" />
     <Compile Include="CSS\Completion\CompletionProviders\ColorCompletionProvider.cs" />
-    <Compile Include="CSS\Completion\CompletionProviders\FontFamilyCompletionProvider.cs" />
     <Compile Include="CSS\Completion\CompletionProviders\RegionCompletionProvider.cs" />
     <Compile Include="CSS\Completion\CompletionProviders\FontCompletionProvider.cs" />
     <Compile Include="CSS\Completion\ContextProviders\LessPseudoContextProvider.cs" />
