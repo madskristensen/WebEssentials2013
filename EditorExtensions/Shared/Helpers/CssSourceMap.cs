@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web.Helpers;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
@@ -18,6 +19,9 @@ namespace MadsKristensen.EditorExtensions
         public Selector OriginalSelector { get; set; }
     }
 
+    ///<summary>This will ultimately get called when source-map processing completes.</sumaary>
+    public delegate void CssSourceMapCompletionNotifier(object source);
+
     ///<summary>CSS source map factory.</summary>
     ///<remarks>
     /// The objects of this class will be instantiated
@@ -31,13 +35,18 @@ namespace MadsKristensen.EditorExtensions
         private IContentType _contentType;
 
         public IEnumerable<CssSourceMapNode> MapNodes { get; private set; }
+        public event CssSourceMapCompletionNotifier Completed;
 
         private CssSourceMap()
         { }
 
-        public CssSourceMap(string targetFileName, string mapFileName, IContentType contentType)
+        public async static Task<CssSourceMap> Create(string targetFileName, string mapFileName, IContentType contentType)
         {
-            Initialize(targetFileName, mapFileName, contentType);
+            CssSourceMap map = new CssSourceMap();
+
+            await Task.Run(() => map.Initialize(targetFileName, mapFileName, contentType));
+
+            return map;
         }
 
         private void Initialize(string targetFileName, string mapFileName, IContentType contentType)
@@ -50,7 +59,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void PopulateMap(string targetFileName, string mapFileName)
         {
-            var map = new SourceMapDefinition();
+            SourceMapDefinition map;
 
             try
             {
@@ -86,8 +95,6 @@ namespace MadsKristensen.EditorExtensions
                                .ThenBy(x => x.GeneratedColumn);
 
             MapNodes = ProcessGeneratedMaps(File.ReadAllText(targetFileName));
-
-            MapNodes.Any();
         }
 
         // A very ugly hack for a very ugly bug: https://github.com/hcatlin/libsass/issues/324
@@ -108,7 +115,7 @@ namespace MadsKristensen.EditorExtensions
             int start = 0, indexInCollection, targetDepth;
             string fileContents = null, simpleText = "";
             var result = new List<CssSourceMapNode>();
-            var contentCollection = new Dictionary<string, string>(); // So we don't have to read file for each map item.
+            var contentCollection = new HashSet<string>(); // So we don't have to read file for each map item.
             var parser = new CssParser();
 
             cssStyleSheet = parser.Parse(cssFileContents, false);
@@ -116,14 +123,14 @@ namespace MadsKristensen.EditorExtensions
             foreach (var node in MapNodes)
             {
                 // Cache source file contents.
-                if (!contentCollection.ContainsKey(node.SourceFilePath))
+                if (!contentCollection.Contains(node.SourceFilePath))
                 {
                     if (!File.Exists(node.SourceFilePath)) // Lets say someone deleted the reference file.
                         continue;
 
                     fileContents = File.ReadAllText(node.SourceFilePath);
 
-                    contentCollection.Add(node.SourceFilePath, fileContents);
+                    contentCollection.Add(node.SourceFilePath);
 
                     styleSheet = _parser.Parse(fileContents, false);
                 }
@@ -209,19 +216,19 @@ namespace MadsKristensen.EditorExtensions
             int start;
             var fileContents = "";
             var result = new List<CssSourceMapNode>();
-            var contentCollection = new Dictionary<string, string>(); // So we don't have to read file for each map item.
+            var contentCollection = new HashSet<string>();
 
             foreach (var node in MapNodes)
             {
                 // Cache source file contents.
-                if (!contentCollection.ContainsKey(node.SourceFilePath))
+                if (!contentCollection.Contains(node.SourceFilePath))
                 {
                     if (!File.Exists(node.SourceFilePath)) // Lets say someone deleted the reference file.
                         continue;
 
                     fileContents = File.ReadAllText(node.SourceFilePath);
 
-                    contentCollection.Add(node.SourceFilePath, fileContents);
+                    contentCollection.Add(node.SourceFilePath);
 
                     styleSheet = _parser.Parse(fileContents, false);
                 }
@@ -312,11 +319,11 @@ namespace MadsKristensen.EditorExtensions
             return result;
         }
 
-        private struct SourceMapDefinition
+        private class SourceMapDefinition
         {
-            public string file;
-            public string mappings;
-            public string[] sources;
+            public string file { get; set; }
+            public string mappings { get; set; }
+            public string[] sources { get; set; }
         }
     }
 }

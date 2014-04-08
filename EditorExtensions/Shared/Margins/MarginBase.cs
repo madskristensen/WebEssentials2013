@@ -193,6 +193,7 @@ namespace MadsKristensen.EditorExtensions
             base.CreateMarginControls();
             Dispatcher.InvokeAsync(() => Notifier.RequestCompilationResult(cached: true));
         }
+
         protected abstract void UpdateMargin(CompilerResult result);
 
 

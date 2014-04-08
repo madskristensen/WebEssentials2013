@@ -45,10 +45,8 @@ namespace MadsKristensen.EditorExtensions.JSONLD
 
             foreach (IVocabulary vocab in vocabularies.Where(v => v.Cache.ContainsKey(value)))
                 foreach (Entry entry in vocab.Cache[value])
-                {
                     yield return new JSONCompletionEntry(entry.Name, "\"" + entry.Name + "\"", null,
-                        entry.GetGlyph(), "iconAutomationText", true, context.Session as ICompletionSession);
-                }
+                        entry.Glyph, "iconAutomationText", true, context.Session as ICompletionSession);
         }
     }
 }

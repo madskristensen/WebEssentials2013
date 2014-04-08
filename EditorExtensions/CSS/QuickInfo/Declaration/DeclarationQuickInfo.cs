@@ -90,22 +90,22 @@ namespace MadsKristensen.EditorExtensions
             if (rules == null || rules.Selectors.Count == 0)
                 return null;
 
-            var compilerResult = session.TextView.Properties.GetProperty("CssCompilerResult") as CssCompilerResult;
+            var sourceMaps = session.TextView.Properties.GetProperty("CssSourceMap") as CssSourceMap;
 
-            if (compilerResult == null)
+            if (sourceMaps == null)
                 return null;
 
             StringBuilder result = new StringBuilder();
 
             foreach (Selector item in rules.Selectors)
             {
-                var line = point.GetContainingLine().LineNumber - 1;
-                var column = item.Start - point.Snapshot.GetLineFromPosition(item.Start).Start;
+                var line = rules.StyleSheet.Text.Substring(0, rules.Start).Count(s => s == '\n');//point.GetContainingLine().LineNumber - 1;
+                var column = item.Start - point.Snapshot.GetLineFromPosition(item.Start).Start - 1;
 
-                var node = compilerResult.SourceMap.MapNodes.FirstOrDefault(s =>
-                            s.SourceFilePath == _buffer.GetFileName() &&
-                            s.OriginalLine == line &&
-                            s.OriginalColumn == column);
+                var node = sourceMaps.MapNodes.FirstOrDefault(s =>
+                               s.SourceFilePath == _buffer.GetFileName() &&
+                               s.OriginalLine == line &&
+                               s.OriginalColumn > column);
 
                 if (node == null)
                     return null;

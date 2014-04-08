@@ -113,6 +113,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
 
         ///<summary>Occurs when the file has been compiled (on both success and failure).</summary>
         public event EventHandler<CompilerResultEventArgs> CompilationReady;
+
         ///<summary>Raises the CompilationReady event.</summary>
         ///<param name="e">A CompilerResultEventArgs object that provides the event data.</param>
         protected virtual void OnCompilationReady(CompilerResultEventArgs e)
@@ -147,25 +148,25 @@ namespace MadsKristensen.EditorExtensions.TypeScript
                 RaiseReady();
             else
                 OnCompilationReady(new CompilerResultEventArgs(
-                    CompilerResultFactory.GenerateResult(
-                        sourceFileName: SourceFilePath,
-                        targetFileName: null,
-                        isSuccess: true,   // HACK: Set IsSuccess to true to force margin to display result
-                        result: "// Not compiled to disk yet",
-                        errors: null
-                    )));
+                         CompilerResultFactory.GenerateResult(
+                              sourceFileName: SourceFilePath,
+                              targetFileName: null,
+                              isSuccess: true,   // HACK: Set IsSuccess to true to force margin to display result
+                              result: "// Not compiled to disk yet",
+                              errors: null
+                          )));
         }
 
         private void RaiseReady()
         {
             OnCompilationReady(new CompilerResultEventArgs(
-                CompilerResultFactory.GenerateResult(
-                    sourceFileName: SourceFilePath,
-                    targetFileName: TargetFilePath,
-                    isSuccess: true,
-                    result: File.ReadAllText(TargetFilePath),
-                    errors: null
-                )));
+                     CompilerResultFactory.GenerateResult(
+                          sourceFileName: SourceFilePath,
+                          targetFileName: TargetFilePath,
+                          isSuccess: true,
+                          result: File.ReadAllText(TargetFilePath),
+                          errors: null
+                      )));
         }
     }
 }

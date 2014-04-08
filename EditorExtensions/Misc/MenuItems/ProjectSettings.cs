@@ -6,7 +6,6 @@ using EnvDTE;
 using EnvDTE80;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace MadsKristensen.EditorExtensions
 {

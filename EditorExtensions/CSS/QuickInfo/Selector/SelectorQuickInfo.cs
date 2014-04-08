@@ -67,21 +67,21 @@ namespace MadsKristensen.EditorExtensions
 
         private void HandlePreprocessor(IQuickInfoSession session, SnapshotPoint point, Selector item, IList<object> qiContent)
         {
-            if (item == null)
+            if (item == null || !session.TextView.Properties.ContainsProperty("CssSourceMap"))
                 return;
 
-            var compilerResult = session.TextView.Properties.GetProperty("CssCompilerResult") as CssCompilerResult;
+            var sourceMap = session.TextView.Properties.GetProperty("CssSourceMap") as CssSourceMap;
 
-            if (compilerResult == null)
+            if (sourceMap == null)
                 return;
 
             var line = point.GetContainingLine().LineNumber;
             var column = item.Start - point.Snapshot.GetLineFromPosition(item.Start).Start;
 
-            var node = compilerResult.SourceMap.MapNodes.FirstOrDefault(s =>
-                        s.SourceFilePath == _buffer.GetFileName() &&
-                        s.OriginalLine == line &&
-                        s.OriginalColumn == column);
+            var node = sourceMap.MapNodes.FirstOrDefault(s =>
+                           s.SourceFilePath == _buffer.GetFileName() &&
+                           s.OriginalLine == line &&
+                           s.OriginalColumn == column);
 
             if (node == null)
                 return;
