@@ -19,9 +19,6 @@ namespace MadsKristensen.EditorExtensions
         public Selector OriginalSelector { get; set; }
     }
 
-    ///<summary>This will ultimately get called when source-map processing completes.</sumaary>
-    public delegate void CssSourceMapCompletionNotifier(object source);
-
     ///<summary>CSS source map factory.</summary>
     ///<remarks>
     /// The objects of this class will be instantiated
@@ -35,7 +32,6 @@ namespace MadsKristensen.EditorExtensions
         private IContentType _contentType;
 
         public IEnumerable<CssSourceMapNode> MapNodes { get; private set; }
-        public event CssSourceMapCompletionNotifier Completed;
 
         private CssSourceMap()
         { }

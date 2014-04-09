@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions.Margin
     public class CssTextViewMargin : TextViewMargin
     {
         private MenuItem _goToMenuItem { get; set; }
-        public CssCompilerResult _compilerResult { get; set; }
+        private CssCompilerResult _compilerResult { get; set; }
 
         public CssTextViewMargin(string targetContentType, ITextDocument document, IWpfTextView sourceView)
             : base(targetContentType, document, sourceView)
