@@ -28,9 +28,6 @@ namespace MadsKristensen.EditorExtensions.JavaScript
     internal sealed class JsTextViewCreationListener : IWpfTextViewConnectionListener
     {
         [Import]
-        IVsEditorAdaptersFactoryService AdaptersFactory = null;
-
-        [Import]
         ICompletionBroker CompletionBroker = null;
 
         [Import]

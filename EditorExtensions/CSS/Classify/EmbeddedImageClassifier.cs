@@ -194,13 +194,6 @@ namespace MadsKristensen.EditorExtensions.Css
             }
         }
 
-        private string GetValueText(Declaration dec)
-        {
-            int start = dec.Colon.AfterEnd;
-            int length = dec.AfterEnd - start;
-            return _buffer.CurrentSnapshot.GetText(start, length);
-        }
-
         public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;
 
         public void RaiseClassificationChanged(SnapshotSpan span)

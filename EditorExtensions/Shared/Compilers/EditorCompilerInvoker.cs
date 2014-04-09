@@ -109,15 +109,18 @@ namespace MadsKristensen.EditorExtensions.Compilers
             }
             base.Dispose(disposing);
         }
+
         protected override Task CompileAsync(string sourcePath)
         {
             _provider.Tasks.Clear();
             return base.CompileAsync(sourcePath);
         }
+
         protected override void OnCompilationReady(CompilerResultEventArgs e)
         {
             foreach (var error in e.CompilerResult.Errors)
                 CreateTask(error);
+
             base.OnCompilationReady(e);
         }
 

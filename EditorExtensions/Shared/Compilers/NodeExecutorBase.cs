@@ -62,12 +62,12 @@ namespace MadsKristensen.EditorExtensions
                 using (var process = await start.ExecuteAsync())
                 {
                     return ProcessResult(
-                                            process,
-                                            File.ReadAllText(errorOutputFile).Trim(),
-                                            sourceFileName,
-                                            targetFileName,
-                                            MapFileName
-                                        );
+                               process,
+                               File.ReadAllText(errorOutputFile).Trim(),
+                               sourceFileName,
+                               targetFileName,
+                               MapFileName
+                           );
                 }
             }
             finally
