@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions
         private static DTE2 _dte;
         private OleMenuCommandService _mcs;
         public const string _ext = ".bundle";
-        private static string[] _ignoreFolders = new[] { "app_data", "bin", "obj" };
+        private static string[] _ignoreFolders = new[] { "app_data", "bin", "obj", "pkg" };
 
         public BundleFilesMenu()
         {
