@@ -25,6 +25,8 @@ namespace MadsKristensen.EditorExtensions
         [Import]
         public IContentTypeRegistryService ContentTypes { get; set; }
         [Import]
+        public IFileExtensionRegistryService FileExtensionRegistry { get; set; }
+        [Import]
         public ProjectCompiler Compiler { get; set; }
 
         public BuildMenu(DTE2 dte, OleMenuCommandService mcs)
@@ -85,7 +87,7 @@ namespace MadsKristensen.EditorExtensions
             // Perform expensive blocking work in parallel
             Parallel.ForEach(files, file =>
                 MinificationSaveListener.ReMinify(
-                    ContentTypeManager.GetContentType(Path.GetExtension(file).TrimStart('.')),
+                    FileExtensionRegistry.GetContentTypeForExtension(Path.GetExtension(file).TrimStart('.')),
                     file,
                     false
                 )
