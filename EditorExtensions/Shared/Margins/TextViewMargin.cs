@@ -86,22 +86,21 @@ namespace MadsKristensen.EditorExtensions.Margin
 
         protected void SetText(string text)
         {
-            if (!Settings.ShowPreviewPane)
-                return;
-
             // Prevents race conditions when the file is saved before the preview is open.
-            if (PreviewTextHost == null) return;
-
-            if (string.IsNullOrEmpty(text))
-            {
-                PreviewTextHost.HostControl.Opacity = 0.3;
+            if (!Settings.ShowPreviewPane || PreviewTextHost == null)
                 return;
-            }
-            int position = PreviewTextHost.TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
-            PreviewTextHost.TextView.TextBuffer.SetText(text);
 
             try
             {
+
+                if (string.IsNullOrEmpty(text))
+                {
+                    PreviewTextHost.HostControl.Opacity = 0.3;
+                    return;
+                }
+
+                int position = PreviewTextHost.TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
+                PreviewTextHost.TextView.TextBuffer.SetText(text);
                 PreviewTextHost.HostControl.Opacity = 1;
                 PreviewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, PreviewTextHost.TextView.TextSnapshot.GetLineNumberFromPosition(position));
                 PreviewTextHost.TextView.ViewScroller.ScrollViewportHorizontallyByPixels(-9999);
