@@ -334,8 +334,11 @@ namespace MadsKristensen.EditorExtensions
         {
             EnvDTE.Solution solution = EditorExtensionsPackage.DTE.Solution;
 
-            if (solution == null || string.IsNullOrEmpty(solution.FullName))
+            if (solution == null)
                 return null;
+
+            if (string.IsNullOrEmpty(solution.FullName))
+                return GetRootFolder();
 
             return Path.GetDirectoryName(solution.FullName);
         }
