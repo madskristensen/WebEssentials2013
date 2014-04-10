@@ -39,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
 
         void SolutionEvents_Opened()
         {
-            System.Threading.Tasks.Task.Run(() => BundleFilesMenu.BindAllBundlesAssets(_dte.Solution.FullName));
+            System.Threading.Tasks.Task.Run(() => BundleFilesMenu.BindAllBundlesAssets(ProjectHelpers.GetSolutionFolderPath()));
         }
 
         private void SolutionBeforeQueryStatus(object sender, EventArgs e)
