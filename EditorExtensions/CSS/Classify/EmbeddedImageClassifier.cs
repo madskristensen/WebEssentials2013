@@ -148,9 +148,9 @@ namespace MadsKristensen.EditorExtensions.Css
 
             if (dec != null && Cache.Contains(dec))
             {
-                var url = (UrlItem)dec.Values.First();
+                var url = (UrlItem)dec.Values.FirstOrDefault();
 
-                if (!url.IsValid || url.UrlString == null || url.UrlString.Text.Contains(";base64,"))
+                if (url == null || !url.IsValid || url.UrlString == null || url.UrlString.Text.Contains(";base64,"))
                     return;
 
                 var matches = Cache.Where(d => d.IsValid && d != dec && d.Parent == dec.Parent &&
