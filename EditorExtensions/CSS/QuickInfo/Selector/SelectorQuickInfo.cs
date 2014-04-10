@@ -70,9 +70,9 @@ namespace MadsKristensen.EditorExtensions
             if (item == null || !session.TextView.Properties.ContainsProperty("CssSourceMap"))
                 return;
 
-            var sourceMap = session.TextView.Properties.GetProperty("CssSourceMap") as CssSourceMap;
+            CssSourceMap sourceMap;
 
-            if (sourceMap == null)
+            if (!session.TextView.Properties.TryGetProperty<CssSourceMap>("CssSourceMap", out sourceMap))
                 return;
 
             var line = point.GetContainingLine().LineNumber;
