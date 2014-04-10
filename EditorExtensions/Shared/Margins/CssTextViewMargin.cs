@@ -53,7 +53,7 @@ namespace MadsKristensen.EditorExtensions.Margin
                 Header = "Go To Definition",
                 InputGestureText = "F12",
                 Command = new GoToDefinitionCommand(GoToDefinitionCommandHandler, () =>
-                { return _compilerResult != null && SourceTextView.Properties.ContainsProperty("CssSourceMap"); })
+                { return _compilerResult != null && _compilerResult.SourceMap.IsCompleted; })
             };
 
             menu.Items.Add(_goToMenuItem);
