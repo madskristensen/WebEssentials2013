@@ -25,10 +25,6 @@ namespace MadsKristensen.EditorExtensions.Html
         {
             var results = new ValidationErrorCollection();
 
-            // Columns works only for DIVs
-            if (element.Name != "div")
-                return results;
-
             var elementClasses = element.GetAttribute("class");
 
             if (elementClasses == null || !elementClasses.Value.Split(' ').Any(x => x.StartsWith("col-")))
