@@ -32,5 +32,47 @@ namespace WebEssentialsTests
             Assert.AreEqual(expected, compiled.Count);
         }
 
+        [TestMethod]
+        public void BootstrapBtnPrimaryClassRequireBtnClassToo()
+        {
+            BootstrapClassValidator validator = new BootstrapClassValidator();
+
+            var source = @"<a class='btn-primary'>
+                        Link text
+                        </a>";
+
+            var tree = new HtmlTree(new TextStream(source));
+
+            tree.Build();
+
+            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0]);
+
+            int expected = 1;
+            string expectedMessage = "When using \"btn-primary\", you must also specify the class \"btn\".";
+
+            Assert.AreEqual(expected, compiled.Count);
+            Assert.AreEqual(expectedMessage, compiled[0].Message);
+        }
+
+        [TestMethod]
+        public void BootStrapClassValidatorDoNothingIfClassAttributIsMissing()
+        {
+            BootstrapClassValidator validator = new BootstrapClassValidator();
+
+            var source = @"<a id='someHyperlink' href='#'>
+                        Link text
+                        </a>";
+
+            var tree = new HtmlTree(new TextStream(source));
+
+            tree.Build();
+
+            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0]);
+
+            int expected = 0;
+
+            Assert.AreEqual(expected, compiled.Count);
+        }
+
     }
 }
