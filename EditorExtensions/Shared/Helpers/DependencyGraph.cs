@@ -119,7 +119,8 @@ namespace MadsKristensen.EditorExtensions.Helpers
         #region Graph Creation
         ///<summary>Gets the full paths to all files that the given file depends on.  (the dependencies need not exist).</summary>
         ///<remarks>This method will be called concurrently on arbitrary threads.</remarks>
-        protected abstract IEnumerable<string> GetDependencyPaths(string fileName);
+        protected abstract Task<IEnumerable<string>> GetDependencyPaths(string fileName);
+
         ///<summary>Rescans the entire graph from a collection of source files, replacing the entire graph.</summary>
         ///<remarks>Although this method is async, it performs lots of synchronous work, and should not be called on a UI thread.</remarks>
         public async Task RescanAllAsync(IEnumerable<string> sourceFiles)
@@ -134,7 +135,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
                 foreach (var item in dependencies)
                 {
                     var parentNode = GetNode(item.FileName);
-                    foreach (var dependency in item.dependencies)
+                    foreach (var dependency in await item.dependencies)
                         parentNode.AddDependency(GetNode(dependency));
                 }
             }
@@ -201,7 +202,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
 
                 parentNode.ClearDependencies();
 
-                foreach (var dependency in dependencies)
+                foreach (var dependency in await dependencies)
                 {
                     var childNode = GetNode(dependency, out created);
                     parentNode.AddDependency(childNode);
@@ -361,10 +362,12 @@ namespace MadsKristensen.EditorExtensions.Helpers
         }
 
         // This is triggered by the derived class' ContentType-specific [Export(typeof(IFileSaveListener))]
-        public void FileSaved(IContentType contentType, string path, bool forceSave, bool minifyInPlace)
+        public Task FileSaved(IContentType contentType, string path, bool forceSave, bool minifyInPlace)
         {
             if (IsEnabled)
                 RescanComplete = Task.Run(() => RescanFileAsync(path)).HandleErrors("parsing " + path + " for dependencies");
+
+            return null;
         }
         #endregion
     }
@@ -381,10 +384,10 @@ namespace MadsKristensen.EditorExtensions.Helpers
             parserFactory = CssParserLocator.FindComponent(ContentType);
         }
 
-        protected override IEnumerable<string> GetDependencyPaths(string fileName)
+        protected async override Task<IEnumerable<string>> GetDependencyPaths(string fileName)
         {
             var sourceUri = new Uri(fileName);
-            var cachedFileContent = File.ReadAllText(fileName);
+            var cachedFileContent = await FileHelpers.ReadAllTextRetry(fileName);
 
             return new CssItemAggregator<string> { (ImportDirective id) => GetImportPaths(sourceUri, id) }
                             .Crawl(parserFactory.CreateParser().Parse(cachedFileContent, false));

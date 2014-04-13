@@ -87,7 +87,7 @@ namespace MadsKristensen.EditorExtensions.Html
                     if (file.EndsWith(".min" + ext, StringComparison.OrdinalIgnoreCase))
                         continue;
 
-                    string text = File.ReadAllText(file);
+                    string text = FileHelpers.ReadAllTextRetry(file).ConfigureAwait(false).GetAwaiter().GetResult();
                     int index = text.IndexOf("." + _className, StringComparison.Ordinal);
 
                     if (index > -1)

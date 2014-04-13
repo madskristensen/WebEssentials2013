@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
-using System.IO;
-using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
 using Microsoft.Html.Core;
@@ -49,14 +48,14 @@ namespace MadsKristensen.EditorExtensions.Html
                 base(htmlSmartTag, "Extract To File")
             { }
 
-            public override void Invoke()
+            public async override void Invoke()
             {
                 string file;
                 string root = ProjectHelpers.GetProjectFolder(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
 
                 if (CanSaveFile(root, out file))
                 {
-                    MakeChanges(root, file);
+                    await MakeChanges(root, file);
                 }
             }
 
@@ -82,7 +81,7 @@ namespace MadsKristensen.EditorExtensions.Html
                 return true;
             }
 
-            private void MakeChanges(string root, string fileName)
+            private async Task MakeChanges(string root, string fileName)
             {
                 var element = this.HtmlSmartTag.Element;
                 var textBuffer = this.HtmlSmartTag.TextBuffer;
@@ -93,7 +92,7 @@ namespace MadsKristensen.EditorExtensions.Html
                 using (EditorExtensionsPackage.UndoContext((this.DisplayText)))
                 {
                     textBuffer.Replace(new Span(element.Start, element.Length), reference);
-                    File.WriteAllText(fileName, text, Encoding.UTF8);
+                    await FileHelpers.WriteAllTextRetry(fileName, text);
                     EditorExtensionsPackage.DTE.ItemOperations.OpenFile(fileName);
                     ProjectHelpers.AddFileToActiveProject(fileName);
                 }

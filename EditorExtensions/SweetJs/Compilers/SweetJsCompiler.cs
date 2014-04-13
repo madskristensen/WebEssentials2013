@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 
@@ -33,11 +34,11 @@ namespace MadsKristensen.EditorExtensions.SweetJs
             return args.ToString();
         }
 
-        protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
+        protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
             Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
 
-            return resultSource;
+            return await Task.FromResult(resultSource);
         }
     }
 }

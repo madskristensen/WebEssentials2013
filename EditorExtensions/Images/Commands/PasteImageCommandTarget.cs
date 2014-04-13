@@ -209,7 +209,7 @@ namespace MadsKristensen.EditorExtensions.Images
                 {
                     image.Save(ms, GetImageFormat(Path.GetExtension(fileName)));
                     byte[] buffer = ms.ToArray();
-                    File.WriteAllBytes(fileName, buffer);
+                    await FileHelpers.WriteAllBytesRetry(fileName, buffer);
                 }
             }
 

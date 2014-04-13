@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web.Helpers;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.CSS.Core;
@@ -16,10 +16,10 @@ namespace MadsKristensen.EditorExtensions
     {
         private static readonly Regex _sourceMapInCss = new Regex(@"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", RegexOptions.Multiline);
 
-        protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
+        protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
             // Inserts an empty row between each rule and replace two space indentation with 4 space indentation
-            resultSource = UpdateSourceMapUrls(resultSource, targetFileName);
+            resultSource = await UpdateSourceMapUrls(resultSource, targetFileName);
 
             var message = ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.";
 
@@ -47,7 +47,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
 
-        private string UpdateSourceMapUrls(string content, string compiledFileName)
+        private async Task<string> UpdateSourceMapUrls(string content, string compiledFileName)
         {
             if (!File.Exists(compiledFileName))
                 return content;
@@ -60,24 +60,24 @@ namespace MadsKristensen.EditorExtensions
             if (!File.Exists(sourceMapFilename))
                 return content;
 
-            var updatedFileContent = GetUpdatedSourceMapFileContent(compiledFileName, sourceMapFilename);
+            var updatedFileContent = await GetUpdatedSourceMapFileContent(compiledFileName, sourceMapFilename);
 
             if (updatedFileContent == null)
                 return content;
 
-            File.WriteAllText(sourceMapFilename, updatedFileContent, Encoding.UTF8);
+            await FileHelpers.WriteAllTextRetry(sourceMapFilename, updatedFileContent);
 
             return UpdateSourceLinkInCssComment(content, FileHelpers.RelativePath(compiledFileName, sourceMapFilename));
         }
 
         // Overridden to work around SASS bug
         // TODO: Remove when https://github.com/hcatlin/libsass/issues/242 is fixed
-        protected virtual string ReadMapFile(string sourceMapFileName) { return File.ReadAllText(sourceMapFileName); }
+        protected async virtual Task<string> ReadMapFile(string sourceMapFileName) { return await FileHelpers.ReadAllTextRetry(sourceMapFileName); }
 
-        private string GetUpdatedSourceMapFileContent(string cssFileName, string sourceMapFileName)
+        private async Task<string> GetUpdatedSourceMapFileContent(string cssFileName, string sourceMapFileName)
         {
             // Read JSON map file and deserialize.
-            dynamic jsonSourceMap = Json.Decode(ReadMapFile(sourceMapFileName));
+            dynamic jsonSourceMap = Json.Decode(await ReadMapFile(sourceMapFileName));
 
             if (jsonSourceMap == null)
                 return null;

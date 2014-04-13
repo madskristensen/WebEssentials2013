@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
                 ContentType = contentType;
                 _sourceExtensions = FileExtensionRegistry.GetFileExtensionSet(contentType);
 
-                Command = new OleMenuCommand((s, e) => Execute(), new CommandID(CommandGuids.guidMinifyCmdSet, (int)id));
+                Command = new OleMenuCommand(async (s, e) => await Execute(), new CommandID(CommandGuids.guidMinifyCmdSet, (int)id));
                 Command.BeforeQueryStatus += (s, e) => CheckVisible();
             }
 
@@ -58,16 +58,15 @@ namespace MadsKristensen.EditorExtensions
                            );
                 Command.Enabled = selectedFiles.Any();
             }
-            private void Execute()
+            private async System.Threading.Tasks.Task Execute()
             {
                 foreach (var file in selectedFiles)
                 {
-                    MinificationSaveListener.CreateMinFile(ContentType, file);
+                    await MinificationSaveListener.CreateMinFile(ContentType, file);
                 }
 
                 CheckEnableSync();
             }
-
 
             private void CheckEnableSync()
             {

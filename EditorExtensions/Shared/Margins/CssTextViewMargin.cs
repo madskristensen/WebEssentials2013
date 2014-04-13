@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -53,7 +52,7 @@ namespace MadsKristensen.EditorExtensions.Margin
                 Header = "Go To Definition",
                 InputGestureText = "F12",
                 Command = new GoToDefinitionCommand(GoToDefinitionCommandHandler, () =>
-                { return _compilerResult != null && _compilerResult.SourceMap.IsCompleted; })
+                { return _compilerResult != null && _compilerResult.SourceMap.IsCompleted && SourceTextView.Properties.ContainsProperty("CssSourceMap"); })
             };
 
             menu.Items.Add(_goToMenuItem);
@@ -101,7 +100,7 @@ namespace MadsKristensen.EditorExtensions.Margin
             if (sourceInfo.SourceFilePath != Document.FilePath)
                 FileHelpers.OpenFileInPreviewTab(sourceInfo.SourceFilePath);
 
-            string content = File.ReadAllText(sourceInfo.SourceFilePath);
+            string content = await FileHelpers.ReadAllTextRetry(sourceInfo.SourceFilePath);
 
             var finalPositionInSource = content.NthIndexOfCharInString('\n', (int)sourceInfo.OriginalLine) + sourceInfo.OriginalColumn;
 

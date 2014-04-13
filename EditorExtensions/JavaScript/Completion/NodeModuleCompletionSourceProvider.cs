@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -90,6 +91,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
                 "fs", "http", "https", "net", "os",  "path", "punycode", "querystring", "readline", "stream", 
                 "string_decoder", "tls", "tty", "url", "util", "vm", "zlib"
         }, m => new Intel.Completion(m, m, null, moduleIcon, "Node module")));
+
         static IEnumerable<Intel.Completion> GetRootCompletions(string baseFolder)
         {
             return dotCompletions
@@ -97,20 +99,21 @@ namespace MadsKristensen.EditorExtensions.JavaScript
                         .Select(p => new Intel.Completion(
                             Path.GetFileName(p),
                             Path.GetFileName(p),
-                            GetDescription(p),
+                            GetDescription(p).ConfigureAwait(false).GetAwaiter().GetResult(),
                             moduleIcon,
                             "Node module"
                         ))
                     ).Concat(builtInModuleCompletions);
         }
-        static string GetDescription(string path)
+
+        static async Task<string> GetDescription(string path)
         {
             var packageFile = Path.Combine(path, "package.json");
             if (!File.Exists(packageFile))
                 return "This module does not have a package.json file.";
             try
             {
-                var json = JObject.Parse(File.ReadAllText(packageFile));
+                var json = JObject.Parse(await FileHelpers.ReadAllTextRetry(packageFile).ConfigureAwait(false));
                 return (json.Value<string>("description") ?? "This module's package.json does not have a description property.")
                      + "\nv" + (json.Value<string>("version") ?? "?");
             }

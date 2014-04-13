@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using FluentAssertions;
+using MadsKristensen.EditorExtensions;
 using MadsKristensen.EditorExtensions.Settings;
 using MadsKristensen.EditorExtensions.SweetJs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -32,11 +32,11 @@ namespace WebEssentialsTests.Tests.NodeExecutors
                 if (!File.Exists(compiledFile))
                     continue;
 
-                var expectedLines = File.ReadLines(compiledFile);
+                var expectedLines = await FileHelpers.ReadAllTextRetry(compiledFile);
 
                 var compiledCode = await new SweetJsCompiler().CompileToStringAsync(sweetFileName);
 
-                compiledCode.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None).Should().Equal(expectedLines);
+                compiledCode.Replace("\r\n", "\n").Equals(expectedLines, StringComparison.CurrentCulture);
             }
         }
     }

@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.CSS.Editor.Intellisense;
@@ -51,7 +52,7 @@ namespace MadsKristensen.EditorExtensions.Css
         public IEnumerable<ColorModel> GetColors(ITextView textView, SnapshotSpan contextSpan)
         {
             if (_directives == null && _hasFile)
-                ParseDocument();
+                ParseDocument().Wait();
 
             if (_directives != null && textView != null)
             {
@@ -68,14 +69,14 @@ namespace MadsKristensen.EditorExtensions.Css
             return new List<ColorModel>();
         }
 
-        private static void ParseDocument()
+        private async static Task ParseDocument()
         {
             string fileName = GetSolutionFilePath();
 
             if (!string.IsNullOrEmpty(fileName) && File.Exists(fileName))
             {
                 CssParser parser = new CssParser();
-                StyleSheet stylesheet = parser.Parse(File.ReadAllText(fileName), false);
+                StyleSheet stylesheet = parser.Parse(await FileHelpers.ReadAllTextRetry(fileName), false);
 
                 if (stylesheet.IsValid)
                 {
@@ -172,7 +173,7 @@ namespace MadsKristensen.EditorExtensions.Css
         public bool AllowProvider(string providerName)
         {
             if (_directives == null)
-                ParseDocument();
+                ParseDocument().Wait();
 
             if (_directives != null)
                 return providerName != "Default" && providerName != "Document Colors";

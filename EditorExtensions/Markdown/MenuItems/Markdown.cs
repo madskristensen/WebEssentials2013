@@ -38,7 +38,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
         public void SetupCommands()
         {
             CommandID css = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.CreateMarkdownStylesheet);
-            OleMenuCommand cssCommand = new OleMenuCommand((s, e) => AddStylesheet(), css);
+            OleMenuCommand cssCommand = new OleMenuCommand(async (s, e) => await AddStylesheet(), css);
             cssCommand.BeforeQueryStatus += HasStylesheet;
             _mcs.AddCommand(cssCommand);
 
@@ -72,9 +72,9 @@ namespace MadsKristensen.EditorExtensions.Markdown
             Parallel.ForEach(paths, f => compiler.CompileToDefaultOutputAsync(f).DontWait("compiling " + f));
         }
 
-        private static void AddStylesheet()
+        private async static System.Threading.Tasks.Task AddStylesheet()
         {
-            MarkdownMargin.CreateStylesheet();
+            await MarkdownMargin.CreateStylesheet();
         }
     }
 }

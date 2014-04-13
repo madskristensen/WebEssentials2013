@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Helpers;
@@ -30,7 +29,9 @@ namespace MadsKristensen.EditorExtensions
 
         public async Task<CompilerResult> CompileAsync(string sourceFileName, string targetFileName)
         {
-            if (RequireMatchingFileName && Path.GetFileName(targetFileName) != Path.GetFileNameWithoutExtension(sourceFileName) + TargetExtension)
+            if (RequireMatchingFileName &&
+                Path.GetFileName(targetFileName) != Path.GetFileNameWithoutExtension(sourceFileName) + TargetExtension &&
+                Path.GetFileName(targetFileName) != Path.GetFileNameWithoutExtension(sourceFileName) + ".min" + TargetExtension)
                 throw new ArgumentException(ServiceName + " cannot compile to a targetFileName with a different name.  Only the containing directory can be different.", "targetFileName");
 
             var scriptArgs = GetArguments(sourceFileName, targetFileName);
@@ -61,13 +62,16 @@ namespace MadsKristensen.EditorExtensions
 
                 using (var process = await start.ExecuteAsync())
                 {
-                    return ProcessResult(
-                               process,
-                               File.ReadAllText(errorOutputFile).Trim(),
-                               sourceFileName,
-                               targetFileName,
-                               MapFileName
-                           );
+                    if (targetFileName != null)
+                        await MoveOutputContentToCorrectTarget(targetFileName);
+
+                    return await ProcessResult(
+                                     process,
+                                     (await FileHelpers.ReadAllTextRetry(errorOutputFile)).Trim(),
+                                     sourceFileName,
+                                     targetFileName,
+                                     MapFileName
+                                 );
                 }
             }
             finally
@@ -79,33 +83,33 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private CompilerResult ProcessResult(Process process, string errorText, string sourceFileName, string targetFileName, string mapFileName)
+        private async Task<CompilerResult> ProcessResult(Process process, string errorText, string sourceFileName, string targetFileName, string mapFileName)
         {
-            var result = ValidateResult(process, targetFileName, errorText);
+            var result = await ValidateResult(process, targetFileName, errorText);
             var resultText = result.Result;
             bool success = result.IsSuccess;
 
             if (success)
             {
-                var renewedResult = PostProcessResult(resultText, sourceFileName, targetFileName);
+                var renewedResult = await PostProcessResult(resultText, sourceFileName, targetFileName);
 
                 if (!ReferenceEquals(resultText, renewedResult))
                 {
-                    File.WriteAllText(targetFileName, renewedResult, Encoding.UTF8);
+                    await FileHelpers.WriteAllTextRetry(targetFileName, renewedResult);
                     resultText = renewedResult;
                 }
             }
 
             IEnumerable<CompilerError> errors = result.Errors;
 
-            var compilerResult = CompilerResultFactory.GenerateResult(
-                                     sourceFileName: sourceFileName,
-                                     targetFileName: targetFileName,
-                                     mapFileName: mapFileName,
-                                     isSuccess: success,
-                                     result: resultText,
-                                     errors: errors
-                                 ) as CompilerResult;
+            var compilerResult = await CompilerResultFactory.GenerateResult(
+                                           sourceFileName: sourceFileName,
+                                           targetFileName: targetFileName,
+                                           mapFileName: mapFileName,
+                                           isSuccess: success,
+                                           result: resultText,
+                                           errors: errors
+                                       ) as CompilerResult;
 
             if (!success)
             {
@@ -116,7 +120,7 @@ namespace MadsKristensen.EditorExtensions
             return compilerResult;
         }
 
-        private dynamic ValidateResult(Process process, string outputFile, string errorText)
+        private async Task<dynamic> ValidateResult(Process process, string outputFile, string errorText)
         {
             string result = null;
             var isSuccess = false;
@@ -126,8 +130,8 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (process.ExitCode == 0)
                 {
-                    if (!string.IsNullOrEmpty(outputFile))
-                        result = File.ReadAllText(outputFile);
+                    if (!string.IsNullOrEmpty(outputFile) && File.Exists(outputFile))
+                        result = await FileHelpers.ReadAllTextRetry(outputFile);
                     isSuccess = true;
                 }
                 else
@@ -187,8 +191,18 @@ namespace MadsKristensen.EditorExtensions
             });
         }
 
+        /// <summary>
+        ///  In case of CoffeeScript, the compiler doesn't take output file path argument,
+        ///  instead takes path to output directory. This method can be overridden by any
+        ///  such compiler to move data to correct target.
+        /// </summary>
+        protected virtual Task MoveOutputContentToCorrectTarget(string targetFileName)
+        {
+            return Task.FromResult(0);
+        }
+
         protected abstract string GetArguments(string sourceFileName, string targetFileName);
 
-        protected abstract string PostProcessResult(string resultSource, string sourceFileName, string targetFileName);
+        protected abstract Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName);
     }
 }

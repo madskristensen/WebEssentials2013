@@ -2,7 +2,6 @@
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions.JavaScript
@@ -20,7 +19,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
         public void SetupCommands()
         {
             CommandID commandId = new CommandID(CommandGuids.guidEditorExtensionsCmdSet, (int)CommandId.ReferenceJs);
-            OleMenuCommand menuCommand = new OleMenuCommand((s, e) => Execute(), commandId);
+            OleMenuCommand menuCommand = new OleMenuCommand(async (s, e) => await Execute(), commandId);
             menuCommand.BeforeQueryStatus += menuCommand_BeforeQueryStatus;
             _mcs.AddCommand(menuCommand);
         }
@@ -60,12 +59,12 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             menuCommand.Visible = true;
         }
 
-        private void Execute()
+        private async System.Threading.Tasks.Task Execute()
         {
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(_referencesJsPath));
-                File.WriteAllText(_referencesJsPath, "/// <autosync enabled=\"true\" />", Encoding.UTF8);
+                await FileHelpers.WriteAllTextRetry(_referencesJsPath, "/// <autosync enabled=\"true\" />");
                 ProjectHelpers.AddFileToActiveProject(_referencesJsPath);
                 EditorExtensionsPackage.DTE.ItemOperations.OpenFile(_referencesJsPath);
             }

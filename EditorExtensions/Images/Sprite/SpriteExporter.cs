@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -10,14 +11,14 @@ namespace MadsKristensen.EditorExtensions.Images
 {
     internal class SpriteExporter
     {
-        public static string Export(IEnumerable<SpriteFragment> fragments, string imageFile, ExportFormat format)
+        public async static Task<string> Export(IEnumerable<SpriteFragment> fragments, string imageFile, ExportFormat format)
         {
             if (format == ExportFormat.Json)
             {
                 return ExportJson(fragments, imageFile);
             }
 
-            return ExportStylesheet(fragments, imageFile, format);
+            return await ExportStylesheet(fragments, imageFile, format);
         }
 
         private static string ExportJson(IEnumerable<SpriteFragment> fragments, string imageFile)
@@ -55,7 +56,7 @@ namespace MadsKristensen.EditorExtensions.Images
             return outputFile;
         }
 
-        private static string ExportStylesheet(IEnumerable<SpriteFragment> fragments, string imageFile, ExportFormat format)
+        private async static Task<string> ExportStylesheet(IEnumerable<SpriteFragment> fragments, string imageFile, ExportFormat format)
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(GetDescription(format));
@@ -73,7 +74,7 @@ namespace MadsKristensen.EditorExtensions.Images
             string outputFile = GetFileName(imageFile, format);
 
             ProjectHelpers.CheckOutFileFromSourceControl(outputFile);
-            File.WriteAllText(outputFile, sb.ToString().Replace("-0px", "0"), Encoding.UTF8);
+            await FileHelpers.WriteAllTextRetry(outputFile, sb.ToString().Replace("-0px", "0"));
 
             return outputFile;
         }

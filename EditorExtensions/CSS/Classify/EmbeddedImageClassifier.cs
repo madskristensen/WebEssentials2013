@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
@@ -124,7 +125,7 @@ namespace MadsKristensen.EditorExtensions.Css
             UpdateDeclarationCache(e.Tree.StyleSheet);
         }
 
-        private void TreeItemsChanged(object sender, CssItemsChangedEventArgs e)
+        private async void TreeItemsChanged(object sender, CssItemsChangedEventArgs e)
         {
             foreach (ParseItem item in e.DeletedItems)
             {
@@ -135,11 +136,11 @@ namespace MadsKristensen.EditorExtensions.Css
             foreach (ParseItem item in e.InsertedItems)
             {
                 UpdateDeclarationCache(item);
-                UpdateEmbeddedImageValues(item);
+                await UpdateEmbeddedImageValues(item);
             }
         }
 
-        private void UpdateEmbeddedImageValues(ParseItem item)
+        private async Task UpdateEmbeddedImageValues(ParseItem item)
         {
             if (!WESettings.Instance.Css.SyncBase64ImageValues)
                 return;
@@ -162,7 +163,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
                 string urlText = url.UrlString.Text.Trim('\'', '"');
                 string filePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(_buffer.GetFileName()), urlText));
-                string b64UrlText = FileHelpers.ConvertToBase64(filePath);
+                string b64UrlText = await FileHelpers.ConvertToBase64(filePath);
                 string b64Url = url.Text.Replace(urlText, b64UrlText);
                 IEnumerable<Tuple<SnapshotSpan, string>> changes = matches.Reverse().SelectMany(match =>
                 {
@@ -178,7 +179,7 @@ namespace MadsKristensen.EditorExtensions.Css
                     return new[] { new Tuple<SnapshotSpan, string>(span, urlText), new Tuple<SnapshotSpan, string>(b64Span, b64Url) };
                 });
 
-                Dispatcher.CurrentDispatcher.InvokeAsync(() =>
+                await Dispatcher.CurrentDispatcher.InvokeAsync(() =>
                 {
                     using (ITextEdit edit = _buffer.CreateEdit())
                     {

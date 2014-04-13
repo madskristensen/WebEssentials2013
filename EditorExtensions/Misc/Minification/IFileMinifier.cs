@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.Ajax.Utilities;
 using Microsoft.VisualStudio.Utilities;
@@ -16,7 +17,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     {
         ///<summary>Minifies an existing file, creating or overwriting the target.</summary>
         ///<returns>True if the minified file has changed from the old version on disk.</returns>
-        bool MinifyFile(string sourcePath, string targetPath);
+        Task<bool> MinifyFile(string sourcePath, string targetPath);
 
         ///<summary>Minifies a string in-memory.</summary>
         string MinifyString(string source);
@@ -30,14 +31,14 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     {
         public virtual bool GenerateSourceMap { get { return false; } }
 
-        public virtual bool MinifyFile(string sourcePath, string targetPath)
+        public async virtual Task<bool> MinifyFile(string sourcePath, string targetPath)
         {
-            var result = MinifyString(File.ReadAllText(sourcePath));
+            var result = MinifyString(await FileHelpers.ReadAllTextRetry(sourcePath));
 
-            if (result != null && (!File.Exists(targetPath) || result != File.ReadAllText(targetPath)))
+            if (result != null && (!File.Exists(targetPath) || result != await FileHelpers.ReadAllTextRetry(targetPath)))
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(targetPath);
-                File.WriteAllText(targetPath, result, Encoding.UTF8);
+                await FileHelpers.WriteAllTextRetry(targetPath, result);
                 ProjectHelpers.AddFileToProject(sourcePath, targetPath);
 
                 return true;
@@ -117,15 +118,15 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             return new Minifier().MinifyJavaScript(source, CreateSettings());
         }
 
-        public override bool MinifyFile(string sourcePath, string targetPath)
+        public async override Task<bool> MinifyFile(string sourcePath, string targetPath)
         {
             if (GenerateSourceMap)
-                return MinifyFileWithSourceMap(sourcePath, targetPath);
+                return await MinifyFileWithSourceMap(sourcePath, targetPath);
             else
-                return base.MinifyFile(sourcePath, targetPath);
+                return await base.MinifyFile(sourcePath, targetPath);
         }
 
-        private static bool MinifyFileWithSourceMap(string file, string minFile)
+        private async static Task<bool> MinifyFileWithSourceMap(string file, string minFile)
         {
             string mapPath = minFile + ".map";
             ProjectHelpers.CheckOutFileFromSourceControl(mapPath);
@@ -138,36 +139,36 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
                 sourceMap.StartPackage(Path.GetFileName(minFile), Path.GetFileName(mapPath));
 
                 // This fails when debugger is attached. Bug raised with Ron Logan
-                bool result = MinifyFile(file, minFile, settings);
+                bool result = await MinifyFile(file, minFile, settings);
                 ProjectHelpers.AddFileToProject(minFile, mapPath);
 
                 return result;
             }
         }
 
-        private static bool MinifyFile(string file, string minFile, CodeSettings settings)
+        private async static Task<bool> MinifyFile(string file, string minFile, CodeSettings settings)
         {
             Minifier minifier = new Minifier();
 
             // If the source file is not itself mapped, add the filename for mapping
             // TODO: Make sure this works for compiled output too. (check for .map?)
-            if (!(File.ReadLines(file)
-                      .SkipWhile(string.IsNullOrWhiteSpace)
-                      .FirstOrDefault() ?? "")
-                      .Trim()
-                      .StartsWith("///#source", StringComparison.CurrentCulture))
+            if (!((await FileHelpers.ReadAllLinesRetry(file))
+                                    .SkipWhile(string.IsNullOrWhiteSpace)
+                                    .FirstOrDefault() ?? "")
+                                    .Trim()
+                                    .StartsWith("///#source", StringComparison.CurrentCulture))
             {
                 minifier.FileName = Path.GetFileName(file);
             }
 
-            string content = minifier.MinifyJavaScript(File.ReadAllText(file), settings);
+            string content = minifier.MinifyJavaScript(await FileHelpers.ReadAllTextRetry(file), settings);
             content += "\r\n/*\r\n//# sourceMappingURL=" + Path.GetFileName(minFile) + ".map\r\n*/";
 
-            if (File.Exists(minFile) && content == File.ReadAllText(minFile))
+            if (File.Exists(minFile) && content == await FileHelpers.ReadAllTextRetry(minFile))
                 return false;
 
             ProjectHelpers.CheckOutFileFromSourceControl(minFile);
-            File.WriteAllText(minFile, content, Encoding.UTF8);
+            await FileHelpers.WriteAllTextRetry(minFile, content);
             ProjectHelpers.AddFileToProject(file, minFile);
 
             return true;

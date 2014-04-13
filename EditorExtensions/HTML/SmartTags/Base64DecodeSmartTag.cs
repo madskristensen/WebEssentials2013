@@ -60,7 +60,7 @@ namespace MadsKristensen.EditorExtensions.Html
                 base(htmlSmartTag, "Save as image")
             { }
 
-            public override void Invoke()
+            public async override void Invoke()
             {
                 ITextBuffer textBuffer = this.HtmlSmartTag.TextBuffer;
                 ElementNode element = this.HtmlSmartTag.Element;
@@ -71,7 +71,7 @@ namespace MadsKristensen.EditorExtensions.Html
 
                 var fileName = FileHelpers.ShowDialog(extension);
 
-                if (!string.IsNullOrEmpty(fileName) && FileHelpers.SaveDataUriToFile(src.Value, fileName))
+                if (!string.IsNullOrEmpty(fileName) && await FileHelpers.SaveDataUriToFile(src.Value, fileName))
                 {
                     using (EditorExtensionsPackage.UndoContext((DisplayText)))
                         ReplaceUrlValue(fileName, textBuffer, src);

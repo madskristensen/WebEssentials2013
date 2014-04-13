@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 
@@ -36,11 +37,24 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
             return args.ToString();
         }
 
-        protected override string PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
+        protected async override Task MoveOutputContentToCorrectTarget(string targetFileName)
+        {
+            if (!targetFileName.EndsWith(".min.js", System.StringComparison.OrdinalIgnoreCase))
+                return;
+
+            var tempName = targetFileName.Replace(".min.js", ".js");
+
+            if (!File.Exists(tempName))
+                return;
+
+            await FileHelpers.WriteAllTextRetry(targetFileName, await FileHelpers.ReadAllTextRetry(tempName));
+        }
+
+        protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
         {
             Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
 
-            return resultSource;
+            return await Task.FromResult(resultSource);
         }
     }
 }

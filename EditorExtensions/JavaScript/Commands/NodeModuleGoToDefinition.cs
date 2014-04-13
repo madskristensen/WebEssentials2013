@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             if (path == null)
                 return false;
 
-            var filePath = NodeModuleService.ResolveModule(Path.GetDirectoryName(TextView.TextBuffer.GetFileName()), path);
+            var filePath = NodeModuleService.ResolveModule(Path.GetDirectoryName(TextView.TextBuffer.GetFileName()), path).ConfigureAwait(false).GetAwaiter().GetResult();
 
             if (filePath != null)
             {

@@ -6,13 +6,14 @@ using System.Linq;
 using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Settings;
 
 namespace MadsKristensen.EditorExtensions
 {
     internal static class IntellisenseWriter
     {
-        public static void Write(IEnumerable<IntellisenseObject> objects, string file)
+        public async static Task Write(IEnumerable<IntellisenseObject> objects, string file)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -21,7 +22,7 @@ namespace MadsKristensen.EditorExtensions
             else
                 WriteJavaScript(objects, sb);
 
-            File.WriteAllText(file, sb.ToString(), Encoding.UTF8);
+            await FileHelpers.WriteAllTextRetry(file, sb.ToString());
         }
 
         private static string CamelCasePropertyName(string name)

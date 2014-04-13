@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.IO;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.CSS.Editor.Schemas;
@@ -27,9 +26,9 @@ namespace MadsKristensen.EditorExtensions.Css
 
                 if (_lastRequest.Year == 2000 || _lastRequest.AddDays(_days) < DateTime.UtcNow)
                 {
-                    Task.Run(() =>
+                    Task.Run(async () =>
                     {
-                        ProcessSchemaUpdate();
+                        await ProcessSchemaUpdate();
                         _lastRequest = DateTime.UtcNow;
                     });
                 }
@@ -41,14 +40,14 @@ namespace MadsKristensen.EditorExtensions.Css
             }
         }
 
-        private static void ProcessSchemaUpdate()
+        private async static Task ProcessSchemaUpdate()
         {
             XmlDocument doc = DownloadXml();
 
             if (doc != null)
             {
                 string folder = GetFolder();
-                int filesWritten = WriteFilesToDisk(folder, doc);
+                int filesWritten = await WriteFilesToDisk(folder, doc);
 
                 if (filesWritten > 0)
                 {
@@ -62,7 +61,7 @@ namespace MadsKristensen.EditorExtensions.Css
             }
         }
 
-        private static int WriteFilesToDisk(string folder, XmlDocument doc)
+        private async static Task<int> WriteFilesToDisk(string folder, XmlDocument doc)
         {
             try
             {
@@ -73,7 +72,7 @@ namespace MadsKristensen.EditorExtensions.Css
                     string fileName = node.Attributes["fileName"].InnerText;
                     string path = Path.Combine(folder, fileName);
 
-                    File.WriteAllText(path, node.OuterXml, Encoding.UTF8);
+                    await FileHelpers.WriteAllTextRetry(path, node.OuterXml);
                     WriteLog("Updating module: " + fileName);
                 }
 
