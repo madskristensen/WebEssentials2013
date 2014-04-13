@@ -17,6 +17,7 @@ namespace MadsKristensen.EditorExtensions.JSON
             {"tslint.json", "http://vswebessentials.com/schemas/v0.1/tslint.json"},
             {"jscsrc.json", "http://vswebessentials.com/schemas/v0.1/jscsrc.json"},
             {".jscsrc", "http://vswebessentials.com/schemas/v0.1/jscsrc.json"},
+            {"coffeelint.json", "http://vswebessentials.com/schemas/v0.1/coffeelint.json"},
         };
 
         public IEnumerable<string> GetAvailableSchemas()
