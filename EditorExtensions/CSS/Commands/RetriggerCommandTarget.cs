@@ -47,8 +47,11 @@ namespace MadsKristensen.EditorExtensions.Css
                 var controller = CssCompletionController.FromView(_textView);
 
                 if (controller != null)
-                    controller.OnShowMemberList(true);
-
+                    try
+                    {
+                        controller.OnShowMemberList(true);
+                    }
+                    catch { }
             }), DispatcherPriority.Normal, null);
         }
 
