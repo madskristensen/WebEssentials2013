@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.Html
         {
             var results = new ValidationErrorCollection();
 
-            if (!WESettings.Instance.Html.EnableBootstrapValidation)
+            if (!WESettings.Instance.Html.EnableBootstrapValidation || !WESettings.Instance.Html.EnableBootstrapColumnsValidation)
                 return results;
 
             var elementClasses = element.GetAttribute("class");
