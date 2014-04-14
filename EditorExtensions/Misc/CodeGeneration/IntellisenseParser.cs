@@ -190,6 +190,14 @@ namespace MadsKristensen.EditorExtensions
         {
             var references = new HashSet<string>();
             var properties = GetProperties(cc.Members, new HashSet<string>(), references).ToList();
+            var internalEnums = cc.Members.OfType<CodeEnum>().ToList();
+            if (internalEnums != null)
+            {
+                foreach (var internalEnum in internalEnums)
+                {
+                    ProcessEnum(internalEnum, list);
+                }
+            }
             var dataContractAttribute = cc.Attributes.Cast<CodeAttribute>().Where(a => a.Name == "DataContract");
             string className = cc.Name;
             string nsName = GetNamespace(cc);
