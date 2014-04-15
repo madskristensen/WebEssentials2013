@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -25,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.Margin
             {
                 _compilerResult = result as CssCompilerResult;
 
-                UpdateResults();
+                UpdateResults().DontWait("updating TextView property");
                 SetText(result.Result);
             }
             else
@@ -34,12 +35,15 @@ namespace MadsKristensen.EditorExtensions.Margin
                       + "\r\n\r\n*/");
         }
 
-        private async void UpdateResults()
+        private async Task UpdateResults()
         {
-            if (SourceTextView.Properties.ContainsProperty("CssSourceMap"))
-                SourceTextView.Properties.RemoveProperty("CssSourceMap");
+            if (_compilerResult != null)
+            {
+                if (SourceTextView.Properties.ContainsProperty("CssSourceMap"))
+                    SourceTextView.Properties.RemoveProperty("CssSourceMap");
 
-            SourceTextView.Properties.AddProperty("CssSourceMap", await _compilerResult.SourceMap);
+                SourceTextView.Properties.AddProperty("CssSourceMap", await _compilerResult.SourceMap.ConfigureAwait(false));
+            }
         }
 
         protected override void AddSpecialItems(ItemsControl menu)
