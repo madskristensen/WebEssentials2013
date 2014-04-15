@@ -104,9 +104,7 @@ namespace MadsKristensen.EditorExtensions
         {
             IVsTextBuffer bufferAdapter;
 
-            owner.Properties.TryGetProperty(typeof(IVsTextBuffer), out bufferAdapter);
-
-            if (bufferAdapter == null)
+            if (!owner.Properties.TryGetProperty(typeof(IVsTextBuffer), out bufferAdapter))
                 return null;
 
             var persistFileFormat = bufferAdapter as IPersistFileFormat;
