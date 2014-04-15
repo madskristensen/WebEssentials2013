@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions
             get { return TaskErrorCategory.Warning; }
         }
 
-        public void Navigate(object sender, EventArgs e)
+        public async void Navigate(object sender, EventArgs e)
         {
             ErrorTask task = (ErrorTask)sender;
 
@@ -43,7 +43,7 @@ namespace MadsKristensen.EditorExtensions
                 if (!File.Exists(_file))
                     return;
 
-                string html = File.ReadAllText(_file);
+                string html = await FileHelpers.ReadAllTextRetry(_file);
                 int index = html.IndexOf("</head>", StringComparison.OrdinalIgnoreCase);
 
                 if (index > -1)

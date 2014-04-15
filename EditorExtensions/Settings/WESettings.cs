@@ -180,7 +180,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         public string HtmlFormat { get; set; }
     }
 
-    public sealed class JavaScriptSettings : LinterSettings<JavaScriptSettings>, IMinifierSettings
+    public sealed class JavaScriptSettings : LinterSettings<JavaScriptSettings>, IMinifierSettings, ISourceMapSettings
     {
         #region Minification
         [Category("Minification")]
@@ -295,7 +295,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         public bool ShowBrowserTooltip { get; set; }
     }
 
-    public abstract class CompilationSettings<T> : SettingsBase<T>, ICompilerInvocationSettings, IMarginSettings where T : CompilationSettings<T>
+    public abstract class CompilationSettings<T> : SettingsBase<T>, ICompilerInvocationSettings, IMarginSettings, ISourceMapSettings where T : CompilationSettings<T>
     {
         [Category("Editor")]
         [DisplayName("Show preview pane")]
@@ -459,6 +459,11 @@ namespace MadsKristensen.EditorExtensions.Settings
         public bool MinifyInPlace { get; set; }
     }
 
+    public interface ISourceMapSettings
+    {
+        bool GenerateSourceMaps { get; }
+    }
+
     public interface IMarginSettings
     {
         bool ShowPreviewPane { get; }
@@ -471,11 +476,13 @@ namespace MadsKristensen.EditorExtensions.Settings
         string OutputDirectory { get; }
         bool MinifyInPlace { get; }
     }
+
     public interface IChainableCompilerSettings : ICompilerInvocationSettings
     {
         bool EnableChainCompilation { get; }
         event EventHandler EnableChainCompilationChanged;
     }
+
     public interface IMinifierSettings
     {
         bool AutoMinify { get; set; }

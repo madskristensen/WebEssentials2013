@@ -84,7 +84,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
             {
                 try
                 {
-                    var text = File.ReadAllText(_file);
+                    var text = await FileHelpers.ReadAllTextRetry(_file);
 
                     Reparse(text);
 

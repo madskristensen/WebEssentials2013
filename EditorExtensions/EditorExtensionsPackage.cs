@@ -164,14 +164,14 @@ namespace MadsKristensen.EditorExtensions
         {
             var compiler = WebEditor.Host.ExportProvider.GetExport<ProjectCompiler>();
 
-            ThreadingTask.Task.Run(() =>
+            ThreadingTask.Task.Run(async () =>
             {
                 Parallel.ForEach(
                     Mef.GetSupportedContentTypes<ICompilerRunnerProvider>()
                        .Where(c => WESettings.Instance.ForContentType<ICompilerInvocationSettings>(c).CompileOnBuild),
                     c => compiler.Value.CompileSolutionAsync(c).DontWait("compiling solution-wide " + c.DisplayName)
                 );
-                BuildMenu.UpdateBundleFiles();
+                await BuildMenu.UpdateBundleFiles();
             }).DontWait("running solution-wide compilers");
 
             if (WESettings.Instance.JavaScript.LintOnBuild)

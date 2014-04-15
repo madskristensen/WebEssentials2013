@@ -63,7 +63,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
             return InitiateCompilationAsync(sourcePath, save: CompilerRunner.Settings.CompileOnSave).HandleErrors("compiling " + sourcePath);
         }
 
-        public void RequestCompilationResult(bool cached)
+        public async void RequestCompilationResult(bool cached)
         {
             if (cached && CompilerRunner.Settings.CompileOnSave)
             {
@@ -71,7 +71,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
                 if (File.Exists(targetPath))
                 {
-                    OnCompilationReady(new CompilerResultEventArgs(CompilerResultFactory.GenerateResult(Document.FilePath, targetPath)));
+                    OnCompilationReady(new CompilerResultEventArgs(await CompilerResultFactory.GenerateResult(Document.FilePath, targetPath)));
 
                     return;
                 }

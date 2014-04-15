@@ -27,7 +27,7 @@ namespace MadsKristensen.EditorExtensions.Css
             get { return Resources.ReverseEmbedSmartTagActionName; }
         }
 
-        public override void Invoke()
+        public async override void Invoke()
         {
             string base64 = _url.UrlString.Text.Trim('\'', '"');
             string mimeType = FileHelpers.GetMimeTypeFromBase64(base64);
@@ -35,7 +35,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
             var fileName = FileHelpers.ShowDialog(extension);
 
-            if (!string.IsNullOrEmpty(fileName) && FileHelpers.SaveDataUriToFile(base64, fileName))
+            if (!string.IsNullOrEmpty(fileName) && await FileHelpers.SaveDataUriToFile(base64, fileName))
             {
                 using (EditorExtensionsPackage.UndoContext((DisplayText)))
                     ReplaceUrlValue(fileName);

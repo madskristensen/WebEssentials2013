@@ -63,7 +63,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected async Task<bool> ExecuteAsync(string extension)
         {
-            File.WriteAllText(_file + extension, string.Empty);
+            await FileHelpers.WriteAllTextRetry(_file + extension, string.Empty);
             if (await ScriptIntellisenseListener.ProcessAsync(_file))
                 return true;
             File.Delete(_file + extension);

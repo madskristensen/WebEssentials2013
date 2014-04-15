@@ -65,22 +65,22 @@ namespace MadsKristensen.EditorExtensions
                 if (list == null)
                     return false;
 
-                AddScript(filePath, IntellisenseParser.Ext.JavaScript, list);
-                AddScript(filePath, IntellisenseParser.Ext.TypeScript, list);
+                Task.FromResult(AddScript(filePath, IntellisenseParser.Ext.JavaScript, list));
+                Task.FromResult(AddScript(filePath, IntellisenseParser.Ext.TypeScript, list));
 
                 return true;
             }), DispatcherPriority.ApplicationIdle).Task;
         }
 
 
-        private static void AddScript(string filePath, string extension, List<IntellisenseObject> list)
+        private async static Task AddScript(string filePath, string extension, List<IntellisenseObject> list)
         {
             string resultPath = filePath + extension;
 
             if (!File.Exists(resultPath))
                 return;
 
-            IntellisenseWriter.Write(list, resultPath);
+            await IntellisenseWriter.Write(list, resultPath);
 
             var item = ProjectHelpers.AddFileToProject(filePath, resultPath);
 

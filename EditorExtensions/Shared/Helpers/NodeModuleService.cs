@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
 namespace MadsKristensen.EditorExtensions
@@ -20,7 +21,7 @@ namespace MadsKristensen.EditorExtensions
         ///<param name="callerPath">The path to the directory containing the file that is calling require().  This must be an absolute path.</param>
         ///<param name="modulePath">The string passed to require().  This can be a relative path, a module name, or a path within a module name.</param>
         ///<returns>The path to the fully resolved file, after resolving default extensions, default directory files, and package.json.</returns>
-        public static string ResolveModule(string callerDirectory, string modulePath)
+        public async static Task<string> ResolveModule(string callerDirectory, string modulePath)
         {
             string rawPath = ResolvePath(callerDirectory, modulePath);
 
@@ -37,7 +38,7 @@ namespace MadsKristensen.EditorExtensions
             // If the non-existent file is a directory, look inside.
             if (Directory.Exists(rawPath))
             {
-                var mainEntry = GetPackageMain(rawPath);
+                var mainEntry = await GetPackageMain(rawPath).ConfigureAwait(false);
                 if (mainEntry != null)
                 {
                     potentialPaths.Add(Path.Combine(rawPath, mainEntry));
@@ -54,14 +55,14 @@ namespace MadsKristensen.EditorExtensions
         }
 
         ///<summary>Gets the value of the "main" entry in a directory's package.json, or null if it doesn't exist or is invalid.</summary>
-        private static string GetPackageMain(string directory)
+        private async static Task<string> GetPackageMain(string directory)
         {
             var packageFile = Path.Combine(directory, "package.json");
             if (!File.Exists(packageFile))
                 return null;
             try
             {
-                var json = JObject.Parse(File.ReadAllText(packageFile));
+                var json = JObject.Parse(await FileHelpers.ReadAllTextRetry(packageFile).ConfigureAwait(false));
                 return json.Value<string>("main");
             }
             catch (Exception ex)

@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
@@ -30,9 +31,9 @@ namespace MadsKristensen.EditorExtensions.Scss
         }
 
         //https://github.com/hcatlin/libsass/issues/242
-        protected override string ReadMapFile(string sourceMapFileName)
+        protected async override Task<string> ReadMapFile(string sourceMapFileName)
         {
-            return File.ReadAllText(sourceMapFileName).Replace("\\", "\\\\");
+            return (await FileHelpers.ReadAllTextRetry(sourceMapFileName)).Replace("\\", "\\\\");
         }
     }
 }

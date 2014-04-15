@@ -26,12 +26,12 @@ namespace MadsKristensen.EditorExtensions.Images
                 return dataUri;
 
             string temp = Path.Combine(Path.GetTempPath(), _dataUriPrefix + Guid.NewGuid() + "." + extension);
-            bool isFileSaved = FileHelpers.SaveDataUriToFile(dataUri, temp);
+            bool isFileSaved = await FileHelpers.SaveDataUriToFile(dataUri, temp);
 
             if (isFileSaved)
             {
                 await CompressFilesAsync(temp);
-                string base64 = FileHelpers.ConvertToBase64(temp);
+                string base64 = await FileHelpers.ConvertToBase64(temp);
                 File.Delete(temp);
 
                 return base64;

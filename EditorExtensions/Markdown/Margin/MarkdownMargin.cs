@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 using System.IO;
-using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using MadsKristensen.EditorExtensions.Settings;
@@ -44,13 +44,12 @@ namespace MadsKristensen.EditorExtensions.Markdown
             return Path.Combine(folder, _stylesheet);
         }
 
-        public static void CreateStylesheet()
+        public async static Task CreateStylesheet()
         {
             string file = Path.Combine(ProjectHelpers.GetSolutionFolderPath(), _stylesheet);
-            File.WriteAllText(file, "body { background: yellow; }", new UTF8Encoding(true));
+            await FileHelpers.WriteAllTextRetry(file, "body { background: yellow; }");
             ProjectHelpers.GetSolutionItemsProject().ProjectItems.AddFromFile(file);
         }
-
 
         protected override void UpdateMargin(CompilerResult result)
         {

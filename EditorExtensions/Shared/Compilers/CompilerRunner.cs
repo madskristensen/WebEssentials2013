@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using EnvDTE;
 using MadsKristensen.EditorExtensions.Commands;
@@ -12,7 +11,6 @@ using MadsKristensen.EditorExtensions.Settings;
 using MadsKristensen.EditorExtensions.SweetJs;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using Task = System.Threading.Tasks.Task;
 
 namespace MadsKristensen.EditorExtensions.Compilers
 {
@@ -139,8 +137,11 @@ namespace MadsKristensen.EditorExtensions.Compilers
                 if (GenerateSourceMap && File.Exists(mapFile))
                     ProjectHelpers.AddFileToProject(targetPath, mapFile);
 
+                if (!File.Exists(result.TargetFileName))
+                    return result;
+
                 foreach (var listener in _listeners)
-                    listener.FileSaved(TargetContentType, result.TargetFileName, true, Settings.MinifyInPlace);
+                    await listener.FileSaved(TargetContentType, result.TargetFileName, true, Settings.MinifyInPlace);
             }
 
             return result;
@@ -217,26 +218,27 @@ namespace MadsKristensen.EditorExtensions.Compilers
     {
         public CompilerRunnerBase GetCompiler(IContentType contentType) { return new MarkdownCompilerRunner(contentType); }
     }
-    ///<summary>Compiles files synchronously using MarkdownSharp and reports the results.</summary>
+
+    ///<summary>Compiles files asynchronously using MarkdownSharp and reports the results.</summary>
     class MarkdownCompilerRunner : CompilerRunnerBase
     {
         public MarkdownCompilerRunner(IContentType contentType) : base(contentType) { }
         public override bool GenerateSourceMap { get { return false; } }
         public override string TargetExtension { get { return ".html"; } }
 
-        protected override Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
+        protected async override Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
         {
-            var result = new MarkdownSharp.Markdown(WESettings.Instance.Markdown).Transform(File.ReadAllText(sourcePath));
+            var result = new MarkdownSharp.Markdown(WESettings.Instance.Markdown).Transform(await FileHelpers.ReadAllTextRetry(sourcePath));
 
             if (!string.IsNullOrEmpty(targetPath))
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(targetPath);   // TODO: Only if output changed?
-                File.WriteAllText(targetPath, result, new UTF8Encoding(false));
+                await FileHelpers.WriteAllTextRetry(targetPath, result);
             }
 
-            var compilerResult = CompilerResultFactory.GenerateResult(sourcePath, targetPath, true, result, null);
+            var compilerResult = await CompilerResultFactory.GenerateResult(sourcePath, targetPath, true, result, null);
 
-            return Task.FromResult(compilerResult);
+            return compilerResult;
         }
     }
 }

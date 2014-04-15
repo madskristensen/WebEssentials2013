@@ -2,7 +2,6 @@
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.SmartTags;
@@ -49,7 +48,7 @@ namespace MadsKristensen.EditorExtensions.Html
                 base(htmlSmartTag, "Add new Angular controller")
             { }
 
-            public override void Invoke()
+            public async override void Invoke()
             {
                 string value = HtmlSmartTag.Element.GetAttribute("ng-controller").Value;
 
@@ -75,7 +74,7 @@ namespace MadsKristensen.EditorExtensions.Html
                 using (EditorExtensionsPackage.UndoContext((this.DisplayText)))
                 {
                     string script = GetScript(value);
-                    File.WriteAllText(file, script, Encoding.UTF8);
+                    await FileHelpers.WriteAllTextRetry(file, script);
 
                     ProjectHelpers.AddFileToActiveProject(file);
                     EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);

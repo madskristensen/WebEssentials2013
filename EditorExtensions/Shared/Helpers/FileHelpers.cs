@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using EnvDTE80;
 using Microsoft.VisualStudio;
@@ -173,13 +175,13 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public static bool SaveDataUriToFile(string dataUri, string filePath)
+        public async static Task<bool> SaveDataUriToFile(string dataUri, string filePath)
         {
             try
             {
                 int index = dataUri.IndexOf("base64,", StringComparison.Ordinal) + 7;
                 byte[] imageBytes = Convert.FromBase64String(dataUri.Substring(index));
-                File.WriteAllBytes(filePath, imageBytes);
+                await FileHelpers.WriteAllBytesRetry(filePath, imageBytes);
                 ProjectHelpers.AddFileToActiveProject(filePath);
                 return true;
             }
@@ -202,13 +204,13 @@ namespace MadsKristensen.EditorExtensions
             return string.Empty;
         }
 
-        public static string ConvertToBase64(string fileName)
+        public async static Task<string> ConvertToBase64(string fileName)
         {
             if (!File.Exists(fileName))
                 return string.Empty;
 
             string format = "data:{0};base64,{1}";
-            byte[] buffer = File.ReadAllBytes(fileName);
+            byte[] buffer = await FileHelpers.ReadAllBytesRetry(fileName);
             string extension = Path.GetExtension(fileName).Substring(1);
             string contentType = GetMimeTypeFromFileExtension(extension);
 
@@ -287,6 +289,69 @@ namespace MadsKristensen.EditorExtensions
             find.FilesOfType = types;
             find.MatchCase = matchCase;
             find.MatchWholeWord = matchWord;
+        }
+
+        /// <summary>
+        /// Opens a text file,
+        /// tries reading file 5 times before throwing IO Exception,
+        /// and then closes the file.
+        /// </summary>
+        /// <param name="fileName">The file to open for reading.</param>
+        /// <returns>Task which ultimately returns a string containing all lines of the file.</returns>
+        public async static Task<string> ReadAllTextRetry(string fileName)
+        {
+            return await Task.FromResult<string>(File.ReadAllText(fileName))
+                        .ExecuteRetryableTaskAsync<string>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5));
+        }
+
+        /// <summary>
+        /// Tries reading the lines of a file 5 times before throwing IO Exception.
+        /// </summary>
+        /// <param name="fileName">The file to open for reading.</param>
+        /// <returns>Task which ultimately returns all lines of the file, or the lines that are the result of a query.</returns>
+        public async static Task<IEnumerable<string>> ReadAllLinesRetry(string fileName)
+        {
+            return await Task.FromResult<IEnumerable<string>>(File.ReadLines(fileName))
+                        .ExecuteRetryableTaskAsync<IEnumerable<string>>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5));
+        }
+
+        /// <summary>
+        /// Opens a text file,
+        /// tries reading file into a byte array 5 times before throwing IO Exception,
+        /// and then closes the file.
+        /// </summary>
+        /// <param name="fileName">The file to open for reading.</param>
+        /// <returns>Task which ultimately returns all lines of the file, or the lines that are the result of a query.</returns>
+        public async static Task<byte[]> ReadAllBytesRetry(string fileName)
+        {
+            return await Task.FromResult<byte[]>(File.ReadAllBytes(fileName))
+                        .ExecuteRetryableTaskAsync<byte[]>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5));
+        }
+
+        /// <summary>
+        /// Creates a new file, writes the specified string to the file, and then closes
+        /// the file. If the target file already exists, it is overwritten. If the target
+        /// file is in use, try 5 times before throwing IO Exception.
+        /// </summary>
+        /// <param name="fileName">The file to open for reading.</param>
+        /// <param name="contents">The string to write to the file.</param>
+        public async static Task WriteAllTextRetry(string fileName, string contents)
+        {
+            await Task.Run(() => File.WriteAllText(fileName, contents, Encoding.UTF8))
+                 .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5));
+        }
+
+        /// <summary>
+        /// Creates a new file, writes the specified byte array to the file, and then closes
+        /// the file. If the target file already exists, it is overwritten. If the target
+        /// file is in use, try 5 times before throwing IO Exception.
+        /// </summary>
+        /// <param name="fileName">The file to open for reading.</param>
+        /// <param name="bytes">The bytes to write to the file.</param>
+        public async static Task WriteAllBytesRetry(string fileName, byte[] bytes)
+        {
+            await Task.Run(() => File.WriteAllBytes(fileName, bytes))
+                 .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5));
         }
     }
 }

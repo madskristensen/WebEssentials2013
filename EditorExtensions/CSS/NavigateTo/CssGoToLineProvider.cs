@@ -47,10 +47,10 @@ namespace MadsKristensen.EditorExtensions.Css
                     parallelOptions.CancellationToken = _cancellationToken;
                     parallelOptions.MaxDegreeOfParallelism = Environment.ProcessorCount;
 
-                    Parallel.For(0, fileList.Count, parallelOptions, i =>
+                    Parallel.For(0, fileList.Count, parallelOptions, async i =>
                     {
                         string file = fileList[i];
-                        IEnumerable<ParseItem> items = GetItems(file, _searchValue);
+                        IEnumerable<ParseItem> items = await GetItems(file, _searchValue);
                         foreach (ParseItem sel in items)
                         {
                             _cancellationToken.ThrowIfCancellationRequested();
@@ -72,10 +72,10 @@ namespace MadsKristensen.EditorExtensions.Css
                 }
             }
 
-            private static IEnumerable<ParseItem> GetItems(string filePath, string searchValue)
+            private async static Task<IEnumerable<ParseItem>> GetItems(string filePath, string searchValue)
             {
                 var cssParser = new CssParser();
-                StyleSheet ss = cssParser.Parse(File.ReadAllText(filePath), true);
+                StyleSheet ss = cssParser.Parse(await FileHelpers.ReadAllTextRetry(filePath), true);
 
                 return new CssItemAggregator<ParseItem>
                 {
