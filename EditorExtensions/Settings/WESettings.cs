@@ -95,6 +95,16 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Use LowerCamelCase instead of lowerCamelCase for type names in generated JS/TS files.")]
         [DefaultValue(false)]
         public bool CamelCaseTypeNames { get; set; }
+
+        [DisplayName("Use LowerCamelCase for enumeration values")]
+        [Description("Use LowerCamelCase for enumeration values in generated JS/TS files.")]
+        [DefaultValue(false)]
+        public bool CamelCaseEnumerationValues { get; set; }
+
+        [DisplayName("Add TypeScript reference")]
+        [Description("Add TypeScript reference path in generated JS/TS files.")]
+        [DefaultValue(true)]
+        public bool AddTypeScriptReferencePath { get; set; }
     }
 
     public interface ILinterSettings

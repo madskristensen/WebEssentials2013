@@ -25,6 +25,15 @@ namespace MadsKristensen.EditorExtensions
             await FileHelpers.WriteAllTextRetry(file, sb.ToString());
         }
 
+        private static string CamelCaseEnumValue(string name)
+        {
+            if (WESettings.Instance.CodeGen.CamelCaseEnumerationValues)
+            {
+                name = CamelCase(name);
+            }
+            return name;
+        }
+
         private static string CamelCasePropertyName(string name)
         {
             if (WESettings.Instance.CodeGen.CamelCasePropertyNames)
@@ -94,8 +103,15 @@ namespace MadsKristensen.EditorExtensions
 
         internal static void WriteTypeScript(IEnumerable<IntellisenseObject> objects, StringBuilder sb, string file = null)
         {
-            bool extraLineFeed = false;
-            StringBuilder references = new StringBuilder();
+            if (WESettings.Instance.CodeGen.AddTypeScriptReferencePath && !string.IsNullOrEmpty(file))
+            {
+                var references = objects.SelectMany(io => io.References.Where(r => r != file)).Distinct().ToList();
+                foreach (var reference in references)
+                {
+                    sb.AppendFormat("/// <reference path=\"{0}\" />\r\n", FileHelpers.RelativePath(file, reference));
+                }
+                if (references.Count > 0) sb.AppendLine();
+            }
 
             foreach (var ns in objects.GroupBy(o => o.Namespace))
             {
@@ -113,11 +129,11 @@ namespace MadsKristensen.EditorExtensions
                             WriteTypeScriptComment(p, sb);
                             if (p.InitExpression != null)
                             {
-                                sb.AppendLine("\t\t" + CamelCasePropertyName(p.Name) + " = " + CleanEnumInitValue(p.InitExpression) + ",");
+                                sb.AppendLine("\t\t" + CamelCaseEnumValue(p.Name) + " = " + CleanEnumInitValue(p.InitExpression) + ",");
                             }
                             else
                             {
-                                sb.AppendLine("\t\t" + CamelCasePropertyName(p.Name) + ",");
+                                sb.AppendLine("\t\t" + CamelCaseEnumValue(p.Name) + ",");
                             }
                         }
                         sb.AppendLine("\t}");
@@ -127,26 +143,6 @@ namespace MadsKristensen.EditorExtensions
                         sb.Append("\tinterface ").Append(CamelCaseClassName(io.Name)).Append(" ");
                         WriteTSInterfaceDefinition(sb, "\t", io.Properties);
                         sb.AppendLine();
-
-                        if (file == null)
-                            continue;
-
-                        foreach (var reference in io.References.Where(r => r != file))
-                        {
-                            references.Insert(0, string.Format(CultureInfo.InvariantCulture, "/// <reference path=\"{0}\" />\r\n", FileHelpers.RelativePath(file, reference)));
-                        }
-
-                        if (references.Length < 1)
-                            continue;
-
-                        if (!extraLineFeed)
-                        {
-                            references.AppendLine();
-                            extraLineFeed = true;
-                        }
-
-                        sb.Insert(0, references);
-                        references.Clear();
                     }
                 }
 
