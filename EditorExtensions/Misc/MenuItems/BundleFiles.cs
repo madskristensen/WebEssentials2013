@@ -63,10 +63,11 @@ namespace MadsKristensen.EditorExtensions
 
         public async static Threading.Task BindAllBundlesAssets(string path)
         {
-            foreach (var file in Directory.EnumerateFiles(Path.GetDirectoryName(path), "*.bundle", SearchOption.AllDirectories))
-            {
-                await ObserveBundleFileObjects(file);
-            }
+            if (path != null)
+                foreach (var file in Directory.EnumerateFiles(Path.GetDirectoryName(path), "*.bundle", SearchOption.AllDirectories))
+                {
+                    await ObserveBundleFileObjects(file);
+                }
         }
 
         private async static Threading.Task ObserveBundleFileObjects(string file)
