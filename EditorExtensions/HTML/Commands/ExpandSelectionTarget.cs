@@ -36,7 +36,20 @@ namespace MadsKristensen.EditorExtensions.Html
             if (tag == null)
                 return false;
 
-            if (tag.EndTag != null && tag.StartTag.End == start && tag.EndTag.Start == end)
+            if (attr != null && start >= attr.ValueRange.Start && start <= attr.ValueRange.End &&
+                (attr.ValueRange.Start != start || attr.ValueRange.End != end))
+            {
+                Select(attr.ValueRange.Start, attr.ValueRange.Length);
+            }
+            else if (attr != null && (attr.Start != start || attr.End != end))
+            {
+                Select(attr.Start, attr.Length);
+            }
+            else if (attr != null)
+            {
+                Select(tag.StartTag.Start, tag.StartTag.Length);
+            }
+            else if (tag.EndTag != null && tag.StartTag.End == start && tag.EndTag.Start == end)
             {
                 Select(tag.Start, tag.OuterRange.Length);
             }
