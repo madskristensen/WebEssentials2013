@@ -51,10 +51,20 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         ///<summary>Raises the CompilationReady event.</summary>
         ///<param name="e">A CompilerResultEventArgs object that provides the event data.</param>
-        protected virtual void OnCompilationReady(CompilerResultEventArgs e)
+        protected virtual void OnCompilationReady(CompilerResultEventArgs e) { }
+
+        ///<summary>
+        ///  Raises the CompilationReady event.
+        ///  In case of cached results, it will propogate a flag to event handler
+        ///  to avoid chained compilation for CSS preprocessors.
+        ///  (see https://github.com/madskristensen/WebEssentials2013/issues/916).
+        ///</summary>
+        ///<param name="e">A CompilerResultEventArgs object that provides the event data.</param>
+        ///<param name="cached">A flag to indicate if event is raised for cached results.</param>
+        private void OnCompilationReady(CompilerResultEventArgs e, bool cached = false)
         {
             if (CompilationReady != null)
-                CompilationReady(this, e);
+                CompilationReady(cached, e);
         }
 
         protected virtual Task CompileAsync(string sourcePath)
@@ -71,19 +81,19 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
                 if (File.Exists(targetPath))
                 {
-                    OnCompilationReady(new CompilerResultEventArgs(await CompilerResultFactory.GenerateResult(Document.FilePath, targetPath)));
+                    OnCompilationReady(new CompilerResultEventArgs(await CompilerResultFactory.GenerateResult(Document.FilePath, targetPath)), true);
 
                     return;
                 }
             }
 
-            InitiateCompilationAsync(Document.FilePath, save: false).DontWait("compiling " + Document.FilePath);
+            InitiateCompilationAsync(Document.FilePath, false, cached).DontWait("compiling " + Document.FilePath);
         }
 
-        async Task InitiateCompilationAsync(string sourcePath, bool save)
+        async Task InitiateCompilationAsync(string sourcePath, bool save, bool cached = false)
         {
             var result = await CompilerRunner.CompileAsync(sourcePath, save);
-            OnCompilationReady(new CompilerResultEventArgs(result));
+            OnCompilationReady(new CompilerResultEventArgs(result), cached);
         }
     }
 
