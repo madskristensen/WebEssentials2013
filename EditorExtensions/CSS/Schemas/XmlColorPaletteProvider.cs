@@ -41,7 +41,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
             string assembly = Assembly.GetExecutingAssembly().Location;
             string folder = Path.GetDirectoryName(assembly);
-            string sourcePath = Path.Combine(folder, "schemas\\css\\WE-Palette.css");
+            string sourcePath = Path.Combine(folder, "css\\schemas\\WE-Palette.css");
             string targetPath = GetSolutionFilePath();
 
             File.Copy(sourcePath, targetPath, true);
