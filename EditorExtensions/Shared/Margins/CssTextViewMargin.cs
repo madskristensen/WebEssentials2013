@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.Margin
             {
                 _compilerResult = result as CssCompilerResult;
 
-                UpdateResults().DontWait("updating TextView property");
+                UpdateResults().DoNotWait("updating TextView property");
                 SetText(result.Result);
             }
             else

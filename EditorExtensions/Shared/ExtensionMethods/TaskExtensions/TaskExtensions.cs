@@ -17,14 +17,14 @@ namespace MadsKristensen.EditorExtensions
             // Add the error handler, then return the original task.
             // Don't wait on the continuation; it'll become canceled
             // on success.  http://stackoverflow.com/q/6573720/34397
-            task.DontWait(operation);
+            task.DoNotWait(operation);
             return task;
         }
 
         /// <summary>Handles errors on a task to prevent VS from crashing.</summary>
         /// <param name="operation">The description of the asynchronous operation to show in the log on failure.  Should start with a lowercase present-tense infinitive (eg,  "compiling someFile.less").</param>
         /// <remarks>Call this method when you call an async method and don't need to wait for the result.</remarks>
-        public static void DontWait(this Task task, string operation)
+        public static void DoNotWait(this Task task, string operation)
         {
             if (SettingsStore.InTestMode)
                 return; // Don't mask crashes in unit tests.

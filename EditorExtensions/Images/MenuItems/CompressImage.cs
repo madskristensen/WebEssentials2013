@@ -37,7 +37,7 @@ namespace MadsKristensen.EditorExtensions.Images
 
         private void StartCompress()
         {
-            new ImageCompressor().CompressFilesAsync(_selectedPaths.ToArray()).DontWait("compressing " + string.Join(", ", _selectedPaths));
+            new ImageCompressor().CompressFilesAsync(_selectedPaths.ToArray()).DoNotWait("compressing " + string.Join(", ", _selectedPaths));
         }
     }
 }

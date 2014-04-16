@@ -61,6 +61,8 @@
       <Word>JSDoc</Word>
       <Word>Unstyled</Word>
       <Word>Vlq</Word>
+      <Word>Retryable</Word>
+      <Word>Ld</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>
@@ -77,6 +79,7 @@
   <Acronyms>
     <CasingExceptions>
       <Acronym>XHTML</Acronym>
+      <Acronym>JSONLD</Acronym>
     </CasingExceptions>
   </Acronyms>
 </Dictionary>

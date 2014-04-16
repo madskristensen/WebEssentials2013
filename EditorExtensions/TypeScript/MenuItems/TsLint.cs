@@ -58,7 +58,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
             foreach (string file in files)
             {
                 var runner = new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, file);
-                runner.RunLinterAsync().DontWait("linting " + file);
+                runner.RunLinterAsync().DoNotWait("linting " + file);
             }
         }
     }

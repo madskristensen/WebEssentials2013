@@ -27,7 +27,7 @@ namespace MadsKristensen.EditorExtensions
             if (_runner.Settings.LintOnSave)
             {
                 Dispatcher.CurrentDispatcher.InvokeAsync(
-                    () => _runner.RunLinterAsync().DontWait("linting " + _document.FilePath),
+                    () => _runner.RunLinterAsync().DoNotWait("linting " + _document.FilePath),
                     DispatcherPriority.ApplicationIdle
                 );
             }
@@ -53,7 +53,7 @@ namespace MadsKristensen.EditorExtensions
                     goto case FileActionTypes.ContentSavedToDisk;
                 case FileActionTypes.ContentSavedToDisk:
                     Dispatcher.CurrentDispatcher.InvokeAsync(
-                        () => _runner.RunLinterAsync().DontWait("linting " + _document.FilePath),
+                        () => _runner.RunLinterAsync().DoNotWait("linting " + _document.FilePath),
                         DispatcherPriority.ApplicationIdle
                     );
                     break;

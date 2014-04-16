@@ -135,7 +135,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
 
             if (File.Exists(TargetFilePath))
             {
-                RaiseReady().DontWait("reading " + TargetFilePath + "file");
+                RaiseReady().DoNotWait("reading " + TargetFilePath + "file");
 
                 foreach (var listener in _listeners)
                     await listener.FileSaved(ContentTypeManager.GetContentType("JavaScript"), TargetFilePath, false, false);
@@ -146,7 +146,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
         public async void RequestCompilationResult(bool cached)
         {
             if (File.Exists(TargetFilePath))
-                RaiseReady().DontWait("reading " + TargetFilePath + "file");
+                RaiseReady().DoNotWait("reading " + TargetFilePath + "file");
             else
                 OnCompilationReady(new CompilerResultEventArgs(
                          await CompilerResultFactory.GenerateResult(

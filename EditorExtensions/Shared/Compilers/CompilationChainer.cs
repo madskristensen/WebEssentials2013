@@ -50,7 +50,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
                 {
                     if (File.Exists(compilerRunner.GetTargetPath(file)))
                     {
-                        compilerRunner.CompileToDefaultOutputAsync(file).DontWait("compiling " + file);
+                        compilerRunner.CompileToDefaultOutputAsync(file).DoNotWait("compiling " + file);
                         count++;
                     }
                 }

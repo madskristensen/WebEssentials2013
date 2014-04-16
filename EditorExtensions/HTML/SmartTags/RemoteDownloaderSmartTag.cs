@@ -85,7 +85,7 @@ namespace MadsKristensen.EditorExtensions.Html
 
                 if (!string.IsNullOrEmpty(fileName))
                 {
-                    DownloadFileAsync(url, fileName).DontWait("downloading " + url + " to disk");
+                    DownloadFileAsync(url, fileName).DoNotWait("downloading " + url + " to disk");
                     ReplaceUrlValue(fileName, textBuffer, _attribute);
                 }
             }

@@ -43,7 +43,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         private void Document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
             if (e.FileActionType == FileActionTypes.ContentSavedToDisk)
-                CompileAsync(e.FilePath).DontWait("compiling " + e.FilePath);
+                CompileAsync(e.FilePath).DoNotWait("compiling " + e.FilePath);
         }
 
         ///<summary>Occurs when the file has been compiled (on both success and failure).</summary>
@@ -87,7 +87,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
                 }
             }
 
-            InitiateCompilationAsync(Document.FilePath, false, cached).DontWait("compiling " + Document.FilePath);
+            InitiateCompilationAsync(Document.FilePath, false, cached).DoNotWait("compiling " + Document.FilePath);
         }
 
         async Task InitiateCompilationAsync(string sourcePath, bool save, bool cached = false)

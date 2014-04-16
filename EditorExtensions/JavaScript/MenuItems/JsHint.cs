@@ -57,7 +57,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             foreach (string file in files)
             {
                 JavaScriptLintReporter runner = new JavaScriptLintReporter(new JsHintCompiler(), file);
-                runner.RunLinterAsync().DontWait("linting " + file);
+                runner.RunLinterAsync().DoNotWait("linting " + file);
             }
         }
     }
