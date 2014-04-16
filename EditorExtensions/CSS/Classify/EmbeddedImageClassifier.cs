@@ -149,7 +149,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
             if (dec != null && Cache.Contains(dec))
             {
-                var url = (UrlItem)dec.Values.FirstOrDefault();
+                var url = dec.Values.FirstOrDefault() as UrlItem;
 
                 if (url == null || !url.IsValid || url.UrlString == null || url.UrlString.Text.Contains(";base64,"))
                     return;
