@@ -1,0 +1,315 @@
+<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ output extension=".d.ts" #>
+<# /* Update this line to match your version of SignalR */ #>
+<#@ assembly name="$(SolutionDir)\packages\Microsoft.AspNet.SignalR.Core.2.0.3\lib\net45\Microsoft.AspNet.SignalR.Core.dll" #>
+<# /* Load the current project's DLL to make sure the DefaultHubManager can find things */ #>
+<#@ assembly name="$(TargetPath)" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Web" #>
+<#@ assembly name="System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" #>
+<#@ assembly name="System.Xml.Linq, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Threading.Tasks" #>
+<#@ import namespace="Microsoft.AspNet.SignalR" #>
+<#@ import namespace="Microsoft.AspNet.SignalR.Hubs" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#
+    var hubmanager = new DefaultHubManager(new DefaultDependencyResolver());
+#>
+// Get signalr.d.ts.ts from https://github.com/borisyankov/DefinitelyTyped (or delete the reference)
+/// <reference path="signalr/signalr.d.ts" />
+/// <reference path="jquery/jquery.d.ts" />
+
+////////////////////
+// available hubs //
+////////////////////
+//#region available hubs
+
+interface SignalR {
+<#
+foreach (var hub in hubmanager.GetHubs())
+{
+#>
+
+    /**
+      * The hub implemented by <#=hub.HubType.FullName#>
+      */
+    <#= FirstCharLowered(hub.Name) #> : <#= hub.HubType.Name #>;
+<#
+}
+#>
+}
+//#endregion available hubs
+
+///////////////////////
+// Service Contracts //
+///////////////////////
+//#region service contracts
+<#
+foreach (var hub in hubmanager.GetHubs())
+{
+    var hubType = hub.HubType;
+    string clientContractName = hubType.Namespace + ".I" + hubType.Name + "Client";
+    var clientType = hubType.Assembly.GetType(clientContractName);
+#>
+
+//#region <#= hub.Name#> hub
+
+interface <#= hubType.Name #> {
+    
+    /**
+      * This property lets you send messages to the <#= hub.Name#> hub.
+      */
+    server : <#= hubType.Name #>Server;
+
+    /**
+      * The functions on this property should be replaced if you want to receive messages from the <#= hub.Name#> hub.
+      */
+    client : <#= clientType != null?(hubType.Name+"Client"):"any"#>;
+}
+
+<#
+/* Server type definition */
+#>
+interface <#= hubType.Name #>Server {
+<#
+    foreach (var method in hubmanager.GetHubMethods(hub.Name ))
+    {
+        var ps = method.Parameters.Select(x => x.Name+ " : "+GetTypeContractName(x.ParameterType));
+        var docs = GetXmlDocForMethod(hubType.GetMethod(method.Name));
+
+#>
+
+    /** 
+      * Sends a "<#= FirstCharLowered(method.Name) #>" message to the <#= hub.Name#> hub.
+      * Contract Documentation: <#= docs.Summary #>
+<#
+    foreach (var p in method.Parameters)
+    {
+#>
+      * @param <#=p.Name#> {<#=GetTypeContractName(p.ParameterType)#>} <#=docs.ParameterSummary(p.Name)#>
+<#
+    }
+#>
+      * @return {JQueryPromise of <#= GetTypeContractName(method.ReturnType)#>}
+      */
+    <#= FirstCharLowered(method.Name) #>(<#=string.Join(", ", ps)#>) : JQueryPromise<<#= GetTypeContractName(method.ReturnType)#>>;
+<#
+    }
+#>
+}
+
+<#
+/* Client type definition */
+#>
+<# 
+    if (clientType != null)
+    {
+#>
+interface <#= hubType.Name #>Client
+{
+<#
+    foreach (var method in clientType.GetMethods())
+    {
+        var ps = method.GetParameters().Select(x => x.Name+ " : "+GetTypeContractName(x.ParameterType));
+        var docs = GetXmlDocForMethod(method);
+
+#>
+
+    /**
+      * Set this function with a "function(<#=string.Join(", ", ps)#>){}" to receive the "<#= FirstCharLowered(method.Name) #>" message from the <#= hub.Name#> hub.
+      * Contract Documentation: <#= docs.Summary #>
+<#
+    foreach (var p in method.GetParameters())
+    {
+#>
+      * @param <#=p.Name#> {<#=GetTypeContractName(p.ParameterType)#>} <#=docs.ParameterSummary(p.Name)#>
+<#
+    }
+#>
+      * @return {void}
+      */
+    <#= FirstCharLowered(method.Name) #> : (<#=string.Join(", ", ps)#>) => void;
+<#
+    }
+#>
+}
+
+<#
+    }
+#>
+//#endregion <#= hub.Name#> hub
+
+<#
+}
+#>
+//#endregion service contracts
+
+
+
+////////////////////
+// Data Contracts //
+////////////////////
+//#region data contracts
+<#
+while(viewTypes.Count!=0)
+{
+    var type = viewTypes.Pop();
+#>
+
+
+/**
+  * Data contract for <#= type.FullName#>
+  */
+interface <#= GenericSpecificName(type) #> {
+<#
+    foreach (var property in type.GetProperties(BindingFlags.Instance|BindingFlags.Public|BindingFlags.DeclaredOnly))
+    {
+#>
+    <#= property.Name#> : <#= GetTypeContractName(property.PropertyType)#>;
+<#
+    }
+#>
+}
+<#
+}
+#>
+
+//#endregion data contracts
+
+<#+
+
+    private Stack<Type> viewTypes = new Stack<Type>();
+    private HashSet<Type> doneTypes = new HashSet<Type>();
+
+    private string GetTypeContractName(Type type)
+    {
+        if (type == typeof (Task))
+        {
+            return "void /*task*/";
+        }
+
+        if (type.IsArray)
+        {
+            return GetTypeContractName(type.GetElementType())+"[]";
+        }
+
+        if (type.IsGenericType && typeof(Task<>).IsAssignableFrom(type.GetGenericTypeDefinition()))
+        {
+            return GetTypeContractName(type.GetGenericArguments()[0]);
+        }
+
+        if (type.IsGenericType && typeof(Nullable<>).IsAssignableFrom(type.GetGenericTypeDefinition()))
+        {
+            return GetTypeContractName(type.GetGenericArguments()[0]);
+        }
+
+        if (type.IsGenericType && typeof(List<>).IsAssignableFrom(type.GetGenericTypeDefinition()))
+        {
+            return GetTypeContractName(type.GetGenericArguments()[0])+"[]";
+        }
+
+    
+
+        switch (type.Name.ToLowerInvariant())
+        {
+
+            case "datetime":
+                return "string";
+            case "int16":
+            case "int32":
+            case "int64":
+            case "single":
+            case "double":
+                return "number";
+            case "boolean":
+                return "bool";
+            case "void":
+            case "string":
+                return type.Name.ToLowerInvariant();
+        }
+
+        if (!doneTypes.Contains(type))
+        {
+            doneTypes.Add(type);
+            viewTypes.Push(type);
+        }
+        return GenericSpecificName(type);
+    }
+
+    private string GenericSpecificName(Type type)
+    {
+        //todo: update for Typescript's generic syntax once invented
+        string name = type.Name;
+        int index = name.IndexOf('`');
+        name = index == -1 ? name : name.Substring(0, index);
+        if (type.IsGenericType)
+        {
+            name += "Of"+string.Join("And", type.GenericTypeArguments.Select(GenericSpecificName));
+        }
+        return name;
+    }
+
+    private string FirstCharLowered(string s)
+    {
+        return Regex.Replace(s, "^.", x => x.Value.ToLowerInvariant());
+    }
+
+    Dictionary<Assembly, XDocument> xmlDocs = new Dictionary<Assembly, XDocument>(); 
+
+    private XDocument XmlDocForAssembly(Assembly a)
+    {
+        XDocument value;
+        if (!xmlDocs.TryGetValue(a, out value))
+        {
+            var path = new Uri(a.CodeBase.Replace(".dll", ".xml")).LocalPath;
+            xmlDocs[a] = value = File.Exists(path) ? XDocument.Load(path) : null;
+        }
+        return value;
+    }
+
+    private MethodDocs GetXmlDocForMethod(MethodInfo method)
+    {
+        var xmlDocForHub = XmlDocForAssembly(method.DeclaringType.Assembly);
+        if (xmlDocForHub == null)
+        {
+            return new MethodDocs();
+        }
+
+        var methodName = string.Format("M:{0}.{1}({2})", method.DeclaringType.FullName, method.Name, string.Join(",", method.GetParameters().Select(x => x.ParameterType.FullName)));
+        var xElement = xmlDocForHub.Descendants("member").SingleOrDefault(x => (string) x.Attribute("name") == methodName);
+        return xElement==null?new MethodDocs():new MethodDocs(xElement);
+    }
+
+    private class MethodDocs
+    {
+        public MethodDocs()
+        {
+            Summary = "---";
+            Parameters = new Dictionary<string, string>();
+        }
+
+        public MethodDocs(XElement xElement)
+        {
+            Summary = ((string) xElement.Element("summary") ?? "").Trim();
+            Parameters = xElement.Elements("param").ToDictionary(x => (string) x.Attribute("name"), x=>x.Value);
+        }
+
+        public string Summary { get; set; }
+        public Dictionary<string, string> Parameters { get; set; }
+    
+        public string ParameterSummary(string name)
+        {
+            if (Parameters.ContainsKey(name))
+            {
+                return Parameters[name];
+            }
+            return "";
+        }
+    }
+
+#>

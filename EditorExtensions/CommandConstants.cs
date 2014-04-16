@@ -20,6 +20,7 @@ namespace MadsKristensen.EditorExtensions
         public const string guidUnusedCssCmdSetString = "47BA41E6-C7AB-49F1-984A-30E672AFF9FC";
         public const string guidPixelPushingCmdSetString = "EE755B3C-F6ED-414B-86BA-1AADB7DAE216";
         public const string guidTopMenuString = "{30947ebe-9147-45f9-96cf-401bfc671a01}";
+        public const string guidTypeScriptTypingsCmdSetString = "{6147C315-9D10-45E8-B410-CE8F3C22E030}";
 
         public static readonly Guid guidEditorExtensionsCmdSet = new Guid(guidEditorExtensionsCmdSetString);
         public static readonly Guid guidCssCmdSet = new Guid(guidCssCmdSetString);
@@ -35,6 +36,7 @@ namespace MadsKristensen.EditorExtensions
         public static readonly Guid guidUnusedCssCmdSet = new Guid(guidUnusedCssCmdSetString);
         public static readonly Guid guidPixelPushingCmdSet = new Guid(guidPixelPushingCmdSetString);
         public static readonly Guid guidTopMenu = new Guid(guidTopMenuString);
+        public static readonly Guid guidTypeScriptTypingsCmdSet = new Guid(guidTypeScriptTypingsCmdSetString);
     }
 
     [Guid(CommandGuids.guidMinifyCmdSetString)]
@@ -139,6 +141,9 @@ namespace MadsKristensen.EditorExtensions
         UnusedCssStopRecordAll = 0x2103,
 
         //Pixel Pushing
-        PixelPushingToggle = 0x2200
+        PixelPushingToggle = 0x2200,
+
+        //T4 Template / TypeScript / SignalR
+        AddHubT4 = 0x4001
     }
 }

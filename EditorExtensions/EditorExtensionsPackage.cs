@@ -90,6 +90,7 @@ namespace MadsKristensen.EditorExtensions
                 BundleFilesMenu bundleMenu = new BundleFilesMenu(DTE, mcs);
                 JsHintMenu jsHintMenu = new JsHintMenu(DTE, mcs);
                 TsLintMenu tsLintMenu = new TsLintMenu(DTE, mcs);
+                HubsT4Menu hubsT4Menu = new HubsT4Menu(DTE, mcs);
                 CoffeeLintMenu coffeeLintMenu = new CoffeeLintMenu(DTE, mcs);
                 JsCodeStyle jsCodeStyleMenu = new JsCodeStyle(DTE, mcs);
                 ProjectSettingsMenu projectSettingsMenu = new ProjectSettingsMenu(DTE, mcs);
@@ -115,6 +116,7 @@ namespace MadsKristensen.EditorExtensions
                 projectSettingsMenu.SetupCommands();
                 jsHintMenu.SetupCommands();
                 tsLintMenu.SetupCommands();
+                hubsT4Menu.SetupCommands();
                 coffeeLintMenu.SetupCommands();
                 jsCodeStyleMenu.SetupCommands();
                 bundleMenu.SetupCommands();

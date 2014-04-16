@@ -707,6 +707,15 @@
         </Strings>
       </Button>
 
+        <Button guid="guidTypeScriptTypingsCmdSet" id="AddHubT4CommandId" priority="0x0106" type="Button">
+            <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+            <CommandFlag>DefaultInvisible</CommandFlag>
+            <CommandFlag>DynamicVisibility</CommandFlag>
+            <Strings>
+                <ButtonText>Add Hubs.tt</ButtonText>
+            </Strings>
+        </Button>
+
       <!--<Button guid="guidEditorExtensionsCmdSet" id="cmdChainCompile" priority="0x2201" type="Button">
         <Parent guid="guidSolutionExplorerCmdSet" id="MySubGroup"/>
         <Icon guid="guidImages" id="bmpLogo"/>
@@ -975,6 +984,10 @@
     <GuidSymbol name="guidBrowserLinkCmdSet" value="{30947ebe-9147-45f9-96cf-401bfc671a82}">
       <IDSymbol name="IDG_BROWSERLINK_COMMANDS" value="0x2001" />
     </GuidSymbol>
+
+      <GuidSymbol name="guidTypeScriptTypingsCmdSet" value="{6147C315-9D10-45E8-B410-CE8F3C22E030}">
+          <IDSymbol name="AddHubT4CommandId" value="0x4001" />
+      </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{51f54cc4-4444-4ae5-a1a6-d44f9a6b7cbc}" >
       <IDSymbol name="bmpPic1" value="1" />
