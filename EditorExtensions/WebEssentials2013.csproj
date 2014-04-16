@@ -357,6 +357,7 @@
     <Compile Include="RobotsTxt\Classify\RobotsTxtClassifier.cs" />
     <Compile Include="RobotsTxt\Classify\RobotsTxtClassifierProvider.cs" />
     <Compile Include="TypeScript\Compilers\TypeScriptCompilationNotifierProvider.cs" />
+    <Compile Include="TypeScript\MenuItems\HubsT4.cs" />
     <Compile Include="WebVtt\ContentType\WebVttContentTypeDefinition.cs" />
     <Compile Include="WebVtt\Classify\WebVttClassificationTypes.cs" />
     <Compile Include="WebVtt\Classify\WebVttClassifier.cs" />
@@ -911,6 +912,9 @@
     <Content Include="Resources\Tools\png.cmd">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\settings-defaults\Hubs.tt">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="Source.extension.vsixmanifest" />
     <Resource Include="Resources\Images\vsgallery.png" />
     <Content Include="CSS\Schemas\css-we-settings.xml">
@@ -973,7 +977,6 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>
