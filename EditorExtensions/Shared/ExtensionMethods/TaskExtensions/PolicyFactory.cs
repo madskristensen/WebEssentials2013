@@ -3,7 +3,7 @@ using Microsoft.Practices.TransientFaultHandling;
 
 namespace MadsKristensen.EditorExtensions
 {
-    public class PolicyFactory
+    public static class PolicyFactory
     {
         public static RetryPolicy GetPolicy(ITransientErrorDetectionStrategy strategy, int retryCount)
         {

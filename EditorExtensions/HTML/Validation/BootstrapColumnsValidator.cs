@@ -27,7 +27,7 @@ namespace MadsKristensen.EditorExtensions.Html
 
             var elementClasses = element.GetAttribute("class");
 
-            if (elementClasses == null || !elementClasses.Value.Split(' ').Any(x => x.StartsWith("col-")))
+            if (elementClasses == null || !elementClasses.Value.Split(' ').Any(x => x.StartsWith("col-", StringComparison.CurrentCulture)))
             {
                 return results;
             }
@@ -36,7 +36,7 @@ namespace MadsKristensen.EditorExtensions.Html
             if (IsParentDivElementMissingRowClass(element))
             {
                 int index = element.Attributes.IndexOf(elementClasses);
-                string columnsClass = elementClasses.Value.Split(' ').Where(x => x.StartsWith("col-")).First();
+                string columnsClass = elementClasses.Value.Split(' ').Where(x => x.StartsWith("col-", StringComparison.CurrentCulture)).First();
                 string error = string.Format(CultureInfo.CurrentCulture, _errorRowMissing, columnsClass, "");
 
                 results.AddAttributeError(element, error, HtmlValidationErrorLocation.AttributeValue, index);
@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions.Html
             // Sum of columns size of a row must egal 12. 
             var classList = elementClasses.Value.Split(' ')
                                 .Select(x => x.Trim())
-                                .Where(x => x.StartsWith("col-"));
+                                .Where(x => x.StartsWith("col-", StringComparison.CurrentCulture));
             foreach (var c in classList)
             {
                 // Find the type (size) of column
@@ -55,7 +55,7 @@ namespace MadsKristensen.EditorExtensions.Html
                 if (sumColumnsCurrentRow != 12)
                 {
                     int index = element.Attributes.IndexOf(elementClasses);
-                    var columnType = string.Format("col-{0}-*", columnSize);
+                    var columnType = string.Format(CultureInfo.CurrentCulture, "col-{0}-*", columnSize);
                     string error = string.Format(CultureInfo.CurrentCulture, _errorInvalidSum, columnType);
 
                     results.AddAttributeError(element, error, HtmlValidationErrorLocation.AttributeValue, index);
@@ -65,10 +65,10 @@ namespace MadsKristensen.EditorExtensions.Html
             return results;
         }
 
-        private Int32 GetSumOfColumns(ElementNode element, string columnSize)
+        private static Int32 GetSumOfColumns(ElementNode element, string columnSize)
         {
-            var columnFilter = string.Format("col-{0}-", columnSize);
-            var columnFilterOffset = string.Format("{0}offset-", columnFilter);
+            var columnFilter = string.Format(CultureInfo.CurrentCulture, "col-{0}-", columnSize);
+            var columnFilterOffset = string.Format(CultureInfo.CurrentCulture, "{0}offset-", columnFilter);
 
             var sumOfColumns = element.Parent.Children
                                 .Where(x => x.Name == "div")
@@ -76,15 +76,16 @@ namespace MadsKristensen.EditorExtensions.Html
                                 .Where(x => x.GetAttribute("class").Value.Contains(columnFilter))
                                 .Select(x => x.GetAttribute("class").Value.Split(' '))
                                 .SelectMany(x => x)
-                                .Where(x => x.StartsWith(columnFilter))
+                                .Where(x => x.StartsWith(columnFilter, StringComparison.CurrentCulture))
                                 .Where(x => !x.Contains("push") && !x.Contains("pull"))
                                 .Sum(x => Int32.Parse(x.Replace(columnFilterOffset, string.Empty)
-                                                       .Replace(columnFilter, string.Empty)));
+                                                       .Replace(columnFilter, string.Empty),
+                                                       CultureInfo.CurrentCulture));
 
             return sumOfColumns;
         }
 
-        private bool IsParentDivElementMissingRowClass(ElementNode element)
+        private static bool IsParentDivElementMissingRowClass(ElementNode element)
         {
             if (element.Parent == null)
                 return true; // To review, can cause false positive on some partials view?

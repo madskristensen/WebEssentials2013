@@ -169,26 +169,26 @@ namespace MadsKristensen.EditorExtensions
                 Parallel.ForEach(
                     Mef.GetSupportedContentTypes<ICompilerRunnerProvider>()
                        .Where(c => WESettings.Instance.ForContentType<ICompilerInvocationSettings>(c).CompileOnBuild),
-                    c => compiler.Value.CompileSolutionAsync(c).DontWait("compiling solution-wide " + c.DisplayName)
+                    c => compiler.Value.CompileSolutionAsync(c).DoNotWait("compiling solution-wide " + c.DisplayName)
                 );
                 await BuildMenu.UpdateBundleFiles();
-            }).DontWait("running solution-wide compilers");
+            }).DoNotWait("running solution-wide compilers");
 
             if (WESettings.Instance.JavaScript.LintOnBuild)
             {
                 LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.js" }, f => new JavaScriptLintReporter(new JsHintCompiler(), f))
-                    .DontWait("running solution-wide JSHint");
+                    .DoNotWait("running solution-wide JSHint");
                 LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.js" }, f => new JavaScriptLintReporter(new JsCodeStyleCompiler(), f))
-                    .DontWait("running solution-wide JSCS");
+                    .DoNotWait("running solution-wide JSCS");
             }
 
             if (WESettings.Instance.TypeScript.LintOnBuild)
                 LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.ts" }, f => new LintReporter(new TsLintCompiler(), WESettings.Instance.TypeScript, f))
-                    .DontWait("running solution-wide TSLint");
+                    .DoNotWait("running solution-wide TSLint");
 
             if (WESettings.Instance.CoffeeScript.LintOnBuild)
                 LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.coffee", "*.iced" }, f => new LintReporter(new CoffeeLintCompiler(), WESettings.Instance.CoffeeScript, f))
-                    .DontWait("running solution-wide CoffeeLint");
+                    .DoNotWait("running solution-wide CoffeeLint");
         }
 
         public static void ExecuteCommand(string commandName, string commandArgs = "")

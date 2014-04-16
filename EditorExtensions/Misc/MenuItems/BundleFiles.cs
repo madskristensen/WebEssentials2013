@@ -196,7 +196,7 @@ namespace MadsKristensen.EditorExtensions
 
                     if (enabled)
                     {
-                        WriteBundleFile(file, doc).DontWait("reading " + file + "file");
+                        WriteBundleFile(file, doc).DoNotWait("reading " + file + "file");
                     }
                 }
             }
@@ -334,7 +334,7 @@ namespace MadsKristensen.EditorExtensions
             if (doc != null)
             {
                 await Dispatcher.CurrentDispatcher.BeginInvoke(
-                    new Action(() => WriteBundleFile(filePath, doc).DontWait("writing " + filePath + "file")), DispatcherPriority.ApplicationIdle, null);
+                    new Action(() => WriteBundleFile(filePath, doc).DoNotWait("writing " + filePath + "file")), DispatcherPriority.ApplicationIdle, null);
             }
         }
 

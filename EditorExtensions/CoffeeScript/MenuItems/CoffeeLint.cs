@@ -59,7 +59,7 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
             foreach (string file in files)
             {
                 var runner = new LintReporter(new CoffeeLintCompiler(), WESettings.Instance.CoffeeScript, file);
-                runner.RunLinterAsync().DontWait("linting " + file);
+                runner.RunLinterAsync().DoNotWait("linting " + file);
             }
         }
     }

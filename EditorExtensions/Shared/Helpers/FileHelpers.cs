@@ -347,10 +347,10 @@ namespace MadsKristensen.EditorExtensions
         /// file is in use, try 5 times before throwing IO Exception.
         /// </summary>
         /// <param name="fileName">The file to open for reading.</param>
-        /// <param name="bytes">The bytes to write to the file.</param>
-        public async static Task WriteAllBytesRetry(string fileName, byte[] bytes)
+        /// <param name="value">The bytes to write to the file.</param>
+        public async static Task WriteAllBytesRetry(string fileName, byte[] value)
         {
-            await Task.Run(() => File.WriteAllBytes(fileName, bytes))
+            await Task.Run(() => File.WriteAllBytes(fileName, value))
                  .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5));
         }
     }

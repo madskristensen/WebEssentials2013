@@ -71,7 +71,7 @@ namespace MadsKristensen.EditorExtensions
             if (MapNodes.Count() == 0)
                 return;
 
-            CollectRules(targetFileContents).DontWait("collecting maps");
+            CollectRules(targetFileContents).DoNotWait("collecting maps");
         }
 
         private async Task CollectRules(string targetFileContents)
