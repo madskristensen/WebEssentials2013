@@ -157,17 +157,10 @@ namespace MadsKristensen.EditorExtensions.Settings
         [DefaultValue(true)]
         public bool EnableAngularValidation { get; set; }
 
-        [Category("Bootstrap")]
-        [DisplayName("Enable Bootstrap.js general validation")]
+        [DisplayName("Enable Bootstrap.js validation")]
         [Description("Validate HTML files against Bootstrap.js best practices.")]
         [DefaultValue(true)]
         public bool EnableBootstrapValidation { get; set; }
-
-        [Category("Bootstrap")]
-        [DisplayName("Validate elements related to columns")]
-        [Description("Validate HTML files for any element related to the Bootstrap grid system.")]
-        [DefaultValue(true)]
-        public bool EnableBootstrapColumnsValidation { get; set; }
 
         [Browsable(false)]
         public ObservableCollection<ImageDropFormat> ImageDropFormats { get; private set; }

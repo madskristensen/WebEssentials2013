@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.Html
         {
             var results = new ValidationErrorCollection();
 
-            if (!WESettings.Instance.Html.EnableBootstrapValidation || !WESettings.Instance.Html.EnableBootstrapColumnsValidation)
+            if (!WESettings.Instance.Html.EnableBootstrapValidation)
                 return results;
 
             var elementClasses = element.GetAttribute("class");
@@ -90,17 +90,36 @@ namespace MadsKristensen.EditorExtensions.Html
 
         private bool IsParentDivElementMissingRowClass(ElementNode element)
         {
+            bool isRowClassPresent = false;
+
             if (element.Parent == null)
-                return true; // To review, can cause false positive on some partials view?
+                return false; // Don't want false alert so better to suppose that it's a partial view of the 'row' class on the parent view.
 
             var classNames = element.Parent.GetAttribute("class");
-            if (classNames == null)
-                return true;
+            if (classNames != null && classNames.Value.Split(' ').Any(x => x.Equals("row")))
+                isRowClassPresent = true;
 
-            if (classNames.Value.Split(' ').Any(x => x.Equals("row")))
+            if (isRowClassPresent)
+            {
                 return false;
+            }
+            else
+            {
+                if (element.Parent.Name == "html")
+                {
+                    // Now at the top and no row class on this element. Confirm, it's missing. 
+                    return true;
+                }
 
-            return true;
+                // Check if a parent element have the row class.
+                return IsParentDivElementMissingRowClass(element.Parent);
+            }
+
+            ////if (classNames.Value.Split(' ').Any(x => x.Equals("row")))
+            ////    return false;
+
+            //// No strong confirmation, be safe.
+            //return false;
         }
     }
 }
