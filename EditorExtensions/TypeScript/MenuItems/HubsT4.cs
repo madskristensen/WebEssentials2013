@@ -1,17 +1,12 @@
-﻿using EnvDTE80;
-using MadsKristensen.EditorExtensions.Compilers;
-using Microsoft.Html.Editor;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 
 namespace MadsKristensen.EditorExtensions.TypeScript
 {
@@ -46,7 +41,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
         private void menuCommand_BeforeQueryStatus(object sender, System.EventArgs e)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
-            selectedFiles = ProjectHelpers.GetSelectedFilePaths().Where(p => IsDependency(p));
+            selectedFiles = ProjectHelpers.GetSelectedFilePaths().Where(IsDependency);
             menuCommand.Visible = selectedFiles.Any();
         }
 
@@ -54,7 +49,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
         {
             foreach (var item in _dependencies)
             {
-                if (fullPath.EndsWith(item, StringComparison.InvariantCultureIgnoreCase))
+                if (fullPath.EndsWith(item, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -66,8 +61,8 @@ namespace MadsKristensen.EditorExtensions.TypeScript
         {
             try
             {
-                string parentPath = selectedFiles.FirstOrDefault(o => o.ToLower().Contains(scriptTypingsFolder));
-                parentPath = parentPath.Remove(parentPath.ToLower().IndexOf(scriptTypingsFolder) + scriptTypingsFolder.Length);
+                string parentPath = selectedFiles.FirstOrDefault(o => o.ToLower(CultureInfo.CurrentCulture).Contains(scriptTypingsFolder));
+                parentPath = parentPath.Remove(parentPath.ToLower(CultureInfo.CurrentCulture).IndexOf(scriptTypingsFolder,StringComparison.OrdinalIgnoreCase) + scriptTypingsFolder.Length);
                 string fullPath = Path.Combine(parentPath, hubsT4FileName);
 
                 if (File.Exists(fullPath))
@@ -75,7 +70,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
                     MessageBox.Show("A Hubs.tt file already exists", "Web Essentials", MessageBoxButtons.OK);
                     return;
                 }
-                
+
                 string extensionDir = Path.GetDirectoryName(typeof(HubsT4Menu).Assembly.Location);
                 string settingsFile = Path.Combine(extensionDir, @"Resources\settings-defaults\" + hubsT4FileName);
                 File.Copy(settingsFile, fullPath);
@@ -84,7 +79,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
 
                 _dte.ItemOperations.OpenFile(fullPath);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("Something went wrong =(" + Environment.NewLine + Environment.NewLine + ex.ToString(), "Web Essentials", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
             }
