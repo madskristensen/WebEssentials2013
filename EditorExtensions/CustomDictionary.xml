@@ -63,6 +63,7 @@
       <Word>Vlq</Word>
       <Word>Retryable</Word>
       <Word>Ld</Word>
+      <Word>tt</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>
