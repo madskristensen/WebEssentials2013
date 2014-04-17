@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions.Html
             {
                 // Find the type (size) of column
                 var columnSize = c.Replace("col-", string.Empty).Substring(0, 2);
-                var sumColumnsCurrentRow = GetSumOfColumns(element, columnSize); ;
+                var sumColumnsCurrentRow = GetSumOfColumns(element, columnSize); 
 
                 if (sumColumnsCurrentRow != 12)
                 {
@@ -75,7 +75,6 @@ namespace MadsKristensen.EditorExtensions.Html
             var columnFilterOffset = string.Format(CultureInfo.CurrentCulture, "{0}offset-", columnFilter);
 
             var sumOfColumns = element.Parent.Children
-                                .Where(x => x.Name == "div")
                                 .Where(x => x.HasAttribute("class"))
                                 .Where(x => x.GetAttribute("class").Value.Contains(columnFilter))
                                 .Select(x => x.GetAttribute("class").Value.Split(' '))
