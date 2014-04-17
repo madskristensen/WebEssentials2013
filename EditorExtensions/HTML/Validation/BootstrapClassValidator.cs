@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.Linq;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Validation.Validators;
 using Microsoft.Html.Validation;
@@ -29,6 +30,10 @@ namespace MadsKristensen.EditorExtensions.Html
         public override IList<IHtmlValidationError> ValidateElement(ElementNode element)
         {
             var results = new ValidationErrorCollection();
+
+            if (!WESettings.Instance.Html.EnableBootstrapValidation)
+                return results;
+
             var classNames = element.GetAttribute("class");
             List<string> childrenClassNames = null;
 

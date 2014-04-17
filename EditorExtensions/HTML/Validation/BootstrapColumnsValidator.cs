@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.Linq;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Validation.Validators;
 using Microsoft.Html.Validation;
@@ -18,12 +19,15 @@ namespace MadsKristensen.EditorExtensions.Html
 
     public class BootstrapColumnsValidator : BaseValidator
     {
-        private static string _errorRowMissing = "Bootstrap: When using \"{0}\", you must also specify the class \"row\" on the parent div element.";
+        private static string _errorRowMissing = "Bootstrap: When using \"{0}\", you must also specify the class \"row\" on a parent element.";
         private static string _errorInvalidSum = "Bootstrap: Sum of columns of type {0} must equal 12.";
 
         public override IList<IHtmlValidationError> ValidateElement(ElementNode element)
         {
             var results = new ValidationErrorCollection();
+
+            if (!WESettings.Instance.Html.EnableBootstrapValidation)
+                return results;
 
             var elementClasses = element.GetAttribute("class");
 
@@ -87,17 +91,36 @@ namespace MadsKristensen.EditorExtensions.Html
 
         private static bool IsParentDivElementMissingRowClass(ElementNode element)
         {
+            bool isRowClassPresent = false;
+
             if (element.Parent == null)
-                return true; // To review, can cause false positive on some partials view?
+                return false; // Don't want false alert so better to suppose that it's a partial view of the 'row' class on the parent view.
 
             var classNames = element.Parent.GetAttribute("class");
-            if (classNames == null)
-                return true;
+            if (classNames != null && classNames.Value.Split(' ').Any(x => x.Equals("row")))
+                isRowClassPresent = true;
 
-            if (classNames.Value.Split(' ').Any(x => x.Equals("row")))
+            if (isRowClassPresent)
+            {
                 return false;
+            }
+            else
+            {
+                if (element.Parent.Name == "html")
+                {
+                    // Now at the top and no row class on this element. Confirm, it's missing. 
+                    return true;
+                }
 
-            return true;
+                // Check if a parent element have the row class.
+                return IsParentDivElementMissingRowClass(element.Parent);
+            }
+
+            ////if (classNames.Value.Split(' ').Any(x => x.Equals("row")))
+            ////    return false;
+
+            //// No strong confirmation, be safe.
+            //return false;
         }
     }
 }
