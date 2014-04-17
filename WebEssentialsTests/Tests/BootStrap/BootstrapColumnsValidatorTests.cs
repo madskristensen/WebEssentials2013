@@ -132,6 +132,29 @@ namespace WebEssentialsTests
         }
 
         [TestMethod]
+        public void MustWorkForNonDivElementsToo()
+        {
+            BootstrapColumnsValidator validator = new BootstrapColumnsValidator();
+
+            var source = @"<div class='form-group row'>
+                              <label for='commentcontent' class='control-label col-sm-2'>Comment (no HTML allowed)</label>
+                              <div class='col-sm-10'>
+                                 <textarea id='commentcontent' class='form-control' rows='4' placeholder='Comment' required></textarea>
+                              </div>
+                           </div>";
+
+            var tree = new HtmlTree(new TextStream(source));
+
+            tree.Build();
+
+            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0].Children[0]);
+
+            int expected = 0;
+
+            Assert.AreEqual(expected, compiled.Count);
+        }
+
+        [TestMethod]
         public void WarnIfParentsElementIsMissingRowClass()
         {
             BootstrapColumnsValidator validator = new BootstrapColumnsValidator();
