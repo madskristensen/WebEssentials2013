@@ -274,7 +274,7 @@ namespace MadsKristensen.EditorExtensions.Settings
 
         [Category("Performance Warnings")]
         [DisplayName("Disallow unrecognized vendor-specifics")]
-        [Description("Warn on unrecognized vendor specific properties, psuedos, and @-directives.")]
+        [Description("Warn on unrecognized vendor specific properties, pseudos, and @-directives.")]
         [DefaultValue(true)]
         public bool ValidateVendorSpecifics { get; set; }
         #endregion
