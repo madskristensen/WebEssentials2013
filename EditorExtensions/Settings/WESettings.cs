@@ -16,6 +16,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         public GeneralSettings General { get; private set; }
         public CodeGenSettings CodeGen { get; private set; }
         public BrowserLinkSettings BrowserLink { get; private set; }
+        public SpriteSettings Sprite { get; private set; }
 
         // The names of these properties must match VS ContentTypes
         public TypeScriptSettings TypeScript { get; private set; }
@@ -29,6 +30,15 @@ namespace MadsKristensen.EditorExtensions.Settings
         public CoffeeScriptSettings CoffeeScript { get; private set; }
         public MarkdownSettings Markdown { get; private set; }
         public SweetJsSettings SweetJs { get; private set; }
+    }
+
+    public sealed class SpriteSettings : SettingsBase<SpriteSettings>
+    {
+        [Category("Paths")]
+        [DisplayName("Use full path for naming identifiers")]
+        [Description("Use full path to generate unique class or mixin name in CSS, LESS and SASS files. Consider disabling this if you want class names to be filename only.")]
+        [DefaultValue(true)]
+        public bool UseFullPathForNamingIdentifier { get; set; }
     }
 
     public sealed class GeneralSettings : SettingsBase<GeneralSettings>, IMarginSettings
@@ -75,7 +85,7 @@ namespace MadsKristensen.EditorExtensions.Settings
 
         [Category("CSS")]
         [DisplayName("Enable f12 auto-sync")]
-        [Description("Automatically synchronize changes made in the browser dev tools with CSS files in Visual Studio.  If this is turned off, you can synchronize changes explicitly in the Browser Link menu.")]
+        [Description("Automatically synchronize changes made in the browser dev tools with CSS files in Visual Studio. If this is turned off, you can synchronize changes explicitly in the Browser Link menu.")]
         [DefaultValue(true)]
         public bool EnablePixelPushing { get; set; }
 
@@ -152,13 +162,13 @@ namespace MadsKristensen.EditorExtensions.Settings
         public bool EnableEnterFormat { get; set; }
 
         [DisplayName("Minify files on save")]
-        [Description("Update any .min.html file when saving the corresponding .html file.  To create a .min.html file, right-click a .html file.")]
+        [Description("Update any .min.html file when saving the corresponding .html file. To create a .min.html file, right-click a .html file.")]
         [DefaultValue(false)]
         public bool AutoMinify { get; set; }
 
         [Category("Minification")]
         [DisplayName("Create gzipped files")]
-        [Description("Also save separate gzipped files when minifying.  This option has no effect when Minify on save is disabled.")]
+        [Description("Also save separate gzipped files when minifying. This option has no effect when Minify on save is disabled.")]
         [DefaultValue(false)]
         public bool GzipMinifiedFiles { get; set; }
 
@@ -200,13 +210,13 @@ namespace MadsKristensen.EditorExtensions.Settings
         #region Minification
         [Category("Minification")]
         [DisplayName("Minify files on save")]
-        [Description("Update any .min.js file when saving the corresponding .js file.  To create a .min.js file, right-click a .js file.")]
+        [Description("Update any .min.js file when saving the corresponding .js file. To create a .min.js file, right-click a .js file.")]
         [DefaultValue(false)]
         public bool AutoMinify { get; set; }
 
         [Category("Minification")]
         [DisplayName("Create gzipped files")]
-        [Description("Also save separate gzipped files when minifying.  This option has no effect when Minify on save is disabled.")]
+        [Description("Also save separate gzipped files when minifying. This option has no effect when Minify on save is disabled.")]
         [DefaultValue(false)]
         public bool GzipMinifiedFiles { get; set; }
 
@@ -229,7 +239,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         #region Minification
         [Category("Minification")]
         [DisplayName("Minify files on save")]
-        [Description("Update any .min.css file when saving the corresponding .css file.  To create a .min.css file, right-click a .css file.  This also applies to compiled LESS and SASS files.")]
+        [Description("Update any .min.css file when saving the corresponding .css file. To create a .min.css file, right-click a .css file. This also applies to compiled LESS and SASS files.")]
         [DefaultValue(false)]
         public bool AutoMinify { get; set; }
 
@@ -242,7 +252,7 @@ namespace MadsKristensen.EditorExtensions.Settings
 
         [Category("Bundles")]
         [DisplayName("Adjust relative paths")]
-        [Description("Adjust relative URLs when bundling CSS files to a different folder.  Consider disabling this if image files do not share the same directory structure as CSS files.")]
+        [Description("Adjust relative URLs when bundling CSS files to a different folder. Consider disabling this if image files do not share the same directory structure as CSS files.")]
         [DefaultValue(true)]
         public bool AdjustRelativePaths { get; set; }
 
@@ -293,7 +303,7 @@ namespace MadsKristensen.EditorExtensions.Settings
 
         [Category("IntelliSense")]
         [DisplayName("Show initial/inherit")]
-        [Description("Show the global property values 'initial' and 'inherit' in IntelliSense.  Disabling this will not warn if you use them.")]
+        [Description("Show the global property values 'initial' and 'inherit' in IntelliSense. Disabling this will not warn if you use them.")]
         [DefaultValue(false)]
         public bool ShowInitialInherit { get; set; }
 
@@ -332,13 +342,13 @@ namespace MadsKristensen.EditorExtensions.Settings
 
         [Category("Compilation")]
         [DisplayName("Custom output directory")]
-        [Description("Specifies a custom subfolder to save compiled files to.  By default, compiled output will be placed in the same folder and nested under the original file.")]
+        [Description("Specifies a custom subfolder to save compiled files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
         [DefaultValue(null)]
         public string OutputDirectory { get; set; }
 
         [Category("Compilation")]
         [DisplayName("Create source map files")]
-        [Description("Generate source map files when minifying.  This option has no effect when Minify is disabled.")]
+        [Description("Generate source map files when minifying. This option has no effect when Minify is disabled.")]
         [DefaultValue(true)]
         public bool GenerateSourceMaps { get; set; }
 
@@ -355,7 +365,7 @@ namespace MadsKristensen.EditorExtensions.Settings
 
         [Category("Compilation")]
         [DisplayName("Auto-compile dependent files on save")]
-        [Description("Compile all files that depend @import the current file on save.  This feature will only compile files that already have compiled output.  This option has no effect when Compile on Save is disabled.")]
+        [Description("Compile all files that depend @import the current file on save. This feature will only compile files that already have compiled output. This option has no effect when Compile on Save is disabled.")]
         [DefaultValue(true)]
         public bool EnableChainCompilation
         {
@@ -378,7 +388,7 @@ namespace MadsKristensen.EditorExtensions.Settings
     public sealed class CoffeeScriptSettings : CompilationSettings<CoffeeScriptSettings>, ILinterSettings
     {
         [DisplayName("Wrap generated JavaScript files")]
-        [Description("Wrap the generated JavaScript source in an anonymous function.  This prevents variables from leaking into the global scope.")]
+        [Description("Wrap the generated JavaScript source in an anonymous function. This prevents variables from leaking into the global scope.")]
         [Category("CoffeeScript")]
         [DefaultValue(true)]
         public bool WrapClosure { get; set; }
@@ -425,7 +435,7 @@ namespace MadsKristensen.EditorExtensions.Settings
 
         [Category("Compilation")]
         [DisplayName("Custom output directory")]
-        [Description("Specifies a custom subfolder to save compiled files to.  By default, compiled output will be placed in the same folder and nested under the original file.")]
+        [Description("Specifies a custom subfolder to save compiled files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
         [DefaultValue(null)]
         public string OutputDirectory { get; set; }
         #endregion

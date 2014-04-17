@@ -36,7 +36,10 @@ namespace MadsKristensen.EditorExtensions.Settings
             SettingsStore.Save();
         }
     }
-
+    class SpriteOptions : SettingsOptionPage<SpriteSettings>
+    {
+        public SpriteOptions() : base(s => s.Sprite) { }
+    }
     class TypeScriptOptions : SettingsOptionPage<TypeScriptSettings>
     {
         public TypeScriptOptions() : base(s => s.TypeScript) { }

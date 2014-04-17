@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MadsKristensen.EditorExtensions.Settings;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -23,13 +24,15 @@ namespace MadsKristensen.EditorExtensions.Images
 
         private static string ExportJson(IEnumerable<SpriteFragment> fragments, string imageFile)
         {
+            string root = ProjectHelpers.GetRootFolder();
+
             var map = new
             {
                 images = fragments.Select(fragment =>
                 {
                     var item = new
                     {
-                        Name = Path.GetFileName(fragment.FileName),
+                        Name = "/" + FileHelpers.RelativePath(root, fragment.FileName),
                         Width = fragment.Width,
                         Height = fragment.Height,
                         OffsetX = fragment.X,
@@ -58,20 +61,19 @@ namespace MadsKristensen.EditorExtensions.Images
 
         private async static Task<string> ExportStylesheet(IEnumerable<SpriteFragment> fragments, string imageFile, ExportFormat format)
         {
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine(GetDescription(format));
+            string outputFile = GetFileName(imageFile, format);
+            StringBuilder sb = new StringBuilder().AppendLine(GetDescription(format));
+            string root = ProjectHelpers.GetRootFolder();
 
             foreach (SpriteFragment fragment in fragments)
             {
-                sb.AppendLine(GetSelector(fragment.FileName, format) + " {");
+                sb.AppendLine(GetSelector(FileHelpers.RelativePath(root, fragment.FileName), format) + " {");
                 sb.AppendLine("/* You may have to set 'display: block' */");
                 sb.AppendLine("\twidth: " + fragment.Width + "px;");
                 sb.AppendLine("\theight: " + fragment.Height + "px;");
-                sb.AppendLine("\tbackground: url('" + Path.GetFileName(imageFile) + "') -" + fragment.X + "px -" + fragment.Y + "px;");
+                sb.AppendLine("\tbackground: url('" + FileHelpers.RelativePath(outputFile, imageFile) + "') -" + fragment.X + "px -" + fragment.Y + "px;");
                 sb.AppendLine("}");
             }
-
-            string outputFile = GetFileName(imageFile, format);
 
             ProjectHelpers.CheckOutFileFromSourceControl(outputFile);
             await FileHelpers.WriteAllTextRetry(outputFile, sb.ToString().Replace("-0px", "0"));
@@ -91,12 +93,22 @@ namespace MadsKristensen.EditorExtensions.Images
 
         private static string GetSelector(string fileName, ExportFormat format)
         {
-            if (format == ExportFormat.Less)
-                return ".sprite-" + Path.GetFileNameWithoutExtension(fileName) + "()";
-            else if (format == ExportFormat.Scss)
-                return "@mixin sprite-" + Path.GetFileNameWithoutExtension(fileName) + "()";
+            string className = FileHelpers.GetFileNameWithoutExtension(fileName);
 
-            return "." + Path.GetFileNameWithoutExtension(fileName);
+            if (WESettings.Instance.Sprite.UseFullPathForNamingIdentifier)
+            {
+                string withoutExtensionWithDirectoryName = Path.Combine(Path.GetDirectoryName(fileName), className);
+                className = string.Join("-", withoutExtensionWithDirectoryName.Split(
+                                             new[] { Path.DirectorySeparatorChar,
+                                                     Path.AltDirectorySeparatorChar }));
+            }
+
+            if (format == ExportFormat.Less)
+                return ".sprite-" + className + "()";
+            else if (format == ExportFormat.Scss)
+                return "@mixin sprite-" + className + "()";
+
+            return "." + className;
         }
 
         private static string GetFileName(string imageFileName, ExportFormat format)

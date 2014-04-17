@@ -322,13 +322,11 @@ namespace MadsKristensen.EditorExtensions.Helpers
         private static void RenameNestedItems(ProjectItem projectItem, string fileName)
         {
             var path = Path.GetDirectoryName(fileName);
-            var fileNameWithoutPath = Path.GetFileName(fileName);
-            var trueNameWithoutExtension = Path.GetFileNameWithoutExtension(fileNameWithoutPath).Substring(0, fileNameWithoutPath.IndexOf('.'));
 
             foreach (var item in projectItem.ProjectItems.Cast<ProjectItem>())
             {
                 var trueExtension = string.Join("", item.Name.SkipWhile(x => x != '.'));
-                var newFileName = string.Format(CultureInfo.CurrentCulture, "{0}{1}", trueNameWithoutExtension, trueExtension);
+                var newFileName = string.Format(CultureInfo.CurrentCulture, "{0}{1}", FileHelpers.GetFileNameWithoutExtension(fileName), trueExtension);
 
                 if (File.Exists(Path.Combine(path, newFileName)))
                     continue;
