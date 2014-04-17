@@ -39,6 +39,30 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Use full path to generate unique class or mixin name in CSS, LESS and SASS files. Consider disabling this if you want class names to be filename only.")]
         [DefaultValue(true)]
         public bool UseFullPathForNamingIdentifier { get; set; }
+
+        [Category("Paths")]
+        [DisplayName("Use absolute URL path in generated CSS-like files")]
+        [Description("Use absolute path in the generated CSS-like files. By default, the URLs are relative to sprite image file (and the location of CSS, LESS and SCSS).")]
+        [DefaultValue(false)]
+        public bool UseAbsoluteUrl { get; set; }
+
+        [Category("Paths")]
+        [DisplayName("Custom CSS output directory")]
+        [Description("Specifies a custom subfolder to save CSS files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
+        [DefaultValue(null)]
+        public string CssOutputDirectory { get; set; }
+
+        [Category("Paths")]
+        [DisplayName("Custom LESS output directory")]
+        [Description("Specifies a custom subfolder to save LESS files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
+        [DefaultValue(null)]
+        public string LessOutputDirectory { get; set; }
+
+        [Category("Paths")]
+        [DisplayName("Custom SCSS output directory")]
+        [Description("Specifies a custom subfolder to save SCSS files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
+        [DefaultValue(null)]
+        public string ScssOutputDirectory { get; set; }
     }
 
     public sealed class GeneralSettings : SettingsBase<GeneralSettings>, IMarginSettings
