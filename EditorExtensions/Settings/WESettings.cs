@@ -167,8 +167,8 @@ namespace MadsKristensen.EditorExtensions.Settings
         [DefaultValue(true)]
         public bool EnableAngularValidation { get; set; }
 
-        [DisplayName("Enable Bootstrap.js validation")]
-        [Description("Validate HTML files against Bootstrap.js best practices.")]
+        [DisplayName("Enable Bootstrap validation")]
+        [Description("Validate HTML files against Bootstrap best practices.")]
         [DefaultValue(true)]
         public bool EnableBootstrapValidation { get; set; }
 
