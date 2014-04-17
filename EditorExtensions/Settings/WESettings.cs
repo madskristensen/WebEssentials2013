@@ -242,7 +242,7 @@ namespace MadsKristensen.EditorExtensions.Settings
 
         [Category("Bundles")]
         [DisplayName("Adjust relative paths")]
-        [Description("Adjust relative URLs when bundling CSS files to a different folder.  Consider disabling this if image files do not share the same directory structure as CS files.")]
+        [Description("Adjust relative URLs when bundling CSS files to a different folder.  Consider disabling this if image files do not share the same directory structure as CSS files.")]
         [DefaultValue(true)]
         public bool AdjustRelativePaths { get; set; }
 
