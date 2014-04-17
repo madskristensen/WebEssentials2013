@@ -56,6 +56,57 @@ namespace WebEssentialsTests
         }
 
         [TestMethod]
+        public void CorrectColumnsUsageWithRowClassOnTheParentParent()
+        {
+            BootstrapColumnsValidator validator = new BootstrapColumnsValidator();
+
+            var source = @"<div class='row'>
+                             <div>
+                               <div class='col-md-8'>               
+                                 <b>Title 1</b>
+                               </div>
+                               <div class='col-md-4'>               
+                                 <b>Title 2</b>
+                               </div>
+                             </div>
+                           </div>";
+
+            var tree = new HtmlTree(new TextStream(source));
+
+            tree.Build();
+
+            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0].Children[0].Children[0]);
+
+            int expected = 0;
+
+            Assert.AreEqual(expected, compiled.Count);
+        }
+
+        [TestMethod]
+        public void NoWarningIfNoParentForColumns()
+        {
+            BootstrapColumnsValidator validator = new BootstrapColumnsValidator();
+
+            var source = @"<div class='col-md-8'>               
+                                <b>Title 1</b>
+                            </div>
+                             <div class='col-md-4'>               
+                                <b>Title 2</b>
+                            </div>";
+
+            var tree = new HtmlTree(new TextStream(source));
+
+            tree.Build();
+
+            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0]);
+
+            int expected = 0;
+
+            Assert.AreEqual(expected, compiled.Count);
+        }
+
+
+        [TestMethod]
         public void ComplexCorrectColumnsUsage()
         {
             BootstrapColumnsValidator validator = new BootstrapColumnsValidator();
@@ -85,20 +136,24 @@ namespace WebEssentialsTests
         {
             BootstrapColumnsValidator validator = new BootstrapColumnsValidator();
 
-            var source = @"<div class='someClass'>
+            var source = @"<html>
+                            <body>
+                            <div class='someClass'>
                              <div class='col-md-8'>               
                                 <b>Title 1</b>
                             </div>
                              <div class='col-md-4'>               
                                 <b>Title 2</b>
                             </div>
-                        </div>";
+                        </div>
+                        </body>
+                        </html>";
 
             var tree = new HtmlTree(new TextStream(source));
 
             tree.Build();
 
-            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0].Children[0]);
+            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.GetElement(4)); 
 
             int expected = 1;
 
