@@ -132,7 +132,7 @@ namespace WebEssentialsTests
         }
 
         [TestMethod]
-        public void WarnIfParentDivRowClassColumnIsMissing()
+        public void WarnIfParentsElementIsMissingRowClass()
         {
             BootstrapColumnsValidator validator = new BootstrapColumnsValidator();
 
@@ -153,7 +153,7 @@ namespace WebEssentialsTests
 
             tree.Build();
 
-            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.GetElement(4)); 
+            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0].Children[0].Children[0].Children[0]);
 
             int expected = 1;
 
