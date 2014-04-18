@@ -105,15 +105,15 @@ namespace MadsKristensen.EditorExtensions.Html
 
         private void FormatTag(ElementNode element)
         {
-            var schemas = GetSchemas();
-
-            element = GetFirstBlockParent(element, schemas);
-
-            ITextBuffer buffer = HtmlEditorDocument.FromTextView(TextView).TextBuffer;
-            SnapshotSpan span = new SnapshotSpan(buffer.CurrentSnapshot, element.Start, element.Length);
-
             try
             {
+                var schemas = GetSchemas();
+
+                element = GetFirstBlockParent(element, schemas);
+
+                ITextBuffer buffer = HtmlEditorDocument.FromTextView(TextView).TextBuffer;
+                SnapshotSpan span = new SnapshotSpan(buffer.CurrentSnapshot, element.Start, element.Length);
+
                 _formatter.FormatRange(TextView, buffer, span, true);
             }
             catch
