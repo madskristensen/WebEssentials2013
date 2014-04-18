@@ -111,7 +111,7 @@ namespace MadsKristensen.EditorExtensions.Images
             ProjectHelpers.AddFileToActiveProject(sprite.FileName);
             ProjectHelpers.AddFileToProject(sprite.FileName, imageFile);
 
-            await Export(fragments, imageFile);
+            await Export(fragments, imageFile, sprite);
 
             if (sprite.Optimize)
                 await new ImageCompressor().CompressFilesAsync(imageFile);
@@ -119,11 +119,11 @@ namespace MadsKristensen.EditorExtensions.Images
             _dte.StatusBar.Text = "Sprite generated";
         }
 
-        private async static Task Export(IEnumerable<SpriteFragment> fragments, string imageFile)
+        private async static Task Export(IEnumerable<SpriteFragment> fragments, string imageFile, SpriteDocument sprite)
         {
             foreach (ExportFormat format in (ExportFormat[])Enum.GetValues(typeof(ExportFormat)))
             {
-                string exportFile = await SpriteExporter.Export(fragments, imageFile, format);
+                string exportFile = await SpriteExporter.Export(fragments, sprite, imageFile, format);
                 ProjectHelpers.AddFileToProject(imageFile, exportFile);
             }
         }

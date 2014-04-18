@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MadsKristensen.EditorExtensions.Settings;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -12,17 +11,17 @@ namespace MadsKristensen.EditorExtensions.Images
 {
     internal class SpriteExporter
     {
-        public async static Task<string> Export(IEnumerable<SpriteFragment> fragments, string imageFile, ExportFormat format)
+        public async static Task<string> Export(IEnumerable<SpriteFragment> fragments, SpriteDocument sprite, string imageFile, ExportFormat format)
         {
             if (format == ExportFormat.Json)
             {
-                return ExportJson(fragments, imageFile);
+                return ExportJson(fragments, sprite, imageFile);
             }
 
-            return await ExportStylesheet(fragments, imageFile, format);
+            return await ExportStylesheet(fragments, sprite, imageFile, format);
         }
 
-        private static string ExportJson(IEnumerable<SpriteFragment> fragments, string imageFile)
+        private static string ExportJson(IEnumerable<SpriteFragment> fragments, SpriteDocument sprite, string imageFile)
         {
             string root = ProjectHelpers.GetRootFolder();
 
@@ -43,7 +42,7 @@ namespace MadsKristensen.EditorExtensions.Images
                 })
             };
 
-            string outputFile = GetFileName(imageFile, ExportFormat.Json);
+            string outputFile = GetFileName(imageFile, sprite, ExportFormat.Json);
             ProjectHelpers.CheckOutFileFromSourceControl(outputFile);
 
             using (StreamWriter sw = new StreamWriter(outputFile))
@@ -59,9 +58,9 @@ namespace MadsKristensen.EditorExtensions.Images
             return outputFile;
         }
 
-        private async static Task<string> ExportStylesheet(IEnumerable<SpriteFragment> fragments, string imageFile, ExportFormat format)
+        private async static Task<string> ExportStylesheet(IEnumerable<SpriteFragment> fragments, SpriteDocument sprite, string imageFile, ExportFormat format)
         {
-            string outputFile = GetFileName(imageFile, format);
+            string outputFile = GetFileName(imageFile, sprite, format);
             var outputDirectory = Path.GetDirectoryName(outputFile);
             StringBuilder sb = new StringBuilder().AppendLine(GetDescription(format));
             string root = ProjectHelpers.GetRootFolder();
@@ -70,9 +69,9 @@ namespace MadsKristensen.EditorExtensions.Images
             {
                 var rootAbsoluteUrl = FileHelpers.RelativePath(root, fragment.FileName);
 
-                var bgUrl = WESettings.Instance.Sprite.UseAbsoluteUrl ? "/" + FileHelpers.RelativePath(root, imageFile) : FileHelpers.RelativePath(outputFile, imageFile);
+                var bgUrl = sprite.UseAbsoluteUrl ? "/" + FileHelpers.RelativePath(root, imageFile) : FileHelpers.RelativePath(outputFile, imageFile);
 
-                sb.AppendLine(GetSelector(rootAbsoluteUrl, format) + " {");
+                sb.AppendLine(GetSelector(rootAbsoluteUrl, sprite, format) + " {");
                 sb.AppendLine("/* You may have to set 'display: block' */");
                 sb.AppendLine("\twidth: " + fragment.Width + "px;");
                 sb.AppendLine("\theight: " + fragment.Height + "px;");
@@ -100,11 +99,11 @@ namespace MadsKristensen.EditorExtensions.Images
             return "/*" + Environment.NewLine + text + Environment.NewLine + "*/";
         }
 
-        private static string GetSelector(string fileName, ExportFormat format)
+        private static string GetSelector(string fileName, SpriteDocument sprite, ExportFormat format)
         {
             string className = FileHelpers.GetFileNameWithoutExtension(fileName);
 
-            if (WESettings.Instance.Sprite.UseFullPathForNamingIdentifier)
+            if (sprite.UseFullPathForNamingIdentifier)
             {
                 string withoutExtensionWithDirectoryName = Path.Combine(Path.GetDirectoryName(fileName), className);
                 className = string.Join("-", withoutExtensionWithDirectoryName.Split(
@@ -120,21 +119,21 @@ namespace MadsKristensen.EditorExtensions.Images
             return "." + className;
         }
 
-        private static string GetFileName(string imageFileName, ExportFormat format)
+        private static string GetFileName(string imageFileName, SpriteDocument sprite, ExportFormat format)
         {
             switch (format)
             {
                 case ExportFormat.Css:
-                    if (WESettings.Instance.Sprite.CssOutputDirectory != null)
-                        return imageFileName = GetAbsolutePathFromSettings(WESettings.Instance.Sprite.CssOutputDirectory, imageFileName, ".css");
+                    if (sprite.CssOutputDirectory != null)
+                        return imageFileName = GetAbsolutePathFromSettings(sprite.CssOutputDirectory, imageFileName, ".css");
                     return imageFileName + ".css";
                 case ExportFormat.Less:
-                    if (WESettings.Instance.Sprite.CssOutputDirectory != null)
-                        return imageFileName = GetAbsolutePathFromSettings(WESettings.Instance.Sprite.LessOutputDirectory, imageFileName, ".less");
+                    if (sprite.CssOutputDirectory != null)
+                        return imageFileName = GetAbsolutePathFromSettings(sprite.LessOutputDirectory, imageFileName, ".less");
                     return imageFileName + ".less";
                 case ExportFormat.Scss:
-                    if (WESettings.Instance.Sprite.CssOutputDirectory != null)
-                        return imageFileName = GetAbsolutePathFromSettings(WESettings.Instance.Sprite.ScssOutputDirectory, imageFileName, ".scss");
+                    if (sprite.CssOutputDirectory != null)
+                        return imageFileName = GetAbsolutePathFromSettings(sprite.ScssOutputDirectory, imageFileName, ".scss");
                     return imageFileName + ".scss";
                 case ExportFormat.Json:
                     return imageFileName + ".map";
