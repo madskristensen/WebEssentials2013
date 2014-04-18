@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions.Images
         public bool Optimize { get; set; }
         public bool IsVertical { get; set; }
         public string FileExtension { get; set; }
-        public bool UseFullPathForNamingIdentifier { get; set; }
+        public bool UseFullPathForIdentifierName { get; set; }
         public bool UseAbsoluteUrl { get; set; }
         public string CssOutputDirectory { get; set; }
         public string LessOutputDirectory { get; set; }
@@ -28,7 +28,7 @@ namespace MadsKristensen.EditorExtensions.Images
             Optimize = true;
             IsVertical = true;
             FileExtension = Path.GetExtension(imageFiles.First()).TrimStart('.');
-            UseFullPathForNamingIdentifier = WESettings.Instance.Sprite.UseFullPathForNamingIdentifier;
+            UseFullPathForIdentifierName = WESettings.Instance.Sprite.UseFullPathForIdentifierName;
             UseAbsoluteUrl = WESettings.Instance.Sprite.UseAbsoluteUrl;
             CssOutputDirectory = WESettings.Instance.Sprite.CssOutputDirectory;
             LessOutputDirectory = WESettings.Instance.Sprite.LessOutputDirectory;
@@ -37,7 +37,7 @@ namespace MadsKristensen.EditorExtensions.Images
 
         public void Save()
         {
-            XmlWriterSettings settings = new XmlWriterSettings() { WriteEndDocumentOnClose = false, Indent = true };
+            XmlWriterSettings settings = new XmlWriterSettings() { Indent = true };
 
             using (XmlWriter writer = XmlWriter.Create(FileName, settings))
             {
@@ -51,11 +51,16 @@ namespace MadsKristensen.EditorExtensions.Images
                 writer.WriteElementString("optimize", Optimize ? "true" : "false");
                 writer.WriteElementString("orientation", IsVertical ? "vertical" : "horizontal");
                 writer.WriteElementString("outputType", FileExtension.ToString().ToLowerInvariant());
-                writer.WriteElementString("UseFullPathForNamingIdentifier", UseFullPathForNamingIdentifier ? "true" : "false");
-                writer.WriteElementString("UseAbsoluteUrl", UseAbsoluteUrl ? "true" : "false");
-                writer.WriteElementString("CssOutputDirectory", CssOutputDirectory);
-                writer.WriteElementString("LessOutputDirectory", LessOutputDirectory);
-                writer.WriteElementString("ScssOutputDirectory", ScssOutputDirectory);
+                writer.WriteComment("Use full path to generate unique class or mixin name in CSS, LESS and SASS files. Consider disabling this if you want class names to be filename only.");
+                writer.WriteElementString("fullPathForIdentifierName", UseFullPathForIdentifierName ? "true" : "false");
+                writer.WriteComment("Use absolute path in the generated CSS-like files. By default, the URLs are relative to sprite image file (and the location of CSS, LESS and SCSS).");
+                writer.WriteElementString("useAbsoluteUrl", UseAbsoluteUrl ? "true" : "false");
+                writer.WriteComment("Specifies a custom subfolder to save CSS files to. By default, compiled output will be placed in the same folder and nested under the original file.");
+                writer.WriteElementString("outputDirectoryForCss", CssOutputDirectory);
+                writer.WriteComment("Specifies a custom subfolder to save LESS files to. By default, compiled output will be placed in the same folder and nested under the original file.");
+                writer.WriteElementString("outputDirectoryForLess", LessOutputDirectory);
+                writer.WriteComment("Specifies a custom subfolder to save SCSS files to. By default, compiled output will be placed in the same folder and nested under the original file.");
+                writer.WriteElementString("outputDirectoryForScss", ScssOutputDirectory);
                 writer.WriteEndElement(); // </settings>
 
                 // Files
@@ -102,27 +107,27 @@ namespace MadsKristensen.EditorExtensions.Images
             if (element != null)
                 sprite.FileExtension = element.Value;
 
-            element = doc.Descendants("UseFullPathForNamingIdentifier").FirstOrDefault();
+            element = doc.Descendants("fullPathForIdentifierName").FirstOrDefault();
 
             if (element != null)
-                sprite.UseFullPathForNamingIdentifier = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+                sprite.UseFullPathForIdentifierName = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
 
-            element = doc.Descendants("UseAbsoluteUrl").FirstOrDefault();
+            element = doc.Descendants("useAbsoluteUrl").FirstOrDefault();
 
             if (element != null)
                 sprite.UseAbsoluteUrl = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
 
-            element = doc.Descendants("CssOutputDirectory").FirstOrDefault();
+            element = doc.Descendants("outputDirectoryForCss").FirstOrDefault();
 
             if (element != null)
                 sprite.CssOutputDirectory = element.Value;
 
-            element = doc.Descendants("LessOutputDirectory").FirstOrDefault();
+            element = doc.Descendants("outputDirectoryForLess").FirstOrDefault();
 
             if (element != null)
                 sprite.LessOutputDirectory = element.Value;
 
-            element = doc.Descendants("ScssOutputDirectory").FirstOrDefault();
+            element = doc.Descendants("outputDirectoryForScss").FirstOrDefault();
 
             if (element != null)
                 sprite.ScssOutputDirectory = element.Value;

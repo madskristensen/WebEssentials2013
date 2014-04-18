@@ -38,7 +38,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         [DisplayName("Use full path for naming identifiers")]
         [Description("Use full path to generate unique class or mixin name in CSS, LESS and SASS files. Consider disabling this if you want class names to be filename only.")]
         [DefaultValue(true)]
-        public bool UseFullPathForNamingIdentifier { get; set; }
+        public bool UseFullPathForIdentifierName { get; set; }
 
         [Category("Paths")]
         [DisplayName("Use absolute URL path in generated CSS-like files")]

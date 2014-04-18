@@ -103,7 +103,7 @@ namespace MadsKristensen.EditorExtensions.Images
         {
             string className = FileHelpers.GetFileNameWithoutExtension(fileName);
 
-            if (sprite.UseFullPathForNamingIdentifier)
+            if (sprite.UseFullPathForIdentifierName)
             {
                 string withoutExtensionWithDirectoryName = Path.Combine(Path.GetDirectoryName(fileName), className);
                 className = string.Join("-", withoutExtensionWithDirectoryName.Split(

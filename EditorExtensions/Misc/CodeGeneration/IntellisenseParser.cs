@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Threading;
 using System.Xml.Linq;
 using EnvDTE;
 using EnvDTE80;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
@@ -19,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
     [ContentType("CSharp")]
     [ContentType("VisualBasic")]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    public class IntellisenseParser
+    public static class IntellisenseParser
     {
         private const string DefaultModuleName = "server";
         private const string ModuleNameAttributeName = "TypeScriptModule";
@@ -29,28 +25,6 @@ namespace MadsKristensen.EditorExtensions
         {
             public const string JavaScript = ".js";
             public const string TypeScript = ".d.ts";
-        }
-
-        private async static Task AddScript(string filePath, string extension, IEnumerable<IntellisenseObject> list)
-        {
-            string resultPath = filePath + extension;
-
-            if (!File.Exists(resultPath))
-                return;
-
-            await IntellisenseWriter.Write(list, resultPath);
-
-            var item = ProjectHelpers.AddFileToProject(filePath, resultPath);
-
-            if (item == null)
-                return;
-
-            if (extension.Equals(Ext.TypeScript, StringComparison.OrdinalIgnoreCase))
-                item.Properties.Item("ItemType").Value = "TypeScriptCompile";
-            else
-            {
-                item.Properties.Item("ItemType").Value = "None";
-            }
         }
 
         internal static List<IntellisenseObject> ProcessFile(ProjectItem item)
