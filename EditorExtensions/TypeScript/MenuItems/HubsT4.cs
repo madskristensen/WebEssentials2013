@@ -62,7 +62,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
             try
             {
                 string parentPath = selectedFiles.FirstOrDefault(o => o.ToLower(CultureInfo.CurrentCulture).Contains(scriptTypingsFolder));
-                parentPath = parentPath.Remove(parentPath.ToLower(CultureInfo.CurrentCulture).IndexOf(scriptTypingsFolder,StringComparison.OrdinalIgnoreCase) + scriptTypingsFolder.Length);
+                parentPath = parentPath.Remove(parentPath.ToLower(CultureInfo.CurrentCulture).IndexOf(scriptTypingsFolder, StringComparison.OrdinalIgnoreCase) + scriptTypingsFolder.Length);
                 string fullPath = Path.Combine(parentPath, hubsT4FileName);
 
                 if (File.Exists(fullPath))

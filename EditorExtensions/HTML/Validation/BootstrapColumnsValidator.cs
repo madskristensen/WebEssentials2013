@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions.Html
             {
                 // Find the type (size) of column
                 var columnSize = c.Replace("col-", string.Empty).Substring(0, 2);
-                var sumColumnsCurrentRow = GetSumOfColumns(element, columnSize); 
+                var sumColumnsCurrentRow = GetSumOfColumns(element, columnSize);
 
                 if (sumColumnsCurrentRow != 12)
                 {
