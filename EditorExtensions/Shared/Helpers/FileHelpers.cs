@@ -353,5 +353,20 @@ namespace MadsKristensen.EditorExtensions
             await Task.Run(() => File.WriteAllBytes(fileName, value))
                  .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5));
         }
+
+        /// <summary>
+        ///    Returns the file name of the specified path string without the extension.
+        /// </summary>
+        /// <param name="path">The path of the file.</param>
+        /// <returns>
+        ///    The string returned by System.IO.Path.GetFileName(System.String), minus the
+        //     first period (.) and all characters following it.
+        /// </returns>
+        public static string GetFileNameWithoutExtension(string path)
+        {
+            var fileNameWithoutPath = Path.GetFileName(path);
+
+            return Path.GetFileNameWithoutExtension(fileNameWithoutPath).Substring(0, fileNameWithoutPath.IndexOf('.'));
+        }
     }
 }
