@@ -88,11 +88,18 @@ namespace MadsKristensen.EditorExtensions.Markdown
 
         Guid FindGuid()
         {
-            using (var settings = VSRegistry.RegistryRoot(__VsLocalRegistryType.RegType_Configuration))
-            using (var languages = settings.OpenSubKey("Languages"))
-            using (var intellisenseProviders = languages.OpenSubKey("IntellisenseProviders"))
-            using (var provider = intellisenseProviders.OpenSubKey(ProviderName))
-                return new Guid(provider.GetValue("GUID").ToString());
+            try
+            {
+                using (var settings = VSRegistry.RegistryRoot(__VsLocalRegistryType.RegType_Configuration))
+                using (var languages = settings.OpenSubKey("Languages"))
+                using (var intellisenseProviders = languages.OpenSubKey("IntellisenseProviders"))
+                using (var provider = intellisenseProviders.OpenSubKey(ProviderName))
+                    return new Guid(provider.GetValue("GUID").ToString());
+            }
+            catch
+            {
+                return Guid.Empty;
+            }
         }
 
         public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer)
@@ -108,7 +115,9 @@ namespace MadsKristensen.EditorExtensions.Markdown
                 if (doc.PrimaryView == null) return;
 
                 WebEditor.OnIdle -= h;
-                ContainedLanguageAdapter.ForBuffer(editorBuffer).AddIntellisenseProjectLanguage(projectionBuffer, FindGuid());
+                Guid guid = FindGuid();
+                if (guid != Guid.Empty)
+                    ContainedLanguageAdapter.ForBuffer(editorBuffer).AddIntellisenseProjectLanguage(projectionBuffer, guid);
             };
             WebEditor.OnIdle += h;
         }
