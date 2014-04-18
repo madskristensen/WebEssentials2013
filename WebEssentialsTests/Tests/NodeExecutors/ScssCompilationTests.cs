@@ -35,7 +35,7 @@ namespace WebEssentialsTests
                                    .Replace("\r", "");
                 var compiled = await new ScssCompiler().CompileToStringAsync(sourceFile);
 
-                compiled.Should().Be(expected);
+                compiled.Trim().Should().Be(expected.Trim());
             }
         }
     }
