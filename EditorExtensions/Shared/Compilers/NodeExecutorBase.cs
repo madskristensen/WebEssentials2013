@@ -113,8 +113,10 @@ namespace MadsKristensen.EditorExtensions
 
             if (!success)
             {
-                Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName)
-                         + " compilation failed: " + compilerResult.Errors.Select(e => e.Message).FirstOrDefault());
+                var firstError = compilerResult.Errors.Where(e => e != null).Select(e => e.Message);
+
+                if (firstError != null)
+                    Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compilation failed: " + firstError);
             }
 
             return compilerResult;

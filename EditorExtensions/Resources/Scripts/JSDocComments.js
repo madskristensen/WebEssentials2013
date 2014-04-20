@@ -1,27 +1,49 @@
 ﻿(function () {
-
     intellisense.addEventListener("statementcompletionhint", function (event) {
         var itemValue = event.completionItem.value;
-        if (typeof itemValue === "function")
-            if (!canApplyComments(event.symbolHelp.functionHelp)) return;
+
+        if (typeof itemValue === "function" && !canApplyComments(event.symbolHelp.functionHelp)) {
+            return;
+        }
+
         //non functions will only have one documentation type, therefore, no need to check symbolHelp fileds
         var comments = event.completionItem.comments;
-        if (!isJSDocComment(comments)) return;
+
+        if (!isJSDocComment(comments)) {
+            return;
+        }
+
         parseComment(comments, event);
     });
 
     function canApplyComments(functionHelp) {
         var signatures = functionHelp.signatures;
         var signature = signatures[0];
-        if (signatures.length > 1) return false;
-        if (signature.description && signature.description.charAt(0) != "*") return false;
-        if (!signature.params.every(function (param) { return !param.description; })) return false;
+
+        if (signatures.length > 1) {
+            return false;
+        }
+
+        if (signature.description && signature.description.charAt(0) != "*") {
+            return false;
+        }
+
+        if (!signature.params.every(function (param) { return !param.description; })) {
+            return false;
+        }
+
         return true;
     }
 
     intellisense.addEventListener("signaturehelp", function (event) {
-        if (!canApplyComments(event.functionHelp)) return;
-        if (!isJSDocComment(event.functionComments.above)) return
+        if (!canApplyComments(event.functionHelp)) {
+            return;
+        }
+
+        if (!isJSDocComment(event.functionComments.above)) {
+            return;
+        }
+
         parseComment(event.functionComments.above, event);
     });
 
@@ -31,10 +53,16 @@
             var item = event.items[i];
             var isHidden = false;
             var comments = item.comments;
-            if (isJSDocComment(comments))
+
+            if (isJSDocComment(comments)) {
                 isHidden = parseCommentForCompletionItem(comments, item);
-            if (isHidden) event.items.splice(i, 1);
-            else i++;
+            }
+
+            if (isHidden) {
+                event.items.splice(i, 1);
+            } else {
+                i++;
+            }
         }
     });
 
@@ -48,14 +76,18 @@
         ///<returns type="boolean">Returns true if the cpmpletionItem should be hidden from the 
         ///     completionItem list</returns>
         var obj = {};
-        var tag = null;
-        while (tag = tagPattern.exec(comment)) obj["_" + tag[1]] = true;
+
+        tagPattern.exec(comment).map(function (tag) {
+            obj["_" + tag[1]] = true;
+        });
+
         completionItem.glyph = (obj._class && "vs:GlyphGroupClass") ||
             (obj._constructor && "vs:GlyphGroupClass") ||
             (obj._namespace && "vs:GlyphGroupNamespace") ||
             (obj._event && "vs:GlyphGroupEvent") ||
             (obj._enum && "vs:GlyphGroupEnum") ||
             (obj._interface && "vs:GlyphGroupInterface");
+
         return obj._private || obj._ignore;
     }
 
@@ -74,7 +106,7 @@
             var description = commentStringArr[i];
             var desArr = description.split(" ");
             this["_" + desArr[0].substr(1)] = true;
-            tagName = desArr[0];
+            var tagName = desArr[0];
             switch (tagName) {
                 case "@description":
                     desArr.splice(0, 1);
@@ -85,22 +117,29 @@
                     break;
                 case "@returns":
                     this.returnType = typePattern.exec(desArr[1])[1];
-                    if (this.returnType == "void") this.returnType = "";
+
+                    if (this.returnType == "void") {
+                        this.returnType = "";
+                    }
+
                     break;
                 case "@param":
                     var param = {};
                     var name = namePattern.exec(desArr[2]);
                     param.name = name[1];
                     param.type = typePattern.exec(desArr[1])[1].replace("...", "");
+
                     if (param.type.charAt(param.type.length - 1) == "=") {
                         param.isOptional = true;
                         param.type = param.type.substr(0, param.type.length - 1);
                     }
+
                     if (param.type.toLowerCase().indexOf("function") >= 0) {
                         var type = param.type;
                         param.type = "function";
                         param.functionParas = type.slice(type.indexOf("(") + 1, type.indexOf(")")).split(",");
                     }
+
                     param.isOptional = param.isOptional || name[0].charAt(0) == "[";
                     desArr.splice(0, 3);
                     param.description = desArr.join(" ");
@@ -108,7 +147,7 @@
                     break;
             }
         }
-    };
+    }
 
     var splitAtRegExp = /[ *]*[\r\n][ *]*/;
 
@@ -119,7 +158,7 @@
         commentString = commentString.replace(/[ ]+/g, " ");
         //split at each new line [strip leading "*"s and spaces]
         var arr = commentString.split(splitAtRegExp);
-        index = 0;
+        var index = 0;
         while (index < arr.length) {
             if (arr[index].length == 0) {
                 arr.splice(index, 1);
@@ -148,13 +187,18 @@
         //if the completion item is a function, then do
         var sig = event.functionHelp.signatures[0] || event.symbolHelp.functionHelp.signatures[0];
         var symHlp = event.symbolHelp;
-        if (symHlp) symHlp.description = ((doc._deprecated && "[deprecated]") || "") + (doc.description || "");
+
+        if (symHlp) {
+            symHlp.description = ((doc._deprecated && "[deprecated]") || "") + (doc.description || "");
+        }
+
         sig.description = ((doc._deprecated && "[deprecated]") || "") + (doc.description || "");
 
         if (symHlp) {
             symHlp.type = doc.type;
             symHlp.symbolDisplayType = doc.type;
         }
+
         sig.returnValue = new ReturnValue();
         sig.returnValue.type = doc.returnType;
         sig.returnValue.elementType = doc.returnType;

@@ -41,7 +41,7 @@ Guidelines for bug reports:
 2. **Check if the issue has been fixed** &mdash; try to reproduce it using the
    latest `master` or development branch in the repository.
 
-3. **Isolate the problem** &mdash; ideally create a 
+3. **Isolate the problem** &mdash; ideally create an 
    [SSCCE](http://www.sscce.org/) and a live example.
    Uploading the project on cloud storage (OneDrive, DropBox, et el.)
    or creating a sample GitHub repository is also helpful.
@@ -153,7 +153,7 @@ included in the project:
 - Always use proper indentation.
 - In Visual Studio under `Tools > Options > Text Editor > C# > Advanced`, make sure `Place 'System' directives first when sorting usings` option is enabled (checked).
 - Before commiting, organize usings for each updated C# source file. Either you can right-click editor and select `Organize Usings > Remove and sort` OR use extension like [BatchFormat](http://visualstudiogallery.msdn.microsoft.com/a7f75c34-82b4-4357-9c66-c18e32b9393e).
-- Before commiting, run Code Analysis in `Debug` mode and follow the guidlines to fix CA issues.
+- Before commiting, run Code Analysis in `Debug` configuration and follow the guidlines to fix CA issues.
   Code Analysis commits can be made separately.
 
 ## License

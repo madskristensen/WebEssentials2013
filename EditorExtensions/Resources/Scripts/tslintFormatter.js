@@ -8,10 +8,10 @@ PathFormatter.prototype.format = function (failures) {
         var lineAndCharacter = result.getStartPosition().getLineAndCharacter();
 
         return {
-            Line: lineAndCharacter.line() + 1
-          , Column: lineAndCharacter.character() + 1
-          , Message: "TsLint: " + result.getFailure()
-          , FileName: result.getFileName()
+            Line: lineAndCharacter.line() + 1,
+            Column: lineAndCharacter.character() + 1,
+            Message: "TsLint: " + result.getFailure(),
+            FileName: result.getFileName()
         };
     }).sort(function (a, b) {
         return a.Line < b.Line ? -1 : (a.Line > b.Line ? 1 : 0);
