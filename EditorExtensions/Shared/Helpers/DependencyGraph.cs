@@ -390,11 +390,19 @@ namespace MadsKristensen.EditorExtensions.Helpers
             return new CssItemAggregator<string> { (ImportDirective id) => GetImportPaths(sourceUri, id) }
                             .Crawl(parserFactory.CreateParser().Parse(cachedFileContent, false));
         }
+
         private static IEnumerable<string> GetImportPaths(Uri sourceUri, ImportDirective importDirective)
         {
-            return CssDocumentHelpers.GetSourceUrisFromImport(sourceUri, importDirective)
-                                     .Where(t => t.Item1.IsFile && !t.Item1.OriginalString.StartsWith("//", StringComparison.Ordinal))    // Skip protocol-relative paths
-                                     .Select(t => t.Item1.LocalPath);
+            try
+            {
+                return CssDocumentHelpers.GetSourceUrisFromImport(sourceUri, importDirective)
+                                         .Where(t => t.Item1.IsFile && !t.Item1.OriginalString.StartsWith("//", StringComparison.Ordinal))    // Skip protocol-relative paths
+                                         .Select(t => t.Item1.LocalPath);
+            }
+            catch (ArgumentException)
+            {
+                return Enumerable.Empty<string>();
+            }
         }
     }
 
