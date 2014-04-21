@@ -20,8 +20,8 @@ namespace MadsKristensen.EditorExtensions.Css
 
         public IEnumerable<ISmartTagAction> GetSmartTagActions(ParseItem item, int position, ITrackingSpan itemTrackingSpan, ITextView view)
         {
-            UrlItem url = (UrlItem)item;
-            if (!url.IsValid || url.UrlString == null)
+            UrlItem url = item as UrlItem;
+            if (url == null || !url.IsValid || url.UrlString == null)
                 yield break;
 
             Declaration dec = url.FindType<Declaration>();

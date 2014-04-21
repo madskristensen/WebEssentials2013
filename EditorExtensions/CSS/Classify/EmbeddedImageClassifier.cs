@@ -172,7 +172,10 @@ namespace MadsKristensen.EditorExtensions.Css
 
                     SnapshotSpan span = new SnapshotSpan(_buffer.CurrentSnapshot, comment.CommentText.Start, comment.CommentText.Length);
 
-                    url = (UrlItem)value;
+                    url = value as UrlItem;
+
+                    if (url == null)
+                        return null;
 
                     SnapshotSpan b64Span = new SnapshotSpan(_buffer.CurrentSnapshot, url.Start, url.Length);
 
