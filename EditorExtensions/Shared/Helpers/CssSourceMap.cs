@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -318,6 +319,7 @@ namespace MadsKristensen.EditorExtensions
             return result;
         }
 
+        [SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]
         private class SourceMapDefinition
         {
             public string file { get; set; }
