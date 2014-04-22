@@ -18,6 +18,7 @@ using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 using Threading = System.Threading.Tasks;
@@ -85,34 +86,9 @@ namespace MadsKristensen.EditorExtensions
 
                 foreach (XmlNode node in nodes)
                 {
-                    AttachFileObserverEvent(ProjectHelpers.ToAbsoluteFilePath(node.InnerText, file));
+                    await new BundleFileWatcher().AttachFileObserverEvent(ProjectHelpers.ToAbsoluteFilePath(node.InnerText, file));
                 }
             }
-        }
-
-        private static HashSet<string> _watchedFiles = new HashSet<string>();
-
-        private static void AttachFileObserverEvent(string fileName)
-        {
-            if (!File.Exists(fileName))
-                return;
-
-            fileName = Path.GetFullPath(fileName);
-
-            if (_watchedFiles.Contains(fileName))
-                return;
-
-            _watchedFiles.Add(fileName);
-
-            FileSystemWatcher watcher = new FileSystemWatcher();
-
-            watcher.Path = Path.GetDirectoryName(fileName);
-            watcher.Filter = Path.GetFileName(fileName);
-            watcher.NotifyFilter = NotifyFilters.Attributes | NotifyFilters.LastWrite | NotifyFilters.Size;
-
-            watcher.Changed += async (s, e) => await UpdateBundles(null, true);
-
-            watcher.EnableRaisingEvents = true;
         }
 
         private async void document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
@@ -406,7 +382,7 @@ namespace MadsKristensen.EditorExtensions
                 if (!File.Exists(file))
                     continue;
 
-                AttachFileObserverEvent(file);
+                await new BundleFileWatcher().AttachFileObserverEvent(file);
 
                 var source = await FileHelpers.ReadAllTextRetry(file);
                 if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase))
@@ -457,6 +433,39 @@ namespace MadsKristensen.EditorExtensions
 
             if (settings.GzipMinifiedFiles && (changed || !File.Exists(minPath + ".gzip")))
                 FileHelpers.GzipFile(minPath);
+        }
+
+        private class BundleFileWatcher
+        {
+            private FileSystemWatcher _watcher;
+            private readonly AsyncReaderWriterLock rwLock = new AsyncReaderWriterLock();
+            private static HashSet<string> _watchedFiles = new HashSet<string>();
+
+            internal async Threading.Task AttachFileObserverEvent(string fileName)
+            {
+                if (!File.Exists(fileName))
+                    return;
+
+                fileName = Path.GetFullPath(fileName);
+
+                using (await rwLock.WriteLockAsync())
+                {
+                    if (_watchedFiles.Contains(fileName))
+                        return;
+
+                    _watchedFiles.Add(fileName);
+                }
+
+                _watcher = new FileSystemWatcher();
+
+                _watcher.Path = Path.GetDirectoryName(fileName);
+                _watcher.Filter = Path.GetFileName(fileName);
+                _watcher.NotifyFilter = NotifyFilters.Attributes | NotifyFilters.LastWrite | NotifyFilters.Size;
+
+                _watcher.Changed += async (s, e) => await UpdateBundles(null, true);
+
+                _watcher.EnableRaisingEvents = true;
+            }
         }
     }
 }
