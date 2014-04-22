@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions.Html
     public class BootstrapColumnsValidator : BaseValidator
     {
         private static string _errorRowMissing = "Bootstrap: When using \"{0}\", you must also specify the class \"row\" on a parent element.";
-        private static string _errorInvalidSum = "Bootstrap: Sum of columns of type {0} must equal 12.";
+        private static string _errorInvalidSum = "Bootstrap: Sum of columns of type {0} must not exceed 12.";
 
         public override IList<IHtmlValidationError> ValidateElement(ElementNode element)
         {
