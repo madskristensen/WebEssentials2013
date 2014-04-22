@@ -187,12 +187,12 @@ namespace MadsKristensen.EditorExtensions
 
                 if (selector == null)
                 {
-                    // One more try; dive deep and sniff then skip.
-                    var items = rule.Children.Where(r => r is RuleBlock)
-                                             .SelectMany(r => (r as RuleBlock).Children
-                                             .Where(s => s is RuleSet)
-                                             .Select(s => (s as RuleSet).Selectors.FirstOrDefault(sel => sel.Text.Trim() == simpleText)));
-                    selector = items.Any() ? items.First() : null;
+                    // One more try: look for the selector in neighboring rule blocks then skip.
+                    selector = rule.Children.Where(r => r is RuleBlock)
+                                            .SelectMany(r => (r as RuleBlock).Children
+                                            .Where(s => s is RuleSet)
+                                            .Select(s => (s as RuleSet).Selectors.FirstOrDefault(sel => sel.Text.Trim() == simpleText)))
+                                            .FirstOrDefault();
 
                     if (selector == null)
                         continue;
