@@ -56,7 +56,7 @@ namespace MadsKristensen.EditorExtensions.Html
                 var columnSize = c.Replace("col-", string.Empty).Substring(0, 2);
                 var sumColumnsCurrentRow = GetSumOfColumns(element, columnSize);
 
-                if (sumColumnsCurrentRow != 12)
+                if (sumColumnsCurrentRow > 12)
                 {
                     int index = element.Attributes.IndexOf(elementClasses);
                     var columnType = string.Format(CultureInfo.CurrentCulture, "col-{0}-*", columnSize);
