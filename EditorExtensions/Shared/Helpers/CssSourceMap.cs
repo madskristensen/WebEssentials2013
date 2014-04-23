@@ -307,7 +307,7 @@ namespace MadsKristensen.EditorExtensions
                     if (sheet == null || !sheet.RuleSets.Any() || !sheet.RuleSets.First().Selectors.Any())
                         continue;
 
-                    selector = parser.Parse(selectorText.ToString(), false).RuleSets.First().Selectors.First() as Selector;
+                    selector = sheet.RuleSets.First().Selectors.First() as Selector;
 
                     if (selector == null)
                         continue;
