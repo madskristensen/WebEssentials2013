@@ -448,11 +448,14 @@ namespace MadsKristensen.EditorExtensions
 
                 fileName = Path.GetFullPath(fileName);
 
-                using (await rwLock.WriteLockAsync())
+                using (await rwLock.ReadLockAsync())
                 {
                     if (_watchedFiles.Contains(fileName))
                         return;
+                }
 
+                using (await rwLock.WriteLockAsync())
+                {
                     _watchedFiles.Add(fileName);
                 }
 
