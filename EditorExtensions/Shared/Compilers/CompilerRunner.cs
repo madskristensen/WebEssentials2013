@@ -48,18 +48,33 @@ namespace MadsKristensen.EditorExtensions.Compilers
         /// <param name="save">True to save the compiled file(s) to the default output directory.</param>
         public Task<CompilerResult> CompileAsync(string sourcePath, bool save)
         {
-            return save ? CompileToDefaultOutputAsync(sourcePath) : CompileInMemoryAsync(sourcePath);
+            return save && !InvalidMarkdownRequest(sourcePath) ? CompileToDefaultOutputAsync(sourcePath) : CompileInMemoryAsync(sourcePath);
         }
+
+        private bool InvalidMarkdownRequest(string sourcePath)
+        {
+            if (SourceContentType.TypeName != "markdown")
+                return false;
+
+            var targetPath = Path.GetFullPath(GetTargetPath(sourcePath));
+
+            return !File.Exists(targetPath);
+        }
+
         public Task<CompilerResult> CompileInMemoryAsync(string sourcePath)
         {
             return CompileAsync(sourcePath, null);
         }
+
         public Task<CompilerResult> CompileToDefaultOutputAsync(string sourcePath)
         {
             if (!ShouldCompile(sourcePath))
                 return CompileInMemoryAsync(sourcePath);
+
             var targetPath = Path.GetFullPath(GetTargetPath(sourcePath));
+
             Directory.CreateDirectory(Path.GetDirectoryName(targetPath));
+
             return CompileAsync(sourcePath, targetPath);
         }
 
