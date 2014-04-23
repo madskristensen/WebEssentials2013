@@ -38,11 +38,8 @@ namespace MadsKristensen.EditorExtensions.Css
 
             if (!string.IsNullOrEmpty(name))
             {
-
                 if (string.IsNullOrEmpty(Path.GetExtension(name)))
-                {
                     name = name + extension;
-                }
 
                 string fileName = Path.Combine(Path.GetDirectoryName(_dte.ActiveDocument.FullName), name);
 
@@ -56,7 +53,7 @@ namespace MadsKristensen.EditorExtensions.Css
                         }
 
                         ProjectHelpers.AddFileToActiveProject(fileName);
-                        TextView.TextBuffer.Delete(TextView.Selection.SelectedSpans[0].Span);
+                        TextView.TextBuffer.Replace(TextView.Selection.SelectedSpans[0].Span, string.Format("@import \"{0}\";", name));
                         _dte.ItemOperations.OpenFile(fileName);
                     }
                 }
