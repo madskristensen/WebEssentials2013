@@ -171,10 +171,7 @@ namespace MadsKristensen.EditorExtensions
                 RuleSet rule;
                 ScssRuleBlock scssRuleBlock = item as ScssRuleBlock;
 
-                if (scssRuleBlock == null)
-                    rule = item as RuleSet;
-                else
-                    rule = scssRuleBlock.RuleSets.First();
+                rule = scssRuleBlock == null ? item as RuleSet : scssRuleBlock.RuleSets.FirstOrDefault();
 
                 if (rule == null)
                     continue;
@@ -304,6 +301,11 @@ namespace MadsKristensen.EditorExtensions
 
                         simple = simple.NextSibling as SimpleSelector;
                     }
+
+                    StyleSheet sheet = parser.Parse(selectorText.ToString(), false);
+
+                    if (sheet == null || !sheet.RuleSets.Any() || !sheet.RuleSets.First().Selectors.Any())
+                        continue;
 
                     selector = parser.Parse(selectorText.ToString(), false).RuleSets.First().Selectors.First() as Selector;
 
