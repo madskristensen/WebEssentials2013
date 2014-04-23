@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         public SweetJsSettings SweetJs { get; private set; }
     }
 
-    public sealed class SpriteSettings : SettingsBase<SpriteSettings>
+    public sealed class SpriteSettings : SettingsBase<SpriteSettings>, IBundleSettings
     {
         [Category("Paths")]
         [DisplayName("Use full path for naming identifiers")]
@@ -50,7 +50,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         [DisplayName("Custom CSS output directory")]
         [Description("Specifies a custom subfolder to save CSS files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
         [DefaultValue(null)]
-        public string CssOutputDirectory { get; set; }
+        public string OutputDirectory { get; set; }
 
         [Category("Paths")]
         [DisplayName("Custom LESS output directory")]
@@ -506,6 +506,12 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Don't save separate unminified compiler output. This option has no effect when Minify On Save is disabled for HTML.")]
         [DefaultValue(false)]
         public bool MinifyInPlace { get; set; }
+    }
+
+    public interface IBundleSettings
+    {
+        bool UseAbsoluteUrl { get; }
+        string OutputDirectory { get; }
     }
 
     public interface ISourceMapSettings

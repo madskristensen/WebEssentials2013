@@ -165,15 +165,10 @@ namespace MadsKristensen.EditorExtensions
                         }
                     }
 
-                    if (isBuild && bundleNode.Attributes["runOnBuild"] != null && bundleNode.Attributes["runOnBuild"].InnerText == "true")
-                    {
-                        enabled = true;
-                    }
+                    enabled = isBuild && bundleNode.Attributes["runOnBuild"] != null && bundleNode.Attributes["runOnBuild"].InnerText == "true";
 
                     if (enabled)
-                    {
                         WriteBundleFile(file, doc).DoNotWait("reading " + file + "file");
-                    }
                 }
             }
         }
