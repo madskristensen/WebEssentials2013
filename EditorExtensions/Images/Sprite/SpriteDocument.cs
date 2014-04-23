@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions.Images
             FileExtension = Path.GetExtension(imageFiles.First()).TrimStart('.');
             UseFullPathForIdentifierName = WESettings.Instance.Sprite.UseFullPathForIdentifierName;
             UseAbsoluteUrl = WESettings.Instance.Sprite.UseAbsoluteUrl;
-            CssOutputDirectory = WESettings.Instance.Sprite.CssOutputDirectory;
+            CssOutputDirectory = WESettings.Instance.Sprite.OutputDirectory;
             LessOutputDirectory = WESettings.Instance.Sprite.LessOutputDirectory;
             ScssOutputDirectory = WESettings.Instance.Sprite.ScssOutputDirectory;
         }
