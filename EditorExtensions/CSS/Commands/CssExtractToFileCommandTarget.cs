@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using EnvDTE80;
@@ -53,7 +54,7 @@ namespace MadsKristensen.EditorExtensions.Css
                         }
 
                         ProjectHelpers.AddFileToActiveProject(fileName);
-                        TextView.TextBuffer.Replace(TextView.Selection.SelectedSpans[0].Span, string.Format("@import \"{0}\";", name));
+                        TextView.TextBuffer.Replace(TextView.Selection.SelectedSpans[0].Span, string.Format(CultureInfo.CurrentCulture, "@import \"{0}\";", name));
                         _dte.ItemOperations.OpenFile(fileName);
                     }
                 }
