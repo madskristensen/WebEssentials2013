@@ -91,7 +91,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (success)
             {
-                var renewedResult = await PostProcessResult(resultText, sourceFileName, targetFileName);
+                var renewedResult = await PostProcessResult(resultText, sourceFileName, targetFileName, mapFileName);
 
                 if (!ReferenceEquals(resultText, renewedResult))
                 {
@@ -205,6 +205,6 @@ namespace MadsKristensen.EditorExtensions
 
         protected abstract string GetArguments(string sourceFileName, string targetFileName);
 
-        protected abstract Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName);
+        protected abstract Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName);
     }
 }

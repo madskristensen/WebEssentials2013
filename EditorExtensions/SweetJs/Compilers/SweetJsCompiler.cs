@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions.SweetJs
             return args.ToString();
         }
 
-        protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
+        protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
         {
             Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
 
