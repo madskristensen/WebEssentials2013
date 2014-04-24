@@ -38,6 +38,7 @@ namespace MadsKristensen.EditorExtensions
 
             ProcessAsync(e.FilePath).DoNotWait("creating IntelliSense file(s) for " + e.FilePath);
         }
+
         public static Task<bool> ProcessAsync(string filePath)
         {
             if (!File.Exists(filePath + IntellisenseParser.Ext.JavaScript) && !File.Exists(filePath + IntellisenseParser.Ext.TypeScript))
@@ -50,7 +51,7 @@ namespace MadsKristensen.EditorExtensions
                 if (item == null)
                     return false;
 
-                List<IntellisenseObject> list = null;
+                IEnumerable<IntellisenseObject> list = null;
 
                 try
                 {
@@ -73,7 +74,7 @@ namespace MadsKristensen.EditorExtensions
         }
 
 
-        private async static Task AddScript(string filePath, string extension, List<IntellisenseObject> list)
+        private async static Task AddScript(string filePath, string extension, IEnumerable<IntellisenseObject> list)
         {
             string resultPath = filePath + extension;
 

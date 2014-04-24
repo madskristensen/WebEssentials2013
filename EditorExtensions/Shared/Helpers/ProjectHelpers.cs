@@ -225,10 +225,10 @@ namespace MadsKristensen.EditorExtensions
                 root += Path.DirectorySeparatorChar;
             }
 
-            var rootUri = new Uri(root, UriKind.Absolute);
-
             try
             {
+                var rootUri = new Uri(root, UriKind.Absolute);
+
                 return FixAbsolutePath(new Uri(rootUri, relUri).LocalPath);
             }
             catch (UriFormatException)

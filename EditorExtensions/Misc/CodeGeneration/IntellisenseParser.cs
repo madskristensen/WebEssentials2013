@@ -27,36 +27,38 @@ namespace MadsKristensen.EditorExtensions
             public const string TypeScript = ".d.ts";
         }
 
-        internal static List<IntellisenseObject> ProcessFile(ProjectItem item)
+        internal static IEnumerable<IntellisenseObject> ProcessFile(ProjectItem item, HashSet<CodeClass> underProcess = null)
         {
             if (item.FileCodeModel == null)
                 return null;
 
             List<IntellisenseObject> list = new List<IntellisenseObject>();
 
+            if (underProcess == null)
+                underProcess = new HashSet<CodeClass>();
+
             foreach (CodeElement element in item.FileCodeModel.CodeElements)
             {
                 if (element.Kind == vsCMElement.vsCMElementNamespace)
                 {
                     CodeNamespace cn = (CodeNamespace)element;
+
                     foreach (CodeElement member in cn.Members)
                     {
                         if (ShouldProcess(member))
-                        {
-                            ProcessElement(member, list);
-                        }
+                            ProcessElement(member, list, underProcess);
                     }
                 }
                 else if (ShouldProcess(element))
                 {
-                    ProcessElement(element, list);
+                    ProcessElement(element, list, underProcess);
                 }
             }
 
-            return list;
+            return new HashSet<IntellisenseObject>(list);
         }
 
-        private static void ProcessElement(CodeElement element, List<IntellisenseObject> list)
+        private static void ProcessElement(CodeElement element, List<IntellisenseObject> list, HashSet<CodeClass> underProcess)
         {
             if (element.Kind == vsCMElement.vsCMElementEnum)
             {
@@ -64,7 +66,35 @@ namespace MadsKristensen.EditorExtensions
             }
             else if (element.Kind == vsCMElement.vsCMElementClass)
             {
-                ProcessClass((CodeClass)element, list);
+                var cc = (CodeClass)element;
+
+                // Don't re-generate the intellisense.
+                if (list.Any(x => x.Name == GetClassName(cc) && x.Namespace == GetNamespace(cc)))
+                    return;
+
+                // Collect inherit classes.
+                CodeClass baseClass = null;
+
+                try
+                {
+                    // To recuse from throwing from a weird case
+                    // where user inherit class from struct and save. As such inheritance is disallowed.
+                    baseClass = cc.Bases.Cast<CodeClass>()
+                                  .FirstOrDefault(c => c.FullName != "System.Object");
+                }
+                catch { /* Silently continue. */ }
+
+                ProcessClass(cc, baseClass, list);
+
+                var references = new HashSet<string>();
+
+                // Process Inheritence.
+                if (baseClass != null && !underProcess.Contains(baseClass) && !HasIntellisense(baseClass.ProjectItem, Ext.TypeScript, references))
+                {
+                    list.Last().UpdateReferences(references);
+                    underProcess.Add(baseClass);
+                    list.AddRange(ProcessFile(baseClass.ProjectItem, underProcess));
+                }
             }
         }
 
@@ -102,40 +132,36 @@ namespace MadsKristensen.EditorExtensions
                 list.Add(data);
         }
 
-        private static void ProcessClass(CodeClass cc, List<IntellisenseObject> list)
+        private static void ProcessClass(CodeClass cc, CodeClass baseClass, List<IntellisenseObject> list)
         {
-            var references = new HashSet<string>();
-            var properties = GetProperties(cc.Members, new HashSet<string>(), references).ToList();
-            var internalEnums = cc.Members.OfType<CodeEnum>().ToList();
+            string baseNs = null;
+            string baseClassName = null;
+            string ns = GetNamespace(cc);
+            string className = GetClassName(cc);
+            HashSet<string> references = new HashSet<string>();
+            IEnumerable<CodeEnum> internalEnums = cc.Members.OfType<CodeEnum>().ToList();
+            IList<IntellisenseProperty> properties = GetProperties(cc.Members, new HashSet<string>(), references).ToList();
+
             if (internalEnums != null)
-            {
                 foreach (var internalEnum in internalEnums)
                 {
                     ProcessEnum(internalEnum, list);
                 }
-            }
-            var dataContractAttribute = cc.Attributes.Cast<CodeAttribute>().Where(a => a.Name == "DataContract");
-            string className = cc.Name;
-            string nsName = GetNamespace(cc);
 
-            if (dataContractAttribute.Any())
+            if (baseClass != null)
             {
-                var keyValues = dataContractAttribute.First().Children.OfType<CodeAttributeArgument>()
-                               .ToDictionary(a => a.Name, a => (a.Value ?? "").Trim('\"', '\''));
-
-                if (keyValues.ContainsKey("Name"))
-                    className = keyValues["Name"];
-
-                if (keyValues.ContainsKey("Namespace"))
-                    nsName = keyValues["Namespace"];
+                baseClassName = GetClassName(baseClass);
+                baseNs = GetNamespace(baseClass);
             }
 
             if (properties.Any())
             {
-                var intellisenseObject = new IntellisenseObject(properties, references.ToList())
+                var intellisenseObject = new IntellisenseObject(properties.ToList(), references)
                 {
-                    Namespace = nsName,
+                    Namespace = ns,
                     Name = className,
+                    BaseNamespace = baseNs,
+                    BaseName = baseClassName,
                     FullName = cc.FullName,
                     Summary = GetSummary(cc)
                 };
@@ -157,12 +183,39 @@ namespace MadsKristensen.EditorExtensions
                    };
         }
 
-        private static string GetNamespace(CodeClass e) { return GetNamespace(e.Attributes); }
-        private static string GetNamespace(CodeEnum e) { return GetNamespace(e.Attributes); }
+        private static string GetClassName(CodeClass cc)
+        {
+            return GetDataContractName(cc, "Name") ?? cc.Name;
+        }
+
+        private static string GetNamespace(CodeClass cc)
+        {
+            return GetDataContractName(cc, "Namespace") ?? GetNamespace(cc.Attributes);
+        }
+
+        private static string GetDataContractName(CodeClass cc, string attrName)
+        {
+            var dataContractAttribute = cc.Attributes.Cast<CodeAttribute>().Where(a => a.Name == "DataContract");
+
+            if (!dataContractAttribute.Any())
+                return null;
+
+            string name = null;
+            var keyValues = dataContractAttribute.First().Children.OfType<CodeAttributeArgument>()
+                           .ToDictionary(a => a.Name, a => (a.Value ?? "").Trim('\"', '\''));
+
+            if (keyValues.ContainsKey(attrName))
+                name = keyValues[attrName];
+
+            return name;
+        }
+
+        private static string GetNamespace(CodeEnum cc) { return GetNamespace(cc.Attributes); }
 
         private static string GetNamespace(CodeElements attrs)
         {
             if (attrs == null) return DefaultModuleName;
+
             var namespaceFromAttr = from a in attrs.Cast<CodeAttribute2>()
                                     where a.Name.EndsWith(ModuleNameAttributeName, StringComparison.OrdinalIgnoreCase)
                                     from arg in a.Arguments.Cast<CodeAttributeArgument>()
@@ -194,7 +247,7 @@ namespace MadsKristensen.EditorExtensions
                     effectiveTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType &&
                     effectiveTypeRef.CodeType.InfoLocation == vsCMInfoLocation.vsCMInfoLocationProject
                     ?
-                        (codeClass != null && HasIntellisense(codeClass.ProjectItem, Ext.TypeScript, references) ? (GetNamespace(codeClass) + "." + codeClass.Name) : null) ??
+                        (codeClass != null && HasIntellisense(codeClass.ProjectItem, Ext.TypeScript, references) ? (GetNamespace(codeClass) + "." + GetClassName(codeClass)) : null) ??
                         (codeEnum != null && HasIntellisense(codeEnum.ProjectItem, Ext.TypeScript, references) ? (GetNamespace(codeEnum) + "." + codeEnum.Name) : null)
                     : null
             };
@@ -285,6 +338,7 @@ namespace MadsKristensen.EditorExtensions
                     return true;
                 }
             }
+
             return false;
         }
 
