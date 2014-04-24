@@ -331,6 +331,9 @@
     <Compile Include="JSON\Schemas\SchemaExporter.cs" />
     <Compile Include="JSON\Validation\JsonErrorTag.cs" />
     <Compile Include="JSON\Validation\RefMemberNameItemValidator.cs" />
+    <Compile Include="SCSS\Commands\ScssCreationListener.cs" />
+    <Compile Include="SCSS\Commands\ScssExtractMixinCommandTarget.cs" />
+    <Compile Include="SCSS\Commands\ScssExtractVariableCommandTarget.cs" />
     <Compile Include="Shared\Compilers\Result\CompilerResultFactory.cs" />
     <Compile Include="Shared\Compilers\Result\CompilerError.cs" />
     <Compile Include="Shared\Compilers\Result\CssCompilerResult.cs" />
