@@ -113,7 +113,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (!success)
             {
-                var firstError = compilerResult.Errors.Where(e => e != null).Select(e => e.Message);
+                var firstError = compilerResult.Errors.Where(e => e != null).Select(e => e.Message).FirstOrDefault();
 
                 if (firstError != null)
                     Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compilation failed: " + firstError);
