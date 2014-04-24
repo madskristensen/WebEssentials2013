@@ -141,6 +141,9 @@ namespace MadsKristensen.EditorExtensions.Images
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)")]
         private static string GetArguments(string sourceFile, string targetFile)
         {
+            if (!Uri.IsWellFormedUriString(sourceFile, UriKind.RelativeOrAbsolute))
+                return null;
+
             string ext = Path.GetExtension(sourceFile).ToLowerInvariant();
 
             switch (ext)
