@@ -50,7 +50,7 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
             await FileHelpers.WriteAllTextRetry(targetFileName, await FileHelpers.ReadAllTextRetry(tempName));
         }
 
-        protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName)
+        protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
         {
             Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
 
