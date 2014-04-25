@@ -84,7 +84,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 catch { /* Silently continue. */ }
 
-                ProcessClass(cc, baseClass, list);
+                ProcessClass(cc, baseClass, list, underProcess);
 
                 var references = new HashSet<string>();
 
@@ -132,21 +132,22 @@ namespace MadsKristensen.EditorExtensions
                 list.Add(data);
         }
 
-        private static void ProcessClass(CodeClass cc, CodeClass baseClass, List<IntellisenseObject> list)
+        private static void ProcessClass(CodeClass cc, CodeClass baseClass, List<IntellisenseObject> list, HashSet<CodeClass> underProcess)
         {
             string baseNs = null;
             string baseClassName = null;
             string ns = GetNamespace(cc);
             string className = GetClassName(cc);
             HashSet<string> references = new HashSet<string>();
-            IEnumerable<CodeEnum> internalEnums = cc.Members.OfType<CodeEnum>().ToList();
             IList<IntellisenseProperty> properties = GetProperties(cc.Members, new HashSet<string>(), references).ToList();
 
-            if (internalEnums != null)
-                foreach (var internalEnum in internalEnums)
+            foreach (CodeElement member in cc.Members)
+            {
+                if (ShouldProcess(member))
                 {
-                    ProcessEnum(internalEnum, list);
+                    ProcessElement(member, list, underProcess);
                 }
+            }
 
             if (baseClass != null)
             {
