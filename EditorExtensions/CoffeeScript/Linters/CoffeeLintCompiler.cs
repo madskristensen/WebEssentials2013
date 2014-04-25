@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
             get { return ParseErrorsWithXml; }
         }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName)
+        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
             GetOrCreateGlobalSettings(ConfigFileName); // Ensure that default settings exist
 

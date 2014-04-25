@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions.SweetJs
         public override bool RequireMatchingFileName { get { return false; } }
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName)
+        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
             var args = new StringBuilder();
 

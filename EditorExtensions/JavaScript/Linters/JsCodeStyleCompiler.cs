@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
         public override string ServiceName { get { return "JSCS"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName)
+        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
             GetOrCreateGlobalSettings(ConfigFileName); // Ensure that default settings exist
 

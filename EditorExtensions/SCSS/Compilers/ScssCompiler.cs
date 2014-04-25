@@ -22,12 +22,9 @@ namespace MadsKristensen.EditorExtensions.Scss
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
         public override bool GenerateSourceMap { get { return WESettings.Instance.Scss.GenerateSourceMaps; } }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName)
+        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
-            MapFileName = targetFileName + ".map";
-            MapFileName = GenerateSourceMap ? MapFileName : Path.Combine(Path.GetTempPath(), Path.GetFileName(MapFileName));
-
-            return string.Format(CultureInfo.CurrentCulture, "--source-map \"{0}\" --output-style=expanded \"{1}\" --output \"{2}\"", MapFileName, sourceFileName, targetFileName);
+            return string.Format(CultureInfo.CurrentCulture, "--source-map \"{0}\" --output-style=expanded \"{1}\" --output \"{2}\"", mapFileName, sourceFileName, targetFileName);
         }
 
         //https://github.com/hcatlin/libsass/issues/242
