@@ -14,9 +14,9 @@ namespace MadsKristensen.EditorExtensions.IcedCoffeeScript
         public override string ServiceName { get { return "IcedCoffeeScript"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName)
+        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
-            return "--runtime inline " + base.GetArguments(sourceFileName, targetFileName);
+            return "--runtime inline " + base.GetArguments(sourceFileName, targetFileName, mapFileName);
         }
     }
 }

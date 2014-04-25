@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
         public override bool RequireMatchingFileName { get { return true; } }
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName)
+        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
             var args = new StringBuilder();
 

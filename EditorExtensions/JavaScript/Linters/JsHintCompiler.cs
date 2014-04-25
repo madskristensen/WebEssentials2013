@@ -49,7 +49,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             return globalFile;
         }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName)
+        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
             GetOrCreateGlobalSettings(ConfigFileName); // Ensure that default settings exist
 

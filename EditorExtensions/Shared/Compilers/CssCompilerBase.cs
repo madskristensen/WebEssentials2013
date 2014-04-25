@@ -65,6 +65,13 @@ namespace MadsKristensen.EditorExtensions
             return UpdateSourceLinkInCssComment(content, FileHelpers.RelativePath(compiledFileName, mapFileName));
         }
 
+        protected override string GetMapFileName(string sourceFileName, string targetFileName)
+        {
+            var mapFileName = targetFileName + ".map";
+
+            return GenerateSourceMap ? mapFileName : Path.Combine(Path.GetTempPath(), Path.GetFileName(mapFileName));
+        }
+
         // Overridden to work around SASS bug
         // TODO: Remove when https://github.com/hcatlin/libsass/issues/242 is fixed
         protected async virtual Task<string> ReadMapFile(string sourceMapFileName) { return await FileHelpers.ReadAllTextRetry(sourceMapFileName); }

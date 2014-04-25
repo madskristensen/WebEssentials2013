@@ -300,8 +300,8 @@ namespace MadsKristensen.EditorExtensions
         /// <returns>Task which ultimately returns a string containing all lines of the file.</returns>
         public async static Task<string> ReadAllTextRetry(string fileName)
         {
-            return await Task.FromResult<string>(File.ReadAllText(fileName))
-                        .ExecuteRetryableTaskAsync<string>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5));
+            return await BeginRead<string>(Task.FromResult<string>(File.ReadAllText(fileName))
+                                          .ExecuteRetryableTaskAsync<string>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5)));
         }
 
         /// <summary>
@@ -311,8 +311,8 @@ namespace MadsKristensen.EditorExtensions
         /// <returns>Task which ultimately returns all lines of the file, or the lines that are the result of a query.</returns>
         public async static Task<IEnumerable<string>> ReadAllLinesRetry(string fileName)
         {
-            return await Task.FromResult<IEnumerable<string>>(File.ReadLines(fileName))
-                        .ExecuteRetryableTaskAsync<IEnumerable<string>>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5));
+            return await BeginRead<IEnumerable<string>>(Task.FromResult<IEnumerable<string>>(File.ReadLines(fileName))
+                                                       .ExecuteRetryableTaskAsync<IEnumerable<string>>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5)));
         }
 
         /// <summary>
@@ -324,8 +324,25 @@ namespace MadsKristensen.EditorExtensions
         /// <returns>Task which ultimately returns all lines of the file, or the lines that are the result of a query.</returns>
         public async static Task<byte[]> ReadAllBytesRetry(string fileName)
         {
-            return await Task.FromResult<byte[]>(File.ReadAllBytes(fileName))
-                        .ExecuteRetryableTaskAsync<byte[]>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5));
+            return await BeginRead<byte[]>(Task.FromResult<byte[]>(File.ReadAllBytes(fileName))
+                                          .ExecuteRetryableTaskAsync<byte[]>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5)));
+        }
+
+        private async static Task<T> BeginRead<T>(Task<T> readTask)
+        {
+            bool exception = false;
+            T text = default(T);
+
+            try
+            {
+                text = await readTask;
+            }
+            catch (IOException)
+            {
+                exception = true;
+            }
+
+            return exception ? await BeginRead(readTask) : text;
         }
 
         /// <summary>
@@ -337,8 +354,8 @@ namespace MadsKristensen.EditorExtensions
         /// <param name="contents">The string to write to the file.</param>
         public async static Task WriteAllTextRetry(string fileName, string contents)
         {
-            await Task.Run(() => File.WriteAllText(fileName, contents, Encoding.UTF8))
-                 .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5));
+            await BeginWrite(Task.Run(() => File.WriteAllText(fileName, contents, Encoding.UTF8))
+                            .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5)));
         }
 
         /// <summary>
@@ -350,8 +367,25 @@ namespace MadsKristensen.EditorExtensions
         /// <param name="value">The bytes to write to the file.</param>
         public async static Task WriteAllBytesRetry(string fileName, byte[] value)
         {
-            await Task.Run(() => File.WriteAllBytes(fileName, value))
-                 .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5));
+            await BeginWrite(Task.Run(() => File.WriteAllBytes(fileName, value))
+                            .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5)));
+        }
+
+        private async static Task BeginWrite(Task writeTask)
+        {
+            bool exception = false;
+
+            try
+            {
+                await writeTask;
+            }
+            catch (IOException)
+            {
+                exception = true;
+            }
+
+            if (exception)
+                await BeginWrite(writeTask);
         }
 
         /// <summary>

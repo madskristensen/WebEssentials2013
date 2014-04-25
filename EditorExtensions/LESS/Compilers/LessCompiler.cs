@@ -20,15 +20,12 @@ namespace MadsKristensen.EditorExtensions.Less
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
         public override bool GenerateSourceMap { get { return WESettings.Instance.Less.GenerateSourceMaps; } }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName)
+        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
-            MapFileName = targetFileName + ".map";
-            MapFileName = GenerateSourceMap ? MapFileName : Path.Combine(Path.GetTempPath(), Path.GetFileName(MapFileName));
-
-            string mapDirectory = Path.GetDirectoryName(MapFileName);
+            string mapDirectory = Path.GetDirectoryName(mapFileName);
 
             return string.Format(CultureInfo.CurrentCulture, "--no-color --relative-urls --source-map-basepath=\"{0}\" --source-map=\"{1}\" \"{2}\" \"{3}\"",
-                                 mapDirectory, MapFileName, sourceFileName, targetFileName);
+                                 mapDirectory, mapFileName, sourceFileName, targetFileName);
         }
     }
 }
