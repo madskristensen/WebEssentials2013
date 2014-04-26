@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MadsKristensen.EditorExtensions.Html;
 using Microsoft.Html.Core;
 using Microsoft.Html.Validation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Web.Core;
-using System;
 
 namespace WebEssentialsTests
 {
