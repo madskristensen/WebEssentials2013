@@ -17,8 +17,8 @@ namespace MadsKristensen.EditorExtensions.Html
 
     public class FoundationClassValidator : BaseValidator
     {
-        private static string _errorMissingColumns = "When using \"small-#\", \"medium-#\" or \"large-#\", you must also specify the class \"columns\".";
-        private static string _errorMissingSize = "When using \"columns\", you must also specify the class \"small-#\", \"medium-#\" or \"large-#\".";
+        private static string _errorMissingColumns = "Foundation: When using \"small-#\", \"medium-#\" or \"large-#\", you must also specify the class \"columns\".";
+        private static string _errorMissingSize = "Foundation: When using \"columns\", you must also specify the class \"small-#\", \"medium-#\" or \"large-#\".";
 
         public override IList<IHtmlValidationError> ValidateElement(ElementNode element)
         {
