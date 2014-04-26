@@ -1,12 +1,13 @@
-﻿using MadsKristensen.EditorExtensions.Settings;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Validation.Validators;
 using Microsoft.Html.Validation;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions.Html
 {
@@ -43,13 +44,13 @@ namespace MadsKristensen.EditorExtensions.Html
             return results;
         }
 
-        public bool ColumnPairElementsOk(string input)
+        public static bool ColumnPairElementsOk(string input)
         {
             string[] columnClasses = new string[] { "columns", "column" };
             string[] columnSizeClasses = new string[] { "small-", "medium-", "large-" };
 
             var containColumnClass = input.Split(' ').Any(x => columnClasses.Contains(x));
-            var containSizeClass = columnSizeClasses.Any(x => input.Split(' ').Any(y => y.StartsWith(x)));
+            var containSizeClass = columnSizeClasses.Any(x => input.Split(' ').Any(y => y.StartsWith(x, StringComparison.Ordinal)));
 
             // If both are there, or both are missing it's OK
             if ((containColumnClass && containSizeClass) || (!containColumnClass && !containSizeClass))

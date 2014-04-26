@@ -1,9 +1,9 @@
-﻿using MadsKristensen.EditorExtensions.Html;
+﻿using System.Collections.Generic;
+using MadsKristensen.EditorExtensions.Html;
 using Microsoft.Html.Core;
 using Microsoft.Html.Validation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Web.Core;
-using System.Collections.Generic;
 
 namespace WebEssentialsTests
 {
@@ -16,10 +16,9 @@ namespace WebEssentialsTests
             [TestMethod]
             public void BothElements_OK()
             {
-                FoundationClassValidator validator = new FoundationClassValidator();
                 var input = @"small-6 columns";
 
-                var result = validator.ColumnPairElementsOk(input);
+                var result = FoundationClassValidator.ColumnPairElementsOk(input);
 
                 Assert.IsTrue(result);
             }
@@ -27,10 +26,9 @@ namespace WebEssentialsTests
             [TestMethod]
             public void BothElementsMissing_OK()
             {
-                FoundationClassValidator validator = new FoundationClassValidator();
                 var input = @"clearfix no-border";
 
-                var result = validator.ColumnPairElementsOk(input);
+                var result = FoundationClassValidator.ColumnPairElementsOk(input);
 
                 Assert.IsTrue(result);
             }
@@ -38,10 +36,9 @@ namespace WebEssentialsTests
             [TestMethod]
             public void SizeButMissingColumnClass_Error()
             {
-                FoundationClassValidator validator = new FoundationClassValidator();
                 var input = @"small-4";
 
-                var result = validator.ColumnPairElementsOk(input);
+                var result = FoundationClassValidator.ColumnPairElementsOk(input);
 
                 Assert.IsFalse(result);
             }
@@ -49,10 +46,9 @@ namespace WebEssentialsTests
             [TestMethod]
             public void ColumnClassButMissingSize_Error()
             {
-                FoundationClassValidator validator = new FoundationClassValidator();
                 var input = @"columns highlight";
 
-                var result = validator.ColumnPairElementsOk(input);
+                var result = FoundationClassValidator.ColumnPairElementsOk(input);
 
                 Assert.IsFalse(result);
             }

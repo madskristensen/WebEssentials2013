@@ -1,14 +1,14 @@
-﻿using MadsKristensen.EditorExtensions.Settings;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Globalization;
+using System.Linq;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Validation.Validators;
 using Microsoft.Html.Validation;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Globalization;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions.Html
 {
@@ -62,8 +62,8 @@ namespace MadsKristensen.EditorExtensions.Html
 
             // Check for number of columns
             string[] columnSizeClasses = new string[] { "small-", "medium-", "large-" };
-            var classList = columnSizeClasses.Where(x => elementClasses.Value.Split(' ').Any(y => y.StartsWith(x)));
-                    
+            var classList = columnSizeClasses.Where(x => elementClasses.Value.Split(' ').Any(y => y.StartsWith(x, StringComparison.Ordinal)));
+
             foreach (var columnSize in classList)
             {
                 var sumColumnsCurrentRow = GetSumOfColumns(element, columnSize);
@@ -100,7 +100,7 @@ namespace MadsKristensen.EditorExtensions.Html
 
         private static int GetSumOfColumns(ElementNode element, string columnSize)
         {
-            var columnFilter = columnSize; 
+            var columnFilter = columnSize;
             var columnFilterOffset = string.Format(CultureInfo.CurrentCulture, "{0}offset-", columnFilter);
 
             var sumOfColumns = element.Parent.Children
