@@ -206,6 +206,11 @@ namespace MadsKristensen.EditorExtensions.Settings
         [DefaultValue(true)]
         public bool EnableBootstrapValidation { get; set; }
 
+        [DisplayName("Enable Zurb Foundation validation")]
+        [Description("Validate HTML files against Foundation best practices.")]
+        [DefaultValue(true)]
+        public bool EnableFoundationValidation { get; set; }
+
         [Browsable(false)]
         public ObservableCollection<ImageDropFormat> ImageDropFormats { get; private set; }
         protected override void ResetCustom()
