@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using MadsKristensen.EditorExtensions.Html;
+﻿using MadsKristensen.EditorExtensions.Html;
 using Microsoft.Html.Core;
 using Microsoft.Html.Validation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Web.Core;
-
+using System.Collections.Generic;
 
 namespace WebEssentialsTests
 {
@@ -17,56 +16,44 @@ namespace WebEssentialsTests
             [TestMethod]
             public void BothElements_OK()
             {
-                // ARRANGE
                 FoundationClassValidator validator = new FoundationClassValidator();
                 var input = @"small-6 columns";
 
-                // ACT
                 var result = validator.ColumnPairElementsOk(input);
 
-                // ASSERT
                 Assert.IsTrue(result);
             }
 
             [TestMethod]
             public void BothElementsMissing_OK()
             {
-                // Arrange
                 FoundationClassValidator validator = new FoundationClassValidator();
                 var input = @"clearfix no-border";
 
-                // ACT
                 var result = validator.ColumnPairElementsOk(input);
 
-                // ASSERT
                 Assert.IsTrue(result);
             }
 
             [TestMethod]
             public void SizeButMissingColumnClass_Error()
             {
-                // Arrange
                 FoundationClassValidator validator = new FoundationClassValidator();
                 var input = @"small-4";
 
-                // ACT
                 var result = validator.ColumnPairElementsOk(input);
 
-                // ASSERT
                 Assert.IsFalse(result);
             }
 
             [TestMethod]
             public void ColumnClassButMissingSize_Error()
             {
-                // Arrange
                 FoundationClassValidator validator = new FoundationClassValidator();
                 var input = @"columns highlight";
 
-                // ACT
                 var result = validator.ColumnPairElementsOk(input);
 
-                // ASSERT
                 Assert.IsFalse(result);
             }
 
@@ -171,9 +158,6 @@ namespace WebEssentialsTests
 
                 Assert.AreEqual(expected, compiled.Count);
             }
-
         }
-
-
     }
 }

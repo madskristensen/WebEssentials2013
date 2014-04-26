@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Globalization;
-using System.Linq;
-using MadsKristensen.EditorExtensions.Settings;
+﻿using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Validation.Validators;
 using Microsoft.Html.Validation;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
 
 namespace MadsKristensen.EditorExtensions.Html
 {
@@ -51,42 +49,13 @@ namespace MadsKristensen.EditorExtensions.Html
             string[] columnSizeClasses = new string[] { "small-", "medium-", "large-" };
 
             var containColumnClass = input.Split(' ').Any(x => columnClasses.Contains(x));
-            //var containSizeClass = input.Split(' ').Any(x => columnSizeClasses.Contains(x));
             var containSizeClass = columnSizeClasses.Any(x => input.Split(' ').Any(y => y.StartsWith(x)));
-            System.Console.WriteLine(input.Split(' ').Select(x => x).Where(x => x.IndexOf('-') > 0));
-            //var containSizeClass = input.Split(' ').Select(x => x).Where(x => x.IndexOf('-') > 0).Any(x => columnSizeClasses.Contains(x.Substring(0, x.IndexOf('-'))));
-            //var containSizeClass = input.Split(' ').Any(x => columnSizeClasses.Contains(x));
-
 
             // If both are there, or both are missing it's OK
             if ((containColumnClass && containSizeClass) || (!containColumnClass && !containSizeClass))
                 return true;
             else
                 return false;
-
-            //if (input.Contains("columns") || input.Contains("column"))
-            //{
-
-            //    if (input.Contains("small-") || input.Contains("medium-") || input.Contains("large-"))
-            //    {
-            //        // Both elements are there
-            //        return true;
-            //    }
-
-            //    // Size is missing
-            //    return false;
-            //}
-            //else
-            //{
-            //    if (input.Contains("small-") || input.Contains("medium-") || input.Contains("large-"))
-            //    {
-            //        // Size w/o columns. 
-            //        return false;
-            //    }
-            //}
-
-            //// No columns elements. OK
-            //return true;
         }
     }
 }

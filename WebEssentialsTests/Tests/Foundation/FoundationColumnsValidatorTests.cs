@@ -92,46 +92,7 @@ namespace WebEssentialsTests
 
             Assert.AreEqual(expected, compiled.Count);
         }
-
-        [TestMethod]
-        public void ErrorIfColumnClassIsMissing()
-        {
-            FoundationColumnsValidator validator = new FoundationColumnsValidator();
-
-            var source = @"<div class='medium-2'>2 columns</div>
-                           <div class='medium-10 columns'>10 columns</div>";
-
-            var tree = new HtmlTree(new TextStream(source));
-
-            tree.Build();
-
-            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0]);
-
-            int expected = 1;
-
-            Assert.AreEqual(expected, compiled.Count);
-        }
-
-        [TestMethod]
-        public void ErrorIfSizeClassIsMissingWhenColumnsClassIsDeclare()
-        {
-            FoundationColumnsValidator validator = new FoundationColumnsValidator();
-
-            var source = @"<div class='columns'>2 columns</div>
-                           <div class='medium-10 columns'>10 columns</div>";
-
-            var tree = new HtmlTree(new TextStream(source));
-
-            tree.Build();
-
-            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0]);
-
-            int expected = 1;
-
-            Assert.AreEqual(expected, compiled.Count);
-        }
-
-
+       
         //[TestMethod]
         //public void ComplexCorrectColumnsUsage()
         //{
