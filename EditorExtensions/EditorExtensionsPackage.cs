@@ -174,6 +174,7 @@ namespace MadsKristensen.EditorExtensions
                        .Where(c => WESettings.Instance.ForContentType<ICompilerInvocationSettings>(c).CompileOnBuild),
                     c => compiler.Value.CompileSolutionAsync(c).DoNotWait("compiling solution-wide " + c.DisplayName)
                 );
+
                 await BuildMenu.UpdateBundleFiles();
             }).DoNotWait("running solution-wide compilers");
 
