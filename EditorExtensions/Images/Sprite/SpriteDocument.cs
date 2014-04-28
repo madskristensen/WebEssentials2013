@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using MadsKristensen.EditorExtensions.Settings;
@@ -35,13 +36,13 @@ namespace MadsKristensen.EditorExtensions.Images
             ScssOutputDirectory = WESettings.Instance.Sprite.ScssOutputDirectory;
         }
 
-        public void Save()
+        public async Task WriteBundleRecipe()
         {
             string root = ProjectHelpers.GetRootFolder();
             XmlWriterSettings settings = new XmlWriterSettings() { Indent = true };
             XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
 
-            using (XmlWriter writer = XmlWriter.Create(FileName, settings))
+            using (XmlWriter writer = await Task.Run(() => XmlWriter.Create(FileName, settings)))
             {
                 new XDocument(
                     new XElement("sprite",

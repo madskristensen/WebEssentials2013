@@ -178,17 +178,17 @@ namespace MadsKristensen.EditorExtensions
         {
             // TODO: Replace with single class that takes ContentType
             CommandID commandCss = new CommandID(CommandGuids.guidBundleCmdSet, (int)CommandId.BundleCss);
-            OleMenuCommand menuCommandCss = new OleMenuCommand(async (s, e) => await CreateBundlefile(".css"), commandCss);
+            OleMenuCommand menuCommandCss = new OleMenuCommand(async (s, e) => await MakeBundleAsync(".css"), commandCss);
             menuCommandCss.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".css"); };
             _mcs.AddCommand(menuCommandCss);
 
             CommandID commandJs = new CommandID(CommandGuids.guidBundleCmdSet, (int)CommandId.BundleJs);
-            OleMenuCommand menuCommandJs = new OleMenuCommand(async (s, e) => await CreateBundlefile(".js"), commandJs);
+            OleMenuCommand menuCommandJs = new OleMenuCommand(async (s, e) => await MakeBundleAsync(".js"), commandJs);
             menuCommandJs.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".js"); };
             _mcs.AddCommand(menuCommandJs);
 
             CommandID commandHtml = new CommandID(CommandGuids.guidBundleCmdSet, (int)CommandId.BundleHtml);
-            OleMenuCommand menuCommandHtml = new OleMenuCommand(async (s, e) => await CreateBundlefile(".html"), commandHtml);
+            OleMenuCommand menuCommandHtml = new OleMenuCommand(async (s, e) => await MakeBundleAsync(".html"), commandHtml);
             menuCommandHtml.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".html"); };
             _mcs.AddCommand(menuCommandHtml);
         }
@@ -204,7 +204,7 @@ namespace MadsKristensen.EditorExtensions
             return ProjectHelpers.GetSelectedItems().Where(p => Path.GetExtension(p.FileNames[1]) == extension);
         }
 
-        private async static Threading.Task CreateBundlefile(string extension)
+        private async static Threading.Task MakeBundleAsync(string extension)
         {
             var items = GetSelectedItems(extension);
 
@@ -249,11 +249,11 @@ namespace MadsKristensen.EditorExtensions
             }
 
             await Dispatcher.CurrentDispatcher.BeginInvoke(new Action(async () =>
-                  await WriteFile(bundlePath, items, Path.ChangeExtension(bundleFile, null))), // Remove the final ".bundle" extension.
+                  await WriteBundleRecipe(bundlePath, items, Path.ChangeExtension(bundleFile, null))), // Remove the final ".bundle" extension.
                   DispatcherPriority.ApplicationIdle, null);
         }
 
-        private async static Threading.Task WriteFile(string filePath, IEnumerable<ProjectItem> files, string output)
+        private async static Threading.Task WriteBundleRecipe(string filePath, IEnumerable<ProjectItem> files, string output)
         {
             string projectRoot = ProjectHelpers.GetProjectFolder(files.ElementAt(0).FileNames[1]);
             StringBuilder sb = new StringBuilder();

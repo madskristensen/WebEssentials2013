@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.Images
         public void SetupCommands()
         {
             CommandID cmd = new CommandID(CommandGuids.guidImageCmdSet, (int)CommandId.SpriteImage);
-            OleMenuCommand menuCmd = new OleMenuCommand(async (s, e) => await CreateSpriteAsync(), cmd);
+            OleMenuCommand menuCmd = new OleMenuCommand(async (s, e) => await MakeSpriteAsync(), cmd);
             menuCmd.BeforeQueryStatus += BeforeQueryStatus;
             _mcs.AddCommand(menuCmd);
 
@@ -55,7 +55,7 @@ namespace MadsKristensen.EditorExtensions.Images
             button.Enabled = _files.Count() > 1;
         }
 
-        private async Task CreateSpriteAsync()
+        private async Task MakeSpriteAsync()
         {
             string spriteFile;
 
@@ -65,7 +65,9 @@ namespace MadsKristensen.EditorExtensions.Images
             try
             {
                 SpriteDocument doc = new SpriteDocument(spriteFile, _files.ToArray());
-                doc.Save();
+
+                await doc.WriteBundleRecipe();
+
                 EditorExtensionsPackage.DTE.ItemOperations.OpenFile(spriteFile);
 
                 await GenerateAsync(doc);
