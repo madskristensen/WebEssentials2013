@@ -15,7 +15,6 @@ namespace MadsKristensen.EditorExtensions
         protected static readonly string WebEssentialsResourceDirectory = Path.Combine(Path.GetDirectoryName(typeof(NodeExecutorBase).Assembly.Location), @"Resources");
         private static readonly string NodePath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node.exe");
 
-        protected string MapFileName { get; set; }
         protected abstract string CompilerPath { get; }
         protected virtual Regex ErrorParsingPattern { get { return null; } }
         protected virtual Func<string, IEnumerable<CompilerError>> ParseErrors { get { return ParseErrorsWithRegex; } }
@@ -34,7 +33,9 @@ namespace MadsKristensen.EditorExtensions
                 Path.GetFileName(targetFileName) != Path.GetFileNameWithoutExtension(sourceFileName) + ".min" + TargetExtension)
                 throw new ArgumentException(ServiceName + " cannot compile to a targetFileName with a different name.  Only the containing directory can be different.", "targetFileName");
 
-            var scriptArgs = GetArguments(sourceFileName, targetFileName);
+            var mapFileName = GetMapFileName(sourceFileName, targetFileName);
+
+            var scriptArgs = GetArguments(sourceFileName, targetFileName, mapFileName);
 
             var errorOutputFile = Path.GetTempFileName();
 
@@ -55,10 +56,10 @@ namespace MadsKristensen.EditorExtensions
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(targetFileName);
 
-                MapFileName = MapFileName ?? targetFileName + ".map";
+                mapFileName = mapFileName ?? targetFileName + ".map";
 
                 if (GenerateSourceMap)
-                    ProjectHelpers.CheckOutFileFromSourceControl(MapFileName);
+                    ProjectHelpers.CheckOutFileFromSourceControl(mapFileName);
 
                 using (var process = await start.ExecuteAsync())
                 {
@@ -70,7 +71,7 @@ namespace MadsKristensen.EditorExtensions
                                      (await FileHelpers.ReadAllTextRetry(errorOutputFile)).Trim(),
                                      sourceFileName,
                                      targetFileName,
-                                     MapFileName
+                                     mapFileName
                                  );
                 }
             }
@@ -79,7 +80,7 @@ namespace MadsKristensen.EditorExtensions
                 File.Delete(errorOutputFile);
 
                 if (!GenerateSourceMap)
-                    File.Delete(MapFileName);
+                    File.Delete(mapFileName);
             }
         }
 
@@ -203,7 +204,12 @@ namespace MadsKristensen.EditorExtensions
             return Task.FromResult(0);
         }
 
-        protected abstract string GetArguments(string sourceFileName, string targetFileName);
+        protected virtual string GetMapFileName(string sourceFileName, string targetFileName)
+        {
+            return null;
+        }
+
+        protected abstract string GetArguments(string sourceFileName, string targetFileName, string mapFileName);
 
         protected abstract Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName);
     }

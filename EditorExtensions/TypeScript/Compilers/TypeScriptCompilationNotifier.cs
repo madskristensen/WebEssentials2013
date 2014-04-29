@@ -89,6 +89,12 @@ namespace MadsKristensen.EditorExtensions.TypeScript
 
         private void Document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
+            if (e.FileActionType == FileActionTypes.ContentSavedToDisk)
+            {
+                FileTouched(sender, null);
+                return;
+            }
+
             if (e.FileActionType != FileActionTypes.DocumentRenamed)
                 return;
 
@@ -140,6 +146,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
                 foreach (var listener in _listeners)
                     await listener.FileSaved(ContentTypeManager.GetContentType("JavaScript"), TargetFilePath, false, false);
             }
+
             _isReady = false;
         }
 

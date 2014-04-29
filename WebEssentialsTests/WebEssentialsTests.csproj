@@ -119,6 +119,8 @@
     <Compile Include="IntegrationTests\Dependencies\ChainCompilationTests.cs" />
     <Compile Include="IntegrationTests\Dependencies\DependencyGraphTests.cs" />
     <Compile Include="IntegrationTests\SettingsTests.cs" />
+    <Compile Include="Tests\Foundation\FoundationValidationTests.cs" />
+    <Compile Include="Tests\Foundation\FoundationColumnsValidatorTests.cs" />
     <Compile Include="Tests\Bootstrap\BootstrapColumnsValidatorTests.cs" />
     <Compile Include="Tests\NodeExecutors\SweetJsCompilationTests.cs" />
     <Compile Include="Tests\SCSS\ScssDocumentTests.cs" />

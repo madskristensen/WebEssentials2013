@@ -306,6 +306,8 @@
     <Compile Include="CSS\Completion\Filter\ColorSwatchCompletionListFilter.cs" />
     <Compile Include="CSS\Completion\Filter\HideUncommonCompletionListFilter.cs" />
     <Compile Include="HTML\Outlining\HtmlRegionTagger.cs" />
+    <Compile Include="HTML\Validation\FoundationClassValidator.cs" />
+    <Compile Include="HTML\Validation\FoundationColumnsValidator.cs" />
     <Compile Include="HTML\Validation\BootstrapColumnsValidator.cs" />
     <Compile Include="IcedCoffeeScript\ContentType\IcedCoffeeScriptContentTypeDefinition.cs" />
     <Compile Include="JavaScript\Outlining\JavaScriptArrayOutlining.cs">
