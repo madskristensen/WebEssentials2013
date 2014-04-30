@@ -552,15 +552,6 @@
         </Strings>
       </Button>
 
-      <Button guid="guidImageCmdSet" id="cmdUpdateSprite" priority="0x0103" type="Button">
-        <Parent guid="guidImageCmdSet" id="MyMenuGroup"/>
-        <Icon guid="guidMenuImages" id="bmpJigsaw"/>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>Update image sprite</ButtonText>
-        </Strings>
-      </Button>
-
       <Button guid="guidBundleCmdSet" id="cmdBundleJs" priority="0x0101" type="Button">
         <Parent guid="guidSolutionExplorerCmdSet" id="MyBundleGroup"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -590,6 +581,15 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Update All Bundles</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidBuildCmdSet" id="cmdBuildSprites" priority="0x0104" type="Button">
+        <Parent guid="guidBuildCmdSet" id="MyBuildMenuGroup"/>
+        <Icon guid="guidMenuImages" id="bmpJigsaw"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Update All Sprites</ButtonText>
         </Strings>
       </Button>
 
@@ -745,6 +745,7 @@
     <KeyBinding guid="guidExtractCmdSet" id="cmdExtractMixin" mod1="Shift Alt" key1="K" editor="guidVSStd97"/>
 
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildBundles" mod1="Shift Alt" key1="I" editor="guidVSStd97"/>
+    <KeyBinding guid="guidBuildCmdSet" id="cmdBuildSprites" mod1="Shift Alt" key1="G" editor="guidVSStd97"/>
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildLess" mod1="Shift Alt" key1="Y" editor="guidVSStd97"/>
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildSass" mod1="Shift Alt" key1="Q" editor="guidVSStd97"/>
     <KeyBinding guid="guidBuildCmdSet" id="cmdBuildMinify" mod1="Shift Alt" key1="F" editor="guidVSStd97"/>
@@ -917,6 +918,7 @@
     <GuidSymbol name="guidBuildCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e65}">
       <IDSymbol name="MyBuildMenuGroup" value="0x1082" />
       <IDSymbol name="cmdBuildBundles" value="0x1083" />
+      <IDSymbol name="cmdBuildSprites" value="0x1094" />
       <IDSymbol name="cmdBuildLess" value="0x1084" />
       <IDSymbol name="cmdBuildSass" value="0x1085" />
       <IDSymbol name="cmdBuildMinify" value="0x1086" />
@@ -937,7 +939,6 @@
       <IDSymbol name="MyMenuGroup" value="0x1090" />
       <IDSymbol name="cmdCompressImage" value="0x1091" />
       <IDSymbol name="cmdSpriteImage" value="0x1093" />
-      <IDSymbol name="cmdUpdateSprite" value="0x1094" />
     </GuidSymbol>
 
     <GuidSymbol name="htmlEditorCommandSet" value="{D7E8C5E1-BDB8-11D0-9C88-0000F8040A53}">

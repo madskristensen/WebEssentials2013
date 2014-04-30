@@ -136,9 +136,7 @@ namespace MadsKristensen.EditorExtensions
                         {
                             item.Properties.Item("ItemType").Value = itemType;
                         }
-                        catch
-                        {
-                        }
+                        catch { }
                     }
                 }
             }

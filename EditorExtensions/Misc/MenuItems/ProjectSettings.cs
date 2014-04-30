@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 using EnvDTE;
 using EnvDTE80;
+using MadsKristensen.EditorExtensions.Images;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Shell;
 
@@ -37,9 +38,10 @@ namespace MadsKristensen.EditorExtensions
             solutionEvents.ProjectRemoved += ProjectRemoved;
         }
 
-        void SolutionEvents_Opened()
+        private async void SolutionEvents_Opened()
         {
-            System.Threading.Tasks.Task.Run(() => BundleFilesMenu.BindAllBundlesAssets(ProjectHelpers.GetSolutionFolderPath()));
+            await BundleFilesMenu.UpdateAllBundlesAsync();
+            await SpriteImageMenu.UpdateAllSpritesAsync();
         }
 
         private void SolutionBeforeQueryStatus(object sender, EventArgs e)
