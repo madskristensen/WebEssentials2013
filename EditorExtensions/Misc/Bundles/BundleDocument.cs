@@ -60,8 +60,8 @@ namespace MadsKristensen.EditorExtensions
                             new XElement("runOnBuild", RunOnBuild.ToString().ToLowerInvariant()),
                             new XComment("Use absolute path in the generated CSS files. By default, the URLs are relative to generated bundled CSS file."),
                             new XElement("adjustRelativePaths", AdjustRelativePaths.ToString().ToLowerInvariant()),
-                            new XComment("Specifies a custom subfolder to save CSS files to. By default, compiled output will be placed in the same folder and nested under the original file."),
-                            new XElement("outputDirectoryForCss", OutputDirectory)
+                            new XComment("Specifies a custom subfolder to save files to. By default, compiled output will be placed in the same folder and nested under the original file."),
+                            new XElement("outputDirectory", OutputDirectory)
                         ),
                         new XComment("The order of the <file> elements determines the order of the images in the bundle."),
                         new XElement("files", BundleAssets.Select(file => new XElement("file", "/" + FileHelpers.RelativePath(root, file))))

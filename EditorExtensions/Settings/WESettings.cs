@@ -119,6 +119,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Enable the menu that shows up in the browser. Requires restart.")]
         [DefaultValue(true)]
         public bool EnableMenu { get; set; }
+
         [Category("CSS")]
         [DisplayName("CSS usage files to ignore")]
         [Description("A semicolon-separated list of file patterns to ignore.")]
