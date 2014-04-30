@@ -24,7 +24,8 @@ namespace MadsKristensen.EditorExtensions.Scss
 
         protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
-            return string.Format(CultureInfo.CurrentCulture, "--source-map \"{0}\" --output-style=expanded \"{1}\" --output \"{2}\"", mapFileName, sourceFileName, targetFileName);
+            var sourceMapArg = GenerateSourceMap ? string.Format(CultureInfo.CurrentCulture, "--source-map \"{0}\"", mapFileName) : string.Empty;
+            return string.Format(CultureInfo.CurrentCulture, "{0} --output-style=expanded \"{1}\" --output \"{2}\"", sourceMapArg, sourceFileName, targetFileName);
         }
 
         //https://github.com/hcatlin/libsass/issues/242
