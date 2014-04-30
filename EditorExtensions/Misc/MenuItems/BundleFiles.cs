@@ -57,38 +57,34 @@ namespace MadsKristensen.EditorExtensions
             textView.TextDataModel.DocumentBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document);
 
             if (document != null)
-            {
                 document.FileActionOccurred += document_FileActionOccurred;
-            }
         }
 
         public async static Threading.Task BindAllBundlesAssets(string path)
         {
-            if (path != null)
-                foreach (var file in Directory.EnumerateFiles(Path.GetDirectoryName(path), "*.bundle", SearchOption.AllDirectories))
-                {
-                    await ObserveBundleFileObjects(file);
-                }
+            if (path == null)
+                return;
+
+            foreach (var file in Directory.EnumerateFiles(Path.GetDirectoryName(path), "*.bundle", SearchOption.AllDirectories))
+                await ObserveBundleFileObjects(file);
         }
 
         private async static Threading.Task ObserveBundleFileObjects(string file)
         {
             XmlDocument doc = await GetXmlDocument(file);
 
-            if (doc != null)
-            {
-                XmlNode bundleNode = doc.SelectSingleNode("//bundle");
+            if (doc == null)
+                return;
 
-                if (bundleNode == null)
-                    return;
+            XmlNode bundleNode = doc.SelectSingleNode("//bundle");
 
-                XmlNodeList nodes = doc.SelectNodes("//file");
+            if (bundleNode == null)
+                return;
 
-                foreach (XmlNode node in nodes)
-                {
-                    await new BundleFileWatcher().AttachFileObserverEvent(ProjectHelpers.ToAbsoluteFilePath(node.InnerText, file));
-                }
-            }
+            XmlNodeList nodes = doc.SelectNodes("//file");
+
+            foreach (XmlNode node in nodes)
+                await new BundleFileWatcher().AttachFileObserverEvent(ProjectHelpers.ToAbsoluteFilePath(node.InnerText, file));
         }
 
         private async void document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
@@ -118,58 +114,48 @@ namespace MadsKristensen.EditorExtensions
                 await UpdateBundle(changedFile, isBuild);
                 return;
             }
+
             foreach (Project project in ProjectHelpers.GetAllProjects())
             {
-                if (project.ProjectItems.Count > 0)
-                {
-                    string folder = ProjectHelpers.GetRootFolder(project);
-                    await UpdateBundle(folder, isBuild);
-                }
+                if (project.ProjectItems.Count == 0)
+                    continue;
+
+                string folder = ProjectHelpers.GetRootFolder(project);
+                await UpdateBundle(folder, isBuild);
             }
         }
 
         private async static Threading.Task UpdateBundle(string changedFile, bool isBuild)
         {
+            string absolutePath = ProjectHelpers.FixAbsolutePath(changedFile);
             bool isDir = Directory.Exists(changedFile);
-
             string dir = isDir ? changedFile : ProjectHelpers.GetProjectFolder(changedFile);
 
             if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir))
                 return;
 
-            foreach (string file in Directory.GetFiles(dir, "*" + _ext, SearchOption.AllDirectories))
+            foreach (string file in Directory.EnumerateFiles(dir, "*" + _ext, SearchOption.AllDirectories))
             {
-                if (_ignoreFolders.Any(p => file.IndexOf("\\" + p + "\\", StringComparison.OrdinalIgnoreCase) > -1))
+                if (_ignoreFolders.Any(p => file.Contains("\\" + p + "\\")))
                     continue;
 
                 XmlDocument doc = await GetXmlDocument(file);
-                var bundleFileDir = Path.GetDirectoryName(file);
-                bool enabled = false;
 
-                if (doc != null)
-                {
-                    XmlNode bundleNode = doc.SelectSingleNode("//bundle");
-                    if (bundleNode == null)
-                        continue;
+                if (doc == null)
+                    continue;
 
-                    XmlNodeList nodes = doc.SelectNodes("//file");
-                    foreach (XmlNode node in nodes)
-                    {
-                        string relative = node.InnerText;
-                        string absolute = ProjectHelpers.ToAbsoluteFilePath(relative, dir, bundleFileDir);
+                XmlNode bundleNode = doc.SelectSingleNode("//bundle");
 
-                        if (changedFile != null && absolute.Equals(ProjectHelpers.FixAbsolutePath(changedFile), StringComparison.OrdinalIgnoreCase))
-                        {
-                            enabled = true;
-                            break;
-                        }
-                    }
+                if (bundleNode == null)
+                    continue;
 
-                    enabled = isBuild && bundleNode.Attributes["runOnBuild"] != null && bundleNode.Attributes["runOnBuild"].InnerText == "true";
+                string baseDir = Path.GetDirectoryName(file);
 
-                    if (enabled)
-                        WriteBundleFile(file, doc).DoNotWait("reading " + file + "file");
-                }
+                if ((changedFile != null && doc.SelectNodes("//file").Cast<XmlNode>().Any(x =>
+                     absolutePath == ProjectHelpers.ToAbsoluteFilePath(x.InnerText, dir, baseDir))) ||
+                    (isBuild && bundleNode.Attributes["runOnBuild"] != null &&
+                     bundleNode.Attributes["runOnBuild"].InnerText == "true"))
+                    WriteBundleFile(file, doc).DoNotWait("reading " + file + " file");
             }
         }
 
@@ -192,17 +178,17 @@ namespace MadsKristensen.EditorExtensions
         {
             // TODO: Replace with single class that takes ContentType
             CommandID commandCss = new CommandID(CommandGuids.guidBundleCmdSet, (int)CommandId.BundleCss);
-            OleMenuCommand menuCommandCss = new OleMenuCommand(async (s, e) => await CreateBundlefile(".css"), commandCss);
+            OleMenuCommand menuCommandCss = new OleMenuCommand(async (s, e) => await MakeBundleAsync(".css"), commandCss);
             menuCommandCss.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".css"); };
             _mcs.AddCommand(menuCommandCss);
 
             CommandID commandJs = new CommandID(CommandGuids.guidBundleCmdSet, (int)CommandId.BundleJs);
-            OleMenuCommand menuCommandJs = new OleMenuCommand(async (s, e) => await CreateBundlefile(".js"), commandJs);
+            OleMenuCommand menuCommandJs = new OleMenuCommand(async (s, e) => await MakeBundleAsync(".js"), commandJs);
             menuCommandJs.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".js"); };
             _mcs.AddCommand(menuCommandJs);
 
             CommandID commandHtml = new CommandID(CommandGuids.guidBundleCmdSet, (int)CommandId.BundleHtml);
-            OleMenuCommand menuCommandHtml = new OleMenuCommand(async (s, e) => await CreateBundlefile(".html"), commandHtml);
+            OleMenuCommand menuCommandHtml = new OleMenuCommand(async (s, e) => await MakeBundleAsync(".html"), commandHtml);
             menuCommandHtml.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".html"); };
             _mcs.AddCommand(menuCommandHtml);
         }
@@ -218,54 +204,56 @@ namespace MadsKristensen.EditorExtensions
             return ProjectHelpers.GetSelectedItems().Where(p => Path.GetExtension(p.FileNames[1]) == extension);
         }
 
-        private async static Threading.Task CreateBundlefile(string extension)
+        private async static Threading.Task MakeBundleAsync(string extension)
         {
-            StringBuilder sb = new StringBuilder();
-            string firstFile = null;
             var items = GetSelectedItems(extension);
+
+            if (items.Count() == 0)
+                return;
+
+            StringBuilder sb = new StringBuilder();
 
             foreach (ProjectItem item in items)
             {
-                if (string.IsNullOrEmpty(firstFile))
-                    firstFile = item.FileNames[1];
+                if (!File.Exists(item.FileNames[1]))
+                    continue;
 
-                if (File.Exists(item.FileNames[1]))
-                {
-                    string content = await FileHelpers.ReadAllTextRetry(item.FileNames[1]);
-                    sb.AppendLine(content);
-                }
+                string content = await FileHelpers.ReadAllTextRetry(item.FileNames[1]);
+                sb.AppendLine(content);
             }
 
-            if (firstFile != null)
+            ProjectItem firstItem = items.SkipWhile(x => x.FileNames[1] != null).FirstOrDefault();
+
+            if (firstItem == null || string.IsNullOrEmpty(firstItem.FileNames[1]))
+                return;
+
+            string dir = Path.GetDirectoryName(firstItem.FileNames[1]);
+
+            if (!Directory.Exists(dir))
+                return;
+
+            string bundleFile = Microsoft.VisualBasic.Interaction.InputBox("Specify the name of the bundle", "Web Essentials", "bundle1");
+
+            if (string.IsNullOrEmpty(bundleFile))
+                return;
+
+            if (!bundleFile.EndsWith(extension + _ext, StringComparison.OrdinalIgnoreCase))
+                bundleFile += extension + _ext;
+
+            string bundlePath = Path.Combine(dir, bundleFile);
+
+            if (File.Exists(bundlePath))
             {
-                string dir = Path.GetDirectoryName(firstFile);
-
-                if (Directory.Exists(dir))
-                {
-                    string bundleFile = Microsoft.VisualBasic.Interaction.InputBox("Specify the name of the bundle", "Web Essentials", "bundle1");
-
-                    if (string.IsNullOrEmpty(bundleFile))
-                        return;
-
-                    if (!bundleFile.EndsWith(extension + _ext, StringComparison.OrdinalIgnoreCase))
-                        bundleFile += extension + _ext;
-
-                    string bundlePath = Path.Combine(dir, bundleFile);
-
-                    if (File.Exists(bundlePath))
-                    {
-                        Logger.ShowMessage("The bundle file already exists.");
-                    }
-                    else
-                    {
-                        await Dispatcher.CurrentDispatcher.BeginInvoke(         // Remove the final ".bundle" extension.
-                            new Action(async () => await WriteFile(bundlePath, items, Path.ChangeExtension(bundleFile, null))),
-                        DispatcherPriority.ApplicationIdle, null);
-                    }
-                }
+                Logger.ShowMessage("The bundle file already exists.");
+                return;
             }
+
+            await Dispatcher.CurrentDispatcher.BeginInvoke(new Action(async () =>
+                  await WriteBundleRecipe(bundlePath, items, Path.ChangeExtension(bundleFile, null))), // Remove the final ".bundle" extension.
+                  DispatcherPriority.ApplicationIdle, null);
         }
-        private async static Threading.Task WriteFile(string filePath, IEnumerable<ProjectItem> files, string output)
+
+        private async static Threading.Task WriteBundleRecipe(string filePath, IEnumerable<ProjectItem> files, string output)
         {
             string projectRoot = ProjectHelpers.GetProjectFolder(files.ElementAt(0).FileNames[1]);
             StringBuilder sb = new StringBuilder();
@@ -302,16 +290,17 @@ namespace MadsKristensen.EditorExtensions
             //TODO: Use XLINQ
             XmlDocument doc = await GetXmlDocument(filePath);
 
-            if (doc != null)
-            {
-                await Dispatcher.CurrentDispatcher.BeginInvoke(
-                    new Action(() => WriteBundleFile(filePath, doc).DoNotWait("writing " + filePath + "file")), DispatcherPriority.ApplicationIdle, null);
-            }
+            if (doc == null)
+                return;
+
+            await Dispatcher.CurrentDispatcher.BeginInvoke(
+                  new Action(() => WriteBundleFile(filePath, doc).DoNotWait("writing " + filePath + "file")), DispatcherPriority.ApplicationIdle, null);
         }
 
         private async static Threading.Task WriteBundleFile(string bundleFilePath, XmlDocument doc)
         {
             XmlNode bundleNode = doc.SelectSingleNode("//bundle");
+
             if (bundleNode == null)
                 return;
 
@@ -327,16 +316,19 @@ namespace MadsKristensen.EditorExtensions
 
             // filePath must end in ".targetExtension.bundle"
             string extension = Path.GetExtension(Path.GetFileNameWithoutExtension(bundleFilePath));
+
             if (string.IsNullOrEmpty(extension))
             {
                 Logger.Log("Skipping bundle file " + bundleFilePath + " without extension.  Bundle files must end with the output extension, followed by '.bundle'.");
                 return;
             }
+
             XmlNodeList nodes = doc.SelectNodes("//file");
 
             foreach (XmlNode node in nodes)
             {
                 string absolute;
+
                 if (node.InnerText.Contains(":\\"))
                 {
                     absolute = node.InnerText;
@@ -380,23 +372,26 @@ namespace MadsKristensen.EditorExtensions
                 await new BundleFileWatcher().AttachFileObserverEvent(file);
 
                 var source = await FileHelpers.ReadAllTextRetry(file);
+
                 if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase))
                 {
                     // If the bundle is in the same folder as the CSS,
                     // or if does not have URLs, no need to normalize.
-                    if (Path.GetDirectoryName(file) != Path.GetDirectoryName(bundleSourcePath)
-                     && source.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0
-                     && WESettings.Instance.Css.AdjustRelativePaths)
+                    if (Path.GetDirectoryName(file) != Path.GetDirectoryName(bundleSourcePath) &&
+                        source.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0 &&
+                        WESettings.Instance.Css.AdjustRelativePaths)
                         source = CssUrlNormalizer.NormalizeUrls(
                             tree: new CssParser().Parse(source, true),
                             targetFile: bundleSourcePath,
                             oldBasePath: file
                         );
                 }
+
                 sb.AppendLine(source);
             }
 
             bool bundleChanged = !File.Exists(bundleSourcePath) || await FileHelpers.ReadAllTextRetry(bundleSourcePath) != sb.ToString();
+
             if (bundleChanged)
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(bundleSourcePath);
@@ -407,9 +402,7 @@ namespace MadsKristensen.EditorExtensions
             ProjectHelpers.AddFileToProject(bundleFilePath, bundleSourcePath);
 
             if (bundleNode.Attributes["minify"] != null && bundleNode.Attributes["minify"].InnerText == "true")
-            {
                 await WriteMinFile(bundleSourcePath, extension, bundleChanged);
-            }
         }
 
         private async static Threading.Task WriteMinFile(string bundleSourcePath, string extension, bool bundleChanged)

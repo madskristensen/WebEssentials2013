@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using MadsKristensen.EditorExtensions.Settings;
@@ -35,56 +36,46 @@ namespace MadsKristensen.EditorExtensions.Images
             ScssOutputDirectory = WESettings.Instance.Sprite.ScssOutputDirectory;
         }
 
-        public void Save()
+        public async Task WriteBundleRecipe()
         {
+            string root = ProjectHelpers.GetRootFolder();
             XmlWriterSettings settings = new XmlWriterSettings() { Indent = true };
+            XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
 
-            using (XmlWriter writer = XmlWriter.Create(FileName, settings))
+            using (XmlWriter writer = await Task.Run(() => XmlWriter.Create(FileName, settings)))
             {
-                writer.WriteStartElement("sprite");
-                writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
-                writer.WriteAttributeString("xsi", "noNamespaceSchemaLocation", null, "http://vswebessentials.com/schemas/v1/sprite.xsd");
-
-                // Settings
-                writer.WriteStartElement("settings");
-                writer.WriteComment("Determines if the sprite image should be automatically optimized after creation/update");
-                writer.WriteElementString("optimize", Optimize ? "true" : "false");
-                writer.WriteElementString("orientation", IsVertical ? "vertical" : "horizontal");
-                writer.WriteElementString("outputType", FileExtension.ToString().ToLowerInvariant());
-                writer.WriteComment("Use full path to generate unique class or mixin name in CSS, LESS and SASS files. Consider disabling this if you want class names to be filename only.");
-                writer.WriteElementString("fullPathForIdentifierName", UseFullPathForIdentifierName ? "true" : "false");
-                writer.WriteComment("Use absolute path in the generated CSS-like files. By default, the URLs are relative to sprite image file (and the location of CSS, LESS and SCSS).");
-                writer.WriteElementString("useAbsoluteUrl", UseAbsoluteUrl ? "true" : "false");
-                writer.WriteComment("Specifies a custom subfolder to save CSS files to. By default, compiled output will be placed in the same folder and nested under the original file.");
-                writer.WriteElementString("outputDirectoryForCss", CssOutputDirectory);
-                writer.WriteComment("Specifies a custom subfolder to save LESS files to. By default, compiled output will be placed in the same folder and nested under the original file.");
-                writer.WriteElementString("outputDirectoryForLess", LessOutputDirectory);
-                writer.WriteComment("Specifies a custom subfolder to save SCSS files to. By default, compiled output will be placed in the same folder and nested under the original file.");
-                writer.WriteElementString("outputDirectoryForScss", ScssOutputDirectory);
-                writer.WriteEndElement(); // </settings>
-
-                // Files
-                writer.WriteComment("The order of the <file> elements determines the order of the images in the sprite.");
-                writer.WriteStartElement("files");
-
-                string root = ProjectHelpers.GetRootFolder();
-
-                foreach (string file in ImageFiles)
-                {
-                    string relative = "/" + FileHelpers.RelativePath(root, file);
-                    writer.WriteElementString("file", relative);
-                }
-
-                writer.WriteEndElement(); // </files>
-                writer.WriteEndElement(); // </sprite>
+                new XDocument(
+                    new XElement("sprite",
+                        new XAttribute(XNamespace.Xmlns + "xsi", xsi),
+                        new XAttribute(xsi + "noNamespaceSchemaLocation", "http://vswebessentials.com/schemas/v1/sprite.xsd"),
+                        new XElement("settings",
+                            new XComment("Determines if the sprite image should be automatically optimized after creation/update"),
+                            new XElement("optimize", Optimize.ToString().ToLowerInvariant()),
+                            new XElement("orientation", IsVertical ? "vertical" : "horizontal"),
+                            new XElement("outputType", FileExtension.ToString().ToLowerInvariant()),
+                            new XComment("Use full path to generate unique class or mixin name in CSS, LESS and SASS files. Consider disabling this if you want class names to be filename only."),
+                            new XElement("fullPathForIdentifierName", UseFullPathForIdentifierName.ToString().ToLowerInvariant()),
+                            new XComment("Use absolute path in the generated CSS-like files. By default, the URLs are relative to sprite image file (and the location of CSS, LESS and SCSS)."),
+                            new XElement("useAbsoluteUrl", UseAbsoluteUrl.ToString().ToLowerInvariant()),
+                            new XComment("Specifies a custom subfolder to save CSS files to. By default, compiled output will be placed in the same folder and nested under the original file."),
+                            new XElement("outputDirectoryForCss", CssOutputDirectory),
+                            new XComment("Specifies a custom subfolder to save LESS files to. By default, compiled output will be placed in the same folder and nested under the original file."),
+                            new XElement("outputDirectoryForLess", LessOutputDirectory),
+                            new XComment("Specifies a custom subfolder to save SCSS files to. By default, compiled output will be placed in the same folder and nested under the original file."),
+                            new XElement("outputDirectoryForScss", ScssOutputDirectory)
+                        ),
+                        new XComment("The order of the <file> elements determines the order of the images in the sprite."),
+                        new XElement("files", ImageFiles.Select(file => new XElement("file", "/" + FileHelpers.RelativePath(root, file))))
+                    )
+                ).Save(writer);
             }
         }
 
         public static SpriteDocument FromFile(string fileName)
         {
-            XDocument doc = XDocument.Load(fileName);
             string root = ProjectHelpers.GetProjectFolder(fileName);
             string folder = Path.GetDirectoryName(root);
+            XDocument doc = XDocument.Load(fileName);
             XElement element = null;
 
             var imageFiles = from f in doc.Descendants("file")
