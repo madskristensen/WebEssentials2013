@@ -14,13 +14,14 @@ namespace MadsKristensen.EditorExtensions.LiveScript
     public class LiveScriptCompiler : NodeExecutorBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\LiveScript\bin\livescript");
+        private static readonly Regex _errorParsingPattern = new Regex(@"Failed at: (.*?)Error: (?<message>.*)", RegexOptions.Multiline);
 
         public override string TargetExtension { get { return ".js"; } }
         public override bool GenerateSourceMap { get { return WESettings.Instance.LiveScript.GenerateSourceMaps; } }
         public override string ServiceName { get { return "LiveScript"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
         public override bool RequireMatchingFileName { get { return true; } }
-        protected override Regex ErrorParsingPattern { get { return null; } }
+        protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
 
         protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
