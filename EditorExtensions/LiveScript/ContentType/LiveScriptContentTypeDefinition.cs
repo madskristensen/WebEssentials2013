@@ -15,12 +15,22 @@ namespace MadsKristensen.EditorExtensions.LiveScript
         /// </summary>
         [Export(typeof(ContentTypeDefinition))]
         [Name(LiveScriptContentType)]
-        [BaseDefinition("LiveScript")]
+        [BaseDefinition("CoffeeScript")]
         public ContentTypeDefinition ILiveScriptContentType { get; set; }
 
         [Export(typeof(FileExtensionToContentTypeDefinition))]
         [ContentType(LiveScriptContentType)]
         [FileExtension(".ls")]
+        public FileExtensionToContentTypeDefinition LsFileExtension { get; set; }
+
+        [Export(typeof(FileExtensionToContentTypeDefinition))]
+        [ContentType(LiveScriptContentType)]
+        [FileExtension(".livescript")]
         public FileExtensionToContentTypeDefinition LiveScriptFileExtension { get; set; }
+
+        [Export(typeof(FileExtensionToContentTypeDefinition))]
+        [ContentType(LiveScriptContentType)]
+        [FileExtension(".lsc")]
+        public FileExtensionToContentTypeDefinition LscScriptFileExtension { get; set; }
     }
 }

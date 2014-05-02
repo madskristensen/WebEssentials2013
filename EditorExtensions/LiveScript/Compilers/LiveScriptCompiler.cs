@@ -10,33 +10,25 @@ using Microsoft.VisualStudio.Utilities;
 namespace MadsKristensen.EditorExtensions.LiveScript
 {
     [Export(typeof(NodeExecutorBase))]
-    [ContentType("LiveScript")]
+    [ContentType(LiveScriptContentTypeDefinition.LiveScriptContentType)]
     public class LiveScriptCompiler : NodeExecutorBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\LiveScript\bin\livescript");
-        private static readonly Regex _errorParsingPattern = new Regex(@"(?<fileName>.*):(?<line>.\d*):(?<column>.\d*): error: (?<message>.*\n.*)", RegexOptions.Multiline);
 
         public override string TargetExtension { get { return ".js"; } }
-        //TODO: create settings for LiveScript
-        //public override bool GenerateSourceMap { get { return WESettings.Instance.LiveScript.GenerateSourceMaps; } }
-        public override bool GenerateSourceMap { get { return true; } }
+        public override bool GenerateSourceMap { get { return WESettings.Instance.LiveScript.GenerateSourceMaps; } }
         public override string ServiceName { get { return "LiveScript"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
         public override bool RequireMatchingFileName { get { return true; } }
-        protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
+        protected override Regex ErrorParsingPattern { get { return null; } }
 
         protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
             var args = new StringBuilder();
 
-            //TODO: create settings for LiveScript
-            //if (!WESettings.Instance.LiveScript.WrapClosure)
-            //    args.Append("--bare ");
+            if (!WESettings.Instance.LiveScript.WrapClosure)
+                args.Append("-b ");
 
-            //if (GenerateSourceMap)
-            //    args.Append("--map ");
-
-            //args.AppendFormat(CultureInfo.CurrentCulture, "--output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
             args.AppendFormat(CultureInfo.CurrentCulture, "-o \"{0}\" -c \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
             return args.ToString();
         }

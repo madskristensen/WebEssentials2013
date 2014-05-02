@@ -28,6 +28,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         public LessSettings Less { get; private set; }
         public ScssSettings Scss { get; private set; }
         public CoffeeScriptSettings CoffeeScript { get; private set; }
+        public LiveScriptSettings LiveScript { get; private set; }
         public MarkdownSettings Markdown { get; private set; }
         public SweetJsSettings SweetJs { get; private set; }
     }
@@ -523,6 +524,15 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Where to show messages from the linter.")]
         [DefaultValue(TaskErrorCategory.Message)]
         public TaskErrorCategory LintResultLocation { get; set; }
+    }
+
+    public sealed class LiveScriptSettings : CompilationSettings<LiveScriptSettings>
+    {
+        [DisplayName("Wrap generated JavaScript files")]
+        [Description("Wrap the generated JavaScript source in an anonymous function. This prevents variables from leaking into the global scope.")]
+        [Category("LiveScript")]
+        [DefaultValue(true)]
+        public bool WrapClosure { get; set; }
     }
     public sealed class SweetJsSettings : CompilationSettings<SweetJsSettings> { }
 

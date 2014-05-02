@@ -22,6 +22,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     [ContentType("SCSS")]
     [ContentType("CoffeeScript")]
     [ContentType("IcedCoffeeScript")]
+    [ContentType(LiveScript.LiveScriptContentTypeDefinition.LiveScriptContentType)]
     [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
     class NodeCompilerNotifierProvider : ICompilationNotifierProvider
     {
