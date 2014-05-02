@@ -1,0 +1,193 @@
+<h1>Contributing to Web Essentials</h1>
+
+<p>Looking to contribute something to Web Essentials? <strong>Here's how you can help.</strong></p>
+
+<p>Please take a moment to review this document in order to make the contribution
+process easy and effective for everyone involved.</p>
+
+<p>Following these guidelines helps to communicate that you respect the time of
+the developers managing and developing this open source project. In return,
+they should reciprocate that respect in addressing your issue or assessing
+patches and features.</p>
+
+<h2>Using the issue tracker</h2>
+
+<p>The <a href="https://github.com/madskristensen/WebEssentials2013/issues">issue tracker</a> is
+the preferred channel for <a href="#bug-reports">bug reports</a>, <a href="#feature-requests">features requests</a>
+and <a href="#pull-requests">submitting pull requests</a>, but please respect the following
+restrictions:</p>
+
+<ul>
+<li><p>Please <strong>do not</strong> use the issue tracker for personal support requests.  Stack
+Overflow (<a href="http://stackoverflow.com/questions/tagged/web-essentials"><code>web-essentials</code></a> tag) is better place to get help.</p></li>
+<li><p>Please <strong>do not</strong> derail or troll issues. Keep the discussion on topic and
+respect the opinions of others.</p></li>
+<li><p>Please <strong>do not</strong> open issues or pull requests which <em>belongs to</em> the third party components
+SignalR, LESS, SASS, CoffeeScript, LiveScript, TypeScript, NodeJs etc.</p></li>
+</ul>
+
+<h2>Bug reports</h2>
+
+<p>A bug is a <em>demonstrable problem</em> that is caused by the code in the repository.
+Good bug reports are extremely helpful, so thanks!</p>
+
+<p>Guidelines for bug reports:</p>
+
+<ol>
+<li><p><strong>Use the GitHub issue search</strong> &mdash; check if the issue has already been
+reported.</p></li>
+<li><p><strong>Check if the issue has been fixed</strong> &mdash; try to reproduce it using the
+latest <code>master</code> or development branch in the repository.</p></li>
+<li><p><strong>Isolate the problem</strong> &mdash; ideally create an 
+<a href="http://www.sscce.org/">SSCCE</a> and a live example.
+Uploading the project on cloud storage (OneDrive, DropBox, et el.)
+or creating a sample GitHub repository is also helpful.</p></li>
+</ol>
+
+<p>A good bug report shouldn't leave others needing to chase you up for more
+information. Please try to be as detailed as possible in your report. What is
+your environment? What steps will reproduce the issue? What browser(s) and OS
+experience the problem? Do other browsers show the bug differently? What
+would you expect to be the outcome? All these details will help people to fix
+any potential bugs.</p>
+
+<p>Example:</p>
+
+<blockquote>
+  <p>Short and descriptive example bug report title</p>
+  
+  <p>A summary of the issue and the Web Essentials, Visual Studio, browser, OS environments in which it occurs. If
+  suitable, include the steps required to reproduce the bug.</p>
+  
+  <ol>
+  <li>This is the first step</li>
+  <li>This is the second step</li>
+  <li>Further steps, etc.</li>
+  </ol>
+  
+  <p><code>&lt;url&gt;</code> - a link to the project/file uploaded on cloud storage or other publically accessible medium.</p>
+  
+  <p>Any other information you want to share that is relevant to the issue being
+  reported. This might include the lines of code that you have identified as
+  causing the bug, and potential solutions (and your opinions on their
+  merits).</p>
+</blockquote>
+
+<h2>Feature requests</h2>
+
+<p>Feature requests are welcome. But take a moment to find out whether your idea
+fits with the scope and aims of the project. It's up to <em>you</em> to make a strong
+case to convince the project's developers of the merits of this feature. Please
+provide as much detail and context as possible.</p>
+
+<h2>Pull requests</h2>
+
+<p>Good pull requests�patches, improvements, new features�are a fantastic
+help. They should remain focused in scope and avoid containing unrelated
+commits.</p>
+
+<p><strong>Please ask first</strong> before embarking on any significant pull request (e.g.
+implementing features, refactoring code, porting to a different language),
+otherwise you risk spending a lot of time working on something that the
+project's developers might not want to merge into the project.</p>
+
+<p>Please adhere to the <a href="#code-guidelines">coding guidelines</a> used throughout the
+project (indentation, accurate comments, etc.) and any other requirements
+(such as test coverage).</p>
+
+<p>Adhering to the following process is the best way to get your work
+included in the project:</p>
+
+<ol>
+<li><p><a href="http://help.github.com/fork-a-repo/">Fork</a> the project, clone your fork,
+and configure the remotes:</p>
+
+<p>```bash</p>
+
+<h1>Clone your fork of the repo into the current directory</h1>
+
+<p>git clone https://github.com/<your-username>/WebEssentials2013.git</p>
+
+<h1>Navigate to the newly cloned directory</h1>
+
+<p>cd WebEssentials2013</p>
+
+<h1>Assign the original repo to a remote called "we2013" (or "upstream")</h1>
+
+<p>git remote add we2013 https://github.com/madskristensen/WebEssentials2013.git
+```</p></li>
+<li><p>If you cloned a while ago, get the latest changes from upstream:</p>
+
+<p><code>bash
+git checkout master
+git pull we2013 master
+</code></p></li>
+<li><p>Create a new topic branch (off the main project development branch) to
+contain your feature, change, or fix:</p>
+
+<p><code>bash
+git checkout -b &lt;topic-branch-name&gt;
+</code></p></li>
+<li><p>Commit your changes in logical chunks. Please adhere to these <a href="http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html">git commit
+message guidelines</a>
+or your code is unlikely be merged into the main project. Use Git's
+<a href="https://help.github.com/articles/interactive-rebase">interactive rebase</a>
+feature to tidy up your commits before making them public. Also, prepend name of the feature
+to the commit message. For instance: "SCSS: Fixes compiler results for IFileListener.\nFixes <code>#123</code>"</p></li>
+<li><p>Locally merge (or rebase) the upstream development branch into your topic branch:</p>
+
+<p><code>bash
+git pull [--rebase] we2013 master
+</code></p></li>
+<li><p>Push your topic branch up to your fork:</p>
+
+<p><code>bash
+git push origin &lt;topic-branch-name&gt;
+</code></p></li>
+<li><p><a href="https://help.github.com/articles/using-pull-requests/">Open a Pull Request</a>
+with a clear title and description against the <code>master</code> branch.</p></li>
+</ol>
+
+<h2>Code guidelines</h2>
+
+<ul>
+<li>Always use proper indentation.</li>
+<li>In Visual Studio under <code>Tools &gt; Options &gt; Text Editor &gt; C# &gt; Advanced</code>, make sure <code>Place 'System' directives first when sorting usings</code> option is enabled (checked).</li>
+<li>Before commiting, organize usings for each updated C# source file. Either you can right-click editor and select <code>Organize Usings &gt; Remove and sort</code> OR use extension like <a href="http://visualstudiogallery.msdn.microsoft.com/a7f75c34-82b4-4357-9c66-c18e32b9393e">BatchFormat</a>.</li>
+<li>Before commiting, run Code Analysis in <code>Debug</code> configuration and follow the guidlines to fix CA issues.
+Code Analysis commits can be made separately.</li>
+</ul>
+
+<h2>License</h2>
+
+<p>Microsoft Reciprocal License (Ms-RL)</p>
+
+<p>This license governs use of the accompanying software. If you use the software, you accept this license. If you do not accept the license, do not use the software.</p>
+
+<ol>
+<li><p>Definitions</p>
+
+<p>The terms "reproduce", "reproduction", "derivative works" and "distribution" have the same meaning here as under U.S. copyright law.</p>
+
+<p>A "contribution" is the original software, or any additions or changes to the software.</p>
+
+<p>A "contributor" is any person that distributes its contribution under this license.</p>
+
+<p>"Licensed patents" are a contributor's patent claims that read directly on its contribution.</p></li>
+<li><p>Grant of Rights</p>
+
+<ol>
+<li><p>Copyright Grant- Subject to the terms of this license, including the license conditions and limitations in section 3, each contributor grants you a non-exclusive, worldwide, royalty-free copyright license to reproduce its contribution, prepare derivative works of its contribution, and distribute its contribution or any derivative works that you create.</p></li>
+<li><p>Patent Grant- Subject to the terms of this license, including the license conditions and limitations in section 3, each contributor grants you a non-exclusive, worldwide, royalty-free license under its licensed patents to make, have made, use, sell, offer for sale, import, and/or otherwise dispose of its contribution in the software or derivative works of the contribution in the software.</p></li>
+</ol></li>
+<li><p>Conditions and Limitations</p>
+
+<ol>
+<li><p>Reciprocal Grants- For any file you distribute that contains code from the software (in source code or binary format), you must provide recipients the source code to that file along with a copy of this license, which license will govern that file. You may license other files that are entirely your own work and do not contain code from the software under any terms you choose.</p></li>
+<li><p>No Trademark License- This license does not grant you rights to use any contributors' name, logo, or trademarks.</p></li>
+<li><p>If you bring a patent claim against any contributor over patents that you claim are infringed by the software, your patent license from such contributor to the software ends automatically.</p></li>
+<li><p>If you distribute any portion of the software, you must retain all copyright, patent, trademark, and attribution notices that are present in the software.</p></li>
+<li><p>If you distribute any portion of the software in source code form, you may do so only under this license by including a complete copy of this license with your distribution. If you distribute any portion of the software in compiled or object code form, you may only do so under a license that complies with this license.</p></li>
+<li><p>The software is licensed "as-is." You bear the risk of using it. The contributors give no express warranties, guarantees or conditions. You may have additional consumer rights under your local laws which this license cannot change. To the extent permitted under your local laws, the contributors exclude the implied warranties of merchantability, fitness for a particular purpose and non-infringement.</p></li>
+</ol></li>
+</ol>

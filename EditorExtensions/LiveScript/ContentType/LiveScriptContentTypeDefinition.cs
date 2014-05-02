@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions.LiveScript
         /// </summary>
         [Export(typeof(ContentTypeDefinition))]
         [Name(LiveScriptContentType)]
-        [BaseDefinition("CoffeeScript")]
+        [BaseDefinition("LiveScript")]
         public ContentTypeDefinition ILiveScriptContentType { get; set; }
 
         [Export(typeof(FileExtensionToContentTypeDefinition))]
