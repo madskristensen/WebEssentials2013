@@ -333,6 +333,10 @@
     <Compile Include="JSON\Schemas\SchemaExporter.cs" />
     <Compile Include="JSON\Validation\JsonErrorTag.cs" />
     <Compile Include="JSON\Validation\RefMemberNameItemValidator.cs" />
+    <Compile Include="Misc\Bundles\BundleFilesObserver.cs" />
+    <Compile Include="Misc\Bundles\IBundleDocument.cs" />
+    <Compile Include="Misc\Bundles\BundleGenerator.cs" />
+    <Compile Include="Misc\Bundles\BundleDocument.cs" />
     <Compile Include="SCSS\Commands\ScssCreationListener.cs" />
     <Compile Include="SCSS\Commands\ScssExtractMixinCommandTarget.cs" />
     <Compile Include="SCSS\Commands\ScssExtractVariableCommandTarget.cs" />
@@ -982,6 +986,7 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -138,25 +139,33 @@ namespace MadsKristensen.EditorExtensions.Images
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)")]
         private static string GetArguments(string sourceFile, string targetFile)
         {
-            if (!Uri.IsWellFormedUriString(sourceFile, UriKind.RelativeOrAbsolute))
+            if (!Uri.IsWellFormedUriString(sourceFile, UriKind.RelativeOrAbsolute) && !File.Exists(sourceFile))
                 return null;
 
-            string ext = Path.GetExtension(sourceFile).ToLowerInvariant();
+            string ext;
+
+            try
+            {
+                ext = Path.GetExtension(sourceFile).ToLowerInvariant();
+            }
+            catch (ArgumentException)
+            {
+                return null;
+            }
 
             switch (ext)
             {
                 case ".png":
-                    return string.Format("/c png.cmd \"{0}\" \"{1}\"", sourceFile, targetFile);
+                    return string.Format(CultureInfo.CurrentCulture, "/c png.cmd \"{0}\" \"{1}\"", sourceFile, targetFile);
 
                 case ".jpg":
                 case ".jpeg":
-                    return string.Format("/c jpegtran -copy none -optimize -progressive \"{0}\" \"{1}\"", sourceFile, targetFile);
+                    return string.Format(CultureInfo.CurrentCulture, "/c jpegtran -copy none -optimize -progressive \"{0}\" \"{1}\"", sourceFile, targetFile);
 
                 case ".gif":
-                    return string.Format("/c gifsicle --crop-transparency --no-comments --no-extensions --no-names --optimize=3 --batch \"{0}\" --output=\"{1}\"", sourceFile, targetFile);
+                    return string.Format(CultureInfo.CurrentCulture, "/c gifsicle --crop-transparency --no-comments --no-extensions --no-names --optimize=3 --batch \"{0}\" --output=\"{1}\"", sourceFile, targetFile);
             }
 
             return null;

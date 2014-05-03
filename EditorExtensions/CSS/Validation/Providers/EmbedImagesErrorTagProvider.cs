@@ -25,6 +25,9 @@ namespace MadsKristensen.EditorExtensions.Css
             if (string.IsNullOrEmpty(fileName) || fileName.Contains("://"))
                 return ItemCheckResult.Continue;
 
+            // Remove parameters if any; c:/temp/myfile.ext?#iefix
+            fileName = fileName.Split('?', '#')[0];
+
             FileInfo file = new FileInfo(fileName);
 
             if (file.Exists && file.Length < (1024 * 3))

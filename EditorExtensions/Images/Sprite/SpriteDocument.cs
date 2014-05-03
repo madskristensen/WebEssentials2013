@@ -9,12 +9,13 @@ using MadsKristensen.EditorExtensions.Settings;
 
 namespace MadsKristensen.EditorExtensions.Images
 {
-    internal class SpriteDocument
+    internal class SpriteDocument : IBundleDocument
     {
         public string FileName { get; set; }
-        public IEnumerable<string> ImageFiles { get; set; }
+        public IEnumerable<string> BundleAssets { get; set; }
         public bool Optimize { get; set; }
         public bool IsVertical { get; set; }
+        public bool RunOnBuild { get; set; }
         public string FileExtension { get; set; }
         public bool UseFullPathForIdentifierName { get; set; }
         public bool UseAbsoluteUrl { get; set; }
@@ -25,18 +26,19 @@ namespace MadsKristensen.EditorExtensions.Images
         public SpriteDocument(string fileName, params string[] imageFiles)
         {
             FileName = fileName;
-            ImageFiles = imageFiles;
-            Optimize = true;
-            IsVertical = true;
+            BundleAssets = imageFiles;
             FileExtension = Path.GetExtension(imageFiles.First()).TrimStart('.');
+            Optimize = WESettings.Instance.Sprite.Optimize;
+            IsVertical = WESettings.Instance.Sprite.IsVertical;
+            RunOnBuild = WESettings.Instance.Sprite.RunOnBuild;
             UseFullPathForIdentifierName = WESettings.Instance.Sprite.UseFullPathForIdentifierName;
             UseAbsoluteUrl = WESettings.Instance.Sprite.UseAbsoluteUrl;
-            CssOutputDirectory = WESettings.Instance.Sprite.OutputDirectory;
+            CssOutputDirectory = WESettings.Instance.Sprite.CssOutputDirectory;
             LessOutputDirectory = WESettings.Instance.Sprite.LessOutputDirectory;
             ScssOutputDirectory = WESettings.Instance.Sprite.ScssOutputDirectory;
         }
 
-        public async Task WriteBundleRecipe()
+        public async Task WriteSpriteRecipe()
         {
             string root = ProjectHelpers.GetRootFolder();
             XmlWriterSettings settings = new XmlWriterSettings() { Indent = true };
@@ -49,10 +51,14 @@ namespace MadsKristensen.EditorExtensions.Images
                         new XAttribute(XNamespace.Xmlns + "xsi", xsi),
                         new XAttribute(xsi + "noNamespaceSchemaLocation", "http://vswebessentials.com/schemas/v1/sprite.xsd"),
                         new XElement("settings",
-                            new XComment("Determines if the sprite image should be automatically optimized after creation/update"),
+                            new XComment("Determines if the sprite image should be automatically optimized after creation/update."),
                             new XElement("optimize", Optimize.ToString().ToLowerInvariant()),
+                            new XComment("Determines the orientation of images to form this sprite. The value must be vertical or horizontal."),
                             new XElement("orientation", IsVertical ? "vertical" : "horizontal"),
+                            new XComment("File extension of sprite image."),
                             new XElement("outputType", FileExtension.ToString().ToLowerInvariant()),
+                            new XComment("Determin whether to generate/re-generate this sprite on building the solution."),
+                            new XElement("runOnBuild", RunOnBuild.ToString().ToLowerInvariant()),
                             new XComment("Use full path to generate unique class or mixin name in CSS, LESS and SASS files. Consider disabling this if you want class names to be filename only."),
                             new XElement("fullPathForIdentifierName", UseFullPathForIdentifierName.ToString().ToLowerInvariant()),
                             new XComment("Use absolute path in the generated CSS-like files. By default, the URLs are relative to sprite image file (and the location of CSS, LESS and SCSS)."),
@@ -65,7 +71,7 @@ namespace MadsKristensen.EditorExtensions.Images
                             new XElement("outputDirectoryForScss", ScssOutputDirectory)
                         ),
                         new XComment("The order of the <file> elements determines the order of the images in the sprite."),
-                        new XElement("files", ImageFiles.Select(file => new XElement("file", "/" + FileHelpers.RelativePath(root, file))))
+                        new XElement("files", BundleAssets.Select(file => new XElement("file", "/" + FileHelpers.RelativePath(root, file))))
                     )
                 ).Save(writer);
             }
@@ -75,7 +81,21 @@ namespace MadsKristensen.EditorExtensions.Images
         {
             string root = ProjectHelpers.GetProjectFolder(fileName);
             string folder = Path.GetDirectoryName(root);
-            XDocument doc = XDocument.Load(fileName);
+
+            if (folder == null || root == null)
+                return null;
+
+            XDocument doc = null;
+
+            try
+            {
+                doc = XDocument.Load(fileName);
+            }
+            catch (XmlException)
+            {
+                return null;
+            }
+
             XElement element = null;
 
             var imageFiles = from f in doc.Descendants("file")
@@ -92,6 +112,11 @@ namespace MadsKristensen.EditorExtensions.Images
 
             if (element != null)
                 sprite.IsVertical = element.Value.Equals("vertical", StringComparison.OrdinalIgnoreCase);
+
+            element = doc.Descendants("runOnBuild").FirstOrDefault();
+
+            if (element != null)
+                sprite.RunOnBuild = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
 
             element = doc.Descendants("outputType").FirstOrDefault();
 
