@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions.LiveScript
     public class LiveScriptCompiler : NodeExecutorBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\LiveScript\bin\livescript");
-        private static readonly Regex _errorParsingPattern = new Regex(@"Failed at: (.*?)Error: (?<message>.*)", RegexOptions.Multiline);
+        private static readonly Regex _errorParsingPattern = new Regex(@"Failed at: (?<filename>.*?)Error: (?<message>.*)", RegexOptions.Multiline);
 
         public override string TargetExtension { get { return ".js"; } }
         public override bool GenerateSourceMap { get { return WESettings.Instance.LiveScript.GenerateSourceMaps; } }
