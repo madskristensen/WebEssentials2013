@@ -53,9 +53,6 @@ namespace MadsKristensen.EditorExtensions.Settings
             target.CoffeeScript.GenerateSourceMaps = GetBoolean("CoffeeScriptSourceMaps");
             target.CoffeeScript.OutputDirectory = GetNonBooleanString("CoffeeScriptCompileToLocation");
 
-            // LiveScript
-            target.LiveScript.WrapClosure = GetBoolean("LiveScriptWrapClosure");
-
             // Markdown
             target.Markdown.ShowPreviewPane = GetBoolean("MarkdownShowPreviewWindow");
             target.Markdown.CompileOnSave = GetBoolean("MarkdownEnableCompiler");
