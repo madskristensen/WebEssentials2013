@@ -162,9 +162,6 @@ namespace MadsKristensen.EditorExtensions
                 BundleDocument doc = new BundleDocument(bundleFile, _files.ToArray());
 
                 await doc.WriteBundleRecipe();
-
-                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(bundleFile);
-
                 await GenerateAsync(doc, extension);
             }
             catch (Exception ex)
@@ -184,6 +181,8 @@ namespace MadsKristensen.EditorExtensions
 
             ProjectHelpers.AddFileToActiveProject(bundle.FileName);
             ProjectHelpers.AddFileToProject(bundle.FileName, bundleFile);
+
+            EditorExtensionsPackage.DTE.ItemOperations.OpenFile(bundle.FileName);
 
             if (bundle.Minified)
                 await BundleGenerator.MakeMinFile(bundleFile, extension, hasChanged);
