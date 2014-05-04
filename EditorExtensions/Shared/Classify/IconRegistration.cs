@@ -19,6 +19,9 @@ namespace MadsKristensen.EditorExtensions
                     // IcedCoffeeScript
                     AddIcon(classes, "CoffeeScript.ico", ".iced");
 
+                    // LiveScript
+                    AddIcon(classes, "LiveScript.ico", ".ls", ".livescript", ".lsc");
+
                     // Markdown
                     AddIcon(classes, "Markdown.ico", ".md", ".mdown", ".markdown", ".mkd", ".mkdn", ".mdwn", ".mmd");
 

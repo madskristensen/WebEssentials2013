@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using EnvDTE;
 using MadsKristensen.EditorExtensions.Commands;
 using MadsKristensen.EditorExtensions.IcedCoffeeScript;
+using MadsKristensen.EditorExtensions.LiveScript;
 using MadsKristensen.EditorExtensions.Settings;
 using MadsKristensen.EditorExtensions.SweetJs;
 using Microsoft.VisualStudio.Utilities;
@@ -170,6 +171,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     [ContentType(ScssContentTypeDefinition.ScssContentType)]
     [ContentType(CoffeeContentTypeDefinition.CoffeeContentType)]
     [ContentType(IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType)]
+    [ContentType(LiveScriptContentTypeDefinition.LiveScriptContentType)]
     [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
     public class NodeCompilerRunnerProvider : ICompilerRunnerProvider
     {

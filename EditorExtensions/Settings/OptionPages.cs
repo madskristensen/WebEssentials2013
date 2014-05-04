@@ -69,6 +69,10 @@ namespace MadsKristensen.EditorExtensions.Settings
     {
         public CoffeeScriptOptions() : base(s => s.CoffeeScript) { }
     }
+    class LiveScriptOptions : SettingsOptionPage<LiveScriptSettings>
+    {
+        public LiveScriptOptions() : base(s => s.LiveScript) { }
+    }
     class LessOptions : SettingsOptionPage<LessSettings>
     {
         public LessOptions() : base(s => s.Less) { }

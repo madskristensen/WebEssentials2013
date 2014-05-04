@@ -25,7 +25,7 @@ restrictions:
   respect the opinions of others.
 
 * Please **do not** open issues or pull requests which *belongs to* the third party components
-  SignalR, LESS, SASS, CoffeeSCript, TypeScript, NodeJs etc.
+  SignalR, LESS, SASS, CoffeeScript, LiveScript, TypeScript, NodeJs etc.
 
 
 ## Bug reports

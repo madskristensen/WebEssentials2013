@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using MadsKristensen.EditorExtensions.IcedCoffeeScript;
+using MadsKristensen.EditorExtensions.LiveScript;
 using MadsKristensen.EditorExtensions.Markdown;
 using MadsKristensen.EditorExtensions.Svg;
 using MadsKristensen.EditorExtensions.SweetJs;
@@ -20,6 +21,7 @@ namespace MadsKristensen.EditorExtensions.Margin
     [ContentType(ScssContentTypeDefinition.ScssContentType)]
     [ContentType(CoffeeContentTypeDefinition.CoffeeContentType)]
     [ContentType(IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType)]
+    [ContentType(LiveScriptContentTypeDefinition.LiveScriptContentType)]
     [ContentType("TypeScript")]
     [ContentType("Markdown")]
     [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
@@ -34,11 +36,12 @@ namespace MadsKristensen.EditorExtensions.Margin
         {
             { "CoffeeScript",      (document, sourceView) => new TextViewMargin("JavaScript", document, sourceView) },
             { "IcedCoffeeScript",  (document, sourceView) => new TextViewMargin("JavaScript", document, sourceView) },
+            { "LiveScript",        (document, sourceView) => new TextViewMargin("JavaScript", document, sourceView) },
             { "LESS",              (document, sourceView) => new CssTextViewMargin("CSS", document, sourceView) },
             { "Markdown",          (document, sourceView) => new MarkdownMargin(document) },
             { "SCSS",              (document, sourceView) => new CssTextViewMargin("CSS", document, sourceView) },
             { "Svg",               (document, sourceView) => new SvgMargin(document) },
-            { "SweetJs",  (document, sourceView) => new TextViewMargin("JavaScript", document, sourceView) },
+            { "SweetJs",           (document, sourceView) => new TextViewMargin("JavaScript", document, sourceView) },
             { "TypeScript",        (document, sourceView) => document.FilePath.EndsWith(".d.ts", StringComparison.OrdinalIgnoreCase) 
                                                              ? null : new TextViewMargin("JavaScript", document, sourceView) }
         };
