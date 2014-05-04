@@ -18,6 +18,7 @@ namespace MadsKristensen.EditorExtensions
     internal static class ProjectHelpers
     {
         public const string SolutionItemsFolder = "Solution Items";
+
         ///<summary>Gets the Solution Items solution folder in the current solution, creating it if it doesn't exist.</summary>
         public static Project GetSolutionItemsProject()
         {
@@ -34,13 +35,15 @@ namespace MadsKristensen.EditorExtensions
                 .Cast<Project>()
                 .SelectMany(GetChildProjects);
         }
+
         private static IEnumerable<Project> GetChildProjects(Project parent)
         {
-            if (parent.Kind != ProjectKinds.vsProjectKindSolutionFolder && parent.Collection == null)  // Unloaded
+            if (parent == null || (parent.Kind != ProjectKinds.vsProjectKindSolutionFolder && parent.Collection == null))  // Unloaded
                 return Enumerable.Empty<Project>();
 
             if (!String.IsNullOrEmpty(parent.FullName))
                 return new[] { parent };
+
             return parent.ProjectItems
                     .Cast<ProjectItem>()
                     .Where(p => p.SubProject != null)
@@ -252,6 +255,7 @@ namespace MadsKristensen.EditorExtensions
 
             return editorAdapter.GetWpfTextView(GetCurrentNativeTextView());
         }
+
         public static IVsTextView GetCurrentNativeTextView()
         {
             var textManager = (IVsTextManager)ServiceProvider.GlobalProvider.GetService(typeof(SVsTextManager));
@@ -290,6 +294,7 @@ namespace MadsKristensen.EditorExtensions
                 }
             }
         }
+
         ///<summary>Gets the the currently selected project(s) in the Solution Explorer.</summary>
         public static IEnumerable<Project> GetSelectedProjects()
         {

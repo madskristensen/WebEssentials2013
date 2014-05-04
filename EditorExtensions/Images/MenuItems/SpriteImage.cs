@@ -60,9 +60,6 @@ namespace MadsKristensen.EditorExtensions.Images
                 SpriteDocument doc = new SpriteDocument(spriteFile, _files.ToArray());
 
                 await doc.WriteSpriteRecipe();
-
-                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(spriteFile);
-
                 await GenerateAsync(doc);
             }
             catch (Exception ex)
@@ -126,6 +123,8 @@ namespace MadsKristensen.EditorExtensions.Images
 
             ProjectHelpers.AddFileToActiveProject(sprite.FileName);
             ProjectHelpers.AddFileToProject(sprite.FileName, imageFile);
+
+            EditorExtensionsPackage.DTE.ItemOperations.OpenFile(sprite.FileName);
 
             await Export(fragments, imageFile, sprite);
 
