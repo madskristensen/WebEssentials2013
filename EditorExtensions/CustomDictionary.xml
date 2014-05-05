@@ -65,6 +65,8 @@
       <Word>Retryable</Word>
       <Word>Ld</Word>
       <Word>tt</Word>
+      <Word>Ls</Word>
+      <Word>Lsc</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>

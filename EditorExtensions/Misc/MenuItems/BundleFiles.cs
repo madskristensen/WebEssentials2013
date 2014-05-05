@@ -135,7 +135,7 @@ namespace MadsKristensen.EditorExtensions
             try
             {
                 BundleDocument doc = BundleDocument.FromFile(bundleFileName);
-                await GenerateAsync(doc, extension);
+                await GenerateAsync(doc, extension, true);
             }
             catch (FileNotFoundException ex)
             {
@@ -172,17 +172,19 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private async Task GenerateAsync(BundleDocument bundle, string extension)
+        private async Task GenerateAsync(BundleDocument bundle, string extension, bool hasUpdated = false)
         {
             _dte.StatusBar.Text = "Generating bundle...";
 
             string bundleFile = Path.Combine(Path.GetDirectoryName(bundle.FileName), Path.GetFileNameWithoutExtension(bundle.FileName));
             bool hasChanged = await BundleGenerator.MakeBundle(bundle, bundleFile, UpdateBundleAsync);
 
-            ProjectHelpers.AddFileToActiveProject(bundle.FileName);
-            ProjectHelpers.AddFileToProject(bundle.FileName, bundleFile);
-
-            EditorExtensionsPackage.DTE.ItemOperations.OpenFile(bundle.FileName);
+            if (!hasUpdated)
+            {
+                ProjectHelpers.AddFileToActiveProject(bundle.FileName);
+                ProjectHelpers.AddFileToProject(bundle.FileName, bundleFile);
+                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(bundle.FileName);
+            }
 
             if (bundle.Minified)
                 await BundleGenerator.MakeMinFile(bundleFile, extension, hasChanged);
