@@ -99,7 +99,7 @@ namespace MadsKristensen.EditorExtensions.Images
                 SpriteDocument doc = SpriteDocument.FromFile(spriteFileName);
 
                 if (!isBuild || doc.RunOnBuild)
-                    await GenerateAsync(doc);
+                    await GenerateAsync(doc, true);
             }
             catch (FileNotFoundException ex)
             {
@@ -114,17 +114,19 @@ namespace MadsKristensen.EditorExtensions.Images
             }
         }
 
-        private async Task GenerateAsync(SpriteDocument sprite)
+        private async Task GenerateAsync(SpriteDocument sprite, bool hasUpdated = false)
         {
             _dte.StatusBar.Text = "Generating sprite...";
 
             string imageFile = Path.ChangeExtension(sprite.FileName, sprite.FileExtension);
             IEnumerable<SpriteFragment> fragments = await SpriteGenerator.MakeImage(sprite, imageFile, UpdateSpriteAsync);
 
-            ProjectHelpers.AddFileToActiveProject(sprite.FileName);
-            ProjectHelpers.AddFileToProject(sprite.FileName, imageFile);
-
-            EditorExtensionsPackage.DTE.ItemOperations.OpenFile(sprite.FileName);
+            if (!hasUpdated)
+            {
+                ProjectHelpers.AddFileToActiveProject(sprite.FileName);
+                ProjectHelpers.AddFileToProject(sprite.FileName, imageFile);
+                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(sprite.FileName);
+            }
 
             await Export(fragments, imageFile, sprite);
 
