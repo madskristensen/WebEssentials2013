@@ -328,7 +328,7 @@ namespace MadsKristensen.EditorExtensions
                                           .ExecuteRetryableTaskAsync<byte[]>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5)));
         }
 
-        private async static Task<T> BeginRead<T>(Task<T> readTask)
+        private async static Task<T> BeginRead<T>(Task<T> readTask, int count = 0)
         {
             bool exception = false;
             T text = default(T);
@@ -339,10 +339,13 @@ namespace MadsKristensen.EditorExtensions
             }
             catch (IOException)
             {
+                if (count > 10000)
+                    return text;
+
                 exception = true;
             }
 
-            return exception ? await BeginRead(readTask) : text;
+            return exception ? await BeginRead(readTask, ++count) : text;
         }
 
         /// <summary>
@@ -371,7 +374,7 @@ namespace MadsKristensen.EditorExtensions
                             .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5)));
         }
 
-        private async static Task BeginWrite(Task writeTask)
+        private async static Task BeginWrite(Task writeTask, int count = 0)
         {
             bool exception = false;
 
@@ -381,11 +384,14 @@ namespace MadsKristensen.EditorExtensions
             }
             catch (IOException)
             {
+                if (count > 10000)
+                    return;
+
                 exception = true;
             }
 
             if (exception)
-                await BeginWrite(writeTask);
+                await BeginWrite(writeTask, ++count);
         }
 
         /// <summary>
