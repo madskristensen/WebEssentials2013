@@ -18,7 +18,6 @@ namespace MadsKristensen.EditorExtensions
 
         protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
         {
-            // Inserts an empty row between each rule and replace two space indentation with 4 space indentation
             resultSource = await UpdateSourceMapUrls(resultSource, targetFileName, mapFileName);
 
             var message = ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.";
