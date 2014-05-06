@@ -93,7 +93,8 @@ namespace MadsKristensen.EditorExtensions
         private static string UpdateSourceLinkInCssComment(string content, string sourceMapRelativePath)
         {   // Fix sourceMappingURL comment in CSS file with network accessible path.
             return _sourceMapInCss.Replace(content,
-                string.Format(CultureInfo.InvariantCulture, "/*# sourceMappingURL={0} */", sourceMapRelativePath));
+                   string.Format(CultureInfo.InvariantCulture,
+                   "/*# sourceMappingURL={0} */", sourceMapRelativePath));
         }
     }
 }
