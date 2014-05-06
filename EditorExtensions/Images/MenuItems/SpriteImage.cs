@@ -43,7 +43,7 @@ namespace MadsKristensen.EditorExtensions.Images
             OleMenuCommand button = sender as OleMenuCommand;
 
             _files = ProjectHelpers.GetSelectedFilePaths()
-                                   .Where(file => _supported.Contains(Path.GetExtension(file)));
+                                   .Where(file => _supported.Any(x => x.Equals(Path.GetExtension(file), StringComparison.OrdinalIgnoreCase)));
 
             button.Enabled = _files.Count() > 1;
         }
