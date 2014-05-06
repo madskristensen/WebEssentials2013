@@ -118,7 +118,9 @@ namespace MadsKristensen.EditorExtensions.Images
         {
             _dte.StatusBar.Text = "Generating sprite...";
 
+            //Default file name is the sprite name with specified file extension.
             string imageFile = Path.ChangeExtension(sprite.FileName, sprite.FileExtension);
+
             IEnumerable<SpriteFragment> fragments = await SpriteGenerator.MakeImage(sprite, imageFile, UpdateSpriteAsync);
 
             if (!hasUpdated)
@@ -164,7 +166,20 @@ namespace MadsKristensen.EditorExtensions.Images
                 fileName = dialog.FileName;
             }
 
-            return true;
+            //Check for colliding file names
+            string collidedFile = FileHelpers.GetFileCollisions(Path.ChangeExtension(fileName, Path.GetExtension(_files.First())), ".css", ".scss", ".less", ".map");
+            if (collidedFile == null)
+            {
+                return true;
+            }
+
+            if (MessageBox.Show("The following existing file conflicts with a file that would be generated:\r\n'" + collidedFile + "'.\r\n\r\nWould you like to retry with a different name or cancel?", "File name issue", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation) == DialogResult.Retry)
+            {
+                return GetFileName(out fileName);
+            }
+
+            _dte.StatusBar.Text = "Sprite generation canceled.";
+            return false;
         }
     }
 }

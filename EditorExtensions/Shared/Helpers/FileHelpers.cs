@@ -408,5 +408,18 @@ namespace MadsKristensen.EditorExtensions
 
             return Path.GetFileNameWithoutExtension(fileNameWithoutPath).Substring(0, fileNameWithoutPath.IndexOf('.'));
         }
+
+        /// <summary>
+        /// Gets the file name collisions.
+        /// </summary>
+        /// <param name="fileName">Name of the file to check.</param>
+        /// <param name="extensions">The extensions to append to the file name to also check.</param>
+        /// <returns>The colliding file name if there is one, else <see langword="null"/>.</returns>
+        public static string GetFileCollisions(string fileName, params string[] extensions)
+        {
+            return File.Exists(fileName)
+                 ? fileName
+                 : extensions.Select(extension => fileName + extension).FirstOrDefault(File.Exists);
+        }
     }
 }
