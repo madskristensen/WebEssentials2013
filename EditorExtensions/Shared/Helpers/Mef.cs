@@ -18,14 +18,17 @@ namespace MadsKristensen.EditorExtensions
         public static IEnumerable<IContentType> GetSupportedContentTypes<T>()
         {
             var ctr = WebEditor.ExportProvider.GetExport<IContentTypeRegistryService>();
+
             return WebEditor.ExportProvider.GetExports<T, IContentTypeMetadata>()
                             .SelectMany(o => o.Metadata.ContentTypes)
-                            .Select(ctr.Value.GetContentType);
+                            .Select(ctr.Value.GetContentType)
+                            .Where(e => e != null);
         }
 
         public static IContentType GetContentType(string name)
         {
             var ctr = WebEditor.ExportProvider.GetExport<IContentTypeRegistryService>().Value;
+
             return ctr.GetContentType(name);
         }
 
@@ -33,9 +36,10 @@ namespace MadsKristensen.EditorExtensions
         public static IEnumerable<string> GetSupportedExtensions<T>()
         {
             var fers = WebEditor.ExportProvider.GetExport<IFileExtensionRegistryService>();
+
             return GetSupportedContentTypes<T>()
-                        .SelectMany(fers.Value.GetExtensionsForContentType)
-                        .Select(e => "." + e);
+                  .SelectMany(fers.Value.GetExtensionsForContentType)
+                  .Select(e => "." + e);
         }
 
         public static IEnumerable<IContentType> GetChainCompilationContentTypes()
@@ -49,6 +53,7 @@ namespace MadsKristensen.EditorExtensions
         public static ISet<string> GetChainedCompileExtensions()
         {
             var fers = WebEditor.ExportProvider.GetExport<IFileExtensionRegistryService>();
+
             return new HashSet<string>(GetChainCompilationContentTypes()
                     .SelectMany(fers.Value.GetExtensionsForContentType)
                     .Select(e => "*." + e));

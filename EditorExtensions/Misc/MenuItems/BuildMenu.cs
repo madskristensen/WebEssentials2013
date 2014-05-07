@@ -89,17 +89,17 @@ namespace MadsKristensen.EditorExtensions
             );
 
             var files = ProjectHelpers.GetAllProjects()
-                            .Select(ProjectHelpers.GetRootFolder)
-                            .SelectMany(p => Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories))
-                            .Where(f => extensions.Contains(Path.GetExtension(f)));
+                       .Select(ProjectHelpers.GetRootFolder)
+                       .SelectMany(p => Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories))
+                       .Where(f => extensions.Contains(Path.GetExtension(f)));
 
             // Perform expensive blocking work in parallel
             Parallel.ForEach(files, async file =>
                 await MinificationSaveListener.ReMinify(
-                    FileExtensionRegistry.GetContentTypeForExtension(Path.GetExtension(file).TrimStart('.')),
-                    file,
-                    false
-                )
+                          FileExtensionRegistry.GetContentTypeForExtension(Path.GetExtension(file).TrimStart('.')),
+                          file,
+                          false
+                      )
             );
 
             EditorExtensionsPackage.DTE.StatusBar.Clear();

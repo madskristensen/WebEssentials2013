@@ -30,6 +30,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
             if (File.Exists(file))
             {
                 string linkFormat = "<link rel=\"stylesheet\" href=\"{0}\" />";
+
                 return string.Format(CultureInfo.CurrentCulture, linkFormat, file);
             }
 
@@ -39,14 +40,17 @@ namespace MadsKristensen.EditorExtensions.Markdown
         public static string GetCustomStylesheetFilePath()
         {
             string folder = ProjectHelpers.GetSolutionFolderPath();
+
             if (string.IsNullOrEmpty(folder))
                 return null;
+
             return Path.Combine(folder, _stylesheet);
         }
 
         public async static Task CreateStylesheet()
         {
             string file = Path.Combine(ProjectHelpers.GetSolutionFolderPath(), _stylesheet);
+
             await FileHelpers.WriteAllTextRetry(file, "body { background: yellow; }");
             ProjectHelpers.GetSolutionItemsProject().ProjectItems.AddFromFile(file);
         }
@@ -57,13 +61,18 @@ namespace MadsKristensen.EditorExtensions.Markdown
                 return;
             // The Markdown compiler cannot return errors
             string html = String.Format(CultureInfo.InvariantCulture, @"<!DOCTYPE html>
-                                    <html lang=""en"" xmlns=""http://www.w3.org/1999/xhtml"">
-                                    <head>
-                                        <meta charset=""utf-8"" />
-                                        <title>Markdown Preview</title>
-                                        {0}
-                                    </head>
-                                    <body>{1}</body></html>", GetStylesheet(), result.Result);
+                                        <html lang=""en"" xmlns=""http://www.w3.org/1999/xhtml"">
+                                            <head>
+                                                <meta charset=""utf-8"" />
+                                                <base href=""file:///{0}/"">
+                                                <title>Markdown Preview</title>
+                                                {1}
+                                            </head>
+                                            <body>{2}</body>
+                                        </html>",
+                                        Path.GetDirectoryName(Document.FilePath).Replace("\\", "/"),
+                                        GetStylesheet(),
+                                        result.Result);
 
             if (_document == null)
             {
