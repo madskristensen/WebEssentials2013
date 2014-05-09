@@ -87,10 +87,23 @@ namespace MadsKristensen.EditorExtensions
                 fileName = dialog.FileName;
 
                 if (!fileName.EndsWith(extension + ".bundle", StringComparison.OrdinalIgnoreCase))
-                    fileName = Path.Combine(Path.GetDirectoryName(fileName), Path.GetFileNameWithoutExtension(fileName) + extension + ".bundle");
+                    fileName = Path.Combine(Path.GetDirectoryName(fileName), Path.ChangeExtension(Path.GetFileNameWithoutExtension(fileName), extension) + ".bundle");
             }
 
-            return true;
+            //Check for colliding file names (remove bundle from name before passing in).
+            string collidedFile = FileHelpers.GetFileCollisions(Path.Combine(Path.GetDirectoryName(fileName), Path.GetFileNameWithoutExtension(fileName)));
+            if (collidedFile == null)
+            {
+                return true;
+            }
+
+            if (MessageBox.Show("The following existing file conflicts with a file that would be generated:\r\n'" + collidedFile + "'.\r\n\r\nWould you like to retry with a different name or cancel?", "File name issue", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation) == DialogResult.Retry)
+            {
+                return GetFileName(out fileName, extension);
+            }
+
+            _dte.StatusBar.Text = "Bundle generation canceled.";
+            return false;
         }
 
         public static async Task UpdateAllBundlesAsync(bool isBuild = false)
