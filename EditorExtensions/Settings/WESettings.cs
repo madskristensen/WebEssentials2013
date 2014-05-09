@@ -354,10 +354,6 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Warn on selectors that contain the universal selector (*).")]
         [DefaultValue(true)]
         public bool ValidateStarSelector { get; set; }
-        [DisplayName("Disallow overqualified ID selector")]
-        [Description("Warn on selectors that unnecessarily qualify an ID selector with classes or tag names.")]
-        [DefaultValue(true)]
-        public bool ValidateOverQualifiedSelector { get; set; }
         [Category("Performance Warnings")]
         [DisplayName("Disallow units for 0 values")]
         [Description("Warn when units are unnecessarily specified for the number 0 (which never needs a unit in CSS).")]

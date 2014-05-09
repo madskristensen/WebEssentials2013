@@ -4,7 +4,6 @@ using System.IO;
 using System.Windows.Forms;
 using EnvDTE;
 using EnvDTE80;
-using MadsKristensen.EditorExtensions.Images;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Shell;
 
