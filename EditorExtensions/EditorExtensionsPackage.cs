@@ -79,6 +79,7 @@ namespace MadsKristensen.EditorExtensions
 
             Instance = this;
 
+            CompatibilityChecker.StartCheckingCompatibility();
             SettingsStore.Load();
             JavaScriptIntellisense.Register();
 
