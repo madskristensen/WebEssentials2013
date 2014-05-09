@@ -171,12 +171,6 @@
   <data name="LessImportOnceDeprecated" xml:space="preserve">
     <value>The "@import-once" directive was removed in LESS 1.4.  Use "@import"instead.</value>
   </data>
-  <data name="OverQualifiedSmartTagActionName" xml:space="preserve">
-    <value>Trim over qualified selectors</value>
-  </data>
-  <data name="PerformanceDontOverQualifySelectors" xml:space="preserve">
-    <value>Performance: Don't over qualify selectors. Remove all selectors before "{0}" ({1}). ID's must only occur once per web page and doesn't need further qualification.</value>
-  </data>
   <data name="PerformanceDontUseStarSelector" xml:space="preserve">
     <value>Performance: Never use the universal selector. It has a big negative performance impact on browser rendering.</value>
   </data>

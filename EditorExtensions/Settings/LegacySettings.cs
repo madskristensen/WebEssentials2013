@@ -70,7 +70,6 @@ namespace MadsKristensen.EditorExtensions.Settings
 
             // CSS
             target.Css.ValidateStarSelector = GetBoolean("CssValidateStarSelector");
-            target.Css.ValidateOverQualifiedSelector = GetBoolean("CSSValidateOverQualifiedSelector");
             target.Css.ValidationLocation = (WarningLocation)GetInt("CssErrorLocation");
             target.Css.ValidateEmbedImages = GetBoolean("CssValidateEmbedImages");
             target.Css.ShowBrowserTooltip = GetBoolean("CssShowBrowserTooltip");

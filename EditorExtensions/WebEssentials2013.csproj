@@ -609,9 +609,6 @@
     <Compile Include="CSS\Validation\Providers\MissingVendorErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CSS\Validation\Providers\OverQualifiedSelectorErrorTagProvider.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="CSS\Validation\Providers\ShorthandErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -688,7 +685,6 @@
     <Compile Include="CSS\SmartTags\Actions\UpdateEmbedSmartTagAction.cs" />
     <Compile Include="CSS\SmartTags\Actions\MissingStandardDirectiveSmartTagAction.cs" />
     <Compile Include="CSS\SmartTags\Actions\VendorDirectiveSmartTagAction.cs" />
-    <Compile Include="CSS\SmartTags\Actions\OverQualifySelectorSmartTagAction.cs" />
     <Compile Include="LESS\SmartTags\LessExtractVariableSmartTagProvider.cs" />
     <Compile Include="CSS\SmartTags\Providers\SortSmartTagProvider.cs" />
     <Compile Include="CSS\Validation\Filters\CustomCssErrorFilter.cs" />
@@ -715,7 +711,6 @@
     <Compile Include="CSS\SmartTags\Providers\UpdateEmbedSmartTagProvider.cs" />
     <Compile Include="CSS\SmartTags\Providers\MissingStandardDirectiveSmartTagProvider.cs" />
     <Compile Include="CSS\SmartTags\Providers\MissingVendorDirectiveSmartTagProvider.cs" />
-    <Compile Include="CSS\SmartTags\Providers\OverQualifiedSelectorSmartTagProvider.cs" />
     <Compile Include="CSS\SmartTags\Providers\VendorOrderSmartTagProvider.cs" />
     <Compile Include="CSS\SmartTags\Providers\MissingVendorSmartTagProvider.cs" />
     <Compile Include="CSS\SmartTags\Providers\SelectorHackSmartTagProvider.cs" />
