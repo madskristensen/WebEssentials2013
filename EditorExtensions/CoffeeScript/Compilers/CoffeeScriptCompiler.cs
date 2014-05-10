@@ -57,7 +57,11 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
 
             if (GenerateSourceMap)
             {
+                if (File.Exists(mapFileName))
+                    File.Delete(mapFileName);
+
                 File.Move(Path.ChangeExtension(targetFileName, ".map"), mapFileName);
+
                 resultSource = UpdateSourceLinkInJsComment(resultSource, FileHelpers.RelativePath(targetFileName, mapFileName));
             }
 
