@@ -4,12 +4,13 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.Settings;
-using System.Runtime.InteropServices;
+using Task = System.Threading.Tasks.Task;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -23,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
         /// This is the entry point for checking if this version of WebEssentials is compatible
         /// with the running version of Visual Studio by using a web service.
         /// </summary>
-        public static void StartCheckingCompatibility()
+        public async static Task StartCheckingCompatibility()
         {
             if (CanCheckCompatibility)
             {
@@ -33,7 +34,7 @@ namespace MadsKristensen.EditorExtensions
                 if (!string.IsNullOrEmpty(weVersion) && !string.IsNullOrEmpty(vsVersion))
                 {
                     Uri uri = new Uri(string.Format("http://vswebessentials.com/update?we={0}&vs={1}", weVersion, vsVersion));
-                    StartRequestingCompatibility(uri);
+                    await StartRequestingCompatibility(uri);
                 }
             }
         }
@@ -71,9 +72,10 @@ namespace MadsKristensen.EditorExtensions
         /// <summary>
         /// Kicks off a web request to see if Web Essentials has an important update
         /// </summary>
-        private static async void StartRequestingCompatibility(Uri uri)
+        private static async Task StartRequestingCompatibility(Uri uri)
         {
             string responseText = string.Empty;
+
             try
             {
                 HttpClient client = new HttpClient();
@@ -82,18 +84,19 @@ namespace MadsKristensen.EditorExtensions
             catch (WebException) { }
             catch (HttpRequestException) { }
 
-            if (!string.IsNullOrEmpty(responseText))
+            if (string.IsNullOrEmpty(responseText))
+                return;
+
+            Uri upgradeUri;
+
+            if (Uri.TryCreate(responseText, UriKind.Absolute, out upgradeUri) && upgradeUri.Scheme == "http")
             {
-                Uri upgradeUri;
-                if (Uri.TryCreate(responseText, UriKind.Absolute, out upgradeUri) && upgradeUri.Scheme == "http")
-                {
-                    // Make sure the dialog gets shown from the main UI thread
-                    ThreadHelper.Generic.BeginInvoke(() => ShowDialog(upgradeUri));
-                }
-                else
-                {
-                    Debug.Fail("Unexpected response: " + responseText);
-                }
+                // Make sure the dialog gets shown from the main UI thread
+                ThreadHelper.Generic.BeginInvoke(() => ShowDialog(upgradeUri));
+            }
+            else
+            {
+                Debug.Fail("Unexpected response: " + responseText);
             }
         }
 
@@ -103,30 +106,32 @@ namespace MadsKristensen.EditorExtensions
         private static void ShowDialog(Uri upgradeUri)
         {
             IVsUIShell shell = Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
-            if (shell != null)
+
+            if (shell == null)
+                return;
+
+            int result;
+
+            if (shell.ShowMessageBox(
+                0, // unused
+                Guid.Empty, // unused
+                null, // title (actually becomes part of the dialog text, not really the title)
+                "A new version of Web Essentials is available. It contains important updates. Do you want to install it?",
+                null, // help file
+                0, // help ID
+                OLEMSGBUTTON.OLEMSGBUTTON_YESNO, // buttons
+                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, // default button
+                OLEMSGICON.OLEMSGICON_QUERY, // icon
+                0, // system modal
+                out result) == VSConstants.S_OK)
             {
-                int result;
-                if (shell.ShowMessageBox(
-                    0, // unused
-                    Guid.Empty, // unused
-                    null, // title (actually becomes part of the dialog text, not really the title)
-                    "A new version of Web Essentials is available. It contains important updates. Do you want to install it?",
-                    null, // help file
-                    0, // help ID
-                    OLEMSGBUTTON.OLEMSGBUTTON_YESNO, // buttons
-                    OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, // default button
-                    OLEMSGICON.OLEMSGICON_QUERY, // icon
-                    0, // system modal
-                    out result) == VSConstants.S_OK)
+                if (result == 6) // IDYES
                 {
-                    if (result == 6) // IDYES
-                    {
-                        Process.Start(upgradeUri.ToString());
-                    }
-                    else
-                    {
-                        DelayNextCheck();
-                    }
+                    Process.Start(upgradeUri.ToString());
+                }
+                else
+                {
+                    DelayNextCheck();
                 }
             }
         }
@@ -215,11 +220,10 @@ namespace MadsKristensen.EditorExtensions
                     {
                         const int VSAPROPID_ReleaseVersion = -8597;
                         object versionObject = null;
+
                         if (appId.GetProperty(VSAPROPID_ReleaseVersion, out versionObject) == VSConstants.S_OK &&
-                            versionObject is string)
-                        {
-                            versionString = (string)versionObject;
-                        }
+                            (versionString = versionObject as string) == null)
+                            versionString = string.Empty;
                     }
                 }
 
