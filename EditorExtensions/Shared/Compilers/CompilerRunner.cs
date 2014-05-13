@@ -245,7 +245,29 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         protected async override Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
         {
-            var result = new MarkdownSharp.Markdown(WESettings.Instance.Markdown).Transform(await FileHelpers.ReadAllTextRetry(sourcePath));
+            string result;
+            var markDownResult = new MarkdownSharp.Markdown(WESettings.Instance.Markdown).Transform(await FileHelpers.ReadAllTextRetry(sourcePath));
+
+            if (WESettings.Instance.Markdown.IncludeStylesInHtml)
+            {
+                var sourceFileName = System.IO.Path.GetFileName(sourcePath);
+                var stylesSection = GetStylesLink(sourcePath);
+
+                result = string.Format("<!DOCTYPE html>\n" +
+                                          "<html>\n" +
+                                          "<head>\n" +
+                                          "    <meta charset=\"UTF-8\">\n" +
+                                          "    <title>{0}</title>\n" +
+                                          "{1}</head>\n" +
+                                          "<body>\n" +
+                                          "    {2}" +
+                                          "</body>\n" +
+                                          "</html>", sourceFileName, stylesSection, markDownResult);
+            }
+            else
+            {
+                result = markDownResult;
+            }
 
             if (!string.IsNullOrEmpty(targetPath))
             {
@@ -256,6 +278,34 @@ namespace MadsKristensen.EditorExtensions.Compilers
             var compilerResult = await CompilerResultFactory.GenerateResult(sourcePath, targetPath, true, result, null);
 
             return compilerResult;
+        }
+
+        /// <summary>
+        /// Generate <link ...> for the generated HTML page base on markdown.
+        /// </summary>
+        /// <param name="sourcePath">Path where is the markdown file</param>
+        /// <returns>String.Empty if no matching .CSS files found. HTML <link... section otherwise.</returns>
+        private static string GetStylesLink(string sourcePath)
+        {
+            string stylesSection = "";
+            string sourceFileName = System.IO.Path.GetFileName(sourcePath);
+            string path = System.IO.Path.GetDirectoryName(sourcePath);
+
+            string mainCssFile = Path.Combine(path, WESettings.Instance.Markdown.DefaultMainCSSFileToUse);
+            string sourceCssFile = sourceFileName + ".css";
+            string specificCssFile = Path.Combine(path, sourceCssFile);
+
+            if (System.IO.File.Exists(mainCssFile))
+            {
+                stylesSection += String.Format("    <link href=\"{0}\" rel=\"stylesheet\" />\n", WESettings.Instance.Markdown.DefaultMainCSSFileToUse);
+            }
+
+            if (System.IO.File.Exists(specificCssFile))
+            {
+                stylesSection += String.Format("    <link href=\"{0}\" rel=\"stylesheet\" />\n", sourceCssFile);
+            }
+
+            return stylesSection;
         }
     }
 }
