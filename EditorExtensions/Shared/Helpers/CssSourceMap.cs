@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Helpers;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.Scss.Core;
@@ -41,7 +42,10 @@ namespace MadsKristensen.EditorExtensions
         {
             CssSourceMap map = new CssSourceMap();
 
-            await Task.Run(() => map.Initialize(targetFileContents, mapFileContents, directory, contentType));
+            map.MapNodes = Enumerable.Empty<CssSourceMapNode>();
+
+            if (WESettings.Instance.ForContentType<ICssSourceMapSettings>(contentType).ProcessSourceMapsForEditorEnhancements)
+                await Task.Run(() => map.Initialize(targetFileContents, mapFileContents, directory, contentType));
 
             return map;
         }

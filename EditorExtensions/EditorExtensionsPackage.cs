@@ -21,7 +21,7 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Web.Editor;
-using ThreadingTask = System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -73,13 +73,13 @@ namespace MadsKristensen.EditorExtensions
         public static EditorExtensionsPackage Instance { get; private set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
-        protected override void Initialize()
+        protected async override void Initialize()
         {
             base.Initialize();
 
             Instance = this;
 
-            CompatibilityChecker.StartCheckingCompatibility();
+            await CompatibilityChecker.StartCheckingCompatibility();
             SettingsStore.Load();
             JavaScriptIntellisense.Register();
 
@@ -169,7 +169,7 @@ namespace MadsKristensen.EditorExtensions
         {
             var compiler = WebEditor.Host.ExportProvider.GetExport<ProjectCompiler>();
 
-            ThreadingTask.Task.Run(async () =>
+            Task.Run(async () =>
             {
                 Parallel.ForEach(
                     Mef.GetSupportedContentTypes<ICompilerRunnerProvider>()

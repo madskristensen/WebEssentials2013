@@ -37,13 +37,25 @@ namespace MadsKristensen.EditorExtensions.Margin
 
         private async Task UpdateResults()
         {
-            if (_compilerResult != null)
-            {
-                if (SourceTextView.Properties.ContainsProperty("CssSourceMap"))
-                    SourceTextView.Properties.RemoveProperty("CssSourceMap");
+            if (_compilerResult == null)
+                return;
 
+            bool succeeded = true;
+
+            if (SourceTextView.Properties.ContainsProperty("CssSourceMap"))
+                SourceTextView.Properties.RemoveProperty("CssSourceMap");
+
+            try
+            {
                 SourceTextView.Properties.AddProperty("CssSourceMap", await _compilerResult.SourceMap.ConfigureAwait(false));
             }
+            catch (ArgumentException)
+            {
+                succeeded = false;
+            }
+
+            if (!succeeded) // retry to get the latest results
+                await UpdateResults();
         }
 
         protected override void AddSpecialItems(ItemsControl menu)

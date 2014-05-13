@@ -190,6 +190,9 @@ namespace MadsKristensen.EditorExtensions
 
         protected override void CreateMarginControls()
         {
+            if (!Settings.ShowPreviewPane)
+                return;
+
             base.CreateMarginControls();
             Dispatcher.InvokeAsync(() => Notifier.RequestCompilationResult(cached: true));
         }
