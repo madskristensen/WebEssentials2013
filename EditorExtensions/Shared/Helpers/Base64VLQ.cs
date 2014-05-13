@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -34,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
         // binary: 100000
         const int VLQ_CONTINUATION_BIT = VLQ_BASE;
 
-        private static Regex _mappingSeparator = new Regex("^[,;]", RegexOptions.Compiled);
+        private static bool IsMappingSeparator(int ch) { return ch == ',' || ch == ';'; }
 
         private static string GetName(int index, string basePath, params string[] sources)
         {
@@ -106,75 +105,63 @@ namespace MadsKristensen.EditorExtensions
             int generatedLine = 0, previousSource, previousGeneratedColumn, previousOriginalLine, previousOriginalColumn;
             previousSource = previousGeneratedColumn = previousOriginalLine = previousOriginalColumn = 0;
 
-            while (vlqValue.Length > 0)
+            var stream = new StringReader(vlqValue);
+            while (stream.Peek() != -1)
             {
-                if (vlqValue[0] == ',')
+                if (stream.Peek() == ',')
                 {
-                    vlqValue = vlqValue.Substring(1);
+                    stream.Read();
                     continue;
                 }
 
-                if (vlqValue[0] == ';')
+                if (stream.Peek() == ';')
                 {
+                    stream.Read();
                     generatedLine++;
-                    vlqValue = vlqValue.Substring(1);
                     previousGeneratedColumn = 0;
                     continue;
                 }
 
-                var temp = VlqDecode(vlqValue);
                 var result = new CssSourceMapNode();
 
                 // Generated column.
-                result.GeneratedColumn = previousGeneratedColumn + temp.Value;
+                result.GeneratedColumn = previousGeneratedColumn + VlqDecode(stream);
                 result.GeneratedLine = generatedLine;
                 previousGeneratedColumn = result.GeneratedColumn;
 
-                vlqValue = temp.Rest;
-
-                if (vlqValue.Length < 1 || _mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
+                if (stream.Peek() < 0 || IsMappingSeparator(stream.Peek()))
                     yield break;
 
                 // Original source.
-                temp = VlqDecode(vlqValue);
-                previousSource += temp.Value;
+                previousSource += VlqDecode(stream);
                 result.SourceFilePath = GetName(previousSource, basePath, sources);
-                vlqValue = temp.Rest;
 
-                if (vlqValue.Length == 0 || _mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
+                if (stream.Peek() < 0 || IsMappingSeparator(stream.Peek()))
                     throw new VlqException("Found a source, but no line and column");
 
                 // Original line.
-                temp = VlqDecode(vlqValue);
-                result.OriginalLine = previousOriginalLine + temp.Value;
+                result.OriginalLine = previousOriginalLine + VlqDecode(stream);
                 previousOriginalLine = result.OriginalLine;
-                vlqValue = temp.Rest;
 
-                if (vlqValue.Length == 0 || _mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
+                if (stream.Peek() < 0 || IsMappingSeparator(stream.Peek()))
                     throw new VlqException("Found a source and line, but no column");
 
                 // Original column.
-                temp = VlqDecode(vlqValue);
-                result.OriginalColumn = previousOriginalColumn + temp.Value;
+                result.OriginalColumn = previousOriginalColumn + VlqDecode(stream);
                 previousOriginalColumn = result.OriginalColumn;
-                vlqValue = temp.Rest;
 
-                if (vlqValue.Length > 0 && !_mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
-                    // Skip Original Name bit; we are not using it.
-                    vlqValue = vlqValue.Substring(1);
+                // Skip Original Name bit; we are not using it.
+                if (stream.Peek() > 0 && !IsMappingSeparator(stream.Peek()))
+                    stream.Read();
 
                 yield return result;
             }
         }
 
-        /**
-         * Decodes the next base 64 VLQ value from the given string and returns the
-         * value and the rest of the string.
-         */
-        public static VlqResult VlqDecode(string slug)
+        ///<summary>Reads a single VLQ value from a stream of text, advancing the stream to the subsequent character.</summary>
+
+        public static int VlqDecode(TextReader stream)
         {
-            var i = 0;
-            var strLen = slug.Length;
             var result = 0;
             var shift = 0;
             bool continuation;
@@ -182,17 +169,17 @@ namespace MadsKristensen.EditorExtensions
 
             do
             {
-                if (i >= strLen)
+                if (stream.Peek() == -1)
                     throw new VlqException("Expected more digits in base 64 VLQ value.");
 
-                digit = Base64.Base64Decode(slug[i++]);
+                digit = Base64.Base64Decode((char)stream.Read());
                 continuation = (digit & VLQ_CONTINUATION_BIT) != 0;
                 digit &= VLQ_BASE_MASK;
                 result += digit << shift;
                 shift += VLQ_BASE_SHIFT;
             } while (continuation);
 
-            return new VlqResult(value: FromVLQSigned(result), rest: slug.Substring(i));
+            return FromVLQSigned(result);
         }
 
         private static class Base64
@@ -223,29 +210,6 @@ namespace MadsKristensen.EditorExtensions
                 throw new VlqException("Not a valid base 64 digit: " + character);
             }
         }
-    }
-    public class StringSection : IEquatable<StringSection>
-    {
-        public StringSection(string fullText, int startIndex)// : this()
-        {
-            this.FullText = fullText;
-            this.StartIndex = startIndex;
-        }
-
-        public string FullText { get; private set; }
-        public int StartIndex { get; private set; }
-
-    }
-    public class VlqResult
-    {
-        public VlqResult(int value, string rest)
-        {
-            Value = value;
-            Rest = rest;
-        }
-
-        public int Value { get; private set; }
-        public string Rest { get; private set; }
     }
 
     // For CA2201: Do not raise reserved exception types.

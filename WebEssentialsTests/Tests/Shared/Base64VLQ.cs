@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Vlq = MadsKristensen.EditorExtensions.Base64Vlq;
 
@@ -86,10 +87,11 @@ namespace WebEssentialsTests.Tests.Shared
         {
             for (var i = -255; i < 256; i++)
             {
-                var result = Vlq.VlqDecode(Vlq.Encode(i));
+                var reader = new StringReader(Vlq.Encode(i));
+                var result = Vlq.VlqDecode(reader);
 
-                Assert.AreEqual(result.Value, i);
-                Assert.AreEqual(result.Rest, "");
+                Assert.AreEqual(i, result);
+                Assert.AreEqual(-1, reader.Peek(), "Stream should be fully consumed");
             }
         }
     }
