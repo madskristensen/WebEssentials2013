@@ -42,8 +42,11 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         private void Document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
-            if (e.FileActionType == FileActionTypes.ContentSavedToDisk)
-                CompileAsync(e.FilePath).DoNotWait("compiling " + e.FilePath);
+            if (!CompilerRunner.Settings.CompileOnSave && !CompilerRunner.MarginSettings.ShowPreviewPane ||
+                e.FileActionType != FileActionTypes.ContentSavedToDisk)
+                return;
+
+            CompileAsync(e.FilePath).DoNotWait("compiling " + e.FilePath);
         }
 
         ///<summary>Occurs when the file has been compiled (on both success and failure).</summary>
@@ -70,6 +73,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         protected virtual Task CompileAsync(string sourcePath)
         {
             Logger.Log(CompilerRunner.SourceContentType + ": Compiling " + Path.GetFileName(sourcePath));
+
             return InitiateCompilationAsync(sourcePath, save: CompilerRunner.Settings.CompileOnSave).HandleErrors("compiling " + sourcePath);
         }
 

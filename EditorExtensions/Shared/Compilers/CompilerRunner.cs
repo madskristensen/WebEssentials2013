@@ -29,6 +29,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         public IContentType SourceContentType { get; private set; }
         public IContentType TargetContentType { get; private set; }
         public ICompilerInvocationSettings Settings { get; private set; }
+        public IMarginSettings MarginSettings { get; private set; }
 
         [Import]
         public IFileExtensionRegistryService FileExtensionRegistry { get; set; }
@@ -42,6 +43,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
             _listeners = Mef.GetAllImports<IFileSaveListener>(TargetContentType);
             Settings = WESettings.Instance.ForContentType<ICompilerInvocationSettings>(contentType);
+            MarginSettings = WESettings.Instance.ForContentType<IMarginSettings>(contentType);
         }
 
         ///<summary>Compiles a source file, optionally saving it to the default output directory.</summary>
