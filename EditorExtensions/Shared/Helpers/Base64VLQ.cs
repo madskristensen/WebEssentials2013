@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace MadsKristensen.EditorExtensions
@@ -76,7 +77,7 @@ namespace MadsKristensen.EditorExtensions
          */
         public static string Encode(int number)
         {
-            var encoded = "";
+            var encoded = new StringBuilder();
             int digit;
 
             var vlq = ToVLQSigned(number);
@@ -94,10 +95,10 @@ namespace MadsKristensen.EditorExtensions
                     digit |= VLQ_CONTINUATION_BIT;
                 }
 
-                encoded += Base64.Base64Encode(digit);
+                encoded.Append(Base64.Base64Encode(digit));
             } while (vlq > 0);
 
-            return encoded;
+            return encoded.ToString();
         }
 
         public static IEnumerable<CssSourceMapNode> Decode(string vlqValue, string basePath, params string[] sources)
@@ -125,38 +126,38 @@ namespace MadsKristensen.EditorExtensions
                 var result = new CssSourceMapNode();
 
                 // Generated column.
-                result.GeneratedColumn = previousGeneratedColumn + temp.value;
+                result.GeneratedColumn = previousGeneratedColumn + temp.Value;
                 result.GeneratedLine = generatedLine;
                 previousGeneratedColumn = result.GeneratedColumn;
 
-                vlqValue = temp.rest;
+                vlqValue = temp.Rest;
 
                 if (vlqValue.Length < 1 || _mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
                     yield break;
 
                 // Original source.
                 temp = VlqDecode(vlqValue);
-                previousSource += temp.value;
+                previousSource += temp.Value;
                 result.SourceFilePath = GetName(previousSource, basePath, sources);
-                vlqValue = temp.rest;
+                vlqValue = temp.Rest;
 
                 if (vlqValue.Length == 0 || _mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
                     throw new VlqException("Found a source, but no line and column");
 
                 // Original line.
                 temp = VlqDecode(vlqValue);
-                result.OriginalLine = previousOriginalLine + temp.value;
+                result.OriginalLine = previousOriginalLine + temp.Value;
                 previousOriginalLine = result.OriginalLine;
-                vlqValue = temp.rest;
+                vlqValue = temp.Rest;
 
                 if (vlqValue.Length == 0 || _mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
                     throw new VlqException("Found a source and line, but no column");
 
                 // Original column.
                 temp = VlqDecode(vlqValue);
-                result.OriginalColumn = previousOriginalColumn + temp.value;
+                result.OriginalColumn = previousOriginalColumn + temp.Value;
                 previousOriginalColumn = result.OriginalColumn;
-                vlqValue = temp.rest;
+                vlqValue = temp.Rest;
 
                 if (vlqValue.Length > 0 && !_mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
                     // Skip Original Name bit; we are not using it.
@@ -170,7 +171,7 @@ namespace MadsKristensen.EditorExtensions
          * Decodes the next base 64 VLQ value from the given string and returns the
          * value and the rest of the string.
          */
-        public static dynamic VlqDecode(string slug)
+        public static VlqResult VlqDecode(string slug)
         {
             var i = 0;
             var strLen = slug.Length;
@@ -187,15 +188,11 @@ namespace MadsKristensen.EditorExtensions
                 digit = Base64.Base64Decode(slug[i++]);
                 continuation = (digit & VLQ_CONTINUATION_BIT) != 0;
                 digit &= VLQ_BASE_MASK;
-                result = result + (digit << shift);
+                result += digit << shift;
                 shift += VLQ_BASE_SHIFT;
             } while (continuation);
 
-            return new
-            {
-                value = FromVLQSigned(result),
-                rest = slug.Substring(i)
-            };
+            return new VlqResult(value: FromVLQSigned(result), rest: slug.Substring(i));
         }
 
         private static class Base64
@@ -227,21 +224,48 @@ namespace MadsKristensen.EditorExtensions
             }
         }
     }
+    public class StringSection : IEquatable<StringSection>
+    {
+        public StringSection(string fullText, int startIndex)// : this()
+        {
+            this.FullText = fullText;
+            this.StartIndex = startIndex;
+        }
+
+        public string FullText { get; private set; }
+        public int StartIndex { get; private set; }
+
+    }
+    public class VlqResult
+    {
+        public VlqResult(int value, string rest)
+        {
+            Value = value;
+            Rest = rest;
+        }
+
+        public int Value { get; private set; }
+        public string Rest { get; private set; }
+    }
 
     // For CA2201: Do not raise reserved exception types.
     [Serializable]
     public class VlqException : Exception
     {
         public VlqException()
-            : base() { }
+            : base()
+        { }
 
         public VlqException(string message)
-            : base(message) { }
+            : base(message)
+        { }
 
         public VlqException(string message, Exception innerException)
-            : base(message, innerException) { }
+            : base(message, innerException)
+        { }
 
         protected VlqException(SerializationInfo info, StreamingContext context)
-            : base(info, context) { }
+            : base(info, context)
+        { }
     }
 }

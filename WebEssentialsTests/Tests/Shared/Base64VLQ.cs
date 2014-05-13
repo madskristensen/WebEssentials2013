@@ -86,10 +86,10 @@ namespace WebEssentialsTests.Tests.Shared
         {
             for (var i = -255; i < 256; i++)
             {
-                dynamic result = Vlq.VlqDecode(Vlq.Encode(i));
+                var result = Vlq.VlqDecode(Vlq.Encode(i));
 
-                Assert.AreEqual(result.value, i);
-                Assert.AreEqual(result.rest, "");
+                Assert.AreEqual(result.Value, i);
+                Assert.AreEqual(result.Rest, "");
             }
         }
     }
