@@ -613,6 +613,18 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Don't save separate unminified compiler output. This option has no effect when Minify On Save is disabled for HTML.")]
         [DefaultValue(false)]
         public bool MinifyInPlace { get; set; }
+
+        [Category("Compilation")]
+        [DisplayName("Include CSS link into HTML")]
+        [Description("When true, the generated HTML contains link to global and specific CSS files, if presents.")]
+        [DefaultValue(true)]
+        public bool IncludeStylesInHtml { get; set; }
+
+        [Category("Compilation")]
+        [DisplayName("Global CSS file for HTML file")]
+        [Description("The global CSS file is included on the generated HTML file when present.")]
+        [DefaultValue("_md.css")]
+        public string DefaultMainCSSFileToUse { get; set; }
     }
 
     public interface IBundleSettings
