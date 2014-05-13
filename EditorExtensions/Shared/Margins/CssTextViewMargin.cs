@@ -66,7 +66,8 @@ namespace MadsKristensen.EditorExtensions.Margin
             _goToMenuItem = new MenuItem()
             {
                 Header = "Go To Definition",
-                InputGestureText = "F12",
+                // TODO: Add F12 back as a keybinding when the CssGoToDefinitionCommand doesn't throw an exception
+                //InputGestureText = "F12",
                 Command = new GoToDefinitionCommand(GoToDefinitionCommandHandler, () =>
                 { return _compilerResult != null && _compilerResult.SourceMap.IsCompleted && SourceTextView.Properties.ContainsProperty("CssSourceMap"); })
             };
