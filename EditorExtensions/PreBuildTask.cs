@@ -47,6 +47,7 @@ namespace MadsKristensen.EditorExtensions
                 InstallModuleAsync("node-sass", "node-sass"),
                 InstallModuleAsync("coffee", "coffee-script"),
                 InstallModuleAsync("iced", "iced-coffee-script"),
+                InstallModuleAsync("LiveScript", "LiveScript"),
                 InstallModuleAsync("coffeelint", "coffeelint"),
                 InstallModuleAsync("sjs", "sweet.js")
             ).Result.Where(r => r != ModuleInstallResult.AlreadyPresent);

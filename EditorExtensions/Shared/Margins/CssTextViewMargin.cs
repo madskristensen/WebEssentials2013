@@ -37,13 +37,25 @@ namespace MadsKristensen.EditorExtensions.Margin
 
         private async Task UpdateResults()
         {
-            if (_compilerResult != null)
-            {
-                if (SourceTextView.Properties.ContainsProperty("CssSourceMap"))
-                    SourceTextView.Properties.RemoveProperty("CssSourceMap");
+            if (_compilerResult == null)
+                return;
 
+            bool succeeded = true;
+
+            if (SourceTextView.Properties.ContainsProperty("CssSourceMap"))
+                SourceTextView.Properties.RemoveProperty("CssSourceMap");
+
+            try
+            {
                 SourceTextView.Properties.AddProperty("CssSourceMap", await _compilerResult.SourceMap.ConfigureAwait(false));
             }
+            catch (ArgumentException)
+            {
+                succeeded = false;
+            }
+
+            if (!succeeded) // retry to get the latest results
+                await UpdateResults();
         }
 
         protected override void AddSpecialItems(ItemsControl menu)
@@ -54,7 +66,8 @@ namespace MadsKristensen.EditorExtensions.Margin
             _goToMenuItem = new MenuItem()
             {
                 Header = "Go To Definition",
-                InputGestureText = "F12",
+                // TODO: Add F12 back as a keybinding when the CssGoToDefinitionCommand doesn't throw an exception
+                //InputGestureText = "F12",
                 Command = new GoToDefinitionCommand(GoToDefinitionCommandHandler, () =>
                 { return _compilerResult != null && _compilerResult.SourceMap.IsCompleted && SourceTextView.Properties.ContainsProperty("CssSourceMap"); })
             };

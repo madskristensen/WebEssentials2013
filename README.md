@@ -3,7 +3,7 @@
 
 Web Essentials extends Visual Studio with lots of new features that web developers have been missing for many years. 
 
-If you ever write CSS, HTML, JavaScript, TypeScript, CoffeeScript or LESS, then you will find many useful features that make your life as a developer easier. 
+If you ever write CSS, HTML, JavaScript, TypeScript, CoffeeScript, LiveScript or LESS, then you will find many useful features that make your life as a developer easier. 
 
 This is for all Web developers using Visual Studio.
 

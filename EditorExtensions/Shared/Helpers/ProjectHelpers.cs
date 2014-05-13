@@ -18,6 +18,7 @@ namespace MadsKristensen.EditorExtensions
     internal static class ProjectHelpers
     {
         public const string SolutionItemsFolder = "Solution Items";
+
         ///<summary>Gets the Solution Items solution folder in the current solution, creating it if it doesn't exist.</summary>
         public static Project GetSolutionItemsProject()
         {
@@ -34,13 +35,22 @@ namespace MadsKristensen.EditorExtensions
                 .Cast<Project>()
                 .SelectMany(GetChildProjects);
         }
+
         private static IEnumerable<Project> GetChildProjects(Project parent)
         {
-            if (parent.Kind != ProjectKinds.vsProjectKindSolutionFolder && parent.Collection == null)  // Unloaded
-                return Enumerable.Empty<Project>();
+            try
+            {
+                if (parent.Kind != ProjectKinds.vsProjectKindSolutionFolder && parent.Collection == null)  // Unloaded
+                    return Enumerable.Empty<Project>();
 
-            if (!String.IsNullOrEmpty(parent.FullName))
-                return new[] { parent };
+                if (!String.IsNullOrEmpty(parent.FullName))
+                    return new[] { parent };
+            }
+            catch (COMException)
+            {
+                return Enumerable.Empty<Project>();
+            }
+
             return parent.ProjectItems
                     .Cast<ProjectItem>()
                     .Where(p => p.SubProject != null)
@@ -117,33 +127,29 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        internal static bool AddFileToActiveProject(string fileName, string itemType = null)
+        public static void AddFileToActiveProject(string fileName, string itemType = null)
         {
             Project project = GetActiveProject();
 
-            if (project != null)
+            if (project == null)
+                return;
+
+            string projectFilePath = project.Properties.Item("FullPath").Value.ToString();
+            string projectDirPath = Path.GetDirectoryName(projectFilePath);
+
+            if (!fileName.StartsWith(projectDirPath, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            ProjectItem item = project.ProjectItems.AddFromFile(fileName);
+
+            if (itemType == null || item == null || project.FullName.Contains("://"))
+                return;
+
+            try
             {
-                string projectFilePath = project.Properties.Item("FullPath").Value.ToString();
-                string projectDirPath = Path.GetDirectoryName(projectFilePath);
-
-                if (fileName.StartsWith(projectDirPath, StringComparison.OrdinalIgnoreCase))
-                {
-                    ProjectItem item = project.ProjectItems.AddFromFile(fileName);
-
-                    if (itemType != null && item != null && !project.FullName.Contains("://"))
-                    {
-                        try
-                        {
-                            item.Properties.Item("ItemType").Value = itemType;
-                        }
-                        catch
-                        {
-                        }
-                    }
-                }
+                item.Properties.Item("ItemType").Value = itemType;
             }
-
-            return false;
+            catch { }
         }
 
         ///<summary>Gets the currently active project (as reported by the Solution Explorer), if any.</summary>
@@ -254,6 +260,7 @@ namespace MadsKristensen.EditorExtensions
 
             return editorAdapter.GetWpfTextView(GetCurrentNativeTextView());
         }
+
         public static IVsTextView GetCurrentNativeTextView()
         {
             var textManager = (IVsTextManager)ServiceProvider.GlobalProvider.GetService(typeof(SVsTextManager));
@@ -286,12 +293,12 @@ namespace MadsKristensen.EditorExtensions
             foreach (UIHierarchyItem selItem in items)
             {
                 var item = selItem.Object as ProjectItem;
+
                 if (item != null)
-                {
                     yield return item.Properties.Item("FullPath").Value.ToString();
-                }
             }
         }
+
         ///<summary>Gets the the currently selected project(s) in the Solution Explorer.</summary>
         public static IEnumerable<Project> GetSelectedProjects()
         {
@@ -299,10 +306,9 @@ namespace MadsKristensen.EditorExtensions
             foreach (UIHierarchyItem selItem in items)
             {
                 var item = selItem.Object as Project;
+
                 if (item != null)
-                {
                     yield return item;
-                }
             }
         }
 
@@ -316,6 +322,7 @@ namespace MadsKristensen.EditorExtensions
 
                 if (dte == null || !File.Exists(fileName) || dte.Solution.FindProjectItem(fileName) == null)
                     return true;
+
                 if (dte.SourceControl.IsItemUnderSCC(fileName) && !dte.SourceControl.IsItemCheckedOut(fileName))
                     return dte.SourceControl.CheckOutItem(fileName);
 
@@ -374,19 +381,16 @@ namespace MadsKristensen.EditorExtensions
             foreach (UIHierarchyItem selItem in items)
             {
                 var item = selItem.Object as ProjectItem;
+
                 if (item != null)
-                {
                     yield return item;
-                }
             }
         }
 
         public static string FixAbsolutePath(string absolutePath)
         {
             if (string.IsNullOrWhiteSpace(absolutePath))
-            {
                 return absolutePath;
-            }
 
             var uniformlySeparated = absolutePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
             var doubleSlash = new string(Path.DirectorySeparatorChar, 2);
@@ -394,9 +398,7 @@ namespace MadsKristensen.EditorExtensions
             uniformlySeparated = uniformlySeparated.Replace(doubleSlash, new string(Path.DirectorySeparatorChar, 1));
 
             if (prependSeparator)
-            {
                 uniformlySeparated = Path.DirectorySeparatorChar + uniformlySeparated;
-            }
 
             return uniformlySeparated;
         }

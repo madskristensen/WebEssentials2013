@@ -1,22 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions.Images
 {
-    internal class SpriteGenerator
+    internal static class SpriteGenerator
     {
-        public static IEnumerable<SpriteFragment> CreateImage(SpriteDocument sprite, out string imageFile)
+        public async static Task<IEnumerable<SpriteFragment>> MakeImage(SpriteDocument document, string imageFile, Func<string, bool, Task> updateSprite)
         {
-            imageFile = Path.ChangeExtension(sprite.FileName, sprite.FileExtension);
             ProjectHelpers.CheckOutFileFromSourceControl(imageFile);
 
-            Dictionary<string, Image> images = GetImages(sprite);
+            Dictionary<string, Image> images = GetImages(document);
 
-            int width = sprite.IsVertical ? images.Values.Max(i => i.Width) : images.Values.Sum(i => i.Width);
-            int height = sprite.IsVertical ? images.Values.Sum(img => img.Height) : images.Values.Max(img => img.Height);
+            await new BundleFileObserver().AttachFileObserver(document.FileName, document.FileName, updateSprite);
+
+            foreach (string file in images.Keys)
+            {
+                await new BundleFileObserver().AttachFileObserver(file, document.FileName, updateSprite);
+            }
+
+            int width = document.IsVertical ? images.Values.Max(i => i.Width) : images.Values.Sum(i => i.Width);
+            int height = document.IsVertical ? images.Values.Sum(img => img.Height) : images.Values.Max(img => img.Height);
 
             List<SpriteFragment> fragments = new List<SpriteFragment>();
 
@@ -24,13 +30,13 @@ namespace MadsKristensen.EditorExtensions.Images
             {
                 using (Graphics canvas = Graphics.FromImage(bitmap))
                 {
-                    if (sprite.IsVertical)
+                    if (document.IsVertical)
                         Vertical(images, fragments, canvas);
                     else
                         Horizontal(images, fragments, canvas);
                 }
 
-                bitmap.Save(imageFile, PasteImage.GetImageFormat("." + sprite.FileExtension));
+                bitmap.Save(imageFile, PasteImage.GetImageFormat("." + document.FileExtension));
             }
 
             return fragments;
@@ -68,7 +74,7 @@ namespace MadsKristensen.EditorExtensions.Images
         {
             Dictionary<string, Image> images = new Dictionary<string, Image>();
 
-            foreach (string file in sprite.ImageFiles)
+            foreach (string file in sprite.BundleAssets)
             {
                 Image image = Image.FromFile(file);
 

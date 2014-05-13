@@ -14,32 +14,35 @@ namespace MadsKristensen.EditorExtensions
         {
             using (RegistryKey classes = Registry.CurrentUser.OpenSubKey("SoftWare\\Classes", true))
             {
-                if (classes != null)
-                {
-                    // IcedCoffeeScript
-                    AddIcon(classes, "CoffeeScript.ico", ".iced");
+                if (classes == null)
+                    return;
 
-                    // Markdown
-                    AddIcon(classes, "Markdown.ico", ".md", ".mdown", ".markdown", ".mkd", ".mkdn", ".mdwn", ".mmd");
+                // IcedCoffeeScript
+                AddIcon(classes, "CoffeeScript.ico", ".iced");
 
-                    // WebVTT
-                    AddIcon(classes, "WebVTT.ico", ".vtt");
+                // LiveScript
+                AddIcon(classes, "LiveScript.ico", ".ls", ".livescript", ".lsc");
 
-                    // Bundles
-                    AddIcon(classes, "Bundle.ico", ".bundle");
+                // Markdown
+                AddIcon(classes, "Markdown.ico", ".md", ".mdown", ".markdown", ".mkd", ".mkdn", ".mdwn", ".mmd");
 
-                    // Fonts
-                    AddIcon(classes, "Font.ico", ".wof", ".woff", ".eot");
+                // WebVTT
+                AddIcon(classes, "WebVTT.ico", ".vtt");
 
-                    // Git
-                    AddIcon(classes, "Git.ico", ".gitignore", ".gitattributes");
+                // Bundles
+                AddIcon(classes, "Bundle.ico", ".bundle");
 
-                    // Generic script
-                    AddIcon(classes, "GenericScript.ico", ".appcache", JsHintCompiler.ConfigFileName, ".jshintignore", TsLintCompiler.ConfigFileName, JsCodeStyleCompiler.ConfigFileName, CoffeeLintCompiler.ConfigFileName, ".sjs", ".jsonld", ".bowerrc");
+                // Fonts
+                AddIcon(classes, "Font.ico", ".wof", ".woff", ".eot");
 
-                    // Jigsaw
-                    AddIcon(classes, "Jigsaw.ico", ".sprite");
-                }
+                // Git
+                AddIcon(classes, "Git.ico", ".gitignore", ".gitattributes");
+
+                // Generic script
+                AddIcon(classes, "GenericScript.ico", ".appcache", JsHintCompiler.ConfigFileName, ".jshintignore", TsLintCompiler.ConfigFileName, JsCodeStyleCompiler.ConfigFileName, CoffeeLintCompiler.ConfigFileName, ".sjs", ".jsonld", ".bowerrc");
+
+                // Jigsaw
+                AddIcon(classes, "Jigsaw.ico", ".sprite");
             }
         }
 
@@ -47,9 +50,9 @@ namespace MadsKristensen.EditorExtensions
         {
             foreach (string extension in extensions)
             {
-                using (RegistryKey iced = classes.CreateSubKey(extension + "\\DefaultIcon"))
+                using (RegistryKey key = classes.CreateSubKey(extension + "\\DefaultIcon"))
                 {
-                    iced.SetValue(string.Empty, _folder + iconName);
+                    key.SetValue(string.Empty, _folder + iconName);
                 }
             }
         }

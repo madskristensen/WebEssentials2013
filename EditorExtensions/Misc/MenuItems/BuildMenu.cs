@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnvDTE80;
 using MadsKristensen.EditorExtensions.Compilers;
+using MadsKristensen.EditorExtensions.Images;
 using MadsKristensen.EditorExtensions.Optimization.Minification;
 using MadsKristensen.EditorExtensions.SweetJs;
 using Microsoft.VisualStudio.Shell;
@@ -47,6 +48,10 @@ namespace MadsKristensen.EditorExtensions
             OleMenuCommand menuBundles = new OleMenuCommand(async (s, e) => await UpdateBundleFiles(), cmdBundles);
             _mcs.AddCommand(menuBundles);
 
+            CommandID cmdSprites = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildSprites);
+            OleMenuCommand menuSprites = new OleMenuCommand(async (s, e) => await UpdateSpriteFiles(), cmdSprites);
+            _mcs.AddCommand(menuSprites);
+
             CommandID cmdMinify = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildMinify);
             OleMenuCommand menuMinify = new OleMenuCommand((s, e) => Task.Run(new Action(Minify)), cmdMinify);
             _mcs.AddCommand(menuMinify);
@@ -67,7 +72,12 @@ namespace MadsKristensen.EditorExtensions
 
         public async static Task UpdateBundleFiles()
         {
-            await BundleFilesMenu.UpdateBundles(null, true);
+            await BundleFilesMenu.UpdateAllBundlesAsync();
+        }
+
+        public async static Task UpdateSpriteFiles()
+        {
+            await SpriteImageMenu.UpdateAllSpritesAsync();
         }
 
         private void Minify()
@@ -79,17 +89,17 @@ namespace MadsKristensen.EditorExtensions
             );
 
             var files = ProjectHelpers.GetAllProjects()
-                            .Select(ProjectHelpers.GetRootFolder)
-                            .SelectMany(p => Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories))
-                            .Where(f => extensions.Contains(Path.GetExtension(f)));
+                       .Select(ProjectHelpers.GetRootFolder)
+                       .SelectMany(p => Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories))
+                       .Where(f => extensions.Contains(Path.GetExtension(f)));
 
             // Perform expensive blocking work in parallel
             Parallel.ForEach(files, async file =>
                 await MinificationSaveListener.ReMinify(
-                    FileExtensionRegistry.GetContentTypeForExtension(Path.GetExtension(file).TrimStart('.')),
-                    file,
-                    false
-                )
+                          FileExtensionRegistry.GetContentTypeForExtension(Path.GetExtension(file).TrimStart('.')),
+                          file,
+                          false
+                      )
             );
 
             EditorExtensionsPackage.DTE.StatusBar.Clear();

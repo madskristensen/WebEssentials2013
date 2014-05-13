@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="5fb7364d-2e8c-44a4-95eb-2a382e30fec8" Version="2.0.9" Language="en-US" Publisher="Mads Kristensen" />
-    <DisplayName>Web Essentials 2013 for Update 2 RC</DisplayName>
-    <Description xml:space="preserve">Adds many useful features to Visual Studio for web developers.</Description>
+    <Identity Id="5fb7364d-2e8c-44a4-95eb-2a382e30fec8" Version="2.1" Language="en-US" Publisher="Mads Kristensen" />
+    <DisplayName>Web Essentials 2013 for Update 2</DisplayName>
+    <Description xml:space="preserve">Adds many useful features to Visual Studio for web developers. Requires VS2013 Update 2 RTM</Description>
     <MoreInfo>http://vswebessentials.com/</MoreInfo>
     <License>License.txt</License>
     <GettingStartedGuide>http://vswebessentials.com/changelog</GettingStartedGuide>
@@ -13,12 +13,12 @@
     <Tags>css, javascript, html, less, coffeescript, json</Tags>
   </Metadata>
   <Installation InstalledByMsi="false">
-    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="12.0" />
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[12.0.30501,13.0)" />
+    <InstallationTarget Id="Microsoft.VisualStudio.VWDExpress" Version="[12.0.30501,13.0)" />
   </Installation>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />
     <Dependency Id="Microsoft.VisualStudio.MPF.12.0" DisplayName="Visual Studio MPF 12.0" d:Source="Installed" Version="[12.0,13.0)" />
-    <Dependency d:Source="Installed" Id="0AC2ABB1-6383-4608-BA51-B58A23DD9E8A" DisplayName="VS2013 Update 2 RC and Web Tools" Version="[2013.2.50314,2014.0)" />
   </Dependencies>
   <Assets>
     <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />

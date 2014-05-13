@@ -40,9 +40,7 @@ namespace MadsKristensen.EditorExtensions
             var items = ProjectHelpers.GetSelectedItemPaths(_dte);
 
             if (items.Count() == 1 && (items.ElementAt(0).EndsWith(".cs", StringComparison.OrdinalIgnoreCase) || items.ElementAt(0).EndsWith(".vb", StringComparison.OrdinalIgnoreCase)))
-            {
                 _file = items.ElementAt(0);
-            }
 
             menuCommand.Enabled = !string.IsNullOrEmpty(_file) && !File.Exists(_file + ".js");
         }
@@ -54,9 +52,7 @@ namespace MadsKristensen.EditorExtensions
             var items = ProjectHelpers.GetSelectedItemPaths(_dte);
 
             if (items.Count() == 1 && (items.ElementAt(0).EndsWith(".cs", StringComparison.OrdinalIgnoreCase) || items.ElementAt(0).EndsWith(".vb", StringComparison.OrdinalIgnoreCase)))
-            {
                 _file = items.ElementAt(0);
-            }
 
             menuCommand.Enabled = !string.IsNullOrEmpty(_file) && !File.Exists(_file + ".d.ts");
         }
@@ -64,10 +60,13 @@ namespace MadsKristensen.EditorExtensions
         protected async Task<bool> ExecuteAsync(string extension)
         {
             await FileHelpers.WriteAllTextRetry(_file + extension, string.Empty);
+
             if (await ScriptIntellisenseListener.ProcessAsync(_file))
                 return true;
+
             File.Delete(_file + extension);
             Logger.ShowMessage("An error occurred while processing " + Path.GetFileName(_file) + ".\nNo script file was generated.  For more details, see the output window.");
+
             return false;
         }
     }

@@ -50,9 +50,7 @@ namespace MadsKristensen.EditorExtensions
                     }
                 }
                 else if (ShouldProcess(element))
-                {
                     ProcessElement(element, list, underProcess);
-                }
             }
 
             return new HashSet<IntellisenseObject>(list);

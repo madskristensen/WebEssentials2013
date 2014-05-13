@@ -300,8 +300,19 @@ namespace MadsKristensen.EditorExtensions
         /// <returns>Task which ultimately returns a string containing all lines of the file.</returns>
         public async static Task<string> ReadAllTextRetry(string fileName)
         {
-            return await BeginRead<string>(Task.FromResult<string>(File.ReadAllText(fileName))
-                                          .ExecuteRetryableTaskAsync<string>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5)));
+            int retryCount = 500;
+
+            try
+            {
+                return await Task.FromResult<string>(File.ReadAllText(fileName))
+                            .ExecuteRetryableTaskAsync<string>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount));
+            }
+            catch (IOException)
+            {
+                Logger.Log("Exception: Tried " + retryCount + " times for reading, but the file " + fileName + " is still in use. Exiting gracefully.");
+            }
+
+            return string.Empty;
         }
 
         /// <summary>
@@ -311,8 +322,19 @@ namespace MadsKristensen.EditorExtensions
         /// <returns>Task which ultimately returns all lines of the file, or the lines that are the result of a query.</returns>
         public async static Task<IEnumerable<string>> ReadAllLinesRetry(string fileName)
         {
-            return await BeginRead<IEnumerable<string>>(Task.FromResult<IEnumerable<string>>(File.ReadLines(fileName))
-                                                       .ExecuteRetryableTaskAsync<IEnumerable<string>>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5)));
+            int retryCount = 500;
+
+            try
+            {
+                return await Task.FromResult<IEnumerable<string>>(File.ReadLines(fileName))
+                            .ExecuteRetryableTaskAsync<IEnumerable<string>>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount));
+            }
+            catch (IOException)
+            {
+                Logger.Log("Exception: Tried " + retryCount + " times for reading, but the file " + fileName + " is still in use. Exiting gracefully.");
+            }
+
+            return Enumerable.Empty<string>();
         }
 
         /// <summary>
@@ -324,25 +346,19 @@ namespace MadsKristensen.EditorExtensions
         /// <returns>Task which ultimately returns all lines of the file, or the lines that are the result of a query.</returns>
         public async static Task<byte[]> ReadAllBytesRetry(string fileName)
         {
-            return await BeginRead<byte[]>(Task.FromResult<byte[]>(File.ReadAllBytes(fileName))
-                                          .ExecuteRetryableTaskAsync<byte[]>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5)));
-        }
-
-        private async static Task<T> BeginRead<T>(Task<T> readTask)
-        {
-            bool exception = false;
-            T text = default(T);
+            int retryCount = 500;
 
             try
             {
-                text = await readTask;
+                return await Task.FromResult<byte[]>(File.ReadAllBytes(fileName))
+                            .ExecuteRetryableTaskAsync<byte[]>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount));
             }
             catch (IOException)
             {
-                exception = true;
+                Logger.Log("Exception: Tried " + retryCount + " times for reading, but the file " + fileName + " is still in use. Exiting gracefully.");
             }
 
-            return exception ? await BeginRead(readTask) : text;
+            return Enumerable.Empty<byte>().ToArray();
         }
 
         /// <summary>
@@ -354,8 +370,17 @@ namespace MadsKristensen.EditorExtensions
         /// <param name="contents">The string to write to the file.</param>
         public async static Task WriteAllTextRetry(string fileName, string contents)
         {
-            await BeginWrite(Task.Run(() => File.WriteAllText(fileName, contents, Encoding.UTF8))
-                            .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5)));
+            int retryCount = 500;
+
+            try
+            {
+                await Task.Run(() => File.WriteAllText(fileName, contents, Encoding.UTF8))
+                     .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount));
+            }
+            catch (IOException)
+            {
+                Logger.Log("Exception: Tried " + retryCount + " times for writing, but the file " + fileName + " is still in use. Exiting gracefully.");
+            }
         }
 
         /// <summary>
@@ -367,25 +392,17 @@ namespace MadsKristensen.EditorExtensions
         /// <param name="value">The bytes to write to the file.</param>
         public async static Task WriteAllBytesRetry(string fileName, byte[] value)
         {
-            await BeginWrite(Task.Run(() => File.WriteAllBytes(fileName, value))
-                            .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), 5)));
-        }
-
-        private async static Task BeginWrite(Task writeTask)
-        {
-            bool exception = false;
+            int retryCount = 500;
 
             try
             {
-                await writeTask;
+                await Task.Run(() => File.WriteAllBytes(fileName, value))
+                     .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount));
             }
             catch (IOException)
             {
-                exception = true;
+                Logger.Log("Exception: Tried" + retryCount + " times for writing, but the file " + fileName + " is still in use. Exiting gracefully.");
             }
-
-            if (exception)
-                await BeginWrite(writeTask);
         }
 
         /// <summary>
@@ -401,6 +418,19 @@ namespace MadsKristensen.EditorExtensions
             var fileNameWithoutPath = Path.GetFileName(path);
 
             return Path.GetFileNameWithoutExtension(fileNameWithoutPath).Substring(0, fileNameWithoutPath.IndexOf('.'));
+        }
+
+        /// <summary>
+        /// Gets the file name collisions.
+        /// </summary>
+        /// <param name="fileName">Name of the file to check.</param>
+        /// <param name="extensions">The extensions to append to the file name to also check.</param>
+        /// <returns>The colliding file name if there is one, else <see langword="null"/>.</returns>
+        public static string GetFileCollisions(string fileName, params string[] extensions)
+        {
+            return File.Exists(fileName)
+                 ? fileName
+                 : extensions.Select(extension => fileName + extension).FirstOrDefault(File.Exists);
         }
     }
 }

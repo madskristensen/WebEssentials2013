@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
+using System.Text;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
         // binary: 100000
         const int VLQ_CONTINUATION_BIT = VLQ_BASE;
 
-        private static Regex _mappingSeparator = new Regex("^[,;]", RegexOptions.Compiled);
+        private static bool IsMappingSeparator(int ch) { return ch == ',' || ch == ';'; }
 
         private static string GetName(int index, string basePath, params string[] sources)
         {
@@ -76,7 +76,7 @@ namespace MadsKristensen.EditorExtensions
          */
         public static string Encode(int number)
         {
-            var encoded = "";
+            var encoded = new StringBuilder();
             int digit;
 
             var vlq = ToVLQSigned(number);
@@ -94,10 +94,10 @@ namespace MadsKristensen.EditorExtensions
                     digit |= VLQ_CONTINUATION_BIT;
                 }
 
-                encoded += Base64.Base64Encode(digit);
+                encoded.Append(Base64.Base64Encode(digit));
             } while (vlq > 0);
 
-            return encoded;
+            return encoded.ToString();
         }
 
         public static IEnumerable<CssSourceMapNode> Decode(string vlqValue, string basePath, params string[] sources)
@@ -105,75 +105,63 @@ namespace MadsKristensen.EditorExtensions
             int generatedLine = 0, previousSource, previousGeneratedColumn, previousOriginalLine, previousOriginalColumn;
             previousSource = previousGeneratedColumn = previousOriginalLine = previousOriginalColumn = 0;
 
-            while (vlqValue.Length > 0)
+            var stream = new StringReader(vlqValue);
+            while (stream.Peek() != -1)
             {
-                if (vlqValue[0] == ',')
+                if (stream.Peek() == ',')
                 {
-                    vlqValue = vlqValue.Substring(1);
+                    stream.Read();
                     continue;
                 }
 
-                if (vlqValue[0] == ';')
+                if (stream.Peek() == ';')
                 {
+                    stream.Read();
                     generatedLine++;
-                    vlqValue = vlqValue.Substring(1);
                     previousGeneratedColumn = 0;
                     continue;
                 }
 
-                var temp = VlqDecode(vlqValue);
                 var result = new CssSourceMapNode();
 
                 // Generated column.
-                result.GeneratedColumn = previousGeneratedColumn + temp.value;
+                result.GeneratedColumn = previousGeneratedColumn + VlqDecode(stream);
                 result.GeneratedLine = generatedLine;
                 previousGeneratedColumn = result.GeneratedColumn;
 
-                vlqValue = temp.rest;
-
-                if (vlqValue.Length < 1 || _mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
+                if (stream.Peek() < 0 || IsMappingSeparator(stream.Peek()))
                     yield break;
 
                 // Original source.
-                temp = VlqDecode(vlqValue);
-                previousSource += temp.value;
+                previousSource += VlqDecode(stream);
                 result.SourceFilePath = GetName(previousSource, basePath, sources);
-                vlqValue = temp.rest;
 
-                if (vlqValue.Length == 0 || _mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
+                if (stream.Peek() < 0 || IsMappingSeparator(stream.Peek()))
                     throw new VlqException("Found a source, but no line and column");
 
                 // Original line.
-                temp = VlqDecode(vlqValue);
-                result.OriginalLine = previousOriginalLine + temp.value;
+                result.OriginalLine = previousOriginalLine + VlqDecode(stream);
                 previousOriginalLine = result.OriginalLine;
-                vlqValue = temp.rest;
 
-                if (vlqValue.Length == 0 || _mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
+                if (stream.Peek() < 0 || IsMappingSeparator(stream.Peek()))
                     throw new VlqException("Found a source and line, but no column");
 
                 // Original column.
-                temp = VlqDecode(vlqValue);
-                result.OriginalColumn = previousOriginalColumn + temp.value;
+                result.OriginalColumn = previousOriginalColumn + VlqDecode(stream);
                 previousOriginalColumn = result.OriginalColumn;
-                vlqValue = temp.rest;
 
-                if (vlqValue.Length > 0 && !_mappingSeparator.IsMatch(vlqValue.Substring(0, 1)))
-                    // Skip Original Name bit; we are not using it.
-                    vlqValue = vlqValue.Substring(1);
+                // Skip Original Name bit; we are not using it.
+                if (stream.Peek() > 0 && !IsMappingSeparator(stream.Peek()))
+                    stream.Read();
 
                 yield return result;
             }
         }
 
-        /**
-         * Decodes the next base 64 VLQ value from the given string and returns the
-         * value and the rest of the string.
-         */
-        public static dynamic VlqDecode(string slug)
+        ///<summary>Reads a single VLQ value from a stream of text, advancing the stream to the subsequent character.</summary>
+
+        public static int VlqDecode(TextReader stream)
         {
-            var i = 0;
-            var strLen = slug.Length;
             var result = 0;
             var shift = 0;
             bool continuation;
@@ -181,21 +169,17 @@ namespace MadsKristensen.EditorExtensions
 
             do
             {
-                if (i >= strLen)
+                if (stream.Peek() == -1)
                     throw new VlqException("Expected more digits in base 64 VLQ value.");
 
-                digit = Base64.Base64Decode(slug[i++]);
+                digit = Base64.Base64Decode((char)stream.Read());
                 continuation = (digit & VLQ_CONTINUATION_BIT) != 0;
                 digit &= VLQ_BASE_MASK;
-                result = result + (digit << shift);
+                result += digit << shift;
                 shift += VLQ_BASE_SHIFT;
             } while (continuation);
 
-            return new
-            {
-                value = FromVLQSigned(result),
-                rest = slug.Substring(i)
-            };
+            return FromVLQSigned(result);
         }
 
         private static class Base64
@@ -233,15 +217,19 @@ namespace MadsKristensen.EditorExtensions
     public class VlqException : Exception
     {
         public VlqException()
-            : base() { }
+            : base()
+        { }
 
         public VlqException(string message)
-            : base(message) { }
+            : base(message)
+        { }
 
         public VlqException(string message, Exception innerException)
-            : base(message, innerException) { }
+            : base(message, innerException)
+        { }
 
         protected VlqException(SerializationInfo info, StreamingContext context)
-            : base(info, context) { }
+            : base(info, context)
+        { }
     }
 }

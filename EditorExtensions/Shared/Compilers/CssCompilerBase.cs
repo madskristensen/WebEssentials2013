@@ -18,7 +18,6 @@ namespace MadsKristensen.EditorExtensions
 
         protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
         {
-            // Inserts an empty row between each rule and replace two space indentation with 4 space indentation
             resultSource = await UpdateSourceMapUrls(resultSource, targetFileName, mapFileName);
 
             var message = ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.";
@@ -94,7 +93,8 @@ namespace MadsKristensen.EditorExtensions
         private static string UpdateSourceLinkInCssComment(string content, string sourceMapRelativePath)
         {   // Fix sourceMappingURL comment in CSS file with network accessible path.
             return _sourceMapInCss.Replace(content,
-                string.Format(CultureInfo.InvariantCulture, "/*# sourceMappingURL={0} */", sourceMapRelativePath));
+                   string.Format(CultureInfo.InvariantCulture,
+                   "/*# sourceMappingURL={0} */", sourceMapRelativePath));
         }
     }
 }

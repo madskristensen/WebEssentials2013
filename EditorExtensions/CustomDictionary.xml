@@ -28,6 +28,7 @@
       <Word>px</Word>
       <Word>CoffeeScript</Word>
       <Word>IcedCoffeeScript</Word>
+      <Word>LiveScript</Word>
       <Word>Markdown</Word>
       <Word>IVsContainedLanguage</Word>
       <Word>IVsContainedLanguageFactory</Word>
@@ -64,9 +65,12 @@
       <Word>Retryable</Word>
       <Word>Ld</Word>
       <Word>tt</Word>
+      <Word>Ls</Word>
+      <Word>Lsc</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>
+      <Term>LiveScript</Term>
       <Term>TypeScript</Term>
       <Term>CodeName</Term>
       <Term>JsHint</Term>

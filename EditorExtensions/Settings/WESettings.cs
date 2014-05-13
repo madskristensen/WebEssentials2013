@@ -28,37 +28,56 @@ namespace MadsKristensen.EditorExtensions.Settings
         public LessSettings Less { get; private set; }
         public ScssSettings Scss { get; private set; }
         public CoffeeScriptSettings CoffeeScript { get; private set; }
+        public LiveScriptSettings LiveScript { get; private set; }
         public MarkdownSettings Markdown { get; private set; }
         public SweetJsSettings SweetJs { get; private set; }
     }
 
-    public sealed class SpriteSettings : SettingsBase<SpriteSettings>, IBundleSettings
+    public sealed class SpriteSettings : SettingsBase<SpriteSettings>
     {
-        [Category("Paths")]
+        [Category("Sprite")]
+        [DisplayName("Optmize sprite files")]
+        [Description("Optmize sprite using image optmizer. Set it to false, if you need maximum resolution.")]
+        [DefaultValue(true)]
+        public bool Optimize { get; set; }
+
+        [Category("Sprite")]
+        [DisplayName("Is Vertical")]
+        [Description("Sprite image would be generated vertically. Set it to false, to generate it horizontally.")]
+        [DefaultValue(true)]
+        public bool IsVertical { get; set; }
+
+        [Category("Sprite")]
+        [DisplayName("Run on build")]
+        [Description("Regenerate the sprite when building the solution.")]
+        [DefaultValue(false)]
+        public bool RunOnBuild { get; set; }
+
+        [Category("Sprite")]
         [DisplayName("Use full path for naming identifiers")]
         [Description("Use full path to generate unique class or mixin name in CSS, LESS and SASS files. Consider disabling this if you want class names to be filename only.")]
         [DefaultValue(true)]
         public bool UseFullPathForIdentifierName { get; set; }
 
-        [Category("Paths")]
+        [Category("Sprite")]
         [DisplayName("Use absolute URL path in generated CSS-like files")]
         [Description("Use absolute path in the generated CSS-like files. By default, the URLs are relative to sprite image file (and the location of CSS, LESS and SCSS).")]
         [DefaultValue(false)]
         public bool UseAbsoluteUrl { get; set; }
 
-        [Category("Paths")]
+        [Category("Sprite")]
         [DisplayName("Custom CSS output directory")]
         [Description("Specifies a custom subfolder to save CSS files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
         [DefaultValue(null)]
-        public string OutputDirectory { get; set; }
+        public string CssOutputDirectory { get; set; }
 
-        [Category("Paths")]
+        [Category("Sprite")]
         [DisplayName("Custom LESS output directory")]
         [Description("Specifies a custom subfolder to save LESS files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
         [DefaultValue(null)]
         public string LessOutputDirectory { get; set; }
 
-        [Category("Paths")]
+        [Category("Sprite")]
         [DisplayName("Custom SCSS output directory")]
         [Description("Specifies a custom subfolder to save SCSS files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
         [DefaultValue(null)]
@@ -101,6 +120,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Enable the menu that shows up in the browser. Requires restart.")]
         [DefaultValue(true)]
         public bool EnableMenu { get; set; }
+
         [Category("CSS")]
         [DisplayName("CSS usage files to ignore")]
         [Description("A semicolon-separated list of file patterns to ignore.")]
@@ -178,7 +198,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         public bool ShowPreviewPane { get; set; }
     }
 
-    public sealed class HtmlSettings : SettingsBase<HtmlSettings>, IMinifierSettings
+    public sealed class HtmlSettings : SettingsBase<HtmlSettings>, IMinifierSettings, IBundleSettings
     {
         [DisplayName("Auto-format HTML on Enter")]
         [Description("Automatically format HTML source when pressing Enter.")]
@@ -220,6 +240,28 @@ namespace MadsKristensen.EditorExtensions.Settings
             ImageDropFormats.Add(new ImageDropFormat("Enclosed as List Item", @"<li id=""item_{1}""><img src=""{0}"" alt="""" /></li>"));
             ImageDropFormats.Add(new ImageDropFormat("Inline CSS", @"<div style=""background-image=url('{0}')""></div>"));
         }
+
+        #region Bundle Settings.
+
+        [Category("Bundle")]
+        [DisplayName("Minify files on making bundle")]
+        [Description("Make minified version of the file when bundle is generated. The minified file would be updated if the auto-minfied option is enabled.")]
+        [DefaultValue(false)]
+        public bool MakeMinified { get; set; }
+
+        [Category("Bundle")]
+        [DisplayName("Run on build")]
+        [Description("Regenerate the sprite when building the solution.")]
+        [DefaultValue(false)]
+        public bool RunOnBuild { get; set; }
+
+        [Category("Bundle")]
+        [DisplayName("Custom HTML output directory")]
+        [Description("Specifies a custom subfolder to save HTML files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
+        [DefaultValue(null)]
+        public string OutputDirectory { get; set; }
+
+        #endregion
     }
 
     public sealed class ImageDropFormat : SettingsBase<ImageDropFormat>
@@ -234,7 +276,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         public string HtmlFormat { get; set; }
     }
 
-    public sealed class JavaScriptSettings : LinterSettings<JavaScriptSettings>, IMinifierSettings, ISourceMapSettings
+    public sealed class JavaScriptSettings : LinterSettings<JavaScriptSettings>, IMinifierSettings, ISourceMapSettings, IBundleSettings
     {
         #region Minification
         [Category("Minification")]
@@ -261,9 +303,31 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Auto-complete /* */ comment blocks, and insert * on new lines.")]
         [DefaultValue(true)]
         public bool BlockCommentCompletion { get; set; }
+
+        #region Bundle Settings.
+
+        [Category("Bundle")]
+        [DisplayName("Minify files on making bundle")]
+        [Description("Make minified version of the file when bundle is generated. The minified file would be updated if the auto-minfied option is enabled.")]
+        [DefaultValue(false)]
+        public bool MakeMinified { get; set; }
+
+        [Category("Bundle")]
+        [DisplayName("Run on build")]
+        [Description("Regenerate the sprite when building the solution.")]
+        [DefaultValue(false)]
+        public bool RunOnBuild { get; set; }
+
+        [Category("Bundle")]
+        [DisplayName("Custom JavaScript output directory")]
+        [Description("Specifies a custom subfolder to save JavaScript files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
+        [DefaultValue(null)]
+        public string OutputDirectory { get; set; }
+
+        #endregion
     }
 
-    public sealed class CssSettings : SettingsBase<CssSettings>, IMinifierSettings
+    public sealed class CssSettings : SettingsBase<CssSettings>, IMinifierSettings, IBundleSettings
     {
         #region Minification
         [Category("Minification")]
@@ -279,12 +343,6 @@ namespace MadsKristensen.EditorExtensions.Settings
         public bool GzipMinifiedFiles { get; set; }
         #endregion
 
-        [Category("Bundles")]
-        [DisplayName("Adjust relative paths")]
-        [Description("Adjust relative URLs when bundling CSS files to a different folder. Consider disabling this if image files do not share the same directory structure as CSS files.")]
-        [DefaultValue(true)]
-        public bool AdjustRelativePaths { get; set; }
-
         #region Warnings
         [Category("Performance Warnings")]
         [DisplayName("Results location")]
@@ -296,10 +354,6 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Warn on selectors that contain the universal selector (*).")]
         [DefaultValue(true)]
         public bool ValidateStarSelector { get; set; }
-        [DisplayName("Disallow overqualified ID selector")]
-        [Description("Warn on selectors that unnecessarily qualify an ID selector with classes or tag names.")]
-        [DefaultValue(true)]
-        public bool ValidateOverQualifiedSelector { get; set; }
         [Category("Performance Warnings")]
         [DisplayName("Disallow units for 0 values")]
         [Description("Warn when units are unnecessarily specified for the number 0 (which never needs a unit in CSS).")]
@@ -347,9 +401,36 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Show which browser support CSS properties & values on mouse hover.")]
         [DefaultValue(true)]
         public bool ShowBrowserTooltip { get; set; }
+
+        #region Bundle Settings.
+
+        [Category("Bundle")]
+        [DisplayName("Minify files on making bundle")]
+        [Description("Make minified version of the file when bundle is generated. The minified file would be updated if the auto-minfied option is enabled.")]
+        [DefaultValue(false)]
+        public bool MakeMinified { get; set; }
+
+        [Category("Bundle")]
+        [DisplayName("Adjust relative paths")]
+        [Description("Adjust relative URLs when bundling CSS files to a different folder. Consider disabling this if image files do not share the same directory structure as CSS files.")]
+        [DefaultValue(true)]
+        public bool AdjustRelativePaths { get; set; }
+
+        [Category("Bundle")]
+        [DisplayName("Run on build")]
+        [Description("Regenerate the sprite when building the solution.")]
+        [DefaultValue(false)]
+        public bool RunOnBuild { get; set; }
+
+        [Category("Bundle")]
+        [DisplayName("Custom CSS output directory")]
+        [Description("Specifies a custom subfolder to save CSS files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
+        [DefaultValue(null)]
+        public string OutputDirectory { get; set; }
+        #endregion
     }
 
-    public abstract class CompilationSettings<T> : SettingsBase<T>, ICompilerInvocationSettings, IMarginSettings, ISourceMapSettings where T : CompilationSettings<T>
+    public abstract class CompilationSettings<T> : SettingsBase<T>, ICompilerInvocationSettings, IMarginSettings, ICssSourceMapSettings where T : CompilationSettings<T>
     {
         [Category("Editor")]
         [DisplayName("Show preview pane")]
@@ -382,10 +463,22 @@ namespace MadsKristensen.EditorExtensions.Settings
         public bool GenerateSourceMaps { get; set; }
 
         [Category("Compilation")]
+        [DisplayName("Process source maps")]
+        [Description("Regardless of Create source map option, this will generate source map (or use the generated one) to bring about editor enhancement features; such as specificity, selector path and go-to-definition.")]
+        [DefaultValue(true)]
+        public bool ProcessSourceMapsForEditorEnhancements { get; set; }
+
+        [Category("Compilation")]
         [DisplayName("Don't save raw compilation output")]
         [Description("Don't save separate unminified compiler output. This option has no effect when Minify On Save is disabled for the output format.")]
         [DefaultValue(false)]
         public bool MinifyInPlace { get; set; }
+
+        [Category("Compilation")]
+        [DisplayName("Strict Math")]
+        [Description("With this option turned off, LESS will try and process all maths in your CSS.")]
+        [DefaultValue(false)]
+        public bool StrictMath { get; set; }
     }
 
     public abstract class ChainableCompilationSettings<T> : CompilationSettings<T>, IChainableCompilerSettings where T : ChainableCompilationSettings<T>
@@ -439,6 +532,15 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Where to show messages from the linter.")]
         [DefaultValue(TaskErrorCategory.Message)]
         public TaskErrorCategory LintResultLocation { get; set; }
+    }
+
+    public sealed class LiveScriptSettings : CompilationSettings<LiveScriptSettings>
+    {
+        [DisplayName("Wrap generated JavaScript files")]
+        [Description("Wrap the generated JavaScript source in an anonymous function. This prevents variables from leaking into the global scope.")]
+        [Category("LiveScript")]
+        [DefaultValue(true)]
+        public bool WrapClosure { get; set; }
     }
     public sealed class SweetJsSettings : CompilationSettings<SweetJsSettings> { }
 
@@ -515,13 +617,19 @@ namespace MadsKristensen.EditorExtensions.Settings
 
     public interface IBundleSettings
     {
-        bool UseAbsoluteUrl { get; }
+        bool MakeMinified { get; }
+        bool RunOnBuild { get; }
         string OutputDirectory { get; }
     }
 
     public interface ISourceMapSettings
     {
         bool GenerateSourceMaps { get; }
+    }
+
+    public interface ICssSourceMapSettings : ISourceMapSettings
+    {
+        bool ProcessSourceMapsForEditorEnhancements { get; }
     }
 
     public interface IMarginSettings

@@ -116,7 +116,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else if (url.Contains("://") || File.Exists(url))
                 {
-                    return BitmapFrame.Create(new Uri(url), BitmapCreateOptions.None, BitmapCacheOption.OnDemand);
+                    return BitmapFrame.Create(new Uri(url), BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                 }
             }
             catch { }

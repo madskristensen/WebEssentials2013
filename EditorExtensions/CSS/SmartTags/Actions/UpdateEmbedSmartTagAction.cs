@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using Microsoft.VisualStudio.Text;
 
@@ -27,19 +28,19 @@ namespace MadsKristensen.EditorExtensions.Css
             get { return string.Format(CultureInfo.CurrentCulture, Resources.UpdateEmbedSmartTagActionName, _path); }
         }
 
-        public override void Invoke()
+        public async override void Invoke()
         {
             string filePath = ProjectHelpers.ToAbsoluteFilePath(_path, _span.TextBuffer.GetFileName());
-            ApplyChanges(filePath);
+            await ApplyChanges(filePath);
         }
 
-        private void ApplyChanges(string filePath)
+        private async Task ApplyChanges(string filePath)
         {
             ITextSnapshot snapshot = _span.TextBuffer.CurrentSnapshot;
 
             if (File.Exists(filePath))
             {
-                string dataUri = "url('" + FileHelpers.ConvertToBase64(filePath) + "')";
+                string dataUri = "url('" + await FileHelpers.ConvertToBase64(filePath) + "')";
                 InsertEmbedString(snapshot, dataUri);
             }
             else

@@ -87,13 +87,13 @@
     <CopyVsixExtensionLocation>bin/release/new folder</CopyVsixExtensionLocation>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AjaxMin, Version=5.8.5172.27703, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+    <Reference Include="AjaxMin, Version=5.9.5229.26434, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AjaxMin.5.8.5172.27710\lib\net40\AjaxMin.dll</HintPath>
+      <HintPath>..\packages\AjaxMin.5.9.5229.26438\lib\net40\AjaxMin.dll</HintPath>
     </Reference>
-    <Reference Include="ConfOxide, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="ConfOxide, Version=1.4.0.0, Culture=neutral, PublicKeyToken=934faed64f82030e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ConfOxide.1.3.0.0\lib\net40\ConfOxide.dll</HintPath>
+      <HintPath>..\packages\ConfOxide.1.4.0.0\lib\net40\ConfOxide.dll</HintPath>
     </Reference>
     <Reference Include="CssSorter">
       <HintPath>..\CssSorter.dll</HintPath>
@@ -180,7 +180,7 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -201,9 +201,9 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebMarkupMin.Core, Version=0.8.13.0, Culture=neutral, PublicKeyToken=99472178d266584b, processorArchitecture=MSIL">
+    <Reference Include="WebMarkupMin.Core, Version=0.8.18.0, Culture=neutral, PublicKeyToken=99472178d266584b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebMarkupMin.Core.0.8.13\lib\net40\WebMarkupMin.Core.dll</HintPath>
+      <HintPath>..\packages\WebMarkupMin.Core.0.8.18\lib\net40\WebMarkupMin.Core.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="ZenCoding, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -233,6 +233,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BrowserLink\UnusedCss\ScssDocument.cs" />
+    <Compile Include="CompatibilityChecker.cs" />
     <Compile Include="CSS\Adornments\ColorAdornment.cs" />
     <Compile Include="CSS\Adornments\ColorAdornmentTagger.cs" />
     <Compile Include="CSS\Adornments\ColorAdornmentTaggerProvider.cs" />
@@ -333,6 +334,12 @@
     <Compile Include="JSON\Schemas\SchemaExporter.cs" />
     <Compile Include="JSON\Validation\JsonErrorTag.cs" />
     <Compile Include="JSON\Validation\RefMemberNameItemValidator.cs" />
+    <Compile Include="Misc\Bundles\BundleFilesObserver.cs" />
+    <Compile Include="Misc\Bundles\IBundleDocument.cs" />
+    <Compile Include="Misc\Bundles\BundleGenerator.cs" />
+    <Compile Include="Misc\Bundles\BundleDocument.cs" />
+    <Compile Include="LiveScript\Compilers\LiveScriptCompiler.cs" />
+    <Compile Include="LiveScript\ContentType\LiveScriptContentTypeDefinition.cs" />
     <Compile Include="SCSS\Commands\ScssCreationListener.cs" />
     <Compile Include="SCSS\Commands\ScssExtractMixinCommandTarget.cs" />
     <Compile Include="SCSS\Commands\ScssExtractVariableCommandTarget.cs" />
@@ -603,9 +610,6 @@
     <Compile Include="CSS\Validation\Providers\MissingVendorErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CSS\Validation\Providers\OverQualifiedSelectorErrorTagProvider.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="CSS\Validation\Providers\ShorthandErrorTagProvider.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -682,7 +686,6 @@
     <Compile Include="CSS\SmartTags\Actions\UpdateEmbedSmartTagAction.cs" />
     <Compile Include="CSS\SmartTags\Actions\MissingStandardDirectiveSmartTagAction.cs" />
     <Compile Include="CSS\SmartTags\Actions\VendorDirectiveSmartTagAction.cs" />
-    <Compile Include="CSS\SmartTags\Actions\OverQualifySelectorSmartTagAction.cs" />
     <Compile Include="LESS\SmartTags\LessExtractVariableSmartTagProvider.cs" />
     <Compile Include="CSS\SmartTags\Providers\SortSmartTagProvider.cs" />
     <Compile Include="CSS\Validation\Filters\CustomCssErrorFilter.cs" />
@@ -709,7 +712,6 @@
     <Compile Include="CSS\SmartTags\Providers\UpdateEmbedSmartTagProvider.cs" />
     <Compile Include="CSS\SmartTags\Providers\MissingStandardDirectiveSmartTagProvider.cs" />
     <Compile Include="CSS\SmartTags\Providers\MissingVendorDirectiveSmartTagProvider.cs" />
-    <Compile Include="CSS\SmartTags\Providers\OverQualifiedSelectorSmartTagProvider.cs" />
     <Compile Include="CSS\SmartTags\Providers\VendorOrderSmartTagProvider.cs" />
     <Compile Include="CSS\SmartTags\Providers\MissingVendorSmartTagProvider.cs" />
     <Compile Include="CSS\SmartTags\Providers\SelectorHackSmartTagProvider.cs" />
@@ -794,6 +796,9 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\Icons\Jigsaw.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Icons\LiveScript.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\Icons\WebVTT.ico">
@@ -982,6 +987,7 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>

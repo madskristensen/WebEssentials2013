@@ -21,7 +21,7 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Web.Editor;
-using ThreadingTask = System.Threading.Tasks;
+using Task = System.Threading.Tasks.Task;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -42,6 +42,7 @@ namespace MadsKristensen.EditorExtensions
     [ProvideOptionPage(typeof(Settings.JavaScriptOptions), "Web Essentials", "JavaScript", 101, 107, true, new[] { "JScript", "JS", "Minify", "Minification", "EcmaScript" })]
     [ProvideOptionPage(typeof(Settings.BrowserLinkOptions), "Web Essentials", "Browser Link", 101, 108, true, new[] { "HTML menu", "BrowserLink" })]
     [ProvideOptionPage(typeof(Settings.CoffeeScriptOptions), "Web Essentials", "CoffeeScript", 101, 106, true, new[] { "Iced", "JavaScript", "JS", "JScript" })]
+    [ProvideOptionPage(typeof(Settings.LiveScriptOptions), "Web Essentials", "LiveScript", 101, 106, true, new[] { "LiveScript", "LS", "JavaScript", "JS", "JScript" })]
     [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling"), PackageRegistration(UseManagedResourcesOnly = true)]
     public sealed class EditorExtensionsPackage : Package
     {
@@ -72,12 +73,13 @@ namespace MadsKristensen.EditorExtensions
         public static EditorExtensionsPackage Instance { get; private set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
-        protected override void Initialize()
+        protected async override void Initialize()
         {
             base.Initialize();
 
             Instance = this;
 
+            await CompatibilityChecker.StartCheckingCompatibility();
             SettingsStore.Load();
             JavaScriptIntellisense.Register();
 
@@ -167,13 +169,14 @@ namespace MadsKristensen.EditorExtensions
         {
             var compiler = WebEditor.Host.ExportProvider.GetExport<ProjectCompiler>();
 
-            ThreadingTask.Task.Run(async () =>
+            Task.Run(async () =>
             {
                 Parallel.ForEach(
                     Mef.GetSupportedContentTypes<ICompilerRunnerProvider>()
                        .Where(c => WESettings.Instance.ForContentType<ICompilerInvocationSettings>(c).CompileOnBuild),
                     c => compiler.Value.CompileSolutionAsync(c).DoNotWait("compiling solution-wide " + c.DisplayName)
                 );
+
                 await BuildMenu.UpdateBundleFiles();
             }).DoNotWait("running solution-wide compilers");
 
@@ -192,6 +195,9 @@ namespace MadsKristensen.EditorExtensions
             if (WESettings.Instance.CoffeeScript.LintOnBuild)
                 LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.coffee", "*.iced" }, f => new LintReporter(new CoffeeLintCompiler(), WESettings.Instance.CoffeeScript, f))
                     .DoNotWait("running solution-wide CoffeeLint");
+
+            BundleFilesMenu.UpdateAllBundlesAsync(true).DoNotWait("running bundles");
+            SpriteImageMenu.UpdateAllSpritesAsync(true).DoNotWait("running sprites");
         }
 
         public static void ExecuteCommand(string commandName, string commandArgs = "")

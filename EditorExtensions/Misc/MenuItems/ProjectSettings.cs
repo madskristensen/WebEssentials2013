@@ -27,19 +27,12 @@ namespace MadsKristensen.EditorExtensions
             menuCommandSol.BeforeQueryStatus += SolutionBeforeQueryStatus;
             _mcs.AddCommand(menuCommandSol);
 
-            _dte.Events.SolutionEvents.Opened += SolutionEvents_Opened;
-
             ProjectItemsEvents projectEvents = ((Events2)_dte.Events).ProjectItemsEvents;
             projectEvents.ItemRemoved += ItemRemoved;
             projectEvents.ItemRenamed += ItemRenamed;
 
             SolutionEvents solutionEvents = ((Events2)_dte.Events).SolutionEvents;
             solutionEvents.ProjectRemoved += ProjectRemoved;
-        }
-
-        void SolutionEvents_Opened()
-        {
-            System.Threading.Tasks.Task.Run(() => BundleFilesMenu.BindAllBundlesAssets(ProjectHelpers.GetSolutionFolderPath()));
         }
 
         private void SolutionBeforeQueryStatus(object sender, EventArgs e)

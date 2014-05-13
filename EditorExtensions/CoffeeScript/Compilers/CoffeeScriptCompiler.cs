@@ -15,6 +15,7 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\coffee-script\bin\coffee");
         private static readonly Regex _errorParsingPattern = new Regex(@"(?<fileName>.*):(?<line>.\d*):(?<column>.\d*): error: (?<message>.*\n.*)", RegexOptions.Multiline);
+        private static readonly Regex _sourceMapInJs = new Regex(@"\/\/\\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*", RegexOptions.Multiline);
 
         public override string TargetExtension { get { return ".js"; } }
         public override bool GenerateSourceMap { get { return WESettings.Instance.CoffeeScript.GenerateSourceMaps; } }
@@ -54,7 +55,24 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
         {
             Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
 
+            if (GenerateSourceMap)
+            {
+                if (File.Exists(mapFileName))
+                    File.Delete(mapFileName);
+
+                File.Move(Path.ChangeExtension(targetFileName, ".map"), mapFileName);
+
+                resultSource = UpdateSourceLinkInJsComment(resultSource, FileHelpers.RelativePath(targetFileName, mapFileName));
+            }
+
             return await Task.FromResult(resultSource);
+        }
+
+        private static string UpdateSourceLinkInJsComment(string content, string sourceMapRelativePath)
+        {
+            return _sourceMapInJs.Replace(content,
+                   string.Format(CultureInfo.InvariantCulture,
+                   "//# sourceMappingURL={0}", sourceMapRelativePath));
         }
     }
 }

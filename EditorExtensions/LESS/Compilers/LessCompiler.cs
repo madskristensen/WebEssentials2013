@@ -24,8 +24,16 @@ namespace MadsKristensen.EditorExtensions.Less
         {
             string mapDirectory = Path.GetDirectoryName(mapFileName);
 
-            return string.Format(CultureInfo.CurrentCulture, "--no-color --relative-urls --source-map-basepath=\"{0}\" --source-map=\"{1}\" \"{2}\" \"{3}\"",
-                                 mapDirectory, mapFileName, sourceFileName, targetFileName);
+            // Source maps would be generated in "ALL" cases (regardless of the settings).
+            // If the option in settings is disabled, we will delete the map file once the
+            // B64VLQ values are extracted.
+            return string.Format(CultureInfo.CurrentCulture,
+                   "--no-color --relative-urls --strict-math={0} --source-map-basepath=\"{1}\" --source-map=\"{2}\" \"{3}\" \"{4}\"",
+                   WESettings.Instance.Less.StrictMath ? "on" : "off",
+                   mapDirectory,
+                   mapFileName,
+                   sourceFileName,
+                   targetFileName);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
@@ -14,8 +15,14 @@ namespace MadsKristensen.EditorExtensions.Images
     {
         private DTE2 _dte;
         private OleMenuCommandService _mcs;
-        private IEnumerable<string> _files, _sprites;
+        private IEnumerable<string> _files;
         private static string[] _supported = new[] { ".png", ".jpg", ".jpeg", ".gif" };
+
+        public SpriteImageMenu()
+        {
+            // Used by the IWpfTextViewCreationListener
+            _dte = EditorExtensionsPackage.DTE;
+        }
 
         public SpriteImageMenu(DTE2 dte, OleMenuCommandService mcs)
         {
@@ -26,36 +33,22 @@ namespace MadsKristensen.EditorExtensions.Images
         public void SetupCommands()
         {
             CommandID cmd = new CommandID(CommandGuids.guidImageCmdSet, (int)CommandId.SpriteImage);
-            OleMenuCommand menuCmd = new OleMenuCommand(async (s, e) => await CreateSpriteAsync(), cmd);
+            OleMenuCommand menuCmd = new OleMenuCommand(async (s, e) => await MakeSpriteAsync(), cmd);
             menuCmd.BeforeQueryStatus += BeforeQueryStatus;
             _mcs.AddCommand(menuCmd);
-
-            CommandID update = new CommandID(CommandGuids.guidImageCmdSet, (int)CommandId.UpdateSprite);
-            OleMenuCommand menuUpdate = new OleMenuCommand(async (s, e) => await UpdateSpriteAsync(), update);
-            menuUpdate.BeforeQueryStatus += IsSpriteFile;
-            _mcs.AddCommand(menuUpdate);
         }
 
-        void IsSpriteFile(object sender, System.EventArgs e)
-        {
-            OleMenuCommand button = sender as OleMenuCommand;
-            _sprites = ProjectHelpers.GetSelectedFilePaths()
-                                   .Where(file => Path.GetExtension(file) == ".sprite");
-
-            button.Enabled = _sprites.Count() > 0;
-        }
-
-        void BeforeQueryStatus(object sender, System.EventArgs e)
+        private void BeforeQueryStatus(object sender, System.EventArgs e)
         {
             OleMenuCommand button = sender as OleMenuCommand;
 
             _files = ProjectHelpers.GetSelectedFilePaths()
-                                   .Where(file => _supported.Contains(Path.GetExtension(file)));
+                                   .Where(file => _supported.Any(x => x.Equals(Path.GetExtension(file), StringComparison.OrdinalIgnoreCase)));
 
             button.Enabled = _files.Count() > 1;
         }
 
-        private async Task CreateSpriteAsync()
+        private async Task MakeSpriteAsync()
         {
             string spriteFile;
 
@@ -65,9 +58,8 @@ namespace MadsKristensen.EditorExtensions.Images
             try
             {
                 SpriteDocument doc = new SpriteDocument(spriteFile, _files.ToArray());
-                doc.Save();
-                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(spriteFile);
 
+                await doc.WriteSpriteRecipe();
                 await GenerateAsync(doc);
             }
             catch (Exception ex)
@@ -78,15 +70,36 @@ namespace MadsKristensen.EditorExtensions.Images
             }
         }
 
-        private async Task UpdateSpriteAsync()
+        public static async Task UpdateAllSpritesAsync(bool isBuild = false)
         {
+            foreach (Project project in ProjectHelpers.GetAllProjects())
+            {
+                if (project.ProjectItems.Count == 0)
+                    continue;
+
+                string folder = ProjectHelpers.GetRootFolder(project);
+
+                foreach (string file in Directory.EnumerateFiles(folder, "*.sprite", SearchOption.AllDirectories))
+                {
+                    if (ProjectHelpers.GetProjectItem(file) == null)
+                        continue;
+
+                    await new SpriteImageMenu().UpdateSpriteAsync(file, isBuild);
+                }
+            }
+        }
+
+        private async Task UpdateSpriteAsync(string spriteFileName, bool isBuild = false)
+        {
+            if (!spriteFileName.EndsWith(".sprite", StringComparison.OrdinalIgnoreCase))
+                return;
+
             try
             {
-                await Task.WhenAll(_sprites.Select(async file =>
-                {
-                    SpriteDocument doc = SpriteDocument.FromFile(file);
-                    await GenerateAsync(doc);
-                }));
+                SpriteDocument doc = SpriteDocument.FromFile(spriteFileName);
+
+                if (!isBuild || doc.RunOnBuild)
+                    await GenerateAsync(doc, true);
             }
             catch (FileNotFoundException ex)
             {
@@ -101,15 +114,21 @@ namespace MadsKristensen.EditorExtensions.Images
             }
         }
 
-        private async Task GenerateAsync(SpriteDocument sprite)
+        private async Task GenerateAsync(SpriteDocument sprite, bool hasUpdated = false)
         {
             _dte.StatusBar.Text = "Generating sprite...";
 
-            string imageFile;
-            var fragments = SpriteGenerator.CreateImage(sprite, out imageFile);
+            //Default file name is the sprite name with specified file extension.
+            string imageFile = Path.ChangeExtension(sprite.FileName, sprite.FileExtension);
 
-            ProjectHelpers.AddFileToActiveProject(sprite.FileName);
-            ProjectHelpers.AddFileToProject(sprite.FileName, imageFile);
+            IEnumerable<SpriteFragment> fragments = await SpriteGenerator.MakeImage(sprite, imageFile, UpdateSpriteAsync);
+
+            if (!hasUpdated)
+            {
+                ProjectHelpers.AddFileToActiveProject(sprite.FileName);
+                ProjectHelpers.AddFileToProject(sprite.FileName, imageFile);
+                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(sprite.FileName);
+            }
 
             await Export(fragments, imageFile, sprite);
 
@@ -131,8 +150,8 @@ namespace MadsKristensen.EditorExtensions.Images
         private bool GetFileName(out string fileName)
         {
             fileName = "MySprite";
-            string firstFile = _files.First();
-            string directory = Path.GetDirectoryName(firstFile);
+
+            string directory = Path.GetDirectoryName(_files.First());
 
             using (var dialog = new SaveFileDialog())
             {
@@ -147,7 +166,20 @@ namespace MadsKristensen.EditorExtensions.Images
                 fileName = dialog.FileName;
             }
 
-            return true;
+            //Check for colliding file names
+            string collidedFile = FileHelpers.GetFileCollisions(Path.ChangeExtension(fileName, Path.GetExtension(_files.First())), ".css", ".scss", ".less", ".map");
+            if (collidedFile == null)
+            {
+                return true;
+            }
+
+            if (MessageBox.Show("The following existing file conflicts with a file that would be generated:\r\n'" + collidedFile + "'.\r\n\r\nWould you like to retry with a different name or cancel?", "File name issue", MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation) == DialogResult.Retry)
+            {
+                return GetFileName(out fileName);
+            }
+
+            _dte.StatusBar.Text = "Sprite generation canceled.";
+            return false;
         }
     }
 }

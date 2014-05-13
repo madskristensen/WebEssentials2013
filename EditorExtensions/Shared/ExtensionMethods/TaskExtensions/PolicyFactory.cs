@@ -7,7 +7,7 @@ namespace MadsKristensen.EditorExtensions
     {
         public static RetryPolicy GetPolicy(ITransientErrorDetectionStrategy strategy, int retryCount)
         {
-            RetryPolicy policy = new RetryPolicy(strategy, retryCount, TimeSpan.FromMilliseconds(50));
+            RetryPolicy policy = new RetryPolicy(strategy, retryCount, TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(50));
 
             return policy;
         }
