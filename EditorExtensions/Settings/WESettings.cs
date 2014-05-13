@@ -430,7 +430,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         #endregion
     }
 
-    public abstract class CompilationSettings<T> : SettingsBase<T>, ICompilerInvocationSettings, IMarginSettings, ISourceMapSettings where T : CompilationSettings<T>
+    public abstract class CompilationSettings<T> : SettingsBase<T>, ICompilerInvocationSettings, IMarginSettings, ICssSourceMapSettings where T : CompilationSettings<T>
     {
         [Category("Editor")]
         [DisplayName("Show preview pane")]
@@ -461,6 +461,12 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Generate source map files when minifying. This option has no effect when Minify is disabled.")]
         [DefaultValue(true)]
         public bool GenerateSourceMaps { get; set; }
+
+        [Category("Compilation")]
+        [DisplayName("Process source maps")]
+        [Description("Regardless of Create source map option, this will generate source map (or use the generated one) to bring about editor enhancement features; such as specificity, selector path and go-to-definition.")]
+        [DefaultValue(true)]
+        public bool ProcessSourceMapsForEditorEnhancements { get; set; }
 
         [Category("Compilation")]
         [DisplayName("Don't save raw compilation output")]
@@ -619,6 +625,11 @@ namespace MadsKristensen.EditorExtensions.Settings
     public interface ISourceMapSettings
     {
         bool GenerateSourceMaps { get; }
+    }
+
+    public interface ICssSourceMapSettings : ISourceMapSettings
+    {
+        bool ProcessSourceMapsForEditorEnhancements { get; }
     }
 
     public interface IMarginSettings
