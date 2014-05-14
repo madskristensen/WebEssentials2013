@@ -90,9 +90,9 @@ namespace MadsKristensen.EditorExtensions
             }
 
             XElement element = null;
-            IEnumerable<string> contituentFiles = from f in doc.Descendants("file")
+            IEnumerable<string> constituentFiles = from f in doc.Descendants("file")
                                                   select ProjectHelpers.ToAbsoluteFilePath(f.Value, root, folder);
-            BundleDocument bundle = new BundleDocument(fileName, contituentFiles.ToArray());
+            BundleDocument bundle = new BundleDocument(fileName, constituentFiles.ToArray());
 
             element = doc.Descendants("minify").FirstOrDefault();
 

@@ -12,14 +12,7 @@ namespace MadsKristensen.EditorExtensions.Images
         {
             ProjectHelpers.CheckOutFileFromSourceControl(imageFile);
 
-            Dictionary<string, Image> images = GetImages(document);
-
-            await new BundleFileObserver().AttachFileObserver(document.FileName, document.FileName, updateSprite);
-
-            foreach (string file in images.Keys)
-            {
-                await new BundleFileObserver().AttachFileObserver(file, document.FileName, updateSprite);
-            }
+            Dictionary<string, Image> images = await WatchFiles(document, updateSprite);
 
             int width = document.IsVertical ? images.Values.Max(i => i.Width) : images.Values.Sum(i => i.Width);
             int height = document.IsVertical ? images.Values.Sum(img => img.Height) : images.Values.Max(img => img.Height);
@@ -40,6 +33,20 @@ namespace MadsKristensen.EditorExtensions.Images
             }
 
             return fragments;
+        }
+
+        public async static Task<Dictionary<string, Image>> WatchFiles(SpriteDocument document, Func<string, bool, Task> updateSprite)
+        {
+            Dictionary<string, Image> images = GetImages(document);
+
+            await new BundleFileObserver().AttachFileObserver(document.FileName, document.FileName, updateSprite);
+
+            foreach (string file in images.Keys)
+            {
+                await new BundleFileObserver().AttachFileObserver(file, document.FileName, updateSprite);
+            }
+
+            return images;
         }
 
         private static void Vertical(Dictionary<string, Image> images, List<SpriteFragment> fragments, Graphics canvas)
