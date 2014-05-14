@@ -11,6 +11,8 @@ namespace MadsKristensen.EditorExtensions
 {
     public class BundleDocument : IBundleDocument
     {
+        private bool isCss;
+
         public string FileName { get; set; }
         public IEnumerable<string> BundleAssets { get; set; }
         public bool Minified { get; set; }
@@ -20,12 +22,15 @@ namespace MadsKristensen.EditorExtensions
 
         public BundleDocument(string fileName, params string[] assets)
         {
+            isCss = false;
+
             var extension = Path.GetExtension(assets.First()).TrimStart('.').ToLowerInvariant();
 
             IBundleSettings settings;
 
             if (extension == "css")
             {
+                isCss = true;
                 settings = WESettings.Instance.Css;
                 AdjustRelativePaths = WESettings.Instance.Css.AdjustRelativePaths;
             }
@@ -49,7 +54,7 @@ namespace MadsKristensen.EditorExtensions
 
             using (XmlWriter writer = await Task.Run(() => XmlWriter.Create(FileName, settings)))
             {
-                new XDocument(
+                XDocument doc = new XDocument(
                     new XElement("bundle",
                         new XAttribute(XNamespace.Xmlns + "xsi", xsi),
                         new XAttribute(xsi + "noNamespaceSchemaLocation", "http://vswebessentials.com/schemas/v1/bundle.xsd"),
@@ -58,20 +63,27 @@ namespace MadsKristensen.EditorExtensions
                             new XElement("minify", Minified.ToString().ToLowerInvariant()),
                             new XComment("Determin whether to generate/re-generate this bundle on building the solution."),
                             new XElement("runOnBuild", RunOnBuild.ToString().ToLowerInvariant()),
-                            new XComment("Use absolute path in the generated CSS files. By default, the URLs are relative to generated bundled CSS file."),
-                            new XElement("adjustRelativePaths", AdjustRelativePaths.ToString().ToLowerInvariant()),
                             new XComment("Specifies a custom subfolder to save files to. By default, compiled output will be placed in the same folder and nested under the original file."),
                             new XElement("outputDirectory", OutputDirectory)
                         ),
                         new XComment("The order of the <file> elements determines the order of the files in the bundle."),
                         new XElement("files", BundleAssets.Select(file => new XElement("file", "/" + FileHelpers.RelativePath(root, file))))
                     )
-                ).Save(writer);
+                );
+
+                if (isCss)
+                    doc.Descendants("runOnBuild").FirstOrDefault().AddAfterSelf(
+                        new XComment("Use absolute path in the generated CSS files. By default, the URLs are relative to generated bundled CSS file."),
+                        new XElement("adjustRelativePaths", AdjustRelativePaths.ToString().ToLowerInvariant())
+                    );
+
+                doc.Save(writer);
             }
         }
 
         public static BundleDocument FromFile(string fileName)
         {
+            var extension = Path.GetExtension(fileName).TrimStart('.').ToLowerInvariant();
             string root = ProjectHelpers.GetProjectFolder(fileName);
             string folder = Path.GetDirectoryName(root);
 
@@ -91,7 +103,7 @@ namespace MadsKristensen.EditorExtensions
 
             XElement element = null;
             IEnumerable<string> constituentFiles = from f in doc.Descendants("file")
-                                                  select ProjectHelpers.ToAbsoluteFilePath(f.Value, root, folder);
+                                                   select ProjectHelpers.ToAbsoluteFilePath(f.Value, root, folder);
             BundleDocument bundle = new BundleDocument(fileName, constituentFiles.ToArray());
 
             element = doc.Descendants("minify").FirstOrDefault();
@@ -104,10 +116,13 @@ namespace MadsKristensen.EditorExtensions
             if (element != null)
                 bundle.RunOnBuild = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
 
-            element = doc.Descendants("adjustRelativePaths").FirstOrDefault();
+            if (extension == "css")
+            {
+                element = doc.Descendants("adjustRelativePaths").FirstOrDefault();
 
-            if (element != null)
-                bundle.AdjustRelativePaths = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+                if (element != null)
+                    bundle.AdjustRelativePaths = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+            }
 
             element = doc.Descendants("outputDirectory").FirstOrDefault();
 
