@@ -136,7 +136,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             {
                 var settings = CreateSettings();
                 settings.SymbolsMap = sourceMap;
-                sourceMap.StartPackage(Path.GetFileName(minFile), Path.GetFileName(mapPath));
+                sourceMap.StartPackage(minFile, mapPath);
 
                 // This fails when debugger is attached. Bug raised with Ron Logan
                 bool result = await MinifyFile(file, minFile, settings);
@@ -158,7 +158,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
                                     .Trim()
                                     .StartsWith("///#source", StringComparison.CurrentCulture))
             {
-                minifier.FileName = Path.GetFileName(file);
+                minifier.FileName = file;
             }
 
             string content = minifier.MinifyJavaScript(await FileHelpers.ReadAllTextRetry(file), settings);
