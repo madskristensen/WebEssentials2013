@@ -136,9 +136,9 @@ namespace MadsKristensen.EditorExtensions.Margin
 
             int column = Math.Max(0, selector.SimpleSelectors.Last().Start - containingLine.Start - 1);
 
-            var sourceInfoCollection = (await _compilerResult.SourceMap).MapNodes.Where(s => s.GeneratedLine == line && s.GeneratedColumn == column);
+            var sourceInfo = (await _compilerResult.SourceMap).MapNodes.FirstOrDefault(s => s.GeneratedLine == line && s.GeneratedColumn == column);
 
-            if (!sourceInfoCollection.Any())
+            if (sourceInfo == null)
             {
                 if (selector.SimpleSelectors.Last().PreviousSibling == null)
                     return;
@@ -148,20 +148,18 @@ namespace MadsKristensen.EditorExtensions.Margin
                 var point = selector.SimpleSelectors.Last().PreviousSibling.AfterEnd - 1;
 
                 column = Math.Max(0, point - containingLine.Start - 1);
-                sourceInfoCollection = (await _compilerResult.SourceMap).MapNodes.Where(s => s.GeneratedLine == line && s.GeneratedColumn == column);
+                sourceInfo = (await _compilerResult.SourceMap).MapNodes.FirstOrDefault(s => s.GeneratedLine == line && s.GeneratedColumn == column);
 
-                if (!sourceInfoCollection.Any())
+                if (sourceInfo == null)
                     return;
             }
-
-            var sourceInfo = sourceInfoCollection.First();
 
             if (sourceInfo.SourceFilePath != Document.FilePath)
                 FileHelpers.OpenFileInPreviewTab(sourceInfo.SourceFilePath);
 
             string content = await FileHelpers.ReadAllTextRetry(sourceInfo.SourceFilePath);
 
-            var finalPositionInSource = content.NthIndexOfCharInString('\n', (int)sourceInfo.OriginalLine) + sourceInfo.OriginalColumn;
+            var finalPositionInSource = content.NthIndexOfCharInString('\n', sourceInfo.OriginalLine) + sourceInfo.OriginalColumn;
 
             Dispatch(sourceInfo.SourceFilePath, finalPositionInSource);
         }
