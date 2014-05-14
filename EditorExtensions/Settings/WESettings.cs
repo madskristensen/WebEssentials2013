@@ -327,8 +327,22 @@ namespace MadsKristensen.EditorExtensions.Settings
         #endregion
     }
 
-    public sealed class CssSettings : SettingsBase<CssSettings>, IMinifierSettings, IBundleSettings
+    public sealed class CssSettings : SettingsBase<CssSettings>, IMinifierSettings, IAutoprefixerSettings, IBundleSettings
     {
+        #region Autoprefixer
+        [Category("Autoprefixer")]
+        [DisplayName("Enable Autoprefixer")]
+        [Description("Parse CSS and add vendor prefixes to CSS rules using values from caniuse.com")]
+        [DefaultValue(false)]
+        public bool Autoprefix { get; set; }
+
+        [Category("Autoprefixer")]
+        [DisplayName("Targeted browsers")]
+        [Description("Specify the browsers to target. See http://github.com/ai/autoprefixer#browsers")]
+        [DefaultValue(null)]
+        public string AutoprefixerBrowsers { get; set; }
+        #endregion
+
         #region Minification
         [Category("Minification")]
         [DisplayName("Minify files on save")]
@@ -655,6 +669,12 @@ namespace MadsKristensen.EditorExtensions.Settings
     {
         bool AutoMinify { get; set; }
         bool GzipMinifiedFiles { get; }
+    }
+
+    public interface IAutoprefixerSettings
+    {
+        bool Autoprefix { get; set; }
+        string AutoprefixerBrowsers { get; }
     }
 
     public enum WarningLocation

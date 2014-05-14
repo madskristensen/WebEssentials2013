@@ -46,6 +46,7 @@ namespace MadsKristensen.EditorExtensions
                 InstallModuleAsync("tslint", "tslint"),
                 InstallModuleAsync("node-sass", "node-sass"),
                 InstallModuleAsync("coffee", "coffee-script"),
+                InstallModuleAsync("autoprefixer", "autoprefixer"),
                 InstallModuleAsync("iced", "iced-coffee-script"),
                 InstallModuleAsync("LiveScript", "LiveScript"),
                 InstallModuleAsync("coffeelint", "coffeelint"),

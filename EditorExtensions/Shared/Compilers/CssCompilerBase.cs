@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Web.Helpers;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.CSS.Core;
+using MadsKristensen.EditorExtensions.Misc.Autoprefixer;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -19,6 +20,8 @@ namespace MadsKristensen.EditorExtensions
         protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
         {
             resultSource = await UpdateSourceMapUrls(resultSource, targetFileName, mapFileName);
+
+            resultSource = await Autoprefixer.AutoprefixContent(resultSource);
 
             var message = ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.";
 
@@ -44,7 +47,6 @@ namespace MadsKristensen.EditorExtensions
 
             return resultSource;
         }
-
 
         private async Task<string> UpdateSourceMapUrls(string content, string compiledFileName, string mapFileName)
         {
