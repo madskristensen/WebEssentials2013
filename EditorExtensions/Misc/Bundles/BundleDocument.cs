@@ -54,16 +54,16 @@ namespace MadsKristensen.EditorExtensions
                         new XAttribute(XNamespace.Xmlns + "xsi", xsi),
                         new XAttribute(xsi + "noNamespaceSchemaLocation", "http://vswebessentials.com/schemas/v1/bundle.xsd"),
                         new XElement("settings",
-                            new XComment("Determines if the sprite image should be automatically optimized after creation/update."),
+                            new XComment("Determines if the bundle file should be automatically optimized after creation/update."),
                             new XElement("minify", Minified.ToString().ToLowerInvariant()),
-                            new XComment("Determin whether to generate/re-generate this sprite on building the solution."),
+                            new XComment("Determin whether to generate/re-generate this bundle on building the solution."),
                             new XElement("runOnBuild", RunOnBuild.ToString().ToLowerInvariant()),
                             new XComment("Use absolute path in the generated CSS files. By default, the URLs are relative to generated bundled CSS file."),
                             new XElement("adjustRelativePaths", AdjustRelativePaths.ToString().ToLowerInvariant()),
                             new XComment("Specifies a custom subfolder to save files to. By default, compiled output will be placed in the same folder and nested under the original file."),
                             new XElement("outputDirectory", OutputDirectory)
                         ),
-                        new XComment("The order of the <file> elements determines the order of the images in the bundle."),
+                        new XComment("The order of the <file> elements determines the order of the files in the bundle."),
                         new XElement("files", BundleAssets.Select(file => new XElement("file", "/" + FileHelpers.RelativePath(root, file))))
                     )
                 ).Save(writer);
@@ -90,9 +90,9 @@ namespace MadsKristensen.EditorExtensions
             }
 
             XElement element = null;
-            IEnumerable<string> imageFiles = from f in doc.Descendants("file")
-                                             select ProjectHelpers.ToAbsoluteFilePath(f.Value, root, folder);
-            BundleDocument bundle = new BundleDocument(fileName, imageFiles.ToArray());
+            IEnumerable<string> contituentFiles = from f in doc.Descendants("file")
+                                                  select ProjectHelpers.ToAbsoluteFilePath(f.Value, root, folder);
+            BundleDocument bundle = new BundleDocument(fileName, contituentFiles.ToArray());
 
             element = doc.Descendants("minify").FirstOrDefault();
 
