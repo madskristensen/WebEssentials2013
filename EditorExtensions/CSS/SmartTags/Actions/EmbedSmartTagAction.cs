@@ -40,13 +40,13 @@ namespace MadsKristensen.EditorExtensions.Css
             }
         }
 
-        private void ApplyChanges(string filePath)
+        private async void ApplyChanges(string filePath)
         {
             ITextSnapshot snapshot = _span.TextBuffer.CurrentSnapshot;
 
             if (File.Exists(filePath))
             {
-                string dataUri = "url('" + FileHelpers.ConvertToBase64(filePath) + "') /*" + Uri.UnescapeDataString(_url.UrlString.Text.Trim('"', '\'')) + "*/";
+                string dataUri = "url('" + await FileHelpers.ConvertToBase64(filePath) + "') /*" + Uri.UnescapeDataString(_url.UrlString.Text.Trim('"', '\'')) + "*/";
                 InsertEmbedString(snapshot, dataUri);
             }
             else
@@ -59,7 +59,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
-                        string dataUri = "url('" + FileHelpers.ConvertToBase64(dialog.FileName) + "')";
+                        string dataUri = "url('" + await FileHelpers.ConvertToBase64(dialog.FileName) + "')";
                         InsertEmbedString(snapshot, dataUri);
                     }
                 }
@@ -70,25 +70,7 @@ namespace MadsKristensen.EditorExtensions.Css
         {
             using (EditorExtensionsPackage.UndoContext((DisplayText)))
             {
-                Declaration dec = _url.FindType<Declaration>();
-
-                if (dec != null && dec.Parent != null && !(dec.Parent.Parent is FontFaceDirective)) // No declaration in LESS variable definitions
-                {
-                    RuleBlock rule = _url.FindType<RuleBlock>();
-                    string text = dec.Text;
-
-                    if (dec != null && rule != null)
-                    {
-                        Declaration match = rule.Declarations.FirstOrDefault(d => d.PropertyName != null && d.PropertyName.Text == "*" + dec.PropertyName.Text);
-                        if (!text.StartsWith("*", StringComparison.Ordinal) && match == null)
-                            _span.TextBuffer.Insert(dec.AfterEnd, "*" + text + "/* For IE 6 and 7 */");
-                    }
-                }
-
                 _span.TextBuffer.Replace(_span.GetSpan(snapshot), dataUri);
-
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-                EditorExtensionsPackage.ExecuteCommand("Edit.CollapsetoDefinitions");
             }
         }
     }
