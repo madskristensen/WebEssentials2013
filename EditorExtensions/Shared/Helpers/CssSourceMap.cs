@@ -5,12 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Helpers;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.Scss.Core;
 using Microsoft.VisualStudio.Utilities;
+using Newtonsoft.Json;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -64,7 +64,7 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                map = Json.Decode<SourceMapDefinition>(mapFileContents);
+                map = JsonConvert.DeserializeObject<SourceMapDefinition>(mapFileContents);
             }
             catch
             {

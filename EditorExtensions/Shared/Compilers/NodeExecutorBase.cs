@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web.Helpers;
+using Newtonsoft.Json;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -86,29 +86,46 @@ namespace MadsKristensen.EditorExtensions
 
         private async Task<CompilerResult> ProcessResult(Process process, string errorText, string sourceFileName, string targetFileName, string mapFileName)
         {
-            var result = await ValidateResult(process, targetFileName, errorText);
-            var resultText = result.Result;
-            bool success = result.IsSuccess;
+            string result = "";
+            bool success = false;
+            IEnumerable<CompilerError> errors = null;
+
+            try
+            {
+                if (process.ExitCode == 0)
+                {
+                    if (!string.IsNullOrEmpty(targetFileName) && File.Exists(targetFileName))
+                        result = await FileHelpers.ReadAllTextRetry(targetFileName);
+
+                    success = true;
+                }
+                else
+                {
+                    errors = ParseErrors(errorText);
+                }
+            }
+            catch (FileNotFoundException missingFileException)
+            {
+                Logger.Log(ServiceName + ": " + Path.GetFileName(targetFileName) + " compilation failed. " + missingFileException.Message);
+            }
 
             if (success)
             {
-                var renewedResult = await PostProcessResult(resultText, sourceFileName, targetFileName, mapFileName);
+                var renewedResult = await PostProcessResult(result, sourceFileName, targetFileName, mapFileName);
 
-                if (!ReferenceEquals(resultText, renewedResult))
+                if (!ReferenceEquals(result, renewedResult))
                 {
                     await FileHelpers.WriteAllTextRetry(targetFileName, renewedResult);
-                    resultText = renewedResult;
+                    result = renewedResult;
                 }
             }
-
-            IEnumerable<CompilerError> errors = result.Errors;
 
             var compilerResult = await CompilerResultFactory.GenerateResult(
                                            sourceFileName: sourceFileName,
                                            targetFileName: targetFileName,
                                            mapFileName: mapFileName,
                                            isSuccess: success,
-                                           result: resultText,
+                                           result: result,
                                            errors: errors
                                        ) as CompilerResult;
 
@@ -123,38 +140,6 @@ namespace MadsKristensen.EditorExtensions
             return compilerResult;
         }
 
-        private async Task<dynamic> ValidateResult(Process process, string outputFile, string errorText)
-        {
-            string result = null;
-            var isSuccess = false;
-            IEnumerable<CompilerError> errors = null;
-
-            try
-            {
-                if (process.ExitCode == 0)
-                {
-                    if (!string.IsNullOrEmpty(outputFile) && File.Exists(outputFile))
-                        result = await FileHelpers.ReadAllTextRetry(outputFile);
-                    isSuccess = true;
-                }
-                else
-                {
-                    errors = ParseErrors(errorText);
-                }
-            }
-            catch (FileNotFoundException missingFileException)
-            {
-                Logger.Log(ServiceName + ": " + Path.GetFileName(outputFile) + " compilation failed. " + missingFileException.Message);
-            }
-
-            return new
-            {
-                Result = result,
-                IsSuccess = isSuccess,
-                Errors = errors
-            };
-        }
-
         protected IEnumerable<CompilerError> ParseErrorsWithJson(string error)
         {
             if (string.IsNullOrEmpty(error))
@@ -162,7 +147,7 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                CompilerError[] results = Json.Decode<CompilerError[]>(error);
+                CompilerError[] results = JsonConvert.DeserializeObject<CompilerError[]>(error);
 
                 if (results.Length == 0)
                     Logger.Log(ServiceName + " parse error: " + error);
