@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web.Helpers;
 using MadsKristensen.EditorExtensions.Helpers;
 using Microsoft.CSS.Core;
+using Newtonsoft.Json.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -78,16 +76,20 @@ namespace MadsKristensen.EditorExtensions
         private async Task<string> GetUpdatedSourceMapFileContent(string cssFileName, string sourceMapFileName)
         {
             // Read JSON map file and deserialize.
-            dynamic jsonSourceMap = Json.Decode(await ReadMapFile(sourceMapFileName));
+
+            JObject jsonSourceMap = JObject.Parse(await ReadMapFile(sourceMapFileName));
 
             if (jsonSourceMap == null)
                 return null;
 
-            jsonSourceMap.sources = ((IEnumerable<dynamic>)jsonSourceMap.sources).Select(s => FileHelpers.RelativePath(cssFileName, s));
-            jsonSourceMap.names = new List<dynamic>(jsonSourceMap.names);
-            jsonSourceMap.file = Path.GetFileName(cssFileName);
+            for (int i = 0; i < ((JArray)jsonSourceMap["sources"]).Count; i++)
+            {
+                jsonSourceMap["sources"][i] = FileHelpers.RelativePath(cssFileName, jsonSourceMap["sources"][i].Value<string>());
+            }
 
-            return Json.Encode(jsonSourceMap);
+            jsonSourceMap["file"] = Path.GetFileName(cssFileName);
+
+            return jsonSourceMap.ToString();
         }
 
         private static string UpdateSourceLinkInCssComment(string content, string sourceMapRelativePath)

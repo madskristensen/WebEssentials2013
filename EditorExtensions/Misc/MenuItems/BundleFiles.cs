@@ -115,17 +115,19 @@ namespace MadsKristensen.EditorExtensions
 
                 string folder = ProjectHelpers.GetRootFolder(project);
 
+                BundleFilesMenu menu = new BundleFilesMenu();
+
                 foreach (string file in Directory.EnumerateFiles(folder, "*" + _ext, SearchOption.AllDirectories))
                 {
                     if (ProjectHelpers.GetProjectItem(file) == null)
                         continue;
 
-                    await new BundleFilesMenu().UpdateBundleAsync(file, isBuild);
+                    await menu.UpdateBundleAsync(file, isBuild);
                 }
             }
         }
 
-        private async Task UpdateBundleAsync(string file, bool isBuild = false)
+        public async Task UpdateBundleAsync(string file, bool isBuild = false)
         {
             string extension = null;
 

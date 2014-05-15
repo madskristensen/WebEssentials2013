@@ -20,8 +20,6 @@ namespace MadsKristensen.EditorExtensions
             if (document == null)
                 return false;
 
-            Dictionary<string, string> files = new Dictionary<string, string>();
-
             // filePath must end in ".targetExtension.bundle"
             string extension = Path.GetExtension(Path.GetFileNameWithoutExtension(document.FileName));
 
@@ -30,6 +28,30 @@ namespace MadsKristensen.EditorExtensions
                 Logger.Log("Skipping bundle file " + document.FileName + " without extension.  Bundle files must end with the output extension, followed by '.bundle'.");
                 return false;
             }
+
+            Dictionary<string, string> files = await WatchFiles(document, updateBundle);
+
+            if (files == null)
+                return false;
+
+            string combinedContent = await CombineFiles(files, extension, document, bundleFile);
+            bool bundleChanged = !File.Exists(bundleFile) || await FileHelpers.ReadAllTextRetry(bundleFile) != combinedContent;
+
+            if (bundleChanged)
+            {
+                ProjectHelpers.CheckOutFileFromSourceControl(bundleFile);
+                await FileHelpers.WriteAllTextRetry(bundleFile, combinedContent);
+                Logger.Log("Web Essentials: Updated bundle: " + Path.GetFileName(bundleFile));
+            }
+
+            ProjectHelpers.AddFileToProject(document.FileName, bundleFile);
+
+            return bundleChanged;
+        }
+
+        public async static Task<Dictionary<string, string>> WatchFiles(BundleDocument document, Func<string, bool, Task> updateBundle)
+        {
+            Dictionary<string, string> files = new Dictionary<string, string>();
 
             await new BundleFileObserver().AttachFileObserver(document.FileName, document.FileName, updateBundle);
 
@@ -51,23 +73,11 @@ namespace MadsKristensen.EditorExtensions
                     EditorExtensionsPackage.DTE.ItemOperations.OpenFile(document.FileName);
                     Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "Bundle error: The file '{0}' doesn't exist", asset));
 
-                    return false;
+                    return null;
                 }
             }
 
-            string combinedContent = await CombineFiles(files, extension, document, bundleFile);
-            bool bundleChanged = !File.Exists(bundleFile) || await FileHelpers.ReadAllTextRetry(bundleFile) != combinedContent;
-
-            if (bundleChanged)
-            {
-                ProjectHelpers.CheckOutFileFromSourceControl(bundleFile);
-                await FileHelpers.WriteAllTextRetry(bundleFile, combinedContent);
-                Logger.Log("Web Essentials: Updated bundle: " + Path.GetFileName(bundleFile));
-            }
-
-            ProjectHelpers.AddFileToProject(document.FileName, bundleFile);
-
-            return bundleChanged;
+            return files;
         }
 
         private async static Task<string> CombineFiles(Dictionary<string, string> files, string extension, BundleDocument bundle, string bundleFile)
