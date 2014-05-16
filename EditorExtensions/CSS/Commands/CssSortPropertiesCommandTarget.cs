@@ -47,6 +47,9 @@ namespace MadsKristensen.EditorExtensions.Css
             if (contentType.IsOfType("LESS"))
                 return sorter.SortLess(text);
 
+            if (contentType.IsOfType("SCSS"))
+                return sorter.SortScss(text);
+
             return sorter.SortStyleSheet(text);
         }
 
