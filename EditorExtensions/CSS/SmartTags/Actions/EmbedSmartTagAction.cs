@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 using Microsoft.CSS.Core;

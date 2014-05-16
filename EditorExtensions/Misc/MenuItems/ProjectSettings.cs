@@ -21,6 +21,8 @@ namespace MadsKristensen.EditorExtensions
         {
             _dte = dte;
             _mcs = mcs;
+
+            _dte.Events.SolutionEvents.Opened += SolutionEvents_Opened;
         }
 
         public void SetupCommands()
@@ -29,8 +31,6 @@ namespace MadsKristensen.EditorExtensions
             OleMenuCommand menuCommandSol = new OleMenuCommand((s, e) => ApplySolutionSettings(), commandSol);
             menuCommandSol.BeforeQueryStatus += SolutionBeforeQueryStatus;
             _mcs.AddCommand(menuCommandSol);
-
-            _dte.Events.SolutionEvents.Opened += SolutionEvents_Opened;
 
             ProjectItemsEvents projectEvents = ((Events2)_dte.Events).ProjectItemsEvents;
             projectEvents.ItemRemoved += ItemRemoved;
