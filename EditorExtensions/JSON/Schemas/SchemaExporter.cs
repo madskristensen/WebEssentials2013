@@ -10,14 +10,14 @@ namespace MadsKristensen.EditorExtensions.JSON
     {
         private static Dictionary<string, string> _schemas = new Dictionary<string, string> 
         { 
-            {".jshintrc", "http://vswebessentials.com/schemas/v0.1/jshintrc.json"},
-            {".bowerrc", "http://vswebessentials.com/schemas/v0.1/bowerrc.json"},
-            {"bower.json", "http://vswebessentials.com/schemas/v0.1/bower.json"},
-            {"package.json", "http://vswebessentials.com/schemas/v0.1/package.json"},
-            {"tslint.json", "http://vswebessentials.com/schemas/v0.1/tslint.json"},
-            {"jscsrc.json", "http://vswebessentials.com/schemas/v0.1/jscsrc.json"},
-            {".jscsrc", "http://vswebessentials.com/schemas/v0.1/jscsrc.json"},
-            {"coffeelint.json", "http://vswebessentials.com/schemas/v0.1/coffeelint.json"},
+            {".jshintrc", "http://schemastore.org/schemas/jshintrc.json"},
+            {".bowerrc", "http://schemastore.org/schemas/bowerrc.json"},
+            {"bower.json", "http://schemastore.org/schemas/bower.json"},
+            {"package.json", "http://schemastore.org/schemas/package.json"},
+            {"tslint.json", "http://schemastore.org/schemas/tslint.json"},
+            {"jscsrc.json", "http://schemastore.org/schemas/jscsrc.json"},
+            {".jscsrc", "http://schemastore.org/schemas/jscsrc.json"},
+            {"coffeelint.json", "http://schemastore.org/schemas/coffeelint.json"},
         };
 
         public IEnumerable<string> GetAvailableSchemas()
