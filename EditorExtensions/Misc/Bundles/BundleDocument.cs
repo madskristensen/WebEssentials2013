@@ -104,6 +104,9 @@ namespace MadsKristensen.EditorExtensions
             // Migrate old bundles
             doc = MigrateBundle(doc, fileName, root, folder);
 
+            if (doc == null)
+                return null;
+
             XElement element = null;
             IEnumerable<string> constituentFiles = from f in doc.Descendants("file")
                                                    select ProjectHelpers.ToAbsoluteFilePath(f.Value, root, folder);
@@ -139,12 +142,12 @@ namespace MadsKristensen.EditorExtensions
         {
             string[] attrNames = new[] { "runOnBuild", "minify", "output" };
             XElement bundle = doc.Descendants("bundle").FirstOrDefault();
-            string [] attributes = bundle.Attributes()
-                                         .Where(a => attrNames.Contains(a.Name.ToString()))
-                                         .Select(a => a.Name.ToString())
-                                         .ToArray();
+            string[] attributes = bundle.Attributes()
+                                        .Where(a => attrNames.Contains(a.Name.ToString()))
+                                        .Select(a => a.Name.ToString())
+                                        .ToArray();
 
-            if (attributes.Count() > 0)
+            if (attributes.Count() == 0)
                 return doc;
 
             IEnumerable<string> constituentFiles = from f in doc.Descendants("file")
@@ -159,7 +162,14 @@ namespace MadsKristensen.EditorExtensions
 
             newDoc.WriteBundleRecipe().DoNotWait("Migrating bundle to new schema.");
 
-            return XDocument.Load(fileName);
+            try
+            {
+                return XDocument.Load(fileName);
+            }
+            catch (XmlException)
+            {
+                return null;
+            }
         }
     }
 }
