@@ -306,6 +306,7 @@
     <Compile Include="CSS\Classify\EmbeddedImageClassifier.cs" />
     <Compile Include="CSS\Completion\Filter\ColorSwatchCompletionListFilter.cs" />
     <Compile Include="CSS\Completion\Filter\HideUncommonCompletionListFilter.cs" />
+    <Compile Include="CSS\Validation\Filters\ExtendCssErrorFilter.cs" />
     <Compile Include="HTML\Outlining\HtmlRegionTagger.cs" />
     <Compile Include="HTML\Validation\FoundationClassValidator.cs" />
     <Compile Include="HTML\Validation\FoundationColumnsValidator.cs" />
