@@ -139,10 +139,10 @@ namespace MadsKristensen.EditorExtensions
             if (string.IsNullOrEmpty(extension))
                 return;
 
-            await UpdateBundleAsync(file, extension);
+            await UpdateBundleAsync(file, extension, isBuild);
         }
 
-        private async Task UpdateBundleAsync(string bundleFileName, string extension)
+        private async Task UpdateBundleAsync(string bundleFileName, string extension, bool isBuild = false)
         {
             if (_ignoreFolders.Any(p => bundleFileName.Contains("\\" + p + "\\")))
                 return;
@@ -150,7 +150,9 @@ namespace MadsKristensen.EditorExtensions
             try
             {
                 BundleDocument doc = BundleDocument.FromFile(bundleFileName);
-                await GenerateAsync(doc, extension, true);
+
+                if (!isBuild || doc.RunOnBuild)
+                    await GenerateAsync(doc, extension, true);
             }
             catch (FileNotFoundException ex)
             {
