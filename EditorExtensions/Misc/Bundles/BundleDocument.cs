@@ -101,6 +101,9 @@ namespace MadsKristensen.EditorExtensions
                 return null;
             }
 
+            // Migrate old bundles
+            doc = MigrateBundle(doc, fileName, root, folder);
+
             XElement element = null;
             IEnumerable<string> constituentFiles = from f in doc.Descendants("file")
                                                    select ProjectHelpers.ToAbsoluteFilePath(f.Value, root, folder);
@@ -130,6 +133,33 @@ namespace MadsKristensen.EditorExtensions
                 bundle.OutputDirectory = element.Value;
 
             return bundle;
+        }
+
+        private static XDocument MigrateBundle(XDocument doc, string fileName, string root, string folder)
+        {
+            string[] attrNames = new[] { "runOnBuild", "minify", "output" };
+            XElement bundle = doc.Descendants("bundle").FirstOrDefault();
+            string [] attributes = bundle.Attributes()
+                                         .Where(a => attrNames.Contains(a.Name.ToString()))
+                                         .Select(a => a.Name.ToString())
+                                         .ToArray();
+
+            if (attributes.Count() > 0)
+                return doc;
+
+            IEnumerable<string> constituentFiles = from f in doc.Descendants("file")
+                                                   select ProjectHelpers.ToAbsoluteFilePath(f.Value, root, folder);
+            BundleDocument newDoc = new BundleDocument(fileName, constituentFiles.ToArray());
+
+            if (attributes.Contains("runOnBuild"))
+                newDoc.RunOnBuild = bundle.Attribute("runOnBuild").Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+
+            if (attributes.Contains("minify"))
+                newDoc.RunOnBuild = bundle.Attribute("minify").Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+
+            newDoc.WriteBundleRecipe().DoNotWait("Migrating bundle to new schema.");
+
+            return XDocument.Load(fileName);
         }
     }
 }
