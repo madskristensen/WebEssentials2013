@@ -63,7 +63,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     if (!files.ContainsKey(absolute))
                     {
-                        files.Add(absolute, asset);
+                        files.Add(absolute, "/" + FileHelpers.RelativePath(ProjectHelpers.GetProjectFolder(document.FileName), asset));
 
                         await new BundleFileObserver().AttachFileObserver(absolute, document.FileName, updateBundle);
                     }
