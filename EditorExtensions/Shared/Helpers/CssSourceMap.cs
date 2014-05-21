@@ -165,6 +165,9 @@ namespace MadsKristensen.EditorExtensions
 
                 item = styleSheet.ItemAfterPosition(start);
 
+                if (item == null)
+                    continue;
+
                 while (item.TreeDepth > targetDepth)
                 {
                     item = item.Parent;
@@ -298,10 +301,10 @@ namespace MadsKristensen.EditorExtensions
 
                     for (int i = 0; i < node.OriginalSelector.SimpleSelectors.Count; i++)
                     {
-                        selectorText.Append(simple.Text).Append(" ");
+                        if (simple == null)
+                            break;
 
-                        if (simple.NextSibling == null)
-                            continue;
+                        selectorText.Append(simple.Text).Append(" ");
 
                         simple = simple.NextSibling as SimpleSelector;
                     }
