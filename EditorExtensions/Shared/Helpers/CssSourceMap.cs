@@ -5,12 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Helpers;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
 using Microsoft.Scss.Core;
 using Microsoft.VisualStudio.Utilities;
+using Newtonsoft.Json;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -64,7 +64,7 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                map = Json.Decode<SourceMapDefinition>(mapFileContents);
+                map = JsonConvert.DeserializeObject<SourceMapDefinition>(mapFileContents);
             }
             catch
             {
@@ -164,6 +164,9 @@ namespace MadsKristensen.EditorExtensions
                 start += node.OriginalColumn;
 
                 item = styleSheet.ItemAfterPosition(start);
+
+                if (item == null)
+                    continue;
 
                 while (item.TreeDepth > targetDepth)
                 {
@@ -298,10 +301,10 @@ namespace MadsKristensen.EditorExtensions
 
                     for (int i = 0; i < node.OriginalSelector.SimpleSelectors.Count; i++)
                     {
-                        selectorText.Append(simple.Text).Append(" ");
+                        if (simple == null)
+                            break;
 
-                        if (simple.NextSibling == null)
-                            continue;
+                        selectorText.Append(simple.Text).Append(" ");
 
                         simple = simple.NextSibling as SimpleSelector;
                     }

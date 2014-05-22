@@ -79,17 +79,19 @@ namespace MadsKristensen.EditorExtensions.Images
 
                 string folder = ProjectHelpers.GetRootFolder(project);
 
+                SpriteImageMenu menu = new SpriteImageMenu();
+
                 foreach (string file in Directory.EnumerateFiles(folder, "*.sprite", SearchOption.AllDirectories))
                 {
                     if (ProjectHelpers.GetProjectItem(file) == null)
                         continue;
 
-                    await new SpriteImageMenu().UpdateSpriteAsync(file, isBuild);
+                    await menu.UpdateSpriteAsync(file, isBuild);
                 }
             }
         }
 
-        private async Task UpdateSpriteAsync(string spriteFileName, bool isBuild = false)
+        public async Task UpdateSpriteAsync(string spriteFileName, bool isBuild = false)
         {
             if (!spriteFileName.EndsWith(".sprite", StringComparison.OrdinalIgnoreCase))
                 return;

@@ -6,8 +6,12 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.Web.Editor;
+using VSConstants = Microsoft.VisualStudio.VSConstants;
 
 namespace MadsKristensen.EditorExtensions.Margin
 {
@@ -18,7 +22,13 @@ namespace MadsKristensen.EditorExtensions.Margin
 
         public CssTextViewMargin(string targetContentType, ITextDocument document, IWpfTextView sourceView)
             : base(targetContentType, document, sourceView)
-        { }
+        {
+            // Intercept F12 when it bubbles from the preview pane to the main TextView
+            var adapterFactory = WebEditor.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
+            var adapter = adapterFactory.GetViewAdapter(sourceView);
+            if (adapter != null)
+                sourceView.Properties.GetOrCreateSingletonProperty(() => new GoToDefinitionFilter(adapter, this));
+        }
 
         protected override void UpdateMargin(CompilerResult result)
         {
@@ -58,6 +68,40 @@ namespace MadsKristensen.EditorExtensions.Margin
                 await UpdateResults();
         }
 
+        // This is necessary to prevent the CSS editor's handler
+        // from running & failing.  Status checks do not seem to
+        // work properly when the preview pane is focused.
+        class GoToDefinitionFilter : CommandTargetBase<VSConstants.VSStd97CmdID>
+        {
+            CssTextViewMargin owner;
+            public GoToDefinitionFilter(IVsTextView adapter, CssTextViewMargin owner)
+                : base(adapter, owner.SourceTextView, VSConstants.VSStd97CmdID.GotoDefn)
+            {
+                this.owner = owner;
+            }
+            protected override bool Execute(VSConstants.VSStd97CmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+            {
+                if (!owner.PreviewTextHost.TextView.HasAggregateFocus)
+                    return false;
+                if (!owner.IsSourceMapAvailable())
+                    return false;
+                owner.GoToDefinitionCommandHandler();
+                return true;
+            }
+
+            protected override bool IsEnabled()
+            {
+                if (!owner.PreviewTextHost.HostControl.IsFocused)
+                    return false;
+                return owner.IsSourceMapAvailable();
+            }
+        }
+
+        private bool IsSourceMapAvailable()
+        {
+            return _compilerResult != null && _compilerResult.SourceMap.IsCompleted && SourceTextView.Properties.ContainsProperty("CssSourceMap");
+        }
+
         protected override void AddSpecialItems(ItemsControl menu)
         {
             if (_goToMenuItem != null && PreviewTextHost.TextView.VisualElement.ContextMenu.Items.Contains(_goToMenuItem))
@@ -66,10 +110,8 @@ namespace MadsKristensen.EditorExtensions.Margin
             _goToMenuItem = new MenuItem()
             {
                 Header = "Go To Definition",
-                // TODO: Add F12 back as a keybinding when the CssGoToDefinitionCommand doesn't throw an exception
-                //InputGestureText = "F12",
-                Command = new GoToDefinitionCommand(GoToDefinitionCommandHandler, () =>
-                { return _compilerResult != null && _compilerResult.SourceMap.IsCompleted && SourceTextView.Properties.ContainsProperty("CssSourceMap"); })
+                InputGestureText = "F12",
+                Command = new GoToDefinitionCommand(GoToDefinitionCommandHandler, IsSourceMapAvailable)
             };
 
             menu.Items.Add(_goToMenuItem);
@@ -94,9 +136,9 @@ namespace MadsKristensen.EditorExtensions.Margin
 
             int column = Math.Max(0, selector.SimpleSelectors.Last().Start - containingLine.Start - 1);
 
-            var sourceInfoCollection = (await _compilerResult.SourceMap).MapNodes.Where(s => s.GeneratedLine == line && s.GeneratedColumn == column);
+            var sourceInfo = (await _compilerResult.SourceMap).MapNodes.FirstOrDefault(s => s.GeneratedLine == line && s.GeneratedColumn == column);
 
-            if (!sourceInfoCollection.Any())
+            if (sourceInfo == null)
             {
                 if (selector.SimpleSelectors.Last().PreviousSibling == null)
                     return;
@@ -106,20 +148,18 @@ namespace MadsKristensen.EditorExtensions.Margin
                 var point = selector.SimpleSelectors.Last().PreviousSibling.AfterEnd - 1;
 
                 column = Math.Max(0, point - containingLine.Start - 1);
-                sourceInfoCollection = (await _compilerResult.SourceMap).MapNodes.Where(s => s.GeneratedLine == line && s.GeneratedColumn == column);
+                sourceInfo = (await _compilerResult.SourceMap).MapNodes.FirstOrDefault(s => s.GeneratedLine == line && s.GeneratedColumn == column);
 
-                if (!sourceInfoCollection.Any())
+                if (sourceInfo == null)
                     return;
             }
-
-            var sourceInfo = sourceInfoCollection.First();
 
             if (sourceInfo.SourceFilePath != Document.FilePath)
                 FileHelpers.OpenFileInPreviewTab(sourceInfo.SourceFilePath);
 
             string content = await FileHelpers.ReadAllTextRetry(sourceInfo.SourceFilePath);
 
-            var finalPositionInSource = content.NthIndexOfCharInString('\n', (int)sourceInfo.OriginalLine) + sourceInfo.OriginalColumn;
+            var finalPositionInSource = content.NthIndexOfCharInString('\n', sourceInfo.OriginalLine) + sourceInfo.OriginalColumn;
 
             Dispatch(sourceInfo.SourceFilePath, finalPositionInSource);
         }
@@ -135,13 +175,14 @@ namespace MadsKristensen.EditorExtensions.Margin
                     ITextSnapshot snapshot = view.TextBuffer.CurrentSnapshot;
                     view.Caret.MoveTo(new SnapshotPoint(snapshot, positionInFile));
                     view.ViewScroller.EnsureSpanVisible(new SnapshotSpan(snapshot, positionInFile, 1), EnsureSpanVisibleOptions.AlwaysCenter);
+                    ((Control)view).Focus();
                 }
                 catch
                 { }
             }), DispatcherPriority.ApplicationIdle, null);
         }
 
-        private class GoToDefinitionCommand : ICommand
+        private class GoToDefinitionCommand : System.Windows.Input.ICommand
         {
             private readonly Action _goToAction;
             private readonly Func<bool> _canExecuteAction;

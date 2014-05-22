@@ -371,10 +371,11 @@ namespace MadsKristensen.EditorExtensions
         public async static Task WriteAllTextRetry(string fileName, string contents)
         {
             int retryCount = 500;
+            UTF8Encoding utf8Encoding = new UTF8Encoding(false);
 
             try
             {
-                await Task.Run(() => File.WriteAllText(fileName, contents, new UTF8Encoding(false)))
+                await Task.Run(() => File.WriteAllText(fileName, contents, utf8Encoding))
                      .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount));
             }
             catch (IOException)

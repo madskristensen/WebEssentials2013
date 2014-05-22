@@ -147,55 +147,55 @@ namespace MadsKristensen.EditorExtensions.Css
 
             Declaration dec = item.FindType<Declaration>();
 
-            if (dec != null && Cache.Contains(dec))
+            if (dec == null || !Cache.Contains(dec))
+                return;
+
+            var url = dec.Values.FirstOrDefault() as UrlItem;
+
+            if (url == null || !url.IsValid || url.UrlString == null || url.UrlString.Text.Contains(";base64,"))
+                return;
+
+            var matches = Cache.Where(d => d.IsValid && d != dec && d.Parent == dec.Parent && d.Values.Any() &&
+                                     (d.Values[0].NextSibling as CComment) != null);
+
+            // Undo sometimes messes with the positions, so we have to make this check before proceeding.
+            if (!matches.Any() || dec.Text.Length < dec.Colon.AfterEnd - dec.Start || dec.Colon.AfterEnd < dec.Start)
+                return;
+
+            string urlText = url.UrlString.Text.Trim('\'', '"');
+            string filePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(_buffer.GetFileName()), urlText));
+            string b64UrlText = await FileHelpers.ConvertToBase64(filePath);
+            string b64Url = url.Text.Replace(urlText, b64UrlText);
+            IEnumerable<Tuple<SnapshotSpan, string>> changes = matches.Reverse().SelectMany(match =>
             {
-                var url = dec.Values.FirstOrDefault() as UrlItem;
+                ParseItem value = match.Values[0];
+                CComment comment = value.NextSibling as CComment;
 
-                if (url == null || !url.IsValid || url.UrlString == null || url.UrlString.Text.Contains(";base64,"))
-                    return;
+                SnapshotSpan span = new SnapshotSpan(_buffer.CurrentSnapshot, comment.CommentText.Start, comment.CommentText.Length);
 
-                var matches = Cache.Where(d => d.IsValid && d != dec && d.Parent == dec.Parent &&
-                                         (d.Values[0].NextSibling as CComment) != null);
+                url = value as UrlItem;
 
-                // Undo sometimes messes with the positions, so we have to make this check before proceeding.
-                if (!matches.Any() || dec.Text.Length < dec.Colon.AfterEnd - dec.Start || dec.Colon.AfterEnd < dec.Start)
-                    return;
+                if (url == null)
+                    return null;
 
-                string urlText = url.UrlString.Text.Trim('\'', '"');
-                string filePath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(_buffer.GetFileName()), urlText));
-                string b64UrlText = await FileHelpers.ConvertToBase64(filePath);
-                string b64Url = url.Text.Replace(urlText, b64UrlText);
-                IEnumerable<Tuple<SnapshotSpan, string>> changes = matches.Reverse().SelectMany(match =>
+                SnapshotSpan b64Span = new SnapshotSpan(_buffer.CurrentSnapshot, url.Start, url.Length);
+
+                return new[] { new Tuple<SnapshotSpan, string>(span, urlText), new Tuple<SnapshotSpan, string>(b64Span, b64Url) };
+            });
+
+            await Dispatcher.CurrentDispatcher.InvokeAsync(() =>
+            {
+                using (ITextEdit edit = _buffer.CreateEdit())
                 {
-                    ParseItem value = match.Values[0];
-                    CComment comment = value.NextSibling as CComment;
-
-                    SnapshotSpan span = new SnapshotSpan(_buffer.CurrentSnapshot, comment.CommentText.Start, comment.CommentText.Length);
-
-                    url = value as UrlItem;
-
-                    if (url == null)
-                        return null;
-
-                    SnapshotSpan b64Span = new SnapshotSpan(_buffer.CurrentSnapshot, url.Start, url.Length);
-
-                    return new[] { new Tuple<SnapshotSpan, string>(span, urlText), new Tuple<SnapshotSpan, string>(b64Span, b64Url) };
-                });
-
-                await Dispatcher.CurrentDispatcher.InvokeAsync(() =>
-                {
-                    using (ITextEdit edit = _buffer.CreateEdit())
+                    foreach (Tuple<SnapshotSpan, string> change in changes)
                     {
-                        foreach (Tuple<SnapshotSpan, string> change in changes)
-                        {
-                            SnapshotSpan currentSpan = change.Item1.TranslateTo(_buffer.CurrentSnapshot, SpanTrackingMode.EdgeExclusive);
-                            edit.Replace(currentSpan, change.Item2);
-                        }
-
-                        edit.Apply();
+                        SnapshotSpan currentSpan = change.Item1.TranslateTo(_buffer.CurrentSnapshot, SpanTrackingMode.EdgeExclusive);
+                        edit.Replace(currentSpan, change.Item2);
                     }
-                });
-            }
+
+                    edit.Apply();
+                }
+            });
         }
 
         public event EventHandler<ClassificationChangedEventArgs> ClassificationChanged;

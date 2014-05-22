@@ -20,8 +20,6 @@ namespace MadsKristensen.EditorExtensions
             if (document == null)
                 return false;
 
-            Dictionary<string, string> files = new Dictionary<string, string>();
-
             // filePath must end in ".targetExtension.bundle"
             string extension = Path.GetExtension(Path.GetFileNameWithoutExtension(document.FileName));
 
@@ -31,29 +29,10 @@ namespace MadsKristensen.EditorExtensions
                 return false;
             }
 
-            await new BundleFileObserver().AttachFileObserver(document.FileName, document.FileName, updateBundle);
+            Dictionary<string, string> files = await WatchFiles(document, updateBundle);
 
-            foreach (string asset in document.BundleAssets)
-            {
-                string absolute = asset.Contains(":\\") ? asset : ProjectHelpers.ToAbsoluteFilePath(asset, document.FileName);
-
-                if (File.Exists(absolute))
-                {
-                    if (!files.ContainsKey(absolute))
-                    {
-                        files.Add(absolute, asset);
-
-                        await new BundleFileObserver().AttachFileObserver(absolute, document.FileName, updateBundle);
-                    }
-                }
-                else
-                {
-                    EditorExtensionsPackage.DTE.ItemOperations.OpenFile(document.FileName);
-                    Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "Bundle error: The file '{0}' doesn't exist", asset));
-
-                    return false;
-                }
-            }
+            if (files == null)
+                return false;
 
             string combinedContent = await CombineFiles(files, extension, document, bundleFile);
             bool bundleChanged = !File.Exists(bundleFile) || await FileHelpers.ReadAllTextRetry(bundleFile) != combinedContent;
@@ -68,6 +47,37 @@ namespace MadsKristensen.EditorExtensions
             ProjectHelpers.AddFileToProject(document.FileName, bundleFile);
 
             return bundleChanged;
+        }
+
+        public async static Task<Dictionary<string, string>> WatchFiles(BundleDocument document, Func<string, bool, Task> updateBundle)
+        {
+            Dictionary<string, string> files = new Dictionary<string, string>();
+
+            await new BundleFileObserver().AttachFileObserver(document.FileName, document.FileName, updateBundle);
+
+            foreach (string asset in document.BundleAssets)
+            {
+                string absolute = asset.Contains(":\\") ? asset : ProjectHelpers.ToAbsoluteFilePath(asset, document.FileName);
+
+                if (File.Exists(absolute))
+                {
+                    if (!files.ContainsKey(absolute))
+                    {
+                        files.Add(absolute, "/" + FileHelpers.RelativePath(ProjectHelpers.GetProjectFolder(document.FileName), asset));
+
+                        await new BundleFileObserver().AttachFileObserver(absolute, document.FileName, updateBundle);
+                    }
+                }
+                else
+                {
+                    EditorExtensionsPackage.DTE.ItemOperations.OpenFile(document.FileName);
+                    Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "Bundle error: The file '{0}' doesn't exist", asset));
+
+                    return null;
+                }
+            }
+
+            return files;
         }
 
         private async static Task<string> CombineFiles(Dictionary<string, string> files, string extension, BundleDocument bundle, string bundleFile)
