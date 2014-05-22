@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
                 return;
 
             if (minifyInPlace)
-                await MinifyFile(contentType, path, path, settings);
+                await MinifyFile(contentType, path, path, settings, !minifyInPlace);
             else
                 await ReMinify(contentType, path, forceSave, settings);
         }
@@ -68,10 +68,10 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
                 ProjectHelpers.AddFileToProject(minPath, minPath + ".gzip");
         }
 
-        private async static Task MinifyFile(IContentType contentType, string sourcePath, string minPath, IMinifierSettings settings)
+        private async static Task MinifyFile(IContentType contentType, string sourcePath, string minPath, IMinifierSettings settings, bool compilerNeedsSourceMap = true)
         {
             IFileMinifier minifier = Mef.GetImport<IFileMinifier>(contentType);
-            bool changed = await minifier.MinifyFile(sourcePath, minPath);
+            bool changed = await minifier.MinifyFile(sourcePath, minPath, compilerNeedsSourceMap);
 
             if (settings.GzipMinifiedFiles && (changed || !File.Exists(minPath + ".gzip")))
                 FileHelpers.GzipFile(minPath);

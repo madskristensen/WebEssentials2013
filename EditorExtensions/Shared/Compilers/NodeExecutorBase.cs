@@ -154,7 +154,7 @@ namespace MadsKristensen.EditorExtensions
 
                 return results;
             }
-            catch (ArgumentException)
+            catch (JsonReaderException)
             {
                 Logger.Log(ServiceName + " parse error: " + error);
                 return new[] { new CompilerError() { Message = error } };

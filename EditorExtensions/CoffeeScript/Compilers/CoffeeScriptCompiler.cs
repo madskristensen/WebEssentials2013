@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
         private static readonly Regex _sourceMapInJs = new Regex(@"\/\/\\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*", RegexOptions.Multiline);
 
         public override string TargetExtension { get { return ".js"; } }
-        public override bool GenerateSourceMap { get { return WESettings.Instance.CoffeeScript.GenerateSourceMaps; } }
+        public override bool GenerateSourceMap { get { return WESettings.Instance.CoffeeScript.GenerateSourceMaps && !WESettings.Instance.CoffeeScript.MinifyInPlace; } }
         public override string ServiceName { get { return "CoffeeScript"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
         public override bool RequireMatchingFileName { get { return true; } }
@@ -55,12 +55,19 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
         {
             Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
 
+            string realTargetFileName = Path.Combine(Path.GetDirectoryName(targetFileName), FileHelpers.GetFileNameWithoutExtension(targetFileName) + ".js");
+
+            if (WESettings.Instance.CoffeeScript.MinifyInPlace)
+            {
+                File.Delete(realTargetFileName); // Because CoffeeScript compiler doesn't take custom file name as parameter.
+            }
+
             if (GenerateSourceMap)
             {
                 if (File.Exists(mapFileName))
                     File.Delete(mapFileName);
 
-                File.Move(Path.ChangeExtension(targetFileName, ".map"), mapFileName);
+                File.Move(Path.ChangeExtension(realTargetFileName, ".map"), mapFileName);
 
                 resultSource = UpdateSourceLinkInJsComment(resultSource, FileHelpers.RelativePath(targetFileName, mapFileName));
             }

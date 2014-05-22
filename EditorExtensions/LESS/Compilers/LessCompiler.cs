@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions.Less
         public override string ServiceName { get { return "LESS"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
-        public override bool GenerateSourceMap { get { return WESettings.Instance.Less.GenerateSourceMaps; } }
+        public override bool GenerateSourceMap { get { return WESettings.Instance.Less.GenerateSourceMaps && !WESettings.Instance.Less.MinifyInPlace; } }
 
         protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {

@@ -134,7 +134,7 @@ namespace MadsKristensen.EditorExtensions
             IconRegistration.RegisterIcons();
 
             // Hook up event handlers
-            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+            await Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
                 DTE.Events.BuildEvents.OnBuildDone += BuildEvents_OnBuildDone;
                 DTE.Events.SolutionEvents.Opened += delegate { SettingsStore.Load(); ShowTopMenu(); };
@@ -148,6 +148,7 @@ namespace MadsKristensen.EditorExtensions
             if (_dte.Solution.SolutionBuild.LastBuildInfo != 0)
             {
                 string text = _dte.StatusBar.Text; // respect localization of "Build failed"
+
                 Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
                 {
                     _dte.StatusBar.Text = text;

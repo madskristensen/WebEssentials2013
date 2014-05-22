@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions.JSONLD
     {
         private static Dictionary<string, string> _schemas = new Dictionary<string, string>
         {
-            {".jsonld", "http://json-ld.org/schemas/jsonld-schema.json"},
+            {".jsonld", "http://schemastore.org/schemas/json-ld.json"},
         };
 
         public IEnumerable<string> GetAvailableSchemas()
