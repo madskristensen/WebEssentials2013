@@ -1,7 +1,4 @@
 ﻿using MadsKristensen.EditorExtensions.Settings;
-using Microsoft.Html.Editor;
-using System;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions.Misc.Autoprefixer
