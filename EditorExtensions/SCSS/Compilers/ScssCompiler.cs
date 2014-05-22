@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions.Scss
         public override string TargetExtension { get { return ".css"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
-        public override bool GenerateSourceMap { get { return WESettings.Instance.Scss.GenerateSourceMaps; } }
+        public override bool GenerateSourceMap { get { return WESettings.Instance.Scss.GenerateSourceMaps && !WESettings.Instance.Scss.MinifyInPlace; } }
 
         protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {

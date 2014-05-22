@@ -19,6 +19,10 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         ///<returns>True if the minified file has changed from the old version on disk.</returns>
         Task<bool> MinifyFile(string sourcePath, string targetPath);
 
+        ///<summary>Minifies an existing file, creating or overwriting the target.</summary>
+        ///<returns>True if the minified file has changed from the old version on disk.</returns>
+        Task<bool> MinifyFile(string sourcePath, string targetPath, bool compilerNeedsSourceMap);
+
         ///<summary>Minifies a string in-memory.</summary>
         string MinifyString(string source);
 
@@ -46,6 +50,12 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
 
             return false;
         }
+
+        public async virtual Task<bool> MinifyFile(string sourcePath, string targetPath, bool compilerNeedsSourceMap)
+        {
+            return await MinifyFile(sourcePath, targetPath);
+        }
+
         public abstract string MinifyString(string source);
     }
 
@@ -121,6 +131,14 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         public async override Task<bool> MinifyFile(string sourcePath, string targetPath)
         {
             if (GenerateSourceMap)
+                return await MinifyFileWithSourceMap(sourcePath, targetPath);
+            else
+                return await base.MinifyFile(sourcePath, targetPath);
+        }
+
+        public async override Task<bool> MinifyFile(string sourcePath, string targetPath, bool compilerNeedsSourceMap)
+        {
+            if (GenerateSourceMap && compilerNeedsSourceMap)
                 return await MinifyFileWithSourceMap(sourcePath, targetPath);
             else
                 return await base.MinifyFile(sourcePath, targetPath);
