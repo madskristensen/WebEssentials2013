@@ -1016,9 +1016,9 @@
   </UsingTask>
   <Target Name="BeforeBuild">
     <MadsKristensen.EditorExtensions.PreBuildTask />
-    <!-- Include newly downloaded files now ... -->
+    <!-- Include newly downloaded files now.. -->
     <ItemGroup>
-      <!-- Exclude LESS & SASS because they have too many extra files; usea whitelist instead-->
+      <!-- Exclude LESS & SASS because they have too many extra files; usea whitelist instead -->
       <!-- Mocha comes from some package that forgot about "devDependencies"; Jade comes from Mocha -->
       <Content Include="Resources\nodejs\tools\**" Exclude="&#xD;&#xA; **\node-sass\**; **\less\**; &#xD;&#xA;               **\mocha\**; **\jade\**; &#xD;&#xA;               **\*.md; **\*.markdown; **\*.html; **\*.txt; **\LICENSE; **\README; **\CHANGELOG; **\CNAME; **\*.old; **\*.patch; **\*.ico; &#xD;&#xA;               **\*.json; **\.*; **\Makefile.*; **\Rakefile; **\*.yml; &#xD;&#xA;               **\test.*; **\generate-*; &#xD;&#xA;               **\*.min.js; **\*-min.js; &#xD;&#xA;               **\media\**; **\images\**; **\man\**; &#xD;&#xA;               **\.bin\**; **\benchmark\**; **\build\**; **\scripts\**; &#xD;&#xA;               **\vendor\**; &#xD;&#xA;               **\test\**; **\tst\**; **\tests\**; **\testing\**; &#xD;&#xA;               **\examples\**; **\example\**; **\tools\**\tools\**">
         <IncludeInVSIX>true</IncludeInVSIX>
@@ -1029,8 +1029,12 @@
       <Content Include="Resources\nodejs\tools\node_modules\less\lib\**; Resources\nodejs\tools\node_modules\less\bin\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <!-- Explicitly include JSON files that are actually needed at runtime-->
+      <!-- Explicitly include JSON files that are actually needed at runtime -->
       <Content Include="Resources\nodejs\tools\node_modules\htmlparser2\lib\entities\**; Resources\nodejs\tools\node_modules\jshint\package.json; Resources\nodejs\tools\node_modules\resolve\lib\core.json; Resources\nodejs\tools\node_modules\escodegen\package.json;">
+        <IncludeInVSIX>true</IncludeInVSIX>
+      </Content>
+      <!-- Explicitly include files that are needed for JsHint -->
+      <Content Include="Resources\nodejs\tools\node_modules\entities\maps\**; Resources\nodejs\tools\node_modules\shelljs\src\test.js;">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
     </ItemGroup>
