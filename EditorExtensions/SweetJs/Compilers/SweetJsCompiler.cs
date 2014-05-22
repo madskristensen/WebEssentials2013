@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions.SweetJs
         private static readonly Regex _errorParsingPattern = new Regex(@"(?<fileName>.*):(?<line>.\d*):(?<column>.\d*): error: (?<message>.*\n.*)", RegexOptions.Multiline);
 
         public override string TargetExtension { get { return ".js"; } }
-        public override bool GenerateSourceMap { get { return WESettings.Instance.SweetJs.GenerateSourceMaps; } }
+        public override bool GenerateSourceMap { get { return WESettings.Instance.SweetJs.GenerateSourceMaps && !WESettings.Instance.SweetJs.MinifyInPlace; } }
         public override string ServiceName { get { return SweetJsContentTypeDefinition.SweetJsContentType; } }
         protected override string CompilerPath { get { return _compilerPath; } }
         public override bool RequireMatchingFileName { get { return false; } }
