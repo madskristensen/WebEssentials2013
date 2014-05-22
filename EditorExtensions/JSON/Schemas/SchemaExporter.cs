@@ -12,6 +12,7 @@ namespace MadsKristensen.EditorExtensions.JSON
         { 
             {".jshintrc", "http://schemastore.org/schemas/jshintrc.json"},
             {".bowerrc", "http://schemastore.org/schemas/bowerrc.json"},
+            {".bower.json", "http://schemastore.org/schemas/bower.json"},
             {"bower.json", "http://schemastore.org/schemas/bower.json"},
             {"package.json", "http://schemastore.org/schemas/package.json"},
             {"tslint.json", "http://schemastore.org/schemas/tslint.json"},
