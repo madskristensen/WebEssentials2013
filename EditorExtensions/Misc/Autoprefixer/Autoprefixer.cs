@@ -8,23 +8,12 @@ namespace MadsKristensen.EditorExtensions.Misc.Autoprefixer
 {
     public static class Autoprefixer 
     {
-        public static async Task<string> AutoprefixContent(string content)
+        public static async Task<string> AutoprefixContent(string resultSource, string targetFileName, bool generateSourceMap)
         {
-            var settings = WESettings.Instance.ForContentType<IAutoprefixerSettings>(ContentTypeManager.GetContentType("CSS"));
-            if (settings == null || !settings.Autoprefix)
-                return content;
+            if (!WESettings.Instance.Css.Autoprefix)
+                return resultSource;
 
-            var tempName = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".autoprefix");
-
-            await FileHelpers.WriteAllTextRetry(tempName, content);
-
-            if (!File.Exists(tempName))
-                return content;
-
-            var result = await new AutoprefixerCompiler().CompileAsync(tempName, tempName);
-
-            File.Delete(tempName);
-
+            var result = await new AutoprefixerCompiler(generateSourceMap).CompileAsync(targetFileName, targetFileName);
             return result.Result;
         }
     }

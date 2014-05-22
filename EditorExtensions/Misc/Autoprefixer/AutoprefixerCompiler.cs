@@ -12,12 +12,18 @@ namespace MadsKristensen.EditorExtensions.Misc.Autoprefixer
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\autoprefixer\bin\autoprefixer");
         private static readonly Regex _errorParsingPattern = new Regex(@"(?<fileName>.*):(?<line>.\d*): error: (?<message>.*\n.*)", RegexOptions.Multiline);
+        private bool _generateSourceMap;
 
         public override string ServiceName { get { return "Autoprefixer"; } }
         public override string TargetExtension { get { return ".autoprefix"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
-        public override bool GenerateSourceMap { get { return false; } }
+        public override bool GenerateSourceMap { get { return _generateSourceMap; } }
+
+        public AutoprefixerCompiler(bool generateSourceMap)
+        {
+            _generateSourceMap = generateSourceMap;
+        }
 
         protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
@@ -26,13 +32,13 @@ namespace MadsKristensen.EditorExtensions.Misc.Autoprefixer
             {
                 browsers = "--browsers \"" + WESettings.Instance.Css.AutoprefixerBrowsers.Replace("\\", "\\\\").Replace("\"", "'") + "\"";
             }
-            return string.Format(CultureInfo.CurrentCulture, "\"{0}\" --no-map {1}", sourceFileName, browsers);
+            return string.Format(CultureInfo.CurrentCulture, "\"{0}\" --output \"{1}\" --map {2}", sourceFileName, targetFileName, browsers);
         }
 
         protected override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
         {
-            var message = ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.";
-            return Task<string>.Run(() => resultSource);
+            Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
+            return Task.FromResult(resultSource);
         }
     }
 }

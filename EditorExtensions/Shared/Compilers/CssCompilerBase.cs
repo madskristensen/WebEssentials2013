@@ -19,9 +19,9 @@ namespace MadsKristensen.EditorExtensions
 
         protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
         {
-            resultSource = await UpdateSourceMapUrls(resultSource, targetFileName, mapFileName);
+            resultSource = await Autoprefixer.AutoprefixContent(resultSource, targetFileName, GenerateSourceMap);
 
-            resultSource = await Autoprefixer.AutoprefixContent(resultSource);
+            resultSource = await UpdateSourceMapUrls(resultSource, targetFileName, mapFileName);
 
             var message = ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.";
 
