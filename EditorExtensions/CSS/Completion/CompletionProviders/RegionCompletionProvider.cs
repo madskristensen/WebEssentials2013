@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
         public CssCompletionContextType ContextType
         {
-            get { return (CssCompletionContextType)601; } //ItemName
+            get { return CssCompletionContextType.ItemNameSelector; }
         }
 
         public IEnumerable<ICssCompletionListEntry> GetListEntries(CssCompletionContext context)
