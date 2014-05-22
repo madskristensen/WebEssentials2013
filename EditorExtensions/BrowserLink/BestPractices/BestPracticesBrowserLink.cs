@@ -104,7 +104,7 @@ namespace MadsKristensen.EditorExtensions
 
         public void AddHierarchyItem(ErrorTask task)
         {
-            if (task == null)
+            if (task == null || Connection == null || Connection.Project == null || string.IsNullOrEmpty(Connection.Project.FullName))
                 return;
 
             IVsHierarchy HierarchyItem;
