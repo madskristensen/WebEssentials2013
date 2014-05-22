@@ -18,6 +18,7 @@ namespace MadsKristensen.EditorExtensions.JSON
             {"jscsrc.json", "http://schemastore.org/schemas/jscsrc.json"},
             {".jscsrc", "http://schemastore.org/schemas/jscsrc.json"},
             {"coffeelint.json", "http://schemastore.org/schemas/coffeelint.json"},
+            {"composer.json", "http://schemastore.org/schemas/composer.json"},
         };
 
         public IEnumerable<string> GetAvailableSchemas()
