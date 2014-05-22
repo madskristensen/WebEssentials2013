@@ -91,14 +91,14 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
             ProjectItem item = ProjectHelpers.GetProjectItem(sourcePath);
 
-
             if (item != null)
                 try
                 {
                     // Ignore files nested under other files such as bundle or TypeScript output
                     ProjectItem parent = item.Collection.Parent as ProjectItem;
 
-                    if (parent != null && parent.Kind == EnvDTE.Constants.vsProjectItemKindPhysicalFile)
+                    if (parent != null && parent.Kind == EnvDTE.Constants.vsProjectItemKindPhysicalFile &&
+                        parent.FileNames[0].EndsWith(".sprite", StringComparison.OrdinalIgnoreCase))
                         return false;
                 }
                 catch (InvalidOperationException) { }
@@ -196,7 +196,9 @@ namespace MadsKristensen.EditorExtensions.Compilers
             // This is called by the base ctor, before we assign Compiler
             get { return (Compiler ?? Mef.GetImport<NodeExecutorBase>(SourceContentType)).TargetExtension; }
         }
+
         public override bool GenerateSourceMap { get { return Compiler.GenerateSourceMap; } }
+        
         protected override async Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
         {
             bool isTemp = false;
