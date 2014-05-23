@@ -40,8 +40,8 @@ namespace MadsKristensen.EditorExtensions.Margin
                 SetText(result.Result);
             }
             else
-                SetText("/*\r\n\r\nCompilation Error. \r\nSee error list for details\r\n"
-                      + string.Join("\r\n", result.Errors.Select(e => "Error found" + (e.Line > 0 ? " at line " + e.Line + (e.Column > 0 ? ", column " + e.Column : "") : "") + ":\r\n" + e.Message))
+                SetText("/*\r\n\r\nCompilation Error occurred (see error list to navigate to the error location):\r\n"
+                      + string.Join("\r\n", result.Errors.Select(e => "Error found" + (e.Line > 0 ? " at line " + e.Line + (e.Column > 0 ? ", column " + e.Column : "") : "") + ":\r\n" + e.FullMessage))
                       + "\r\n\r\n*/");
         }
 
