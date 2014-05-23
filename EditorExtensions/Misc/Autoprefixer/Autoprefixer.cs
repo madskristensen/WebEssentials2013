@@ -1,17 +1,46 @@
-﻿using MadsKristensen.EditorExtensions.Settings;
+﻿using System.IO;
 using System.Threading.Tasks;
+using MadsKristensen.EditorExtensions.Settings;
 
-namespace MadsKristensen.EditorExtensions.Misc.Autoprefixer
+namespace MadsKristensen.EditorExtensions.Autoprefixer
 {
-    public static class Autoprefixer 
+    public static class CssAutoprefixer 
     {
-        public static async Task<string> AutoprefixContent(string resultSource, string targetFileName, bool generateSourceMap)
+        public static async Task<string> AutoprefixFile(string sourceFileName, string targetFileName, string mapFileName)
         {
-            if (!WESettings.Instance.Css.Autoprefix)
-                return resultSource;
+            string result = null;
+            string tempDirectory = null;
+            if (Path.GetDirectoryName(sourceFileName) != Path.GetDirectoryName(targetFileName) || Path.GetDirectoryName(targetFileName) != Path.GetDirectoryName(mapFileName))
+            {
+                // Create temporary directory - since autoprefixer source maps must be in same directory as output https://www.npmjs.org/package/grunt-autoprefixer#options-map
+                tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                Directory.CreateDirectory(tempDirectory);
 
-            var result = await new AutoprefixerCompiler(generateSourceMap).CompileAsync(targetFileName, targetFileName);
-            return result.Result;
+                // Create temporary files
+                File.Copy(sourceFileName, Path.Combine(tempDirectory, Path.GetFileName(sourceFileName)));
+                File.Copy(targetFileName, Path.Combine(tempDirectory, Path.GetFileName(targetFileName)));
+                File.Copy(mapFileName, Path.Combine(tempDirectory, Path.GetFileName(mapFileName)));
+            }
+
+            var autoprefixResult = await new AutoprefixerCompiler().CompileAsync(targetFileName, targetFileName);
+            if (autoprefixResult.IsSuccess)
+            {
+                result = autoprefixResult.Result;
+
+                if (tempDirectory != null)
+                {
+                    // Get the autoprefixer updated source map
+                    var updatedSourceMap = await FileHelpers.ReadAllTextRetry(Path.Combine(tempDirectory, Path.GetFileName(mapFileName)));
+
+                    // Write updates to the actual source map file
+                    await FileHelpers.WriteAllTextRetry(mapFileName, updatedSourceMap);
+                }
+            }
+
+            if (tempDirectory != null)
+                Directory.Delete(tempDirectory, true);
+
+            return result;
         }
     }
 }

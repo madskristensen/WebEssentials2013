@@ -3,9 +3,10 @@ using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using MadsKristensen.EditorExtensions.Autoprefixer;
 using MadsKristensen.EditorExtensions.Helpers;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
-using MadsKristensen.EditorExtensions.Misc.Autoprefixer;
 using Newtonsoft.Json.Linq;
 
 namespace MadsKristensen.EditorExtensions
@@ -17,11 +18,19 @@ namespace MadsKristensen.EditorExtensions
 
         protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
         {
-            resultSource = await Autoprefixer.AutoprefixContent(resultSource, targetFileName, GenerateSourceMap);
-
             resultSource = await UpdateSourceMapUrls(resultSource, targetFileName, mapFileName);
 
             var message = ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.";
+
+            if (WESettings.Instance.Css.Autoprefix)
+            {
+                await FileHelpers.WriteAllTextRetry(targetFileName, resultSource);
+                var autoprefixResult = await CssAutoprefixer.AutoprefixFile(sourceFileName, targetFileName, mapFileName);
+                if (autoprefixResult != null)
+                {
+                    resultSource = await UpdateSourceMapUrls(autoprefixResult, targetFileName, mapFileName);
+                }
+            }
 
             // If the caller wants us to renormalize URLs to a different filename, do so.
             if (targetFileName != null && Path.GetDirectoryName(targetFileName) != Path.GetDirectoryName(sourceFileName)

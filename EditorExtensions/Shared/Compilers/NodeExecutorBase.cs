@@ -21,6 +21,7 @@ namespace MadsKristensen.EditorExtensions
 
         ///<summary>Indicates whether this compiler will emit a source map file.  Will only return true if aupported and enabled in user settings.</summary>
         public abstract bool GenerateSourceMap { get; }
+        public virtual bool ManagedSourceMap { get { return true; } }
         public abstract string TargetExtension { get; }
         public abstract string ServiceName { get; }
         ///<summary>Indicates whether this compiler is capable of compiling to a filename that doesn't match the source filename.</summary>
@@ -58,7 +59,7 @@ namespace MadsKristensen.EditorExtensions
 
                 mapFileName = mapFileName ?? targetFileName + ".map";
 
-                if (GenerateSourceMap)
+                if (ManagedSourceMap && GenerateSourceMap)
                     ProjectHelpers.CheckOutFileFromSourceControl(mapFileName);
 
                 using (var process = await start.ExecuteAsync())
@@ -79,7 +80,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 File.Delete(errorOutputFile);
 
-                if (!GenerateSourceMap)
+                if (ManagedSourceMap && !GenerateSourceMap)
                     File.Delete(mapFileName);
             }
         }
