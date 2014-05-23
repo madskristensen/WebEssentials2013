@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions.Scss
     public class ScssCompiler : CssCompilerBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\node-sass\bin\node-sass");
-        private static readonly Regex _errorParsingPattern = new Regex(@"(?<fileName>.*):(?<line>.\d*): error: (?<message>.*\n.*)", RegexOptions.Multiline);
+        private static readonly Regex _errorParsingPattern = new Regex(@"^(?<fileName>.+):(?<line>.\d+): error: (?<message>(.*)?\z)", RegexOptions.Multiline);
 
         public override string ServiceName { get { return "SCSS"; } }
         public override string TargetExtension { get { return ".css"; } }

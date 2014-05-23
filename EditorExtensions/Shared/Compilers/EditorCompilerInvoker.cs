@@ -52,10 +52,6 @@ namespace MadsKristensen.EditorExtensions.Compilers
         ///<summary>Occurs when the file has been compiled (on both success and failure).</summary>
         public event EventHandler<CompilerResultEventArgs> CompilationReady;
 
-        ///<summary>Raises the CompilationReady event.</summary>
-        ///<param name="e">A CompilerResultEventArgs object that provides the event data.</param>
-        protected virtual void OnCompilationReady(CompilerResultEventArgs e) { }
-
         ///<summary>
         ///  Raises the CompilationReady event.
         ///  In case of cached results, it will propogate a flag to event handler
@@ -64,7 +60,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         ///</summary>
         ///<param name="e">A CompilerResultEventArgs object that provides the event data.</param>
         ///<param name="cached">A flag to indicate if event is raised for cached results.</param>
-        private void OnCompilationReady(CompilerResultEventArgs e, bool cached = false)
+        protected virtual void OnCompilationReady(CompilerResultEventArgs e, bool cached)
         {
             if (CompilationReady != null)
                 CompilationReady(cached, e);
@@ -94,7 +90,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
             InitiateCompilationAsync(Document.FilePath, false, cached).DoNotWait("compiling " + Document.FilePath);
         }
 
-        async Task InitiateCompilationAsync(string sourcePath, bool save, bool cached = false)
+        private async Task InitiateCompilationAsync(string sourcePath, bool save, bool cached = false)
         {
             var result = await CompilerRunner.CompileAsync(sourcePath, save);
             OnCompilationReady(new CompilerResultEventArgs(result), cached);
@@ -130,12 +126,12 @@ namespace MadsKristensen.EditorExtensions.Compilers
             return base.CompileAsync(sourcePath);
         }
 
-        protected override void OnCompilationReady(CompilerResultEventArgs e)
+        protected override void OnCompilationReady(CompilerResultEventArgs e, bool cached)
         {
             foreach (var error in e.CompilerResult.Errors)
                 CreateTask(error);
 
-            base.OnCompilationReady(e);
+            base.OnCompilationReady(e, cached);
         }
 
         private void CreateTask(CompilerError error)
