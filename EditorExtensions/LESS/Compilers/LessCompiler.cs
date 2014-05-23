@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions.Less
     public class LessCompiler : CssCompilerBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\less\bin\lessc");
-        private static readonly Regex _errorParsingPattern = new Regex(@"^(?<message>.+) in (?<fileName>.+) on line (?<line>\d+), column (?<column>\d+):$", RegexOptions.Multiline);
+        private static readonly Regex _errorParsingPattern = new Regex(@"\A(?<message>.+) in (?<fileName>.+) on line (?<line>\d+), column (?<column>\d+):$", RegexOptions.Multiline | RegexOptions.Compiled);
 
         public override string TargetExtension { get { return ".css"; } }
         public override string ServiceName { get { return "LESS"; } }

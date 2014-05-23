@@ -173,7 +173,8 @@ namespace MadsKristensen.EditorExtensions
             return matches.Cast<Match>().Select(match => new CompilerError
             {
                 FileName = match.Groups["fileName"].Value,
-                Message = match.Groups["message"].Value,
+                Message = match.Groups["message"].Value.Trim(),
+                FullMessage = string.IsNullOrEmpty(match.Groups["fullMessage"].Value) ? match.Groups["message"].Value : match.Groups["fullMessage"].Value,
                 Column = string.IsNullOrEmpty(match.Groups["column"].Value) ? 1 : int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture),
                 Line = int.Parse(match.Groups["line"].Value, CultureInfo.CurrentCulture)
             });

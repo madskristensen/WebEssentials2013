@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
     public class CoffeeScriptCompiler : NodeExecutorBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\coffee-script\bin\coffee");
-        private static readonly Regex _errorParsingPattern = new Regex(@"(?<fileName>.*):(?<line>.\d*):(?<column>.\d*): error: (?<message>(.*)?\z)", RegexOptions.Multiline);
+        private static readonly Regex _errorParsingPattern = new Regex(@"\A(?<fileName>.*):(?<line>.\d*):(?<column>.\d*): error: (?<fullMessage>(?<message>.*)(\n*.*)*)", RegexOptions.Multiline | RegexOptions.Compiled);
         private static readonly Regex _sourceMapInJs = new Regex(@"\/\/\\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*", RegexOptions.Multiline);
 
         public override string TargetExtension { get { return ".js"; } }
