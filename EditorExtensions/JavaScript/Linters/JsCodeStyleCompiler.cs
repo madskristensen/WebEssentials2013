@@ -8,7 +8,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
     public class JsCodeStyleCompiler : JsHintCompiler
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\jscs\bin\jscs");
-        private static readonly string _jscsReporter = Path.Combine(WebEssentialsResourceDirectory, @"Scripts\jscs-node-reporter.js");
+        private static readonly string _reporter = Path.Combine(WebEssentialsResourceDirectory, @"Scripts\jscsReporter.js");
         public new static readonly string ConfigFileName = ".jscsrc";
 
         public override IEnumerable<string> SourceExtensions { get { return new[] { ".js" }; } }
@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             GetOrCreateGlobalSettings(ConfigFileName); // Ensure that default settings exist
 
             return String.Format(CultureInfo.CurrentCulture, "--reporter \"{0}\" --config \"{1}\" \"{2}\""
-                               , _jscsReporter
+                               , _reporter
                                , FindLocalSettings(sourceFileName, ConfigFileName) ?? GetOrCreateGlobalSettings(ConfigFileName)
                                , sourceFileName);
         }

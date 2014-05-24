@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\jshint\bin\jshint");
         // JsHint Reported is located in Resources\Scripts\ directory. Read more at http://www.jshint.com/docs/reporters/
-        private static readonly string _jsHintReporter = Path.Combine(WebEssentialsResourceDirectory, @"Scripts\jshint-node-reporter.js");
+        private static readonly string _reporter = Path.Combine(WebEssentialsResourceDirectory, @"Scripts\jshintReporter.js");
         public static readonly string ConfigFileName = ".jshintrc";
 
         public override string TargetExtension { get { return null; } }
@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             GetOrCreateGlobalSettings(ConfigFileName); // Ensure that default settings exist
 
             return String.Format(CultureInfo.CurrentCulture, "--reporter \"{0}\" \"{1}\""
-                               , _jsHintReporter
+                               , _reporter
                                , sourceFileName);
         }
 
