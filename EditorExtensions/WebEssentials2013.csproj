@@ -325,7 +325,6 @@
     <Compile Include="JSON-LD\Completion\PropertyNameCompletionProvider.cs" />
     <Compile Include="JSON-LD\Completion\TypeCompletionProvider.cs" />
     <Compile Include="JSON-LD\ContentType\JsonLdContentTypeDefinition.cs" />
-    <Compile Include="JSON-LD\Schemas\SchemaExporter.cs" />
     <Compile Include="JSON-LD\Vocabularies\Helpers.cs" />
     <Compile Include="JSON-LD\Vocabularies\IVocabulary.cs" />
     <Compile Include="JSON-LD\Vocabularies\SchemaOrgVocabulary.cs" />
