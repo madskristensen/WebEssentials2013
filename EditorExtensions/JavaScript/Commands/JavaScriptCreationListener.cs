@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.Composition;
-using MadsKristensen.EditorExtensions.Css;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -38,7 +37,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
 
             textView.Properties.GetOrCreateSingletonProperty(() => new MinifySelection(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty(() => new JavaScriptFindReferences(textViewAdapter, textView, Navigator));
-            textView.Properties.GetOrCreateSingletonProperty(() => new CssExtractToFile(textViewAdapter, textView));
+            textView.Properties.GetOrCreateSingletonProperty(() => new ExtractToFile(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty(() => new NodeModuleGoToDefinition(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty(() => new ReferenceTagGoToDefinition(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty(() => new CommentCompletionCommandTarget(textViewAdapter, textView, AggregatorService));

@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using EnvDTE80;
 using Microsoft.VisualBasic;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.Web.Editor.EditorHelpers;
 
-namespace MadsKristensen.EditorExtensions.Css
+namespace MadsKristensen.EditorExtensions
 {
-    internal class CssExtractToFile : CommandTargetBase<ExtractCommandId>
+    internal class ExtractToFile : CommandTargetBase<ExtractCommandId>
     {
         private DTE2 _dte;
         private List<string> _possible = new List<string>() { ".CSS", ".LESS", ".JS", ".TS" };
 
-        public CssExtractToFile(IVsTextView adapter, IWpfTextView textView)
+        public ExtractToFile(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, ExtractCommandId.ExtractSelection)
         {
             _dte = EditorExtensionsPackage.DTE;
@@ -69,9 +70,16 @@ namespace MadsKristensen.EditorExtensions.Css
 
         private static bool IsValidTextBuffer(IWpfTextView view)
         {
-            return (ProjectionBufferHelper.MapToBuffer(view, "css", view.Caret.Position.BufferPosition)
-                ?? ProjectionBufferHelper.MapToBuffer(view, "javascript", view.Caret.Position.BufferPosition)
-                ) != null;
+            try
+            {
+                return view.BufferGraph.MapDownToBuffer(view.GetSelectedSpan(c => c.IsOfType("CSS") || c.IsOfType("JavaScript")).Value,
+                                                        SpanTrackingMode.EdgeExclusive,
+                                                        view.TextBuffer).Any();
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         protected override bool IsEnabled()
