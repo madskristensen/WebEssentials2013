@@ -16,7 +16,8 @@ namespace MadsKristensen.EditorExtensions.JSON
         private static Dictionary<string, string> _props = new Dictionary<string, string>
         { 
             { "$ref", "Reference a predefined property"},
-            // Add this when the issue with duplicate completion entries has been fixed
+            // Add this when the issue with duplicate completion entries has been fixed.
+            // The issue occurs when editing a JSON schema file, since it already has $schema in the completion list.
             //{ "$schema", "Provide a URL to a JSON schema"},
         };
 
