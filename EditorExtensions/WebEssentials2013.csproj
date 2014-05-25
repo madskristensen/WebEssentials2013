@@ -335,6 +335,7 @@
     <Compile Include="JSON\Commands\FormatCommandTarget.cs" />
     <Compile Include="JSON\Commands\JsonCreationListener.cs" />
     <Compile Include="JSON\Completion\HyperSchemaCompletionProvider.cs" />
+    <Compile Include="JSON\Completion\RefValueCompletionProvider.cs" />
     <Compile Include="JSON\Completion\SchemaValueCompletionProvider.cs" />
     <Compile Include="JSON\Helpers\JsonTreeVisitor.cs" />
     <Compile Include="JSON\Schemas\SchemaExporter.cs" />

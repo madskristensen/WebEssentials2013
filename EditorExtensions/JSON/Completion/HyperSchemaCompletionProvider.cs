@@ -15,8 +15,9 @@ namespace MadsKristensen.EditorExtensions.JSON
     {
         private static Dictionary<string, string> _props = new Dictionary<string, string>
         { 
-            { "$schema", "Provide a URL to a JSON schema"},
             { "$ref", "Reference a predefined property"},
+            // Add this when the issue with duplicate completion entries has been fixed
+            //{ "$schema", "Provide a URL to a JSON schema"},
         };
 
         public JSONCompletionContextType ContextType
@@ -34,7 +35,7 @@ namespace MadsKristensen.EditorExtensions.JSON
             foreach (string prop in _props.Keys)
             {
                 yield return new JSONCompletionEntry(prop, "\"" + prop + "\"", _props[prop],
-                GlyphService.GetGlyph(StandardGlyphGroup.GlyphExtensionMethod, StandardGlyphItem.GlyphItemPublic),
+                GlyphService.GetGlyph(StandardGlyphGroup.GlyphReference, StandardGlyphItem.GlyphItemPublic),
                 "iconAutomationText", true, context.Session as ICompletionSession);
             }
         }

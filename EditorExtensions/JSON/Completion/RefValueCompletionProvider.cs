@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.ComponentModel.Composition;
 using Microsoft.JSON.Core.Parser;
 using Microsoft.JSON.Editor.Completion;
@@ -11,8 +12,8 @@ using Microsoft.Web.Editor;
 namespace MadsKristensen.EditorExtensions.JSON
 {
     [Export(typeof(IJSONCompletionListProvider))]
-    [Name("SchemaValueCompletionProvider")]
-    internal class SchemaValueCompletionProvider : IJSONCompletionListProvider
+    [Name("RefValueCompletionProvider")]
+    internal class RefValueCompletionProvider : IJSONCompletionListProvider
     {
         public JSONCompletionContextType ContextType
         {
@@ -23,12 +24,27 @@ namespace MadsKristensen.EditorExtensions.JSON
         {
             JSONMember member = context.ContextItem as JSONMember;
 
-            if (member == null || member.Name == null || member.Name.Text != "\"$schema\"")
+            if (member == null || member.Name == null || member.Name.Text != "\"$ref\"" || member.JSONDocument.Children.Count == 0)
                 yield break;
 
-            foreach (var schema in VsJSONSchemaStore.SchemaStore.SchemaCache.Entries)
+            var visitor = new JSONItemCollector<JSONMember>(false);
+            member.JSONDocument.Children[0].Accept(visitor);
+
+            var definition = visitor.Items.FirstOrDefault(prop => prop.Name != null && prop.Name.Text == "\"definitions\"");
+
+            if (definition == null || definition.Children.Count < 3)
+                yield break;
+
+            var block = definition.Children[2] as JSONBlockItem;
+
+            var visitor2 = new JSONItemCollector<JSONMember>(false);
+            block.Accept(visitor2);
+
+            foreach (var prop in visitor2.Items)
             {
-                yield return new JSONCompletionEntry(schema.OriginalPath, "\"" + schema.OriginalPath + "\"", null,
+                string text = "#/definitions/" + prop.Name.Text.Trim('"');
+
+                yield return new JSONCompletionEntry(text, "\"" + text + "\"", null,
                 GlyphService.GetGlyph(StandardGlyphGroup.GlyphReference, StandardGlyphItem.GlyphItemPublic),
                 "iconAutomationText", true, context.Session as ICompletionSession);
             }
