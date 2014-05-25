@@ -357,8 +357,8 @@
     <Compile Include="Markdown\Classify\MarkdownParser.cs" />
     <Compile Include="SCSS\SmartTags\ScssExtractVariableSmartTagProvider.cs" />
     <Compile Include="Shared\Completion\ColorSwatchIntellisenseProvider.cs" />
-    <Compile Include="Shared\ExtensionMethods\TaskExtensions\PolicyFactory.cs" />
-    <Compile Include="Shared\ExtensionMethods\TaskExtensions\Strategies\FileTransientErrorDetectionStrategy.cs" />
+    <Compile Include="Shared\Helpers\Policies\PolicyFactory.cs" />
+    <Compile Include="Shared\Helpers\Policies\Strategies\FileTransientErrorDetectionStrategy.cs" />
     <Compile Include="Shared\ExtensionMethods\TaskExtensions\TaskExtensions.cs" />
     <Compile Include="Shared\Helpers\SourceMapNode.cs" />
     <Compile Include="Shared\Helpers\CssSourceMap.cs" />
@@ -502,7 +502,7 @@
     <Compile Include="Shared\Commands\TextCreationListener.cs" />
     <Compile Include="Shared\Commands\MinifySelectionCommandTarget.cs" />
     <Compile Include="CSS\Commands\CssAddMissingStandardCommandTarget.cs" />
-    <Compile Include="CSS\Commands\CssExtractToFileCommandTarget.cs" />
+    <Compile Include="Shared\Commands\ExtractToFileCommandTarget.cs" />
     <Compile Include="CSS\Commands\CssCreationListener.cs" />
     <Compile Include="CSS\Commands\CssSortPropertiesCommandTarget.cs" />
     <Compile Include="CSS\Classify\Base64TaggerProvider.cs" />
