@@ -32,7 +32,7 @@
                 // Description
                 var description = $("meta[name=description]").length > 0;
 
-                if (!description) {
+                if (!description && browserLink.sourceMapping) {
                     var head = document.getElementsByTagName("head");
 
                     if (head.length > 0 && browserLink.sourceMapping.canMapToSource(head[0])) {
