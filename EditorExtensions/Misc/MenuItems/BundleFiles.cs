@@ -151,6 +151,12 @@ namespace MadsKristensen.EditorExtensions
             {
                 BundleDocument doc = BundleDocument.FromFile(bundleFileName);
 
+                if(doc == null)
+                {
+                    Logger.Log("Note: Bundle file " + bundleFileName + " is not in Web Essentials bundle format.");
+                    return;
+                }
+                
                 if (!isBuild || doc.RunOnBuild)
                     await GenerateAsync(doc, extension, true);
             }
