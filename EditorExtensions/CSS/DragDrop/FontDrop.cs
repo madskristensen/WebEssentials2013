@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace MadsKristensen.EditorExtensions.Css
 {
-    [Export(typeof(IDropHandlerProvider))]
+    //[Export(typeof(IDropHandlerProvider))] // Updated 3 includes this functionality
     [DropFormat("FileDrop")]
     [DropFormat("CF_VSSTGPROJECTITEMS")]
     [Name("FontDropHandler")]

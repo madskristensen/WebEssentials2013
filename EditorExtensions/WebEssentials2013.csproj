@@ -550,9 +550,7 @@
     <Compile Include="RobotsTxt\Completion\RobotsCompletionController.cs" />
     <Compile Include="RobotsTxt\Completion\RobotsCompletionSource.cs" />
     <Compile Include="XML\DragDrop\BundleDrop.cs" />
-    <Compile Include="CSS\DragDrop\StylesheetDrop.cs" />
     <Compile Include="CSS\DragDrop\FontDrop.cs" />
-    <Compile Include="CSS\DragDrop\ImageDrop.cs" />
     <Compile Include="Shared\ExtensionMethods\CssExtensions.cs" />
     <Compile Include="Shared\Helpers\Css\CssTreeWatcher.cs" />
     <Compile Include="Shared\Helpers\Css\CssUrlNormalizer.cs" />
