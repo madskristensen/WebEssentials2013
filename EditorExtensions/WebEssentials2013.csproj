@@ -334,7 +334,6 @@
     <Compile Include="JSON-LD\Vocabularies\VocabularyFactory.cs" />
     <Compile Include="JSON\Commands\FormatCommandTarget.cs" />
     <Compile Include="JSON\Commands\JsonCreationListener.cs" />
-    <Compile Include="JSON\Completion\ResJsonCompletionProvider.cs" />
     <Compile Include="JSON\Completion\HyperSchemaCompletionProvider.cs" />
     <Compile Include="JSON\Completion\RefValueCompletionProvider.cs" />
     <Compile Include="JSON\Completion\SchemaValueCompletionProvider.cs" />
@@ -551,6 +550,9 @@
     <Compile Include="RobotsTxt\Completion\RobotsCompletionController.cs" />
     <Compile Include="RobotsTxt\Completion\RobotsCompletionSource.cs" />
     <Compile Include="XML\DragDrop\BundleDrop.cs" />
+    <Compile Include="CSS\DragDrop\StylesheetDrop.cs" />
+    <Compile Include="CSS\DragDrop\FontDrop.cs" />
+    <Compile Include="CSS\DragDrop\ImageDrop.cs" />
     <Compile Include="Shared\ExtensionMethods\CssExtensions.cs" />
     <Compile Include="Shared\Helpers\Css\CssTreeWatcher.cs" />
     <Compile Include="Shared\Helpers\Css\CssUrlNormalizer.cs" />
