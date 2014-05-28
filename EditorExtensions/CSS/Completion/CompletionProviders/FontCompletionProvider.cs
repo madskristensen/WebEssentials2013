@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using Microsoft.CSS.Core;
@@ -43,24 +42,6 @@ namespace MadsKristensen.EditorExtensions.Css
         {
             if (!IsFontFamilyContext(context))
                 yield break;
-
-            StyleSheet stylesheet = context.ContextItem.StyleSheet;
-            var visitorRules = new CssItemCollector<FontFaceDirective>();
-            stylesheet.Accept(visitorRules);
-
-            foreach (FontFaceDirective item in visitorRules.Items)
-            {
-                var visitorDec = new CssItemCollector<Declaration>();
-                item.Block.Accept(visitorDec);
-
-                Declaration family = visitorDec.Items.FirstOrDefault(i => i.PropertyName.Text == "font-family");
-
-                if (family != null)
-                {
-                    string value = string.Join(string.Empty, family.Values.Select(v => v.Text));
-                    yield return new FontFamilyCompletionListEntry(value.Trim('\'', '"'));
-                }
-            }
 
             yield return new FontFamilyCompletionListEntry("Pick from file...");
         }
