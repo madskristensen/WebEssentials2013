@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.ComponentModel.Composition;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Intellisense;
@@ -36,6 +37,32 @@ namespace MadsKristensen.EditorExtensions.Css
                     yield return new CompletionListEntry("black-on-white");
                     yield return new CompletionListEntry("white-on-black");
                     yield return new CompletionListEntry("none");
+                    break;
+
+                case "width":    
+                case "max-width":
+                case "min-width":
+                case "device-width":
+                case "max-device-width":
+                case "min-device-width":
+                    foreach (var browser in BrowserLink.BrowserInfo._infos.Values.OrderByDescending(b => b.Width))
+                    {
+                        string value = browser.Width + "px";
+                        yield return new BrowserCompletionListEntry(value, browser.Name);
+                    }
+                    break;
+
+                case "height":    
+                case "max-height":
+                case "min-height":
+                case "device-height":
+                case "max-device-height":
+                case "min-device-height":
+                    foreach (var browser in BrowserLink.BrowserInfo._infos.Values.OrderByDescending(b => b.Height))
+                    {
+                        string value = browser.Height + "px";
+                        yield return new BrowserCompletionListEntry(value, browser.Name);
+                    }
                     break;
             }
         }

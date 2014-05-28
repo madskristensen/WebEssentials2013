@@ -235,6 +235,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BrowserLink\BrowserInfo\BrowserInfo.cs" />
     <Compile Include="BrowserLink\UnusedCss\ScssDocument.cs" />
     <Compile Include="CompatibilityChecker.cs" />
     <Compile Include="CSS\Adornments\ColorAdornment.cs" />
@@ -307,6 +308,7 @@
     <Compile Include="CSS\Classify\ImportantClassifier.cs" />
     <Compile Include="CSS\Classify\VariableClassifier.cs" />
     <Compile Include="CSS\Classify\EmbeddedImageClassifier.cs" />
+    <Compile Include="CSS\Completion\CompletionProviders\BrowserLinkCompletionProvider.cs" />
     <Compile Include="CSS\Completion\Filter\ColorSwatchCompletionListFilter.cs" />
     <Compile Include="CSS\Completion\Filter\HideUncommonCompletionListFilter.cs" />
     <Compile Include="CSS\Validation\Filters\ExtendCssErrorFilter.cs" />
@@ -523,7 +525,7 @@
     <Compile Include="CSS\Completion\CompletionProviders\RegionCompletionProvider.cs" />
     <Compile Include="CSS\Completion\CompletionProviders\FontCompletionProvider.cs" />
     <Compile Include="CSS\Completion\ContextProviders\LessPseudoContextProvider.cs" />
-    <Compile Include="CSS\Completion\CustomCompletionListEntry.cs" />
+    <Compile Include="CSS\Completion\BrowserCompletionListEntry.cs" />
     <Compile Include="HTML\Completion\AppleLinkCompletion.cs" />
     <Compile Include="HTML\Completion\StaticListCompletion.cs" />
     <Compile Include="HTML\Completion\MiscMetaCompletion.cs" />
@@ -738,6 +740,7 @@
     <Compile Include="Settings\LegacySettings.cs" />
     <Compile Include="HTML\Validation\OpenGraphPrefixValidator.cs" />
     <Compile Include="HTML\Validation\ItemTypeValidator.cs" />
+    <EmbeddedResource Include="BrowserLink\BrowserInfo\BrowserInfo.js" />
     <Content Include="CSS\Snippets\snippets.pkgdef">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
