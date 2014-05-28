@@ -199,12 +199,14 @@ namespace MadsKristensen.EditorExtensions
         {
             _dte.StatusBar.Text = "Generating bundle...";
 
+            if (!hasUpdated)
+                ProjectHelpers.AddFileToActiveProject(bundle.FileName);
+            
             string bundleFile = Path.Combine(Path.GetDirectoryName(bundle.FileName), Path.GetFileNameWithoutExtension(bundle.FileName));
             bool hasChanged = await BundleGenerator.MakeBundle(bundle, bundleFile, UpdateBundleAsync);
 
             if (!hasUpdated)
             {
-                ProjectHelpers.AddFileToActiveProject(bundle.FileName);
                 ProjectHelpers.AddFileToProject(bundle.FileName, bundleFile);
                 EditorExtensionsPackage.DTE.ItemOperations.OpenFile(bundle.FileName);
             }
