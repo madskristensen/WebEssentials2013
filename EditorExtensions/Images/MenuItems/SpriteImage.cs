@@ -120,6 +120,9 @@ namespace MadsKristensen.EditorExtensions.Images
         {
             _dte.StatusBar.Text = "Generating sprite...";
 
+            if (!hasUpdated)
+                ProjectHelpers.AddFileToActiveProject(sprite.FileName);
+
             //Default file name is the sprite name with specified file extension.
             string imageFile = Path.ChangeExtension(sprite.FileName, sprite.FileExtension);
 
@@ -127,7 +130,6 @@ namespace MadsKristensen.EditorExtensions.Images
 
             if (!hasUpdated)
             {
-                ProjectHelpers.AddFileToActiveProject(sprite.FileName);
                 ProjectHelpers.AddFileToProject(sprite.FileName, imageFile);
                 EditorExtensionsPackage.DTE.ItemOperations.OpenFile(sprite.FileName);
             }
