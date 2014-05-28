@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions
     ///<summary>A base class for a compiler that rewrites CSS source maps.</summary>
     public abstract class CssCompilerBase : NodeExecutorBase
     {
-        private static readonly Regex _sourceMapInCss = new Regex(@"\/\*#([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", RegexOptions.Multiline);
+        private static readonly Regex _sourceMapInCss = new Regex(@"\/\*#.*(?i:sourceMappingURL)([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", RegexOptions.Multiline);
 
         protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
         {
