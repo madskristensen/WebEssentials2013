@@ -106,6 +106,16 @@ Element.prototype.import = Element.prototype;
 
 //#endregion
 
+//#region Object.observe()
+
+Object.observe = function (object, callback) {
+    /// <summary>Oberves changes made to an object</summary>
+    /// <param name="object" type="object">The object to observe.</param>
+    /// <param name="callback" type="function(changes)">The callback function.</param>
+};
+
+//#endregion
+
 //#region Angular.js
 
 
