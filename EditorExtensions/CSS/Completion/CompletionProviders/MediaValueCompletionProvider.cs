@@ -39,6 +39,48 @@ namespace MadsKristensen.EditorExtensions.Css
                     yield return new CompletionListEntry("none");
                     break;
 
+                case "update-frequency":
+                    yield return new CompletionListEntry("none");
+                    yield return new CompletionListEntry("normal");
+                    yield return new CompletionListEntry("slow");
+                    break;
+
+                case "overflow-block":
+                    yield return new CompletionListEntry("none");
+                    yield return new CompletionListEntry("scroll");
+                    yield return new CompletionListEntry("optional-paged");
+                    yield return new CompletionListEntry("paged");
+                    break;
+
+                case "overflow-inline":
+                    yield return new CompletionListEntry("none");
+                    yield return new CompletionListEntry("scroll");
+                    break;
+
+                case "pointer":
+                    yield return new CompletionListEntry("none");
+                    yield return new CompletionListEntry("coarse");
+                    yield return new CompletionListEntry("fine");
+                    break;
+
+                case "hover":
+                    yield return new CompletionListEntry("none");
+                    yield return new CompletionListEntry("on-demand");
+                    yield return new CompletionListEntry("hover");
+                    break;
+
+                case "light-level":
+                    yield return new CompletionListEntry("dim");
+                    yield return new CompletionListEntry("normal");
+                    yield return new CompletionListEntry("washed");
+                    break;
+
+                case "scripting":
+                    yield return new CompletionListEntry("none");
+                    yield return new CompletionListEntry("initial-only");
+                    yield return new CompletionListEntry("enabled");
+                    break;
+
                 case "width":    
                 case "max-width":
                 case "min-width":

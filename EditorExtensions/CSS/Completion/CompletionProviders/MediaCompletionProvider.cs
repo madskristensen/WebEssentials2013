@@ -51,6 +51,7 @@ namespace MadsKristensen.EditorExtensions.Css
             yield return new CompletionListEntry("min-device-aspect-ratio");
 
             yield return new CompletionListEntry("color");
+            yield return new CompletionListEntry("color-index");
             yield return new CompletionListEntry("min-color");
             yield return new CompletionListEntry("max-color");
 
@@ -58,9 +59,18 @@ namespace MadsKristensen.EditorExtensions.Css
             yield return new CompletionListEntry("max-color-index");
             yield return new CompletionListEntry("min-color-index");
 
+            yield return new CompletionListEntry("update-frequency");
+            yield return new CompletionListEntry("overflow-block");
+            yield return new CompletionListEntry("overflow-inline");
+
             yield return new CompletionListEntry("monochrome");
             yield return new CompletionListEntry("max-monochrome");
             yield return new CompletionListEntry("min-monochrome");
+
+            yield return new CompletionListEntry("pointer");
+            yield return new CompletionListEntry("hover");
+            yield return new CompletionListEntry("light-level");
+            yield return new CompletionListEntry("scripting");
 
             // Internet Explorer
             yield return new CompletionListEntry("-ms-high-contrast");
