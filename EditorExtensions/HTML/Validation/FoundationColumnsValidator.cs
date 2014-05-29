@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions.Html
     public class FoundationColumnsValidator : BaseValidator
     {
         private static string _errorRowMissing = "Foundation: When using \"{0}\", you must also specify the class \"row\" on the parent element.";
-        private static string _errorOver12Columns = "Foundation: Sum of columns of type {0} must not exceed 12.";
+        private static string _errorOver12Columns = "Foundation: \"{0}\" - If you define more than 12 columns, the sum should be a multiple of 12. For examples: http://foundation.zurb.com/docs/components/grid.html";
         private static string _errorUnder12Columns = "Foundation: \"{0}\" - When declaring less then 12 columns, the last column need the 'end' class element.";
 
         public override IList<IHtmlValidationError> ValidateElement(ElementNode element)
@@ -34,13 +34,13 @@ namespace MadsKristensen.EditorExtensions.Html
             bool useNameColumn;
             bool useNameColumns;
 
-            // 'column' and 'columns' are allowed... unfortunately for this validator: lot of duplicate checks
             if (elementClasses == null)
             {
                 return results;
             }
             else
             {
+                // 'column' and 'columns' are allowed... unfortunately for this validator: lot of duplicate checks
                 useNameColumn = elementClasses.Value.Split(' ').Any(x => x.Contains("column"));
                 useNameColumns = elementClasses.Value.Split(' ').Any(x => x.Contains("columns"));
 
@@ -60,9 +60,20 @@ namespace MadsKristensen.EditorExtensions.Html
                 results.AddAttributeError(element, error, HtmlValidationErrorLocation.AttributeValue, index);
             }
 
-            // Check for number of columns
+            // Check for number of columns...
             string[] columnSizeClasses = new string[] { "small-", "medium-", "large-" };
             var classList = columnSizeClasses.Where(x => elementClasses.Value.Split(' ').Any(y => y.StartsWith(x, StringComparison.Ordinal)));
+
+            // ...only if the doesn't contains '[size]-centered' or '[size]-uncentered' elements
+            if (classList.Any())
+            {
+                string[] columnSizeCenteredClasses = new string[] { "small-centered", "medium-centered", "large-centered",
+                                                                    "small-uncentered", "medium-uncentered", "large-uncentered"};
+                bool containCenteredElement = columnSizeCenteredClasses.Any(x => elementClasses.Value.Split(' ').Any(y => y.Equals(x, StringComparison.InvariantCultureIgnoreCase)));
+
+                if (containCenteredElement)
+                    return results;
+            }
 
             foreach (var columnSize in classList)
             {
@@ -77,7 +88,7 @@ namespace MadsKristensen.EditorExtensions.Html
                     results.AddAttributeError(element, error, HtmlValidationErrorLocation.AttributeValue, index);
                 }
 
-                if (sumColumnsCurrentRow > 12)
+                if (sumColumnsCurrentRow > 12 && sumColumnsCurrentRow % 12 != 0)
                 {
                     var index = element.Attributes.IndexOf(elementClasses);
                     var error = string.Format(CultureInfo.CurrentCulture, _errorOver12Columns, columnSize);

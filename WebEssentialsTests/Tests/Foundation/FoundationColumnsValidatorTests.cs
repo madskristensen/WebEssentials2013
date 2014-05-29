@@ -228,6 +228,46 @@ namespace WebEssentialsTests
         }
 
         [TestMethod]
+        public void OkToHaveLessThan12ColumnsIfCenteredClassPresent()
+        {
+            FoundationColumnsValidator validator = new FoundationColumnsValidator();
+
+            var source = @"<div class='row'>
+                               <div class='small-3 small-centered columns'>3 centered</div>
+                           </div>";
+
+            var tree = new HtmlTree(new TextStream(source));
+
+            tree.Build();
+
+            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0].Children[0]);
+
+            int expected = 0;
+
+            Assert.AreEqual(expected, compiled.Count);
+        }
+
+        [TestMethod]
+        public void OkToHaveLessThan12ColumnsIfCenteredClassPresentEvenOnAnotherSize()
+        {
+            FoundationColumnsValidator validator = new FoundationColumnsValidator();
+
+            var source = @"<div class='row'>
+                               <div class='small-6 large-centered columns'>6 centered</div>
+                           </div>";
+
+            var tree = new HtmlTree(new TextStream(source));
+
+            tree.Build();
+
+            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0].Children[0]);
+
+            int expected = 0;
+
+            Assert.AreEqual(expected, compiled.Count);
+        }
+
+        [TestMethod]
         public void ErrorMsgIfMoreThanTwelveColumns()
         {
             FoundationColumnsValidator validator = new FoundationColumnsValidator();
@@ -246,8 +286,60 @@ namespace WebEssentialsTests
             int expected = 1;
 
             Assert.AreEqual(expected, compiled.Count);
-            Assert.IsTrue(compiled[0].Message.Contains("must not exceed 12"));
+            Assert.IsTrue(compiled[0].Message.Contains("more than 12 columns"));
             Assert.IsTrue(compiled[0].Message.Contains("medium-"));
+        }
+
+        /// <summary>
+        /// This test is based on an example from the Foundation documentation.
+        /// http://foundation.zurb.com/docs/components/grid.html
+        /// </summary>
+        [TestMethod]
+        public void TwoRowsOnMobileDesign_ValidExampleWithMoreThan12Columns()
+        {
+            FoundationColumnsValidator validator = new FoundationColumnsValidator();
+
+            var source = @"<div class='row'>
+                              <div class='small-6 large-2 columns'>...</div>
+                              <div class='small-6 large-8 columns'>...</div>
+                              <div class='small-12 large-2 columns'>...</div>
+                           </div>";
+
+            var tree = new HtmlTree(new TextStream(source));
+
+            tree.Build();
+
+            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0].Children[0]);
+
+            int expected = 0;
+
+            Assert.AreEqual(expected, compiled.Count);
+        }
+
+        /// <summary>
+        /// This test is based on an example from the Foundation documentation.
+        /// http://foundation.zurb.com/docs/components/grid.html
+        /// </summary>
+        [TestMethod]
+        public void TwoRowsOnMobileDesign_InvalidExampleWithMoreThan12ColumnsBecauseNotMultipleOfTwelve()
+        {
+            FoundationColumnsValidator validator = new FoundationColumnsValidator();
+
+            var source = @"<div class='row'>
+                              <div class='small-6 large-2 columns'>...</div>
+                              <div class='small-6 large-8 columns'>...</div>
+                              <div class='small-8 large-2 columns'>...</div>
+                           </div>";
+
+            var tree = new HtmlTree(new TextStream(source));
+
+            tree.Build();
+
+            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0].Children[0]);
+
+            int expected = 1;
+
+            Assert.AreEqual(expected, compiled.Count);
         }
     }
 }

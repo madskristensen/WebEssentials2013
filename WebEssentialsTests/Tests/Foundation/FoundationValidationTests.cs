@@ -52,7 +52,15 @@ namespace WebEssentialsTests
 
                 Assert.IsFalse(result);
             }
+            [TestMethod]
+            public void NoWarningForFoundationBlockGridClass()
+            {
+                var input = @"small-block-grid-3";
 
+                var result = FoundationClassValidator.ColumnPairElementsOk(input);
+
+                Assert.IsTrue(result);
+            }
         }
 
         [TestClass]
@@ -154,6 +162,7 @@ namespace WebEssentialsTests
 
                 Assert.AreEqual(expected, compiled.Count);
             }
+
         }
     }
 }
