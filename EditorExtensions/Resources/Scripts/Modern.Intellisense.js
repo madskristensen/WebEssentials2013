@@ -102,7 +102,7 @@ EventSource.CLOSED = 2;
 
 //#region HTML Import
 
-Element.prototype.import = Element.prototype;
+Element.prototype.import = Document.prototype;
 
 //#endregion
 
