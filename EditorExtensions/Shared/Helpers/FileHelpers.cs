@@ -40,18 +40,25 @@ namespace MadsKristensen.EditorExtensions
         {
             return view.BufferGraph.MapDownToInsertionPoint(view.Caret.Position.BufferPosition, PointTrackingMode.Positive, ts => contentTypeFilter(ts.ContentType));
         }
-        ///<summary>Gets the first currently selected span within a specific buffer type, or null if there is no selection or if the selection is in a different buffer.</summary>
+
+        ///<summary>
+        ///  Gets a pair of first currently selected (projection) span
+        ///  and its underlying mapped span with desired content-type selected
+        ///  by the predicate within a specific buffer type, or null if there
+        ///  is no selection or if the selection is in a different buffer.
+        ///</summary>
         ///<param name="view">The TextView containing the selection</param>
-        ///<param name="contentTypeFilter">The ContentType to filter the selection by.</param>        
-        public static SnapshotSpan? GetSelectedSpan(this ITextView view, Func<IContentType, bool> contentTypeFilter)
+        ///<param name="contentTypeFilter">The ContentType to filter the selection by.</param>
+        ///<returns>Pair of projection span and the mapped span.</returns>
+        public static Tuple<SnapshotSpan, SnapshotSpan> GetSelectedSpan(this ITextView view, Func<IContentType, bool> contentTypeFilter)
         {
             return view.Selection.SelectedSpans.SelectMany(span =>
-                view.BufferGraph.MapDownToFirstMatch(
-                    span,
-                    SpanTrackingMode.EdgePositive,
-                    ts => contentTypeFilter(ts.ContentType)
-                ), (s, c) => (SnapshotSpan?)s
-            ).FirstOrDefault();
+                       view.BufferGraph.MapDownToFirstMatch(
+                           span,
+                           SpanTrackingMode.EdgePositive,
+                           ts => contentTypeFilter(ts.ContentType)
+                       ).Select(snapshot => new Tuple<SnapshotSpan, SnapshotSpan>(span, snapshot))
+                   ).FirstOrDefault();
         }
 
         public static void GzipFile(string sourcePath)

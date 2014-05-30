@@ -8,29 +8,32 @@ namespace MadsKristensen.EditorExtensions
 {
     internal class MinifySelection : CommandTargetBase<MinifyCommandId>
     {
+        private Tuple<SnapshotSpan, SnapshotSpan> _spansTuple;
+
         public MinifySelection(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, MinifyCommandId.MinifySelection)
-        {
-        }
+        { }
 
-        SnapshotSpan? span;
         protected override bool Execute(MinifyCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if (span == null)
+            if (_spansTuple == null)
                 return false;
-            var source = span.Value.GetText();
-            string result = Mef.GetImport<IFileMinifier>(span.Value.Snapshot.TextBuffer.ContentType)
+
+            var source = _spansTuple.Item2.GetText();
+            string result = Mef.GetImport<IFileMinifier>(_spansTuple.Item2.Snapshot.TextBuffer.ContentType)
                                .MinifyString(source);
 
             if (result == null)
                 return false; // IFileMinifier already displayed an error
+
             if (result == source)
             {
                 EditorExtensionsPackage.DTE.StatusBar.Text = "The selection is already minified";
                 return false;
             }
+
             using (EditorExtensionsPackage.UndoContext("Minify"))
-                TextView.TextBuffer.Replace(span.Value.Span, result);
+                TextView.TextBuffer.Replace(_spansTuple.Item1, result);
 
             return true;
         }
@@ -38,9 +41,9 @@ namespace MadsKristensen.EditorExtensions
         protected override bool IsEnabled()
         {
             // Don't minify Markdown
-            span = TextView.GetSelectedSpan(c => !c.IsOfType("Markdown")
-                                              && Mef.GetImport<IFileMinifier>(c) != null);
-            return span.HasValue;
+            _spansTuple = TextView.GetSelectedSpan(c => !c.IsOfType("Markdown")
+                                                     && Mef.GetImport<IFileMinifier>(c) != null);
+            return _spansTuple != null;
         }
     }
 }

@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 using EnvDTE80;
 using Microsoft.VisualBasic;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
@@ -70,16 +68,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static bool IsValidTextBuffer(IWpfTextView view)
         {
-            try
-            {
-                return view.BufferGraph.MapDownToBuffer(view.GetSelectedSpan(c => c.IsOfType("CSS") || c.IsOfType("JavaScript")).Value,
-                                                        SpanTrackingMode.EdgeExclusive,
-                                                        view.TextBuffer).Any();
-            }
-            catch
-            {
-                return false;
-            }
+            return view.GetSelectedSpan(c => c.IsOfType("CSS") || c.IsOfType("JavaScript")) != null;
         }
 
         protected override bool IsEnabled()
