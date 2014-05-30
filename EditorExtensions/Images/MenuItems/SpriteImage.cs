@@ -98,7 +98,7 @@ namespace MadsKristensen.EditorExtensions.Images
 
             try
             {
-                SpriteDocument doc = SpriteDocument.FromFile(spriteFileName);
+                SpriteDocument doc = await SpriteDocument.FromFile(spriteFileName);
 
                 if (!isBuild || doc.RunOnBuild)
                     await GenerateAsync(doc, true);

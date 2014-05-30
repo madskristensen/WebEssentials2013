@@ -149,7 +149,7 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                BundleDocument doc = BundleDocument.FromFile(bundleFileName);
+                BundleDocument doc = await BundleDocument.FromFile(bundleFileName);
 
                 if (doc == null)
                 {

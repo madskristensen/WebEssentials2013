@@ -77,7 +77,7 @@ namespace MadsKristensen.EditorExtensions.Images
             }
         }
 
-        public static SpriteDocument FromFile(string fileName)
+        public static async Task<SpriteDocument> FromFile(string fileName)
         {
             string root = ProjectHelpers.GetProjectFolder(fileName);
             string folder = Path.GetDirectoryName(root);
@@ -87,9 +87,11 @@ namespace MadsKristensen.EditorExtensions.Images
 
             XDocument doc = null;
 
+            string contents = await FileHelpers.ReadAllTextRetry(fileName);
+
             try
             {
-                doc = XDocument.Load(fileName);
+                doc = XDocument.Parse(contents);
             }
             catch (XmlException)
             {

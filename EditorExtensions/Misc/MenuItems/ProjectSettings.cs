@@ -58,9 +58,9 @@ namespace MadsKristensen.EditorExtensions
                         continue;
 
                     if (file.EndsWith(".bundle", StringComparison.OrdinalIgnoreCase))
-                        await BundleGenerator.WatchFiles(BundleDocument.FromFile(file), bundleFunc);
+                        await BundleGenerator.WatchFiles(await BundleDocument.FromFile(file), bundleFunc);
                     else
-                        await SpriteGenerator.WatchFiles(SpriteDocument.FromFile(file), spriteFunc);
+                        await SpriteGenerator.WatchFiles(await SpriteDocument.FromFile(file), spriteFunc);
                 }
             }
         }
