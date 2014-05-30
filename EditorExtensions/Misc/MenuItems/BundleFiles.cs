@@ -151,12 +151,12 @@ namespace MadsKristensen.EditorExtensions
             {
                 BundleDocument doc = BundleDocument.FromFile(bundleFileName);
 
-                if(doc == null)
+                if (doc == null)
                 {
                     Logger.Log("Note: Bundle file " + bundleFileName + " is not in Web Essentials bundle format.");
                     return;
                 }
-                
+
                 if (!isBuild || doc.RunOnBuild)
                     await GenerateAsync(doc, extension, true);
             }
@@ -201,7 +201,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (!hasUpdated)
                 ProjectHelpers.AddFileToActiveProject(bundle.FileName);
-            
+
             string bundleFile = Path.Combine(Path.GetDirectoryName(bundle.FileName), Path.GetFileNameWithoutExtension(bundle.FileName));
             bool hasChanged = await BundleGenerator.MakeBundle(bundle, bundleFile, UpdateBundleAsync);
 

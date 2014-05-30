@@ -473,12 +473,6 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Don't save separate unminified compiler output. This option has no effect when Minify On Save is disabled for the output format.")]
         [DefaultValue(false)]
         public bool MinifyInPlace { get; set; }
-
-        [Category("Compilation")]
-        [DisplayName("Strict Math")]
-        [Description("With this option turned off, LESS will try and process all maths in your CSS.")]
-        [DefaultValue(false)]
-        public bool StrictMath { get; set; }
     }
 
     public abstract class ChainableCompilationSettings<T> : CompilationSettings<T>, IChainableCompilerSettings where T : ChainableCompilationSettings<T>
@@ -503,7 +497,14 @@ namespace MadsKristensen.EditorExtensions.Settings
         }
     }
 
-    public sealed class LessSettings : ChainableCompilationSettings<LessSettings> { }
+    public sealed class LessSettings : ChainableCompilationSettings<LessSettings>
+    {
+        [Category("Compilation")]
+        [DisplayName("Strict Math")]
+        [Description("With this option turned off, LESS will try and process all maths in your CSS.")]
+        [DefaultValue(false)]
+        public bool StrictMath { get; set; }
+    }
 
     public sealed class ScssSettings : ChainableCompilationSettings<ScssSettings> { }
 

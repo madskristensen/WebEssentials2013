@@ -84,6 +84,7 @@
   <Acronyms>
     <CasingExceptions>
       <Acronym>XHTML</Acronym>
+      <Acronym>JSON</Acronym>
       <Acronym>JSONLD</Acronym>
     </CasingExceptions>
   </Acronyms>
