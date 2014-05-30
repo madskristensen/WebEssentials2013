@@ -50,7 +50,9 @@ namespace MadsKristensen.EditorExtensions.Html
             string[] columnSizeClasses = new string[] { "small-", "medium-", "large-" };
 
             var containColumnClass = input.Split(' ').Any(x => columnClasses.Contains(x));
-            var containSizeClass = columnSizeClasses.Any(x => input.Split(' ').Any(y => y.StartsWith(x, StringComparison.Ordinal)));
+            var containSizeClass = columnSizeClasses.Any(x => input.Split(' ')
+                                                    .Where(toExclude => !toExclude.Contains("block-grid"))
+                                                    .Any(y => y.StartsWith(x, StringComparison.Ordinal)));
 
             // If both are there, or both are missing it's OK
             if ((containColumnClass && containSizeClass) || (!containColumnClass && !containSizeClass))
