@@ -69,7 +69,7 @@ namespace MadsKristensen.EditorExtensions.Html
             {
                 string[] columnSizeCenteredClasses = new string[] { "small-centered", "medium-centered", "large-centered",
                                                                     "small-uncentered", "medium-uncentered", "large-uncentered"};
-                bool containCenteredElement = columnSizeCenteredClasses.Any(x => elementClasses.Value.Split(' ').Any(y => y.Equals(x, StringComparison.InvariantCultureIgnoreCase)));
+                bool containCenteredElement = columnSizeCenteredClasses.Any(x => elementClasses.Value.Split(' ').Any(y => y.Equals(x, StringComparison.OrdinalIgnoreCase)));
 
                 if (containCenteredElement)
                     return results;

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.ComponentModel.Composition;
+using System.Linq;
 using Microsoft.JSON.Core.Parser;
 using Microsoft.JSON.Editor.Completion;
 using Microsoft.JSON.Editor.Completion.Def;
-using Microsoft.VisualStudio.JSON.Package.Schema;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;

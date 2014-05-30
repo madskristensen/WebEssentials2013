@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.ComponentModel.Composition;
+using System.Linq;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.VisualStudio.Utilities;
@@ -81,26 +81,26 @@ namespace MadsKristensen.EditorExtensions.Css
                     yield return new CompletionListEntry("enabled");
                     break;
 
-                case "width":    
+                case "width":
                 case "max-width":
                 case "min-width":
                 case "device-width":
                 case "max-device-width":
                 case "min-device-width":
-                    foreach (var browser in BrowserLink.BrowserInfo._infos.Values.OrderByDescending(b => b.Width))
+                    foreach (var browser in BrowserLink.BrowserInfo.BrowserCapDictionary.Values.OrderByDescending(b => b.Width))
                     {
                         string value = browser.Width + "px";
                         yield return new BrowserCompletionListEntry(value, browser.Name);
                     }
                     break;
 
-                case "height":    
+                case "height":
                 case "max-height":
                 case "min-height":
                 case "device-height":
                 case "max-device-height":
                 case "min-device-height":
-                    foreach (var browser in BrowserLink.BrowserInfo._infos.Values.OrderByDescending(b => b.Height))
+                    foreach (var browser in BrowserLink.BrowserInfo.BrowserCapDictionary.Values.OrderByDescending(b => b.Height))
                     {
                         string value = browser.Height + "px";
                         yield return new BrowserCompletionListEntry(value, browser.Name);

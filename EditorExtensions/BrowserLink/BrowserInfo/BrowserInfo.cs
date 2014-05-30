@@ -1,10 +1,7 @@
-﻿using Microsoft.VisualStudio.Web.BrowserLink;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
 using System.IO;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Web;
+using Microsoft.VisualStudio.Web.BrowserLink;
 
 namespace MadsKristensen.EditorExtensions.BrowserLink
 {
@@ -28,19 +25,22 @@ namespace MadsKristensen.EditorExtensions.BrowserLink
 
     public class BrowserInfo : BrowserLinkExtension
     {
-        public static Dictionary<string, BrowserCap> _infos = new Dictionary<string, BrowserCap>();
+        private static Dictionary<string, BrowserCap> _browserCapDictionary = new Dictionary<string, BrowserCap>();
         private BrowserLinkConnection _current;
+
+        public static Dictionary<string, BrowserCap> BrowserCapDictionary { get { return _browserCapDictionary; } }
 
         public override void OnConnected(BrowserLinkConnection connection)
         {
             _current = connection;
+
             base.OnConnected(connection);
         }
 
         public override void OnDisconnecting(BrowserLinkConnection connection)
         {
-            if (_infos.ContainsKey(connection.ConnectionId))
-                _infos.Remove(connection.ConnectionId);
+            if (_browserCapDictionary.ContainsKey(connection.ConnectionId))
+                _browserCapDictionary.Remove(connection.ConnectionId);
 
             base.OnDisconnecting(connection);
         }
@@ -55,7 +55,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink
                 Height = height,
             };
 
-            _infos[_current.ConnectionId] = browserCap;
+            _browserCapDictionary[_current.ConnectionId] = browserCap;
         }
     }
 

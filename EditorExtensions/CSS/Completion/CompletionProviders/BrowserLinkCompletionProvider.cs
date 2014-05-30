@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
             if (dec.PropertyName.Text.EndsWith("width", StringComparison.OrdinalIgnoreCase))
             {
-                foreach (var browser in BrowserLink.BrowserInfo._infos.Values.OrderByDescending(b => b.Width))
+                foreach (var browser in BrowserLink.BrowserInfo.BrowserCapDictionary.Values.OrderByDescending(b => b.Width))
                 {
                     string value = browser.Width + "px";
                     yield return new BrowserCompletionListEntry(value, browser.Name);
@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions.Css
             }
             else if (dec.PropertyName.Text.EndsWith("height", StringComparison.OrdinalIgnoreCase))
             {
-                foreach (var browser in BrowserLink.BrowserInfo._infos.Values.OrderByDescending(b => b.Height))
+                foreach (var browser in BrowserLink.BrowserInfo.BrowserCapDictionary.Values.OrderByDescending(b => b.Height))
                 {
                     string value = browser.Height + "px";
                     yield return new BrowserCompletionListEntry(value, browser.Name);

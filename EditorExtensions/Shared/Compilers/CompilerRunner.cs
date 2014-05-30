@@ -198,7 +198,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         }
 
         public override bool GenerateSourceMap { get { return Compiler.GenerateSourceMap; } }
-        
+
         protected override async Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
         {
             bool isTemp = false;
