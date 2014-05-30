@@ -60,16 +60,16 @@ namespace MadsKristensen.EditorExtensions
 
         private void PopulateMap(string targetFileContents, string mapFileContents)
         {
-            SourceMapDefinition map;
+            SourceMapDefinition map = null;
 
             try
             {
                 map = JsonConvert.DeserializeObject<SourceMapDefinition>(mapFileContents);
             }
-            catch
-            {
+            catch { }
+
+            if (map == null)
                 return;
-            }
 
             MapNodes = Base64Vlq.Decode(map.mappings, _directory, map.sources);
 

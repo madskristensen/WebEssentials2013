@@ -75,9 +75,14 @@ namespace MadsKristensen.EditorExtensions
 
         private async Task<string> GetUpdatedSourceMapFileContent(string cssFileName, string sourceMapFileName)
         {
+            string jsonString = await ReadMapFile(sourceMapFileName);
+
+            if (string.IsNullOrEmpty(jsonString))
+                return null;
+
             // Read JSON map file and deserialize.
 
-            JObject jsonSourceMap = JObject.Parse(await ReadMapFile(sourceMapFileName));
+            JObject jsonSourceMap = JObject.Parse(jsonString);
 
             if (jsonSourceMap == null)
                 return null;
