@@ -98,7 +98,7 @@ namespace MadsKristensen.EditorExtensions.Html
                 {
                     ICssParser parser = CssParserLocator.FindComponent(Mef.GetContentType(ext.Trim('.'))).CreateParser();
 
-                    foreach (string file in Directory.GetFiles(root, "*" + ext, SearchOption.AllDirectories))
+                    foreach (string file in Directory.EnumerateFiles(root, "*" + ext, SearchOption.AllDirectories))
                     {
                         if (file.EndsWith(".min" + ext, StringComparison.OrdinalIgnoreCase))
                             continue;
