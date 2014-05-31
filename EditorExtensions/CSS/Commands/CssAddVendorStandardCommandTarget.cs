@@ -14,32 +14,35 @@ namespace MadsKristensen.EditorExtensions.Css
 {
     internal class CssAddMissingVendor : CommandTargetBase<CssCommandId>
     {
+        private SnapshotPoint? _point;
+
         public CssAddMissingVendor(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, CssCommandId.AddMissingVendor)
-        {
-        }
+        { }
 
         protected override bool Execute(CssCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            var point = TextView.GetSelection("css");
-            if (point == null) return false;
+            if (_point == null)
+                return false;
 
-            ITextBuffer buffer = point.Value.Snapshot.TextBuffer;
+            ITextBuffer buffer = _point.Value.Snapshot.TextBuffer;
             CssEditorDocument doc = CssEditorDocument.FromTextBuffer(buffer);
             ICssSchemaInstance rootSchema = CssSchemaManager.SchemaManager.GetSchemaRoot(null);
-
             StringBuilder sb = new StringBuilder(buffer.CurrentSnapshot.GetText());
             int scrollPosition = TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
 
             using (EditorExtensionsPackage.UndoContext("Add Missing Vendor Specifics"))
             {
                 int count;
-                string result = AddMissingVendorDeclarations(sb, doc, rootSchema, out count);
-                Span span = new Span(0, buffer.CurrentSnapshot.Length);
-                buffer.Replace(span, result);
+                bool hasChanged = AddMissingVendorDeclarations(sb, doc, rootSchema, out count);
 
-                var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
-                selection.GotoLine(1);
+                if (hasChanged)
+                    buffer.SetText(sb.ToString()
+                                     .Replace("/* BEGIN EXTERNAL SOURCE */\r\n", string.Empty)
+                                     .Replace("\r\n/* END EXTERNAL SOURCE */\r\n", string.Empty));
+
+                if (TextView.Caret.Position.BufferPosition.Snapshot == buffer.CurrentSnapshot)
+                    (EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection).GotoLine(1);
 
                 EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
                 TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, TextView.TextSnapshot.GetLineNumberFromPosition(scrollPosition));
@@ -49,9 +52,11 @@ namespace MadsKristensen.EditorExtensions.Css
             return true;
         }
 
-        private static string AddMissingVendorDeclarations(StringBuilder sb, CssEditorDocument doc, ICssSchemaInstance rootSchema, out int count)
+        private static bool AddMissingVendorDeclarations(StringBuilder sb, CssEditorDocument doc, ICssSchemaInstance rootSchema, out int count)
         {
+            bool hasChanged = false;
             var visitor = new CssItemCollector<Declaration>(true);
+
             doc.Tree.StyleSheet.Accept(visitor);
             count = 0;
 
@@ -69,10 +74,12 @@ namespace MadsKristensen.EditorExtensions.Css
 
                     sb.Insert(dec.Start, vendors);
                     count++;
+
+                    hasChanged = true;
                 }
             }
 
-            return sb.ToString();
+            return hasChanged;
         }
 
         private static string GetVendorDeclarations(IEnumerable<string> prefixes, Declaration declaration)
@@ -90,7 +97,9 @@ namespace MadsKristensen.EditorExtensions.Css
 
         protected override bool IsEnabled()
         {
-            return TextView.GetSelection("css").HasValue;
+            _point = TextView.GetSelection("css");
+
+            return _point.HasValue;
         }
     }
 }

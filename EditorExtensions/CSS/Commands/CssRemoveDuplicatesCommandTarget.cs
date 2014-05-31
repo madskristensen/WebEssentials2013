@@ -13,32 +13,34 @@ namespace MadsKristensen.EditorExtensions.Css
 {
     internal class CssRemoveDuplicates : CommandTargetBase<CssCommandId>
     {
+        private SnapshotPoint? _point;
 
         public CssRemoveDuplicates(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, CssCommandId.RemoveDuplicates)
-        {
-        }
+        { }
 
         protected override bool Execute(CssCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            var point = TextView.GetSelection("CSS");
-            if (point == null)
+            if (_point == null)
                 return false;
-            ITextSnapshot snapshot = point.Value.Snapshot;
-            var doc = CssEditorDocument.FromTextBuffer(snapshot.TextBuffer);
 
-            StringBuilder sb = new StringBuilder(snapshot.GetText());
+            ITextBuffer buffer = _point.Value.Snapshot.TextBuffer;
+            CssEditorDocument doc = CssEditorDocument.FromTextBuffer(buffer);
+            StringBuilder sb = new StringBuilder(buffer.CurrentSnapshot.GetText());
             int scrollPosition = TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
 
             using (EditorExtensionsPackage.UndoContext("Remove Duplicate Properties"))
             {
                 int count;
-                string result = RemoveDuplicateProperties(sb, doc, out count);
-                Span span = new Span(0, snapshot.Length);
-                snapshot.TextBuffer.Replace(span, result);
+                bool hasChanged = RemoveDuplicateProperties(sb, doc, out count);
 
-                var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
-                selection.GotoLine(1);
+                if (hasChanged)
+                    buffer.SetText(sb.ToString()
+                                     .Replace("/* BEGIN EXTERNAL SOURCE */\r\n", string.Empty)
+                                     .Replace("\r\n/* END EXTERNAL SOURCE */\r\n", string.Empty));
+
+                if (TextView.Caret.Position.BufferPosition.Snapshot == buffer.CurrentSnapshot)
+                    (EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection).GotoLine(1);
 
                 EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
                 TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, TextView.TextSnapshot.GetLineNumberFromPosition(scrollPosition));
@@ -48,9 +50,11 @@ namespace MadsKristensen.EditorExtensions.Css
             return true;
         }
 
-        private static string RemoveDuplicateProperties(StringBuilder sb, CssEditorDocument doc, out int count)
+        private static bool RemoveDuplicateProperties(StringBuilder sb, CssEditorDocument doc, out int count)
         {
+            bool hasChanged = false;
             var visitor = new CssItemCollector<RuleBlock>(true);
+
             doc.Tree.StyleSheet.Accept(visitor);
             count = 0;
 
@@ -64,16 +68,20 @@ namespace MadsKristensen.EditorExtensions.Css
                     {
                         sb.Remove(dec.Start, dec.Length);
                         count++;
+
+                        hasChanged = true;
                     }
                 }
             }
 
-            return sb.ToString();
+            return hasChanged;
         }
 
         protected override bool IsEnabled()
         {
-            return TextView.GetSelection("CSS") != null;
+            _point = TextView.GetSelection("css");
+
+            return _point.HasValue;
         }
     }
 }
