@@ -13,15 +13,15 @@ namespace MadsKristensen.EditorExtensions.Html
 {
     class HtmlDefinitionPeekItem : IPeekableItem
     {
-        private readonly IPeekResultFactory peekResultFactory;
+        private readonly IPeekResultFactory _peekResultFactory;
         private readonly string _className;
-        private readonly ITextBuffer textbuffer;
+        private readonly ITextBuffer _textbuffer;
 
         public HtmlDefinitionPeekItem(string className, IPeekResultFactory peekResultFactory, ITextBuffer textbuffer)
         {
-            this.peekResultFactory = peekResultFactory;
+            _peekResultFactory = peekResultFactory;
             _className = className;
-            this.textbuffer = textbuffer;
+            _textbuffer = textbuffer;
         }
 
         public string DisplayName
@@ -73,7 +73,7 @@ namespace MadsKristensen.EditorExtensions.Html
 
                 var displayInfo = new PeekResultDisplayInfo(label: peekableItem._className, labelTooltip: file, title: Path.GetFileName(file), titleTooltip: file);
 
-                var result = peekableItem.peekResultFactory.Create
+                var result = peekableItem._peekResultFactory.Create
                 (
                     displayInfo,
                     file,
@@ -88,14 +88,16 @@ namespace MadsKristensen.EditorExtensions.Html
 
             private string FindFile(IEnumerable<string> extensions, string className, out RuleSet rule)
             {
-                ICssParser parser = CssParserLocator.FindComponent(Mef.GetContentType(LessContentTypeDefinition.LessContentType)).CreateParser();
-
-                string root = ProjectHelpers.GetProjectFolder(peekableItem.textbuffer.GetFileName());
+                // Is there a more efficient way to traverse the file system? For instance, start in known CSS folders
+                // such as "content" and "css" and then exlude folders like "node_modules", "bower_components" etc.?
+                string root = ProjectHelpers.GetProjectFolder(peekableItem._textbuffer.GetFileName());
                 string result = null;
                 rule = null;
 
                 foreach (string ext in extensions)
                 {
+                    ICssParser parser = CssParserLocator.FindComponent(Mef.GetContentType(ext.Trim('.'))).CreateParser();
+
                     foreach (string file in Directory.GetFiles(root, "*" + ext, SearchOption.AllDirectories))
                     {
                         if (file.EndsWith(".min" + ext, StringComparison.OrdinalIgnoreCase))

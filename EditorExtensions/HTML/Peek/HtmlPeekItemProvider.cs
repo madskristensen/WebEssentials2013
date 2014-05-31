@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
@@ -17,17 +12,17 @@ namespace MadsKristensen.EditorExtensions.Html
     [SupportsStandaloneFiles(false)]
     class HtmlPeekItemProvider : IPeekableItemSourceProvider
     {
-        private readonly IPeekResultFactory peekResultFactory;
+        private readonly IPeekResultFactory _peekResultFactory;
 
         [ImportingConstructor]
         public HtmlPeekItemProvider(IPeekResultFactory peekResultFactory)
         {
-            this.peekResultFactory = peekResultFactory;
+            _peekResultFactory = peekResultFactory;
         }
 
         public IPeekableItemSource TryCreatePeekableItemSource(ITextBuffer textBuffer)
         {
-            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new HtmlPeekItemSource(textBuffer, peekResultFactory));
+            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new HtmlPeekItemSource(textBuffer, _peekResultFactory));
         }
     }
 }

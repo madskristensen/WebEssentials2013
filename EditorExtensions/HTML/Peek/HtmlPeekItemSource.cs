@@ -8,34 +8,30 @@ namespace MadsKristensen.EditorExtensions.Html
 {
     internal sealed class HtmlPeekItemSource : IPeekableItemSource, IHtmlTreeVisitor
     {
-        private readonly ITextBuffer textBuffer;
-        private readonly IPeekResultFactory peekResultFactory;
+        private readonly ITextBuffer _textBuffer;
+        private readonly IPeekResultFactory _peekResultFactory;
 
         public HtmlPeekItemSource(ITextBuffer textBuffer, IPeekResultFactory peekResultFactory)
         {
-            this.textBuffer = textBuffer;
-            this.peekResultFactory = peekResultFactory;
+            _textBuffer = textBuffer;
+            _peekResultFactory = peekResultFactory;
         }
 
         public void AugmentPeekSession(IPeekSession session, IList<IPeekableItem> peekableItems)
         {
-            var triggerPoint = session.GetTriggerPoint(textBuffer.CurrentSnapshot);
+            var triggerPoint = session.GetTriggerPoint(_textBuffer.CurrentSnapshot);
             if (!triggerPoint.HasValue)
-            {
                 return;
-            }
 
-            var document = HtmlEditorDocument.FromTextBuffer(textBuffer);
+            var document = HtmlEditorDocument.FromTextBuffer(_textBuffer);
             if (document == null)
-            {
                 return;
-            }
 
             string className;
             if (!TryGetClassName(document.HtmlEditorTree, triggerPoint.Value.Position, out className))
                 return;
 
-            peekableItems.Add(new HtmlDefinitionPeekItem(className, peekResultFactory, textBuffer));
+            peekableItems.Add(new HtmlDefinitionPeekItem(className, _peekResultFactory, _textBuffer));
         }
 
         private bool TryGetClassName(HtmlEditorTree tree, int position, out string className)
