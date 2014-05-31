@@ -38,7 +38,7 @@ namespace MadsKristensen.EditorExtensions.Images
             ScssOutputDirectory = WESettings.Instance.Sprite.ScssOutputDirectory;
         }
 
-        public async Task WriteSpriteRecipe()
+        public async Task<XDocument> WriteSpriteRecipe()
         {
             string root = ProjectHelpers.GetRootFolder();
             XmlWriterSettings settings = new XmlWriterSettings() { Indent = true };
@@ -46,6 +46,7 @@ namespace MadsKristensen.EditorExtensions.Images
 
             using (XmlWriter writer = await Task.Run(() => XmlWriter.Create(FileName, settings)))
             {
+                XDocument doc =
                 new XDocument(
                     new XElement("sprite",
                         new XAttribute(XNamespace.Xmlns + "xsi", xsi),
@@ -73,7 +74,11 @@ namespace MadsKristensen.EditorExtensions.Images
                         new XComment("The order of the <file> elements determines the order of the images in the sprite."),
                         new XElement("files", BundleAssets.Select(file => new XElement("file", "/" + FileHelpers.RelativePath(root, file))))
                     )
-                ).Save(writer);
+                );
+
+                doc.Save(writer);
+
+                return doc;
             }
         }
 

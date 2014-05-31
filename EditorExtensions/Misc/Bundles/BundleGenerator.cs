@@ -53,6 +53,9 @@ namespace MadsKristensen.EditorExtensions
         {
             Dictionary<string, string> files = new Dictionary<string, string>();
 
+            if (document == null)
+                return null;
+
             await new BundleFileObserver().AttachFileObserver(document.FileName, document.FileName, updateBundle);
 
             foreach (string asset in document.BundleAssets)
