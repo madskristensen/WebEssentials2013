@@ -46,7 +46,7 @@ namespace MadsKristensen.EditorExtensions
             OutputDirectory = settings.OutputDirectory;
         }
 
-        public async Task WriteBundleRecipe()
+        public async Task<XDocument> WriteBundleRecipe()
         {
             string root = ProjectHelpers.GetRootFolder();
             XmlWriterSettings settings = new XmlWriterSettings() { Indent = true };
@@ -78,6 +78,8 @@ namespace MadsKristensen.EditorExtensions
                     );
 
                 doc.Save(writer);
+
+                return doc;
             }
         }
 
@@ -162,18 +164,7 @@ namespace MadsKristensen.EditorExtensions
             if (attributes.Contains("minify"))
                 newDoc.Minified = bundle.Attribute("minify").Value.Equals("true", StringComparison.OrdinalIgnoreCase);
 
-            newDoc.WriteBundleRecipe().DoNotWait("Migrating bundle to new schema.");
-
-            string contents = await FileHelpers.ReadAllTextRetry(fileName);
-
-            try
-            {
-                return XDocument.Parse(contents);
-            }
-            catch (XmlException)
-            {
-                return null;
-            }
+            return await newDoc.WriteBundleRecipe();
         }
     }
 }
