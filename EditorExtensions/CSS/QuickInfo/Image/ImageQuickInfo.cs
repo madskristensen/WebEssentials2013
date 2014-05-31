@@ -175,7 +175,7 @@ namespace MadsKristensen.EditorExtensions
             source.OnDownloaded(() => size.SetText(Math.Round(source.Width) + "×" + Math.Round(source.Height)));
             if (source.IsDownloading)
             {
-                EventHandler<ExceptionEventArgs> failure = (s, e) =>
+                EventHandler<System.Windows.Media.ExceptionEventArgs> failure = (s, e) =>
                 {
                     image.Source = noPreview;
                     size.SetText("Couldn't load image: " + e.ErrorException.Message);

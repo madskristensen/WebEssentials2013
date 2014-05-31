@@ -143,6 +143,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Html.Editor.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Internal, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(DevEnvDir)\PrivateAssemblies\Microsoft.VisualStudio.Text.Internal.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.TextManager.Interop.12.0" />
     <Reference Include="Microsoft.VisualStudio.Html.Package" />
     <Reference Include="Microsoft.VisualBasic" />
@@ -313,6 +317,9 @@
     <Compile Include="CSS\Completion\Filter\HideUncommonCompletionListFilter.cs" />
     <Compile Include="CSS\Validation\Filters\ExtendCssErrorFilter.cs" />
     <Compile Include="HTML\Outlining\HtmlRegionTagger.cs" />
+    <Compile Include="HTML\Peek\HtmlPeekDefinitionSource.cs" />
+    <Compile Include="HTML\Peek\HtmlPeekItemSource.cs" />
+    <Compile Include="HTML\Peek\HtmlPeekItemProvider.cs" />
     <Compile Include="HTML\Validation\FoundationClassValidator.cs" />
     <Compile Include="HTML\Validation\FoundationColumnsValidator.cs" />
     <Compile Include="HTML\Validation\BootstrapColumnsValidator.cs" />
