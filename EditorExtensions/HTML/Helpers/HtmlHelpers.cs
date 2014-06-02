@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions.Html
         /// </summary>
         /// <param name="buffer">Any text buffer</param>
         /// <param name="position">The position in the buffer</param>
-        /// <param name="attributeNames">One or more HTMLattribute names, such as 'class', 'id', 'src' etc.</param>
+        /// <param name="attributeNames">One or more HTML attribute names, such as 'class', 'id', 'src' etc.</param>
         /// <returns>A single value matching the position in the text buffer</returns>
         public static string GetSinglePropertyValue(ITextBuffer buffer, int position, params string[] attributeNames)
         {
@@ -21,10 +21,22 @@ namespace MadsKristensen.EditorExtensions.Html
             if (document == null)
                 return null;
 
+            return GetSinglePropertyValue(document.HtmlEditorTree, position, attributeNames);
+        }
+
+        /// <summary>
+        /// Finds a single property value at a given position in the tree.
+        /// </summary>
+        /// <param name="buffer">Any HTML editor tree</param>
+        /// <param name="position">The position in the buffer</param>
+        /// <param name="attributeNames">One or more HTML attribute names, such as 'class', 'id', 'src' etc.</param>
+        /// <returns>A single value matching the position in the tree</returns>
+        public static string GetSinglePropertyValue(HtmlEditorTree tree, int position, params string[] attributeNames)
+        {            
             ElementNode element = null;
             AttributeNode attr = null;
-
-            document.HtmlEditorTree.GetPositionElement(position, out element, out attr);
+            
+            tree.GetPositionElement(position, out element, out attr);
 
             if (attr == null || !attributeNames.Contains(attr.Name, StringComparer.InvariantCultureIgnoreCase))
                 return null;

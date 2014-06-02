@@ -318,6 +318,10 @@
     <Compile Include="CSS\Validation\Filters\ExtendCssErrorFilter.cs" />
     <Compile Include="HTML\Helpers\HtmlHelpers.cs" />
     <Compile Include="HTML\Outlining\HtmlRegionTagger.cs" />
+    <Compile Include="HTML\Peek\IDs\IdPeekDefinitionItem.cs" />
+    <Compile Include="HTML\Peek\IDs\IdPeekItemProvider.cs" />
+    <Compile Include="HTML\Peek\IDs\IdPeekItemSource.cs" />
+    <Compile Include="HTML\Peek\IDs\IdPeekResultSource.cs" />
     <Compile Include="HTML\Peek\ClassNames\ClassPeekDefinitionItem.cs" />
     <Compile Include="HTML\Peek\ClassNames\ClassPeekItemSource.cs" />
     <Compile Include="HTML\Peek\ClassNames\ClassPeekItemProvider.cs" />
