@@ -20,7 +20,6 @@ namespace MadsKristensen.EditorExtensions.Html
     public class BootstrapColumnsValidator : BaseValidator
     {
         private static string _errorRowMissing = "Bootstrap: When using \"{0}\", you must also specify the class \"row\" on a parent element.";
-        private static string _errorInvalidSum = "Bootstrap: Sum of columns of type {0} must not exceed 12.";
 
         public override IList<IHtmlValidationError> ValidateElement(ElementNode element)
         {
@@ -46,50 +45,12 @@ namespace MadsKristensen.EditorExtensions.Html
                 results.AddAttributeError(element, error, HtmlValidationErrorLocation.AttributeValue, index);
             }
 
-            // Sum of columns size of a row must egal 12. 
-            var classList = elementClasses.Value.Split(' ')
-                                .Select(x => x.Trim())
-                                .Where(x => x.StartsWith("col-", StringComparison.CurrentCulture));
-            foreach (var c in classList)
-            {
-                // Find the type (size) of column
-                var columnSize = c.Replace("col-", string.Empty).Substring(0, 2);
-                var sumColumnsCurrentRow = GetSumOfColumns(element, columnSize);
-
-                if (sumColumnsCurrentRow > 12)
-                {
-                    int index = element.Attributes.IndexOf(elementClasses);
-                    var columnType = string.Format(CultureInfo.CurrentCulture, "col-{0}-*", columnSize);
-                    string error = string.Format(CultureInfo.CurrentCulture, _errorInvalidSum, columnType);
-
-                    results.AddAttributeError(element, error, HtmlValidationErrorLocation.AttributeValue, index);
-                }
-            }
-
             return results;
-        }
-
-        private static Int32 GetSumOfColumns(ElementNode element, string columnSize)
-        {
-            var columnFilter = string.Format(CultureInfo.CurrentCulture, "col-{0}-", columnSize);
-            var columnFilterOffset = string.Format(CultureInfo.CurrentCulture, "{0}offset-", columnFilter);
-
-            var sumOfColumns = element.Parent.Children
-                                .Where(x => x.HasAttribute("class"))
-                                .Where(x => x.GetAttribute("class").Value.Contains(columnFilter))
-                                .Select(x => x.GetAttribute("class").Value.Split(' '))
-                                .SelectMany(x => x)
-                                .Where(x => x.StartsWith(columnFilter, StringComparison.CurrentCulture))
-                                .Where(x => !x.Contains("push") && !x.Contains("pull"))
-                                .Sum(x => Int32.Parse(x.Replace(columnFilterOffset, string.Empty)
-                                                       .Replace(columnFilter, string.Empty),
-                                                       CultureInfo.CurrentCulture));
-
-            return sumOfColumns;
         }
 
         private static bool IsParentDivElementMissingRowClass(ElementNode element)
         {
+
             bool isRowClassPresent = false;
 
             if (element.Parent == null)
