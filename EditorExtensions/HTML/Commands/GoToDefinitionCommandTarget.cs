@@ -158,26 +158,9 @@ namespace MadsKristensen.EditorExtensions.Html
         private bool TryGetClassName(out string className)
         {
             int position = TextView.Caret.Position.BufferPosition.Position;
-            className = null;
+            className = HtmlHelpers.GetSinglePropertyValue(_tree, position, "class");
 
-            ElementNode element = null;
-            AttributeNode attr = null;
-
-            _tree.GetPositionElement(position, out element, out attr);
-
-            if (attr == null || attr.Name != "class")
-                return false;
-
-            int beginning = position - attr.ValueRangeUnquoted.Start;
-            int start = attr.Value.LastIndexOf(' ', beginning) + 1;
-            int length = attr.Value.IndexOf(' ', start) - start;
-
-            if (length < 0)
-                length = attr.ValueRangeUnquoted.Length - start;
-
-            className = attr.Value.Substring(start, length);
-
-            return true;
+            return !string.IsNullOrEmpty(className);
         }
 
         protected override bool IsEnabled()
