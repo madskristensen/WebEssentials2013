@@ -183,32 +183,5 @@ namespace WebEssentialsTests
             Assert.AreEqual(expected, compiled.Count);
             Assert.IsTrue(compiled[0].Message.Contains("col-md-8"));
         }
-
-        [TestMethod]
-        public void ErrorMsgIfMoreThanTwelveColumns()
-        {
-            BootstrapColumnsValidator validator = new BootstrapColumnsValidator();
-
-            var source = @"<div class='row'>
-                             <div class='col-md-10'>               
-                                <b>Title 1</b>
-                            </div>
-                             <div class='col-md-3'>               
-                                <b>Title 2</b>
-                            </div>
-                        </div>";
-
-            var tree = new HtmlTree(new TextStream(source));
-
-            tree.Build();
-
-            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0].Children[0]);
-
-            int expected = 1;
-
-            Assert.AreEqual(expected, compiled.Count);
-            Assert.IsTrue(compiled[0].Message.Contains("must not exceed 12"));
-            Assert.IsTrue(compiled[0].Message.Contains("col-md-*"));
-        }
     }
 }
