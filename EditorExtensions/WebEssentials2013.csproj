@@ -316,11 +316,12 @@
     <Compile Include="CSS\Completion\Filter\ColorSwatchCompletionListFilter.cs" />
     <Compile Include="CSS\Completion\Filter\HideUncommonCompletionListFilter.cs" />
     <Compile Include="CSS\Validation\Filters\ExtendCssErrorFilter.cs" />
+    <Compile Include="HTML\Helpers\HtmlHelpers.cs" />
     <Compile Include="HTML\Outlining\HtmlRegionTagger.cs" />
-    <Compile Include="HTML\Peek\HtmlPeekDefinitionSource.cs" />
-    <Compile Include="HTML\Peek\HtmlPeekItemSource.cs" />
-    <Compile Include="HTML\Peek\HtmlPeekItemProvider.cs" />
-    <Compile Include="HTML\Peek\HtmlPeekResultSource.cs" />
+    <Compile Include="HTML\Peek\ClassNames\ClassPeekDefinitionItem.cs" />
+    <Compile Include="HTML\Peek\ClassNames\ClassPeekItemSource.cs" />
+    <Compile Include="HTML\Peek\ClassNames\ClassPeekItemProvider.cs" />
+    <Compile Include="HTML\Peek\ClassNames\ClassPeekResultSource.cs" />
     <Compile Include="HTML\Validation\FoundationClassValidator.cs" />
     <Compile Include="HTML\Validation\FoundationColumnsValidator.cs" />
     <Compile Include="HTML\Validation\BootstrapColumnsValidator.cs" />

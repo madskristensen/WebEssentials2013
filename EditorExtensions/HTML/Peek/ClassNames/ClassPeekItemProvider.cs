@@ -8,21 +8,16 @@ namespace MadsKristensen.EditorExtensions.Html
 {
     [Export(typeof(IPeekableItemSourceProvider))]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
-    [Name("HTML Peekable Item Provider")]
+    [Name("HTML Class Peekable Item Provider")]
     [SupportsStandaloneFiles(false)]
-    class HtmlPeekItemProvider : IPeekableItemSourceProvider
+    class ClassPeekItemProvider : IPeekableItemSourceProvider
     {
-        private readonly IPeekResultFactory _peekResultFactory;
-
-        [ImportingConstructor]
-        public HtmlPeekItemProvider(IPeekResultFactory peekResultFactory)
-        {
-            _peekResultFactory = peekResultFactory;
-        }
+        [Import]
+        private IPeekResultFactory _peekResultFactory {get; set;}
 
         public IPeekableItemSource TryCreatePeekableItemSource(ITextBuffer textBuffer)
         {
-            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new HtmlPeekItemSource(textBuffer, _peekResultFactory));
+            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new ClassPeekItemSource(textBuffer, _peekResultFactory));
         }
     }
 }

@@ -10,11 +10,11 @@ using Microsoft.VisualStudio.Text;
 
 namespace MadsKristensen.EditorExtensions.Html
 {
-    class ResultSource : IPeekResultSource
+    class ClassResultSource : IPeekResultSource
     {
-        private readonly HtmlDefinitionPeekItem peekableItem;
+        private readonly ClassDefinitionPeekItem peekableItem;
 
-        public ResultSource(HtmlDefinitionPeekItem peekableItem)
+        public ClassResultSource(ClassDefinitionPeekItem peekableItem)
         {
             this.peekableItem = peekableItem;
         }
