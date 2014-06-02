@@ -74,14 +74,15 @@ namespace MadsKristensen.EditorExtensions.Html
 
         private string FindFile(IEnumerable<string> extensions, out int position)
         {
-            ICssParser parser = CssParserLocator.FindComponent(Mef.GetContentType(LessContentTypeDefinition.LessContentType)).CreateParser();
-
             string root = ProjectHelpers.GetProjectFolder(TextView.TextBuffer.GetFileName());
             position = -1;
+            bool isLow = false, isMedium = false;
             string result = null;
 
             foreach (string ext in extensions)
             {
+                ICssParser parser = CssParserLocator.FindComponent(Mef.GetContentType(ext.Trim('.'))).CreateParser();
+
                 foreach (string file in Directory.EnumerateFiles(root, "*" + ext, SearchOption.AllDirectories))
                 {
                     if (file.EndsWith(".min" + ext, StringComparison.OrdinalIgnoreCase) ||
@@ -92,38 +93,40 @@ namespace MadsKristensen.EditorExtensions.Html
                     string text = FileHelpers.ReadAllTextRetry(file).ConfigureAwait(false).GetAwaiter().GetResult();
                     int index = text.IndexOf("." + _className, StringComparison.Ordinal);
 
-                    if (index > -1)
+                    if (index == -1)
+                        continue;
+
+                    var css = parser.Parse(text, true);
+                    var visitor = new CssItemCollector<ClassSelector>(false);
+                    css.Accept(visitor);
+
+                    var selectors = visitor.Items.Where(c => c.ClassName.Text == _className);
+                    var high = selectors.FirstOrDefault(c => c.FindType<AtDirective>() == null && (c.Parent.NextSibling == null || c.Parent.NextSibling.Text == ","));
+
+                    if (high != null)
                     {
-                        var css = parser.Parse(text, true);
-                        var visitor = new CssItemCollector<ClassSelector>(false);
-                        css.Accept(visitor);
+                        position = high.Start;
+                        return file;
+                    }
 
-                        var selectors = visitor.Items.Where(c => c.ClassName.Text == _className);
-                        var high = selectors.FirstOrDefault(c => c.FindType<AtDirective>() == null && (c.Parent.NextSibling == null || c.Parent.NextSibling.Text == ","));
+                    var medium = selectors.FirstOrDefault(c => c.Parent.NextSibling == null || c.Parent.NextSibling.Text == ",");
 
-                        if (high != null)
-                        {
-                            position = high.Start;
-                            return file;
-                        }
+                    if (medium != null && !isMedium)
+                    {
+                        position = medium.Start;
+                        result = file;
+                        isMedium = true;
+                        continue;
+                    }
 
-                        var medium = selectors.FirstOrDefault(c => c.Parent.NextSibling == null || c.Parent.NextSibling.Text == ",");
+                    var low = selectors.FirstOrDefault();
 
-                        if (medium != null)
-                        {
-                            position = medium.Start;
-                            result = file;
-                            continue;
-                        }
-
-                        var low = selectors.FirstOrDefault();
-
-                        if (low != null)
-                        {
-                            position = low.Start;
-                            result = file;
-                            continue;
-                        }
+                    if (low != null && !isMedium && !isLow)
+                    {
+                        position = low.Start;
+                        result = file;
+                        isLow = true;
+                        continue;
                     }
                 }
             }

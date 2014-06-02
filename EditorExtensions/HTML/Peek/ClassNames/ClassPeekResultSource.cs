@@ -54,6 +54,7 @@ namespace MadsKristensen.EditorExtensions.Html
         {
             string root = ProjectHelpers.GetProjectFolder(peekableItem._textbuffer.GetFileName());
             string result = null;
+            bool isLow = false, isMedium = false;
             rule = null;
 
             foreach (string ext in extensions)
@@ -70,38 +71,39 @@ namespace MadsKristensen.EditorExtensions.Html
                     string text = FileHelpers.ReadAllTextRetry(file).ConfigureAwait(false).GetAwaiter().GetResult();
                     int index = text.IndexOf("." + className, StringComparison.Ordinal);
 
-                    if (index > -1)
+                    if (index == -1)
+                        continue;
+
+                    var css = parser.Parse(text, true);
+                    var visitor = new CssItemCollector<ClassSelector>(false);
+                    css.Accept(visitor);
+
+                    var selectors = visitor.Items.Where(c => c.ClassName.Text == className);
+                    var high = selectors.FirstOrDefault(c => c.FindType<AtDirective>() == null && (c.Parent.NextSibling == null || c.Parent.NextSibling.Text == ","));
+
+                    if (high != null)
                     {
-                        var css = parser.Parse(text, true);
-                        var visitor = new CssItemCollector<ClassSelector>(false);
-                        css.Accept(visitor);
+                        rule = high.FindType<RuleSet>();
+                        return file;
+                    }
 
-                        var selectors = visitor.Items.Where(c => c.ClassName.Text == className);
-                        var high = selectors.FirstOrDefault(c => c.FindType<AtDirective>() == null && (c.Parent.NextSibling == null || c.Parent.NextSibling.Text == ","));
+                    var medium = selectors.FirstOrDefault(c => c.Parent.NextSibling == null || c.Parent.NextSibling.Text == ",");
 
-                        if (high != null)
-                        {
-                            rule = high.FindType<RuleSet>();
-                            return file;
-                        }
+                    if (medium != null && !isMedium)
+                    {
+                        rule = medium.FindType<RuleSet>();
+                        result = file;
+                        isMedium = true;
+                        continue;
+                    }
 
-                        var medium = selectors.FirstOrDefault(c => c.Parent.NextSibling == null || c.Parent.NextSibling.Text == ",");
+                    var low = selectors.FirstOrDefault();
 
-                        if (medium != null)
-                        {
-                            rule = medium.FindType<RuleSet>();
-                            result = file;
-                            continue;
-                        }
-
-                        var low = selectors.FirstOrDefault();
-
-                        if (low != null)
-                        {
-                            rule = low.FindType<RuleSet>();
-                            result = file;
-                            continue;
-                        }
+                    if (low != null && !isLow && !isMedium)
+                    {
+                        rule = low.FindType<RuleSet>();
+                        result = file;
+                        isLow = true;
                     }
                 }
             }
