@@ -320,6 +320,7 @@
     <Compile Include="HTML\Peek\HtmlPeekDefinitionSource.cs" />
     <Compile Include="HTML\Peek\HtmlPeekItemSource.cs" />
     <Compile Include="HTML\Peek\HtmlPeekItemProvider.cs" />
+    <Compile Include="HTML\Peek\HtmlPeekResultSource.cs" />
     <Compile Include="HTML\Validation\FoundationClassValidator.cs" />
     <Compile Include="HTML\Validation\FoundationColumnsValidator.cs" />
     <Compile Include="HTML\Validation\BootstrapColumnsValidator.cs" />

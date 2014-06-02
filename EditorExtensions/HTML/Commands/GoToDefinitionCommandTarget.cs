@@ -82,9 +82,11 @@ namespace MadsKristensen.EditorExtensions.Html
 
             foreach (string ext in extensions)
             {
-                foreach (string file in Directory.GetFiles(root, "*" + ext, SearchOption.AllDirectories))
+                foreach (string file in Directory.EnumerateFiles(root, "*" + ext, SearchOption.AllDirectories))
                 {
-                    if (file.EndsWith(".min" + ext, StringComparison.OrdinalIgnoreCase))
+                    if (file.EndsWith(".min" + ext, StringComparison.OrdinalIgnoreCase) ||
+                        file.Contains("node_modules") ||
+                        file.Contains("bower_components"))
                         continue;
 
                     string text = FileHelpers.ReadAllTextRetry(file).ConfigureAwait(false).GetAwaiter().GetResult();
