@@ -70,6 +70,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
                 RemoveOptionalEndTags = false,
                 AttributeQuotesRemovalMode = HtmlAttributeQuotesRemovalMode.KeepQuotes,
                 RemoveRedundantAttributes = false,
+                EmptyTagRenderMode = HtmlEmptyTagRenderMode.Slash,
             };
 
             var minifier = new HtmlMinifier(settings);
