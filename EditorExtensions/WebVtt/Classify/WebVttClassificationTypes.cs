@@ -23,9 +23,6 @@ namespace MadsKristensen.EditorExtensions.WebVtt
 
         [Export, Name(WebVttClassificationTypes.Time)]
         public static ClassificationTypeDefinition WebVttClassificationTime { get; set; }
-
-        [Export, Name(WebVttClassificationTypes.Comment)]
-        public static ClassificationTypeDefinition WebVttClassificationComment { get; set; }
     }
 
     [Export(typeof(EditorFormatDefinition))]
@@ -84,21 +81,6 @@ namespace MadsKristensen.EditorExtensions.WebVtt
         {
             ForegroundColor = System.Windows.Media.Colors.DarkOrange;
             DisplayName = "WebVTT Time";
-        }
-    }
-
-    [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = WebVttClassificationTypes.Comment)]
-    [Name(WebVttClassificationTypes.Comment)]
-    [Order(After = Priority.Default)]
-    [UserVisible(true)]
-    internal sealed class WebVttCommentFormatDefinition : ClassificationFormatDefinition
-    {
-        public WebVttCommentFormatDefinition()
-        {
-            ForegroundColor = System.Windows.Media.Colors.Green;
-            IsItalic = true;
-            DisplayName = "WebVTT Comment";
         }
     }
 }

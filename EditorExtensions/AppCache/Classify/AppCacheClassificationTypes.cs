@@ -11,9 +11,6 @@ namespace MadsKristensen.EditorExtensions.AppCache
 
         [Export, Name(AppCacheClassificationTypes.Keywords)]
         public static ClassificationTypeDefinition AppCacheClassificationMarkup { get; set; }
-
-        [Export, Name(AppCacheClassificationTypes.Comment)]
-        public static ClassificationTypeDefinition AppCacheClassificationComment { get; set; }
     }
 
     [Export(typeof(EditorFormatDefinition))]

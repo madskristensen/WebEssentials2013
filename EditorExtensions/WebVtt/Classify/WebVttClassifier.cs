@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 
@@ -19,7 +20,7 @@ namespace MadsKristensen.EditorExtensions.WebVtt
             _name = registry.GetClassificationType(WebVttClassificationTypes.Name);
             _statement = registry.GetClassificationType(WebVttClassificationTypes.Statement);
             _time = registry.GetClassificationType(WebVttClassificationTypes.Time);
-            _comment = registry.GetClassificationType(WebVttClassificationTypes.Comment);
+            _comment = registry.GetClassificationType(PredefinedClassificationTypeNames.Comment);
         }
 
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)

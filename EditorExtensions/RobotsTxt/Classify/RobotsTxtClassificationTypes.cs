@@ -11,9 +11,6 @@ namespace MadsKristensen.EditorExtensions
 
         [Export, Name(RobotsTxtClassificationTypes.Keyword)]
         public static ClassificationTypeDefinition RobotsTxtClassificationBold { get; set; }
-
-        [Export, Name(RobotsTxtClassificationTypes.Comment)]
-        public static ClassificationTypeDefinition RobotsTxtClassificationHeader { get; set; }
     }
 
     [Export(typeof(EditorFormatDefinition))]
