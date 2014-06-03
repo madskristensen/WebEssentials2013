@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 
@@ -17,7 +18,7 @@ namespace MadsKristensen.EditorExtensions.RobotsTxt
         public RobotsTxtClassifier(IClassificationTypeRegistryService registry)
         {
             _keyword = registry.GetClassificationType(RobotsTxtClassificationTypes.Keyword);
-            _comment = registry.GetClassificationType(RobotsTxtClassificationTypes.Comment);
+            _comment = registry.GetClassificationType(PredefinedClassificationTypeNames.Comment);
         }
 
         public IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span)

@@ -29,19 +29,4 @@ namespace MadsKristensen.EditorExtensions
             DisplayName = "Robots.txt Keyword";
         }
     }
-
-    [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = RobotsTxtClassificationTypes.Comment)]
-    [Name(RobotsTxtClassificationTypes.Comment)]
-    [Order(After = Priority.Default)]
-    [UserVisible(true)]
-    internal sealed class RobotsTxtHeaderFormatDefinition : ClassificationFormatDefinition
-    {
-        public RobotsTxtHeaderFormatDefinition()
-        {
-            ForegroundColor = System.Windows.Media.Colors.Green;
-            IsItalic = true;
-            DisplayName = "Robots.txt Comment";
-        }
-    }
 }

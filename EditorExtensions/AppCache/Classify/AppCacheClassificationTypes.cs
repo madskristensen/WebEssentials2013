@@ -29,19 +29,4 @@ namespace MadsKristensen.EditorExtensions.AppCache
             DisplayName = "AppCache Keyword";
         }
     }
-
-    [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = AppCacheClassificationTypes.Comment)]
-    [Name(AppCacheClassificationTypes.Comment)]
-    [Order(After = Priority.Default)]
-    [UserVisible(true)]
-    internal sealed class AppCacheCommentFormatDefinition : ClassificationFormatDefinition
-    {
-        public AppCacheCommentFormatDefinition()
-        {
-            ForegroundColor = System.Windows.Media.Colors.Green;
-            IsItalic = true;
-            DisplayName = "AppCache Comment";
-        }
-    }
 }
