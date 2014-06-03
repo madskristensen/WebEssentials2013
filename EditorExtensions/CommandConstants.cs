@@ -46,6 +46,7 @@ namespace MadsKristensen.EditorExtensions
         MinifyJs = 0x1052,
         MinifyHtml = 0x1058,
         MinifySelection = 0x1053,
+        UnMinifySelection = 0x1059,
 
         SelectBrowsers = 0x1055,
     }

@@ -106,6 +106,7 @@ namespace MadsKristensen.EditorExtensions
                 ReferenceJsMenu referenceJsMenu = new ReferenceJsMenu(mcs);
                 CompressImageMenu compressImageMenu = new CompressImageMenu(mcs);
                 SpriteImageMenu spriteImageMenu = new SpriteImageMenu(DTE, mcs);
+                UnminifyMenu unMinifyMenu = new UnminifyMenu(DTE, mcs);
                 //ChainCompilationMenu chainCompilationMenu = new ChainCompilationMenu(DTE, mcs);
 
                 HandleMenuVisibility(mcs);
@@ -128,6 +129,7 @@ namespace MadsKristensen.EditorExtensions
                 transform.SetupCommands();
                 compressImageMenu.SetupCommands();
                 spriteImageMenu.SetupCommands();
+                unMinifyMenu.SetupCommands();
                 //chainCompilationMenu.SetupCommands();
             }
 

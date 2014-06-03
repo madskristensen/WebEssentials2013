@@ -346,6 +346,15 @@
         </Strings>
       </Button>
 
+      <Button guid="guidMinifyCmdSet" id="cmdUnMinifySelection" priority="0x0104" type="Button">
+        <Parent guid="guidCssCmdSet" id="CssMinifyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <CommandName>UnMinifySelection</CommandName>
+          <ButtonText>Un-Minify document</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guidExtractCmdSet" id="cmdExtractSelection" priority="0x0105" type="Button">
         <Parent guid="guidExtractCmdSet" id="MyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -904,6 +913,7 @@
       <IDSymbol name="cmdMinifyCss" value="0x1051" />
       <IDSymbol name="cmdMinifyJs" value="0x1052" />
       <IDSymbol name="cmdMinifySelection" value="0x1053" />
+      <IDSymbol name="cmdUnMinifySelection" value="0x1059" />
       <IDSymbol name="cmdSelectBrowsers" value="0x1055" />
       <IDSymbol name="cmdMinifyHtml" value="0x1058" />
     </GuidSymbol>
