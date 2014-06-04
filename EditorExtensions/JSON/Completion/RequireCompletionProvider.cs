@@ -43,10 +43,8 @@ namespace MadsKristensen.EditorExtensions.JSON
             child.Accept(visitor);
 
             foreach (var item in visitor.Items)
-            {                
-                yield return new JSONCompletionEntry(item.Name.Text.Trim('"'), item.Name.Text, null,
-                GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic),
-                "iconAutomationText", true, context.Session as ICompletionSession);
+            {
+                yield return new SimpleCompletionEntry(item.Name.Text.Trim('"'), context.Session);
             }            
         }
     }

@@ -43,10 +43,8 @@ namespace MadsKristensen.EditorExtensions.JSON
             {
                 string text = "#/definitions/" + prop.Name.Text.Trim('"');
 
-                yield return new JSONCompletionEntry(text, "\"" + text + "\"", null,
-                GlyphService.GetGlyph(StandardGlyphGroup.GlyphReference, StandardGlyphItem.GlyphItemPublic),
-                "iconAutomationText", true, context.Session as ICompletionSession);
-            }
+                yield return new SimpleCompletionEntry(text, StandardGlyphGroup.GlyphReference, context.Session);
+             }
         }
     }
 }

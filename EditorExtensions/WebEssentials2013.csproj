@@ -354,6 +354,7 @@
     <Compile Include="JSON\Completion\RequireCompletionProvider.cs" />
     <Compile Include="JSON\Completion\RefValueCompletionProvider.cs" />
     <Compile Include="JSON\Completion\SchemaValueCompletionProvider.cs" />
+    <Compile Include="JSON\Completion\SimpleCompletionEntry.cs" />
     <Compile Include="JSON\Helpers\JsonTreeVisitor.cs" />
     <Compile Include="JSON\Schemas\SchemaExporter.cs" />
     <Compile Include="JSON\Validation\JsonErrorTag.cs" />

@@ -28,9 +28,7 @@ namespace MadsKristensen.EditorExtensions.JSON
 
             foreach (var schema in VsJSONSchemaStore.SchemaStore.SchemaCache.Entries)
             {
-                yield return new JSONCompletionEntry(schema.OriginalPath, "\"" + schema.OriginalPath + "\"", null,
-                GlyphService.GetGlyph(StandardGlyphGroup.GlyphReference, StandardGlyphItem.GlyphItemPublic),
-                "iconAutomationText", true, context.Session as ICompletionSession);
+                yield return new SimpleCompletionEntry(schema.OriginalPath, StandardGlyphGroup.GlyphReference, context.Session);
             }
         }
     }

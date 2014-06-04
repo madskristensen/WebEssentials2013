@@ -35,9 +35,7 @@ namespace MadsKristensen.EditorExtensions.JSON
 
             foreach (string prop in _props.Keys)
             {
-                yield return new JSONCompletionEntry(prop, "\"" + prop + "\"", _props[prop],
-                GlyphService.GetGlyph(StandardGlyphGroup.GlyphReference, StandardGlyphItem.GlyphItemPublic),
-                "iconAutomationText", true, context.Session as ICompletionSession);
+                yield return new SimpleCompletionEntry(prop, _props[prop], StandardGlyphGroup.GlyphReference, context.Session);
             }
         }
     }
