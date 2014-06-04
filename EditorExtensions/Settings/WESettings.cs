@@ -246,7 +246,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Category("Bundle")]
         [DisplayName("Minify files on making bundle")]
         [Description("Make minified version of the file when bundle is generated. The minified file would be updated if the auto-minfied option is enabled.")]
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool MakeMinified { get; set; }
 
         [Category("Bundle")]
