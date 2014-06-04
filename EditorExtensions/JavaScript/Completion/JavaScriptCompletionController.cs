@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using Intel = Microsoft.VisualStudio.Language.Intellisense;
@@ -128,7 +129,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
         [SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if (pguidCmdGroup != VSConstants.VSStd2K)
+            if (pguidCmdGroup != VSConstants.VSStd2K || !IsValidTextBuffer())
                 return Next.Exec(pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 
             // This filter should only have do anything inside a string literal, or when opening a string literal.
@@ -248,6 +249,31 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             }
 
             return hresult;
+        }
+
+        private bool IsValidTextBuffer()
+        {
+            if (TextView.TextBuffer.ContentType.IsOfType("javascript"))
+                return true;
+
+            var projection = TextView.TextBuffer as IProjectionBuffer;
+
+            if (projection != null)
+            {
+                var snapshotPoint = TextView.Caret.Position.BufferPosition;
+
+                var buffers = projection.SourceBuffers.Where(s => s.ContentType.IsOfType("htmlx"));
+
+                foreach (ITextBuffer buffer in buffers)
+                {
+                    SnapshotPoint? point = TextView.BufferGraph.MapDownToBuffer(snapshotPoint, PointTrackingMode.Negative, buffer, PositionAffinity.Predecessor);
+
+                    if (point.HasValue)
+                        return false;
+                }
+            }
+
+            return true;
         }
 
         private void Filter()
