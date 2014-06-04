@@ -282,7 +282,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Category("Minification")]
         [DisplayName("Minify files on save")]
         [Description("Update any .min.js file when saving the corresponding .js file. To create a .min.js file, right-click a .js file.")]
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool AutoMinify { get; set; }
 
         [Category("Minification")]
@@ -309,7 +309,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Category("Bundle")]
         [DisplayName("Minify files on making bundle")]
         [Description("Make minified version of the file when bundle is generated. The minified file would be updated if the auto-minfied option is enabled.")]
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool MakeMinified { get; set; }
 
         [Category("Bundle")]
@@ -333,7 +333,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Category("Minification")]
         [DisplayName("Minify files on save")]
         [Description("Update any .min.css file when saving the corresponding .css file. To create a .min.css file, right-click a .css file. This also applies to compiled LESS and SASS files.")]
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool AutoMinify { get; set; }
 
         [Category("Minification")]
@@ -407,7 +407,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Category("Bundle")]
         [DisplayName("Minify files on making bundle")]
         [Description("Make minified version of the file when bundle is generated. The minified file would be updated if the auto-minfied option is enabled.")]
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool MakeMinified { get; set; }
 
         [Category("Bundle")]
