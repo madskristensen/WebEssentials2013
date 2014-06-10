@@ -32,13 +32,13 @@ namespace MadsKristensen.EditorExtensions.Html
         /// <param name="attributeNames">One or more HTML attribute names, such as 'class', 'id', 'src' etc.</param>
         /// <returns>A single value matching the position in the tree</returns>
         public static string GetSinglePropertyValue(HtmlEditorTree tree, int position, params string[] attributeNames)
-        {            
+        {
             ElementNode element = null;
             AttributeNode attr = null;
-            
+
             tree.GetPositionElement(position, out element, out attr);
 
-            if (attr == null || !attributeNames.Contains(attr.Name, StringComparer.InvariantCultureIgnoreCase))
+            if (attr == null || !attributeNames.Contains(attr.Name, StringComparer.OrdinalIgnoreCase))
                 return null;
 
             int beginning = position - attr.ValueRangeUnquoted.Start;

@@ -35,19 +35,20 @@ namespace MadsKristensen.EditorExtensions.Html
                 return;
             }
 
-            var displayInfo = new PeekResultDisplayInfo(label: peekableItem._className, labelTooltip: file, title: Path.GetFileName(file), titleTooltip: file);
+            using (var displayInfo = new PeekResultDisplayInfo(label: peekableItem._className, labelTooltip: file, title: Path.GetFileName(file), titleTooltip: file))
+            {
+                var result = peekableItem._peekResultFactory.Create
+                (
+                    displayInfo,
+                    file,
+                    new Span(rule.Start, rule.Length),
+                    rule.Start,
+                    false
+                );
 
-            var result = peekableItem._peekResultFactory.Create
-            (
-                displayInfo,
-                file,
-                new Span(rule.Start, rule.Length),
-                rule.Start,
-                false
-            );
-
-            resultCollection.Add(result);
-            callback.ReportProgress(1);
+                resultCollection.Add(result);
+                callback.ReportProgress(1);
+            }
         }
 
         private string FindRuleSetInFile(IEnumerable<string> extensions, string className, out RuleSet rule)

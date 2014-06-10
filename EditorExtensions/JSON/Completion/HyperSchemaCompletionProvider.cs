@@ -5,7 +5,6 @@ using Microsoft.JSON.Editor.Completion;
 using Microsoft.JSON.Editor.Completion.Def;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions.JSON
 {

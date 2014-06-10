@@ -4,9 +4,7 @@ using System.Linq;
 using Microsoft.JSON.Core.Parser;
 using Microsoft.JSON.Editor.Completion;
 using Microsoft.JSON.Editor.Completion.Def;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions.JSON
 {
@@ -25,7 +23,7 @@ namespace MadsKristensen.EditorExtensions.JSON
 
             if (req == null || req.Name == null || req.Name.Text != "\"required\"")
                 yield break;
-                        
+
             var propVisitor = new JSONItemCollector<JSONMember>();
             req.Parent.Accept(propVisitor);
 
@@ -45,7 +43,7 @@ namespace MadsKristensen.EditorExtensions.JSON
             foreach (var item in visitor.Items)
             {
                 yield return new SimpleCompletionEntry(item.Name.Text.Trim('"'), context.Session);
-            }            
+            }
         }
     }
 }
