@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions
             if (updatedFileContent == null)
                 return content;
 
-            await FileHelpers.WriteAllTextRetry(mapFileName, updatedFileContent);
+            await FileHelpers.WriteAllTextRetry(mapFileName, updatedFileContent, false);
 
             if (!GenerateSourceMap)
                 return _sourceMapInCss.Replace(content, string.Empty);
