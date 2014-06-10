@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using Microsoft.Html.Core;
-using Microsoft.Html.Editor;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
@@ -32,7 +30,6 @@ namespace MadsKristensen.EditorExtensions.Html
         }
 
         public void Dispose()
-        {
-        }
+        { }
     }
 }

@@ -375,14 +375,13 @@ namespace MadsKristensen.EditorExtensions
         /// </summary>
         /// <param name="fileName">The file to open for reading.</param>
         /// <param name="contents">The string to write to the file.</param>
-        public async static Task WriteAllTextRetry(string fileName, string contents)
+        public async static Task WriteAllTextRetry(string fileName, string contents, bool withBOM = true)
         {
             int retryCount = 500;
-            UTF8Encoding utf8Encoding = new UTF8Encoding(false);
 
             try
             {
-                await Task.Run(() => File.WriteAllText(fileName, contents, utf8Encoding))
+                await Task.Run(() => File.WriteAllText(fileName, contents, new UTF8Encoding(withBOM)))
                      .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount));
             }
             catch (IOException)

@@ -1,27 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Design;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using EnvDTE80;
-using MadsKristensen.EditorExtensions.Optimization.Minification;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 
 namespace MadsKristensen.EditorExtensions.JavaScript
 {
     internal class UnminifyMenu
     {
-        private DTE2 _dte;
         private OleMenuCommandService _mcs;
         private ITextBuffer _buffer;
 
-        public UnminifyMenu(DTE2 dte, OleMenuCommandService mcs)
+        public UnminifyMenu(OleMenuCommandService mcs)
         {
-            _dte = dte;
             _mcs = mcs;
         }
 
@@ -36,7 +28,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
         void menuCommand_BeforeQueryStatus(object sender, System.EventArgs e)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
-            _buffer  = ProjectHelpers.GetCurentTextBuffer();
+            _buffer = ProjectHelpers.GetCurentTextBuffer();
 
             menuCommand.Enabled = _buffer != null && _buffer.ContentType.IsOfType("javascript");
         }

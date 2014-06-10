@@ -86,6 +86,7 @@
       <Acronym>XHTML</Acronym>
       <Acronym>JSON</Acronym>
       <Acronym>JSONLD</Acronym>
+      <Acronym>BOM</Acronym>
     </CasingExceptions>
   </Acronyms>
 </Dictionary>

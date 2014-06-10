@@ -24,17 +24,17 @@ namespace MadsKristensen.EditorExtensions.Scss
 
         protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
-            string outputStyle = WESettings.Instance.Scss.OutputStyle.ToString();
+            string outputStyle = WESettings.Instance.Scss.OutputStyle.ToString().ToLowerInvariant();
 
             // Source maps would be generated in "ALL" cases (regardless of the settings).
             // If the option in settings is disabled, we will delete the map file once the
             // B64VLQ values are extracted.
             return string.Format(CultureInfo.CurrentCulture,
-                   "--source-map \"{0}\" --output-style={3} \"{1}\" --output \"{2}\"",
+                   "--source-map \"{0}\" --output-style={1} \"{2}\" --output \"{3}\"",
                    mapFileName,
+                   outputStyle,
                    sourceFileName,
-                   targetFileName,
-                   outputStyle);
+                   targetFileName);
         }
 
         //https://github.com/hcatlin/libsass/issues/242

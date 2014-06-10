@@ -509,22 +509,19 @@ namespace MadsKristensen.EditorExtensions.Settings
     public sealed class ScssSettings : ChainableCompilationSettings<ScssSettings>
     {
 
-        public enum OutputStyles
+        public enum OutputFormat
         {
-            nested = 0,
-            expanded = 1,
-            compact = 2,
-            compressed = 3
+            Expanded,
+            Nested,
+            Compact,
+            Compressed
         }
 
-        // Default value is forces to 'expanded' even if the default value 
-        // for the tool is 'nested' to not change the current behavior of 
-        // WebEssentials that used this value before it has configurable. 
         [Category("Compilation")]
         [DisplayName("Output Style")]
-        [Description("CSS output style")]
-        [DefaultValue(1)]
-        public OutputStyles OutputStyle { get; set; }
+        [Description("CSS output style. See libsass documentation for more details.")]
+        [DefaultValue(0)]
+        public OutputFormat OutputStyle { get; set; }
     }
 
     public sealed class CoffeeScriptSettings : CompilationSettings<CoffeeScriptSettings>, ILinterSettings
