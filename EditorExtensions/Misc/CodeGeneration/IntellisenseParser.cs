@@ -55,7 +55,6 @@ namespace MadsKristensen.EditorExtensions
 
             return new HashSet<IntellisenseObject>(list);
         }
-
         private static void ProcessElement(CodeElement element, List<IntellisenseObject> list, HashSet<CodeClass> underProcess)
         {
             if (element.Kind == vsCMElement.vsCMElementEnum)
@@ -229,10 +228,16 @@ namespace MadsKristensen.EditorExtensions
         {
             var isArray = codeTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefArray;
             var isCollection = codeTypeRef.AsString.StartsWith("System.Collections", StringComparison.Ordinal);
+            var isDictionary = false;
 
             var effectiveTypeRef = codeTypeRef;
             if (isArray && codeTypeRef.ElementType != null) effectiveTypeRef = effectiveTypeRef.ElementType;
             else if (isCollection) effectiveTypeRef = TryToGuessGenericArgument(rootElement, effectiveTypeRef);
+
+            if (isCollection)
+            {
+                isDictionary = codeTypeRef.AsString.StartsWith("System.Collections.Generic.Dictionary", StringComparison.Ordinal);
+            }
 
             var codeClass = effectiveTypeRef.CodeType as CodeClass2;
             var codeEnum = effectiveTypeRef.CodeType as CodeEnum;
@@ -240,7 +245,8 @@ namespace MadsKristensen.EditorExtensions
 
             var result = new IntellisenseType
             {
-                IsArray = isArray || isCollection,
+                IsArray = !isDictionary && (isArray || isCollection),
+                IsDictionary = isDictionary,
                 CodeName = effectiveTypeRef.AsString,
                 ClientSideReferenceName =
                     effectiveTypeRef.TypeKind == vsCMTypeRef.vsCMTypeRefCodeType &&

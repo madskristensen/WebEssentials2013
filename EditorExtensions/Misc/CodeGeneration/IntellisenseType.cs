@@ -15,6 +15,8 @@ namespace MadsKristensen.EditorExtensions
         /// </summary>
         public bool IsArray { get; set; }
 
+        public bool IsDictionary { get; set; }
+
         /// <summary>
         /// If this type is itself part of a source code file that has a .d.ts definitions file attached,
         /// this property will contain the full (namespace-qualified) client-side name of that type.
@@ -35,12 +37,16 @@ namespace MadsKristensen.EditorExtensions
 
         public string JavaScriptName
         {
-            get { return GetTargetName(true); }
+            get { return GetTargetName(this.CodeName, true); }
         }
 
         public string TypeScriptName
         {
-            get { return GetTargetName(false); }
+            get
+            {
+                if (IsDictionary) return GetKVPTypes();
+                return GetTargetName(this.CodeName, false);
+            }
         }
 
         public string JavaScripLiteral
@@ -68,9 +74,9 @@ namespace MadsKristensen.EditorExtensions
         }
 
 
-        private string GetTargetName(bool js)
+        private string GetTargetName(string codeName, bool js)
         {
-            var t = CodeName.ToLowerInvariant().TrimEnd('?');
+            var t = codeName.ToLowerInvariant().TrimEnd('?');
             switch (t)
             {
                 case "int16":
@@ -98,13 +104,28 @@ namespace MadsKristensen.EditorExtensions
                 case "boolean":
                     return js ? "Boolean" : "boolean";
             }
-
             return js ? "Object" : GetComplexTypeScriptName();
         }
 
         private string GetComplexTypeScriptName()
         {
             return ClientSideReferenceName ?? "any";
+        }
+
+        private string GetKVPTypes()
+        {
+            var type = CodeName.ToLowerInvariant().TrimEnd('?');
+            var types = type.Split('<', '>')[1].Split(',');
+            string keyType = GetTargetName(types[0].Trim(), false);
+
+            if(keyType != "string" || keyType != "number")
+            { // only string or number are allowed for keys
+                keyType = "string";
+            }
+
+            string valueType = GetTargetName(types[1].Trim(), false);
+
+            return string.Format("{{ [index: {0}]: {1} }}", keyType, valueType);
         }
     }
 }
