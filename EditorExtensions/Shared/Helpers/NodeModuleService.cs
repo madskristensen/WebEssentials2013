@@ -107,6 +107,10 @@ namespace MadsKristensen.EditorExtensions
         ///<remarks>The modules will be sorted by depth (innermost modules first; mirroring require()'s search order), then alphabetically.</remarks>
         public static IEnumerable<string> GetAvailableModules(string directory)
         {
+            // This null check is for Node.js projects (NTVS)
+            if (string.IsNullOrEmpty(directory))
+                return Enumerable.Empty<string>();
+
             var nmDir = Path.Combine(directory, "node_modules");
             IEnumerable<string> ourModules;
             if (Directory.Exists(nmDir) && Path.GetFileName(directory) != "node_modules")   // don't search in node_modules/node_modules
