@@ -67,6 +67,8 @@
       <Word>tt</Word>
       <Word>Ls</Word>
       <Word>Lsc</Word>
+      <Word>Autoprefix</Word>
+      <Word>Autoprefixer</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>

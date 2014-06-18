@@ -3,7 +3,9 @@ using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using MadsKristensen.EditorExtensions.Autoprefixer;
 using MadsKristensen.EditorExtensions.Helpers;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
 using Newtonsoft.Json.Linq;
 
@@ -19,6 +21,16 @@ namespace MadsKristensen.EditorExtensions
             resultSource = await UpdateSourceMapUrls(resultSource, targetFileName, mapFileName);
 
             var message = ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.";
+
+            if (WESettings.Instance.Css.Autoprefix)
+            {
+                await FileHelpers.WriteAllTextRetry(targetFileName, resultSource);
+                var autoprefixResult = await CssAutoprefixer.AutoprefixFile(sourceFileName, targetFileName, mapFileName);
+                if (autoprefixResult != null)
+                {
+                    resultSource = await UpdateSourceMapUrls(autoprefixResult, targetFileName, mapFileName);
+                }
+            }
 
             // If the caller wants us to renormalize URLs to a different filename, do so.
             if (targetFileName != null && Path.GetDirectoryName(targetFileName) != Path.GetDirectoryName(sourceFileName)
@@ -42,7 +54,6 @@ namespace MadsKristensen.EditorExtensions
 
             return resultSource;
         }
-
 
         private async Task<string> UpdateSourceMapUrls(string content, string compiledFileName, string mapFileName)
         {
