@@ -44,7 +44,14 @@ namespace MadsKristensen.EditorExtensions
                 _watchedFiles[bundleFile].Add(fileName);
             }
 
-            _watcher.Changed += async (s, e) => await updateBundle(bundleFile, false);
+            _watcher.Changed += async (s, e) =>
+            {
+                _watcher.EnableRaisingEvents = false;
+
+                await updateBundle(bundleFile, false);
+
+                _watcher.EnableRaisingEvents = true;
+            };
 
             _watcher.EnableRaisingEvents = true;
         }

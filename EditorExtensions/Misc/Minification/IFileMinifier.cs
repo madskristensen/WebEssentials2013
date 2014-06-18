@@ -148,9 +148,10 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         private async static Task<bool> MinifyFileWithSourceMap(string file, string minFile)
         {
             string mapPath = minFile + ".map";
+            StringBuilder builder = new StringBuilder();
             ProjectHelpers.CheckOutFileFromSourceControl(mapPath);
 
-            using (TextWriter writer = new StreamWriter(mapPath, false, new UTF8Encoding(false)))
+            using (TextWriter writer = new StringWriter(builder))
             using (V3SourceMap sourceMap = new V3SourceMap(writer))
             {
                 var settings = CreateSettings();
@@ -159,6 +160,9 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
 
                 // This fails when debugger is attached. Bug raised with Ron Logan
                 bool result = await MinifyFile(file, minFile, settings);
+
+                await FileHelpers.WriteAllTextRetry(mapPath, builder.ToString(), false);
+
                 ProjectHelpers.AddFileToProject(minFile, mapPath);
 
                 return result;
