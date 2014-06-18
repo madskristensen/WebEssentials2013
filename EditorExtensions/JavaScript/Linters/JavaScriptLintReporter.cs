@@ -45,10 +45,17 @@ namespace MadsKristensen.EditorExtensions.JavaScript
 
             if (item != null)
             {
-                // Ignore files nested under other files such as bundle or TypeScript output
-                ProjectItem parent = item.Collection.Parent as ProjectItem;
-                if (parent != null && !Directory.Exists(parent.FileNames[1]) || File.Exists(item.FileNames[1] + ".bundle"))
-                    return true;
+                try
+                {
+                    // Ignore files nested under other files such as bundle or TypeScript output
+                    ProjectItem parent = item.Collection.Parent as ProjectItem;
+                    if (parent != null && !Directory.Exists(parent.FileNames[1]) || File.Exists(item.FileNames[1] + ".bundle"))
+                        return true;
+                }
+                catch
+                {
+                    // Some project types such as node.js doesn't have correct implementations of item.Collection and will throw.
+                }
             }
 
             string name = Path.GetFileName(file);
