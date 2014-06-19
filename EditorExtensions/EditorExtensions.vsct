@@ -327,14 +327,14 @@
         </Strings>
       </Button>
 
-      <Button guid="guidCssCmdSet" id="cmdidCssSortProperties" priority="0x0103" type="Button">
+      <!--<Button guid="guidCssCmdSet" id="cmdidCssSortProperties" priority="0x0103" type="Button">
         <Parent guid="guidCssCmdSet" id="CssSubMenuGroup" />
         <Icon guid="guidNumbers" id="pic4"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Sort All Properties</ButtonText>
         </Strings>
-      </Button>
+      </Button>-->
 
       <Button guid="guidMinifyCmdSet" id="cmdMinifySelection" priority="0x0104" type="Button">
         <Parent guid="guidCssCmdSet" id="CssMinifyMenuGroup" />
