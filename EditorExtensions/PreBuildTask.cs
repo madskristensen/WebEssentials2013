@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Helpers;
@@ -129,8 +130,22 @@ namespace MadsKristensen.EditorExtensions
 
             FlattenNodeModules(@"resources\nodejs\tools");
 
+            // Fix node-sass-middleware require:
+            FixRequired();
+
             return true;
         }
+
+        private void FixRequired()
+        {
+            string requiredFile = @"resources\nodejs\tools\node_modules\node-sass-middleware\middleware.js";
+            string text = File.ReadAllText(requiredFile);
+
+            text = Regex.Replace(text, @"require\(\'node-sass\'\)", @"require('../node-sass/bin/node-sass')");
+
+            File.WriteAllText(requiredFile, text);
+        }
+
 
         /// <summary>
         /// Due to the way node_modues work, the directory depth can get very deep and go beyond MAX_PATH (260 chars). 
