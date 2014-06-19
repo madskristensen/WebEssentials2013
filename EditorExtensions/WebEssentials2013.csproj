@@ -404,7 +404,6 @@
     <Compile Include="Markdown\Classify\MarkdownClassificationTypes.cs" />
     <Compile Include="Markdown\Classify\MarkdownClassifier.cs" />
     <Compile Include="Markdown\ContentType\MarkdownContentTypeDefinition.cs" />
-    <Compile Include="CSS\Classify\ModernizrClassifier.cs" />
     <Compile Include="Svg\ContentType\SvgContentTypeDefinition.cs" />
     <Compile Include="AppCache\Commands\AppCacheCreationListener.cs" />
     <Compile Include="CoffeeScript\Commands\CoffeeScriptCreationListener.cs" />
@@ -703,7 +702,6 @@
     <Compile Include="CSS\BrowserSelector\BrowserSchemaFilter.cs" />
     <Compile Include="CSS\Schemas\ColorPaletteProvider.cs" />
     <Compile Include="CSS\Schemas\CssSchemaUpdater.cs" />
-    <Compile Include="CSS\Schemas\ModernizrProvider.cs" />
     <Compile Include="CSS\Schemas\XmlColorPaletteProvider.cs" />
     <Compile Include="LESS\SmartTags\LessExtractVariableSmartTagAction.cs" />
     <Compile Include="CSS\SmartTags\Actions\SortSmartTagAction.cs" />
