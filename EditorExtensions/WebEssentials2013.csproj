@@ -1055,7 +1055,7 @@
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <!-- Explicitly include JSON files that are actually needed at runtime -->
-      <Content Include="Resources\nodejs\tools\node_modules\htmlparser2\lib\entities\**; Resources\nodejs\tools\node_modules\jshint\package.json; Resources\nodejs\tools\node_modules\resolve\lib\core.json; Resources\nodejs\tools\node_modules\escodegen\package.json;">
+      <Content Include="Resources\nodejs\tools\node_modules\htmlparser2\lib\entities\**; Resources\nodejs\tools\node_modules\jshint\package.json; Resources\nodejs\tools\node_modules\resolve\lib\core.json; Resources\nodejs\tools\node_modules\escodegen\package.json;  Resources\nodejs\tools\node_modules\caniuse-db\**;">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <!-- Explicitly include files that are needed for JsHint -->
