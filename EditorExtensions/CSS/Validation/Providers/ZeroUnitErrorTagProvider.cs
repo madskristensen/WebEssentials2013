@@ -20,7 +20,7 @@ namespace MadsKristensen.EditorExtensions.Css
             NumericalValue number = (NumericalValue)item;
             UnitValue unit = number as UnitValue;
 
-            if (unit == null || context == null)
+            if (unit == null || context == null || item.FindType<Declaration>() == null)
                 return ItemCheckResult.Continue;
 
             // The 2nd and 3rd arguments to hsl() require units even when zero
