@@ -541,7 +541,7 @@ namespace MadsKristensen.EditorExtensions.Settings
 		[DisplayName("Number Precision")]
 		[Description("Used to determine how many digits after the decimal will be allowed.")]
 		[DefaultValue(5)]
-		public int NumberPrecision { get; set; }
+        public int NumberPrecision { get; set; }
     }
 
     public sealed class CoffeeScriptSettings : CompilationSettings<CoffeeScriptSettings>, ILinterSettings

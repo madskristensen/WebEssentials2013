@@ -24,8 +24,8 @@ namespace MadsKristensen.EditorExtensions.Scss
 
         protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
-			string outputStyle = WESettings.Instance.Scss.OutputStyle.ToString().ToLowerInvariant();
-			string numberPrecision = WESettings.Instance.Scss.NumberPrecision.ToString().ToLowerInvariant();
+            string outputStyle = WESettings.Instance.Scss.OutputStyle.ToString().ToLowerInvariant();
+            string numberPrecision = WESettings.Instance.Scss.NumberPrecision.ToString().ToLowerInvariant();
 
             // Source maps would be generated in "ALL" cases (regardless of the settings).
             // If the option in settings is disabled, we will delete the map file once the
