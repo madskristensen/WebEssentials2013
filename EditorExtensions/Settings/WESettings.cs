@@ -536,11 +536,11 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("CSS output style. See libsass documentation for more details.")]
         [DefaultValue(0)]
         public OutputFormat OutputStyle { get; set; }
-
-		[Category("Compilation")]
-		[DisplayName("Number Precision")]
-		[Description("Used to determine how many digits after the decimal will be allowed.")]
-		[DefaultValue(5)]
+        
+        [Category("Compilation")]
+        [DisplayName("Number Precision")]
+        [Description("Used to determine how many digits after the decimal will be allowed.")]
+        [DefaultValue(5)]
         public int NumberPrecision { get; set; }
     }
 
