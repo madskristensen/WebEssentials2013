@@ -40,7 +40,8 @@ namespace MadsKristensen.EditorExtensions.Settings
             target.Scss.ShowPreviewPane = GetBoolean("SassShowPreviewWindow");
             target.Scss.CompileOnBuild = GetBoolean("SassCompileOnBuild");
             target.Scss.GenerateSourceMaps = GetBoolean("SassSourceMaps");
-            target.Scss.OutputDirectory = GetNonBooleanString("SassCompileToLocation");
+			target.Scss.OutputDirectory = GetNonBooleanString("SassCompileToLocation");
+			target.Scss.NumberPrecision = GetInt("SassNumberPrecision");
 
             // TypeScript
             target.TypeScript.ShowPreviewPane = GetBoolean("TypeScriptShowPreviewWindow");
