@@ -147,26 +147,28 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
 
         private async static Task<bool> MinifyFileWithSourceMap(string file, string minFile)
         {
+            bool result;
             string mapPath = minFile + ".map";
-            StringBuilder builder = new StringBuilder();
+            StringWriter writer = new StringWriter();
+
             ProjectHelpers.CheckOutFileFromSourceControl(mapPath);
 
-            using (TextWriter writer = new StringWriter(builder))
             using (V3SourceMap sourceMap = new V3SourceMap(writer))
             {
                 var settings = CreateSettings();
+
                 settings.SymbolsMap = sourceMap;
                 sourceMap.StartPackage(minFile, mapPath);
 
                 // This fails when debugger is attached. Bug raised with Ron Logan
-                bool result = await MinifyFile(file, minFile, settings);
-
-                await FileHelpers.WriteAllTextRetry(mapPath, builder.ToString(), false);
-
-                ProjectHelpers.AddFileToProject(minFile, mapPath);
-
-                return result;
+                result = await MinifyFile(file, minFile, settings);
             }
+
+            await FileHelpers.WriteAllTextRetry(mapPath, writer.ToString(), false);
+
+            ProjectHelpers.AddFileToProject(minFile, mapPath);
+
+            return result;
         }
 
         private async static Task<bool> MinifyFile(string file, string minFile, CodeSettings settings)

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -118,14 +119,14 @@ namespace MadsKristensen.EditorExtensions
             var types = type.Split('<', '>')[1].Split(',');
             string keyType = GetTargetName(types[0].Trim(), false);
 
-            if(keyType != "string" || keyType != "number")
+            if (keyType != "string" || keyType != "number")
             { // only string or number are allowed for keys
                 keyType = "string";
             }
 
             string valueType = GetTargetName(types[1].Trim(), false);
 
-            return string.Format("{{ [index: {0}]: {1} }}", keyType, valueType);
+            return string.Format(CultureInfo.CurrentCulture, "{{ [index: {0}]: {1} }}", keyType, valueType);
         }
     }
 }
