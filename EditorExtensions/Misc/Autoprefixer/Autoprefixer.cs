@@ -1,10 +1,9 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using MadsKristensen.EditorExtensions.Settings;
 
 namespace MadsKristensen.EditorExtensions.Autoprefixer
 {
-    public static class CssAutoprefixer 
+    public static class CssAutoprefixer
     {
         public static async Task<string> AutoprefixFile(string sourceFileName, string targetFileName, string mapFileName)
         {
