@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using ConfOxide;
 using MarkdownSharp;
 using Microsoft.VisualStudio.Shell;
+using WebMarkupMin.Core;
 
 namespace MadsKristensen.EditorExtensions.Settings
 {
@@ -204,11 +205,18 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Automatically format HTML source when pressing Enter.")]
         [DefaultValue(true)]
         public bool EnableEnterFormat { get; set; }
-
+        
+        [Category("Minification")]
         [DisplayName("Minify files on save")]
         [Description("Update any .min.html file when saving the corresponding .html file. To create a .min.html file, right-click a .html file.")]
         [DefaultValue(false)]
         public bool AutoMinify { get; set; }
+
+        [Category("Minification")]
+        [DisplayName("Minification Mode")]
+        [Description("Sets the mode of how the HTML minifier should minify")]
+        [DefaultValue(HtmlAttributeQuotesRemovalMode.KeepQuotes)]
+        public HtmlAttributeQuotesRemovalMode MinificationMode { get; set; }
 
         [Category("Minification")]
         [DisplayName("Create gzipped files")]
