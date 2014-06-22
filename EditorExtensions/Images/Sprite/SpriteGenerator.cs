@@ -39,11 +39,11 @@ namespace MadsKristensen.EditorExtensions.Images
         {
             Dictionary<string, Image> images = GetImages(document);
 
-            await new BundleFileObserver().AttachFileObserver(document.FileName, document.FileName, updateSprite);
+            await new BundleFileObserver().AttachFileObserver(document, document.FileName, updateSprite);
 
             foreach (string file in images.Keys)
             {
-                await new BundleFileObserver().AttachFileObserver(file, document.FileName, updateSprite);
+                await new BundleFileObserver().AttachFileObserver(document, file, updateSprite);
             }
 
             return images;

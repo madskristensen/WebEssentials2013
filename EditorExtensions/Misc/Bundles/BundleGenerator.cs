@@ -56,7 +56,7 @@ namespace MadsKristensen.EditorExtensions
             if (document == null)
                 return null;
 
-            await new BundleFileObserver().AttachFileObserver(document.FileName, document.FileName, updateBundle);
+            await new BundleFileObserver().AttachFileObserver(document, document.FileName, updateBundle);
 
             foreach (string asset in document.BundleAssets)
             {
@@ -68,7 +68,7 @@ namespace MadsKristensen.EditorExtensions
                     {
                         files.Add(absolute, "/" + FileHelpers.RelativePath(ProjectHelpers.GetProjectFolder(document.FileName), asset));
 
-                        await new BundleFileObserver().AttachFileObserver(absolute, document.FileName, updateBundle);
+                        await new BundleFileObserver().AttachFileObserver(document, absolute, updateBundle);
                     }
                 }
                 else
