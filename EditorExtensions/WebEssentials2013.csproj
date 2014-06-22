@@ -87,9 +87,9 @@
     <CopyVsixExtensionLocation>bin/release/new folder</CopyVsixExtensionLocation>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AjaxMin, Version=5.9.5229.26434, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+    <Reference Include="AjaxMin, Version=5.10.5260.16954, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AjaxMin.5.9.5229.26438\lib\net40\AjaxMin.dll</HintPath>
+      <HintPath>..\packages\AjaxMin.5.10.5260.16959\lib\net40\AjaxMin.dll</HintPath>
     </Reference>
     <Reference Include="ConfOxide, Version=1.4.0.0, Culture=neutral, PublicKeyToken=934faed64f82030e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -208,9 +208,9 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebMarkupMin.Core, Version=0.8.20.0, Culture=neutral, PublicKeyToken=99472178d266584b, processorArchitecture=MSIL">
+    <Reference Include="WebMarkupMin.Core, Version=0.8.21.0, Culture=neutral, PublicKeyToken=99472178d266584b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebMarkupMin.Core.0.8.20\lib\net40\WebMarkupMin.Core.dll</HintPath>
+      <HintPath>..\packages\WebMarkupMin.Core.0.8.21\lib\net40\WebMarkupMin.Core.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="ZenCoding, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
