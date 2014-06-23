@@ -79,7 +79,6 @@ namespace MadsKristensen.EditorExtensions
 
             Instance = this;
 
-            await CompatibilityChecker.StartCheckingCompatibility();
             SettingsStore.Load();
             JavaScriptIntellisense.Register();
 
@@ -261,6 +260,18 @@ namespace MadsKristensen.EditorExtensions
             EditorExtensionsPackage.DTE.UndoContext.Open(name);
 
             return new Disposable(DTE.UndoContext.Close);
+        }
+    }
+
+    [Guid(CommandGuids.guidEditorExtensionsPkgString2)]
+    [ProvideAutoLoad(UIContextGuids80.SolutionExists)]
+    [ProvideAutoLoad(UIContextGuids80.NoSolution)]
+    [ProvideAutoLoad(UIContextGuids80.EmptySolution)]
+    public sealed class CompatibilityCheckerPackage : Package
+    {
+        protected async override void Initialize()
+        {
+            await CompatibilityChecker.StartCheckingCompatibility();
         }
     }
 }
