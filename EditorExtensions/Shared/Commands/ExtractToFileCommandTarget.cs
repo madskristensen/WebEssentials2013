@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions
         public ExtractToFile(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, ExtractCommandId.ExtractSelection)
         {
-            _dte = EditorExtensionsPackage.DTE;
+            _dte = WebEssentialsPackage.DTE;
         }
 
         protected override bool Execute(ExtractCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
@@ -45,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
 
                 if (!File.Exists(fileName))
                 {
-                    using (EditorExtensionsPackage.UndoContext("Extract to file..."))
+                    using (WebEssentialsPackage.UndoContext("Extract to file..."))
                     {
                         using (StreamWriter writer = new StreamWriter(fileName, false, new UTF8Encoding(true)))
                         {

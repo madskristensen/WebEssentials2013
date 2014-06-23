@@ -62,7 +62,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
         private static void Replace(ITrackingSpan contextSpan, ITextView textView, string atDirective, string fontFamily)
         {
-            using (EditorExtensionsPackage.UndoContext(("Embed font")))
+            using (WebEssentialsPackage.UndoContext(("Embed font")))
             {
                 textView.TextBuffer.Insert(0, atDirective + Environment.NewLine + Environment.NewLine);
                 textView.TextBuffer.Insert(contextSpan.GetSpan(textView.TextBuffer.CurrentSnapshot).Start, fontFamily);
@@ -77,7 +77,7 @@ namespace MadsKristensen.EditorExtensions.Css
                 fontFamily = text;
                 using (OpenFileDialog dialog = new OpenFileDialog())
                 {
-                    dialog.InitialDirectory = Path.GetDirectoryName(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+                    dialog.InitialDirectory = Path.GetDirectoryName(WebEssentialsPackage.DTE.ActiveDocument.FullName);
                     dialog.Filter = "Fonts (*.woff;*.eot;*.ttf;*.otf;*.svg)|*.woff;*.eot;*.ttf;*.otf;*.svg";
                     dialog.DefaultExt = ".woff";
 

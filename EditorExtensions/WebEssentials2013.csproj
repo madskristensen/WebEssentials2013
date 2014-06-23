@@ -723,7 +723,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="EditorExtensionsPackage.cs" />
+    <Compile Include="WebEssentialsPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CommandConstants.cs" />
     <Compile Include="CSS\SmartTags\CssSmartTagProvider.cs" />

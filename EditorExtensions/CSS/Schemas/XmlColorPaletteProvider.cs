@@ -46,7 +46,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
             File.Copy(sourcePath, targetPath, true);
             ProjectHelpers.GetSolutionItemsProject().ProjectItems.AddFromFile(targetPath);
-            EditorExtensionsPackage.DTE.ItemOperations.OpenFile(targetPath);
+            WebEssentialsPackage.DTE.ItemOperations.OpenFile(targetPath);
         }
 
         public IEnumerable<ColorModel> GetColors(ITextView textView, SnapshotSpan contextSpan)
@@ -147,7 +147,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
         public static string GetSolutionFilePath()
         {
-            EnvDTE.Solution solution = EditorExtensionsPackage.DTE.Solution;
+            EnvDTE.Solution solution = WebEssentialsPackage.DTE.Solution;
 
             if (solution == null || string.IsNullOrEmpty(solution.FullName))
                 return null;

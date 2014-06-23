@@ -40,7 +40,7 @@ namespace MadsKristensen.EditorExtensions.Css
                 sb.Append(text + Environment.NewLine + Environment.NewLine);
             }
 
-            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            using (WebEssentialsPackage.UndoContext((DisplayText)))
                 _span.TextBuffer.Replace(new Span(_directive.Start, _directive.Length), sb.ToString() + _directive.Text);
         }
     }

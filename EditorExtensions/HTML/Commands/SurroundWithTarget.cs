@@ -60,7 +60,7 @@ namespace MadsKristensen.EditorExtensions.Html
 
         private void Update(int start, int end)
         {
-            using (EditorExtensionsPackage.UndoContext("Surround with..."))
+            using (WebEssentialsPackage.UndoContext("Surround with..."))
             {
                 using (var edit = _buffer.CreateEdit())
                 {
@@ -73,7 +73,7 @@ namespace MadsKristensen.EditorExtensions.Html
 
                 _view.Caret.MoveTo(point);
                 _view.Selection.Select(new SnapshotSpan(_buffer.CurrentSnapshot, point, 3), false);
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                WebEssentialsPackage.ExecuteCommand("Edit.FormatSelection");
             }
         }
 

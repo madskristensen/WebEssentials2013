@@ -40,7 +40,7 @@ namespace MadsKristensen.EditorExtensions.Less
 
             if (!string.IsNullOrEmpty(name))
             {
-                using (EditorExtensionsPackage.UndoContext((DisplayText)))
+                using (WebEssentialsPackage.UndoContext((DisplayText)))
                 {
                     foreach (ParseItem item in FindItems())
                     {

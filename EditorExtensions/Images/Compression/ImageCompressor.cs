@@ -43,8 +43,8 @@ namespace MadsKristensen.EditorExtensions.Images
 
         public async Task CompressFilesAsync(params string[] fileNames)
         {
-            EditorExtensionsPackage.DTE.StatusBar.Text = fileNames.Length == 1 ? "Optimizing " + Path.GetFileName(fileNames[0]) + "..." : "Optimizing " + fileNames.Length + " images...";
-            EditorExtensionsPackage.DTE.StatusBar.Animate(true, vsStatusAnimation.vsStatusAnimationDeploy);
+            WebEssentialsPackage.DTE.StatusBar.Text = fileNames.Length == 1 ? "Optimizing " + Path.GetFileName(fileNames[0]) + "..." : "Optimizing " + fileNames.Length + " images...";
+            WebEssentialsPackage.DTE.StatusBar.Animate(true, vsStatusAnimation.vsStatusAnimationDeploy);
             List<CompressionResult> list = new List<CompressionResult>();
 
             try
@@ -67,11 +67,11 @@ namespace MadsKristensen.EditorExtensions.Images
             }
             catch
             {
-                EditorExtensionsPackage.DTE.StatusBar.Text = "The image could not be optimized. Wrong format";
+                WebEssentialsPackage.DTE.StatusBar.Text = "The image could not be optimized. Wrong format";
             }
             finally
             {
-                EditorExtensionsPackage.DTE.StatusBar.Animate(false, vsStatusAnimation.vsStatusAnimationDeploy);
+                WebEssentialsPackage.DTE.StatusBar.Animate(false, vsStatusAnimation.vsStatusAnimationDeploy);
             }
         }
 
@@ -84,11 +84,11 @@ namespace MadsKristensen.EditorExtensions.Images
             if (savings > 0)
             {
                 double percent = 100 - Math.Round((double)results / (double)originals * 100, 1);
-                EditorExtensionsPackage.DTE.StatusBar.Text = list.Count + " images optimized. Total saving of " + savings + " bytes / " + percent + "%";
+                WebEssentialsPackage.DTE.StatusBar.Text = list.Count + " images optimized. Total saving of " + savings + " bytes / " + percent + "%";
             }
             else
             {
-                EditorExtensionsPackage.DTE.StatusBar.Text = "The images were already optimized";
+                WebEssentialsPackage.DTE.StatusBar.Text = "The images were already optimized";
             }
         }
 
@@ -102,12 +102,12 @@ namespace MadsKristensen.EditorExtensions.Images
                 File.Copy(result.ResultFileName, result.OriginalFileName, true);
 
                 string text = "Compressed " + name + " by " + result.Saving + " bytes / " + result.Percent + "%";
-                EditorExtensionsPackage.DTE.StatusBar.Text = text;
+                WebEssentialsPackage.DTE.StatusBar.Text = text;
                 Logger.Log(result.ToString());
             }
             else
             {
-                EditorExtensionsPackage.DTE.StatusBar.Text = name + " is already optimized";
+                WebEssentialsPackage.DTE.StatusBar.Text = name + " is already optimized";
             }
         }
 

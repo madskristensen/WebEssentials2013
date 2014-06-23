@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions.Images
         public PasteImage(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, VSConstants.VSStd97CmdID.Paste)
         {
-            EditorExtensionsPackage.DTE.Events.SolutionEvents.AfterClosing += delegate { _lastPath = null; };
+            WebEssentialsPackage.DTE.Events.SolutionEvents.AfterClosing += delegate { _lastPath = null; };
         }
 
         protected override bool Execute(VSConstants.VSStd97CmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
@@ -174,7 +174,7 @@ namespace MadsKristensen.EditorExtensions.Images
             string relative = FileHelpers.RelativePath(ProjectHelpers.GetRootFolder() ?? "/", fileName);
             string text = string.Format(CultureInfo.InvariantCulture, _format, relative);
 
-            using (EditorExtensionsPackage.UndoContext("Insert Image"))
+            using (WebEssentialsPackage.UndoContext("Insert Image"))
             {
                 TextView.TextBuffer.Insert(position, text);
 
@@ -183,7 +183,7 @@ namespace MadsKristensen.EditorExtensions.Images
                     SnapshotSpan span = new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, position, _format.Length);
                     TextView.Selection.Select(span, false);
 
-                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                    WebEssentialsPackage.ExecuteCommand("Edit.FormatSelection");
                     TextView.Selection.Clear();
                 }
                 catch

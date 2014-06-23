@@ -190,7 +190,7 @@ namespace MadsKristensen.EditorExtensions
 
                 // Get the version of this DLL
                 foreach (AssemblyFileVersionAttribute versionAttribute in
-                    typeof(EditorExtensionsPackage).Assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false))
+                    typeof(WebEssentialsPackage).Assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false))
                 {
                     versionString = versionAttribute.Version;
                     break;

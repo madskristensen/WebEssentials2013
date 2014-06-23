@@ -35,12 +35,12 @@ namespace MadsKristensen.EditorExtensions.Css
             //int index = _directive.Text.IndexOf(":", StringComparison.Ordinal);
             //string newDec = _standardName + _directive.Text.Substring(index);
 
-            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            using (WebEssentialsPackage.UndoContext((DisplayText)))
             {
                 //SnapshotSpan span = _span.GetSpan(_span.TextBuffer.CurrentSnapshot);
                 string text = _directive.Text.Replace("@" + _directive.Keyword.Text, _standardName);
                 _span.TextBuffer.Insert(_directive.AfterEnd, Environment.NewLine + Environment.NewLine + text);
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                WebEssentialsPackage.ExecuteCommand("Edit.FormatSelection");
             }
         }
     }

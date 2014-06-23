@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions
             // Insert the typed character
             TextView.TextBuffer.Insert(position, "*");
 
-            using (EditorExtensionsPackage.UndoContext("Comment completion"))
+            using (WebEssentialsPackage.UndoContext("Comment completion"))
             {
                 // Use separate undo context for this, so it can be undone separately.
                 TextView.TextBuffer.Insert(position + 1, "*/");

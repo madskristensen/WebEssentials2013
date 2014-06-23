@@ -41,7 +41,7 @@ namespace MadsKristensen.EditorExtensions
         protected virtual void CreateMarginControls()
         {
             int width;
-            using (var key = EditorExtensionsPackage.Instance.UserRegistryRoot)
+            using (var key = WebEssentialsPackage.Instance.UserRegistryRoot)
             {
                 var raw = key.GetValue("WE_" + _settingsKey);
                 width = raw is int ? (int)raw : -1;
@@ -81,7 +81,7 @@ namespace MadsKristensen.EditorExtensions
         void splitter_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
             if (double.IsNaN(_previewControl.ActualWidth)) return;
-            using (var key = EditorExtensionsPackage.Instance.UserRegistryRoot)
+            using (var key = WebEssentialsPackage.Instance.UserRegistryRoot)
             {
                 key.SetValue("WE_" + _settingsKey, _previewControl.ActualWidth, RegistryValueKind.DWord);
             }

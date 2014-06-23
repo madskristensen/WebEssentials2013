@@ -70,7 +70,7 @@ namespace MadsKristensen.EditorExtensions.Html
 
                     if (dataUri.Length < src.Value.Length)
                     {
-                        using (EditorExtensionsPackage.UndoContext("Optimize image"))
+                        using (WebEssentialsPackage.UndoContext("Optimize image"))
                         {
                             Span span = Span.FromBounds(src.ValueRangeUnquoted.Start, src.ValueRangeUnquoted.End);
                             textBuffer.Replace(span, dataUri);

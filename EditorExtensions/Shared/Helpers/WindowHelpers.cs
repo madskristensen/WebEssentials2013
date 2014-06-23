@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions
         /// <remarks>Based on http://stackoverflow.com/questions/2413530/find-an-ivstextview-or-iwpftextview-for-a-given-projectitem-in-vs-2010-rc-exten</remarks>
         public static IVsTextView GetIVsTextView(string filePath)
         {
-            var sp = (Microsoft.VisualStudio.OLE.Interop.IServiceProvider)EditorExtensionsPackage.DTE;
+            var sp = (Microsoft.VisualStudio.OLE.Interop.IServiceProvider)WebEssentialsPackage.DTE;
             using (var serviceProvider = new ServiceProvider(sp))
             {
                 uint itemId;

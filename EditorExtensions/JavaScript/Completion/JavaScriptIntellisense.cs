@@ -46,7 +46,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             string fileName = Path.GetFileName(file);
 
             // The APIs for setting the references are all internal, so we need to go directly through the registry.
-            using (RegistryKey key = EditorExtensionsPackage.Instance.UserRegistryRoot.OpenSubKey("JavaScriptLanguageService", true))
+            using (RegistryKey key = WebEssentialsPackage.Instance.UserRegistryRoot.OpenSubKey("JavaScriptLanguageService", true))
             {
                 if (key == null)
                     return;

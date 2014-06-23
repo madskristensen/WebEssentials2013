@@ -73,7 +73,7 @@ namespace MadsKristensen.EditorExtensions.Html
 
                 if (!string.IsNullOrEmpty(fileName) && await FileHelpers.SaveDataUriToFile(src.Value, fileName))
                 {
-                    using (EditorExtensionsPackage.UndoContext((DisplayText)))
+                    using (WebEssentialsPackage.UndoContext((DisplayText)))
                         ReplaceUrlValue(fileName, textBuffer, src);
                 }
             }

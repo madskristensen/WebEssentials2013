@@ -47,7 +47,7 @@ namespace MadsKristensen.EditorExtensions
 
                 if (index > -1)
                 {
-                    EditorExtensionsPackage.DTE.ItemOperations.OpenFile(_file);
+                    WebEssentialsPackage.DTE.ItemOperations.OpenFile(_file);
                     _extension.ErrorList.Tasks.Remove(task);
 
                     AddMetaTag(index);
@@ -63,15 +63,15 @@ namespace MadsKristensen.EditorExtensions
                 var view = ProjectHelpers.GetCurentTextView();
                 var buffer = view.TextBuffer;
 
-                using (EditorExtensionsPackage.UndoContext("Adding <meta> viewport"))
+                using (WebEssentialsPackage.UndoContext("Adding <meta> viewport"))
                 {
                     buffer.Insert(index, "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />" + Environment.NewLine);
                     view.Caret.MoveTo(new SnapshotPoint(buffer.CurrentSnapshot, index + 31 + 37));
                     view.Selection.Select(new SnapshotSpan(buffer.CurrentSnapshot, 31 + index, 37), false);
-                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                    WebEssentialsPackage.ExecuteCommand("Edit.FormatSelection");
                 }
 
-                EditorExtensionsPackage.DTE.ActiveDocument.Save();
+                WebEssentialsPackage.DTE.ActiveDocument.Save();
 
             }), DispatcherPriority.ApplicationIdle, null);
         }

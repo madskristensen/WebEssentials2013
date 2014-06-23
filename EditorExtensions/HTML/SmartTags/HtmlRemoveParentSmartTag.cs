@@ -57,14 +57,14 @@ namespace MadsKristensen.EditorExtensions.Html
                 int start = element.Start;
                 int length = content.Length;
 
-                using (EditorExtensionsPackage.UndoContext((this.DisplayText)))
+                using (WebEssentialsPackage.UndoContext((this.DisplayText)))
                 {
                     textBuffer.Replace(new Span(element.Start, element.OuterRange.Length), content);
 
                     SnapshotSpan span = new SnapshotSpan(view.TextBuffer.CurrentSnapshot, start, length);
 
                     view.Selection.Select(span, false);
-                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                    WebEssentialsPackage.ExecuteCommand("Edit.FormatSelection");
                     view.Caret.MoveTo(new SnapshotPoint(view.TextBuffer.CurrentSnapshot, start));
                     view.Selection.Clear();
                 }

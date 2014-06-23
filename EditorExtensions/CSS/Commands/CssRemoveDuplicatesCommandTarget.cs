@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions.Css
             StringBuilder sb = new StringBuilder(buffer.CurrentSnapshot.GetText());
             int scrollPosition = TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
 
-            using (EditorExtensionsPackage.UndoContext("Remove Duplicate Properties"))
+            using (WebEssentialsPackage.UndoContext("Remove Duplicate Properties"))
             {
                 int count;
                 bool hasChanged = RemoveDuplicateProperties(sb, doc, out count);
@@ -40,11 +40,11 @@ namespace MadsKristensen.EditorExtensions.Css
                                      .Replace("\r\n/* END EXTERNAL SOURCE */\r\n", string.Empty));
 
                 if (TextView.Caret.Position.BufferPosition.Snapshot == buffer.CurrentSnapshot)
-                    (EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection).GotoLine(1);
+                    (WebEssentialsPackage.DTE.ActiveDocument.Selection as TextSelection).GotoLine(1);
 
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
+                WebEssentialsPackage.ExecuteCommand("Edit.FormatDocument");
                 TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, TextView.TextSnapshot.GetLineNumberFromPosition(scrollPosition));
-                EditorExtensionsPackage.DTE.StatusBar.Text = count + " duplicate properties removed";
+                WebEssentialsPackage.DTE.StatusBar.Text = count + " duplicate properties removed";
             }
 
             return true;

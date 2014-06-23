@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
         public BundleFilesMenu()
         {
             // Used by the IWpfTextViewCreationListener
-            _dte = EditorExtensionsPackage.DTE;
+            _dte = WebEssentialsPackage.DTE;
         }
 
         public BundleFilesMenu(DTE2 dte, OleMenuCommandService mcs)
@@ -208,7 +208,7 @@ namespace MadsKristensen.EditorExtensions
             if (!hasUpdated)
             {
                 ProjectHelpers.AddFileToProject(bundle.FileName, bundleFile);
-                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(bundle.FileName);
+                WebEssentialsPackage.DTE.ItemOperations.OpenFile(bundle.FileName);
             }
 
             if (bundle.Minified)

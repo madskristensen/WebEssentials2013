@@ -32,7 +32,7 @@ namespace MadsKristensen.EditorExtensions.Css
             StringBuilder sb = new StringBuilder(buffer.CurrentSnapshot.GetText());
             int scrollPosition = TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
 
-            using (EditorExtensionsPackage.UndoContext("Add Missing Standard Property"))
+            using (WebEssentialsPackage.UndoContext("Add Missing Standard Property"))
             {
                 int count;
                 bool hasChanged = AddMissingStandardDeclaration(sb, doc, rootSchema, out count);
@@ -43,11 +43,11 @@ namespace MadsKristensen.EditorExtensions.Css
                                      .Replace("\r\n/* END EXTERNAL SOURCE */\r\n", string.Empty));
 
                 if (TextView.Caret.Position.BufferPosition.Snapshot == buffer.CurrentSnapshot)
-                    (EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection).GotoLine(1);
+                    (WebEssentialsPackage.DTE.ActiveDocument.Selection as TextSelection).GotoLine(1);
 
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
+                WebEssentialsPackage.ExecuteCommand("Edit.FormatDocument");
                 TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, TextView.TextSnapshot.GetLineNumberFromPosition(scrollPosition));
-                EditorExtensionsPackage.DTE.StatusBar.Text = count + " missing standard properties added";
+                WebEssentialsPackage.DTE.StatusBar.Text = count + " missing standard properties added";
             }
 
             return true;

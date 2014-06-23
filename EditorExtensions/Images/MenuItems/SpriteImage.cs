@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions.Images
         public SpriteImageMenu()
         {
             // Used by the IWpfTextViewCreationListener
-            _dte = EditorExtensionsPackage.DTE;
+            _dte = WebEssentialsPackage.DTE;
         }
 
         public SpriteImageMenu(DTE2 dte, OleMenuCommandService mcs)
@@ -131,7 +131,7 @@ namespace MadsKristensen.EditorExtensions.Images
             if (!hasUpdated)
             {
                 ProjectHelpers.AddFileToProject(sprite.FileName, imageFile);
-                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(sprite.FileName);
+                WebEssentialsPackage.DTE.ItemOperations.OpenFile(sprite.FileName);
             }
 
             await Export(fragments, imageFile, sprite);

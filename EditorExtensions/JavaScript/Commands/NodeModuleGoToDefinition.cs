@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
                 return true;
             }
 
-            EditorExtensionsPackage.DTE.StatusBar.Text = "Couldn't find " + path;
+            WebEssentialsPackage.DTE.StatusBar.Text = "Couldn't find " + path;
 
             return false;
         }

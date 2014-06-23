@@ -64,7 +64,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void UpdateTextBuffer(SnapshotSpan span, string text)
         {
-            using (EditorExtensionsPackage.UndoContext("Comment/Uncomment"))
+            using (WebEssentialsPackage.UndoContext("Comment/Uncomment"))
             {
                 TextView.TextBuffer.Replace(span.Span, text);
             }

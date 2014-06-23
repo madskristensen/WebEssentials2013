@@ -43,7 +43,7 @@ namespace MadsKristensen.EditorExtensions
 
         public BestPractices()
         {
-            ErrorList = new ErrorListProvider(EditorExtensionsPackage.Instance);
+            ErrorList = new ErrorListProvider(WebEssentialsPackage.Instance);
             ErrorList.ProviderName = "Browser Link Extension";
             ErrorList.ProviderGuid = new Guid("5BA8BB0D-D518-45ae-966C-864C536454F2");
         }
@@ -108,7 +108,7 @@ namespace MadsKristensen.EditorExtensions
                 return;
 
             IVsHierarchy HierarchyItem;
-            IVsSolution solution = EditorExtensionsPackage.GetGlobalService<IVsSolution>(typeof(SVsSolution));
+            IVsSolution solution = WebEssentialsPackage.GetGlobalService<IVsSolution>(typeof(SVsSolution));
 
             if (solution != null)
             {

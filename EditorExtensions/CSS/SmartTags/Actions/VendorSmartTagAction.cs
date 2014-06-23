@@ -41,12 +41,12 @@ namespace MadsKristensen.EditorExtensions.Css
                 sb.Append(entry + _declaration.Text + separator);
             }
 
-            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            using (WebEssentialsPackage.UndoContext((DisplayText)))
             {
                 _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), sb.ToString() + _declaration.Text);
                 if (separator == Environment.NewLine)
                 {
-                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                    WebEssentialsPackage.ExecuteCommand("Edit.FormatSelection");
                 }
             }
         }

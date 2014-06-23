@@ -213,7 +213,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
 
             shell.LoadPackage(ref otherPackage, out package);
 
-            var project = (IVsIntellisenseProject)EditorExtensionsPackage.Instance.CreateInstance(ref intellisenseGuid, ref iid_vsip, typeof(IVsIntellisenseProject));
+            var project = (IVsIntellisenseProject)WebEssentialsPackage.Instance.CreateInstance(ref intellisenseGuid, ref iid_vsip, typeof(IVsIntellisenseProject));
 
             string fileName = projectionBuffer.IProjectionBuffer.GetFileName();
             var displayName = contentType.DisplayName;

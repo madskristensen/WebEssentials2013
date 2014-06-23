@@ -63,9 +63,9 @@ namespace MadsKristensen.EditorExtensions
             var cid = new CommandID(CommandGuids.guidBuildCmdSet, (int)id);
             var command = new OleMenuCommand(async (s, e) =>
             {
-                EditorExtensionsPackage.DTE.StatusBar.Text = "Compiling " + contentType + "...";
+                WebEssentialsPackage.DTE.StatusBar.Text = "Compiling " + contentType + "...";
                 await Task.Run(() => Compiler.CompileSolutionAsync(contentType));
-                EditorExtensionsPackage.DTE.StatusBar.Clear();
+                WebEssentialsPackage.DTE.StatusBar.Clear();
             }, cid);
             _mcs.AddCommand(command);
         }
@@ -102,7 +102,7 @@ namespace MadsKristensen.EditorExtensions
                       )
             );
 
-            EditorExtensionsPackage.DTE.StatusBar.Clear();
+            WebEssentialsPackage.DTE.StatusBar.Clear();
         }
     }
 }

@@ -80,12 +80,12 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                IVsUIShellOpenDocument3 openDoc3 = EditorExtensionsPackage.GetGlobalService<SVsUIShellOpenDocument>() as IVsUIShellOpenDocument3;
+                IVsUIShellOpenDocument3 openDoc3 = WebEssentialsPackage.GetGlobalService<SVsUIShellOpenDocument>() as IVsUIShellOpenDocument3;
 
                 Guid reason = VSConstants.NewDocumentStateReason.Navigation;
                 newDocumentStateContext = openDoc3.SetNewDocumentState((uint)__VSNEWDOCUMENTSTATE.NDS_Provisional, ref reason);
 
-                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
+                WebEssentialsPackage.DTE.ItemOperations.OpenFile(file);
             }
             finally
             {
@@ -96,7 +96,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static string ShowDialog(string extension, string fileName = "file.")
         {
-            var initialPath = Path.GetDirectoryName(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+            var initialPath = Path.GetDirectoryName(WebEssentialsPackage.DTE.ActiveDocument.FullName);
 
             using (var dialog = new SaveFileDialog())
             {
@@ -274,7 +274,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static void SearchFiles(string term, string fileTypes)
         {
-            Find2 find = (Find2)EditorExtensionsPackage.DTE.Find;
+            Find2 find = (Find2)WebEssentialsPackage.DTE.Find;
             string types = find.FilesOfType;
             bool matchCase = find.MatchCase;
             bool matchWord = find.MatchWholeWord;

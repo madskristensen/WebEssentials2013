@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
                         count++;
                     }
                 }
-                EditorExtensionsPackage.DTE.StatusBar.Text = "Compiling " + count + " dependent file" + (count == 1 ? "s" : "")
+                WebEssentialsPackage.DTE.StatusBar.Text = "Compiling " + count + " dependent file" + (count == 1 ? "s" : "")
                                                            + " for " + Path.GetFileName(e.CompilerResult.SourceFileName);
             };
         }

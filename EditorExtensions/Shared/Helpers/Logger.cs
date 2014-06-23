@@ -63,7 +63,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     if (pane == null)
                     {
-                        pane = EditorExtensionsPackage.Instance.GetOutputPane(VSConstants.OutputWindowPaneGuid.BuildOutputPane_guid, "Web Essentials");
+                        pane = WebEssentialsPackage.Instance.GetOutputPane(VSConstants.OutputWindowPaneGuid.BuildOutputPane_guid, "Web Essentials");
                     }
                 }
             }

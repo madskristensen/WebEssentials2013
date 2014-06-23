@@ -28,7 +28,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (match.Success)
             {
-                using (EditorExtensionsPackage.UndoContext("Smart Indent"))
+                using (WebEssentialsPackage.UndoContext("Smart Indent"))
                 {
                     TextView.TextBuffer.Insert(position, Environment.NewLine + match.Value);
                 }

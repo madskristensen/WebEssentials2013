@@ -77,7 +77,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static string GetFullUrl(string text, ITextBuffer sourceBuffer)
         {
-            return GetFullUrl(text, sourceBuffer.GetFileName() ?? EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+            return GetFullUrl(text, sourceBuffer.GetFileName() ?? WebEssentialsPackage.DTE.ActiveDocument.FullName);
         }
         public static string GetFullUrl(string text, string sourceFilename)
         {
@@ -151,7 +151,7 @@ namespace MadsKristensen.EditorExtensions
             // HWNDs are always 32-bit.
             // https://twitter.com/Schabse/status/406159104697049088
             // http://msdn.microsoft.com/en-us/library/aa384203.aspx
-            var screen = Screen.FromHandle(new IntPtr(EditorExtensionsPackage.DTE.ActiveWindow.HWnd));
+            var screen = Screen.FromHandle(new IntPtr(WebEssentialsPackage.DTE.ActiveWindow.HWnd));
             Image image = new Image
             {
                 Source = source,

@@ -46,7 +46,7 @@ namespace MadsKristensen.EditorExtensions
                     writer.WriteLine("Disallow: /admin");
                 }
 
-                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(path);
+                WebEssentialsPackage.DTE.ItemOperations.OpenFile(path);
                 project.ProjectItems.AddFromFile(path);
                 _extension.ErrorList.Tasks.Remove(task);
             }

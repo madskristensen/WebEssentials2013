@@ -28,11 +28,11 @@ namespace MadsKristensen.EditorExtensions
 
             if (result == source)
             {
-                EditorExtensionsPackage.DTE.StatusBar.Text = "The selection is already minified";
+                WebEssentialsPackage.DTE.StatusBar.Text = "The selection is already minified";
                 return false;
             }
 
-            using (EditorExtensionsPackage.UndoContext("Minify"))
+            using (WebEssentialsPackage.UndoContext("Minify"))
                 TextView.TextBuffer.Replace(_spansTuple.Item1, result);
 
             return true;

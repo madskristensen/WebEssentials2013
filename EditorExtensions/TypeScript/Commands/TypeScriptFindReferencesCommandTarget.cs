@@ -27,7 +27,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
                 TextExtent wordExtent = _navigator.GetExtentOfWord(point.Value - 1);
                 string wordText = TextView.TextSnapshot.GetText(wordExtent.Span);
 
-                Find2 find = (Find2)EditorExtensionsPackage.DTE.Find;
+                Find2 find = (Find2)WebEssentialsPackage.DTE.Find;
                 string types = find.FilesOfType;
                 bool matchCase = find.MatchCase;
                 bool matchWord = find.MatchWholeWord;

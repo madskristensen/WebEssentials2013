@@ -59,7 +59,7 @@ namespace MadsKristensen.EditorExtensions.Html
                 IFileMinifier minifier = element.IsScriptBlock() ? (IFileMinifier)new JavaScriptFileMinifier() : new CssFileMinifier();
                 string result = minifier.MinifyString(text);
 
-                using (EditorExtensionsPackage.UndoContext((this.DisplayText)))
+                using (WebEssentialsPackage.UndoContext((this.DisplayText)))
                     textBuffer.Replace(range.ToSpan(), result);
             }
         }

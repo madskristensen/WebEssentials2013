@@ -37,14 +37,14 @@ namespace MadsKristensen.EditorExtensions.Css
 
             if (!string.IsNullOrEmpty(fileName) && await FileHelpers.SaveDataUriToFile(base64, fileName))
             {
-                using (EditorExtensionsPackage.UndoContext((DisplayText)))
+                using (WebEssentialsPackage.UndoContext((DisplayText)))
                     ReplaceUrlValue(fileName);
             }
         }
 
         private void ReplaceUrlValue(string fileName)
         {
-            string relative = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, fileName);
+            string relative = FileHelpers.RelativePath(WebEssentialsPackage.DTE.ActiveDocument.FullName, fileName);
             string urlValue = string.Format(CultureInfo.InvariantCulture, "url({0})", relative);
             _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), urlValue);
         }

@@ -37,7 +37,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
             try
             {
-                window = EditorExtensionsPackage.DTE.ItemOperations.OpenFile(doc);
+                window = WebEssentialsPackage.DTE.ItemOperations.OpenFile(doc);
             }
             catch (ArgumentException)
             {
@@ -53,7 +53,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         private static IVsHierarchy ResolveVsHierarchyItem(string projectName)
         {
             IVsHierarchy hierarchyItem = null;
-            var solution = EditorExtensionsPackage.GetGlobalService<IVsSolution>(typeof(SVsSolution));
+            var solution = WebEssentialsPackage.GetGlobalService<IVsSolution>(typeof(SVsSolution));
 
             if (solution != null)
             {

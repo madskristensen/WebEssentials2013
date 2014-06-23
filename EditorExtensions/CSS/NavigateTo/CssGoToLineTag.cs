@@ -51,7 +51,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
         public void NavigateTo()
         {
-            EditorExtensionsPackage.DTE.ItemOperations.OpenFile(_file);
+            WebEssentialsPackage.DTE.ItemOperations.OpenFile(_file);
 
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {

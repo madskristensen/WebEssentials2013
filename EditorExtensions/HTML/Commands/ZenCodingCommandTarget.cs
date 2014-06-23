@@ -54,13 +54,13 @@ namespace MadsKristensen.EditorExtensions.Html
             {
                 Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
                 {
-                    using (EditorExtensionsPackage.UndoContext("ZenCoding"))
+                    using (WebEssentialsPackage.UndoContext("ZenCoding"))
                     {
                         ITextSelection selection = UpdateTextBuffer(zenSpan, result);
 
                         Span newSpan = new Span(zenSpan.Start, selection.SelectedSpans[0].Length);
 
-                        EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                        WebEssentialsPackage.ExecuteCommand("Edit.FormatSelection");
                         SetCaret(newSpan, false);
 
                         selection.Clear();

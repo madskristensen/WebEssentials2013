@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>Gets the Solution Items solution folder in the current solution, creating it if it doesn't exist.</summary>
         public static Project GetSolutionItemsProject()
         {
-            Solution2 solution = EditorExtensionsPackage.DTE.Solution as Solution2;
+            Solution2 solution = WebEssentialsPackage.DTE.Solution as Solution2;
             return solution.Projects
                            .OfType<Project>()
                            .FirstOrDefault(p => p.Name.Equals(SolutionItemsFolder, StringComparison.OrdinalIgnoreCase))
@@ -31,7 +31,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static IEnumerable<Project> GetAllProjects()
         {
-            return EditorExtensionsPackage.DTE.Solution.Projects
+            return WebEssentialsPackage.DTE.Solution.Projects
                 .Cast<Project>()
                 .SelectMany(GetChildProjects);
         }
@@ -84,7 +84,7 @@ namespace MadsKristensen.EditorExtensions
 
                 if (project == null || project.Collection == null)
                 {
-                    var doc = EditorExtensionsPackage.DTE.ActiveDocument;
+                    var doc = WebEssentialsPackage.DTE.ActiveDocument;
                     if (doc != null && !string.IsNullOrEmpty(doc.FullName))
                         return GetProjectFolder(doc.FullName);
                     return string.Empty;
@@ -157,7 +157,7 @@ namespace MadsKristensen.EditorExtensions
         {
             try
             {
-                Array activeSolutionProjects = EditorExtensionsPackage.DTE.ActiveSolutionProjects as Array;
+                Array activeSolutionProjects = WebEssentialsPackage.DTE.ActiveSolutionProjects as Array;
 
                 if (activeSolutionProjects != null && activeSolutionProjects.Length > 0)
                     return activeSolutionProjects.GetValue(0) as Project;
@@ -272,7 +272,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static IComponentModel GetComponentModel()
         {
-            return (IComponentModel)EditorExtensionsPackage.GetGlobalService(typeof(SComponentModel));
+            return (IComponentModel)WebEssentialsPackage.GetGlobalService(typeof(SComponentModel));
         }
 
         ///<summary>Gets the paths to all files included in the selection, including files within selected folders.</summary>
@@ -289,7 +289,7 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>Gets the full paths to the currently selected item(s) in the Solution Explorer.</summary>
         public static IEnumerable<string> GetSelectedItemPaths(DTE2 dte = null)
         {
-            var items = (Array)(dte ?? EditorExtensionsPackage.DTE).ToolWindows.SolutionExplorer.SelectedItems;
+            var items = (Array)(dte ?? WebEssentialsPackage.DTE).ToolWindows.SolutionExplorer.SelectedItems;
             foreach (UIHierarchyItem selItem in items)
             {
                 var item = selItem.Object as ProjectItem;
@@ -302,7 +302,7 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>Gets the the currently selected project(s) in the Solution Explorer.</summary>
         public static IEnumerable<Project> GetSelectedProjects()
         {
-            var items = (Array)EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
+            var items = (Array)WebEssentialsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
             foreach (UIHierarchyItem selItem in items)
             {
                 var item = selItem.Object as Project;
@@ -318,7 +318,7 @@ namespace MadsKristensen.EditorExtensions
         {
             try
             {
-                var dte = EditorExtensionsPackage.DTE;
+                var dte = WebEssentialsPackage.DTE;
 
                 if (dte == null || !File.Exists(fileName) || dte.Solution.FindProjectItem(fileName) == null)
                     return true;
@@ -339,7 +339,7 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>Gets the directory containing the active solution file.</summary>
         public static string GetSolutionFolderPath()
         {
-            EnvDTE.Solution solution = EditorExtensionsPackage.DTE.Solution;
+            EnvDTE.Solution solution = WebEssentialsPackage.DTE.Solution;
 
             if (solution == null)
                 return null;
@@ -377,7 +377,7 @@ namespace MadsKristensen.EditorExtensions
         ///<summary>Gets the the currently selected file(s) in the Solution Explorer.</summary>
         public static IEnumerable<ProjectItem> GetSelectedItems()
         {
-            var items = (Array)EditorExtensionsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
+            var items = (Array)WebEssentialsPackage.DTE.ToolWindows.SolutionExplorer.SelectedItems;
             foreach (UIHierarchyItem selItem in items)
             {
                 var item = selItem.Object as ProjectItem;
@@ -416,7 +416,7 @@ namespace MadsKristensen.EditorExtensions
 
         public static ProjectItem GetActiveFile()
         {
-            var doc = EditorExtensionsPackage.DTE.ActiveDocument;
+            var doc = WebEssentialsPackage.DTE.ActiveDocument;
 
             if (doc == null)
                 return null;
@@ -431,7 +431,7 @@ namespace MadsKristensen.EditorExtensions
         {
             try
             {
-                return EditorExtensionsPackage.DTE.Solution.FindProjectItem(fileName);
+                return WebEssentialsPackage.DTE.Solution.FindProjectItem(fileName);
             }
             catch (Exception exception)
             {

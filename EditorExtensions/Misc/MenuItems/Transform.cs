@@ -103,7 +103,7 @@ namespace MadsKristensen.EditorExtensions
 
             string replacement = callback(document.Selection.Text);
 
-            using (EditorExtensionsPackage.UndoContext((callback.Method.Name)))
+            using (WebEssentialsPackage.UndoContext((callback.Method.Name)))
                 document.Selection.Insert(replacement, 0);
         }
     }

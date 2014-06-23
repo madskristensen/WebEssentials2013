@@ -123,9 +123,9 @@ namespace MadsKristensen.EditorExtensions.Css
 
                 if (string.IsNullOrEmpty(folder))
                 {
-                    var doc = EditorExtensionsPackage.DTE.ActiveDocument;
+                    var doc = WebEssentialsPackage.DTE.ActiveDocument;
                     if (doc != null)
-                        folder = ProjectHelpers.GetProjectFolder(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+                        folder = ProjectHelpers.GetProjectFolder(WebEssentialsPackage.DTE.ActiveDocument.FullName);
                 }
 
                 return folder;

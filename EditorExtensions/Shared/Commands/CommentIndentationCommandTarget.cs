@@ -78,7 +78,7 @@ namespace MadsKristensen.EditorExtensions
 
             string result = Environment.NewLine + indentation + " * " + Environment.NewLine + indentation + " ";
 
-            using (EditorExtensionsPackage.UndoContext("Smart Indent"))
+            using (WebEssentialsPackage.UndoContext("Smart Indent"))
             {
                 TextView.TextBuffer.Insert(position, result);
                 SnapshotPoint point = new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, position + indentation.Length + 5);
@@ -92,7 +92,7 @@ namespace MadsKristensen.EditorExtensions
         {
             string result = Environment.NewLine + indentation + "* ";
 
-            using (EditorExtensionsPackage.UndoContext("Smart Indent"))
+            using (WebEssentialsPackage.UndoContext("Smart Indent"))
             {
                 TextView.TextBuffer.Insert(position, result);
                 SnapshotPoint point = new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, position + result.Length);

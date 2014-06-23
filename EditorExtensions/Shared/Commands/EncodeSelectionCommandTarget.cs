@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions
         public EncodeSelection(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, _commands.Keys.ToArray())
         {
-            _dte = EditorExtensionsPackage.DTE;
+            _dte = WebEssentialsPackage.DTE;
         }
 
         protected override bool Execute(CommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
@@ -39,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
             TextDocument document = GetTextDocument();
             string replacement = callback(document.Selection.Text);
 
-            using (EditorExtensionsPackage.UndoContext((callback.Method.Name)))
+            using (WebEssentialsPackage.UndoContext((callback.Method.Name)))
                 document.Selection.Insert(replacement, 0);
 
             return true;

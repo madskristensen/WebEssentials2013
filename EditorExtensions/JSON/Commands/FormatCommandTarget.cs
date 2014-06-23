@@ -52,7 +52,7 @@ namespace MadsKristensen.EditorExtensions.JSON
 
         private void InsertMissingQuotes(IEnumerable<JSONMember> properties)
         {
-            using (EditorExtensionsPackage.UndoContext("Inserting missing quotes"))
+            using (WebEssentialsPackage.UndoContext("Inserting missing quotes"))
             {
                 var edit = TextView.TextBuffer.CreateEdit();
 

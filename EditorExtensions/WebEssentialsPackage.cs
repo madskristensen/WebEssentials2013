@@ -44,7 +44,7 @@ namespace MadsKristensen.EditorExtensions
     [ProvideOptionPage(typeof(Settings.CoffeeScriptOptions), "Web Essentials", "CoffeeScript", 101, 106, true, new[] { "Iced", "JavaScript", "JS", "JScript" })]
     [ProvideOptionPage(typeof(Settings.LiveScriptOptions), "Web Essentials", "LiveScript", 101, 106, true, new[] { "LiveScript", "LS", "JavaScript", "JS", "JScript" })]
     [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling"), PackageRegistration(UseManagedResourcesOnly = true)]
-    public sealed class EditorExtensionsPackage : Package
+    public sealed class WebEssentialsPackage : Package
     {
         private static DTE2 _dte;
         private static IVsRegisterPriorityCommandTarget _pct;
@@ -70,7 +70,7 @@ namespace MadsKristensen.EditorExtensions
                 return _pct;
             }
         }
-        public static EditorExtensionsPackage Instance { get; private set; }
+        public static WebEssentialsPackage Instance { get; private set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         protected async override void Initialize()
@@ -204,14 +204,14 @@ namespace MadsKristensen.EditorExtensions
 
         public static void ExecuteCommand(string commandName, string commandArgs = "")
         {
-            var command = EditorExtensionsPackage.DTE.Commands.Item(commandName);
+            var command = WebEssentialsPackage.DTE.Commands.Item(commandName);
 
             if (!command.IsAvailable)
                 return;
 
             try
             {
-                EditorExtensionsPackage.DTE.ExecuteCommand(commandName, commandArgs);
+                WebEssentialsPackage.DTE.ExecuteCommand(commandName, commandArgs);
             }
             catch { }
         }
@@ -257,7 +257,7 @@ namespace MadsKristensen.EditorExtensions
         ///<remarks>Use this method in a using() block to make sure that exceptions don't break Undo.</remarks>
         public static IDisposable UndoContext(string name)
         {
-            EditorExtensionsPackage.DTE.UndoContext.Open(name);
+            WebEssentialsPackage.DTE.UndoContext.Open(name);
 
             return new Disposable(DTE.UndoContext.Close);
         }

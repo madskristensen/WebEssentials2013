@@ -28,7 +28,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
         public override void Invoke()
         {
-            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            using (WebEssentialsPackage.UndoContext((DisplayText)))
             {
                 var snapshot = _span.TextBuffer.CurrentSnapshot;
                 var position = _rule.Start + _rule.Length;

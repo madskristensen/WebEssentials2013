@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions
 
         private void PerformDiff()
         {
-            EditorExtensionsPackage.ExecuteCommand("Tools.DiffFiles", "\"" + files[0] + "\" \"" + files[1] + "\"");
+            WebEssentialsPackage.ExecuteCommand("Tools.DiffFiles", "\"" + files[0] + "\" \"" + files[1] + "\"");
         }
     }
 }

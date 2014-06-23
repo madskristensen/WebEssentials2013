@@ -53,7 +53,7 @@ namespace MadsKristensen.EditorExtensions
         [BrowserLinkCallback]
         public void UpdateSource(string innerHtml, string file, int position)
         {
-            EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
+            WebEssentialsPackage.DTE.ItemOperations.OpenFile(file);
 
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
@@ -96,12 +96,12 @@ namespace MadsKristensen.EditorExtensions
 
         private static void UpdateBuffer(string innerHTML, HtmlEditorDocument html, Span span)
         {
-            using (EditorExtensionsPackage.UndoContext("Design Mode changes"))
+            using (WebEssentialsPackage.UndoContext("Design Mode changes"))
             {
                 try
                 {
                     html.TextBuffer.Replace(span, innerHTML);
-                    EditorExtensionsPackage.DTE.ActiveDocument.Save();
+                    WebEssentialsPackage.DTE.ActiveDocument.Save();
                 }
                 catch
                 {
@@ -116,8 +116,8 @@ namespace MadsKristensen.EditorExtensions
         {
             try
             {
-                EditorExtensionsPackage.ExecuteCommand("Edit.Undo");
-                EditorExtensionsPackage.DTE.ActiveDocument.Save();
+                WebEssentialsPackage.ExecuteCommand("Edit.Undo");
+                WebEssentialsPackage.DTE.ActiveDocument.Save();
             }
             catch
             {
@@ -131,8 +131,8 @@ namespace MadsKristensen.EditorExtensions
         {
             try
             {
-                EditorExtensionsPackage.ExecuteCommand("Edit.Redo");
-                EditorExtensionsPackage.DTE.ActiveDocument.Save();
+                WebEssentialsPackage.ExecuteCommand("Edit.Redo");
+                WebEssentialsPackage.DTE.ActiveDocument.Save();
             }
             catch
             {
@@ -144,9 +144,9 @@ namespace MadsKristensen.EditorExtensions
         [BrowserLinkCallback]
         public void Save()
         {
-            if (EditorExtensionsPackage.DTE.ActiveDocument != null && !EditorExtensionsPackage.DTE.ActiveDocument.Saved)
+            if (WebEssentialsPackage.DTE.ActiveDocument != null && !WebEssentialsPackage.DTE.ActiveDocument.Saved)
             {
-                EditorExtensionsPackage.DTE.ActiveDocument.Save();
+                WebEssentialsPackage.DTE.ActiveDocument.Save();
             }
         }
     }

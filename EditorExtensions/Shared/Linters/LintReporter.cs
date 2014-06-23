@@ -26,14 +26,14 @@ namespace MadsKristensen.EditorExtensions
 
         static Dictionary<string, ErrorListProvider> InitializeResources()
         {
-            EditorExtensionsPackage.DTE.Events.SolutionEvents.AfterClosing += SolutionEvents_AfterClosing;
+            WebEssentialsPackage.DTE.Events.SolutionEvents.AfterClosing += SolutionEvents_AfterClosing;
             return new Dictionary<string, ErrorListProvider>();
         }
 
         static void SolutionEvents_AfterClosing()
         {
             Reset();
-            EditorExtensionsPackage.DTE.Events.SolutionEvents.AfterClosing -= SolutionEvents_AfterClosing;
+            WebEssentialsPackage.DTE.Events.SolutionEvents.AfterClosing -= SolutionEvents_AfterClosing;
         }
 
         public static void Reset()
@@ -66,7 +66,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (!_providers.TryGetValue(fileName, out _provider))
             {
-                _provider = new ErrorListProvider(EditorExtensionsPackage.Instance);
+                _provider = new ErrorListProvider(WebEssentialsPackage.Instance);
                 _providers.Add(fileName, _provider);
             }
         }
@@ -77,11 +77,11 @@ namespace MadsKristensen.EditorExtensions
             if (_isDisposed)
                 return;
 
-            EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: Running " + _compiler.ServiceName + "...";
+            WebEssentialsPackage.DTE.StatusBar.Text = "Web Essentials: Running " + _compiler.ServiceName + "...";
 
             CompilerResult result = await _compiler.CheckAsync(FileName);
 
-            EditorExtensionsPackage.DTE.StatusBar.Clear();
+            WebEssentialsPackage.DTE.StatusBar.Clear();
 
             // Hack to select result from Error: 
             // See https://github.com/madskristensen/WebEssentials2013/issues/392#issuecomment-31566419
@@ -164,7 +164,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (task.Column > 0)
             {
-                var doc = (TextDocument)EditorExtensionsPackage.DTE.ActiveDocument.Object("textdocument");
+                var doc = (TextDocument)WebEssentialsPackage.DTE.ActiveDocument.Object("textdocument");
                 doc.Selection.MoveToDisplayColumn(task.Line, task.Column);
             }
         }

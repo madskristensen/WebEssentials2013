@@ -24,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
 
             string result = SortLines(commandId, lines);
 
-            using (EditorExtensionsPackage.UndoContext(("Sort Selected Lines")))
+            using (WebEssentialsPackage.UndoContext(("Sort Selected Lines")))
                 TextView.TextBuffer.Replace(span.Span, result);
 
             return true;

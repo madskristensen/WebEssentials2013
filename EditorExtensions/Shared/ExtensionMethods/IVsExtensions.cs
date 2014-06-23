@@ -41,7 +41,7 @@ namespace MadsKristensen.EditorExtensions
         public static void AddHierarchyItem(this ErrorTask task)
         {
             IVsHierarchy hierarchyItem = null;
-            IVsSolution solution = EditorExtensionsPackage.GetGlobalService<IVsSolution>(typeof(SVsSolution));
+            IVsSolution solution = WebEssentialsPackage.GetGlobalService<IVsSolution>(typeof(SVsSolution));
             Project project = ProjectHelpers.GetActiveProject();
 
             if (solution != null && project != null)

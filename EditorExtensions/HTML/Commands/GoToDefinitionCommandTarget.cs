@@ -38,7 +38,7 @@ namespace MadsKristensen.EditorExtensions.Html
                     return true;
                 }
 
-                EditorExtensionsPackage.DTE.StatusBar.Text = "Couldn't find " + _path;
+                WebEssentialsPackage.DTE.StatusBar.Text = "Couldn't find " + _path;
             }
             else if (!string.IsNullOrEmpty(_className))
             {
@@ -66,7 +66,7 @@ namespace MadsKristensen.EditorExtensions.Html
                     return true;
                 }
 
-                EditorExtensionsPackage.DTE.StatusBar.Text = "Couldn't find " + _className;
+                WebEssentialsPackage.DTE.StatusBar.Text = "Couldn't find " + _className;
             }
 
             return false;

@@ -51,7 +51,7 @@ namespace MadsKristensen.EditorExtensions.Html
             public async override void Invoke()
             {
                 string file;
-                string root = ProjectHelpers.GetProjectFolder(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+                string root = ProjectHelpers.GetProjectFolder(WebEssentialsPackage.DTE.ActiveDocument.FullName);
 
                 if (CanSaveFile(root, out file))
                 {
@@ -89,11 +89,11 @@ namespace MadsKristensen.EditorExtensions.Html
 
                 string reference = GetReference(element, fileName, root);
 
-                using (EditorExtensionsPackage.UndoContext((this.DisplayText)))
+                using (WebEssentialsPackage.UndoContext((this.DisplayText)))
                 {
                     textBuffer.Replace(new Span(element.Start, element.Length), reference);
                     await FileHelpers.WriteAllTextRetry(fileName, text);
-                    EditorExtensionsPackage.DTE.ItemOperations.OpenFile(fileName);
+                    WebEssentialsPackage.DTE.ItemOperations.OpenFile(fileName);
                     ProjectHelpers.AddFileToActiveProject(fileName);
                 }
             }

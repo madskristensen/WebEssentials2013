@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions.Css
                 {
                     dialog.CheckFileExists = true;
                     dialog.Multiselect = false;
-                    dialog.InitialDirectory = new FileInfo(EditorExtensionsPackage.DTE.ActiveDocument.FullName).Directory.FullName;
+                    dialog.InitialDirectory = new FileInfo(WebEssentialsPackage.DTE.ActiveDocument.FullName).Directory.FullName;
 
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
@@ -67,7 +67,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
         private void InsertEmbedString(ITextSnapshot snapshot, string dataUri)
         {
-            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            using (WebEssentialsPackage.UndoContext((DisplayText)))
             {
                 _span.TextBuffer.Replace(_span.GetSpan(snapshot), dataUri);
             }

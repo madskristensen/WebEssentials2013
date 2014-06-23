@@ -33,8 +33,8 @@ namespace MadsKristensen.EditorExtensions.Commands
             {
                 Logger.Log("An exception was thrown while executing command " + GetCommandName(pguidCmdGroup, nCmdID) + ":\n" + ex);
 
-                if (EditorExtensionsPackage.DTE.UndoContext.IsOpen)
-                    EditorExtensionsPackage.DTE.UndoContext.Close();
+                if (WebEssentialsPackage.DTE.UndoContext.IsOpen)
+                    WebEssentialsPackage.DTE.UndoContext.Close();
 
                 foreach (var buffer in _textView.BufferGraph.GetTextBuffers(b => true))
                     AbortUndoTransaction(buffer);

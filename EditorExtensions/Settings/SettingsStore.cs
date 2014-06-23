@@ -134,7 +134,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         }
         public static string GetSolutionFilePath()
         {
-            Solution solution = EditorExtensionsPackage.DTE.Solution;
+            Solution solution = WebEssentialsPackage.DTE.Solution;
 
             if (solution == null || string.IsNullOrEmpty(solution.FullName))
                 return null;
@@ -143,7 +143,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         }
         private static string GetUserFilePath()
         {
-            var ssm = new ShellSettingsManager(EditorExtensionsPackage.Instance);
+            var ssm = new ShellSettingsManager(WebEssentialsPackage.Instance);
             return Path.Combine(ssm.GetApplicationDataFolder(ApplicationDataFolder.RoamingSettings), FileName);
         }
         #endregion
@@ -153,9 +153,9 @@ namespace MadsKristensen.EditorExtensions.Settings
             try
             {
                 if (SolutionSettingsExist)
-                    EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: Solution settings " + action;
+                    WebEssentialsPackage.DTE.StatusBar.Text = "Web Essentials: Solution settings " + action;
                 else
-                    EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: Global settings " + action;
+                    WebEssentialsPackage.DTE.StatusBar.Text = "Web Essentials: Global settings " + action;
             }
             catch
             {

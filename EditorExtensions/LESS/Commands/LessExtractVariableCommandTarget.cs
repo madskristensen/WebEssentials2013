@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions.Less
             if (string.IsNullOrEmpty(name))
                 return false;
 
-            using (EditorExtensionsPackage.UndoContext(("Extract to variable")))
+            using (WebEssentialsPackage.UndoContext(("Extract to variable")))
             {
                 buffer.Insert(rule.Start, "@" + name + ": " + text + ";" + Environment.NewLine + Environment.NewLine);
 

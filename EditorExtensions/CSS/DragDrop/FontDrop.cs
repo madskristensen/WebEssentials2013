@@ -76,7 +76,7 @@ namespace MadsKristensen.EditorExtensions.Css
             {
                 string file = files.ElementAt(i);
                 string extension = Path.GetExtension(file).ToLowerInvariant();
-                string reference = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, file);
+                string reference = FileHelpers.RelativePath(WebEssentialsPackage.DTE.ActiveDocument.FullName, file);
 
                 if (reference.StartsWith("http://localhost:", StringComparison.OrdinalIgnoreCase))
                 {

@@ -49,7 +49,7 @@ namespace MadsKristensen.EditorExtensions.Html
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "img")]
         public DragDropPointerEffects HandleDataDropped(DragDropInfo dragDropInfo)
         {
-            string reference = FileHelpers.RelativePath(EditorExtensionsPackage.DTE.ActiveDocument.FullName, _imageFilename);
+            string reference = FileHelpers.RelativePath(WebEssentialsPackage.DTE.ActiveDocument.FullName, _imageFilename);
 
             if (reference.Contains("://"))
             {

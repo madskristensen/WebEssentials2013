@@ -67,7 +67,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
         public static string GetSolutionFilePath()
         {
-            EnvDTE.Solution solution = EditorExtensionsPackage.DTE.Solution;
+            EnvDTE.Solution solution = WebEssentialsPackage.DTE.Solution;
 
             if (solution == null || string.IsNullOrEmpty(solution.FullName))
                 return null;

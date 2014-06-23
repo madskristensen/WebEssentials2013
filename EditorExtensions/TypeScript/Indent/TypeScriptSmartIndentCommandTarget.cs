@@ -35,7 +35,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
             {
                 Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
                 {
-                    using (EditorExtensionsPackage.UndoContext("Smart Indent"))
+                    using (WebEssentialsPackage.UndoContext("Smart Indent"))
                     {
                         // HACK: A better way is needed. 
                         // We do this to get around the native TS formatter

@@ -209,7 +209,7 @@ namespace MadsKristensen.EditorExtensions.Css
             if (result.Length > 1)
                 result = result.TrimStart('0');
 
-            using (EditorExtensionsPackage.UndoContext(undoTitle))
+            using (WebEssentialsPackage.UndoContext(undoTitle))
                 span.Snapshot.TextBuffer.Replace(span, result);
         }
 

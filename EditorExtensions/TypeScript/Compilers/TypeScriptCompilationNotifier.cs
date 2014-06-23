@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
             if (!string.IsNullOrEmpty(_outputFile))
                 return _outputFile;
 
-            IVsSolution solution = EditorExtensionsPackage.GetGlobalService<IVsSolution>(typeof(SVsSolution));
+            IVsSolution solution = WebEssentialsPackage.GetGlobalService<IVsSolution>(typeof(SVsSolution));
             Project project = ProjectHelpers.GetProject(SourceFilePath);
             IVsHierarchy hierarchy = null;
 
@@ -46,7 +46,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
             else
             {
                 string outputFile, outputDir;
-                string config = EditorExtensionsPackage.DTE.Solution.SolutionBuild.ActiveConfiguration.Name;
+                string config = WebEssentialsPackage.DTE.Solution.SolutionBuild.ActiveConfiguration.Name;
                 int resultFile = buildPropertyStorage.GetPropertyValue("TypeScriptOutFile", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputFile);
                 int resultDir = buildPropertyStorage.GetPropertyValue("TypeScriptOutDir", config, (uint)_PersistStorageType.PST_PROJECT_FILE, out outputDir);
 

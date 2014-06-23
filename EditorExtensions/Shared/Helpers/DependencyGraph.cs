@@ -231,9 +231,9 @@ namespace MadsKristensen.EditorExtensions.Helpers
         ///<summary>Gets the ContentType of the files analyzed by this instance.</summary>
         public IContentType ContentType { get; private set; }
 
-        private readonly DocumentEvents documentEvents = EditorExtensionsPackage.DTE.Events.DocumentEvents;
-        private readonly SolutionEvents solutionEvents = EditorExtensionsPackage.DTE.Events.SolutionEvents;
-        private readonly ProjectItemsEvents projectItemEvents = ((Events2)EditorExtensionsPackage.DTE.Events).ProjectItemsEvents;
+        private readonly DocumentEvents documentEvents = WebEssentialsPackage.DTE.Events.DocumentEvents;
+        private readonly SolutionEvents solutionEvents = WebEssentialsPackage.DTE.Events.SolutionEvents;
+        private readonly ProjectItemsEvents projectItemEvents = ((Events2)WebEssentialsPackage.DTE.Events).ProjectItemsEvents;
 
         protected VsDependencyGraph(IContentType contentType, IFileExtensionRegistryService fileExtensionRegistry)
         {
@@ -270,7 +270,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
                 if (value)
                 {
                     AddEventHandlers();
-                    if (EditorExtensionsPackage.DTE.Solution.IsOpen)
+                    if (WebEssentialsPackage.DTE.Solution.IsOpen)
                         RescanComplete = Task.Run(() => RescanSolutionAsync()).HandleErrors("scanning solution for " + ContentType + " dependencies");
                 }
                 else

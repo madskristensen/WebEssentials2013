@@ -56,7 +56,7 @@ namespace MadsKristensen.EditorExtensions
         {
             try
             {
-                IVsFontAndColorStorage storage = (IVsFontAndColorStorage)EditorExtensionsPackage.GetGlobalService(typeof(IVsFontAndColorStorage));
+                IVsFontAndColorStorage storage = (IVsFontAndColorStorage)WebEssentialsPackage.GetGlobalService(typeof(IVsFontAndColorStorage));
                 var guid = new Guid("A27B4E24-A735-4d1d-B8E7-9716E1E3D8E0");
                 if (storage != null && storage.OpenCategory(ref guid, (uint)(__FCSTORAGEFLAGS.FCSF_READONLY | __FCSTORAGEFLAGS.FCSF_LOADDEFAULTS)) == VS.VSConstants.S_OK)
                 {

@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         private static ErrorListProvider InitializeErrorListProvider()
         {
-            var errorListProvider = new ErrorListProvider(EditorExtensionsPackage.Instance);
+            var errorListProvider = new ErrorListProvider(WebEssentialsPackage.Instance);
 
             try
             {

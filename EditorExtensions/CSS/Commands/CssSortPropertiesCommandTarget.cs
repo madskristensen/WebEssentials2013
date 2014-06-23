@@ -23,18 +23,18 @@ namespace MadsKristensen.EditorExtensions.Css
             var buffer = point.Value.Snapshot.TextBuffer;
             int scrollPosition = TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
 
-            using (EditorExtensionsPackage.UndoContext("Sort All Properties"))
+            using (WebEssentialsPackage.UndoContext("Sort All Properties"))
             {
                 string result = SortProperties(buffer.CurrentSnapshot.GetText(), buffer.ContentType);
                 Span span = new Span(0, buffer.CurrentSnapshot.Length);
                 buffer.Replace(span, result);
 
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
-                var selection = EditorExtensionsPackage.DTE.ActiveDocument.Selection as TextSelection;
+                WebEssentialsPackage.ExecuteCommand("Edit.FormatDocument");
+                var selection = WebEssentialsPackage.DTE.ActiveDocument.Selection as TextSelection;
                 selection.GotoLine(1);
 
                 TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, TextView.TextSnapshot.GetLineNumberFromPosition(scrollPosition));
-                EditorExtensionsPackage.DTE.StatusBar.Text = "Properties sorted";
+                WebEssentialsPackage.DTE.StatusBar.Text = "Properties sorted";
             }
 
             return true;

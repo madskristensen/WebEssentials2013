@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
         public override void Invoke()
         {
-            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            using (WebEssentialsPackage.UndoContext((DisplayText)))
                 _span.TextBuffer.Replace(_span.GetSpan(_span.TextBuffer.CurrentSnapshot), _selector.Text.Substring(_hack.Length));
         }
     }

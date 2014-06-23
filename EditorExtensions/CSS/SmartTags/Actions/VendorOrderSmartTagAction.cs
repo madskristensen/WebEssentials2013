@@ -35,11 +35,11 @@ namespace MadsKristensen.EditorExtensions.Css
             //string separator = CssSettings.FormatterBlockBracePosition == BracePosition.Compact ? " " : Environment.NewLine;
             string insert = _lastVendor.Text + separator + _standard.Text;
 
-            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            using (WebEssentialsPackage.UndoContext((DisplayText)))
             {
                 _span.TextBuffer.Replace(new Span(_lastVendor.Start, _lastVendor.Length), insert);
                 _span.TextBuffer.Delete(new Span(_standard.Start, _standard.Length));
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                WebEssentialsPackage.ExecuteCommand("Edit.FormatSelection");
             }
         }
     }

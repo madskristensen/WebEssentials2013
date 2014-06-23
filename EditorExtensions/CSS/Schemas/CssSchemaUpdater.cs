@@ -118,7 +118,7 @@ namespace MadsKristensen.EditorExtensions.Css
                 writer.WriteLine(DateTime.Now + " " + message);
             }
 
-            EditorExtensionsPackage.DTE.StatusBar.Text = "Web Essentials: " + message;
+            WebEssentialsPackage.DTE.StatusBar.Text = "Web Essentials: " + message;
         }
 
         private static DateTime GetLastRequestDate()

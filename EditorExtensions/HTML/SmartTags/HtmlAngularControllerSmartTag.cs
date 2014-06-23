@@ -55,7 +55,7 @@ namespace MadsKristensen.EditorExtensions.Html
                 if (string.IsNullOrEmpty(value))
                     value = "myController";
 
-                string folder = ProjectHelpers.GetProjectFolder(EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+                string folder = ProjectHelpers.GetProjectFolder(WebEssentialsPackage.DTE.ActiveDocument.FullName);
                 string file;
 
                 using (var dialog = new SaveFileDialog())
@@ -71,13 +71,13 @@ namespace MadsKristensen.EditorExtensions.Html
                     file = dialog.FileName;
                 }
 
-                using (EditorExtensionsPackage.UndoContext((this.DisplayText)))
+                using (WebEssentialsPackage.UndoContext((this.DisplayText)))
                 {
                     string script = GetScript(value);
                     await FileHelpers.WriteAllTextRetry(file, script);
 
                     ProjectHelpers.AddFileToActiveProject(file);
-                    EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
+                    WebEssentialsPackage.DTE.ItemOperations.OpenFile(file);
                 }
             }
 

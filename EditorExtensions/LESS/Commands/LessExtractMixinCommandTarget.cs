@@ -31,7 +31,7 @@ namespace MadsKristensen.EditorExtensions.Less
 
             if (!string.IsNullOrEmpty(name))
             {
-                using (EditorExtensionsPackage.UndoContext(("Extract to mixin")))
+                using (WebEssentialsPackage.UndoContext(("Extract to mixin")))
                 {
                     string text = TextView.Selection.SelectedSpans[0].GetText();
                     buffer.Insert(rule.Start, "." + name + "() {" + Environment.NewLine + text + Environment.NewLine + "}" + Environment.NewLine + Environment.NewLine);
@@ -40,7 +40,7 @@ namespace MadsKristensen.EditorExtensions.Less
                     TextView.TextBuffer.Replace(selection.Span, "." + name + "();");
 
                     TextView.Selection.Select(new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, mixinStart, 1), false);
-                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                    WebEssentialsPackage.ExecuteCommand("Edit.FormatSelection");
                     TextView.Selection.Clear();
                 }
 

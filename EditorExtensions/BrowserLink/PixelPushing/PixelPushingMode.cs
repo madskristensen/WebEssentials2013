@@ -270,7 +270,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
             }
 
             var oldSnapshotOnChange = doc.IsProcessingUnusedCssRules;
-            var window = EditorExtensionsPackage.DTE.ItemOperations.OpenFile(file);
+            var window = WebEssentialsPackage.DTE.ItemOperations.OpenFile(file);
             window.Activate();
             var buffer = ProjectHelpers.GetCurentTextBuffer();
             var flattenedRules = FlattenRules(doc);
@@ -308,7 +308,7 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.PixelPushing
                 if (!compositeEdit.Canceled)
                 {
                     compositeEdit.Apply();
-                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
+                    WebEssentialsPackage.ExecuteCommand("Edit.FormatDocument");
                     window.Document.Save();
                 }
 

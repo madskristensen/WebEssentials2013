@@ -66,7 +66,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
                 Directory.CreateDirectory(Path.GetDirectoryName(_referencesJsPath));
                 await FileHelpers.WriteAllTextRetry(_referencesJsPath, "/// <autosync enabled=\"true\" />");
                 ProjectHelpers.AddFileToActiveProject(_referencesJsPath);
-                EditorExtensionsPackage.DTE.ItemOperations.OpenFile(_referencesJsPath);
+                WebEssentialsPackage.DTE.ItemOperations.OpenFile(_referencesJsPath);
             }
             catch (IOException)
             {

@@ -73,7 +73,7 @@ namespace MadsKristensen.EditorExtensions
                 }
                 else
                 {
-                    EditorExtensionsPackage.DTE.ItemOperations.OpenFile(document.FileName);
+                    WebEssentialsPackage.DTE.ItemOperations.OpenFile(document.FileName);
                     Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "Bundle error: The file '{0}' doesn't exist", asset));
 
                     return null;

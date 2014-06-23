@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
 
                 if (index > -1)
                 {
-                    EditorExtensionsPackage.DTE.ItemOperations.OpenFile(_file);
+                    WebEssentialsPackage.DTE.ItemOperations.OpenFile(_file);
                     _extension.ErrorList.Tasks.Remove(task);
                     AddMetaTag(index);
 
@@ -64,15 +64,15 @@ namespace MadsKristensen.EditorExtensions
                 var view = ProjectHelpers.GetCurentTextView();
                 var buffer = view.TextBuffer;
 
-                using (EditorExtensionsPackage.UndoContext("Adding <meta> description"))
+                using (WebEssentialsPackage.UndoContext("Adding <meta> description"))
                 {
                     buffer.Insert(index, "<meta name=\"description\" content=\"The description of my page\" />" + Environment.NewLine);
                     view.Caret.MoveTo(new SnapshotPoint(buffer.CurrentSnapshot, index + 34 + 26));
                     view.Selection.Select(new SnapshotSpan(buffer.CurrentSnapshot, 34 + index, 26), false);
-                    EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
+                    WebEssentialsPackage.ExecuteCommand("Edit.FormatSelection");
                 }
 
-                EditorExtensionsPackage.DTE.ActiveDocument.Save();
+                WebEssentialsPackage.DTE.ActiveDocument.Save();
                 view.ViewScroller.EnsureSpanVisible(new SnapshotSpan(buffer.CurrentSnapshot, index, 1), EnsureSpanVisibleOptions.AlwaysCenter);
 
             }), DispatcherPriority.ApplicationIdle, null);

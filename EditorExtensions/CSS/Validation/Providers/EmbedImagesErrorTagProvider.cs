@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions.Css
             if (!WESettings.Instance.Css.ValidateEmbedImages || !url.IsValid || url.UrlString == null || url.UrlString.Text.Contains("base64,") || context == null)
                 return ItemCheckResult.Continue;
 
-            string fileName = ImageQuickInfo.GetFullUrl(url.UrlString.Text, EditorExtensionsPackage.DTE.ActiveDocument.FullName);
+            string fileName = ImageQuickInfo.GetFullUrl(url.UrlString.Text, WebEssentialsPackage.DTE.ActiveDocument.FullName);
             if (string.IsNullOrEmpty(fileName) || fileName.Contains("://"))
                 return ItemCheckResult.Continue;
 

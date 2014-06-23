@@ -106,7 +106,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         public ErrorReportingCompilerInvoker(ITextDocument doc, CompilerRunnerBase compilerRunner)
             : base(doc, compilerRunner)
         {
-            _provider = new ErrorListProvider(EditorExtensionsPackage.Instance);
+            _provider = new ErrorListProvider(WebEssentialsPackage.Instance);
         }
 
         ///<summary>Releases the unmanaged resources used by the ErrorReportingCompilerInvoker and optionally releases the managed resources.</summary>
@@ -161,7 +161,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
             if (task.Column > 0)
             {
-                var doc = (TextDocument)EditorExtensionsPackage.DTE.ActiveDocument.Object("textdocument");
+                var doc = (TextDocument)WebEssentialsPackage.DTE.ActiveDocument.Object("textdocument");
                 doc.Selection.MoveToLineAndOffset(task.Line, task.Column, false);
             }
         }

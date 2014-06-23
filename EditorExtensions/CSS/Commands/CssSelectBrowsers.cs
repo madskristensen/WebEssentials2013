@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions.Css
         public CssSelectBrowsers(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, MinifyCommandId.SelectBrowsers)
         {
-            _dte = EditorExtensionsPackage.DTE;
+            _dte = WebEssentialsPackage.DTE;
         }
 
         protected override bool Execute(MinifyCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)

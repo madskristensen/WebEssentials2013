@@ -37,11 +37,11 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             string text = _buffer.CurrentSnapshot.GetText();
             text = Regex.Replace(text, @"(},|};|}\s+|\),|\);|}(?=\w)|(?=if\())", "$1" + Environment.NewLine);
 
-            using (EditorExtensionsPackage.UndoContext("Un-Minify"))
+            using (WebEssentialsPackage.UndoContext("Un-Minify"))
             {
                 Span span = new Span(0, _buffer.CurrentSnapshot.Length);
                 _buffer.Replace(span, text);
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatDocument");
+                WebEssentialsPackage.ExecuteCommand("Edit.FormatDocument");
             }
         }
     }

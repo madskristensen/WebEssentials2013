@@ -35,7 +35,7 @@ namespace MadsKristensen.EditorExtensions.Html
         {
             if (InspectMode.IsInspectModeEnabled)
             {
-                var doc = EditorExtensionsPackage.DTE.ActiveDocument;
+                var doc = WebEssentialsPackage.DTE.ActiveDocument;
                 if (doc != null)
                 {
                     InspectMode.Select(e.View.TextDataModel.DocumentBuffer.GetFileName(), e.Position);

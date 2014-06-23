@@ -51,11 +51,11 @@ namespace MadsKristensen.EditorExtensions.Css
 
         private void InsertEmbedString(ITextSnapshot snapshot, string dataUri)
         {
-            using (EditorExtensionsPackage.UndoContext((DisplayText)))
+            using (WebEssentialsPackage.UndoContext((DisplayText)))
             {
                 _span.TextBuffer.Replace(_span.GetSpan(snapshot), dataUri);
-                EditorExtensionsPackage.ExecuteCommand("Edit.FormatSelection");
-                EditorExtensionsPackage.ExecuteCommand("Edit.CollapsetoDefinitions");
+                WebEssentialsPackage.ExecuteCommand("Edit.FormatSelection");
+                WebEssentialsPackage.ExecuteCommand("Edit.CollapsetoDefinitions");
             }
         }
     }
