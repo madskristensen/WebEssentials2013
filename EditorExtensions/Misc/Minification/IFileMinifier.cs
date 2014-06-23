@@ -34,6 +34,8 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     {
         public virtual bool GenerateSourceMap { get { return false; } }
 
+        public virtual bool SaveWithBom { get; set; }
+
         public async virtual Task<bool> MinifyFile(string sourcePath, string targetPath)
         {
             var result = MinifyString(await FileHelpers.ReadAllTextRetry(sourcePath));
@@ -41,7 +43,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             if (result != null && (!File.Exists(targetPath) || result != await FileHelpers.ReadAllTextRetry(targetPath)))
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(targetPath);
-                await FileHelpers.WriteAllTextRetry(targetPath, result);
+                await FileHelpers.WriteAllTextRetry(targetPath, result, SaveWithBom);
                 ProjectHelpers.AddFileToProject(sourcePath, targetPath);
 
                 return true;
@@ -67,7 +69,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             var settings = new HtmlMinificationSettings
             {
                 RemoveOptionalEndTags = false,
-                
+
                 AttributeQuotesRemovalMode = WESettings.Instance.Html.MinificationMode,
                 RemoveRedundantAttributes = false,
                 //EmptyTagRenderMode = HtmlEmptyTagRenderMode.Slash,
@@ -94,6 +96,8 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     [ContentType("CSS")]
     public class CssFileMinifier : InMemoryMinifier
     {
+        public override bool SaveWithBom { get { return true; } }
+ 
         public override string MinifyString(string source)
         {
             Minifier minifier = new Minifier();
@@ -113,6 +117,8 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     public class JavaScriptFileMinifier : InMemoryMinifier
     {
         public override bool GenerateSourceMap { get { return WESettings.Instance.JavaScript.GenerateSourceMaps; } }
+
+        public override bool SaveWithBom { get { return true; } }
 
         static CodeSettings CreateSettings()
         {
