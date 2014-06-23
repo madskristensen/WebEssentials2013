@@ -11,13 +11,12 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
 {
     [Export(typeof(NodeExecutorBase))]
     [ContentType("CoffeeScript")]
-    public class CoffeeScriptCompiler : NodeExecutorBase
+    public class CoffeeScriptCompiler : JsCompilerBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\coffee-script\bin\coffee");
         private static readonly Regex _errorParsingPattern = new Regex(@"\A(?<fileName>.*):(?<line>.\d*):(?<column>.\d*): error: (?<fullMessage>(?<message>.*)(\n*.*)*)", RegexOptions.Multiline | RegexOptions.Compiled);
         private static readonly Regex _sourceMapInJs = new Regex(@"\/\/\\*#.*(?i:sourceMappingURL)([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*", RegexOptions.Multiline);
 
-        public override string TargetExtension { get { return ".js"; } }
         public override bool GenerateSourceMap { get { return WESettings.Instance.CoffeeScript.GenerateSourceMaps && !WESettings.Instance.CoffeeScript.MinifyInPlace; } }
         public override string ServiceName { get { return "CoffeeScript"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
@@ -36,19 +35,6 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
 
             args.AppendFormat(CultureInfo.CurrentCulture, "--output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
             return args.ToString();
-        }
-
-        protected async override Task MoveOutputContentToCorrectTarget(string targetFileName)
-        {
-            if (!targetFileName.EndsWith(".min.js", System.StringComparison.OrdinalIgnoreCase))
-                return;
-
-            var tempName = targetFileName.Replace(".min.js", ".js");
-
-            if (!File.Exists(tempName))
-                return;
-
-            await FileHelpers.WriteAllTextRetry(targetFileName, await FileHelpers.ReadAllTextRetry(tempName));
         }
 
         protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)

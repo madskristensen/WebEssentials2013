@@ -362,6 +362,7 @@
     <Compile Include="SCSS\Commands\ScssCreationListener.cs" />
     <Compile Include="SCSS\Commands\ScssExtractMixinCommandTarget.cs" />
     <Compile Include="SCSS\Commands\ScssExtractVariableCommandTarget.cs" />
+    <Compile Include="Shared\Compilers\JsCompilerBase.cs" />
     <Compile Include="Shared\Compilers\Result\CompilerResultFactory.cs" />
     <Compile Include="Shared\Compilers\Result\CompilerError.cs" />
     <Compile Include="Shared\Compilers\Result\CssCompilerResult.cs" />

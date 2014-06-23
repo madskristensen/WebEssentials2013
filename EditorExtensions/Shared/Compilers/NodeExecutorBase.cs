@@ -34,13 +34,11 @@ namespace MadsKristensen.EditorExtensions
                 Path.GetFileName(targetFileName) != Path.GetFileNameWithoutExtension(sourceFileName) + ".min" + TargetExtension)
                 throw new ArgumentException(ServiceName + " cannot compile to a targetFileName with a different name.  Only the containing directory can be different.", "targetFileName");
 
-            var mapFileName = GetMapFileName(sourceFileName, targetFileName);
-
-            var scriptArgs = GetArguments(sourceFileName, targetFileName, mapFileName);
-
-            var errorOutputFile = Path.GetTempFileName();
-
-            var cmdArgs = string.Format("\"{0}\" \"{1}\"", NodePath, CompilerPath);
+            string mapFileName = GetMapFileName(sourceFileName, targetFileName),
+                   tempTarget = Path.GetTempFileName(),
+                   scriptArgs = GetArguments(sourceFileName, tempTarget, mapFileName),
+                   errorOutputFile = Path.GetTempFileName(),
+                   cmdArgs = string.Format("\"{0}\" \"{1}\"", NodePath, CompilerPath);
 
             cmdArgs = string.Format("/c \"{0} {1} > \"{2}\" 2>&1\"", cmdArgs, scriptArgs, errorOutputFile);
 
@@ -55,13 +53,7 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                ProjectHelpers.CheckOutFileFromSourceControl(targetFileName);
-
                 mapFileName = mapFileName ?? targetFileName + ".map";
-
-                if (ManagedSourceMap && GenerateSourceMap)
-                    ProjectHelpers.CheckOutFileFromSourceControl(mapFileName);
-
                 using (var process = await start.ExecuteAsync())
                 {
                     if (targetFileName != null)
@@ -71,6 +63,7 @@ namespace MadsKristensen.EditorExtensions
                                      process,
                                      (await FileHelpers.ReadAllTextRetry(errorOutputFile)).Trim(),
                                      sourceFileName,
+                                     tempTarget,
                                      targetFileName,
                                      mapFileName
                                  );
@@ -79,13 +72,14 @@ namespace MadsKristensen.EditorExtensions
             finally
             {
                 File.Delete(errorOutputFile);
+                File.Delete(tempTarget);
 
                 if (ManagedSourceMap && !GenerateSourceMap)
                     File.Delete(mapFileName);
             }
         }
 
-        private async Task<CompilerResult> ProcessResult(Process process, string errorText, string sourceFileName, string targetFileName, string mapFileName)
+        private async Task<CompilerResult> ProcessResult(Process process, string errorText, string sourceFileName, string tempTarget, string targetFileName, string mapFileName)
         {
             string result = "";
             bool success = false;
@@ -95,8 +89,13 @@ namespace MadsKristensen.EditorExtensions
             {
                 if (process.ExitCode == 0)
                 {
-                    if (!string.IsNullOrEmpty(targetFileName) && File.Exists(targetFileName))
-                        result = await FileHelpers.ReadAllTextRetry(targetFileName);
+                    if (!string.IsNullOrEmpty(tempTarget) && File.Exists(tempTarget))
+                    {
+                        result = await FileHelpers.ReadAllTextRetry(tempTarget);
+
+                        if (!File.Exists(targetFileName) || !ReferenceEquals(string.Intern(await FileHelpers.ReadAllTextRetry(targetFileName)), string.Intern(result)))
+                            await FileHelpers.WriteAllTextRetry(targetFileName, result);
+                    }
 
                     success = true;
                 }
@@ -114,7 +113,12 @@ namespace MadsKristensen.EditorExtensions
             {
                 var renewedResult = await PostProcessResult(result, sourceFileName, targetFileName, mapFileName);
 
-                if (!ReferenceEquals(result, renewedResult))
+                ProjectHelpers.CheckOutFileFromSourceControl(targetFileName);
+
+                if (ManagedSourceMap && GenerateSourceMap)
+                    ProjectHelpers.CheckOutFileFromSourceControl(mapFileName);
+
+                if (!ReferenceEquals(string.Intern(result), string.Intern(renewedResult)))
                 {
                     await FileHelpers.WriteAllTextRetry(targetFileName, renewedResult);
                     result = renewedResult;
