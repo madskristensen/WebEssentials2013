@@ -8,17 +8,34 @@ using Microsoft.VisualStudio.Threading;
 
 namespace MadsKristensen.EditorExtensions
 {
-    public class BundleFileObserver
+    public class BundleFileObserver : IDisposable
     {
+        private string _bundleFileName;
         private IBundleDocument _document;
         private FileSystemWatcher _watcher;
         private string[] _extensions = new[] { ".bundle", ".sprite" };
         private readonly AsyncReaderWriterLock rwLock = new AsyncReaderWriterLock();
         private static Dictionary<string, HashSet<Tuple<string, FileSystemWatcher>>> _watchedFiles = new Dictionary<string, HashSet<Tuple<string, FileSystemWatcher>>>();
 
+        public void WatchFutureFiles(string path, string extension, Func<string, Task> callbackTask)
+        {
+            _watcher = new FileSystemWatcher();
+            _watcher.Path = Path.GetDirectoryName(path);
+            _watcher.Filter = extension;
+            _watcher.IncludeSubdirectories = true;
+
+            _watcher.Created += async (_, __) =>
+            {
+                await callbackTask(__.FullPath);
+            };
+
+            _watcher.EnableRaisingEvents = true;
+        }
+
         public async Task AttachFileObserver(IBundleDocument document, string fileName, Func<string, bool, Task> updateBundle)
         {
             _document = document;
+            _bundleFileName = document.FileName;
             fileName = Path.GetFullPath(fileName);
 
             if (!File.Exists(fileName))
@@ -37,43 +54,83 @@ namespace MadsKristensen.EditorExtensions
 
             using (await rwLock.ReadLockAsync())
             {
-                if (_watchedFiles.ContainsKey(_document.FileName) && _watchedFiles[_document.FileName].Any(s => s.Item1.Equals(fileName, StringComparison.OrdinalIgnoreCase)))
+                if (_watchedFiles.ContainsKey(_bundleFileName) && _watchedFiles[_bundleFileName].Any(s => s.Item1.Equals(fileName, StringComparison.OrdinalIgnoreCase)))
                     return;
             }
 
-            _watcher.Changed += new FileSystemEventHandler((_, __) => Changed(fileName, updateBundle));
+            _watcher.Changed += new FileSystemEventHandler((_, __) => Changed(updateBundle));
             _watcher.Deleted += new FileSystemEventHandler((_, __) => Deleted(fileName));
+
+            if (_extensions.Any(e => fileName.EndsWith(e, StringComparison.OrdinalIgnoreCase)))
+                _watcher.Renamed += new RenamedEventHandler((_, renamedEventArgument) => Renamed(renamedEventArgument, updateBundle));
 
             _watcher.EnableRaisingEvents = true;
 
             using (await rwLock.WriteLockAsync())
             {
-                if (!_watchedFiles.ContainsKey(_document.FileName))
-                    _watchedFiles.Add(_document.FileName, new HashSet<Tuple<string, FileSystemWatcher>>());
+                if (!_watchedFiles.ContainsKey(_bundleFileName))
+                    _watchedFiles.Add(_bundleFileName, new HashSet<Tuple<string, FileSystemWatcher>>());
 
-                _watchedFiles[_document.FileName].Add(new Tuple<string, FileSystemWatcher>(fileName, _watcher));
+                _watchedFiles[_bundleFileName].Add(new Tuple<string, FileSystemWatcher>(fileName, _watcher));
             }
         }
 
-        private async void Changed(string fileName, Func<string, bool, Task> updateBundle)
+        private async void Renamed(RenamedEventArgs renamedEventArgument, Func<string, bool, Task> updateBundle)
         {
-            _document = await BundleDocument.FromFile(_document.FileName);
+            using (await rwLock.ReadLockAsync())
+            {
+                if (!_watchedFiles.ContainsKey(renamedEventArgument.OldFullPath) &&
+                    !renamedEventArgument.FullPath.StartsWith(ProjectHelpers.GetSolutionFolderPath(), StringComparison.OrdinalIgnoreCase))
+                    return;
+            }
+
+            HashSet<Tuple<string, FileSystemWatcher>> oldValue;
+
+            using (await rwLock.ReadLockAsync())
+            {
+                oldValue = _watchedFiles[renamedEventArgument.OldFullPath];
+            }
+
+            using (await rwLock.WriteLockAsync())
+            {
+                _watchedFiles.Remove(renamedEventArgument.OldFullPath);
+            }
+
+            _document = await _document.LoadFromFile(renamedEventArgument.FullPath);
+
+            foreach (Tuple<string, FileSystemWatcher> tuple in oldValue)
+            {
+                tuple.Item2.EnableRaisingEvents = false;
+
+                tuple.Item2.Dispose();
+
+                if (_extensions.Any(e => tuple.Item1.EndsWith(e, StringComparison.OrdinalIgnoreCase)))
+                    await AttachFileObserver(_document, _document.FileName, updateBundle);
+                else
+                    await AttachFileObserver(_document, tuple.Item1, updateBundle);
+            }
+        }
+
+        private async void Changed(Func<string, bool, Task> updateBundle)
+        {
             _watcher.EnableRaisingEvents = false;
 
-            await updateBundle(_document.FileName, false);
+            _document = await _document.LoadFromFile(_bundleFileName);
+
+            await updateBundle(_bundleFileName, false);
 
             IEnumerable<Tuple<string, FileSystemWatcher>> tuples;
 
             using (await rwLock.ReadLockAsync())
             {
-                tuples = _watchedFiles[_document.FileName].Where(x => !_extensions.Any(e => x.Item1.EndsWith(e)) && !_document.BundleAssets.Contains(x.Item1, StringComparer.OrdinalIgnoreCase));
+                tuples = _watchedFiles[_bundleFileName].Where(x => !_extensions.Any(e => x.Item1.EndsWith(e)) && !_document.BundleAssets.Contains(x.Item1, StringComparer.OrdinalIgnoreCase));
             }
 
             using (await rwLock.WriteLockAsync())
             {
                 StopMonitoring(tuples);
 
-                _watchedFiles[_document.FileName].RemoveWhere(x => tuples.Contains(x));
+                _watchedFiles[_bundleFileName].RemoveWhere(x => tuples.Contains(x));
             }
 
             _watcher.EnableRaisingEvents = true;
@@ -94,13 +151,19 @@ namespace MadsKristensen.EditorExtensions
                 if (File.Exists(fileName))
                     return;
 
+                using (await rwLock.ReadLockAsync())
+                {
+                    if (!_watchedFiles.ContainsKey(fileName))
+                        return;
+                }
+
                 bool isConstituent = !_extensions.Any(e => fileName.EndsWith(e, StringComparison.OrdinalIgnoreCase));
                 IEnumerable<Tuple<string, FileSystemWatcher>> tuples = null;
 
                 using (await rwLock.ReadLockAsync())
                 {
                     tuples = !isConstituent ?
-                             _watchedFiles[_document.FileName] :
+                             _watchedFiles[_bundleFileName] :
                              _watchedFiles.SelectMany(p => p.Value.Where(v => v.Item1.Equals(fileName, StringComparison.OrdinalIgnoreCase)));
                 }
 
@@ -110,12 +173,12 @@ namespace MadsKristensen.EditorExtensions
 
                     if (isConstituent)
                     {
-                        _watchedFiles[_document.FileName].RemoveWhere(x => tuples.Contains(x));
+                        _watchedFiles[_bundleFileName].RemoveWhere(x => tuples.Contains(x));
 
                         return;
                     }
 
-                    _watchedFiles.Remove(_document.FileName);
+                    _watchedFiles.Remove(_bundleFileName);
                 }
 
                 _watcher.EnableRaisingEvents = false;
@@ -134,6 +197,18 @@ namespace MadsKristensen.EditorExtensions
 
                 tuple.Item2.Dispose();
             }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+                _watcher.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

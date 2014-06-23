@@ -205,7 +205,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Automatically format HTML source when pressing Enter.")]
         [DefaultValue(true)]
         public bool EnableEnterFormat { get; set; }
-        
+
         [Category("Minification")]
         [DisplayName("Minify files on save")]
         [Description("Update any .min.html file when saving the corresponding .html file. To create a .min.html file, right-click a .html file.")]

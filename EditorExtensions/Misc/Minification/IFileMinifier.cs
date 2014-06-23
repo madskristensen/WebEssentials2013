@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.Ajax.Utilities;
 using Microsoft.VisualStudio.Utilities;
-using WebMarkupMin.Core;
 using WebMarkupMin.Core.Minifiers;
 using WebMarkupMin.Core.Settings;
 
@@ -34,7 +33,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     {
         public virtual bool GenerateSourceMap { get { return false; } }
 
-        public virtual bool SaveWithBom { get; set; }
+        public virtual bool SaveWithBOM { get; set; }
 
         public async virtual Task<bool> MinifyFile(string sourcePath, string targetPath)
         {
@@ -43,7 +42,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             if (result != null && (!File.Exists(targetPath) || result != await FileHelpers.ReadAllTextRetry(targetPath)))
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(targetPath);
-                await FileHelpers.WriteAllTextRetry(targetPath, result, SaveWithBom);
+                await FileHelpers.WriteAllTextRetry(targetPath, result, SaveWithBOM);
                 ProjectHelpers.AddFileToProject(sourcePath, targetPath);
 
                 return true;
@@ -96,8 +95,8 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     [ContentType("CSS")]
     public class CssFileMinifier : InMemoryMinifier
     {
-        public override bool SaveWithBom { get { return true; } }
- 
+        public override bool SaveWithBOM { get { return true; } }
+
         public override string MinifyString(string source)
         {
             Minifier minifier = new Minifier();
@@ -118,7 +117,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     {
         public override bool GenerateSourceMap { get { return WESettings.Instance.JavaScript.GenerateSourceMaps; } }
 
-        public override bool SaveWithBom { get { return true; } }
+        public override bool SaveWithBOM { get { return true; } }
 
         static CodeSettings CreateSettings()
         {
