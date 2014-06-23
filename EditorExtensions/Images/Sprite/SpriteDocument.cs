@@ -82,6 +82,11 @@ namespace MadsKristensen.EditorExtensions.Images
             }
         }
 
+        public async Task<IBundleDocument> LoadFromFile(string fileName)
+        {
+            return await SpriteDocument.FromFile(fileName);
+        }
+
         public static async Task<SpriteDocument> FromFile(string fileName)
         {
             string root = ProjectHelpers.GetProjectFolder(fileName);

@@ -83,6 +83,11 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
+        public async Task<IBundleDocument> LoadFromFile(string fileName)
+        {
+            return await BundleDocument.FromFile(fileName);
+        }
+
         public static async Task<BundleDocument> FromFile(string fileName)
         {
             var extension = Path.GetExtension(fileName).TrimStart('.').ToLowerInvariant();

@@ -51,6 +51,11 @@ namespace MadsKristensen.EditorExtensions
                 Func<string, bool, Task> bundleFunc = new BundleFilesMenu().UpdateBundleAsync;
                 Func<string, bool, Task> spriteFunc = new SpriteImageMenu().UpdateSpriteAsync;
 
+                BundleFileObserver observer = new BundleFileObserver();
+
+                observer.WatchFutureFiles(folder, "*.bundle", async (s) => { await BundleGenerator.WatchFiles(await BundleDocument.FromFile(s), bundleFunc); });
+                observer.WatchFutureFiles(folder, "*.sprite", async (s) => { await SpriteGenerator.WatchFiles(await SpriteDocument.FromFile(s), spriteFunc); });
+
                 foreach (string file in Directory.EnumerateFiles(folder, "*.*", SearchOption.AllDirectories)
                                        .Where(s => s.EndsWith(".bundle") || s.EndsWith(".sprite")))
                 {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -6,5 +7,7 @@ namespace MadsKristensen.EditorExtensions
     {
         string FileName { get; }
         IEnumerable<string> BundleAssets { get; }
+
+        Task<IBundleDocument> LoadFromFile(string fileName);
     }
 }
