@@ -121,7 +121,7 @@ namespace MadsKristensen.EditorExtensions
                 0, // help ID
                 OLEMSGBUTTON.OLEMSGBUTTON_YESNO, // buttons
                 OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, // default button
-                OLEMSGICON.OLEMSGICON_QUERY, // icon
+                OLEMSGICON.OLEMSGICON_WARNING, // icon
                 0, // system modal
                 out result) == VSConstants.S_OK)
             {
