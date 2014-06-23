@@ -36,7 +36,7 @@ namespace MadsKristensen.EditorExtensions.Scss
                    outputStyle,
                    sourceFileName,
                    targetFileName,
-				   numberPrecision);
+                   numberPrecision);
         }
 
         //https://github.com/hcatlin/libsass/issues/242
