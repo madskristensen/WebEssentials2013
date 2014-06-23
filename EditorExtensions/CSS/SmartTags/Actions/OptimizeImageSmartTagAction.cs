@@ -42,7 +42,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
                 if (dataUri.Length < url.Length)
                 {
-                    using (EditorExtensionsPackage.UndoContext("Optimize image"))
+                    using (WebEssentialsPackage.UndoContext("Optimize image"))
                     {
                         Span span = Span.FromBounds(_url.UrlString.Start, _url.UrlString.AfterEnd);
                         _span.TextBuffer.Replace(span, "'" + dataUri + "'");
