@@ -24,10 +24,7 @@ namespace MadsKristensen.EditorExtensions
             _watcher.Filter = extension;
             _watcher.IncludeSubdirectories = true;
 
-            _watcher.Created += async (_, __) =>
-            {
-                await callbackTask(__.FullPath);
-            };
+            _watcher.Created += async (_, __) => await callbackTask(__.FullPath);
 
             _watcher.EnableRaisingEvents = true;
         }
