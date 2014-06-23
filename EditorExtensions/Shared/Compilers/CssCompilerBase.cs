@@ -16,20 +16,21 @@ namespace MadsKristensen.EditorExtensions
     {
         private static readonly Regex _sourceMapInCss = new Regex(@"\/\*#.*(?i:sourceMappingURL)([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", RegexOptions.Multiline);
 
-        protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
+        protected async override Task<string> PostProcessResult(string originalResultSource, string sourceFileName, string targetFileName, string mapFileName)
         {
-            resultSource = await UpdateSourceMapUrls(resultSource, targetFileName, mapFileName);
+            string resultSource = await UpdateSourceMapUrls(originalResultSource, targetFileName, mapFileName);
 
-            var message = ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.";
+            string message = ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.";
 
             if (WESettings.Instance.Css.Autoprefix)
             {
-                await FileHelpers.WriteAllTextRetry(targetFileName, resultSource);
-                var autoprefixResult = await CssAutoprefixer.AutoprefixFile(sourceFileName, targetFileName, mapFileName);
+                if (!ReferenceEquals(string.Intern(resultSource), string.Intern(originalResultSource)))
+                    await FileHelpers.WriteAllTextRetry(targetFileName, resultSource);
+
+                string autoprefixResult = await CssAutoprefixer.AutoprefixFile(sourceFileName, targetFileName, mapFileName);
+
                 if (autoprefixResult != null)
-                {
                     resultSource = await UpdateSourceMapUrls(autoprefixResult, targetFileName, mapFileName);
-                }
             }
 
             // If the caller wants us to renormalize URLs to a different filename, do so.
@@ -65,7 +66,8 @@ namespace MadsKristensen.EditorExtensions
             if (updatedFileContent == null)
                 return content;
 
-            await FileHelpers.WriteAllTextRetry(mapFileName, updatedFileContent, false);
+            if (!ReferenceEquals(string.Intern(updatedFileContent), string.Intern(await FileHelpers.ReadAllTextRetry(mapFileName))))
+                await FileHelpers.WriteAllTextRetry(mapFileName, updatedFileContent, false);
 
             if (!GenerateSourceMap)
                 return _sourceMapInCss.Replace(content, string.Empty);

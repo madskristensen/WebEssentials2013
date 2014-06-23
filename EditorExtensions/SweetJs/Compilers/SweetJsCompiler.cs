@@ -11,12 +11,11 @@ namespace MadsKristensen.EditorExtensions.SweetJs
 {
     [Export(typeof(NodeExecutorBase))]
     [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
-    public class SweetJsCompiler : NodeExecutorBase
+    public class SweetJsCompiler : JsCompilerBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\sweet.js\bin\sjs");
         private static readonly Regex _errorParsingPattern = new Regex(@"\A(?<fileName>.+):(.*?\n*.*?)*?Line.+(?<line>\d+): (?<fullMessage>(?<message>.*)(\n*.*)*)", RegexOptions.Multiline | RegexOptions.Compiled);
 
-        public override string TargetExtension { get { return ".js"; } }
         public override bool GenerateSourceMap { get { return WESettings.Instance.SweetJs.GenerateSourceMaps && !WESettings.Instance.SweetJs.MinifyInPlace; } }
         public override string ServiceName { get { return SweetJsContentTypeDefinition.SweetJsContentType; } }
         protected override string CompilerPath { get { return _compilerPath; } }

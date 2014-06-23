@@ -11,12 +11,11 @@ namespace MadsKristensen.EditorExtensions.LiveScript
 {
     [Export(typeof(NodeExecutorBase))]
     [ContentType(LiveScriptContentTypeDefinition.LiveScriptContentType)]
-    public class LiveScriptCompiler : NodeExecutorBase
+    public class LiveScriptCompiler : JsCompilerBase
     {
         private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\LiveScript\bin\livescript");
         private static readonly Regex _errorParsingPattern = new Regex(@"Failed at: (?<filename>.*?)Error: (?<message>.*)", RegexOptions.Multiline);
 
-        public override string TargetExtension { get { return ".js"; } }
         public override bool GenerateSourceMap { get { return WESettings.Instance.LiveScript.GenerateSourceMaps; } }
         public override string ServiceName { get { return "LiveScript"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
@@ -32,19 +31,6 @@ namespace MadsKristensen.EditorExtensions.LiveScript
 
             args.AppendFormat(CultureInfo.CurrentCulture, "-o \"{0}\" -c \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
             return args.ToString();
-        }
-
-        protected async override Task MoveOutputContentToCorrectTarget(string targetFileName)
-        {
-            if (!targetFileName.EndsWith(".min.js", System.StringComparison.OrdinalIgnoreCase))
-                return;
-
-            var tempName = targetFileName.Replace(".min.js", ".js");
-
-            if (!File.Exists(tempName))
-                return;
-
-            await FileHelpers.WriteAllTextRetry(targetFileName, await FileHelpers.ReadAllTextRetry(tempName));
         }
 
         protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
