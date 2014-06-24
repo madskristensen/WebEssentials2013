@@ -48,6 +48,10 @@ namespace MadsKristensen.EditorExtensions
                     continue;
 
                 string folder = ProjectHelpers.GetRootFolder(project);
+
+                if (string.IsNullOrEmpty(folder))
+                    continue;
+
                 Func<string, bool, Task> bundleFunc = new BundleFilesMenu().UpdateBundleAsync;
                 Func<string, bool, Task> spriteFunc = new SpriteImageMenu().UpdateSpriteAsync;
 

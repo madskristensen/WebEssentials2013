@@ -32,8 +32,10 @@ namespace MadsKristensen.EditorExtensions
         public static IEnumerable<Project> GetAllProjects()
         {
             return WebEssentialsPackage.DTE.Solution.Projects
-                .Cast<Project>()
-                .SelectMany(GetChildProjects);
+                  .Cast<Project>()
+                  .SelectMany(GetChildProjects)
+                  .Union(WebEssentialsPackage.DTE.Solution.Projects.Cast<Project>())
+                  .Where(p => !string.IsNullOrEmpty(p.FullName));
         }
 
         private static IEnumerable<Project> GetChildProjects(Project parent)
@@ -43,7 +45,7 @@ namespace MadsKristensen.EditorExtensions
                 if (parent.Kind != ProjectKinds.vsProjectKindSolutionFolder && parent.Collection == null)  // Unloaded
                     return Enumerable.Empty<Project>();
 
-                if (!String.IsNullOrEmpty(parent.FullName))
+                if (!string.IsNullOrEmpty(parent.FullName))
                     return new[] { parent };
             }
             catch (COMException)

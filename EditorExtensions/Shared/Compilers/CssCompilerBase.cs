@@ -16,31 +16,31 @@ namespace MadsKristensen.EditorExtensions
     {
         private static readonly Regex _sourceMapInCss = new Regex(@"\/\*#.*(?i:sourceMappingURL)([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*\/", RegexOptions.Multiline);
 
-        protected async override Task<string> PostProcessResult(string originalResultSource, string sourceFileName, string targetFileName, string mapFileName)
+        protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
         {
-            string resultSource = await UpdateSourceMapUrls(originalResultSource, targetFileName, mapFileName);
+            string newResult = await UpdateSourceMapUrls(resultSource, targetFileName, mapFileName);
 
             string message = ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.";
 
             if (WESettings.Instance.Css.Autoprefix)
             {
-                if (!ReferenceEquals(string.Intern(resultSource), string.Intern(originalResultSource)))
-                    await FileHelpers.WriteAllTextRetry(targetFileName, resultSource);
+                if (!ReferenceEquals(string.Intern(newResult), string.Intern(resultSource)))
+                    await FileHelpers.WriteAllTextRetry(targetFileName, newResult);
 
                 string autoprefixResult = await CssAutoprefixer.AutoprefixFile(sourceFileName, targetFileName, mapFileName);
 
                 if (autoprefixResult != null)
-                    resultSource = await UpdateSourceMapUrls(autoprefixResult, targetFileName, mapFileName);
+                    newResult = await UpdateSourceMapUrls(autoprefixResult, targetFileName, mapFileName);
             }
 
             // If the caller wants us to renormalize URLs to a different filename, do so.
             if (targetFileName != null && Path.GetDirectoryName(targetFileName) != Path.GetDirectoryName(sourceFileName)
-             && resultSource.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
+             && newResult.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
             {
                 try
                 {
-                    resultSource = CssUrlNormalizer.NormalizeUrls(
-                        tree: new CssParser().Parse(resultSource, true),
+                    newResult = CssUrlNormalizer.NormalizeUrls(
+                        tree: new CssParser().Parse(newResult, true),
                         targetFile: targetFileName,
                         oldBasePath: sourceFileName
                     );
@@ -53,7 +53,7 @@ namespace MadsKristensen.EditorExtensions
 
             Logger.Log(message);
 
-            return resultSource;
+            return newResult;
         }
 
         private async Task<string> UpdateSourceMapUrls(string content, string compiledFileName, string mapFileName)

@@ -79,6 +79,9 @@ namespace MadsKristensen.EditorExtensions.Images
 
                 string folder = ProjectHelpers.GetRootFolder(project);
 
+                if (string.IsNullOrEmpty(folder))
+                    continue;
+
                 SpriteImageMenu menu = new SpriteImageMenu();
 
                 foreach (string file in Directory.EnumerateFiles(folder, "*.sprite", SearchOption.AllDirectories))
