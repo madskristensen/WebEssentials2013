@@ -115,6 +115,9 @@ namespace MadsKristensen.EditorExtensions
 
                 string folder = ProjectHelpers.GetRootFolder(project);
 
+                if (string.IsNullOrEmpty(folder))
+                    continue;
+
                 BundleFilesMenu menu = new BundleFilesMenu();
 
                 foreach (string file in Directory.EnumerateFiles(folder, "*" + _ext, SearchOption.AllDirectories))

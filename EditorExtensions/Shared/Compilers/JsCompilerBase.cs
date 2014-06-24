@@ -1,13 +1,5 @@
-﻿using System;
-using System.Globalization;
-using System.IO;
-using System.Text.RegularExpressions;
+﻿using System.IO;
 using System.Threading.Tasks;
-using MadsKristensen.EditorExtensions.Autoprefixer;
-using MadsKristensen.EditorExtensions.Helpers;
-using MadsKristensen.EditorExtensions.Settings;
-using Microsoft.CSS.Core;
-using Newtonsoft.Json.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
