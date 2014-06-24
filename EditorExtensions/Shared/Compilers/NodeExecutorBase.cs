@@ -82,13 +82,15 @@ namespace MadsKristensen.EditorExtensions
         private async Task<CompilerResult> ProcessResult(Process process, string errorText, string sourceFileName, string tempTarget, string targetFileName, string mapFileName)
         {
             string result = "";
-            bool success = false;
+            bool success = process.ExitCode == 0;
             IEnumerable<CompilerError> errors = null;
 
             try
             {
-                if (process.ExitCode == 0)
+                if (success)
                 {
+                    ProjectHelpers.CheckOutFileFromSourceControl(targetFileName);
+
                     if (!string.IsNullOrEmpty(tempTarget) && File.Exists(tempTarget))
                     {
                         result = await FileHelpers.ReadAllTextRetry(tempTarget);
@@ -97,7 +99,16 @@ namespace MadsKristensen.EditorExtensions
                             await FileHelpers.WriteAllTextRetry(targetFileName, result);
                     }
 
-                    success = true;
+                    var renewedResult = await PostProcessResult(result, sourceFileName, targetFileName, mapFileName);
+
+                    if (ManagedSourceMap && GenerateSourceMap)
+                        ProjectHelpers.CheckOutFileFromSourceControl(mapFileName);
+
+                    if (!ReferenceEquals(string.Intern(result), string.Intern(renewedResult)))
+                    {
+                        await FileHelpers.WriteAllTextRetry(targetFileName, renewedResult);
+                        result = renewedResult;
+                    }
                 }
                 else
                 {
@@ -107,22 +118,6 @@ namespace MadsKristensen.EditorExtensions
             catch (FileNotFoundException missingFileException)
             {
                 Logger.Log(ServiceName + ": " + Path.GetFileName(targetFileName) + " compilation failed. " + missingFileException.Message);
-            }
-
-            if (success)
-            {
-                var renewedResult = await PostProcessResult(result, sourceFileName, targetFileName, mapFileName);
-
-                ProjectHelpers.CheckOutFileFromSourceControl(targetFileName);
-
-                if (ManagedSourceMap && GenerateSourceMap)
-                    ProjectHelpers.CheckOutFileFromSourceControl(mapFileName);
-
-                if (!ReferenceEquals(string.Intern(result), string.Intern(renewedResult)))
-                {
-                    await FileHelpers.WriteAllTextRetry(targetFileName, renewedResult);
-                    result = renewedResult;
-                }
             }
 
             var compilerResult = await CompilerResultFactory.GenerateResult(
