@@ -49,13 +49,13 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             return globalFile;
         }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
+        protected override Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
             GetOrCreateGlobalSettings(ConfigFileName); // Ensure that default settings exist
 
-            return String.Format(CultureInfo.CurrentCulture, "--reporter \"{0}\" \"{1}\""
-                               , _reporter
-                               , sourceFileName);
+            return Task.FromResult(string.Format(CultureInfo.CurrentCulture, "--reporter \"{0}\" \"{1}\"",
+                                   _reporter,
+                                   sourceFileName));
         }
 
         protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)

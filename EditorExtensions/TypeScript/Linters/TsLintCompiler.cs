@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.JavaScript;
 
 namespace MadsKristensen.EditorExtensions.TypeScript
@@ -17,14 +18,14 @@ namespace MadsKristensen.EditorExtensions.TypeScript
         public override string ServiceName { get { return "TsLint"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
+        protected override Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
             GetOrCreateGlobalSettings(ConfigFileName); // Ensure that default settings exist
 
-            return String.Format(CultureInfo.CurrentCulture, "--formatters-dir \"{0}\" --format \"{1}\" --file \"{2}\""
-                               , _tsLintFormatterDirectory
-                               , _tsLintFormatter
-                               , sourceFileName);
+            return Task.FromResult(string.Format(CultureInfo.CurrentCulture, "--formatters-dir \"{0}\" --format \"{1}\" --file \"{2}\"",
+                                   _tsLintFormatterDirectory,
+                                   _tsLintFormatter,
+                                   sourceFileName));
         }
     }
 }

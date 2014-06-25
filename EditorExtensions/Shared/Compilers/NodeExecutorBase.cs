@@ -36,7 +36,7 @@ namespace MadsKristensen.EditorExtensions
 
             string mapFileName = GetMapFileName(sourceFileName, targetFileName),
                    tempTarget = Path.GetTempFileName(),
-                   scriptArgs = GetArguments(sourceFileName, tempTarget, mapFileName),
+                   scriptArgs = await GetArguments(sourceFileName, tempTarget, mapFileName),
                    errorOutputFile = Path.GetTempFileName(),
                    cmdArgs = string.Format("\"{0}\" \"{1}\"", NodePath, CompilerPath);
 
@@ -195,7 +195,7 @@ namespace MadsKristensen.EditorExtensions
             return null;
         }
 
-        protected abstract string GetArguments(string sourceFileName, string targetFileName, string mapFileName);
+        protected abstract Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName);
 
         protected abstract Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName);
     }

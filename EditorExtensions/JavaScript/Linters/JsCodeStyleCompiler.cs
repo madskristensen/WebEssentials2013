@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions.JavaScript
 {
@@ -15,14 +16,14 @@ namespace MadsKristensen.EditorExtensions.JavaScript
         public override string ServiceName { get { return "JSCS"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
+        protected override Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
             GetOrCreateGlobalSettings(ConfigFileName); // Ensure that default settings exist
 
-            return String.Format(CultureInfo.CurrentCulture, "--reporter \"{0}\" --config \"{1}\" \"{2}\""
-                               , _reporter
-                               , FindLocalSettings(sourceFileName, ConfigFileName) ?? GetOrCreateGlobalSettings(ConfigFileName)
-                               , sourceFileName);
+            return Task.FromResult(string.Format(CultureInfo.CurrentCulture, "--reporter \"{0}\" --config \"{1}\" \"{2}\"",
+                                   _reporter,
+                                   FindLocalSettings(sourceFileName, ConfigFileName) ?? GetOrCreateGlobalSettings(ConfigFileName),
+                                   sourceFileName));
         }
 
         protected static string FindLocalSettings(string sourcePath, string settingsName)

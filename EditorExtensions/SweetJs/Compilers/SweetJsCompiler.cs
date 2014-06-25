@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions.SweetJs
         public override bool RequireMatchingFileName { get { return false; } }
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
+        protected override Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
             var args = new StringBuilder();
 
@@ -30,7 +30,8 @@ namespace MadsKristensen.EditorExtensions.SweetJs
                 args.Append("--sourcemap ");
 
             args.AppendFormat(CultureInfo.CurrentCulture, "--output \"{0}\" \"{1}\"", targetFileName, sourceFileName);
-            return args.ToString();
+
+            return Task.FromResult(args.ToString());
         }
 
         protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)

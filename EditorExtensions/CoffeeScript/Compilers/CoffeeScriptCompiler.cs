@@ -23,7 +23,7 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
         public override bool RequireMatchingFileName { get { return true; } }
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
+        protected override Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
             var args = new StringBuilder();
 
@@ -34,7 +34,8 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
                 args.Append("--map ");
 
             args.AppendFormat(CultureInfo.CurrentCulture, "--output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
-            return args.ToString();
+
+            return Task.FromResult(args.ToString());
         }
 
         protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)

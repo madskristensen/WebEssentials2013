@@ -20,16 +20,18 @@ namespace MadsKristensen.EditorExtensions.Autoprefixer
         public override bool GenerateSourceMap { get { return false; } }
         public override bool ManagedSourceMap { get { return false; } }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
+        protected override async Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
             // Source maps would be generated in "ALL" cases (regardless of the settings).
 
             var browsers = string.Empty;
+
             if (!string.IsNullOrWhiteSpace(WESettings.Instance.Css.AutoprefixerBrowsers))
-            {
                 browsers = "--browsers \"" + WESettings.Instance.Css.AutoprefixerBrowsers.Replace("\\", "\\\\").Replace("\"", "'") + "\"";
-            }
-            return string.Format(CultureInfo.CurrentCulture, "\"{0}\" --map {1}", sourceFileName, browsers);
+
+            await FileHelpers.WriteAllTextRetry(targetFileName, await FileHelpers.ReadAllTextRetry(sourceFileName));
+
+            return string.Format(CultureInfo.CurrentCulture, "\"{0}\" --map {1}", targetFileName, browsers);
         }
 
         protected override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
