@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Settings;
-using Microsoft.Practices.TransientFaultHandling;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -51,28 +50,6 @@ namespace MadsKristensen.EditorExtensions
             };
 
             return processTaskCompletionSource.Task;
-        }
-
-        /// <summary>
-        /// Keep executing task asynchronously until successful execution
-        /// or the retry limit, set by the policy, is exausted.
-        /// </summary>
-        /// <param name="policy">The retry policy for task, can be manufactured by PolicyFactory.</param>
-        /// <returns>A successful task, even if the operation fails.</returns>
-        public async static Task ExecuteRetryableTaskAsync(this Task task, RetryPolicy policy)
-        {
-            await policy.ExecuteAsync(() => task);
-        }
-
-        /// <summary>
-        /// Keep executing task asynchronously until successful execution
-        /// or the retry limit, set by the policy, is exausted.
-        /// </summary>
-        /// <param name="policy">The retry policy for task, can be manufactured by PolicyFactory.</param>
-        /// <returns>A successful task, even if the operation fails.</returns>
-        public async static Task<T> ExecuteRetryableTaskAsync<T>(this Task<T> task, RetryPolicy policy) where T : class
-        {
-            return await policy.ExecuteAsync(() => task);
         }
     }
 }
