@@ -501,5 +501,45 @@ namespace MadsKristensen.EditorExtensions
 
             return null;
         }
+
+        public static bool CreateDirectoryInProject(string path)
+        {
+            if (!path.StartsWith(GetRootFolder(), StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            // Assuming all the files would have extension
+            // and all the paths without extensions are directory.
+            string directory = string.IsNullOrEmpty(Path.GetExtension(path)) ? path : Path.GetDirectoryName(path);
+
+            Directory.CreateDirectory(directory);
+
+            return true;
+        }
+
+        public static string GetAbsolutePathFromSettings(string settingsPath, string filePath, string ext)
+        {
+            if (string.IsNullOrEmpty(settingsPath))
+                return filePath + ext;
+
+            string targetFileName = Path.GetFileName(filePath + ext);
+            string sourceDir = Path.GetDirectoryName(filePath);
+
+            // If the output path is not project-relative, combine it directly.
+            if (!settingsPath.StartsWith("~/", StringComparison.OrdinalIgnoreCase)
+             && !settingsPath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+                return Path.GetFullPath(Path.Combine(sourceDir, settingsPath, targetFileName));
+
+            string rootDir = ProjectHelpers.GetRootFolder();
+
+            if (string.IsNullOrEmpty(rootDir))
+                // If no project is loaded, assume relative to file anyway
+                rootDir = sourceDir;
+
+            return Path.GetFullPath(Path.Combine(
+                rootDir,
+                settingsPath.TrimStart('~', '/'),
+                targetFileName
+            ));
+        }
     }
 }

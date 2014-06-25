@@ -19,6 +19,7 @@ namespace MadsKristensen.EditorExtensions.Images
         public string FileExtension { get; set; }
         public bool UseFullPathForIdentifierName { get; set; }
         public bool UseAbsoluteUrl { get; set; }
+        public string OutputDirectory { get; set; }
         public string CssOutputDirectory { get; set; }
         public string LessOutputDirectory { get; set; }
         public string ScssOutputDirectory { get; set; }
@@ -33,6 +34,7 @@ namespace MadsKristensen.EditorExtensions.Images
             RunOnBuild = WESettings.Instance.Sprite.RunOnBuild;
             UseFullPathForIdentifierName = WESettings.Instance.Sprite.UseFullPathForIdentifierName;
             UseAbsoluteUrl = WESettings.Instance.Sprite.UseAbsoluteUrl;
+            OutputDirectory = WESettings.Instance.Sprite.OutputDirectory;
             CssOutputDirectory = WESettings.Instance.Sprite.CssOutputDirectory;
             LessOutputDirectory = WESettings.Instance.Sprite.LessOutputDirectory;
             ScssOutputDirectory = WESettings.Instance.Sprite.ScssOutputDirectory;
@@ -66,6 +68,8 @@ namespace MadsKristensen.EditorExtensions.Images
                             new XElement("fullPathForIdentifierName", UseFullPathForIdentifierName.ToString().ToLowerInvariant()),
                             new XComment("Use absolute path in the generated CSS-like files. By default, the URLs are relative to sprite image file (and the location of CSS, LESS and SCSS)."),
                             new XElement("useAbsoluteUrl", UseAbsoluteUrl.ToString().ToLowerInvariant()),
+                            new XComment("Specifies a custom subfolder to save files to. By default, compiled output will be placed in the same folder and nested under the original file."),
+                            new XElement("outputDirectory", OutputDirectory),
                             new XComment("Specifies a custom subfolder to save CSS files to. By default, compiled output will be placed in the same folder and nested under the original file."),
                             new XElement("outputDirectoryForCss", CssOutputDirectory),
                             new XComment("Specifies a custom subfolder to save LESS files to. By default, compiled output will be placed in the same folder and nested under the original file."),
@@ -141,6 +145,11 @@ namespace MadsKristensen.EditorExtensions.Images
 
             if (element != null)
                 sprite.UseFullPathForIdentifierName = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+
+            element = doc.Descendants("outputDirectory").FirstOrDefault();
+
+            if (element != null)
+                sprite.OutputDirectory = element.Value;
 
             element = doc.Descendants("useAbsoluteUrl").FirstOrDefault();
 

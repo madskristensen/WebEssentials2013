@@ -206,6 +206,12 @@ namespace MadsKristensen.EditorExtensions
                 ProjectHelpers.AddFileToActiveProject(bundle.FileName);
 
             string bundleFile = Path.Combine(Path.GetDirectoryName(bundle.FileName), Path.GetFileNameWithoutExtension(bundle.FileName));
+
+            if (bundle.OutputDirectory != null)
+                bundleFile = ProjectHelpers.GetAbsolutePathFromSettings(bundle.OutputDirectory, bundle.FileName, extension);
+
+            ProjectHelpers.CreateDirectoryInProject(bundleFile);
+
             bool hasChanged = await BundleGenerator.MakeBundle(bundle, bundleFile, UpdateBundleAsync);
 
             if (!hasUpdated)

@@ -125,47 +125,21 @@ namespace MadsKristensen.EditorExtensions.Images
             {
                 case ExportFormat.Css:
                     if (sprite.CssOutputDirectory != null)
-                        return imageFileName = GetAbsolutePathFromSettings(sprite.CssOutputDirectory, imageFileName, ".css");
+                        return imageFileName = ProjectHelpers.GetAbsolutePathFromSettings(sprite.CssOutputDirectory, imageFileName, ".css");
                     return imageFileName + ".css";
                 case ExportFormat.Less:
                     if (sprite.CssOutputDirectory != null)
-                        return imageFileName = GetAbsolutePathFromSettings(sprite.LessOutputDirectory, imageFileName, ".less");
+                        return imageFileName = ProjectHelpers.GetAbsolutePathFromSettings(sprite.LessOutputDirectory, imageFileName, ".less");
                     return imageFileName + ".less";
                 case ExportFormat.Scss:
                     if (sprite.CssOutputDirectory != null)
-                        return imageFileName = GetAbsolutePathFromSettings(sprite.ScssOutputDirectory, imageFileName, ".scss");
+                        return imageFileName = ProjectHelpers.GetAbsolutePathFromSettings(sprite.ScssOutputDirectory, imageFileName, ".scss");
                     return imageFileName + ".scss";
                 case ExportFormat.Json:
                     return imageFileName + ".map";
             }
 
             return null;
-        }
-
-        private static string GetAbsolutePathFromSettings(string settingsPath, string imagePath, string ext)
-        {
-            if (string.IsNullOrEmpty(settingsPath))
-                return imagePath + ext;
-
-            string targetFileName = Path.GetFileName(imagePath + ext);
-            string sourceDir = Path.GetDirectoryName(imagePath);
-
-            // If the output path is not project-relative, combine it directly.
-            if (!settingsPath.StartsWith("~/", StringComparison.OrdinalIgnoreCase)
-             && !settingsPath.StartsWith("/", StringComparison.OrdinalIgnoreCase))
-                return Path.GetFullPath(Path.Combine(sourceDir, settingsPath, targetFileName));
-
-            string rootDir = ProjectHelpers.GetRootFolder();
-
-            if (string.IsNullOrEmpty(rootDir))
-                // If no project is loaded, assume relative to file anyway
-                rootDir = sourceDir;
-
-            return Path.GetFullPath(Path.Combine(
-                rootDir,
-                settingsPath.TrimStart('~', '/'),
-                targetFileName
-            ));
         }
     }
 }
