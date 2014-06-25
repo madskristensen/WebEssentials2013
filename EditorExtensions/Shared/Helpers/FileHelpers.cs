@@ -311,8 +311,8 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                return await new Lazy<Task<string>>(() => Task.FromResult<string>(File.ReadAllText(fileName)), true).Value
-                                .ExecuteRetryableTaskAsync<string>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount));
+                return await PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount)
+                            .ExecuteAsync(() => Task.FromResult<string>(File.ReadAllText(fileName)));
             }
             catch (IOException)
             {
@@ -333,8 +333,8 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                return await new Lazy<Task<IEnumerable<string>>>(() => Task.FromResult<IEnumerable<string>>(File.ReadLines(fileName)), true).Value
-                                .ExecuteRetryableTaskAsync<IEnumerable<string>>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount));
+                return await PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount)
+                            .ExecuteAsync(() => Task.FromResult<IEnumerable<string>>(File.ReadLines(fileName)));
             }
             catch (IOException)
             {
@@ -357,8 +357,8 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                return await new Lazy<Task<byte[]>>(() => Task.FromResult<byte[]>(File.ReadAllBytes(fileName))).Value
-                            .ExecuteRetryableTaskAsync<byte[]>(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount));
+                return await PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount)
+                            .ExecuteAsync(() => Task.FromResult<byte[]>(File.ReadAllBytes(fileName)));
             }
             catch (IOException)
             {
@@ -381,8 +381,8 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                await new Lazy<Task>(() => Task.Run(() => File.WriteAllText(fileName, contents, new UTF8Encoding(withBOM)))).Value
-                         .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount));
+                await PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount)
+                     .ExecuteAsync(() => Task.Run(() => File.WriteAllText(fileName, contents, new UTF8Encoding(withBOM))));
             }
             catch (IOException)
             {
@@ -403,8 +403,8 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                await new Lazy<Task>(() => Task.Run(() => File.WriteAllBytes(fileName, value))).Value
-                         .ExecuteRetryableTaskAsync(PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount));
+                await PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount)
+                     .ExecuteAsync(() => Task.Run(() => File.WriteAllBytes(fileName, value)));
             }
             catch (IOException)
             {
