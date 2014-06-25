@@ -126,8 +126,12 @@ namespace MadsKristensen.EditorExtensions.Images
             if (!hasUpdated)
                 ProjectHelpers.AddFileToActiveProject(sprite.FileName);
 
-            //Default file name is the sprite name with specified file extension.
             string imageFile = Path.ChangeExtension(sprite.FileName, sprite.FileExtension);
+
+            if (sprite.OutputDirectory != null)
+                imageFile = ProjectHelpers.GetAbsolutePathFromSettings(sprite.OutputDirectory, sprite.FileName, "." + sprite.FileExtension);
+
+            ProjectHelpers.CreateDirectoryInProject(imageFile);
 
             IEnumerable<SpriteFragment> fragments = await SpriteGenerator.MakeImage(sprite, imageFile, UpdateSpriteAsync);
 

@@ -67,6 +67,12 @@ namespace MadsKristensen.EditorExtensions.Settings
         public bool UseAbsoluteUrl { get; set; }
 
         [Category("Sprite")]
+        [DisplayName("Custom image output directory")]
+        [Description("Specifies a custom subfolder to save sprite image files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
+        [DefaultValue(null)]
+        public string OutputDirectory { get; set; }
+
+        [Category("Sprite")]
         [DisplayName("Custom CSS output directory")]
         [Description("Specifies a custom subfolder to save CSS files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
         [DefaultValue(null)]

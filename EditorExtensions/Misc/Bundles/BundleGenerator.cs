@@ -35,7 +35,7 @@ namespace MadsKristensen.EditorExtensions
                 return false;
 
             string combinedContent = await CombineFiles(files, extension, document, bundleFile);
-            bool bundleChanged = !File.Exists(bundleFile) || await FileHelpers.ReadAllTextRetry(bundleFile) != combinedContent;
+            bool bundleChanged = !File.Exists(bundleFile) || !ReferenceEquals(string.Intern(await FileHelpers.ReadAllTextRetry(bundleFile)), combinedContent);
 
             if (bundleChanged)
             {
