@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.Composition;
 using System.IO;
+using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.CoffeeScript;
 using Microsoft.VisualStudio.Utilities;
 
@@ -14,9 +15,9 @@ namespace MadsKristensen.EditorExtensions.IcedCoffeeScript
         public override string ServiceName { get { return "IcedCoffeeScript"; } }
         protected override string CompilerPath { get { return _compilerPath; } }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
+        protected override Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
-            return "--runtime inline " + base.GetArguments(sourceFileName, targetFileName, mapFileName);
+            return Task.FromResult("--runtime inline " + base.GetArguments(sourceFileName, targetFileName, mapFileName));
         }
     }
 }

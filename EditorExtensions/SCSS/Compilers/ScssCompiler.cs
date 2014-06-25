@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions.Scss
         protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
         public override bool GenerateSourceMap { get { return WESettings.Instance.Scss.GenerateSourceMaps && !WESettings.Instance.Scss.MinifyInPlace; } }
 
-        protected override string GetArguments(string sourceFileName, string targetFileName, string mapFileName)
+        protected override Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
             string outputStyle = WESettings.Instance.Scss.OutputStyle.ToString().ToLowerInvariant();
             string numberPrecision = WESettings.Instance.Scss.NumberPrecision.ToString(CultureInfo.CurrentCulture).ToLowerInvariant();
@@ -30,13 +30,13 @@ namespace MadsKristensen.EditorExtensions.Scss
             // Source maps would be generated in "ALL" cases (regardless of the settings).
             // If the option in settings is disabled, we will delete the map file once the
             // B64VLQ values are extracted.
-            return string.Format(CultureInfo.CurrentCulture,
-                   "--source-map \"{0}\" --output-style={1} \"{2}\" --output \"{3}\" --precision={4}",
-                   mapFileName,
-                   outputStyle,
-                   sourceFileName,
-                   targetFileName,
-                   numberPrecision);
+            return Task.FromResult(string.Format(CultureInfo.CurrentCulture,
+                                   "--source-map \"{0}\" --output-style={1} \"{2}\" --output \"{3}\" --precision={4}",
+                                   mapFileName,
+                                   outputStyle,
+                                   sourceFileName,
+                                   targetFileName,
+                                   numberPrecision));
         }
 
         //https://github.com/hcatlin/libsass/issues/242
