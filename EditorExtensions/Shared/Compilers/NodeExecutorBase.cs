@@ -74,7 +74,7 @@ namespace MadsKristensen.EditorExtensions
                 File.Delete(errorOutputFile);
                 File.Delete(tempTarget);
 
-                if (!string.IsNullOrEmpty(mapFileName))
+                if (ManagedSourceMap && !GenerateSourceMap)
                     File.Delete(mapFileName);
             }
         }
