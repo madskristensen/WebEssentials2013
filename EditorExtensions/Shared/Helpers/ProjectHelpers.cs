@@ -516,12 +516,12 @@ namespace MadsKristensen.EditorExtensions
             return true;
         }
 
-        public static string GetAbsolutePathFromSettings(string settingsPath, string filePath, string ext)
+        public static string GetAbsolutePathFromSettings(string settingsPath, string filePath)
         {
             if (string.IsNullOrEmpty(settingsPath))
-                return filePath + ext;
+                return filePath;
 
-            string targetFileName = Path.GetFileName(filePath + ext);
+            string targetFileName = Path.GetFileName(filePath);
             string sourceDir = Path.GetDirectoryName(filePath);
 
             // If the output path is not project-relative, combine it directly.

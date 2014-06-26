@@ -125,15 +125,15 @@ namespace MadsKristensen.EditorExtensions.Images
             {
                 case ExportFormat.Css:
                     if (sprite.CssOutputDirectory != null)
-                        return imageFileName = ProjectHelpers.GetAbsolutePathFromSettings(sprite.CssOutputDirectory, imageFileName, ".css");
+                        return imageFileName = ProjectHelpers.GetAbsolutePathFromSettings(sprite.CssOutputDirectory, imageFileName + ".css");
                     return imageFileName + ".css";
                 case ExportFormat.Less:
                     if (sprite.CssOutputDirectory != null)
-                        return imageFileName = ProjectHelpers.GetAbsolutePathFromSettings(sprite.LessOutputDirectory, imageFileName, ".less");
+                        return imageFileName = ProjectHelpers.GetAbsolutePathFromSettings(sprite.LessOutputDirectory, imageFileName + ".less");
                     return imageFileName + ".less";
                 case ExportFormat.Scss:
                     if (sprite.CssOutputDirectory != null)
-                        return imageFileName = ProjectHelpers.GetAbsolutePathFromSettings(sprite.ScssOutputDirectory, imageFileName, ".scss");
+                        return imageFileName = ProjectHelpers.GetAbsolutePathFromSettings(sprite.ScssOutputDirectory, imageFileName + ".scss");
                     return imageFileName + ".scss";
                 case ExportFormat.Json:
                     return imageFileName + ".map";
