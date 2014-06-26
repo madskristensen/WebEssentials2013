@@ -307,6 +307,9 @@ namespace MadsKristensen.EditorExtensions
         /// <returns>Task which ultimately returns a string containing all lines of the file.</returns>
         public async static Task<string> ReadAllTextRetry(string fileName)
         {
+            if (string.IsNullOrEmpty(fileName))
+                return null;
+
             int retryCount = 500;
 
             try
@@ -329,6 +332,9 @@ namespace MadsKristensen.EditorExtensions
         /// <returns>Task which ultimately returns all lines of the file, or the lines that are the result of a query.</returns>
         public async static Task<IEnumerable<string>> ReadAllLinesRetry(string fileName)
         {
+            if (string.IsNullOrEmpty(fileName))
+                return null;
+
             int retryCount = 500;
 
             try
@@ -353,6 +359,9 @@ namespace MadsKristensen.EditorExtensions
         /// <returns>Task which ultimately returns all lines of the file, or the lines that are the result of a query.</returns>
         public async static Task<byte[]> ReadAllBytesRetry(string fileName)
         {
+            if (string.IsNullOrEmpty(fileName))
+                return null;
+
             int retryCount = 500;
 
             try
@@ -377,6 +386,9 @@ namespace MadsKristensen.EditorExtensions
         /// <param name="contents">The string to write to the file.</param>
         public async static Task WriteAllTextRetry(string fileName, string contents, bool withBOM = true)
         {
+            if (string.IsNullOrEmpty(fileName))
+                return;
+
             int retryCount = 500;
 
             try
@@ -399,6 +411,9 @@ namespace MadsKristensen.EditorExtensions
         /// <param name="value">The bytes to write to the file.</param>
         public async static Task WriteAllBytesRetry(string fileName, byte[] value)
         {
+            if (string.IsNullOrEmpty(fileName))
+                return;
+
             int retryCount = 500;
 
             try
