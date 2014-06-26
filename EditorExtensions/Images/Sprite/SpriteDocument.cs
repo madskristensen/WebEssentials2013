@@ -46,6 +46,9 @@ namespace MadsKristensen.EditorExtensions.Images
             XmlWriterSettings settings = new XmlWriterSettings() { Indent = true };
             XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
 
+            if (string.IsNullOrEmpty(root))
+                root = ProjectHelpers.GetProjectFolder(FileName);
+
             ProjectHelpers.CheckOutFileFromSourceControl(FileName);
 
             using (XmlWriter writer = await Task.Run(() => XmlWriter.Create(FileName, settings)))

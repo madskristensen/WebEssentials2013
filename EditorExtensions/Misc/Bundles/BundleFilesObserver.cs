@@ -76,7 +76,7 @@ namespace MadsKristensen.EditorExtensions
         {
             using (await rwLock.ReadLockAsync())
             {
-                if (!_watchedFiles.ContainsKey(renamedEventArgument.OldFullPath) &&
+                if (!_watchedFiles.ContainsKey(renamedEventArgument.OldFullPath) ||
                     !renamedEventArgument.FullPath.StartsWith(ProjectHelpers.GetSolutionFolderPath(), StringComparison.OrdinalIgnoreCase))
                     return;
             }
@@ -113,6 +113,9 @@ namespace MadsKristensen.EditorExtensions
             _watcher.EnableRaisingEvents = false;
 
             _document = await _document.LoadFromFile(_bundleFileName);
+
+            if (_document == null)
+                return;
 
             await updateBundle(_bundleFileName, false);
 
