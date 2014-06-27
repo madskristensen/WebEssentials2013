@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions.Svg
         /// </summary>
         [Export(typeof(ContentTypeDefinition))]
         [Name(SvgContentType)]
-        [BaseDefinition("xml")]
+        [BaseDefinition("htmlx")]
         public ContentTypeDefinition ISvgContentType { get; set; }
 
         [Export(typeof(FileExtensionToContentTypeDefinition))]
