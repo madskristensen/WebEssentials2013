@@ -146,7 +146,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         {
             var result = await RunCompilerAsync(sourcePath, targetPath);
 
-            if (result.IsSuccess && !string.IsNullOrEmpty(targetPath))
+            if (result != null && result.IsSuccess && !string.IsNullOrEmpty(targetPath))
             {
                 ProjectHelpers.AddFileToProject(sourcePath, targetPath);
 

@@ -207,7 +207,7 @@ namespace MadsKristensen.EditorExtensions
 
             string bundleFile = Path.Combine(Path.GetDirectoryName(bundle.FileName), Path.GetFileNameWithoutExtension(bundle.FileName));
 
-            if (bundle.OutputDirectory != null)
+            if (!string.IsNullOrEmpty(bundle.OutputDirectory))
                 bundleFile = ProjectHelpers.GetAbsolutePathFromSettings(bundle.OutputDirectory, Path.Combine(Path.GetDirectoryName(bundle.FileName), Path.GetFileNameWithoutExtension(bundle.FileName)));
 
             ProjectHelpers.CreateDirectoryInProject(bundleFile);

@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using MadsKristensen.EditorExtensions.JavaScript;
+using MadsKristensen.EditorExtensions.Settings;
 using Newtonsoft.Json;
 
 namespace MadsKristensen.EditorExtensions
@@ -29,6 +31,12 @@ namespace MadsKristensen.EditorExtensions
 
         public async Task<CompilerResult> CompileAsync(string sourceFileName, string targetFileName)
         {
+            if (WEIgnore.TestWEIgnore(sourceFileName, this is ILintCompiler ? "linter" : "compiler", ServiceName.ToLowerInvariant()))
+            {
+                Logger.Log(String.Format(CultureInfo.CurrentCulture, "{0}: The file {1} is ignored by .weignore. Skipping..", ServiceName, Path.GetFileName(sourceFileName)));
+                return null;
+            }
+
             if (RequireMatchingFileName &&
                 Path.GetFileName(targetFileName) != Path.GetFileNameWithoutExtension(sourceFileName) + TargetExtension &&
                 Path.GetFileName(targetFileName) != Path.GetFileNameWithoutExtension(sourceFileName) + ".min" + TargetExtension)
