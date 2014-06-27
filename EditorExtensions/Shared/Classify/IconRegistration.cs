@@ -39,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
                 AddIcon(classes, "Git.ico", ".gitignore", ".gitattributes");
 
                 // Generic script
-                AddIcon(classes, "GenericScript.ico", ".appcache", JsHintCompiler.ConfigFileName, ".jshintignore", TsLintCompiler.ConfigFileName, JsCodeStyleCompiler.ConfigFileName, CoffeeLintCompiler.ConfigFileName, ".sjs", ".jsonld", ".bowerrc");
+                AddIcon(classes, "GenericScript.ico", ".appcache", JsHintCompiler.ConfigFileName, ".weignore", ".jshintignore", TsLintCompiler.ConfigFileName, JsCodeStyleCompiler.ConfigFileName, CoffeeLintCompiler.ConfigFileName, ".sjs", ".jsonld", ".bowerrc");
 
                 // Jigsaw
                 AddIcon(classes, "Jigsaw.ico", ".sprite");

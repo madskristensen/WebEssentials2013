@@ -128,7 +128,7 @@ namespace MadsKristensen.EditorExtensions.Images
 
             string imageFile = Path.ChangeExtension(sprite.FileName, sprite.FileExtension);
 
-            if (sprite.OutputDirectory != null)
+            if (string.IsNullOrEmpty(sprite.OutputDirectory))
                 imageFile = ProjectHelpers.GetAbsolutePathFromSettings(sprite.OutputDirectory, Path.ChangeExtension(sprite.FileName, sprite.FileExtension));
 
             ProjectHelpers.CreateDirectoryInProject(imageFile);

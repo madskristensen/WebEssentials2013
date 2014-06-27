@@ -93,6 +93,10 @@ namespace MadsKristensen.EditorExtensions.Compilers
         private async Task InitiateCompilationAsync(string sourcePath, bool save, bool cached = false)
         {
             var result = await CompilerRunner.CompileAsync(sourcePath, save);
+
+            if (result == null)
+                return;
+
             OnCompilationReady(new CompilerResultEventArgs(result), cached);
         }
     }
