@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions.Css
                 {
                     case '!':
                     case '=':
-                    case '/':
+                    //case '/':
                     case '[':
                         Retrigger();
                         break;
