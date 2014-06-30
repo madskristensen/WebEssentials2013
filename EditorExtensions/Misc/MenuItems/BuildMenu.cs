@@ -45,15 +45,15 @@ namespace MadsKristensen.EditorExtensions
             //TODO: Iced CoffeeScript?
 
             CommandID cmdBundles = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildBundles);
-            OleMenuCommand menuBundles = new OleMenuCommand(async (s, e) => await UpdateBundleFiles(), cmdBundles);
+            OleMenuCommand menuBundles = new OleMenuCommand((s, e) => UpdateBundleFiles().DoNotWait("Web Essentials: Updating Bundles..."), cmdBundles);
             _mcs.AddCommand(menuBundles);
 
             CommandID cmdSprites = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildSprites);
-            OleMenuCommand menuSprites = new OleMenuCommand(async (s, e) => await UpdateSpriteFiles(), cmdSprites);
+            OleMenuCommand menuSprites = new OleMenuCommand((s, e) => UpdateSpriteFiles().DoNotWait("Web Essentials: Updating Sprites..."), cmdSprites);
             _mcs.AddCommand(menuSprites);
 
             CommandID cmdMinify = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildMinify);
-            OleMenuCommand menuMinify = new OleMenuCommand(async (s, e) => await Task.Run(new Action(Minify)), cmdMinify);
+            OleMenuCommand menuMinify = new OleMenuCommand((s, e) => Task.Run(new Action(Minify)).DoNotWait("Web Essentials: Minifying files..."), cmdMinify);
             _mcs.AddCommand(menuMinify);
         }
 
