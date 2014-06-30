@@ -94,9 +94,6 @@ namespace MadsKristensen.EditorExtensions.Compilers
         {
             var result = await CompilerRunner.CompileAsync(sourcePath, save);
 
-            if (result == null)
-                return;
-
             OnCompilationReady(new CompilerResultEventArgs(result), cached);
         }
     }

@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions.Autoprefixer
             }
 
             var autoprefixResult = await new AutoprefixerCompiler().CompileAsync(targetFileName, targetFileName);
-            if (autoprefixResult != null && autoprefixResult.IsSuccess)
+            if (autoprefixResult.IsSuccess)
             {
                 result = autoprefixResult.Result;
 

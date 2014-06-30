@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions
             return await GenerateResult(sourceFileName, targetFileName, null, isSuccess, result, errors);
         }
 
-        public async static Task<CompilerResult> GenerateResult(string sourceFileName, string targetFileName, string mapFileName, bool isSuccess, string result, IEnumerable<CompilerError> errors)
+        public async static Task<CompilerResult> GenerateResult(string sourceFileName, string targetFileName, string mapFileName, bool isSuccess, string result, IEnumerable<CompilerError> errors, bool hasResult = false)
         {
             CompilerResult instance;
 
@@ -27,9 +27,9 @@ namespace MadsKristensen.EditorExtensions
                 result = await FileHelpers.ReadAllTextRetry(targetFileName);
 
             if (targetFileName != null && Path.GetExtension(targetFileName).Equals(".css", StringComparison.OrdinalIgnoreCase) && File.Exists(mapFileName))
-                instance = await CssCompilerResult.GenerateResult(sourceFileName, targetFileName, mapFileName, isSuccess, result, errors);
+                instance = await CssCompilerResult.GenerateResult(sourceFileName, targetFileName, mapFileName, isSuccess, result, errors, hasResult);
             else
-                instance = CompilerResult.GenerateResult(sourceFileName, targetFileName, isSuccess, result, errors);
+                instance = CompilerResult.GenerateResult(sourceFileName, targetFileName, isSuccess, result, errors, hasResult);
 
             return instance;
         }
