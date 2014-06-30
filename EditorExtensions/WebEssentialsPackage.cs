@@ -180,6 +180,7 @@ namespace MadsKristensen.EditorExtensions
                 );
 
                 await BuildMenu.UpdateBundleFiles();
+                await BuildMenu.UpdateSpriteFiles();
             }).DoNotWait("running solution-wide compilers");
 
             if (WESettings.Instance.JavaScript.LintOnBuild)
@@ -197,9 +198,6 @@ namespace MadsKristensen.EditorExtensions
             if (WESettings.Instance.CoffeeScript.LintOnBuild)
                 LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.coffee", "*.iced" }, f => new LintReporter(new CoffeeLintCompiler(), WESettings.Instance.CoffeeScript, f))
                     .DoNotWait("running solution-wide CoffeeLint");
-
-            BundleFilesMenu.UpdateAllBundlesAsync(true).DoNotWait("running bundles");
-            SpriteImageMenu.UpdateAllSpritesAsync(true).DoNotWait("running sprites");
         }
 
         public static void ExecuteCommand(string commandName, string commandArgs = "")
