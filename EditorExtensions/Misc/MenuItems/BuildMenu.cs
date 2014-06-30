@@ -72,12 +72,12 @@ namespace MadsKristensen.EditorExtensions
 
         public async static Task UpdateBundleFiles()
         {
-            await BundleFilesMenu.UpdateAllBundlesAsync();
+            await BundleFilesMenu.UpdateAllBundlesAsync(true);
         }
 
         public async static Task UpdateSpriteFiles()
         {
-            await SpriteImageMenu.UpdateAllSpritesAsync();
+            await SpriteImageMenu.UpdateAllSpritesAsync(true);
         }
 
         private void Minify()
