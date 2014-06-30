@@ -9,13 +9,13 @@ namespace MadsKristensen.EditorExtensions
         public string SourceMapData { get; set; }
         public Task<CssSourceMap> SourceMap { get; set; }
 
-        private CssCompilerResult(string sourceFileName, string targetFileName, bool isSuccess, string result, IEnumerable<CompilerError> errors)
-            : base(sourceFileName, targetFileName, isSuccess, result, errors)
+        private CssCompilerResult(string sourceFileName, string targetFileName, bool isSuccess, string result, IEnumerable<CompilerError> errors, bool hasSkipped)
+            : base(sourceFileName, targetFileName, isSuccess, result, errors, hasSkipped)
         { }
 
-        public async static Task<CssCompilerResult> GenerateResult(string sourceFileName, string targetFileName, string mapFileName, bool isSuccess, string result, IEnumerable<CompilerError> errors)
+        public async static Task<CssCompilerResult> GenerateResult(string sourceFileName, string targetFileName, string mapFileName, bool isSuccess, string result, IEnumerable<CompilerError> errors, bool hasSkipped = false)
         {
-            CssCompilerResult compilerResult = new CssCompilerResult(sourceFileName, targetFileName, isSuccess, result, errors);
+            CssCompilerResult compilerResult = new CssCompilerResult(sourceFileName, targetFileName, isSuccess, result, errors, hasSkipped);
 
             if (mapFileName == null)
                 return null;

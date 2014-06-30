@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions
             if (WEIgnore.TestWEIgnore(sourceFileName, this is ILintCompiler ? "linter" : "compiler", ServiceName.ToLowerInvariant()))
             {
                 Logger.Log(String.Format(CultureInfo.CurrentCulture, "{0}: The file {1} is ignored by .weignore. Skipping..", ServiceName, Path.GetFileName(sourceFileName)));
-                return null;
+                return await CompilerResultFactory.GenerateResult(sourceFileName, targetFileName, string.Empty, false, string.Empty, Enumerable.Empty<CompilerError>(), true);
             }
 
             if (RequireMatchingFileName &&
@@ -66,6 +66,13 @@ namespace MadsKristensen.EditorExtensions
                 {
                     if (targetFileName != null)
                         await MoveOutputContentToCorrectTarget(targetFileName);
+
+                    // Another ugly hack for https://github.com/jashkenas/coffeescript/issues/3526
+                    if (ServiceName.ToLowerInvariant().IndexOf("coffeescript") >= 0 || ServiceName.ToLowerInvariant().IndexOf("livescript") >= 0)
+                    {
+                        tempTarget = Path.Combine(Path.GetDirectoryName(tempTarget), Path.GetFileName(targetFileName));
+                        mapFileName = Path.ChangeExtension(tempTarget, ".map");
+                    }
 
                     return await ProcessResult(
                                      process,

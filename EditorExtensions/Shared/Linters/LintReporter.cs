@@ -83,9 +83,6 @@ namespace MadsKristensen.EditorExtensions
 
             WebEssentialsPackage.DTE.StatusBar.Clear();
 
-            if (result == null)
-                return;
-
             // Hack to select result from Error: 
             // See https://github.com/madskristensen/WebEssentials2013/issues/392#issuecomment-31566419
             ReadResult(result.Errors);

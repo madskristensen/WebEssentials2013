@@ -113,7 +113,9 @@ namespace MadsKristensen.EditorExtensions.Margin
 
         protected override void UpdateMargin(CompilerResult result)
         {
-            if (result.IsSuccess)
+            if (result.HasSkipped)
+                SetText("/*\r\n\r\nCompilation Skipped..\r\n\r\n*/");
+            else if (result.IsSuccess)
             {
                 SetText(result.Result);
             }

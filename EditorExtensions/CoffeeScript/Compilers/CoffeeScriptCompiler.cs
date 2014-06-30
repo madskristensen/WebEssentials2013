@@ -51,12 +51,14 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
 
             if (GenerateSourceMap)
             {
-                if (File.Exists(mapFileName))
-                    File.Delete(mapFileName);
+                string targetMap = Path.ChangeExtension(realTargetFileName, ".map");
 
-                File.Move(Path.ChangeExtension(realTargetFileName, ".map"), mapFileName);
+                if (File.Exists(targetMap))
+                    File.Delete(targetMap);
 
-                resultSource = UpdateSourceLinkInJsComment(resultSource, FileHelpers.RelativePath(targetFileName, mapFileName));
+                File.Move(mapFileName, targetMap);
+
+                resultSource = UpdateSourceLinkInJsComment(resultSource, FileHelpers.RelativePath(targetFileName, targetMap));
             }
 
             return await Task.FromResult(resultSource);
