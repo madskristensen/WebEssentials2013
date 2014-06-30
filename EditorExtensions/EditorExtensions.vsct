@@ -585,7 +585,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidBuildCmdSet" id="cmdBuildBundles" priority="0x0101" type="Button">
+      <Button guid="guidBuildCmdSet" id="cmdBuildBundles" priority="0x0102" type="Button">
         <Parent guid="guidBuildCmdSet" id="MyBuildMenuGroup"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
@@ -593,7 +593,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidBuildCmdSet" id="cmdBuildSprites" priority="0x0104" type="Button">
+      <Button guid="guidBuildCmdSet" id="cmdBuildSprites" priority="0x0103" type="Button">
         <Parent guid="guidBuildCmdSet" id="MyBuildMenuGroup"/>
         <Icon guid="guidMenuImages" id="bmpJigsaw"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -602,7 +602,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidBuildCmdSet" id="cmdBuildMinify" priority="0x0102" type="Button">
+      <Button guid="guidBuildCmdSet" id="cmdBuildMinify" priority="0x0101" type="Button">
         <Parent guid="guidBuildCmdSet" id="MyBuildMenuGroup"/>
         <Icon guid="guidImages" id="bmpLogo"/>
         <CommandFlag>DynamicVisibility</CommandFlag>
