@@ -35,7 +35,7 @@ namespace MadsKristensen.EditorExtensions
                   .Cast<Project>()
                   .SelectMany(GetChildProjects)
                   .Union(WebEssentialsPackage.DTE.Solution.Projects.Cast<Project>())
-                  .Where(p => !string.IsNullOrEmpty(p.FullName));
+                  .Where(p => { try { return !string.IsNullOrEmpty(p.FullName); } catch { return false; } });
         }
 
         private static IEnumerable<Project> GetChildProjects(Project parent)
