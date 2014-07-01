@@ -4,7 +4,6 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using EnvDTE80;
 using MadsKristensen.EditorExtensions.Compilers;
 using MadsKristensen.EditorExtensions.Images;
@@ -53,7 +52,7 @@ namespace MadsKristensen.EditorExtensions
             _mcs.AddCommand(menuSprites);
 
             CommandID cmdMinify = new CommandID(CommandGuids.guidBuildCmdSet, (int)CommandId.BuildMinify);
-            OleMenuCommand menuMinify = new OleMenuCommand((s, e) => Task.Run(new Action(Minify)).DoNotWait("Web Essentials: Minifying files..."), cmdMinify);
+            OleMenuCommand menuMinify = new OleMenuCommand((s, e) => Minify().DoNotWait("Web Essentials: Minifying files..."), cmdMinify);
             _mcs.AddCommand(menuMinify);
         }
 
@@ -79,7 +78,7 @@ namespace MadsKristensen.EditorExtensions
             await SpriteImageMenu.UpdateAllSpritesAsync(true);
         }
 
-        private void Minify()
+        private async Task Minify()
         {
             _dte.StatusBar.Text = "Web Essentials: Minifying files...";
             var extensions = new HashSet<string>(
@@ -92,14 +91,12 @@ namespace MadsKristensen.EditorExtensions
                        .SelectMany(p => Directory.EnumerateFiles(p, "*", SearchOption.AllDirectories))
                        .Where(f => extensions.Contains(Path.GetExtension(f)));
 
-            // Perform expensive blocking work in parallel
-            Parallel.ForEach(files, async file =>
-                await MinificationSaveListener.ReMinify(
-                          FileExtensionRegistry.GetContentTypeForExtension(Path.GetExtension(file).TrimStart('.')),
-                          file,
-                          false
-                      )
-            );
+            await Task.WhenAll(files.AsParallel().Select(async file =>
+               await MinificationSaveListener.ReMinify(
+                         FileExtensionRegistry.GetContentTypeForExtension(Path.GetExtension(file).TrimStart('.')),
+                         file,
+                         false
+                     )));
 
             WebEssentialsPackage.DTE.StatusBar.Clear();
         }
