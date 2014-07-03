@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Linq;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.JSON.Core.Schema;
 using Microsoft.Web.Editor;
+using Minimatch;
 using Newtonsoft.Json.Linq;
 
 namespace MadsKristensen.EditorExtensions.JSON
@@ -15,7 +16,8 @@ namespace MadsKristensen.EditorExtensions.JSON
     internal class SchemaExporter : IJSONSchemaSelector
     {
         private static string _path = Path.Combine(WebEditor.Host.UserFolder, @"schemas\json\catalog\schemastore.json");
-        private static Dictionary<string, string> _schemas = new Dictionary<string, string>();
+        private static Dictionary<string, IEnumerable<string>> _schemas = new Dictionary<string, IEnumerable<string>>();
+        private static Options _options = new Options { AllowWindowsPaths = true };
         private static bool _isDownloading;
         private const int _days = 7;
 
@@ -85,11 +87,18 @@ namespace MadsKristensen.EditorExtensions.JSON
                 {
                     try
                     {
-                        string file = (string)schema["fileMatch"];
+                        IEnumerable<string> files;
+                        var array = schema["fileMatch"] as JArray;
+
+                        if (array != null)
+                            files = array.Children().Select(c => (string)c).ToList();
+                        else
+                            files = new[] { (string)schema["fileMatch"] };
+
                         string url = (string)schema["url"];
 
                         if (!string.IsNullOrEmpty(url) && !_schemas.ContainsKey(url))
-                            _schemas.Add(url, file);
+                            _schemas.Add(url, files);
                     }
                     catch
                     {
@@ -110,8 +119,16 @@ namespace MadsKristensen.EditorExtensions.JSON
             {
                 try
                 {
-                    if (!string.IsNullOrEmpty(_schemas[url]) && Regex.IsMatch(fileLocation, _schemas[url]))
-                        return url;
+                    if (_schemas[url] == null)
+                        continue;
+                    foreach (string file in _schemas[url])
+                    {
+                        var pattern = "**/" + file.TrimStart('*', '/');
+
+                        var matche = new Minimatcher(pattern, _options);
+                        if (matche.IsMatch(fileLocation))
+                            return url;
+                    }
                 }
                 catch
                 {
