@@ -46,6 +46,9 @@ namespace MadsKristensen.EditorExtensions
                 Dispatcher.CurrentDispatcher.BeginInvoke(
                     new Action(() =>
                     {
+                        if (session == null)
+                            return;
+
                         session.Properties.AddProperty("dec", dec);
                         session.Match();
                     }),
