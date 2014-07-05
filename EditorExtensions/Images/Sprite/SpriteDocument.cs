@@ -119,8 +119,7 @@ namespace MadsKristensen.EditorExtensions.Images
 
             XElement element = null;
 
-            var imageFiles = from f in doc.Descendants("file")
-                             select ProjectHelpers.ToAbsoluteFilePath(f.Value, root, folder);
+            IEnumerable<string> imageFiles = ProjectHelpers.GetBundleConstituentFiles(doc.Descendants("file").Select(s => s.Value), root, folder, fileName);
 
             SpriteDocument sprite = new SpriteDocument(fileName, imageFiles.ToArray());
 

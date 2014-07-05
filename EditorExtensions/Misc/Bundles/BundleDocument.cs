@@ -15,6 +15,7 @@ namespace MadsKristensen.EditorExtensions
 
         public string FileName { get; set; }
         public IEnumerable<string> BundleAssets { get; set; }
+        public IEnumerable<string> BundleAssetsOriginal { get; set; }
         public bool Minified { get; set; }
         public bool RunOnBuild { get; set; }
         public bool AdjustRelativePaths { get; set; }
@@ -122,9 +123,12 @@ namespace MadsKristensen.EditorExtensions
                 return null;
 
             XElement element = null;
-            IEnumerable<string> constituentFiles = from f in doc.Descendants("file")
-                                                   select ProjectHelpers.ToAbsoluteFilePath(f.Value, root, folder);
-            BundleDocument bundle = new BundleDocument(fileName, constituentFiles.ToArray());
+            IEnumerable<string> rawConstituents = doc.Descendants("file").Select(s => s.Value);
+            IEnumerable<string> constituentFiles = ProjectHelpers.GetBundleConstituentFiles(rawConstituents, root, folder, fileName);
+            BundleDocument bundle = new BundleDocument(fileName, constituentFiles.ToArray())
+            {
+                BundleAssetsOriginal = rawConstituents
+            };
 
             element = doc.Descendants("minify").FirstOrDefault();
 
@@ -164,8 +168,7 @@ namespace MadsKristensen.EditorExtensions
             if (attributes.Count() == 0)
                 return doc;
 
-            IEnumerable<string> constituentFiles = from f in doc.Descendants("file")
-                                                   select ProjectHelpers.ToAbsoluteFilePath(f.Value, root, folder);
+            IEnumerable<string> constituentFiles = ProjectHelpers.GetBundleConstituentFiles(doc.Descendants("file").Select(s => s.Value), root, folder, fileName);
             BundleDocument newDoc = new BundleDocument(fileName, constituentFiles.ToArray());
 
             if (attributes.Contains("runOnBuild"))
