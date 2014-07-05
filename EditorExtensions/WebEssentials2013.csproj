@@ -834,6 +834,21 @@
     <Content Include="Resources\Scripts\JSDocComments.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\server\controller.js" />
+    <Content Include="Resources\server\services\compilers\autoprefixer.js" />
+    <Content Include="Resources\server\services\compilers\coffeescript.js" />
+    <Content Include="Resources\server\services\compilers\icedcoffeescript.js" />
+    <Content Include="Resources\server\services\compilers\index.js" />
+    <Content Include="Resources\server\services\compilers\less.js" />
+    <Content Include="Resources\server\services\compilers\livescript.js" />
+    <Content Include="Resources\server\services\compilers\sass.js" />
+    <Content Include="Resources\server\services\compilers\sweetjs.js" />
+    <Content Include="Resources\server\services\compilers\_commons.js" />
+    <Content Include="Resources\server\services\linters\index.js" />
+    <Content Include="Resources\server\services\linters\jscs.js" />
+    <Content Include="Resources\server\services\linters\jshint.js" />
+    <Content Include="Resources\server\services\linters\tslint.js" />
+    <Content Include="Resources\server\we-nodejs-server.js" />
     <Content Include="Resources\Tools\gifsicle.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -1028,6 +1043,13 @@
   </UsingTask>
   <Target Name="BeforeBuild">
     <MadsKristensen.EditorExtensions.PreBuildTask />
+    <!-- Copy node.js server and services to tools -->
+    <ItemGroup>
+      <NodeServerSource Include="$(MSBuildProjectDirectory)\Resources\server\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(NodeServerSource)"
+          DestinationFolder="$(MSBuildProjectDirectory)\Resources\nodejs\tools\server\%(RecursiveDir)"
+          SkipUnchangedFiles="true" />
     <!-- Include newly downloaded files now.. -->
     <ItemGroup>
       <!-- Exclude LESS & SASS because they have too many extra files; use a whitelist instead -->
