@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions
                 return false;
             }
 
-            Dictionary<string, string> files = await WatchFiles(document, updateBundle);
+            Dictionary<string, string> files = await WatchFiles(document, updateBundle, bundleFile);
 
             if (files == null)
                 return false;
@@ -49,8 +49,11 @@ namespace MadsKristensen.EditorExtensions
             return bundleChanged;
         }
 
-        public async static Task<Dictionary<string, string>> WatchFiles(BundleDocument document, Func<string, bool, Task> updateBundle)
+        public async static Task<Dictionary<string, string>> WatchFiles(BundleDocument document, Func<string, bool, Task> updateBundle, string bundleFile = null)
         {
+            if (bundleFile == null && document.OutputDirectory != null)
+                bundleFile = ProjectHelpers.GetAbsolutePathFromSettings(document.OutputDirectory, Path.Combine(Path.GetDirectoryName(document.FileName), Path.GetFileNameWithoutExtension(document.FileName)));
+
             Dictionary<string, string> files = new Dictionary<string, string>();
 
             if (document == null)
@@ -58,7 +61,7 @@ namespace MadsKristensen.EditorExtensions
 
             await new BundleFileObserver().AttachFileObserver(document, document.FileName, updateBundle);
 
-            foreach (string asset in document.BundleAssets)
+            foreach (string asset in document.BundleAssetsOriginal)
             {
                 string absolute = asset.Contains(":\\") ? asset : ProjectHelpers.ToAbsoluteFilePath(asset, document.FileName);
 
@@ -66,7 +69,10 @@ namespace MadsKristensen.EditorExtensions
                 {
                     if (!files.ContainsKey(absolute))
                     {
-                        files.Add(absolute, "/" + FileHelpers.RelativePath(ProjectHelpers.GetProjectFolder(document.FileName), asset));
+                        if (Path.IsPathRooted(asset))
+                            files.Add(absolute, asset);
+                        else
+                            files.Add(absolute, FileHelpers.RelativePath(bundleFile, Path.GetFullPath(Path.Combine(Path.GetDirectoryName(document.FileName), asset))));
 
                         await new BundleFileObserver().AttachFileObserver(document, absolute, updateBundle);
                     }

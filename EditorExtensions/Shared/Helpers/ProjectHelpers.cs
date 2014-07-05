@@ -541,5 +541,15 @@ namespace MadsKristensen.EditorExtensions
                 targetFileName
             ));
         }
+
+        public static IEnumerable<string> GetBundleConstituentFiles(IEnumerable<string> files, string root, string folder, string bundleFileName)
+        {
+            foreach (string file in files)
+            {
+                yield return Path.IsPathRooted(file) ?
+                             ToAbsoluteFilePath(file, root, folder) :
+                             ToAbsoluteFilePath(file, root, Path.GetDirectoryName(bundleFileName));
+            }
+        }
     }
 }
