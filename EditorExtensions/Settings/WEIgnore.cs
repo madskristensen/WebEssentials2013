@@ -22,27 +22,43 @@ namespace MadsKristensen.EditorExtensions.Settings
                 {
                     searchPattern = searchPattern.Trim();
 
-                    if (string.IsNullOrEmpty(searchPattern) || searchPattern[0] == '!') // Negated pattern
+                    if (string.IsNullOrEmpty(searchPattern))
                         continue;
 
                     int index = searchPattern.LastIndexOf('\t');
 
                     if (index > 0)
                     {
+                        string newPattern = searchPattern.Substring(0, index).Trim('\t');
                         string[] subparts = searchPattern.Substring(++index, searchPattern.Length - index).Split(',')
                                            .Select(p => p.Trim().ToLowerInvariant()).ToArray();
 
-                        if (!(subparts.Contains(serviceToken) || subparts.Contains(serviceName)) &&
-                            (subparts.Contains("!" + serviceToken) || subparts.Contains("!" + serviceName) ||
-                            !subparts.Any(s => s[0] == '!')))
+                        if (subparts.Contains(serviceToken) || subparts.Contains(serviceName))
+                        {
+                            if (newPattern[0] == '!' &&
+                                new Minimatcher(newPattern.Substring(1), new Options { AllowWindowsPaths = true }).IsMatch(sourcePath))
+                                return false;
+                            else if (new Minimatcher(newPattern, new Options { AllowWindowsPaths = true }).IsMatch(sourcePath))
+                                return true;
+                        }
+                        else if (subparts.Contains("!" + serviceToken) || subparts.Contains("!" + serviceName))
+                        {
+                            if (newPattern[0] == '!' &&
+                                new Minimatcher(newPattern.Substring(1), new Options { AllowWindowsPaths = true }).IsMatch(sourcePath))
+                                return true;
+                            else if (new Minimatcher(newPattern, new Options { AllowWindowsPaths = true }).IsMatch(sourcePath))
+                                return false;
+                        }
+                        else // The rule is not applicable on this service, continue checking other rules.
                             continue;
 
-                        searchPattern = searchPattern.Substring(0, index).Trim('\t');
+                        searchPattern = newPattern;
                     }
 
-                    Minimatcher miniMatcher = new Minimatcher(searchPattern, new Options { AllowWindowsPaths = true });
-
-                    if (miniMatcher.IsMatch(sourcePath))
+                    if (searchPattern[0] == '!' &&
+                        new Minimatcher(searchPattern, new Options { AllowWindowsPaths = true }).IsMatch(sourcePath))
+                        return false;
+                    else if (new Minimatcher(searchPattern, new Options { AllowWindowsPaths = true }).IsMatch(sourcePath))
                         return true;
                 }
             }
