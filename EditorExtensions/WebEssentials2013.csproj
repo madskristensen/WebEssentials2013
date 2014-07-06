@@ -89,7 +89,7 @@
   <ItemGroup>
     <Reference Include="AjaxMin, Version=5.10.5260.16959, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AjaxMin.5.10.5260.16959\lib\net40\AjaxMin.dll</HintPath>
+      <HintPath>..\packages\AjaxMin.5.11.5295.12309\lib\net40\AjaxMin.dll</HintPath>
     </Reference>
     <Reference Include="ConfOxide, Version=1.4.0.0, Culture=neutral, PublicKeyToken=934faed64f82030e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
