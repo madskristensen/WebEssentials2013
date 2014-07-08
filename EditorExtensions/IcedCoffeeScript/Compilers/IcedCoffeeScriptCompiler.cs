@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions.IcedCoffeeScript
 
         protected override Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName)
         {
-            return Task.FromResult("--runtime inline " + base.GetArguments(sourceFileName, targetFileName, mapFileName));
+            return Task.FromResult("--runtime inline " + base.GetArguments(sourceFileName, targetFileName, mapFileName).Result);
         }
     }
 }

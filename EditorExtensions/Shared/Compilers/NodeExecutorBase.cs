@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions
         protected virtual Regex ErrorParsingPattern { get { return null; } }
         protected virtual Func<string, IEnumerable<CompilerError>> ParseErrors { get { return ParseErrorsWithRegex; } }
 
-        ///<summary>Indicates whether this compiler will emit a source map file.  Will only return true if aupported and enabled in user settings.</summary>
+        ///<summary>Indicates whether this compiler will emit a source map file.  Will only return true if supported and enabled in user settings.</summary>
         public abstract bool GenerateSourceMap { get; }
         public virtual bool ManagedSourceMap { get { return true; } }
         public abstract string TargetExtension { get; }
