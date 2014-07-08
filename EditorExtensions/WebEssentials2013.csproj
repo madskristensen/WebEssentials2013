@@ -370,6 +370,7 @@
     <Compile Include="SCSS\Commands\ScssExtractVariableCommandTarget.cs" />
     <Compile Include="Settings\WEIgnore.cs" />
     <Compile Include="Shared\Compilers\JsCompilerBase.cs" />
+    <Compile Include="Shared\Compilers\NodeServer.cs" />
     <Compile Include="Shared\Compilers\Result\CompilerResultFactory.cs" />
     <Compile Include="Shared\Compilers\Result\CompilerError.cs" />
     <Compile Include="Shared\Compilers\Result\CssCompilerResult.cs" />
@@ -834,20 +835,16 @@
     <Content Include="Resources\Scripts\JSDocComments.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\server\controller.js" />
-    <Content Include="Resources\server\services\compilers\autoprefixer.js" />
-    <Content Include="Resources\server\services\compilers\coffeescript.js" />
-    <Content Include="Resources\server\services\compilers\icedcoffeescript.js" />
-    <Content Include="Resources\server\services\compilers\index.js" />
-    <Content Include="Resources\server\services\compilers\less.js" />
-    <Content Include="Resources\server\services\compilers\livescript.js" />
-    <Content Include="Resources\server\services\compilers\sass.js" />
-    <Content Include="Resources\server\services\compilers\sweetjs.js" />
-    <Content Include="Resources\server\services\compilers\_commons.js" />
-    <Content Include="Resources\server\services\linters\index.js" />
-    <Content Include="Resources\server\services\linters\jscs.js" />
-    <Content Include="Resources\server\services\linters\jshint.js" />
-    <Content Include="Resources\server\services\linters\tslint.js" />
+    <Content Include="Resources\server\services\srv-autoprefixer.js" />
+    <Content Include="Resources\server\services\srv-coffeescript.js" />
+    <Content Include="Resources\server\services\srv-icedcoffeescript.js" />
+    <Content Include="Resources\server\services\srv-less.js" />
+    <Content Include="Resources\server\services\srv-livescript.js" />
+    <Content Include="Resources\server\services\srv-sass.js" />
+    <Content Include="Resources\server\services\srv-sweetjs.js" />
+    <Content Include="Resources\server\services\srv-jscs.js" />
+    <Content Include="Resources\server\services\srv-jshint.js" />
+    <Content Include="Resources\server\services\srv-tslint.js" />
     <Content Include="Resources\server\we-nodejs-server.js" />
     <Content Include="Resources\Tools\gifsicle.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -1047,9 +1044,7 @@
     <ItemGroup>
       <NodeServerSource Include="$(MSBuildProjectDirectory)\Resources\server\**\*.*" />
     </ItemGroup>
-    <Copy SourceFiles="@(NodeServerSource)"
-          DestinationFolder="$(MSBuildProjectDirectory)\Resources\nodejs\tools\server\%(RecursiveDir)"
-          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(NodeServerSource)" DestinationFolder="$(MSBuildProjectDirectory)\Resources\nodejs\tools\server\%(RecursiveDir)" SkipUnchangedFiles="true" />
     <!-- Include newly downloaded files now.. -->
     <ItemGroup>
       <!-- Exclude LESS & SASS because they have too many extra files; use a whitelist instead -->

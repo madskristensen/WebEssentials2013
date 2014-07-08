@@ -1,8 +1,8 @@
 //#region Imports
-var controller = require("./controller.js"),
-    http = require("http"),
+var http = require("http"),
     url = require("url"),
-    os = require("os");
+    os = require("os"),
+    program = require("commander");
 //#endregion
 
 //#region Utilities
@@ -11,9 +11,6 @@ var developmentEnv = true;
 console.logType = { message: "\x1b[32;1m", error: "\x1b[31;1m", transaction: "\x1b[33;1m" };
 
 console.logLine = function (message, type, indent, noTimeStamp) {
-    if (typeof (noTimeStamp) === 'undefined')
-        noTimeStamp = false;
-
     if (!developmentEnv || noTimeStamp) {
         this.log(message);
         return;
@@ -41,7 +38,7 @@ console.logLine = function (message, type, indent, noTimeStamp) {
     var spaces = Array(timeStampSlugSize + 1).join(" ");
 
     while (true) {
-        remainder = message.substr(offset + limit, message.length - offset);
+        var remainder = message.substr(offset + limit, message.length - offset);
 
         if (remainder === "") break;
 
@@ -86,7 +83,7 @@ var validateUptime = function (then) {
 };
 
 var validPositiveInteger = function (int) {
-    return 0 === int % (!isNaN(parseFloat(int)) && 0 <= ~~int);
+    return int % (!isNaN(parseFloat(int)) && ~~int >= 0) === 0;
 };
 
 var validatePort = function (port) {
@@ -98,12 +95,13 @@ var validatePort = function (port) {
     }
 
     if (!validity)
-        console.log("Invalid Port!");
+        console.logLine("Invalid Port!");
 
     return validity;
 };
 //#endregion
 
+//#region Start
 var start = function (port) {
     function onRequest(request, response) {
         console.logLine("Request recieved: " + JSON.stringify(request.headers), console.logType.transaction);
@@ -116,29 +114,76 @@ var start = function (port) {
         response.writeHead(200, { "Content-Type": "text/plain" });
 
         try {
-            controller.handleRequest(response, url.parse(request.url, true).query);
+            (function (writer, params) {
+                if (!/^[a-zA-Z0-9-_]+$/.test(params.service))
+                    // Change to valid character string and let it respond as the regular (invalid) case
+                    params.service = "invalid-service-name";
+
+                require('./services/srv-' + params.service)(writer, params);
+            })(response, url.parse(request.url, true).query);
         } catch (e) {
-            response.write(e.stack);
+            response.write(JSON.stringify({ Success: false, Remarks: e.stack }));
         }
     }
 
     http.createServer(onRequest).listen(port, "127.0.0.1");
-    console.logLine("Server has started..");
-    console.logLine("Started listening on port" + port);
+    console.logLine("Server has started in " + (developmentEnv ? "development" : "production") + " environment");
+    console.logLine("Started listening on port " + port);
 };
+//#endregion
 
-if (process.argv.length === 8 &&
-   (process.argv[6] === "--environment" || process.argv[6] === "-e") &&
-    process.argv[7] === "production")
+//#region CronJob: auto-close
+var checkIfParentExists = function (pid) {
+    try {
+        process.kill(pid, 0);
+    }
+    catch (e) {
+        return false;
+    }
+
+    return true;
+};
+//#endregion
+
+//#region CLI
+program
+  .option('-p, --port <n>', 'Port to bind to when listening for connections.', parseInt)
+  .option('-a, --anti-forgery-token [value]', 'Token to validate requests with.')
+  .option('-e, --environment [value]', 'Configures your Rails environment to what you need.')
+  .option('-pid, --process-id <n>', 'Process ID of the parent process.', parseInt)
+  .parse(process.argv);
+
+if (program.rawArgs.length === 10 && program.environment === "production") {
     developmentEnv = false;
 
-if (!((!developmentEnv && process.argv.length === 6 || process.argv.length === 8) || (developmentEnv && process.argv.length === 4)) ||
-    !(process.argv[2] === "--port" || process.argv[2] === "-p") ||
-    !validatePort(process.argv[3]) ||
-    (!developmentEnv && !(process.argv[4] === "--anti-forgery-token" || process.argv[4] === "-a"))) {
+    // Each VS instance upon loading Web Essentials for the first time,
+    // will instantiate this server. This cron-job will check if the PID
+    // of parent VS instance (which we will provide at handshake) exists,
+    // if not (in case the instance gets crashed or terminated unexpectedly)
+    // it will exit the sever and free-up the memory. Not sure if we need it
+    // after the GC runs.. But I saw the node.exe process running even after
+    // terminating the Experimental Instance from host. I happened once,
+    // couldn't reproduce the behavior.
+    //
+    // NOTE: process.kill() that is used in checkIfParentExists() function,
+    // with signal '0' is a magic code; it returns if the process is running
+    // and throws otherwise (with SGNL 0 it doesn't kill the process).
+    setInterval(function () {
+        require("fs").appendFile('c:/temp/message.txt', program.processId + '\n');
+        if (!checkIfParentExists(program.processId)) {
+            require("fs").appendFile('c:/temp/message.txt', 'exiting: ' + program.processId + '\n');
+            exit(1);
+        }
+    }, 300000);
+}
+
+if (!((!developmentEnv && program.rawArgs.length === 6 || program.rawArgs.length === 10) ||
+    (developmentEnv && program.rawArgs.length === 4)) ||
+    !validatePort(program.port) || (!developmentEnv && !program.antiForgeryToken)) {
     console.logLine("The server cannot start due to the insufficient or incorrect arguments. Exiting..", console.logType.error);
     process.exit(1);
 }
 
 start(process.argv[3]);
 protetFromForgery = process.argv[5];
+//#endregion
