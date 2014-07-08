@@ -1,9 +1,9 @@
-﻿using System.ComponentModel.Composition;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel.Composition;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
     [Export(typeof(IVsTextViewCreationListener))]
     [ContentType(CoffeeContentTypeDefinition.CoffeeContentType)]
     [TextViewRole(PredefinedTextViewRoles.Document)]
-    public class CoffeeScriptViewCreationListener : IVsTextViewCreationListener
+    public class CoffeeScriptViewCreationListener : IWpfTextViewConnectionListener
     {
         [Import]
         public IVsEditorAdaptersFactoryService EditorAdaptersFactoryService { get; set; }
@@ -20,9 +20,9 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
         [Import]
         public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
-        public void VsTextViewCreated(IVsTextView textViewAdapter)
+        public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
-            var textView = EditorAdaptersFactoryService.GetWpfTextView(textViewAdapter);
+            var textViewAdapter = EditorAdaptersFactoryService.GetViewAdapter(textView);
 
             textView.Properties.GetOrCreateSingletonProperty(() => new EnterIndentation(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty(() => new CommentCommandTarget(textViewAdapter, textView, "#"));
@@ -39,6 +39,9 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
                 textView.TextBuffer.Properties.GetOrCreateSingletonProperty(() => lintInvoker);
             }
         }
+
+        public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
+        { }
     }
 
 }
