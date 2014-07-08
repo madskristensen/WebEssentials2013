@@ -1,17 +1,8 @@
 //#region Imports
 var less = require("less"),
     fs = require("fs"),
-    path = require("path"),
-    mkdirp = require("mkdirp");
+    path = require("path");
 //#endregion
-
-/*//#region Helpers
-var ensureDirectory = function (filepath) {
-    var dirname = path.dirname(filepath);
-    if (!fs.existsSync(dirname))
-        mkdirp.sync(dirname);
-};
-//#endregion*/
 
 //#region Handler
 var handleLess = function (writer, params) {
@@ -48,7 +39,6 @@ var handleLess = function (writer, params) {
                     sourceMapOutputFilename: mapFileName,
                     strictMath: params.strictMath,
                     writeSourceMap: function (output) {
-                        //ensureDirectory(mapFileName);
                         output = JSON.parse(output);
                         output.file = path.basename(params.targetFileName);
                         output.sources = output.sources.map(function (source) {
@@ -60,7 +50,6 @@ var handleLess = function (writer, params) {
                             return source;
                         });
                         map = output;
-                        //fs.writeFileSync(mapFileName, JSON.stringify(output), 'utf8');
                     }
                 });
 
@@ -72,9 +61,6 @@ var handleLess = function (writer, params) {
                     newMaps.sources = map.sources;
                     map = newMaps;
                 }
-
-                //ensureDirectory(params.targetFileName);
-                //fs.writeFileSync(params.targetFileName, css, 'utf8');
 
                 writer.write(JSON.stringify({
                     Success: true,

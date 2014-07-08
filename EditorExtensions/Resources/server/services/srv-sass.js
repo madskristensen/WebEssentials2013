@@ -6,13 +6,11 @@ var sass = require("node-sass"),
 //#region Handler
 var handleSass = function (writer, params) {
     var mapFileName = params.targetFileName + ".map";
-    var sourceMapURL = params.sourceMapURL != undefined ? "map" : "none";
     sass.render({
         file: params.sourceFileName,
         includePaths: [path.dirname(params.sourceFileName)],
         precision: parseInt(params.precision, 10),
         outputStyle: params.outputStyle,
-        sourceComments: sourceMapURL,
         sourceMap: mapFileName,
         success: function (css, map) {
             map = JSON.parse(map);
@@ -26,6 +24,16 @@ var handleSass = function (writer, params) {
                     return source.substr(3, source.length);
                 });
                 map = newMaps;
+            }
+
+            // SASS doesn't generate source-maps without source-map comments
+            // (unlike LESS and CoffeeScript). So we need to delete the comment
+            // manually if its not present in params.
+            if (params.sourceMapURL == undefined) {
+                var soucemapCommentLineIndex = css.lastIndexOf("\n");
+                if (soucemapCommentLineIndex > 0) {
+                    css = css.substring(0, soucemapCommentLineIndex);
+                }
             }
 
             writer.write(JSON.stringify({
