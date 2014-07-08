@@ -123,6 +123,7 @@ var start = function (port) {
             })(response, url.parse(request.url, true).query);
         } catch (e) {
             response.write(JSON.stringify({ Success: false, Remarks: e.stack }));
+            response.end();
         }
     }
 
