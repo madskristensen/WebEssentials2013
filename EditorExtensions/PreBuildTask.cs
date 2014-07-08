@@ -104,6 +104,7 @@ namespace MadsKristensen.EditorExtensions
             try
             {
                 await transactor(new WebClient());
+                return;
             }
             catch (WebException e)
             {
