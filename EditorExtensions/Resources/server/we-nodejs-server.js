@@ -16,12 +16,12 @@ console.logLine = function (message, type, indent, noTimeStamp) {
         return;
     }
 
-    message = message.toString();
+    message = (message || "null").toString();
 
-    if (typeof (type) === 'undefined')
+    if (!type)
         type = this.logType.message;
 
-    if (typeof (indent) === 'undefined')
+    if (!indent)
         indent = true;
 
     var date = new Date().toUTCString();
