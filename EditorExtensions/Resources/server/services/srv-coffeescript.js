@@ -1,14 +1,14 @@
 //#region Imports
-var sweetjs = require("sweet.js");
+var coffeescript = require("coffee-script");
 //#endregion
 
 //#region Handler
-var handleSweetJS = function (writer, params) {
+var handleCoffeeScript = function (writer, params) {
     writer.write(JSON.stringify({ Success: false, Remarks: "Service Not Implemented." }));
     writer.end();
 };
 //#endregion
 
 //#region Exports
-exports.handleSweetJS = handleSweetJS;
+module.exports = handleCoffeeScript;
 //#endregion

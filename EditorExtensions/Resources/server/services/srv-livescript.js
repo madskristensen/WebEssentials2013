@@ -10,5 +10,5 @@ var handleLiveScript = function (writer, params) {
 //#endregion
 
 //#region Exports
-exports.handleLiveScript = handleLiveScript;
+module.exports = handleLiveScript;
 //#endregion

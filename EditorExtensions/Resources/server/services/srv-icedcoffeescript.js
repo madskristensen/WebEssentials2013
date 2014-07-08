@@ -1,14 +1,14 @@
 //#region Imports
-var tslint = require("tslint");
+var icedcoffeescript = require("iced-coffee-script");
 //#endregion
 
 //#region Handler
-var handleTSLint = function (writer, params) {
+var handleIcedCoffeeScript = function (writer, params) {
     writer.write(JSON.stringify({ Success: false, Remarks: "Service Not Implemented." }));
     writer.end();
 };
 //#endregion
 
 //#region Exports
-exports.handleAutoPrefixer = handleTSLint;
+module.exports = handleIcedCoffeeScript;
 //#endregion
