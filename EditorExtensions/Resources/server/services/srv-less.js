@@ -57,8 +57,10 @@ var handleLess = function (writer, params) {
                     var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, params.autoprefixerBrowsers, params.sourceFileName, params.targetFileName);
                     css = autoprefixedOutput.css;
                     // Curate the sources returned by autoprefix; remove ../ from the start of each source
-                    var newMaps = autoprefixedOutput.map;
-                    newMaps.sources = map.sources;
+                    var newMaps = JSON.parse(autoprefixedOutput.map);
+                    newMaps.sources = newMaps.sources.map(function (source) {
+                        return source.substr(3, source.length);
+                    });
                     map = newMaps;
                 }
 
