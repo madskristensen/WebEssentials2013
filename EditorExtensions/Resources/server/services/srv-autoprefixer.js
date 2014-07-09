@@ -50,7 +50,7 @@ var handleAutoPrefixer = function (writer, params) {
 
     fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
         if (err) {
-            writer.write(JSON.stringify({ Success: false, Remarks: err }));
+            writer.write(JSON.stringify({ Success: false, Remarks: "Error reading input file." }));
             writer.end();
             return;
         }

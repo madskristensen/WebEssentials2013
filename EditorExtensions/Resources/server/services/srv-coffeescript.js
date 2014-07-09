@@ -8,7 +8,7 @@ var coffeescript = require("coffee-script"),
 var handleCoffeeScript = function (writer, params) {
     var options = {
         filename: params.sourceFileName,
-        bare: params.bare,
+        bare: params.bare !== null,
         sourceMap: true,
         sourceRoot: "",
         sourceFiles: [path.relative(path.dirname(params.targetFileName), params.sourceFileName).replace(/\\/g, '/')],

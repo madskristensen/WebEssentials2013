@@ -22,7 +22,7 @@ var handleLess = function (writer, params) {
         try {
             new (less.Parser)({ filename: params.sourceFileName }).parse(data, function (e, tree) {
                 if (e) {
-                    writer.write(JSON.stringify({ Success: false, Remarks: e }));
+                    writer.write(JSON.stringify({ Success: false, Remarks: "Error reading input file." }));
                     writer.end();
                     return;
                 }
@@ -31,13 +31,13 @@ var handleLess = function (writer, params) {
                 var mapFileName = params.targetFileName + ".map";
                 var mapDir = path.dirname(mapFileName);
                 var css = tree.toCSS({
-                    relativeUrl: params.relativeUrl,
+                    relativeUrl: true,
                     paths: [path.dirname(params.sourceFileName)],
                     sourceMap: mapFileName,
                     sourceMapURL: params.sourceMapURL != undefined ? path.basename(mapFileName) : null,
                     sourceMapBasepath: mapDir,
                     sourceMapOutputFilename: mapFileName,
-                    strictMath: params.strictMath,
+                    strictMath: params.strictMath !== null,
                     writeSourceMap: function (output) {
                         output = JSON.parse(output);
                         output.file = path.basename(params.targetFileName);
