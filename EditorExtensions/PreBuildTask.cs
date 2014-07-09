@@ -85,7 +85,7 @@ namespace MadsKristensen.EditorExtensions
 
             Log.LogMessage(MessageImportance.High, "Downloading npm ...");
 
-            var npmZip = await WebClientDoAsync<Stream>(wc => wc.OpenReadTaskAsync("http://nodejs.org/dist/npm/npm-1.3.23.zip"));
+            var npmZip = await WebClientDoAsync(wc => wc.OpenReadTaskAsync("http://nodejs.org/dist/npm/npm-1.3.23.zip"));
 
             try
             {
@@ -142,7 +142,7 @@ namespace MadsKristensen.EditorExtensions
 
         static WebClient CreateWebClientWithProxyAuthSetup(IWebProxy proxy = null, ICredentials credentials = null)
         {
-            var wc = new WebClient { Proxy = proxy ?? WebRequest.DefaultWebProxy };
+            var wc = new WebClient { Proxy = proxy ?? WebRequest.GetSystemWebProxy() };
             wc.Proxy.Credentials = credentials ?? CredentialCache.DefaultCredentials;
             return wc;
         }
