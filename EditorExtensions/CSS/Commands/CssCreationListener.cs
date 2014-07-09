@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions.Css
             if (textViewAdapter == null)
                 return;
 
-            textView.Properties.GetOrCreateSingletonProperty<CssSortProperties>(() => new CssSortProperties(textViewAdapter, textView));
+            //textView.Properties.GetOrCreateSingletonProperty<CssSortProperties>(() => new CssSortProperties(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<ExtractToFile>(() => new ExtractToFile(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<CssAddMissingStandard>(() => new CssAddMissingStandard(textViewAdapter, textView));
             textView.Properties.GetOrCreateSingletonProperty<CssAddMissingVendor>(() => new CssAddMissingVendor(textViewAdapter, textView));
