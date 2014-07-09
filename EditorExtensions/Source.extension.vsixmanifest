@@ -2,7 +2,7 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
     <Identity Id="5fb7364d-2e8c-44a4-95eb-2a382e30fec8" Version="2.2.5" Language="en-US" Publisher="Mads Kristensen" />
-    <DisplayName>Web Essentials 2013 for Update 2</DisplayName>
+    <DisplayName>Web Essentials 2013 for Update 3 RC</DisplayName>
     <Description xml:space="preserve">Adds many useful features to Visual Studio for web developers. Requires VS2013 Update 2 RTM</Description>
     <MoreInfo>http://vswebessentials.com/</MoreInfo>
     <License>License.txt</License>
@@ -13,8 +13,8 @@
     <Tags>css, javascript, html, less, coffeescript, json</Tags>
   </Metadata>
   <Installation InstalledByMsi="false">
-    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[12.0.30501,13.0)" />
-    <InstallationTarget Id="Microsoft.VisualStudio.VWDExpress" Version="[12.0.30501,13.0)" />
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[12.0.30626,12.0.30670)" />
+    <InstallationTarget Id="Microsoft.VisualStudio.VWDExpress" Version="[12.0.30626,12.0.30670)" />
   </Installation>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />
