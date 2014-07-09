@@ -7,12 +7,12 @@ var livescript = require("LiveScript"),
 var handleLiveScript = function (writer, params) {
     var options = {
         filename: params.sourceFileName,
-        bare: params.bare
+        bare: params.bare !== null
     };
 
     fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
         if (err) {
-            writer.write(JSON.stringify({ Success: false, Remarks: err }));
+            writer.write(JSON.stringify({ Success: false, Remarks: "Error reading input file." }));
             writer.end();
             return;
         }
