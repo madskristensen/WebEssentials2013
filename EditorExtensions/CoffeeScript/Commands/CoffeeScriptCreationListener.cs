@@ -1,5 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
+using System.Linq;
+using MadsKristensen.EditorExtensions.IcedCoffeeScript;
+using MadsKristensen.EditorExtensions.LiveScript;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Text;
@@ -9,8 +12,9 @@ using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions.CoffeeScript
 {
-    [Export(typeof(IVsTextViewCreationListener))]
+    [Export(typeof(IWpfTextViewConnectionListener))]
     [ContentType(CoffeeContentTypeDefinition.CoffeeContentType)]
+    [ContentType(IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType)]
     [TextViewRole(PredefinedTextViewRoles.Document)]
     public class CoffeeScriptViewCreationListener : IWpfTextViewConnectionListener
     {
@@ -22,6 +26,9 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
 
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
+            if (subjectBuffers.Any(b => b.ContentType.IsOfType(LiveScriptContentTypeDefinition.LiveScriptContentType)))
+                return;
+
             var textViewAdapter = EditorAdaptersFactoryService.GetViewAdapter(textView);
 
             textView.Properties.GetOrCreateSingletonProperty(() => new EnterIndentation(textViewAdapter, textView));
