@@ -1,7 +1,8 @@
 //#region Imports
 var coffeescript = require("coffee-script"),
     path = require("path"),
-    fs = require("fs");
+    fs = require("fs"),
+    xRegex = require("xregexp").XRegExp;
 //#endregion
 
 //#region Handler
@@ -16,7 +17,7 @@ var handleCoffeeScript = function (writer, params) {
 
     fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
         if (err) {
-            writer.write(JSON.stringify({ Success: false, Remarks: err }));
+            writer.write(JSON.stringify({ Success: false, Remarks: "CoffeeScript: Error reading input file.", Details: err }));
             writer.end();
             return;
         }
@@ -36,13 +37,25 @@ var handleCoffeeScript = function (writer, params) {
                 Success: true,
                 Remarks: "Successful!",
                 Output: {
-                    outputContent: js,
-                    mapContent: map
+                    Content: js,
+                    Map: map
                 }
             }));
             writer.end();
         } catch (error) {
-            writer.write(JSON.stringify({ Success: false, Remarks: error.stack || ("" + error) }));
+            var regex = xRegex.exec(error, xRegex(".*:.\\d*:.\\d*: error: (?<fullMessage>(?<message>.*)(\\n*.*)*)", 'gi'));
+            writer.write(JSON.stringify({
+                Success: false,
+                Remarks: "CoffeeScript: An error has occured while processing your request.",
+                Details: regex.message,
+                Errors: {
+                    Line: error.location.first_line,
+                    Column: error.location.first_column,
+                    Message: regex.message,
+                    FileName: error.filename,
+                    FullMessage: regex.fullMessage
+                }
+            }));
             writer.end();
         }
     });

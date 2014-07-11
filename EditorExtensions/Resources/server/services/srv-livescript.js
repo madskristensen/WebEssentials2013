@@ -1,6 +1,7 @@
 //#region Imports
 var livescript = require("LiveScript"),
-    fs = require("fs");
+    fs = require("fs"),
+    xRegex = require("xregexp").XRegExp;
 //#endregion
 
 //#region Handler
@@ -12,7 +13,7 @@ var handleLiveScript = function (writer, params) {
 
     fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
         if (err) {
-            writer.write(JSON.stringify({ Success: false, Remarks: "Error reading input file." }));
+            writer.write(JSON.stringify({ Success: false, Remarks: "LiveScript: Error reading input file.", Details: err }));
             writer.end();
             return;
         }
@@ -24,13 +25,24 @@ var handleLiveScript = function (writer, params) {
                 Success: true,
                 Remarks: "Successful!",
                 Output: {
-                    outputContent: compiled
+                    Content: compiled
                     // Maps aren't supported yet: https://github.com/gkz/LiveScript/issues/452
                 }
             }));
             writer.end();
         } catch (error) {
-            writer.write(JSON.stringify({ Success: false, Remarks: error.stack || ("" + error) }));
+            var regex = xRegex.exec(error, xRegex("(?<fullMessage>(?<message>.*line (?<Line>\\d))\nat (?<fileName>.*))", 'gi'));
+            writer.write(JSON.stringify({
+                Success: false,
+                Remarks: "LiveScript: An error has occured while processing your request.",
+                Details: regex.message,
+                Errors: {
+                    Line: regex.Line,
+                    FileName: regex.fileName,
+                    Message: regex.message,
+                    FullMessage: regex.fullMessage
+                }
+            }));
             writer.end();
         }
     });

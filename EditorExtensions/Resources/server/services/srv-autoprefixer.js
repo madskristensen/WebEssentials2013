@@ -11,9 +11,10 @@ var processAutoprefixer = function (cssContent, mapContent, browsers, from, to) 
         try {
             result = autoprefixer(browsers.split(",").map(function (s) { return s.trim(); }));
         } catch (e) {
+            // Return same css and map back so compilers can continue.
             return {
                 Success: false,
-                Remarks: "Invalid browser provided! See autoprefixer docs for list of valid browsers options.",
+                Remarks: "Autoprefixer: Invalid browser provided! See autoprefixer docs for list of valid browsers options.",
                 css: cssContent,
                 map: mapContent
             };
@@ -43,14 +44,14 @@ var processAutoprefixer = function (cssContent, mapContent, browsers, from, to) 
 //#region Handler
 var handleAutoPrefixer = function (writer, params) {
     if (!fs.existsSync(params.sourceFileName)) {
-        writer.write(JSON.stringify({ Success: false, Remarks: "Input file not found!" }));
+        writer.write(JSON.stringify({ Success: false, Remarks: "Autoprefix: Input file not found!" }));
         writer.end();
         return;
     }
 
     fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
         if (err) {
-            writer.write(JSON.stringify({ Success: false, Remarks: "Error reading input file." }));
+            writer.write(JSON.stringify({ Success: false, Remarks: "Autoprefixer: Error reading input file.", Details: err }));
             writer.end();
             return;
         }
@@ -67,7 +68,7 @@ var handleAutoPrefixer = function (writer, params) {
                 Success: true,
                 Remarks: "Successful!",
                 Output: {
-                    outputContent: output.css
+                    Content: output.css
                 }
             }));
 
