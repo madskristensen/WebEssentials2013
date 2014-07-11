@@ -37,6 +37,9 @@ namespace MadsKristensen.EditorExtensions.Images
 
         public async static Task<Dictionary<string, Image>> WatchFiles(SpriteDocument document, Func<string, bool, Task> updateSprite)
         {
+            if (document == null)
+                return null;
+
             Dictionary<string, Image> images = GetImages(document);
 
             await new BundleFileObserver().AttachFileObserver(document, document.FileName, updateSprite);
