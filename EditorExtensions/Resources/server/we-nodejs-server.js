@@ -2,6 +2,7 @@
 var http = require("http"),
     url = require("url"),
     os = require("os"),
+    fs = require("fs"),
     program = require("commander");
 //#endregion
 
@@ -16,7 +17,8 @@ console.logLine = function (message, type, indent, noTimeStamp) {
         return;
     }
 
-    message = (message || "null").toString();
+    // stringify null
+    message += '';
 
     if (!type)
         type = this.logType.message;
@@ -114,13 +116,23 @@ var start = function (port) {
         response.writeHead(200, { "Content-Type": "text/plain" });
 
         try {
-            (function (writer, params) {
-                if (!/^[a-zA-Z0-9-_]+$/.test(params.service))
-                    // Change to valid character string and let it respond as the regular (invalid) case
-                    params.service = "invalid-service-name";
+            var params = url.parse(request.url, true).query;
 
-                require('./services/srv-' + params.service)(writer, params);
-            })(response, url.parse(request.url, true).query);
+            // Change to valid character string and let it respond as the regular (invalid) case
+            if (!/^[a-zA-Z0-9_-]+$/.test(params.service))
+                params.service = "invalid-service-name";
+
+            var service = require('./services/srv-' + params.service);
+
+            if (!fs.existsSync(params.sourceFileName)) {
+                response.write(JSON.stringify({
+                    Success: false, Remarks: "Input file not found!"
+                }));
+                response.end();
+                return;
+            }
+
+            service(response, params);
         } catch (e) {
             response.write(JSON.stringify({ Success: false, Remarks: e.stack }));
             response.end();
@@ -150,7 +162,7 @@ var checkIfParentExists = function (pid) {
 program
   .option('-p, --port <n>', 'Port to bind to when listening for connections.', parseInt)
   .option('-a, --anti-forgery-token [value]', 'Token to validate requests with.')
-  .option('-e, --environment [value]', 'Configures your Rails environment to what you need.')
+  .option('-e, --environment [value]', 'Configures the environment to what you need.')
   .option('-pid, --process-id <n>', 'Process ID of the parent process.', parseInt)
   .parse(process.argv);
 
@@ -170,11 +182,8 @@ if (program.rawArgs.length === 10 && program.environment === "production") {
     // with signal '0' is a magic code; it returns if the process is running
     // and throws otherwise (with SGNL 0 it doesn't kill the process).
     setInterval(function () {
-        require("fs").appendFile('c:/temp/message.txt', program.processId + '\n');
-        if (!checkIfParentExists(program.processId)) {
-            require("fs").appendFile('c:/temp/message.txt', 'exiting: ' + program.processId + '\n');
+        if (!checkIfParentExists(program.processId))
             exit(1);
-        }
     }, 300000);
 }
 

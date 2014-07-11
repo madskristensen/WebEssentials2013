@@ -386,6 +386,7 @@
     <Compile Include="SCSS\SmartTags\ScssExtractVariableSmartTagProvider.cs" />
     <Compile Include="Shared\Completion\ColorSwatchIntellisenseProvider.cs" />
     <Compile Include="Shared\ExtensionMethods\TaskExtensions.cs" />
+    <Compile Include="Shared\Helpers\AsyncLock.cs" />
     <Compile Include="Shared\Helpers\Policies\PolicyFactory.cs" />
     <Compile Include="Shared\Helpers\Policies\Strategies\FileTransientErrorDetectionStrategy.cs" />
     <Compile Include="Shared\Helpers\SourceMapNode.cs" />
@@ -838,6 +839,7 @@
     <Content Include="Resources\server\services\srv-autoprefixer.js" />
     <Content Include="Resources\server\services\srv-coffeescript.js" />
     <Content Include="Resources\server\services\srv-icedcoffeescript.js" />
+    <Content Include="Resources\server\services\srv-coffeelint.js" />
     <Content Include="Resources\server\services\srv-less.js" />
     <Content Include="Resources\server\services\srv-livescript.js" />
     <Content Include="Resources\server\services\srv-sass.js" />

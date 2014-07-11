@@ -3,19 +3,18 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace MadsKristensen.EditorExtensions
 {
-    public class NodeServer : IDisposable
+    public sealed class NodeServer : IDisposable
     {
         private static readonly string _nodePath = Path.Combine(Path.Combine(Path.GetDirectoryName(typeof(NodeExecutorBase).Assembly.Location), @"Resources"), @"nodejs\node.exe");
-        private static string _serverInfo = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "we-node-server.info");
         private string _authenticationToken;
         private static NodeServer _server;
         private HttpClient _client;
@@ -28,12 +27,14 @@ namespace MadsKristensen.EditorExtensions
 
         public static async Task Up()
         {
+            AsyncLock mutex = new AsyncLock();
+
             if (await HearbeatCheck())
                 return;
 
             while (true)
             {
-                lock (_nodePath)
+                using (await mutex.LockAsync())
                 {
                     if (_server == null || _server._process == null || _server._process.HasExited)
                         _server = new NodeServer();
@@ -44,10 +45,7 @@ namespace MadsKristensen.EditorExtensions
                     await task.ConfigureAwait(false);
 
                     if (await HearbeatCheck())
-                    {
-                        await FileHelpers.WriteAllTextRetry(_serverInfo, _server._process.Id.ToString());
                         break;
-                    }
                 }
             }
         }
@@ -80,8 +78,8 @@ namespace MadsKristensen.EditorExtensions
 
         private NodeServer()
         {
-            _port = GetAvailablePort();
-            _address = string.Format(CultureInfo.CurrentCulture, "http://127.0.0.1:{0}/", _port);
+            SelectAvailablePort();
+            _address = string.Format(CultureInfo.InvariantCulture, "http://127.0.0.1:{0}/", _port);
             _client = new HttpClient();
 
             _client.DefaultRequestHeaders.Add("origin", "web essentials");
@@ -92,27 +90,14 @@ namespace MadsKristensen.EditorExtensions
             Initialize();
         }
 
-        private int GetAvailablePort()
+        private void SelectAvailablePort()
         {
-            int port = new Random().Next(1024, 65535);
-            bool isAvailable = true;
+            Random rand = new Random();
+            TcpConnectionInformation[] connections = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpConnections();
 
-            IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-            TcpConnectionInformation[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpConnections();
-
-            foreach (TcpConnectionInformation tcpi in tcpConnInfoArray)
-            {
-                if (tcpi.LocalEndPoint.Port == port)
-                {
-                    isAvailable = false;
-                    break;
-                }
-            }
-
-            if (isAvailable)
-                return port;
-
-            return GetAvailablePort();
+            do
+                _port = rand.Next(1024, 65535);
+            while (connections.Any(t => t.LocalEndPoint.Port == _port));
         }
 
         private void Initialize()
@@ -128,7 +113,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 WorkingDirectory = Path.GetDirectoryName(_nodePath),
                 WindowStyle = ProcessWindowStyle.Hidden,
-                Arguments = string.Format(CultureInfo.CurrentCulture, @"tools\server\we-nodejs-server.js --port {0} --anti-forgery-token {1} --environment production --process-id {2}", _port, _authenticationToken, Process.GetCurrentProcess().Id),
+                Arguments = string.Format(CultureInfo.InvariantCulture, @"tools\server\we-nodejs-server.js --port {0} --anti-forgery-token {1} --environment production --process-id {2}", _port, _authenticationToken, Process.GetCurrentProcess().Id),
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
@@ -165,7 +150,7 @@ namespace MadsKristensen.EditorExtensions
             return await _client.GetAsync(path);
         }
 
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (disposing)
             {

@@ -267,10 +267,6 @@ namespace MadsKristensen.EditorExtensions
 
             base.Dispose(true);
         }
-        public void Dispose()
-        {
-            Dispose(true);
-        }
     }
 
     [Guid(CommandGuids.guidEditorExtensionsPkgString2)]

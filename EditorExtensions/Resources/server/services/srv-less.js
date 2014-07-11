@@ -6,15 +6,9 @@ var less = require("less"),
 
 //#region Handler
 var handleLess = function (writer, params) {
-    if (!fs.existsSync(params.sourceFileName)) {
-        writer.write(JSON.stringify({ Success: false, Remarks: "Input file not found!" }));
-        writer.end();
-        return;
-    }
-
     fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
         if (err) {
-            writer.write(JSON.stringify({ Success: false, Remarks: err }));
+            writer.write(JSON.stringify({ Success: false, Remarks: "LESS: Error reading input file.", Details: err }));
             writer.end();
             return;
         }
@@ -22,7 +16,17 @@ var handleLess = function (writer, params) {
         try {
             new (less.Parser)({ filename: params.sourceFileName }).parse(data, function (e, tree) {
                 if (e) {
-                    writer.write(JSON.stringify({ Success: false, Remarks: "Error reading input file." }));
+                    writer.write(JSON.stringify({
+                        Success: false,
+                        Remarks: "LESS: Error parsing input file.",
+                        Details: e.message,
+                        Errors: {
+                            Line: e.line,
+                            Column: e.column,
+                            Message: e.message,
+                            FileName: e.filename
+                        }
+                    }));
                     writer.end();
                     return;
                 }
@@ -68,8 +72,8 @@ var handleLess = function (writer, params) {
                     Success: true,
                     Remarks: "Successful!",
                     Output: {
-                        outputContent: css,
-                        mapContent: map
+                        Content: css,
+                        Map: map
                     }
                 }));
                 writer.end();
