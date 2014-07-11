@@ -17,9 +17,6 @@ namespace MadsKristensen.EditorExtensions
     {
         public async static Task<bool> MakeBundle(BundleDocument document, string bundleFile, Func<string, bool, Task> updateBundle)
         {
-            if (document == null)
-                return false;
-
             // filePath must end in ".targetExtension.bundle"
             string extension = Path.GetExtension(Path.GetFileNameWithoutExtension(document.FileName));
 
@@ -30,9 +27,6 @@ namespace MadsKristensen.EditorExtensions
             }
 
             Dictionary<string, string> files = await WatchFiles(document, updateBundle, bundleFile);
-
-            if (files == null)
-                return false;
 
             string combinedContent = await CombineFiles(files, extension, document, bundleFile);
             bool bundleChanged = !File.Exists(bundleFile) || !ReferenceEquals(string.Intern(await FileHelpers.ReadAllTextRetry(bundleFile)), combinedContent);
@@ -51,13 +45,13 @@ namespace MadsKristensen.EditorExtensions
 
         public async static Task<Dictionary<string, string>> WatchFiles(BundleDocument document, Func<string, bool, Task> updateBundle, string bundleFile = null)
         {
+            if (document == null)
+                return null;
+
             if (bundleFile == null && document.OutputDirectory != null)
                 bundleFile = ProjectHelpers.GetAbsolutePathFromSettings(document.OutputDirectory, Path.Combine(Path.GetDirectoryName(document.FileName), Path.GetFileNameWithoutExtension(document.FileName)));
 
             Dictionary<string, string> files = new Dictionary<string, string>();
-
-            if (document == null)
-                return null;
 
             await new BundleFileObserver().AttachFileObserver(document, document.FileName, updateBundle);
 
