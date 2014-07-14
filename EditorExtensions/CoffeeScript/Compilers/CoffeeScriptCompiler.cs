@@ -1,9 +1,4 @@
 ﻿using System.ComponentModel.Composition;
-using System.Globalization;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 
@@ -13,62 +8,27 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
     [ContentType("CoffeeScript")]
     public class CoffeeScriptCompiler : JsCompilerBase
     {
-        private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\coffee-script\bin\coffee");
-        private static readonly Regex _errorParsingPattern = new Regex(@"\A(?<fileName>.*):(?<line>.\d*):(?<column>.\d*): error: (?<fullMessage>(?<message>.*)(\n*.*)*)", RegexOptions.Multiline | RegexOptions.Compiled);
-        private static readonly Regex _sourceMapInJs = new Regex(@"\/\/\\*#.*(?i:sourceMappingURL)([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*", RegexOptions.Multiline);
-
-        public override bool GenerateSourceMap { get { return WESettings.Instance.CoffeeScript.GenerateSourceMaps && !WESettings.Instance.CoffeeScript.MinifyInPlace; } }
         public override string ServiceName { get { return "CoffeeScript"; } }
-        protected override string CompilerPath { get { return _compilerPath; } }
-        public override bool RequireMatchingFileName { get { return true; } }
-        protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
+        public override bool MinifyInPlace { get { return WESettings.Instance.CoffeeScript.MinifyInPlace; } }
+        public override bool GenerateSourceMap { get { return WESettings.Instance.CoffeeScript.GenerateSourceMaps && !MinifyInPlace; } }
 
-        protected override Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName)
+        protected override string GetPath(string sourceFileName, string targetFileName)
         {
-            var args = new StringBuilder();
+            string mapFileName = targetFileName + ".map";
+            var parameters = new NodeServerUtilities.Parameters();
+
+            parameters.Add("service", ServiceName);
+            parameters.Add("sourceFileName", sourceFileName);
+            parameters.Add("targetFileName", targetFileName);
+            parameters.Add("mapFileName", mapFileName);
+
+            if (GenerateSourceMap)
+                parameters.Add("sourceMapURL");
 
             if (!WESettings.Instance.CoffeeScript.WrapClosure)
-                args.Append("--bare ");
+                parameters.Add("bare");
 
-            if (GenerateSourceMap)
-                args.Append("--map ");
-
-            args.AppendFormat(CultureInfo.CurrentCulture, "--output \"{0}\" --compile \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
-
-            return Task.FromResult(args.ToString());
-        }
-
-        protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
-        {
-            Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
-
-            string realTargetFileName = Path.Combine(Path.GetDirectoryName(targetFileName), FileHelpers.GetFileNameWithoutExtension(targetFileName) + ".js");
-
-            if (WESettings.Instance.CoffeeScript.MinifyInPlace)
-            {
-                File.Delete(realTargetFileName); // Because CoffeeScript compiler doesn't take custom file name as parameter.
-            }
-
-            if (GenerateSourceMap)
-            {
-                string targetMap = Path.ChangeExtension(realTargetFileName, ".map");
-
-                if (File.Exists(targetMap))
-                    File.Delete(targetMap);
-
-                File.Move(mapFileName, targetMap);
-
-                resultSource = UpdateSourceLinkInJsComment(resultSource, FileHelpers.RelativePath(targetFileName, targetMap));
-            }
-
-            return await Task.FromResult(resultSource);
-        }
-
-        private static string UpdateSourceLinkInJsComment(string content, string sourceMapRelativePath)
-        {
-            return _sourceMapInJs.Replace(content,
-                   string.Format(CultureInfo.InvariantCulture,
-                   "//# sourceMappingURL={0}", sourceMapRelativePath));
+            return parameters.FlattenParameters();
         }
     }
 }

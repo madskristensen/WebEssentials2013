@@ -3,7 +3,7 @@ var jshint = require("jshint/src/cli");
 //#endregion
 
 //#region Reporter
-var reporter = function (results, writer) {
+var reporter = function (results, writer, params) {
     var messageItems = results.map(function (result) {
         var error = result.error;
 
@@ -21,10 +21,9 @@ var reporter = function (results, writer) {
 
     writer.write(JSON.stringify({
         Success: true,
+        SourceFileName: params.sourceFileName,
         Remarks: "Successful!",
-        Output: {
-            Content: messageItems
-        }
+        Errors: messageItems
     }));
     writer.end();
 }
@@ -35,13 +34,21 @@ var handleJSHint = function (writer, params) {
     // Override jshint's export.exit(1). The only reason this would exit
     // in case of Web Essentials is the invalid JSON.
     jshint.exit = function () {
-        writer.write(JSON.stringify({ Success: false, Remarks: "JsHint: Invalid Config file" }));
+        writer.write(JSON.stringify({
+            Success: false,
+            SourceFileName: params.sourceFileName,
+            Remarks: "JsHint: Invalid Config file",
+            Errors: [{
+                Message: "JSHint: Invalid config file.",
+                FileName: params.sourceFileName
+            }]
+        }));
         writer.end();
     };
 
     jshint.run({
         args: [params.sourceFileName],
-        reporter: function (results) { reporter(results, writer); }
+        reporter: function (results) { reporter(results, writer, params); }
     });
 };
 //#endregion

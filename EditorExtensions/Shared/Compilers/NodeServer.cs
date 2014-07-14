@@ -70,10 +70,10 @@ namespace MadsKristensen.EditorExtensions
             catch { return false; }
         }
 
-        public static async Task<string> CallServiceAsync(string path)
+        public static async Task<CompilerResult> CallServiceAsync(string path, bool reattempt = false)
         {
             await Up();
-            return await _server.CallService(path);
+            return await _server.CallService(path, reattempt);
         }
 
         private NodeServer()
@@ -82,12 +82,12 @@ namespace MadsKristensen.EditorExtensions
             _address = string.Format(CultureInfo.InvariantCulture, "http://127.0.0.1:{0}/", _port);
             _client = new HttpClient();
 
+            Initialize();
+
             _client.DefaultRequestHeaders.Add("origin", "web essentials");
             _client.DefaultRequestHeaders.Add("user-agent", "web essentials");
             _client.DefaultRequestHeaders.Add("web-essentials", "web essentials");
             _client.DefaultRequestHeaders.Add("auth", _authenticationToken);
-
-            Initialize();
         }
 
         private void SelectAvailablePort()
@@ -121,26 +121,37 @@ namespace MadsKristensen.EditorExtensions
             _process = Process.Start(start);
         }
 
-        public async Task<string> CallService(string path)
+        private async Task<CompilerResult> CallService(string path, bool reattempt)
         {
-            _client.DefaultRequestHeaders.Add("uptime", TimeSpan.FromMilliseconds(GetTickCount64()).TotalSeconds.ToString());
-
-            path = string.Format("{0}{1}", _address, path);
-
+            string newPath = string.Format("{0}?{1}&uptime={2}", _address, path, ((int)TimeSpan.FromMilliseconds(GetTickCount64()).TotalSeconds).ToString());
+            HttpResponseMessage response;
             try
             {
-                HttpResponseMessage response = await CallWebServer(path);
+                response = await CallWebServer(newPath);
 
-                return await response.Content.ReadAsStringAsync();
+                // Retry once.
+                if (!response.IsSuccessStatusCode && !reattempt)
+                    return await RetryOnce(path);
+
+                var responseData = await response.Content.ReadAsAsync<NodeServerUtilities.Response>();
+
+                return await responseData.GetCompilerResult();
             }
             catch
             {
-                Logger.Log("Something went wrong reaching: " + path);
+                Logger.Log("Something went wrong reaching: " + Uri.EscapeUriString(newPath));
             }
 
-            // Try again?
-            //return await CallServiceAsync(parameters);
-            return await Task.FromResult(String.Empty);
+            // Retry once.
+            if (!reattempt)
+                return await RetryOnce(path);
+
+            return null;
+        }
+
+        private async Task<CompilerResult> RetryOnce(string path)
+        {
+            return await NodeServer.CallServiceAsync(path, true);
         }
 
         // Making this a separate method so it can throw to caller

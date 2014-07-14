@@ -65,7 +65,7 @@ function getHomeDir() {
 //#endregion
 
 //#region Reporter
-var reporter = function (results, writer) {
+var reporter = function (results, writer, params) {
     if (results)
         var messageItems = results.map(function (result) {
             return {
@@ -80,10 +80,9 @@ var reporter = function (results, writer) {
 
     writer.write(JSON.stringify({
         Success: true,
+        SourceFileName: params.sourceFileName,
         Remarks: "Successful!",
-        Output: {
-            Content: messageItems || []
-        }
+        Errors: messageItems || []
     }));
     writer.end();
 }
@@ -98,14 +97,31 @@ var handleTSLint = function (writer, params) {
     } catch (e) { }
 
     if (config == null) {
-        writer.write(JSON.stringify({ Success: false, Remarks: "TSLint: Invalid Config file" }));
+        writer.write(JSON.stringify({
+            Success: false,
+            SourceFileName: params.sourceFileName,
+            Remarks: "TSLint: Invalid Config file",
+            Errors: [{
+                Message: "TSLint: Invalid config file.",
+                FileName: params.sourceFileName
+            }]
+        }));
         writer.end();
         return;
     }
 
     fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
         if (err) {
-            writer.write(JSON.stringify({ Success: false, Remarks: "TSLint: Error reading input file.", Details: err }));
+            writer.write(JSON.stringify({
+                Success: false,
+                SourceFileName: params.sourceFileName,
+                Remarks: "TSLint: Error reading input file.",
+                Details: err,
+                Errors: [{
+                    Message: "TSLint: Error reading input file.",
+                    FileName: params.sourceFileName
+                }]
+            }));
             writer.end();
             return;
         }
@@ -117,7 +133,7 @@ var handleTSLint = function (writer, params) {
             rulesDirectory: null
         }).lint();
 
-        reporter(JSON.parse(results.output), writer);
+        reporter(JSON.parse(results.output), writer, params);
     });
 };
 //#endregion

@@ -56,12 +56,12 @@ console.logLine = function (message, type, indent, noTimeStamp) {
 //#region Validators
 var protetFromForgery;
 
-var authenticateAll = function (writer, headers) {
+var authenticateAll = function (writer, headers, params) {
     if (!headers["web-essentials"] ||
         headers.origin !== "web essentials" ||
         headers["user-agent"] !== "web essentials" ||
         headers.auth !== protetFromForgery ||
-        !validateUptime(headers.uptime)) {
+        !validateUptime(params.uptime)) {
         writer.writeHead(404, { "Content-Type": "text/plain" });
         writer.write("404 Not found");
         writer.end();
@@ -81,7 +81,9 @@ var validateUptime = function (then) {
 
     then = parseInt(then, 10);
 
-    return then < now && now - 5 < then;
+    then--;
+    
+    return then <= now && now - 5 < then;
 };
 
 var validPositiveInteger = function (int) {
@@ -108,21 +110,21 @@ var start = function (port) {
     function onRequest(request, response) {
         console.logLine("Request recieved: " + JSON.stringify(request.headers), console.logType.transaction);
 
+        var params = url.parse(request.url, true).query;
+
         // Unauthorized access checks (for production environment)
-        if (!developmentEnv && !authenticateAll(response, request.headers))
+        if (!developmentEnv && !authenticateAll(response, request.headers, params))
             return;
 
-        //response.writeHead(200, { "Content-Type": "application/json" });
-        response.writeHead(200, { "Content-Type": "text/plain" });
+        response.writeHead(200, { "Content-Type": "application/json" });
+        //response.writeHead(200, { "Content-Type": "text/plain" });
 
         try {
-            var params = url.parse(request.url, true).query;
-
             // Change to valid character string and let it respond as the regular (invalid) case
             if (!/^[a-zA-Z0-9_-]+$/.test(params.service))
                 params.service = "invalid-service-name";
 
-            var service = require('./services/srv-' + params.service);
+            var service = require('./services/srv-' + params.service.toLowerCase());
 
             if (!fs.existsSync(params.sourceFileName)) {
                 response.write(JSON.stringify({

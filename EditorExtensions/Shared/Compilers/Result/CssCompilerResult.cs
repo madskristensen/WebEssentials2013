@@ -6,26 +6,22 @@ namespace MadsKristensen.EditorExtensions
 {
     public class CssCompilerResult : CompilerResult
     {
-        public string SourceMapData { get; set; }
         public Task<CssSourceMap> SourceMap { get; set; }
 
-        private CssCompilerResult(string sourceFileName, string targetFileName, bool isSuccess, string result, IEnumerable<CompilerError> errors, bool hasSkipped)
-            : base(sourceFileName, targetFileName, isSuccess, result, errors, hasSkipped)
+        private CssCompilerResult(string sourceFileName, string targetFileName, string mapFileName, bool isSuccess, string result, string resultMap, IEnumerable<CompilerError> errors, bool hasSkipped)
+            : base(sourceFileName, targetFileName, mapFileName, isSuccess, result, resultMap, errors, hasSkipped)
         { }
 
-        public async static Task<CssCompilerResult> GenerateResult(string sourceFileName, string targetFileName, string mapFileName, bool isSuccess, string result, IEnumerable<CompilerError> errors, bool hasSkipped = false)
+        public static CssCompilerResult GenerateResult(string sourceFileName, string targetFileName, string mapFileName, bool isSuccess, string result, string resultMap, IEnumerable<CompilerError> errors, bool hasSkipped = false)
         {
-            CssCompilerResult compilerResult = new CssCompilerResult(sourceFileName, targetFileName, isSuccess, result, errors, hasSkipped);
+            CssCompilerResult compilerResult = new CssCompilerResult(sourceFileName, targetFileName, mapFileName, isSuccess, result, resultMap, errors, hasSkipped);
 
             if (mapFileName == null)
-                return null;
+                return compilerResult;
 
-            var extension = Path.GetExtension(sourceFileName).TrimStart('.');
+            string extension = Path.GetExtension(sourceFileName).TrimStart('.');
 
-            compilerResult.SourceMap = CssSourceMap.Create(await FileHelpers.ReadAllTextRetry(targetFileName),
-                                                           await FileHelpers.ReadAllTextRetry(mapFileName),
-                                                           Path.GetDirectoryName(targetFileName),
-                                                           Mef.GetContentType(extension));
+            compilerResult.SourceMap = CssSourceMap.Create(result, resultMap, Path.GetDirectoryName(targetFileName), Mef.GetContentType(extension));
 
             return compilerResult;
         }

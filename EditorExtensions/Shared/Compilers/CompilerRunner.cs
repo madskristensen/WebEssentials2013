@@ -205,15 +205,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
             if (string.IsNullOrEmpty(targetPath))
             {
                 isTemp = true;
-                if (!Compiler.RequireMatchingFileName)
-                    targetPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + Compiler.TargetExtension);
-                else
-                {
-                    // If the compiler cannot compile to a random filename,
-                    // generate a unique directory to avoid conflicts.
-                    targetPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + "-" + Environment.TickCount, Path.GetFileNameWithoutExtension(sourcePath) + Compiler.TargetExtension);
-                    Directory.CreateDirectory(Path.GetDirectoryName(targetPath));
-                }
+                targetPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + Compiler.TargetExtension);
             }
 
             try
@@ -225,9 +217,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
                 if (isTemp)
                 {
                     File.Delete(targetPath);
-                    File.Delete(targetPath + ".map");   //  Idempotent
-                    if (Compiler.RequireMatchingFileName)
-                        Directory.Delete(Path.GetDirectoryName(targetPath), true);
+                    File.Delete(targetPath + ".map");
                 }
             }
         }

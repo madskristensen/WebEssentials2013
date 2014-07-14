@@ -17,7 +17,18 @@ var handleCoffeeScript = function (writer, params) {
 
     fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
         if (err) {
-            writer.write(JSON.stringify({ Success: false, Remarks: "CoffeeScript: Error reading input file.", Details: err }));
+            writer.write(JSON.stringify({
+                Success: false,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                MapFileName: params.mapFileName,
+                Remarks: "CoffeeScript: Error reading input file.",
+                Details: err,
+                Errors: [{
+                    Message: "CoffeeScript: " + err,
+                    FileName: params.sourceFileName
+                }]
+            }));
             writer.end();
             return;
         }
@@ -35,26 +46,30 @@ var handleCoffeeScript = function (writer, params) {
 
             writer.write(JSON.stringify({
                 Success: true,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                MapFileName: params.mapFileName,
                 Remarks: "Successful!",
-                Output: {
-                    Content: js,
-                    Map: map
-                }
+                Content: js,
+                Map: JSON.stringify(map)
             }));
             writer.end();
         } catch (error) {
             var regex = xRegex.exec(error, xRegex(".*:.\\d*:.\\d*: error: (?<fullMessage>(?<message>.*)(\\n*.*)*)", 'gi'));
             writer.write(JSON.stringify({
                 Success: false,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                MapFileName: params.mapFileName,
                 Remarks: "CoffeeScript: An error has occured while processing your request.",
                 Details: regex.message,
-                Errors: {
+                Errors: [{
                     Line: error.location.first_line,
                     Column: error.location.first_column,
-                    Message: regex.message,
+                    Message: "CoffeeScript: " + regex.message,
                     FileName: error.filename,
-                    FullMessage: regex.fullMessage
-                }
+                    FullMessage: "CoffeeScript: " + regex.fullMessage
+                }]
             }));
             writer.end();
         }

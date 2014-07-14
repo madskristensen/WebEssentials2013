@@ -8,7 +8,18 @@ var less = require("less"),
 var handleLess = function (writer, params) {
     fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
         if (err) {
-            writer.write(JSON.stringify({ Success: false, Remarks: "LESS: Error reading input file.", Details: err }));
+            writer.write(JSON.stringify({
+                Success: false,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                MapFileName: params.mapFileName,
+                Remarks: "LESS: Error reading input file.",
+                Details: err,
+                Errors: [{
+                    Message: "LESS" + err,
+                    FileName: params.sourceFileName
+                }]
+            }));
             writer.end();
             return;
         }
@@ -18,14 +29,17 @@ var handleLess = function (writer, params) {
                 if (e) {
                     writer.write(JSON.stringify({
                         Success: false,
+                        SourceFileName: params.sourceFileName,
+                        TargetFileName: params.targetFileName,
+                        MapFileName: params.mapFileName,
                         Remarks: "LESS: Error parsing input file.",
                         Details: e.message,
-                        Errors: {
+                        Errors: [{
                             Line: e.line,
                             Column: e.column,
-                            Message: e.message,
+                            Message: "LESS: " + e.message,
                             FileName: e.filename
-                        }
+                        }]
                     }));
                     writer.end();
                     return;
@@ -70,16 +84,28 @@ var handleLess = function (writer, params) {
 
                 writer.write(JSON.stringify({
                     Success: true,
+                    SourceFileName: params.sourceFileName,
+                    TargetFileName: params.targetFileName,
+                    MapFileName: params.mapFileName,
                     Remarks: "Successful!",
-                    Output: {
-                        Content: css,
-                        Map: map
-                    }
+                    Content: css,
+                    Map: JSON.stringify(map)
                 }));
                 writer.end();
             });
         } catch (e) {
-            writer.write(JSON.stringify({ Success: false, Remarks: e.stack }));
+            writer.write(JSON.stringify({
+                Success: false,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                MapFileName: params.mapFileName,
+                Remarks: "LESS: " + e.message,
+                Details: e.stack,
+                Errors: [{
+                    Message: "LESS: " + err,
+                    FileName: params.sourceFileName
+                }]
+            }));
             writer.end();
         }
     });
