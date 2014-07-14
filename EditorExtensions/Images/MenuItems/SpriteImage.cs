@@ -126,8 +126,7 @@ namespace MadsKristensen.EditorExtensions.Images
         {
             _dte.StatusBar.Text = "Generating sprite...";
 
-            if (!hasUpdated)
-                ProjectHelpers.AddFileToActiveProject(sprite.FileName);
+            ProjectHelpers.AddFileToActiveProject(sprite.FileName);
 
             string imageFile = Path.ChangeExtension(sprite.FileName, sprite.FileExtension);
 
@@ -138,11 +137,10 @@ namespace MadsKristensen.EditorExtensions.Images
 
             IEnumerable<SpriteFragment> fragments = await SpriteGenerator.MakeImage(sprite, imageFile, UpdateSpriteAsync);
 
+            ProjectHelpers.AddFileToProject(sprite.FileName, imageFile);
+
             if (!hasUpdated)
-            {
-                ProjectHelpers.AddFileToProject(sprite.FileName, imageFile);
                 WebEssentialsPackage.DTE.ItemOperations.OpenFile(sprite.FileName);
-            }
 
             await Export(fragments, imageFile, sprite);
 
