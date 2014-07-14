@@ -55,7 +55,7 @@ var handleLess = function (writer, params) {
                     sourceMapURL: params.sourceMapURL != undefined ? path.basename(mapFileName) : null,
                     sourceMapBasepath: mapDir,
                     sourceMapOutputFilename: mapFileName,
-                    strictMath: params.strictMath !== null,
+                    strictMath: params.strictMath != null,
                     writeSourceMap: function (output) {
                         output = JSON.parse(output);
                         output.file = path.basename(params.targetFileName);

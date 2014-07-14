@@ -8,7 +8,7 @@ var livescript = require("LiveScript"),
 var handleLiveScript = function (writer, params) {
     var options = {
         filename: params.sourceFileName,
-        bare: params.bare !== null
+        bare: params.bare != null
     };
 
     fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
