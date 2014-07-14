@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions.LiveScript
         public override string ServiceName { get { return "LiveScript"; } }
         public override bool MinifyInPlace { get { return WESettings.Instance.SweetJs.MinifyInPlace; } }
         public override bool GenerateSourceMap { get { return false; /*WESettings.Instance.LiveScript.GenerateSourceMaps && !WESettings.Instance.LiveScript.MinifyInPlace;*/ } }
-        // Maps aren't yet supported by LiveScript
+        // ^ Since maps aren't yet supported by LiveScript
         protected override string GetPath(string sourceFileName, string targetFileName)
         {
             string mapFileName = targetFileName + ".map";
