@@ -9,7 +9,7 @@ var icedcoffeescript = require("iced-coffee-script"),
 var handleIcedCoffeeScript = function (writer, params) {
     var options = {
         filename: params.sourceFileName,
-        bare: params.bare !== null,
+        bare: params.bare != null,
         runtime: "inline",
         sourceMap: true,
         sourceRoot: "",
