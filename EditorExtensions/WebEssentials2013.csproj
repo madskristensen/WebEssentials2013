@@ -929,18 +929,6 @@
     <Content Include="Resources\settings-defaults\.jscsrc">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\Scripts\jshintReporter.js">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Resources\Scripts\tslintFormatter.js">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Resources\Scripts\jscsReporter.js">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Resources\Scripts\coffeeReporter.js">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Resource Include="Resources\Images\graph_id.png" />
     <Resource Include="Resources\Images\graph_atdir.png" />
     <Resource Include="Resources\Images\graph_class.png" />
