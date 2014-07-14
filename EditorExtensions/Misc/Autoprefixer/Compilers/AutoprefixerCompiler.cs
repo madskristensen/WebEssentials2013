@@ -1,8 +1,4 @@
 ﻿using System.ComponentModel.Composition;
-using System.Globalization;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Settings;
 
 namespace MadsKristensen.EditorExtensions.Autoprefixer
@@ -10,34 +6,22 @@ namespace MadsKristensen.EditorExtensions.Autoprefixer
     [Export(typeof(NodeExecutorBase))]
     public class AutoprefixerCompiler : NodeExecutorBase
     {
-        private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\autoprefixer\bin\autoprefixer");
-        private static readonly Regex _errorParsingPattern = new Regex(@"(?<fileName>.*):(?<line>.\d*): error: (?<message>.*\n.*)", RegexOptions.Multiline);
-
         public override string ServiceName { get { return "Autoprefixer"; } }
-        public override string TargetExtension { get { return ".autoprefix"; } }
-        protected override string CompilerPath { get { return _compilerPath; } }
-        protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
+        public override string TargetExtension { get { return null; } }
+        public override bool MinifyInPlace { get { return false; } }
         public override bool GenerateSourceMap { get { return false; } }
-        public override bool ManagedSourceMap { get { return false; } }
 
-        protected override async Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName)
+        protected override string GetPath(string sourceFileName, string targetFileName)
         {
-            // Source maps would be generated in "ALL" cases (regardless of the settings).
+            var parameters = new NodeServerUtilities.Parameters();
 
-            var browsers = string.Empty;
+            parameters.UriComponentsDictionary.Add("service", ServiceName);
+            parameters.UriComponentsDictionary.Add("sourceFileName", sourceFileName);
 
             if (!string.IsNullOrWhiteSpace(WESettings.Instance.Css.AutoprefixerBrowsers))
-                browsers = "--browsers \"" + WESettings.Instance.Css.AutoprefixerBrowsers.Replace("\\", "\\\\").Replace("\"", "'") + "\"";
+                parameters.UriComponentsDictionary.Add("autoprefixerBrowsers", WESettings.Instance.Css.AutoprefixerBrowsers);
 
-            await FileHelpers.WriteAllTextRetry(targetFileName, await FileHelpers.ReadAllTextRetry(sourceFileName));
-
-            return string.Format(CultureInfo.CurrentCulture, "\"{0}\" --map {1}", targetFileName, browsers);
-        }
-
-        protected override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
-        {
-            Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
-            return Task.FromResult(resultSource);
+            return parameters.FlattenParameters();
         }
     }
 }

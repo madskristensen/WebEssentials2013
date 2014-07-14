@@ -202,8 +202,7 @@ namespace MadsKristensen.EditorExtensions
         {
             _dte.StatusBar.Text = "Generating bundle...";
 
-            if (!hasUpdated)
-                ProjectHelpers.AddFileToActiveProject(bundle.FileName);
+            ProjectHelpers.AddFileToActiveProject(bundle.FileName);
 
             string bundleFile = Path.Combine(Path.GetDirectoryName(bundle.FileName), Path.GetFileNameWithoutExtension(bundle.FileName));
 
@@ -214,11 +213,10 @@ namespace MadsKristensen.EditorExtensions
 
             bool hasChanged = await BundleGenerator.MakeBundle(bundle, bundleFile, UpdateBundleAsync);
 
+            ProjectHelpers.AddFileToProject(bundle.FileName, bundleFile);
+
             if (!hasUpdated)
-            {
-                ProjectHelpers.AddFileToProject(bundle.FileName, bundleFile);
                 WebEssentialsPackage.DTE.ItemOperations.OpenFile(bundle.FileName);
-            }
 
             if (bundle.Minified)
                 await BundleGenerator.MakeMinFile(bundleFile, extension, hasChanged);

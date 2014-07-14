@@ -51,7 +51,8 @@ namespace MadsKristensen.EditorExtensions
                 InstallModuleAsync("iced", "iced-coffee-script"),
                 InstallModuleAsync("LiveScript", "LiveScript"),
                 InstallModuleAsync("coffeelint", "coffeelint"),
-                InstallModuleAsync("sjs", "sweet.js")
+                InstallModuleAsync("sjs", "sweet.js"),
+                InstallModuleAsync("xregexp", "xregexp")
             ).Result.Where(r => r != ModuleInstallResult.AlreadyPresent);
 
             if (moduleResults.Contains(ModuleInstallResult.Error))
@@ -64,6 +65,11 @@ namespace MadsKristensen.EditorExtensions
 
             if (!FlattenModulesAsync().Result)
                 return false;
+
+            // Patch to disqualify node-sass-middleware
+            string middleware = @"resources\nodejs\tools\node_modules\node-sass-middleware\middleware.js";
+            if (File.Exists(middleware))
+                File.Create(middleware);
 
             return true;
         }

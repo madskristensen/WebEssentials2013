@@ -79,6 +79,7 @@ namespace MadsKristensen.EditorExtensions
 
             Instance = this;
 
+            await NodeServer.Up();
             SettingsStore.Load();
             JavaScriptIntellisense.Register();
 
@@ -258,6 +259,13 @@ namespace MadsKristensen.EditorExtensions
             WebEssentialsPackage.DTE.UndoContext.Open(name);
 
             return new Disposable(DTE.UndoContext.Close);
+        }
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                NodeServer.Down();
+
+            base.Dispose(true);
         }
     }
 

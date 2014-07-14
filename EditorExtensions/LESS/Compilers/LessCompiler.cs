@@ -1,8 +1,4 @@
 ﻿using System.ComponentModel.Composition;
-using System.Globalization;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 
@@ -12,29 +8,36 @@ namespace MadsKristensen.EditorExtensions.Less
     [ContentType("LESS")]
     public class LessCompiler : CssCompilerBase
     {
-        private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\less\bin\lessc");
-        private static readonly Regex _errorParsingPattern = new Regex(@"\A(?<message>.+) in (?<fileName>.+) on line (?<line>\d+), column (?<column>\d+):$", RegexOptions.Multiline | RegexOptions.Compiled);
-
         public override string TargetExtension { get { return ".css"; } }
         public override string ServiceName { get { return "LESS"; } }
-        protected override string CompilerPath { get { return _compilerPath; } }
-        protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
-        public override bool GenerateSourceMap { get { return WESettings.Instance.Less.GenerateSourceMaps && !WESettings.Instance.Less.MinifyInPlace; } }
+        public override bool MinifyInPlace { get { return WESettings.Instance.Less.MinifyInPlace; } }
+        public override bool GenerateSourceMap { get { return WESettings.Instance.Less.GenerateSourceMaps && !MinifyInPlace; } }
 
-        protected override Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName)
+        protected override string GetPath(string sourceFileName, string targetFileName)
         {
-            string mapDirectory = Path.GetDirectoryName(mapFileName);
+            string mapFileName = targetFileName + ".map";
+            var parameters = new NodeServerUtilities.Parameters();
 
-            // Source maps would be generated in "ALL" cases (regardless of the settings).
-            // If the option in settings is disabled, we will delete the map file once the
-            // B64VLQ values are extracted.
-            return Task.FromResult(string.Format(CultureInfo.CurrentCulture,
-                                   "--no-color --relative-urls --strict-math={0} --source-map-basepath=\"{1}\" --source-map=\"{2}\" \"{3}\" \"{4}\"",
-                                   WESettings.Instance.Less.StrictMath ? "on" : "off",
-                                   mapDirectory,
-                                   mapFileName,
-                                   sourceFileName,
-                                   targetFileName));
+            parameters.Add("service", ServiceName);
+            parameters.Add("sourceFileName", sourceFileName);
+            parameters.Add("targetFileName", targetFileName);
+            parameters.Add("mapFileName", mapFileName);
+
+            if (GenerateSourceMap)
+                parameters.Add("sourceMapURL");
+
+            if (!WESettings.Instance.Less.StrictMath)
+                parameters.Add("strictMath");
+
+            if (WESettings.Instance.Css.Autoprefix)
+            {
+                parameters.Add("autoprefixer");
+
+                if (!string.IsNullOrWhiteSpace(WESettings.Instance.Css.AutoprefixerBrowsers))
+                    parameters.Add("autoprefixerBrowsers", WESettings.Instance.Css.AutoprefixerBrowsers);
+            }
+
+            return parameters.FlattenParameters();
         }
     }
 }

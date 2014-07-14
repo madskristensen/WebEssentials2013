@@ -352,7 +352,7 @@ namespace MadsKristensen.EditorExtensions.Settings
 
         [Category("Autoprefixer")]
         [DisplayName("Targeted browsers")]
-        [Description("Specify the browsers to target. See http://github.com/ai/autoprefixer#browsers")]
+        [Description("Specify comma-separated list of browsers to target. See http://github.com/ai/autoprefixer#browsers")]
         [DefaultValue(null)]
         public string AutoprefixerBrowsers { get; set; }
         #endregion

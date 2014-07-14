@@ -1,9 +1,4 @@
 ﻿using System.ComponentModel.Composition;
-using System.Globalization;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 
@@ -13,32 +8,27 @@ namespace MadsKristensen.EditorExtensions.LiveScript
     [ContentType(LiveScriptContentTypeDefinition.LiveScriptContentType)]
     public class LiveScriptCompiler : JsCompilerBase
     {
-        private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\LiveScript\bin\livescript");
-        private static readonly Regex _errorParsingPattern = new Regex(@"Failed at: (?<filename>.*?)Error: (?<message>.*)", RegexOptions.Multiline);
-
-        public override bool GenerateSourceMap { get { return WESettings.Instance.LiveScript.GenerateSourceMaps; } }
         public override string ServiceName { get { return "LiveScript"; } }
-        protected override string CompilerPath { get { return _compilerPath; } }
-        public override bool RequireMatchingFileName { get { return true; } }
-        protected override Regex ErrorParsingPattern { get { return _errorParsingPattern; } }
-
-        protected override Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName)
+        public override bool MinifyInPlace { get { return WESettings.Instance.SweetJs.MinifyInPlace; } }
+        public override bool GenerateSourceMap { get { return false; /*WESettings.Instance.LiveScript.GenerateSourceMaps && !WESettings.Instance.LiveScript.MinifyInPlace;*/ } }
+        // Maps aren't yet supported by LiveScript
+        protected override string GetPath(string sourceFileName, string targetFileName)
         {
-            var args = new StringBuilder();
+            string mapFileName = targetFileName + ".map";
+            var parameters = new NodeServerUtilities.Parameters();
+
+            parameters.Add("service", ServiceName);
+            parameters.Add("sourceFileName", sourceFileName);
+            parameters.Add("targetFileName", targetFileName);
+            parameters.Add("mapFileName", mapFileName);
+
+            if (GenerateSourceMap)
+                parameters.Add("sourceMapURL");
 
             if (!WESettings.Instance.LiveScript.WrapClosure)
-                args.Append("-b ");
+                parameters.Add("bare");
 
-            args.AppendFormat(CultureInfo.CurrentCulture, "-o \"{0}\" -c \"{1}\"", Path.GetDirectoryName(targetFileName), sourceFileName);
-
-            return Task.FromResult(args.ToString());
-        }
-
-        protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
-        {
-            Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
-
-            return await Task.FromResult(resultSource);
+            return parameters.FlattenParameters();
         }
     }
 }

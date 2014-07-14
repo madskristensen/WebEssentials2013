@@ -9,15 +9,15 @@ namespace MadsKristensen.EditorExtensions
     {
         public async static Task<CompilerResult> GenerateResult(string sourceFileName, string targetFileName)
         {
-            return await GenerateResult(sourceFileName, targetFileName, null, true, null, null);
+            return await GenerateResult(sourceFileName, targetFileName, null, true, null, null, null);
         }
 
         public async static Task<CompilerResult> GenerateResult(string sourceFileName, string targetFileName, bool isSuccess, string result, IEnumerable<CompilerError> errors)
         {
-            return await GenerateResult(sourceFileName, targetFileName, null, isSuccess, result, errors);
+            return await GenerateResult(sourceFileName, targetFileName, null, isSuccess, result, null, errors);
         }
 
-        public async static Task<CompilerResult> GenerateResult(string sourceFileName, string targetFileName, string mapFileName, bool isSuccess, string result, IEnumerable<CompilerError> errors, bool hasResult = false)
+        public async static Task<CompilerResult> GenerateResult(string sourceFileName, string targetFileName, string mapFileName, bool isSuccess, string result, string resultMap, IEnumerable<CompilerError> errors, bool hasResult = false)
         {
             CompilerResult instance;
 
@@ -27,9 +27,9 @@ namespace MadsKristensen.EditorExtensions
                 result = await FileHelpers.ReadAllTextRetry(targetFileName);
 
             if (targetFileName != null && Path.GetExtension(targetFileName).Equals(".css", StringComparison.OrdinalIgnoreCase) && File.Exists(mapFileName))
-                instance = await CssCompilerResult.GenerateResult(sourceFileName, targetFileName, mapFileName, isSuccess, result, errors, hasResult);
+                instance = CssCompilerResult.GenerateResult(sourceFileName, targetFileName, mapFileName, isSuccess, result, resultMap, errors, hasResult);
             else
-                instance = CompilerResult.GenerateResult(sourceFileName, targetFileName, isSuccess, result, errors, hasResult);
+                instance = CompilerResult.GenerateResult(sourceFileName, targetFileName, mapFileName, isSuccess, result, resultMap, errors, hasResult);
 
             return instance;
         }
