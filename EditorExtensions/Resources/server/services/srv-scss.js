@@ -6,14 +6,16 @@ var sass = require("node-sass"),
 
 //#region Handler
 var handleSass = function (writer, params) {
-    var mapFileName = params.targetFileName + ".map";
+    params.targetFileName = params.targetFileName.replace(/\\/g, '/');
+    params.sourceFileName = params.sourceFileName.replace(/\\/g, '/');
+    params.mapFileName = params.mapFileName.replace(/\\/g, '/');
 
     sass.render({
         file: params.sourceFileName,
         includePaths: [path.dirname(params.sourceFileName)],
         precision: parseInt(params.precision, 10),
         outputStyle: params.outputStyle,
-       // sourceMap: mapFileName,
+        sourceMap: params.mapFileName,
         success: function (css, map) {
             map = JSON.parse(map);
             map.file = path.basename(params.targetFileName);
@@ -40,11 +42,12 @@ var handleSass = function (writer, params) {
 
             writer.write(JSON.stringify({
                 Success: true,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                MapFileName: params.mapFileName,
                 Remarks: "Successful!",
-                Output: {
-                    Content: css,
-                    Map: map
-                }
+                Content: css,
+                Map: JSON.stringify(map)
             }));
             writer.end();
         },
@@ -52,14 +55,17 @@ var handleSass = function (writer, params) {
             var regex = xRegex.exec(error, xRegex("(?<fileName>.+):(?<line>.\\d+): error: (?<fullMessage>(?<message>.*))", 'gi'));
             writer.write(JSON.stringify({
                 Success: false,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                MapFileName: params.mapFileName,
                 Remarks: "SASS: An error has occured while processing your request.",
                 Details: regex.message,
-                Errors: {
+                Errors: [{
                     Line: regex.line,
-                    Message: regex.message,
+                    Message: "SASS: " + regex.message,
                     FileName: regex.fileName,
-                    FullMessage: regex.fullMessage
-                }
+                    FullMessage: "SASS" + regex.fullMessage
+                }]
             }));
             writer.end();
         }

@@ -13,7 +13,18 @@ var handleLiveScript = function (writer, params) {
 
     fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
         if (err) {
-            writer.write(JSON.stringify({ Success: false, Remarks: "LiveScript: Error reading input file.", Details: err }));
+            writer.write(JSON.stringify({
+                Success: false,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                MapFileName: params.mapFileName,
+                Remarks: "LiveScript: Error reading input file.",
+                Details: err,
+                Errors: [{
+                    Message: "LiveScript: " + err,
+                    FileName: params.sourceFileName
+                }]
+            }));
             writer.end();
             return;
         }
@@ -23,25 +34,29 @@ var handleLiveScript = function (writer, params) {
 
             writer.write(JSON.stringify({
                 Success: true,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                MapFileName: params.mapFileName,
                 Remarks: "Successful!",
-                Output: {
-                    Content: compiled
-                    // Maps aren't supported yet: https://github.com/gkz/LiveScript/issues/452
-                }
+                Content: compiled
+                // Maps aren't supported yet: https://github.com/gkz/LiveScript/issues/452
             }));
             writer.end();
         } catch (error) {
             var regex = xRegex.exec(error, xRegex("(?<fullMessage>(?<message>.*line (?<Line>\\d))\nat (?<fileName>.*))", 'gi'));
             writer.write(JSON.stringify({
                 Success: false,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                MapFileName: params.mapFileName,
                 Remarks: "LiveScript: An error has occured while processing your request.",
                 Details: regex.message,
-                Errors: {
+                Errors: [{
                     Line: regex.Line,
                     FileName: regex.fileName,
-                    Message: regex.message,
-                    FullMessage: regex.fullMessage
-                }
+                    Message: "LiveScript: " + regex.message,
+                    FullMessage: "LiveScript:" + regex.fullMessage
+                }]
             }));
             writer.end();
         }

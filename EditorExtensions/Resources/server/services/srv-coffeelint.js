@@ -16,10 +16,9 @@ var reporter = function (results, writer, path) {
 
     writer.write(JSON.stringify({
         Success: true,
+        SourceFileName: path,
         Remarks: "Successful!",
-        Output: {
-            Content: errorItems
-        }
+        Errors: errorItems
     }));
     writer.end();
 }
@@ -35,14 +34,31 @@ var handleCoffeeLint = function (writer, params) {
     console.error = tempError;
 
     if (config == null) {
-        writer.write(JSON.stringify({ Success: false, Remarks: "CoffeeLint: Invalid Config file" }));
+        writer.write(JSON.stringify({
+            Success: false,
+            SourceFileName: params.sourceFileName,
+            Remarks: "CoffeeLint: Invalid Config file.",
+            Errors: [{
+                Message: "CoffeeLint: Invalid config file.",
+                FileName: params.sourceFileName
+            }]
+        }));
         writer.end();
         return;
     }
 
     fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
         if (err) {
-            writer.write(JSON.stringify({ Success: false, Remarks: "CoffeeLint: Error reading input file.", Details: err }));
+            writer.write(JSON.stringify({
+                Success: false,
+                SourceFileName: params.sourceFileName,
+                Remarks: "CoffeeLint: Error reading input file.",
+                Details: err,
+                Errors: [{
+                    Message: "CoffeeLint: " + err,
+                    FileName: params.sourceFileName
+                }]
+            }));
             writer.end();
             return;
         }

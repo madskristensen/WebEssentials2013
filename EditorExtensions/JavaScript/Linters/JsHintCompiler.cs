@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -8,27 +7,20 @@ namespace MadsKristensen.EditorExtensions.JavaScript
 {
     public interface ILintCompiler
     {
-        Task<CompilerResult> CheckAsync(string sourcePath);
         string ServiceName { get; }
         IEnumerable<string> SourceExtensions { get; }
+        Task<CompilerResult> CheckAsync(string sourcePath);
     }
 
     public class JsHintCompiler : NodeExecutorBase, ILintCompiler
     {
-        private static readonly string _compilerPath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\tools\node_modules\jshint\bin\jshint");
-        // JsHint Reported is located in Resources\Scripts\ directory. Read more at http://www.jshint.com/docs/reporters/
-        private static readonly string _reporter = Path.Combine(WebEssentialsResourceDirectory, @"Scripts\jshintReporter.js");
         public static readonly string ConfigFileName = ".jshintrc";
-
-        public override string TargetExtension { get { return null; } }
         public virtual IEnumerable<string> SourceExtensions { get { return new[] { ".js" }; } }
+
         public override string ServiceName { get { return "JsHint"; } }
+        public override string TargetExtension { get { return null; } }
+        public override bool MinifyInPlace { get { return false; } }
         public override bool GenerateSourceMap { get { return false; } }
-        protected override string CompilerPath { get { return _compilerPath; } }
-        protected override Func<string, IEnumerable<CompilerError>> ParseErrors
-        {
-            get { return ParseErrorsWithJson; }
-        }
 
         public Task<CompilerResult> CheckAsync(string sourcePath)
         {
@@ -49,18 +41,21 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             return globalFile;
         }
 
-        protected override Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName)
+        protected override string GetPath(string sourceFileName, string targetFileName)
         {
             GetOrCreateGlobalSettings(ConfigFileName); // Ensure that default settings exist
 
-            return Task.FromResult(string.Format(CultureInfo.CurrentCulture, "--reporter \"{0}\" \"{1}\"",
-                                   _reporter,
-                                   sourceFileName));
+            var parameters = new NodeServerUtilities.Parameters();
+
+            parameters.Add("service", ServiceName);
+            parameters.Add("sourceFileName", sourceFileName);
+
+            return parameters.FlattenParameters();
         }
 
-        protected async override Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName)
+        protected override string PostProcessResult(CompilerResult result)
         {
-            return await Task.FromResult(resultSource);
+            return result.Result;
         }
     }
 }

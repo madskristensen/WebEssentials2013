@@ -14,7 +14,18 @@ var handleSweetJS = function (writer, params) {
 
     fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
         if (err) {
-            writer.write(JSON.stringify({ Success: false, Remarks: "SweetJS: Error reading input file.", Details: err }));
+            writer.write(JSON.stringify({
+                Success: false,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                MapFileName: params.mapFileName,
+                Remarks: "SweetJS: Error reading input file.",
+                Details: err,
+                Errors: [{
+                    Message: "SweetJS: " + err,
+                    FileName: params.sourceFileName
+                }]
+            }));
             writer.end();
             return;
         }
@@ -35,26 +46,30 @@ var handleSweetJS = function (writer, params) {
 
             writer.write(JSON.stringify({
                 Success: true,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                MapFileName: params.mapFileName,
                 Remarks: "Successful!",
-                Output: {
-                    Content: js,
-                    Map: map
-                }
+                Content: js,
+                Map: JSON.stringify(map)
             }));
             writer.end();
         } catch (error) {
             var regex = xRegex.exec(error, xRegex(".+:.*?\\n*.*?Line.+\\d+: (?<fullMessage>.*(\\n*.*)*)", 'gi'));
             writer.write(JSON.stringify({
                 Success: false,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                MapFileName: params.mapFileName,
                 Remarks: "SweetJS: An error has occured while processing your request.",
                 Details: error.description,
-                Errors: {
+                Errors: [{
                     Line: error.lineNumber,
                     Column: error.column,
-                    Message: error.description,
+                    Message: "SweetJS: " + error.description,
                     FileName: param.sourceFileName,
-                    FullMessage: regex.fullMessage
-                }
+                    FullMessage: "SweetJS: " + regex.fullMessage
+                }]
             }));
             writer.end();
         }

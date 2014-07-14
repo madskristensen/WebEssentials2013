@@ -20,7 +20,6 @@ var processAutoprefixer = function (cssContent, mapContent, browsers, from, to) 
             };
         }
 
-
     if (!mapContent)
         return {
             Success: true,
@@ -44,14 +43,33 @@ var processAutoprefixer = function (cssContent, mapContent, browsers, from, to) 
 //#region Handler
 var handleAutoPrefixer = function (writer, params) {
     if (!fs.existsSync(params.sourceFileName)) {
-        writer.write(JSON.stringify({ Success: false, Remarks: "Autoprefix: Input file not found!" }));
+        writer.write(JSON.stringify({
+            Success: false,
+            SourceFileName: params.sourceFileName,
+            TargetFileName: params.targetFileName,
+            Remarks: "Autoprefixer: Input file not found!",
+            Errors: [{
+                Message: "Autoprefixer: Input file not found!",
+                FileName: params.sourceFileName
+            }]
+        }));
         writer.end();
         return;
     }
 
     fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
         if (err) {
-            writer.write(JSON.stringify({ Success: false, Remarks: "Autoprefixer: Error reading input file.", Details: err }));
+            writer.write(JSON.stringify({
+                Success: false,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                Remarks: "Autoprefixer: Error reading input file.",
+                Details: err,
+                Errors: [{
+                    Message: "Autoprefixer: " + err,
+                    FileName: params.sourceFileName
+                }]
+            }));
             writer.end();
             return;
         }
@@ -61,15 +79,21 @@ var handleAutoPrefixer = function (writer, params) {
         if (!output.Success)
             writer.write(JSON.stringify({
                 Success: false,
-                Remarks: output.Remarks,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                Remarks: "Autoprefixer: " + output.Remarks,
+                Errors: [{
+                    Message: output.Remarks,
+                    FileName: params.sourceFileName
+                }]
             }));
         else
             writer.write(JSON.stringify({
                 Success: true,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
                 Remarks: "Successful!",
-                Output: {
-                    Content: output.css
-                }
+                Content: output.css
             }));
 
         writer.end();

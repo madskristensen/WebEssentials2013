@@ -1,217 +1,77 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.JavaScript;
 using MadsKristensen.EditorExtensions.Settings;
-using Newtonsoft.Json;
 
 namespace MadsKristensen.EditorExtensions
 {
     public abstract class NodeExecutorBase
     {
-        protected static readonly string WebEssentialsResourceDirectory = Path.Combine(Path.GetDirectoryName(typeof(NodeExecutorBase).Assembly.Location), @"Resources");
-        private static readonly string NodePath = Path.Combine(WebEssentialsResourceDirectory, @"nodejs\node.exe");
-
-        protected abstract string CompilerPath { get; }
-        protected virtual Regex ErrorParsingPattern { get { return null; } }
-        protected virtual Func<string, IEnumerable<CompilerError>> ParseErrors { get { return ParseErrorsWithRegex; } }
-
         ///<summary>Indicates whether this compiler will emit a source map file.  Will only return true if supported and enabled in user settings.</summary>
+        public abstract bool MinifyInPlace { get; }
         public abstract bool GenerateSourceMap { get; }
-        public virtual bool ManagedSourceMap { get { return true; } }
         public abstract string TargetExtension { get; }
         public abstract string ServiceName { get; }
-        ///<summary>Indicates whether this compiler is capable of compiling to a filename that doesn't match the source filename.</summary>
-        public virtual bool RequireMatchingFileName { get { return false; } }
 
         public async Task<CompilerResult> CompileAsync(string sourceFileName, string targetFileName)
         {
             if (WEIgnore.TestWEIgnore(sourceFileName, this is ILintCompiler ? "linter" : "compiler", ServiceName.ToLowerInvariant()))
             {
                 Logger.Log(String.Format(CultureInfo.CurrentCulture, "{0}: The file {1} is ignored by .weignore. Skipping..", ServiceName, Path.GetFileName(sourceFileName)));
-                return await CompilerResultFactory.GenerateResult(sourceFileName, targetFileName, string.Empty, false, string.Empty, Enumerable.Empty<CompilerError>(), true);
+                return await CompilerResultFactory.GenerateResult(sourceFileName, targetFileName, string.Empty, false, string.Empty, string.Empty, Enumerable.Empty<CompilerError>(), true);
             }
 
-            if (RequireMatchingFileName &&
-                Path.GetFileName(targetFileName) != Path.GetFileNameWithoutExtension(sourceFileName) + TargetExtension &&
-                Path.GetFileName(targetFileName) != Path.GetFileNameWithoutExtension(sourceFileName) + ".min" + TargetExtension)
-                throw new ArgumentException(ServiceName + " cannot compile to a targetFileName with a different name.  Only the containing directory can be different.", "targetFileName");
+            CompilerResult response = await NodeServer.CallServiceAsync(GetPath(sourceFileName, targetFileName));
 
-            string mapFileName = GetMapFileName(sourceFileName, targetFileName),
-                   tempTarget = Path.GetTempFileName(),
-                   scriptArgs = await GetArguments(sourceFileName, tempTarget, mapFileName),
-                   errorOutputFile = Path.GetTempFileName(),
-                   cmdArgs = string.Format("\"{0}\" \"{1}\"", NodePath, CompilerPath);
-
-            cmdArgs = string.Format("/c \"{0} {1} > \"{2}\" 2>&1\"", cmdArgs, scriptArgs, errorOutputFile);
-
-            ProcessStartInfo start = new ProcessStartInfo("cmd")
-            {
-                WindowStyle = ProcessWindowStyle.Hidden,
-                WorkingDirectory = Path.GetDirectoryName(sourceFileName),
-                Arguments = cmdArgs,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            try
-            {
-                mapFileName = mapFileName ?? targetFileName + ".map";
-                using (var process = await start.ExecuteAsync())
-                {
-                    if (targetFileName != null)
-                        await MoveOutputContentToCorrectTarget(targetFileName);
-
-                    // Another ugly hack for https://github.com/jashkenas/coffeescript/issues/3526
-                    if (ServiceName.ToLowerInvariant().IndexOf("coffeescript") >= 0 || ServiceName.ToLowerInvariant().IndexOf("livescript") >= 0)
-                    {
-                        tempTarget = Path.Combine(Path.GetDirectoryName(tempTarget), Path.GetFileName(targetFileName));
-                        mapFileName = Path.ChangeExtension(tempTarget, ".map");
-                    }
-
-                    return await ProcessResult(
-                                     process,
-                                     (await FileHelpers.ReadAllTextRetry(errorOutputFile)).Trim(),
-                                     sourceFileName,
-                                     tempTarget,
-                                     targetFileName,
-                                     mapFileName
-                                 );
-                }
-            }
-            finally
-            {
-                File.Delete(errorOutputFile);
-                File.Delete(tempTarget);
-
-                if (ManagedSourceMap && !GenerateSourceMap)
-                    File.Delete(mapFileName);
-            }
+            return await ProcessResult(response, sourceFileName, targetFileName);
         }
 
-        private async Task<CompilerResult> ProcessResult(Process process, string errorText, string sourceFileName, string tempTarget, string targetFileName, string mapFileName)
+        // Don't try-catch this method: We need to "address" all the bugs,
+        // which may occur as the (node.js-based) service implement changes.
+        private async Task<CompilerResult> ProcessResult(CompilerResult result, string sourceFileName, string targetFileName)
         {
-            string result = "";
-            bool success = process.ExitCode == 0;
-            IEnumerable<CompilerError> errors = null;
-
-            try
+            if (result == null)
             {
-                if (success)
-                {
-                    ProjectHelpers.CheckOutFileFromSourceControl(targetFileName);
-
-                    if (!string.IsNullOrEmpty(tempTarget) && File.Exists(tempTarget))
-                    {
-                        result = await FileHelpers.ReadAllTextRetry(tempTarget);
-
-                        if (!File.Exists(targetFileName) || !ReferenceEquals(string.Intern(await FileHelpers.ReadAllTextRetry(targetFileName)), string.Intern(result)))
-                            await FileHelpers.WriteAllTextRetry(targetFileName, result);
-                    }
-
-                    var renewedResult = await PostProcessResult(result, sourceFileName, targetFileName, mapFileName);
-
-                    if (ManagedSourceMap && GenerateSourceMap)
-                        ProjectHelpers.CheckOutFileFromSourceControl(mapFileName);
-
-                    if (!ReferenceEquals(string.Intern(result), string.Intern(renewedResult)))
-                    {
-                        await FileHelpers.WriteAllTextRetry(targetFileName, renewedResult);
-                        result = renewedResult;
-                    }
-                }
-                else
-                {
-                    errors = ParseErrors(errorText);
-                }
+                Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compilation failed: The service failed to respond to this request\n\t\t\tPossible cause: Syntax Error!");
+                return await CompilerResultFactory.GenerateResult(sourceFileName, targetFileName);
             }
-            catch (FileNotFoundException missingFileException)
+            if (!result.IsSuccess)
             {
-                Logger.Log(ServiceName + ": " + Path.GetFileName(targetFileName) + " compilation failed. " + missingFileException.Message);
-            }
-
-            var compilerResult = await CompilerResultFactory.GenerateResult(
-                                           sourceFileName: sourceFileName,
-                                           targetFileName: targetFileName,
-                                           mapFileName: mapFileName,
-                                           isSuccess: success,
-                                           result: result,
-                                           errors: errors
-                                       ) as CompilerResult;
-
-            if (!success)
-            {
-                var firstError = compilerResult.Errors.Where(e => e != null).Select(e => e.Message).FirstOrDefault();
+                var firstError = result.Errors.Where(e => e != null).Select(e => e.Message).FirstOrDefault();
 
                 if (firstError != null)
-                    Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compilation failed: " + firstError);
+                    Logger.Log(ServiceName + ": " + Path.GetFileName(result.SourceFileName) + " compilation failed: " + firstError);
+
+                return result;
             }
 
-            return compilerResult;
-        }
+            string resultString = PostProcessResult(result);
 
-        protected IEnumerable<CompilerError> ParseErrorsWithJson(string error)
-        {
-            if (string.IsNullOrEmpty(error))
-                return null;
-
-            try
+            if (result.TargetFileName != null && (MinifyInPlace || !File.Exists(result.TargetFileName) ||
+                !ReferenceEquals(string.Intern(resultString), string.Intern(await FileHelpers.ReadAllTextRetry(result.TargetFileName)))))
             {
-                CompilerError[] results = JsonConvert.DeserializeObject<CompilerError[]>(error);
-
-                if (results.Length == 0)
-                    Logger.Log(ServiceName + " parse error: " + error);
-
-                return results;
+                ProjectHelpers.CheckOutFileFromSourceControl(result.TargetFileName);
+                await FileHelpers.WriteAllTextRetry(result.TargetFileName, resultString);
             }
-            catch (JsonReaderException)
+            if (GenerateSourceMap && (!File.Exists(result.MapFileName) ||
+                !ReferenceEquals(string.Intern(result.ResultMap), string.Intern(await FileHelpers.ReadAllTextRetry(result.MapFileName)))))
             {
-                Logger.Log(ServiceName + " parse error: " + error);
-                return new[] { new CompilerError() { Message = error } };
+                ProjectHelpers.CheckOutFileFromSourceControl(result.MapFileName);
+                await FileHelpers.WriteAllTextRetry(result.MapFileName, result.ResultMap);
             }
+
+            return CompilerResult.UpdateResult(result, resultString);
         }
 
-        protected IEnumerable<CompilerError> ParseErrorsWithRegex(string error)
+        protected virtual string PostProcessResult(CompilerResult result)
         {
-            var matches = ErrorParsingPattern.Matches(error);
-
-            if (matches.Count == 0)
-            {
-                Logger.Log(ServiceName + ": unparsable compilation error: " + error);
-                return new[] { new CompilerError { Message = error } };
-            }
-            return matches.Cast<Match>().Select(match => new CompilerError
-            {
-                FileName = match.Groups["fileName"].Value,
-                Message = match.Groups["message"].Value.Trim(),
-                FullMessage = string.IsNullOrEmpty(match.Groups["fullMessage"].Value) ? match.Groups["message"].Value : match.Groups["fullMessage"].Value,
-                Column = string.IsNullOrEmpty(match.Groups["column"].Value) ? 1 : int.Parse(match.Groups["column"].Value, CultureInfo.CurrentCulture),
-                Line = int.Parse(match.Groups["line"].Value, CultureInfo.CurrentCulture)
-            });
+            Logger.Log(ServiceName + ": " + Path.GetFileName(result.SourceFileName) + " compiled.");
+            return result.Result;
         }
 
-        /// <summary>
-        ///  In case of CoffeeScript, the compiler doesn't take output file path argument,
-        ///  instead takes path to output directory. This method can be overridden by any
-        ///  such compiler to move data to correct target.
-        /// </summary>
-        protected virtual Task MoveOutputContentToCorrectTarget(string targetFileName)
-        {
-            return Task.FromResult(0);
-        }
-
-        protected virtual string GetMapFileName(string sourceFileName, string targetFileName)
-        {
-            return null;
-        }
-
-        protected abstract Task<string> GetArguments(string sourceFileName, string targetFileName, string mapFileName);
-
-        protected abstract Task<string> PostProcessResult(string resultSource, string sourceFileName, string targetFileName, string mapFileName);
+        protected abstract string GetPath(string sourceFileName, string targetFileName);
     }
 }

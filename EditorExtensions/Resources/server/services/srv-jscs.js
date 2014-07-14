@@ -6,7 +6,7 @@ var jscs = require("jscs/lib/checker"),
 //#endregion
 
 //#region Reporter
-var reporter = function (results, writer) {
+var reporter = function (results, writer, params) {
     var errorItems = [];
     var errors = results[0];
     var fileName = errors.getFilename();
@@ -24,10 +24,9 @@ var reporter = function (results, writer) {
 
     writer.write(JSON.stringify({
         Success: true,
+        SourceFileName: params.sourceFileName,
         Remarks: "Successful!",
-        Output: {
-            Content: errorItems
-        }
+        Errors: errorItems
     }));
     writer.end();
 };
@@ -40,7 +39,16 @@ var handleJSCS = function (writer, params) {
     try {
         config = configFile.load(null, path.dirname(params.sourceFileName));
     } catch (e) {
-        writer.write(JSON.stringify({ Success: false, Remarks: "JSCS: Invalid Config file", Details: e.message || e.stack }));
+        writer.write(JSON.stringify({
+            Success: false,
+            SourceFileName: params.sourceFileName,
+            Remarks: "JSCS: Invalid Config file",
+            Details: e.message || e.stack,
+            Errors: [{
+                Message: "JSCS: Invalid config file.",
+                FileName: params.sourceFileName
+            }]
+        }));
         writer.end();
         return;
     }
@@ -53,9 +61,17 @@ var handleJSCS = function (writer, params) {
     // Unlike their cli, we don't need Vows'defer() and call all().
     // All we need is proceed on done().
     vow.done(checker.checkPath(params.sourceFileName),
-             function (results) { reporter(results, writer); },
+             function (results) { reporter(results, writer, params); },
              function () { // They should probably need add this to their CLI code too: https://github.com/mdevils/node-jscs/issues/490
-                 writer.write(JSON.stringify({ Success: false, Remarks: "JSCS: Cannot parse invalid JavaScript." }));
+                 writer.write(JSON.stringify({
+                     Success: false,
+                     SourceFileName: params.sourceFileName,
+                     Remarks: "JSCS: Cannot parse invalid JavaScript.",
+                     Errors: [{
+                         Message: "JSCS: Cannot parse invalid JavaScript",
+                         FileName: params.sourceFileName
+                     }]
+                 }));
                  writer.end();
              });
 };

@@ -357,7 +357,6 @@
     <Compile Include="JSON\Schemas\SchemaExporter.cs" />
     <Compile Include="JSON\Validation\JsonErrorTag.cs" />
     <Compile Include="JSON\Validation\RefMemberNameItemValidator.cs" />
-    <Compile Include="Misc\Autoprefixer\Autoprefixer.cs" />
     <Compile Include="Misc\Autoprefixer\Compilers\AutoprefixerCompiler.cs" />
     <Compile Include="Misc\Bundles\BundleFilesObserver.cs" />
     <Compile Include="Misc\Bundles\IBundleDocument.cs" />
@@ -370,6 +369,7 @@
     <Compile Include="SCSS\Commands\ScssExtractVariableCommandTarget.cs" />
     <Compile Include="Settings\WEIgnore.cs" />
     <Compile Include="Shared\Compilers\JsCompilerBase.cs" />
+    <Compile Include="Shared\Compilers\NodeServerUtilities.cs" />
     <Compile Include="Shared\Compilers\NodeServer.cs" />
     <Compile Include="Shared\Compilers\Result\CompilerResultFactory.cs" />
     <Compile Include="Shared\Compilers\Result\CompilerError.cs" />
@@ -842,7 +842,7 @@
     <Content Include="Resources\server\services\srv-coffeelint.js" />
     <Content Include="Resources\server\services\srv-less.js" />
     <Content Include="Resources\server\services\srv-livescript.js" />
-    <Content Include="Resources\server\services\srv-sass.js" />
+    <Content Include="Resources\server\services\srv-scss.js" />
     <Content Include="Resources\server\services\srv-sweetjs.js" />
     <Content Include="Resources\server\services\srv-jscs.js" />
     <Content Include="Resources\server\services\srv-jshint.js" />
@@ -1061,7 +1061,7 @@
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <!-- Explicitly include JSON files that are actually needed at runtime -->
-      <Content Include="Resources\nodejs\tools\node_modules\htmlparser2\lib\entities\**; Resources\nodejs\tools\node_modules\jshint\package.json; Resources\nodejs\tools\node_modules\resolve\lib\core.json; Resources\nodejs\tools\node_modules\escodegen\package.json;  Resources\nodejs\tools\node_modules\caniuse-db\**\*.json;">
+      <Content Include="Resources\nodejs\tools\node_modules\htmlparser2\lib\entities\**; Resources\nodejs\tools\node_modules\jshint\package.json; Resources\nodejs\tools\node_modules\node-sass\package.json; Resources\nodejs\tools\node_modules\less\package.json; Resources\nodejs\tools\node_modules\resolve\lib\core.json; Resources\nodejs\tools\node_modules\escodegen\package.json;  Resources\nodejs\tools\node_modules\caniuse-db\**\*.json;">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <!-- Explicitly include files that are needed for JsHint -->
