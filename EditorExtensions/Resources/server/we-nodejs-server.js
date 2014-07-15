@@ -53,13 +53,13 @@ console.logLine = function (message, type, indent, noTimeStamp) {
 //#endregion
 
 //#region Validators
-var protetFromForgery;
+var antiForgeryToken;
 
 var authenticateAll = function (writer, headers) {
     if (!headers["web-essentials"] ||
         headers.origin !== "web essentials" ||
         headers["user-agent"] !== "web essentials" ||
-        headers.auth !== protetFromForgery) {
+        headers.auth !== antiForgeryToken) {
         writer.writeHead(404, { "Content-Type": "text/plain" });
         writer.write("404 Not found");
         writer.end();
@@ -181,5 +181,5 @@ if (!((!developmentEnv && program.rawArgs.length === 6 || program.rawArgs.length
 }
 
 start(process.argv[3]);
-protetFromForgery = process.argv[5];
+antiForgeryToken = process.argv[5];
 //#endregion
