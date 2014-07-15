@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
 
         public string FileName { get; set; }
         public IEnumerable<string> BundleAssets { get; set; }
-        public IEnumerable<string> BundleAssetsOriginal { get; set; }
+        public List<string> OriginalBundleAssets { get; set; }
         public bool Minified { get; set; }
         public bool RunOnBuild { get; set; }
         public bool AdjustRelativePaths { get; set; }
@@ -45,16 +45,18 @@ namespace MadsKristensen.EditorExtensions
             Minified = settings.MakeMinified;
             RunOnBuild = settings.RunOnBuild;
             OutputDirectory = settings.OutputDirectory;
+            OriginalBundleAssets = new List<string>();
         }
 
         public async Task<XDocument> WriteBundleRecipe()
         {
             string root = ProjectHelpers.GetRootFolder();
-            XmlWriterSettings settings = new XmlWriterSettings() { Indent = true };
-            XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
 
             if (string.IsNullOrEmpty(root))
                 root = ProjectHelpers.GetProjectFolder(FileName);
+
+            XmlWriterSettings settings = new XmlWriterSettings() { Indent = true };
+            XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
 
             ProjectHelpers.CheckOutFileFromSourceControl(FileName);
 
@@ -73,7 +75,7 @@ namespace MadsKristensen.EditorExtensions
                             new XElement("outputDirectory", OutputDirectory)
                         ),
                         new XComment("The order of the <file> elements determines the order of the files in the bundle."),
-                        new XElement("files", BundleAssets.Select(file => new XElement("file", "/" + FileHelpers.RelativePath(root, file))))
+                        new XElement("files", BundleAssets.Select(file => new XElement("file", GetRelativePath(file, root))))
                     )
                 );
 
@@ -87,6 +89,15 @@ namespace MadsKristensen.EditorExtensions
 
                 return doc;
             }
+        }
+
+        private string GetRelativePath(string file, string root)
+        {
+            file = "/" + FileHelpers.RelativePath(root, file);
+
+            OriginalBundleAssets.Add(file);
+
+            return file;
         }
 
         public async Task<IBundleDocument> LoadFromFile(string fileName)
@@ -127,7 +138,7 @@ namespace MadsKristensen.EditorExtensions
             IEnumerable<string> constituentFiles = ProjectHelpers.GetBundleConstituentFiles(rawConstituents, root, folder, fileName);
             BundleDocument bundle = new BundleDocument(fileName, constituentFiles.ToArray())
             {
-                BundleAssetsOriginal = rawConstituents
+                OriginalBundleAssets = new List<string>(rawConstituents)
             };
 
             element = doc.Descendants("minify").FirstOrDefault();

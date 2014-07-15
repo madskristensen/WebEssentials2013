@@ -55,7 +55,7 @@ namespace MadsKristensen.EditorExtensions
 
             await new BundleFileObserver().AttachFileObserver(document, document.FileName, updateBundle);
 
-            foreach (string asset in document.BundleAssetsOriginal)
+            foreach (string asset in document.OriginalBundleAssets)
             {
                 string absolute = asset.Contains(":\\") ? asset : ProjectHelpers.ToAbsoluteFilePath(asset, document.FileName);
 
