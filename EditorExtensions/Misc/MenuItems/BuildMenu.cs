@@ -68,14 +68,14 @@ namespace MadsKristensen.EditorExtensions
             _mcs.AddCommand(command);
         }
 
-        public async static Task UpdateBundleFiles()
+        private async static Task UpdateBundleFiles()
         {
-            await BundleFilesMenu.UpdateAllBundlesAsync(true);
+            await BundleFilesMenu.UpdateAllBundlesAsync();
         }
 
-        public async static Task UpdateSpriteFiles()
+        private async static Task UpdateSpriteFiles()
         {
-            await SpriteImageMenu.UpdateAllSpritesAsync(true);
+            await SpriteImageMenu.UpdateAllSpritesAsync();
         }
 
         private async Task Minify()
