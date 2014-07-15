@@ -180,8 +180,8 @@ namespace MadsKristensen.EditorExtensions
                     c => compiler.Value.CompileSolutionAsync(c).DoNotWait("compiling solution-wide " + c.DisplayName)
                 );
 
-                await BuildMenu.UpdateBundleFiles();
-                await BuildMenu.UpdateSpriteFiles();
+                await BundleFilesMenu.UpdateAllBundlesAsync(true);
+                await SpriteImageMenu.UpdateAllSpritesAsync(true);
             }).DoNotWait("running solution-wide compilers");
 
             if (WESettings.Instance.JavaScript.LintOnBuild)
