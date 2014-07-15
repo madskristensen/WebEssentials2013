@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 
@@ -21,9 +19,6 @@ namespace MadsKristensen.EditorExtensions
         private Process _process;
         private string _address;
         private int _port;
-
-        [SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass"), DllImport("kernel32")]
-        extern static UInt64 GetTickCount64();
 
         public static async Task Up()
         {
@@ -123,7 +118,7 @@ namespace MadsKristensen.EditorExtensions
 
         private async Task<CompilerResult> CallService(string path, bool reattempt)
         {
-            string newPath = string.Format("{0}?{1}&uptime={2}", _address, path, ((int)TimeSpan.FromMilliseconds(GetTickCount64()).TotalSeconds).ToString());
+            string newPath = string.Format("{0}?{1}", _address, path);
             HttpResponseMessage response;
             try
             {

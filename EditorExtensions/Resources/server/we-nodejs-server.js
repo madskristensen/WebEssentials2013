@@ -1,7 +1,6 @@
 //#region Imports
 var http = require("http"),
     url = require("url"),
-    os = require("os"),
     fs = require("fs"),
     program = require("commander");
 //#endregion
@@ -56,12 +55,11 @@ console.logLine = function (message, type, indent, noTimeStamp) {
 //#region Validators
 var protetFromForgery;
 
-var authenticateAll = function (writer, headers, params) {
+var authenticateAll = function (writer, headers) {
     if (!headers["web-essentials"] ||
         headers.origin !== "web essentials" ||
         headers["user-agent"] !== "web essentials" ||
-        headers.auth !== protetFromForgery ||
-        !validateUptime(params.uptime)) {
+        headers.auth !== protetFromForgery) {
         writer.writeHead(404, { "Content-Type": "text/plain" });
         writer.write("404 Not found");
         writer.end();
@@ -70,20 +68,6 @@ var authenticateAll = function (writer, headers, params) {
     }
 
     return true;
-};
-
-var validateUptime = function (then) {
-    if (!validPositiveInteger(then)) {
-        return false;
-    }
-
-    var now = parseInt(os.uptime(), 10);
-
-    then = parseInt(then, 10);
-
-    then--;
-    
-    return then <= now && now - 5 < then;
 };
 
 var validPositiveInteger = function (int) {
@@ -110,14 +94,14 @@ var start = function (port) {
     function onRequest(request, response) {
         console.logLine("Request recieved: " + JSON.stringify(request.headers), console.logType.transaction);
 
-        var params = url.parse(request.url, true).query;
-
         // Unauthorized access checks (for production environment)
-        if (!developmentEnv && !authenticateAll(response, request.headers, params))
+        if (!developmentEnv && !authenticateAll(response, request.headers))
             return;
 
         response.writeHead(200, { "Content-Type": "application/json" });
         //response.writeHead(200, { "Content-Type": "text/plain" });
+
+        var params = url.parse(request.url, true).query;
 
         try {
             // Change to valid character string and let it respond as the regular (invalid) case
