@@ -29,7 +29,9 @@ namespace MadsKristensen.EditorExtensions.Markdown
         {
             Mef.SatisfyImportsOnce(this);
             _contentType = ContentTypes.GetContentType("Markdown");
-            _extensions = FileExtensionRegistry.GetFileExtensionSet(_contentType);
+
+            if (_contentType != null)
+                _extensions = FileExtensionRegistry.GetFileExtensionSet(_contentType);
 
             _dte = dte;
             _mcs = mcs;
