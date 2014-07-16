@@ -13,8 +13,8 @@
     <Tags>css, javascript, html, less, coffeescript, json</Tags>
   </Metadata>
   <Installation InstalledByMsi="false">
-    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[12.0.30626,12.0.30670)" />
-    <InstallationTarget Id="Microsoft.VisualStudio.VWDExpress" Version="[12.0.30626,12.0.30670)" />
+    <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[12.0.30626,12.0.30725)" />
+    <InstallationTarget Id="Microsoft.VisualStudio.VWDExpress" Version="[12.0.30626,12.0.30725)" />
   </Installation>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />
