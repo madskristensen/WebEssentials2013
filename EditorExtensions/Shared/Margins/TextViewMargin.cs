@@ -92,23 +92,36 @@ namespace MadsKristensen.EditorExtensions.Margin
 
             try
             {
-
-                if (string.IsNullOrEmpty(text))
+                if (PreviewTextHost.HostControl.CheckAccess())
                 {
-                    PreviewTextHost.HostControl.Opacity = 0.3;
-                    return;
+                    updateThePreviewText(text);
                 }
-
-                int position = PreviewTextHost.TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
-                PreviewTextHost.TextView.TextBuffer.SetText(text);
-                PreviewTextHost.HostControl.Opacity = 1;
-                PreviewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, PreviewTextHost.TextView.TextSnapshot.GetLineNumberFromPosition(position));
-                PreviewTextHost.TextView.ViewScroller.ScrollViewportHorizontallyByPixels(-9999);
+                else
+                {
+                     this.Dispatcher.Invoke((Action)(() => {
+                         updateThePreviewText(text);
+                     }));
+                }
             }
             catch
             {
                 // Threading issues when called from TypeScript
             }
+        }
+
+        private void updateThePreviewText(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                PreviewTextHost.HostControl.Opacity = 0.3;
+                return;
+            }
+
+            int position = PreviewTextHost.TextView.TextViewLines.FirstVisibleLine.Extent.Start.Position;
+            PreviewTextHost.TextView.TextBuffer.SetText(text);
+            PreviewTextHost.HostControl.Opacity = 1;
+            PreviewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByLines(ScrollDirection.Down, PreviewTextHost.TextView.TextSnapshot.GetLineNumberFromPosition(position));
+            PreviewTextHost.TextView.ViewScroller.ScrollViewportHorizontallyByPixels(-9999);
         }
 
         protected override void UpdateMargin(CompilerResult result)
