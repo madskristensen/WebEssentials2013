@@ -100,9 +100,11 @@ var handleLess = function (writer, params) {
                 TargetFileName: params.targetFileName,
                 MapFileName: params.mapFileName,
                 Remarks: "LESS: " + e.message,
-                Details: e.stack,
+                Details: e.message,
                 Errors: [{
-                    Message: "LESS: " + err,
+                    Line: e.line,
+                    Column: e.column,
+                    Message: "LESS: " + e.message,
                     FileName: params.sourceFileName
                 }]
             }));

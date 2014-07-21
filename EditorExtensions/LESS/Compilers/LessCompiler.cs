@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.Less
             if (GenerateSourceMap)
                 parameters.Add("sourceMapURL");
 
-            if (!WESettings.Instance.Less.StrictMath)
+            if (WESettings.Instance.Less.StrictMath)
                 parameters.Add("strictMath");
 
             if (WESettings.Instance.Css.Autoprefix)
