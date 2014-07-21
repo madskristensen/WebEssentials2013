@@ -15,7 +15,7 @@ namespace MadsKristensen.EditorExtensions
 
         public string FileName { get; set; }
         public IEnumerable<string> BundleAssets { get; set; }
-        public List<string> OriginalBundleAssets { get; set; }
+        public IList<string> OriginalBundleAssets { get; private set; }
         public bool Minified { get; set; }
         public bool RunOnBuild { get; set; }
         public bool AdjustRelativePaths { get; set; }
