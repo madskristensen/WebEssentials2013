@@ -25,7 +25,7 @@ var handleLess = function (writer, params) {
         }
 
         try {
-            new (less.Parser)({ filename: params.sourceFileName }).parse(data, function (e, tree) {
+            new (less.Parser)({ filename: params.sourceFileName, relativeUrls: true }).parse(data, function (e, tree) {
                 if (e) {
                     writer.write(JSON.stringify({
                         Success: false,
@@ -49,7 +49,6 @@ var handleLess = function (writer, params) {
                 var mapFileName = params.targetFileName + ".map";
                 var mapDir = path.dirname(mapFileName);
                 var css = tree.toCSS({
-                    relativeUrl: true,
                     paths: [path.dirname(params.sourceFileName)],
                     sourceMap: mapFileName,
                     sourceMapURL: params.sourceMapURL != undefined ? path.basename(mapFileName) : null,
