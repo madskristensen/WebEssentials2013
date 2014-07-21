@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -76,20 +76,22 @@ namespace MadsKristensen.EditorExtensions
 
         Task DownloadNodeAsync()
         {
-            if (File.Exists(@"resources\nodejs\node.exe"))
+            var file = new FileInfo(@"resources\nodejs\node.exe");
+            if (file.Exists && file.Length > 0)
                 return Task.FromResult<object>(null);
             Log.LogMessage(MessageImportance.High, "Downloading nodejs ...");
-            return new WebClient().DownloadFileTaskAsync("http://nodejs.org/dist/latest/node.exe", @"resources\nodejs\node.exe");
+            return WebClientDoAsync(wc => wc.DownloadFileTaskAsync("http://nodejs.org/dist/latest/node.exe", @"resources\nodejs\node.exe"));
         }
 
         async Task DownloadNpmAsync()
         {
-            if (File.Exists(@"resources\nodejs\node_modules\npm\bin\npm.cmd"))
+            var file = new FileInfo(@"resources\nodejs\node_modules\npm\bin\npm.cmd");
+            if (file.Exists && file.Length > 0)
                 return;
 
             Log.LogMessage(MessageImportance.High, "Downloading npm ...");
 
-            var npmZip = await new WebClient().OpenReadTaskAsync("http://nodejs.org/dist/npm/npm-1.3.23.zip");
+            var npmZip = await WebClientDoAsync(wc => wc.OpenReadTaskAsync("http://nodejs.org/dist/npm/npm-1.3.23.zip"));
 
             try
             {
@@ -101,6 +103,54 @@ namespace MadsKristensen.EditorExtensions
                 Directory.Delete(@"resources\nodejs\node_modules\npm", true);
                 throw;
             }
+        }
+
+        async Task WebClientDoAsync(Func<WebClient, Task> transactor)
+        {
+            try
+            {
+                await transactor(new WebClient());
+                return;
+            }
+            catch (WebException e)
+            {
+                Log.LogWarningFromException(e);
+                if (!IsHttpStatusCode(e, HttpStatusCode.ProxyAuthenticationRequired))
+                    throw;
+            }
+
+            await transactor(CreateWebClientWithProxyAuthSetup());
+        }
+
+        async Task<T> WebClientDoAsync<T>(Func<WebClient, Task<T>> transactor)
+        {
+            try
+            {
+                return await transactor(new WebClient());
+            }
+            catch (WebException e)
+            {
+                Log.LogWarningFromException(e);
+                if (!IsHttpStatusCode(e, HttpStatusCode.ProxyAuthenticationRequired))
+                    throw;
+            }
+
+            return await transactor(CreateWebClientWithProxyAuthSetup());
+        }
+
+        static bool IsHttpStatusCode(WebException e, HttpStatusCode status)
+        {
+            HttpWebResponse response;
+            return e.Status == WebExceptionStatus.ProtocolError
+                && (response = e.Response as HttpWebResponse) != null
+                && response.StatusCode == status;
+        }
+
+        static WebClient CreateWebClientWithProxyAuthSetup(IWebProxy proxy = null, ICredentials credentials = null)
+        {
+            var wc = new WebClient { Proxy = proxy ?? WebRequest.GetSystemWebProxy() };
+            wc.Proxy.Credentials = credentials ?? CredentialCache.DefaultCredentials;
+            return wc;
         }
 
         enum ModuleInstallResult { AlreadyPresent, Installed, Error }
