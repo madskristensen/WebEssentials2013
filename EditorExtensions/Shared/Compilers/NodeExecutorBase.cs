@@ -51,13 +51,13 @@ namespace MadsKristensen.EditorExtensions
             string resultString = PostProcessResult(result);
 
             if (result.TargetFileName != null && (MinifyInPlace || !File.Exists(result.TargetFileName) ||
-                !ReferenceEquals(string.Intern(resultString), string.Intern(await FileHelpers.ReadAllTextRetry(result.TargetFileName)))))
+                resultString != await FileHelpers.ReadAllTextRetry(result.TargetFileName)))
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(result.TargetFileName);
                 await FileHelpers.WriteAllTextRetry(result.TargetFileName, resultString);
             }
             if (GenerateSourceMap && (!File.Exists(result.MapFileName) ||
-                !ReferenceEquals(string.Intern(result.ResultMap), string.Intern(await FileHelpers.ReadAllTextRetry(result.MapFileName)))))
+                result.ResultMap != await FileHelpers.ReadAllTextRetry(result.MapFileName)))
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(result.MapFileName);
                 await FileHelpers.WriteAllTextRetry(result.MapFileName, result.ResultMap);
