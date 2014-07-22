@@ -123,8 +123,8 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         {
             return new CodeSettings()
             {
-                EvalTreatment = EvalTreatment.MakeImmediateSafe,
-                TermSemicolons = true,
+                EvalTreatment = WESettings.Instance.JavaScript.EvalTreatment,
+                TermSemicolons = WESettings.Instance.JavaScript.TermSemicolons,
                 PreserveImportantComments = WESettings.Instance.General.KeepImportantComments
             };
         }

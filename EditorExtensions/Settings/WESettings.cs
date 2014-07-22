@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using ConfOxide;
 using MarkdownSharp;
+using Microsoft.Ajax.Utilities;
 using Microsoft.VisualStudio.Shell;
 using WebMarkupMin.Core;
 
@@ -310,6 +311,18 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Generate source map files when minifying or bundling.")]
         [DefaultValue(true)]
         public bool GenerateSourceMaps { get; set; }
+
+        [Category("Minification")]
+        [DisplayName("Eval treatment option")]
+        [Description("See EvalTreatment description at http://www.asp.net/ajaxlibrary/AjaxMinDLL.ashx.")]
+        [DefaultValue(1)]
+        public EvalTreatment EvalTreatment { get; set; }
+
+        [Category("Minification")]
+        [DisplayName("Terminate semicolons")]
+        [Description("Forces all rules to be terminated with semicolons when true.")]
+        [DefaultValue(true)]
+        public bool TermSemicolons { get; set; }
         #endregion
 
         [Category("Editor")]
