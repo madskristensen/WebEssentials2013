@@ -33,13 +33,13 @@ namespace WebEssentialsTests
                 if (!File.Exists(compiledFile))
                     continue;
 
-                var expectedLines = File.ReadLines(compiledFile).Skip(1).Where(s => !string.IsNullOrEmpty(s));
+                var expectedLines = File.ReadLines(compiledFile).Where(s => !string.IsNullOrEmpty(s));
 
                 var compiledCode = await new CoffeeScriptCompiler().CompileToStringAsync(coffeeFileName);
 
                 // Skip the version header, so we don't need
                 // to update the expecation for CS releases.
-                var compiledLines = compiledCode.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries).Skip(1);
+                var compiledLines = compiledCode.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
                 compiledLines.Should().Equal(expectedLines);
             }
