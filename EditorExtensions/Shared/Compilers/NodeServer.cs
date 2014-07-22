@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions
 {
     public sealed class NodeServer : IDisposable
     {
-        private static readonly string _nodePath = Path.Combine(Path.Combine(Path.GetDirectoryName(typeof(NodeExecutorBase).Assembly.Location), @"Resources"), @"nodejs\node.exe");
+        private static readonly string _nodePath = Path.Combine(Path.Combine(Path.GetDirectoryName(typeof(NodeServer).Assembly.Location), @"Resources"), @"nodejs\node.exe");
         private string _authenticationToken;
         private static NodeServer _server;
         private HttpClient _client;
