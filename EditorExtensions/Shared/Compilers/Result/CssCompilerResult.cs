@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions
             : base(sourceFileName, targetFileName, mapFileName, isSuccess, result, resultMap, errors, hasSkipped)
         { }
 
-        public static CssCompilerResult GenerateResult(string sourceFileName, string targetFileName, string mapFileName, bool isSuccess, string result, string resultMap, IEnumerable<CompilerError> errors, bool hasSkipped = false)
+        public new static CssCompilerResult GenerateResult(string sourceFileName, string targetFileName, string mapFileName, bool isSuccess, string result, string resultMap, IEnumerable<CompilerError> errors, bool hasSkipped = false)
         {
             CssCompilerResult compilerResult = new CssCompilerResult(sourceFileName, targetFileName, mapFileName, isSuccess, result, resultMap, errors, hasSkipped);
 
