@@ -296,7 +296,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 var item = selItem.Object as ProjectItem;
 
-                if (item != null)
+                if (item != null && item.Properties != null)
                     yield return item.Properties.Item("FullPath").Value.ToString();
             }
         }
