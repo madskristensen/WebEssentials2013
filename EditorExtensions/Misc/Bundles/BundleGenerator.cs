@@ -58,29 +58,47 @@ namespace MadsKristensen.EditorExtensions
             foreach (string asset in document.OriginalBundleAssets)
             {
                 string absolute = asset.Contains(":\\") ? asset : ProjectHelpers.ToAbsoluteFilePath(asset, document.FileName);
+                string absoluteActual = GetActualAsset(absolute);
 
-                if (File.Exists(absolute))
-                {
-                    if (!files.ContainsKey(absolute))
-                    {
-                        if (Path.IsPathRooted(asset))
-                            files.Add(absolute, asset);
-                        else
-                            files.Add(absolute, FileHelpers.RelativePath(bundleFile, Path.GetFullPath(Path.Combine(Path.GetDirectoryName(document.FileName), asset))));
-
-                        await new BundleFileObserver().AttachFileObserver(document, absolute, updateBundle);
-                    }
-                }
-                else
+                if (!File.Exists(absoluteActual))
                 {
                     WebEssentialsPackage.DTE.ItemOperations.OpenFile(document.FileName);
                     Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "Bundle error: The file '{0}' doesn't exist", asset));
 
                     return null;
                 }
+
+                if (!File.Exists(absolute))
+                {
+                    WebEssentialsPackage.DTE.ItemOperations.OpenFile(document.FileName);
+                    Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "Bundle error: The file '{0}' doesn't exist", absolute));
+
+                    return null;
+                }
+
+                if (!files.ContainsKey(absoluteActual))
+                {
+                    if (Path.IsPathRooted(asset))
+                        files.Add(absolute, asset);
+                    else
+                        files.Add(absolute, FileHelpers.RelativePath(bundleFile, Path.GetFullPath(Path.Combine(Path.GetDirectoryName(document.FileName), asset))));
+
+                    await new BundleFileObserver().AttachFileObserver(document, absoluteActual, updateBundle);
+                }
             }
 
             return files;
+        }
+
+        private static string GetActualAsset(string path)
+        {
+            const string typeScriptExtension = ".ts";
+
+            //If we actually have a type script file in the javascript bundle, we'll want to include its js file.
+            if (Path.GetExtension(path).Equals(typeScriptExtension, StringComparison.OrdinalIgnoreCase))
+                return Path.ChangeExtension(path, ".js");
+
+            return path;
         }
 
         private async static Task<string> CombineFiles(Dictionary<string, string> files, string extension, BundleDocument bundle, string bundleFile)
@@ -89,25 +107,42 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (string file in files.Keys)
             {
+                string actualFile = GetActualAsset(file);
+
                 if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase) && WESettings.Instance.JavaScript.GenerateSourceMaps)
                 {
-                    sb.AppendLine("///#source 1 1 " + files[file]);
+                    sb.AppendLine("///#source 1 1 " + GetActualAsset(files[file]));
                 }
 
-                var source = await FileHelpers.ReadAllTextRetry(file);
+                var source = await FileHelpers.ReadAllTextRetry(actualFile);
 
                 if (extension.Equals(".css", StringComparison.OrdinalIgnoreCase))
                 {
                     // If the bundle is in the same folder as the CSS,
                     // or if does not have URLs, no need to normalize.
-                    if (Path.GetDirectoryName(file) != Path.GetDirectoryName(bundleFile) &&
+                    if (Path.GetDirectoryName(actualFile) != Path.GetDirectoryName(bundleFile) &&
                         source.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0 &&
                         bundle.AdjustRelativePaths)
                         source = CssUrlNormalizer.NormalizeUrls(
                             tree: new CssParser().Parse(source, true),
                             targetFile: bundleFile,
-                            oldBasePath: file
+                            oldBasePath: actualFile
                         );
+                }
+                else if (Path.GetExtension(file).Equals(".ts", StringComparison.OrdinalIgnoreCase))
+                {
+                    // If it is a Type Script include, we might want to alter the define(... at the start of the script to specify the resource location.
+                    if (source.StartsWith("define([\"require\", \"exports\""))
+                    {
+                        string moduleName = GetActualAsset(files[file]);
+
+                        moduleName = Path.Combine(Path.GetDirectoryName(moduleName), Path.GetFileNameWithoutExtension(moduleName)).Replace('\\', '/');
+
+                        if (moduleName.ToLower().StartsWith(WESettings.Instance.JavaScript.RootDirectory.ToLower()))
+                            moduleName = moduleName.Substring(WESettings.Instance.JavaScript.RootDirectory.Length);
+
+                        source = source.Replace("define([\"require\", \"exports\"", "define(\"" + moduleName + "\", [\"require\", \"exports\"");
+                    }
                 }
 
                 sb.AppendLine(source);

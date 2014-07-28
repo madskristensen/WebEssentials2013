@@ -351,6 +351,12 @@ namespace MadsKristensen.EditorExtensions.Settings
         [DefaultValue(null)]
         public string OutputDirectory { get; set; }
 
+        [Category("Bundle")]
+        [DisplayName("JavaScript root directory")]
+        [Description("Specifies the root folder of the Javascript files. Used with TypeScript+AMD, will be removed from modules name on bundling.")]
+        [DefaultValue("/Scripts/")]
+        public string RootDirectory { get; set; }
+
         #endregion
     }
 

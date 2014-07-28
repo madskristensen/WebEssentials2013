@@ -49,7 +49,7 @@ namespace MadsKristensen.EditorExtensions
 
             CommandID commandJs = new CommandID(CommandGuids.guidBundleCmdSet, (int)CommandId.BundleJs);
             OleMenuCommand menuCommandJs = new OleMenuCommand(async (s, e) => await MakeBundleAsync(".js"), commandJs);
-            menuCommandJs.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".js"); };
+            menuCommandJs.BeforeQueryStatus += (s, e) => { BeforeQueryStatus(s, ".js", ".ts"); };
             _mcs.AddCommand(menuCommandJs);
 
             CommandID commandHtml = new CommandID(CommandGuids.guidBundleCmdSet, (int)CommandId.BundleHtml);
@@ -58,13 +58,13 @@ namespace MadsKristensen.EditorExtensions
             _mcs.AddCommand(menuCommandHtml);
         }
 
-        private void BeforeQueryStatus(object sender, string extension)
+        private void BeforeQueryStatus(object sender, params string[] extensions)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
 
             _files = ProjectHelpers.GetSelectedFilePaths();
 
-            menuCommand.Enabled = _files.All(file => extension == Path.GetExtension(file)) &&
+            menuCommand.Enabled = _files.All(file => extensions.Contains(Path.GetExtension(file))) &&
                                   _files.Count() > 1;
         }
 
