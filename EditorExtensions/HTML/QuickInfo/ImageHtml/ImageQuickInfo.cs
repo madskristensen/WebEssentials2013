@@ -25,7 +25,7 @@ namespace MadsKristensen.EditorExtensions.Html
 
             tree.GetPositionElement(point.Value.Position, out node, out attr);
 
-            if (node == null || !node.Name.Equals("img", StringComparison.OrdinalIgnoreCase))
+            if (node == null || (!node.Name.Equals("img", StringComparison.OrdinalIgnoreCase) && !node.Name.Equals("source", StringComparison.OrdinalIgnoreCase)))
                 return;
             if (attr == null || !attr.Name.Equals("src", StringComparison.OrdinalIgnoreCase))
                 return;
