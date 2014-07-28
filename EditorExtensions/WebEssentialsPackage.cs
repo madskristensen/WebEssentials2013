@@ -172,16 +172,13 @@ namespace MadsKristensen.EditorExtensions
         {
             var compiler = WebEditor.Host.ExportProvider.GetExport<ProjectCompiler>();
 
-            Task.Run(async () =>
+            Task.Run(() =>
             {
                 Parallel.ForEach(
                     Mef.GetSupportedContentTypes<ICompilerRunnerProvider>()
                        .Where(c => WESettings.Instance.ForContentType<ICompilerInvocationSettings>(c).CompileOnBuild),
                     c => compiler.Value.CompileSolutionAsync(c).DoNotWait("compiling solution-wide " + c.DisplayName)
                 );
-
-                await BundleFilesMenu.UpdateAllBundlesAsync(true);
-                await SpriteImageMenu.UpdateAllSpritesAsync(true);
             }).DoNotWait("running solution-wide compilers");
 
             if (WESettings.Instance.JavaScript.LintOnBuild)
@@ -199,6 +196,9 @@ namespace MadsKristensen.EditorExtensions
             if (WESettings.Instance.CoffeeScript.LintOnBuild)
                 LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.coffee", "*.iced" }, f => new LintReporter(new CoffeeLintCompiler(), WESettings.Instance.CoffeeScript, f))
                     .DoNotWait("running solution-wide CoffeeLint");
+
+            BundleFilesMenu.UpdateAllBundlesAsync(true).DoNotWait("Web Essentials: Updating Bundles...");
+            SpriteImageMenu.UpdateAllSpritesAsync(true).DoNotWait("Web Essentials: Updating Sprites...");
         }
 
         public static void ExecuteCommand(string commandName, string commandArgs = "")
