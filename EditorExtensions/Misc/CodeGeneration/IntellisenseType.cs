@@ -119,7 +119,7 @@ namespace MadsKristensen.EditorExtensions
             var types = type.Split('<', '>')[1].Split(',');
             string keyType = GetTargetName(types[0].Trim(), false);
 
-            if (keyType != "string" || keyType != "number")
+            if (keyType != "string" && keyType != "number")
             { // only string or number are allowed for keys
                 keyType = "string";
             }
