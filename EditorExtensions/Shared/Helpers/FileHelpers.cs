@@ -315,7 +315,7 @@ namespace MadsKristensen.EditorExtensions
             try
             {
                 return await PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount)
-                            .ExecuteAsync(() => Task.FromResult<string>(File.ReadAllText(fileName, Encoding.Default)));
+                            .ExecuteAsync(() => Task.FromResult<string>(File.ReadAllText(fileName)));
             }
             catch (IOException)
             {
