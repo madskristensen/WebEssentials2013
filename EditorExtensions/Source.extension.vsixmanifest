@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="5fb7364d-2e8c-44a4-95eb-2a382e30fec8" Version="2.2.8" Language="en-US" Publisher="Mads Kristensen" />
-        <DisplayName>Web Essentials 2013 for Update 3 RC</DisplayName>
+        <Identity Id="5fb7364d-2e8c-44a4-95eb-2a382e30fec8" Version="2.3" Language="en-US" Publisher="Mads Kristensen" />
+        <DisplayName>Web Essentials 2013 for Update 3</DisplayName>
         <Description xml:space="preserve">Adds many useful features to Visual Studio for web developers. Requires VS2013 Update 2 RTM</Description>
         <MoreInfo>http://vswebessentials.com/</MoreInfo>
         <License>License.txt</License>
@@ -19,7 +19,6 @@
     <Dependencies>
         <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />
         <Dependency Id="Microsoft.VisualStudio.MPF.12.0" DisplayName="Visual Studio MPF 12.0" d:Source="Installed" Version="[12.0,13.0)" />
-        <Dependency d:Source="Installed" Id="0AC2ABB1-6383-4608-BA51-B58A23DD9E8A" DisplayName="Microsoft ASP.NET and Web Tools" Version="[12.3.50717.0,13.0)" />
     </Dependencies>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
