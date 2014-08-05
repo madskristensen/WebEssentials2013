@@ -181,6 +181,12 @@ namespace MadsKristensen.EditorExtensions
                 );
             }).DoNotWait("running solution-wide compilers");
 
+            RunLinters();
+            RunBundles();
+        }
+
+        private static void RunLinters()
+        {
             if (WESettings.Instance.JavaScript.LintOnBuild)
             {
                 LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.js" }, f => new JavaScriptLintReporter(new JsHintCompiler(), f))
@@ -196,7 +202,10 @@ namespace MadsKristensen.EditorExtensions
             if (WESettings.Instance.CoffeeScript.LintOnBuild)
                 LintFileInvoker.RunOnAllFilesInProjectAsync(new[] { "*.coffee", "*.iced" }, f => new LintReporter(new CoffeeLintCompiler(), WESettings.Instance.CoffeeScript, f))
                     .DoNotWait("running solution-wide CoffeeLint");
+        }
 
+        private static void RunBundles()
+        {
             BundleFilesMenu.UpdateAllBundlesAsync(true).DoNotWait("Web Essentials: Updating Bundles...");
             SpriteImageMenu.UpdateAllSpritesAsync(true).DoNotWait("Web Essentials: Updating Sprites...");
         }

@@ -69,6 +69,7 @@
       <Word>Lsc</Word>
       <Word>Autoprefix</Word>
       <Word>Autoprefixer</Word>
+      <Word>Eval</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>
