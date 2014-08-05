@@ -19,7 +19,7 @@
     <Dependencies>
         <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="4.5" />
         <Dependency Id="Microsoft.VisualStudio.MPF.12.0" DisplayName="Visual Studio MPF 12.0" d:Source="Installed" Version="[12.0,13.0)" />
-        <Dependency d:Source="Installed" Id="0AC2ABB1-6383-4608-BA51-B58A23DD9E8A" DisplayName="Microsoft ASP.NET and Web Tools" Version="12.0.30723" />
+        <Dependency d:Source="Installed" Id="0AC2ABB1-6383-4608-BA51-B58A23DD9E8A" DisplayName="Microsoft ASP.NET and Web Tools" Version="[12.3,12.4)" />
     </Dependencies>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
