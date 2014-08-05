@@ -94,12 +94,12 @@ namespace MadsKristensen.EditorExtensions.Margin
             {
                 if (PreviewTextHost.HostControl.CheckAccess())
                 {
-                    updateThePreviewText(text);
+                    UpdatePreviewText(text);
                 }
                 else
                 {
                      this.Dispatcher.Invoke((Action)(() => {
-                         updateThePreviewText(text);
+                         UpdatePreviewText(text);
                      }));
                 }
             }
@@ -109,7 +109,7 @@ namespace MadsKristensen.EditorExtensions.Margin
             }
         }
 
-        private void updateThePreviewText(string text)
+        private void UpdatePreviewText(string text)
         {
             if (string.IsNullOrEmpty(text))
             {
