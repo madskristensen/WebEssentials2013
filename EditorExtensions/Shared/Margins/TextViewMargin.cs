@@ -98,9 +98,10 @@ namespace MadsKristensen.EditorExtensions.Margin
                 }
                 else
                 {
-                     this.Dispatcher.Invoke((Action)(() => {
-                         UpdatePreviewText(text);
-                     }));
+                    this.Dispatcher.Invoke((Action)(() =>
+                    {
+                        UpdatePreviewText(text);
+                    }));
                 }
             }
             catch
