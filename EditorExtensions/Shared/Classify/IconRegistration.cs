@@ -12,38 +12,43 @@ namespace MadsKristensen.EditorExtensions
 
         public static void RegisterIcons()
         {
-            using (RegistryKey classes = Registry.CurrentUser.OpenSubKey("SoftWare\\Classes", true))
+            try
             {
-                if (classes == null)
-                    return;
+                using (RegistryKey classes = Registry.CurrentUser.OpenSubKey("SoftWare\\Classes", true))
+                {
+                    if (classes == null)
+                        return;
 
-                // IcedCoffeeScript
-                AddIcon(classes, "CoffeeScript.ico", ".iced");
+                    // IcedCoffeeScript
+                    AddIcon(classes, "CoffeeScript.ico", ".iced");
 
-                // LiveScript
-                AddIcon(classes, "LiveScript.ico", ".ls", ".livescript", ".lsc");
+                    // LiveScript
+                    AddIcon(classes, "LiveScript.ico", ".ls", ".livescript", ".lsc");
 
-                // Markdown
-                AddIcon(classes, "Markdown.ico", ".md", ".mdown", ".markdown", ".mkd", ".mkdn", ".mdwn", ".mmd");
+                    // Markdown
+                    AddIcon(classes, "Markdown.ico", ".md", ".mdown", ".markdown", ".mkd", ".mkdn", ".mdwn", ".mmd");
 
-                // WebVTT
-                AddIcon(classes, "WebVTT.ico", ".vtt");
+                    // WebVTT
+                    AddIcon(classes, "WebVTT.ico", ".vtt");
 
-                // Bundles
-                AddIcon(classes, "Bundle.ico", ".bundle");
+                    // Bundles
+                    AddIcon(classes, "Bundle.ico", ".bundle");
 
-                // Fonts
-                AddIcon(classes, "Font.ico", ".wof", ".woff", ".eot");
+                    // Fonts
+                    AddIcon(classes, "Font.ico", ".wof", ".woff", ".eot");
 
-                // Git
-                AddIcon(classes, "Git.ico", ".gitignore", ".gitattributes");
+                    // Git
+                    AddIcon(classes, "Git.ico", ".gitignore", ".gitattributes");
 
-                // Generic script
-                AddIcon(classes, "GenericScript.ico", ".appcache", JsHintCompiler.ConfigFileName, ".weignore", ".jshintignore", TsLintCompiler.ConfigFileName, JsCodeStyleCompiler.ConfigFileName, CoffeeLintCompiler.ConfigFileName, ".sjs", ".jsonld", ".bowerrc");
+                    // Generic script
+                    AddIcon(classes, "GenericScript.ico", ".appcache", JsHintCompiler.ConfigFileName, ".weignore", ".jshintignore", TsLintCompiler.ConfigFileName, JsCodeStyleCompiler.ConfigFileName, CoffeeLintCompiler.ConfigFileName, ".sjs", ".jsonld", ".bowerrc");
 
-                // Jigsaw
-                AddIcon(classes, "Jigsaw.ico", ".sprite");
+                    // Jigsaw
+                    AddIcon(classes, "Jigsaw.ico", ".sprite");
+                }
             }
+            catch
+            { /* Key doesn't exist. Ignore. */ }
         }
 
         private static void AddIcon(RegistryKey classes, string iconName, params string[] extensions)
