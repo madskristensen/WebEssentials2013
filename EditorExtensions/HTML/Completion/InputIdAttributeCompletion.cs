@@ -24,15 +24,13 @@ namespace MadsKristensen.EditorExtensions.Html
         public IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
         {
             var list = new HashSet<string>();
-            string tooltip = string.Empty;
 
             if (context.Element != null && _inputTypes.Contains(context.Element.Name))
             {
                 context.Document.HtmlEditorTree.RootNode.Accept(this, list);
-                tooltip = "Extracted from a <label> element in this document";
             }
 
-            return list.Select(s => new HtmlCompletion(s, s, tooltip, _glyph, HtmlIconAutomationText.AttributeIconText, null)).ToList();
+            return new List<HtmlCompletion>(list.Select(s => new SimpleHtmlCompletion(s, context.Session)));
         }
 
         public bool Visit(ElementNode element, object parameter)
