@@ -347,6 +347,9 @@
     <Compile Include="JavaScript\Outlining\JavaScriptRegionTagger.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="JSON-LD\Completion\ContextCompletionProvider.cs" />
+    <Compile Include="JSON-LD\Completion\PropertyNameCompletionProvider.cs" />
+    <Compile Include="JSON-LD\Completion\TypeCompletionProvider.cs" />
     <Compile Include="JSON-LD\ContentType\JsonLdContentTypeDefinition.cs" />
     <Compile Include="JSON-LD\Vocabularies\Helpers.cs" />
     <Compile Include="JSON-LD\Vocabularies\IVocabulary.cs" />
