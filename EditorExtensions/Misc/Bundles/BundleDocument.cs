@@ -69,7 +69,7 @@ namespace MadsKristensen.EditorExtensions
                         new XElement("settings",
                             new XComment("Determines if the bundle file should be automatically optimized after creation/update."),
                             new XElement("minify", Minified.ToString().ToLowerInvariant()),
-                            new XComment("Determin whether to generate/re-generate this bundle on building the solution."),
+                            new XComment("Determine whether to generate/re-generate this bundle on building the solution."),
                             new XElement("runOnBuild", RunOnBuild.ToString().ToLowerInvariant()),
                             new XComment("Specifies a custom subfolder to save files to. By default, compiled output will be placed in the same folder and nested under the original file."),
                             new XElement("outputDirectory", OutputDirectory)

@@ -65,7 +65,7 @@ namespace MadsKristensen.EditorExtensions.Images
                             new XElement("orientation", IsVertical ? "vertical" : "horizontal"),
                             new XComment("File extension of sprite image."),
                             new XElement("outputType", FileExtension.ToString().ToLowerInvariant()),
-                            new XComment("Determin whether to generate/re-generate this sprite on building the solution."),
+                            new XComment("Determine whether to generate/re-generate this sprite on building the solution."),
                             new XElement("runOnBuild", RunOnBuild.ToString().ToLowerInvariant()),
                             new XComment("Use full path to generate unique class or mixin name in CSS, LESS and SASS files. Consider disabling this if you want class names to be filename only."),
                             new XElement("fullPathForIdentifierName", UseFullPathForIdentifierName.ToString().ToLowerInvariant()),
