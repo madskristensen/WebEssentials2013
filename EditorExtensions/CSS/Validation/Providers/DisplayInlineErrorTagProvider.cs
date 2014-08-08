@@ -99,9 +99,13 @@ namespace MadsKristensen.EditorExtensions.Css
 
         private static void Update(ParseItem rule, ITextBuffer buffer)
         {
-            CssErrorTagger tagger = CssErrorTagger.FromTextBuffer(buffer);
-            ParseItemList list = new ParseItemList() { rule };
-            tagger.RecheckItems(list);
+            try
+            {
+                CssErrorTagger tagger = CssErrorTagger.FromTextBuffer(buffer);
+                ParseItemList list = new ParseItemList() { rule };
+                tagger.RecheckItems(list);
+            }
+            catch { /* Couldn't get error tagger. Ignore. */ }
         }
     }
 
