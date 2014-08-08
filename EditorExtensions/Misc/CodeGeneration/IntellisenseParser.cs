@@ -141,9 +141,7 @@ namespace MadsKristensen.EditorExtensions
             foreach (CodeElement member in cc.Members)
             {
                 if (ShouldProcess(member))
-                {
                     ProcessElement(member, list, underProcess);
-                }
             }
 
             if (baseClass != null)
@@ -152,20 +150,17 @@ namespace MadsKristensen.EditorExtensions
                 baseNs = GetNamespace(baseClass);
             }
 
-            if (properties.Any())
+            var intellisenseObject = new IntellisenseObject(properties.ToList(), references)
             {
-                var intellisenseObject = new IntellisenseObject(properties.ToList(), references)
-                {
-                    Namespace = ns,
-                    Name = className,
-                    BaseNamespace = baseNs,
-                    BaseName = baseClassName,
-                    FullName = cc.FullName,
-                    Summary = GetSummary(cc)
-                };
+                Namespace = ns,
+                Name = className,
+                BaseNamespace = baseNs,
+                BaseName = baseClassName,
+                FullName = cc.FullName,
+                Summary = GetSummary(cc)
+            };
 
-                list.Add(intellisenseObject);
-            }
+            list.Add(intellisenseObject);
         }
 
         private static IEnumerable<IntellisenseProperty> GetProperties(CodeElements props, HashSet<string> traversedTypes, HashSet<string> references = null)
