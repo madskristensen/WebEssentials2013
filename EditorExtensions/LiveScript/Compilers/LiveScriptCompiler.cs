@@ -8,6 +8,7 @@ namespace MadsKristensen.EditorExtensions.LiveScript
     [ContentType(LiveScriptContentTypeDefinition.LiveScriptContentType)]
     public class LiveScriptCompiler : JsCompilerBase
     {
+        protected override bool Previewing { get { return WESettings.Instance.LiveScript.ShowPreviewPane; } }
         public override string ServiceName { get { return "LiveScript"; } }
         public override bool MinifyInPlace { get { return WESettings.Instance.SweetJs.MinifyInPlace; } }
         public override bool GenerateSourceMap { get { return false; /*WESettings.Instance.LiveScript.GenerateSourceMaps && !WESettings.Instance.LiveScript.MinifyInPlace;*/ } }

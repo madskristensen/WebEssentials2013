@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Media;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Intellisense;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
@@ -14,7 +12,6 @@ namespace MadsKristensen.EditorExtensions.Html
     public class InputIdAttributeCompletion : IHtmlCompletionListProvider, IHtmlTreeVisitor
     {
         private static readonly HashSet<string> _inputTypes = new HashSet<string>() { "input", "textarea", "select" };
-        private static ImageSource _glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
 
         public CompletionType CompletionType
         {

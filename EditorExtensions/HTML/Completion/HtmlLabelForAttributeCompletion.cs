@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Intellisense;
-using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
@@ -21,7 +20,6 @@ namespace MadsKristensen.EditorExtensions.Html
         public IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
         {
             var list = new HashSet<string>();
-            var glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
 
             context.Document.HtmlEditorTree.RootNode.Accept(this, list);
 

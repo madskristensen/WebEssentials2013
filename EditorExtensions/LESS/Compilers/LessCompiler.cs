@@ -8,6 +8,7 @@ namespace MadsKristensen.EditorExtensions.Less
     [ContentType("LESS")]
     public class LessCompiler : CssCompilerBase
     {
+        protected override bool Previewing { get { return WESettings.Instance.Less.ShowPreviewPane; } }
         public override string TargetExtension { get { return ".css"; } }
         public override string ServiceName { get { return "LESS"; } }
         public override bool MinifyInPlace { get { return WESettings.Instance.Less.MinifyInPlace; } }
