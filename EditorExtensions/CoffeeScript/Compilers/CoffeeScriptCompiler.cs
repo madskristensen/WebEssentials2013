@@ -8,6 +8,7 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
     [ContentType("CoffeeScript")]
     public class CoffeeScriptCompiler : JsCompilerBase
     {
+        protected override bool Previewing { get { return WESettings.Instance.CoffeeScript.ShowPreviewPane; } }
         public override string ServiceName { get { return "CoffeeScript"; } }
         public override bool MinifyInPlace { get { return WESettings.Instance.CoffeeScript.MinifyInPlace; } }
         public override bool GenerateSourceMap { get { return WESettings.Instance.CoffeeScript.GenerateSourceMaps && !MinifyInPlace; } }

@@ -10,6 +10,7 @@ namespace MadsKristensen.EditorExtensions.Scss
     [ContentType(ScssContentTypeDefinition.ScssContentType)]
     public class ScssCompiler : CssCompilerBase
     {
+        protected override bool Previewing { get { return WESettings.Instance.Scss.ShowPreviewPane; } }
         public override string ServiceName { get { return "SCSS"; } }
         public override string TargetExtension { get { return ".css"; } }
         public override bool MinifyInPlace { get { return WESettings.Instance.Scss.MinifyInPlace; } }

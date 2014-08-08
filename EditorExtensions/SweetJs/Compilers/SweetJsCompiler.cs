@@ -8,6 +8,7 @@ namespace MadsKristensen.EditorExtensions.SweetJs
     [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
     public class SweetJsCompiler : JsCompilerBase
     {
+        protected override bool Previewing { get { return WESettings.Instance.SweetJs.ShowPreviewPane; } }
         public override string ServiceName { get { return SweetJsContentTypeDefinition.SweetJsContentType; } }
         public override bool MinifyInPlace { get { return WESettings.Instance.SweetJs.MinifyInPlace; } }
         public override bool GenerateSourceMap { get { return WESettings.Instance.SweetJs.GenerateSourceMaps && !MinifyInPlace; } }
