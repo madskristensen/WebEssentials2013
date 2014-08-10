@@ -34,9 +34,17 @@ namespace MadsKristensen.EditorExtensions.Compilers
             var settings = WESettings.Instance.ForContentType<IChainableCompilerSettings>(contentType);
 
             var notifierProvider = Mef.GetImport<ICompilationNotifierProvider>(contentType);
+
+            if (notifierProvider == null)
+                return;
+
             var notifier = notifierProvider.GetCompilationNotifier(document);
 
             var compilerProvider = Mef.GetImport<ICompilerRunnerProvider>(contentType);
+
+            if (compilerProvider == null)
+                return;
+            
             var compilerRunner = compilerProvider.GetCompiler(contentType);
 
             var graph = GetGraph(contentType);
