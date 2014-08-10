@@ -126,7 +126,7 @@ namespace MadsKristensen.EditorExtensions.Images
         {
             _dte.StatusBar.Text = "Generating sprite...";
 
-            ProjectHelpers.AddFileToActiveProject(sprite.FileName);
+            ProjectHelpers.AddFileToProject(Path.GetDirectoryName(sprite.FileName), sprite.FileName);
 
             string imageFile = Path.ChangeExtension(sprite.FileName, sprite.FileExtension);
 
