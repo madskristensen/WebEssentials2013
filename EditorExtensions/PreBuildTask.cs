@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -19,6 +20,26 @@ namespace MadsKristensen.EditorExtensions
     /// </summary>
     public class PreBuildTask : Microsoft.Build.Utilities.Task
     {
+        Type _path;
+        Type _directory;
+        Type _directoryInfo;
+        Type _file;
+
+        public PreBuildTask()
+        {
+            try
+            {
+                Assembly a = null;
+                a = Assembly.LoadFrom(Path.GetDirectoryName(Environment.CurrentDirectory) + @"\packages\Pri.LongPath.1.0.1.0\lib\net45\Pri.LongPath.dll");
+                _path = a.GetType("Pri.LongPath.Path");
+                _directory = a.GetType("Pri.LongPath.Directory");
+                _directoryInfo = a.GetType("Pri.LongPath.DirectoryInfo");
+                _file = a.GetType("Pri.LongPath.File");
+            }
+            catch (Exception)
+            { }
+        }
+
         public override bool Execute()
         {
             Directory.CreateDirectory(@"resources\nodejs\tools");
@@ -202,7 +223,6 @@ namespace MadsKristensen.EditorExtensions
             File.WriteAllText(requiredFile, text);
         }
 
-
         /// <summary>
         /// Due to the way node_modues work, the directory depth can get very deep and go beyond MAX_PATH (260 chars). 
         /// Therefore grab all node_modues directories and move them up to baseNodeModuleDir. Node's require() will then 
@@ -211,13 +231,19 @@ namespace MadsKristensen.EditorExtensions
         void FlattenNodeModules(string baseNodeModuleDir)
         {
             var baseDir = new DirectoryInfo(baseNodeModuleDir);
+            object instance = Activator.CreateInstance(_directoryInfo, new Object[] { baseNodeModuleDir });
+            MethodInfo enumerateDirectories = _directoryInfo.GetMethod("EnumerateDirectories", new Type[] { typeof(string), typeof(SearchOption) });
 
-            var nodeModulesDirs = from dir in baseDir.EnumerateDirectories("*", SearchOption.AllDirectories)
+            var nodeModulesDirs = from dir in (IEnumerable<dynamic>)enumerateDirectories.Invoke(instance, new object[] { "*", SearchOption.AllDirectories })
                                   where dir.Name.Equals("node_modules", StringComparison.OrdinalIgnoreCase)
-                                  orderby dir.FullName.Count(c => c == Path.DirectorySeparatorChar) descending // Get deepest first
+                                  //orderby dir.FullName.ToString().Count(c => c == Path.DirectorySeparatorChar) descending // Get deepest first
                                   select dir;
 
-            foreach (var nodeModules in nodeModulesDirs)
+            // Since IEnumerable<dynamic> can't use orderby (throws CS1977), we will use custom sort.
+            var nodeModulesDirsList = nodeModulesDirs.ToList();
+            nodeModulesDirsList.Sort((dir1, dir2) => dir2.FullName.Split(Path.DirectorySeparatorChar).Length.CompareTo(dir1.FullName.Split(Path.DirectorySeparatorChar).Length));
+
+            foreach (var nodeModules in nodeModulesDirsList)
             {
                 foreach (var module in nodeModules.EnumerateDirectories())
                 {
@@ -226,7 +252,9 @@ namespace MadsKristensen.EditorExtensions
                     // can find it without package.json.
                     if (module.Name != ".bin" && !File.Exists(Path.Combine(module.FullName, "index.js")))
                     {
-                        dynamic package = Json.Decode(File.ReadAllText(Path.Combine(module.FullName, "package.json")));
+                        enumerateDirectories = _file.GetMethod("ReadAllText", new Type[] { typeof(string) });
+                        string path = (string)enumerateDirectories.Invoke(null, new object[] { module.FullName + "\\package.json" });
+                        dynamic package = Json.Decode(path);
                         string main = package.main;
 
                         if (!string.IsNullOrEmpty(main))
@@ -243,12 +271,18 @@ namespace MadsKristensen.EditorExtensions
 
                     string targetDir = Path.Combine(baseDir.FullName, "node_modules", module.Name);
                     if (!Directory.Exists(targetDir))
-                        module.MoveTo(targetDir);
+                    {
+                        enumerateDirectories = _directoryInfo.GetMethod("MoveTo", new Type[] { typeof(string) });
+                        //module.MoveTo(targetDir);
+                        enumerateDirectories.Invoke(module, new object[] { targetDir });
+                    }
                     else if (module.Name != ".bin")
                         Log.LogMessage(MessageImportance.High, "Not collapsing conflicting module " + module.FullName);
                 }
 
-                if (!nodeModules.EnumerateFileSystemInfos().Any())
+                enumerateDirectories = _directoryInfo.GetMethod("EnumerateFileSystemInfos", Type.EmptyTypes);
+
+                if (!(enumerateDirectories.Invoke(nodeModules, new object[] { }) as IEnumerable<dynamic>).Any())
                     nodeModules.Delete();
             }
         }
