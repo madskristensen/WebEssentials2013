@@ -365,10 +365,10 @@ namespace MadsKristensen.EditorExtensions
                     break;
 
                 // Strip the leading & trailing quotes
-                return value.Value.Substring(1, value.Value.Length - 2);
+                return value.Value.Trim('@','\'','"');
             }
 
-            return property.Name;
+            return property.Name.Trim('@');
         }
 
         // External items throw an exception from the DocComment getter
