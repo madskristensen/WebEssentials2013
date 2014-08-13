@@ -51,7 +51,7 @@ namespace MadsKristensen.EditorExtensions
                 var firstError = result.Errors.Where(e => e != null).Select(e => e.Message).FirstOrDefault();
 
                 if (firstError != null)
-                    Logger.Log(ServiceName + ": " + Path.GetFileName(result.SourceFileName) + " compilation failed: " + firstError);
+                    Logger.Log(firstError);
 
                 return result;
             }
@@ -66,6 +66,9 @@ namespace MadsKristensen.EditorExtensions
                 {
                     ProjectHelpers.CheckOutFileFromSourceControl(result.TargetFileName);
                     await FileHelpers.WriteAllTextRetry(result.TargetFileName, resultString);
+
+                    if (!(this is ILintCompiler))
+                        ProjectHelpers.AddFileToProject(result.SourceFileName, result.TargetFileName);
                 }
 
                 // Write map file
@@ -74,6 +77,9 @@ namespace MadsKristensen.EditorExtensions
                 {
                     ProjectHelpers.CheckOutFileFromSourceControl(result.MapFileName);
                     await FileHelpers.WriteAllTextRetry(result.MapFileName, result.ResultMap);
+
+                    if (!(this is ILintCompiler))
+                        ProjectHelpers.AddFileToProject(result.TargetFileName, result.MapFileName);
                 }
 
                 await RtlVariantHandler(result);
@@ -98,7 +104,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected virtual Task RtlVariantHandler(CompilerResult result)
         {
-            return new Task(() => { });
+            return Task.Factory.StartNew(() => { });
         }
 
         protected virtual string PostProcessResult(string result, string targetFileName, string sourceFileName)

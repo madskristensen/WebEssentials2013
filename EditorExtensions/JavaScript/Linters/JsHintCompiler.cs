@@ -13,6 +13,8 @@ namespace MadsKristensen.EditorExtensions.JavaScript
     public class JsHintCompiler : NodeExecutorBase, ILintCompiler
     {
         public static readonly string ConfigFileName = ".jshintrc";
+   
+        protected virtual string ConfigFile { get { return ConfigFileName; } }
         public virtual IEnumerable<string> SourceExtensions { get { return new[] { ".js" }; } }
 
         public override string ServiceName { get { return "JsHint"; } }
@@ -27,7 +29,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
 
         protected override string GetPath(string sourceFileName, string targetFileName)
         {
-            GetOrCreateGlobalSettings(ConfigFileName); // Ensure that default settings exist
+            GetOrCreateGlobalSettings(ConfigFile); // Ensure that default settings exist
 
             var parameters = new NodeServerUtilities.Parameters();
 
