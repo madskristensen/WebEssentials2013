@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Composition;
+using MadsKristensen.EditorExtensions.RtlCss;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 
@@ -16,13 +17,14 @@ namespace MadsKristensen.EditorExtensions.Less
 
         protected override string GetPath(string sourceFileName, string targetFileName)
         {
-            string mapFileName = targetFileName + ".map";
+            GetOrCreateGlobalSettings(RtlCssCompiler.ConfigFileName);
+
             var parameters = new NodeServerUtilities.Parameters();
 
             parameters.Add("service", ServiceName);
             parameters.Add("sourceFileName", sourceFileName);
             parameters.Add("targetFileName", targetFileName);
-            parameters.Add("mapFileName", mapFileName);
+            parameters.Add("mapFileName", targetFileName + ".map");
 
             if (GenerateSourceMap)
                 parameters.Add("sourceMapURL");
@@ -37,6 +39,9 @@ namespace MadsKristensen.EditorExtensions.Less
                 if (!string.IsNullOrWhiteSpace(WESettings.Instance.Css.AutoprefixerBrowsers))
                     parameters.Add("autoprefixerBrowsers", WESettings.Instance.Css.AutoprefixerBrowsers);
             }
+
+            if (WESettings.Instance.Css.RtlCss)
+                parameters.Add("rtlcss");
 
             return parameters.FlattenParameters();
         }

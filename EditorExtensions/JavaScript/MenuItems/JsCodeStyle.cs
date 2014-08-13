@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
 
         private void EditGlobalJsCodeStyleFile()
         {
-            string fileName = JsCodeStyleCompiler.GetOrCreateGlobalSettings(JsCodeStyleCompiler.ConfigFileName);
+            string fileName = NodeExecutorBase.GetOrCreateGlobalSettings(JsCodeStyleCompiler.ConfigFileName);
 
             _dte.ItemOperations.OpenFile(fileName);
         }

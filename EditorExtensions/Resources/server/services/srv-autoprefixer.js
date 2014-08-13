@@ -4,7 +4,7 @@ var autoprefixer = require("autoprefixer"),
 //#endregion
 
 //#region Process
-var processAutoprefixer = function (cssContent, mapContent, browsers, from, to) {
+var processAutoprefixer = function (cssContent, mapContent, browsers, sourceFileName, targetFileName) {
     var result = autoprefixer;
 
     if (browsers != undefined)
@@ -26,10 +26,10 @@ var processAutoprefixer = function (cssContent, mapContent, browsers, from, to) 
             css: result.process(cssContent).css
         };
 
-    result = autoprefixer.process(cssContent, {
+    result = result.process(cssContent, {
         map: { prev: mapContent },
-        from: from,
-        to: to
+        from: sourceFileName,
+        to: targetFileName
     });
 
     return {

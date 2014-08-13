@@ -50,16 +50,24 @@ namespace MadsKristensen.EditorExtensions
             public string Content { get; set; }
             public string Map { get; set; }
 
+            // RTL variants
+            public string RtlSourceFileName { get; set; }
+            public string RtlTargetFileName { get; set; }
+            public string RtlMapFileName { get; set; }
+            public string RtlContent { get; set; }
+            public string RtlMap { get; set; }
+
             internal Response()
             {
-                SourceFileName = TargetFileName = MapFileName = Remarks = Details = Content = Map = "";
+                SourceFileName = TargetFileName = MapFileName = Remarks = Details = Content = Map
+                               = RtlSourceFileName = RtlTargetFileName = RtlMapFileName = RtlContent = RtlMap = "";
             }
 
             internal async Task<CompilerResult> GetCompilerResult()
             {
-                return await CompilerResultFactory.GenerateResult(SourceFileName, TargetFileName, MapFileName, Success, Content, Map, Errors);
+                return await CompilerResultFactory.GenerateResult(SourceFileName, TargetFileName, MapFileName, Success, Content, Map, Errors, false,
+                                                                  RtlSourceFileName, RtlTargetFileName, RtlMapFileName, RtlContent, RtlMap);
             }
         }
     }
 }
-

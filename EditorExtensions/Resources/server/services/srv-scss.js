@@ -19,36 +19,63 @@ var handleSass = function (writer, params) {
         success: function (css, map) {
             map = JSON.parse(map);
             map.file = path.basename(params.targetFileName);
-            if (params.autoprefixer != undefined) {
+            if (params.autoprefixer !== undefined) {
                 var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, params.autoprefixerBrowsers, params.sourceFileName, params.targetFileName);
                 css = autoprefixedOutput.css;
-                // Curate the sources returned by autoprefix; remove ../ from the start of each source
-                var newMaps = JSON.parse(autoprefixedOutput.map);
-                newMaps.sources = newMaps.sources.map(function (source) {
-                    return source.substr(3, source.length);
-                });
-                map = newMaps;
+                map = autoprefixedOutput.map;
             }
 
             // SASS doesn't generate source-maps without source-map comments
             // (unlike LESS and CoffeeScript). So we need to delete the comment
             // manually if its not present in params.
-            if (params.sourceMapURL == undefined) {
+            if (params.sourceMapURL === undefined) {
                 var soucemapCommentLineIndex = css.lastIndexOf("\n");
                 if (soucemapCommentLineIndex > 0) {
                     css = css.substring(0, soucemapCommentLineIndex);
                 }
             }
 
-            writer.write(JSON.stringify({
-                Success: true,
-                SourceFileName: params.sourceFileName,
-                TargetFileName: params.targetFileName,
-                MapFileName: params.mapFileName,
-                Remarks: "Successful!",
-                Content: css,
-                Map: JSON.stringify(map)
-            }));
+            if (params.rtlcss !== undefined) {
+                var rtlResult = require("./srv-rtlcss").processRtlCSS(css,
+                                                                      map,
+                                                                      params.autoprefixer,
+                                                                      params.autoprefixerBrowsers,
+                                                                      params.sourceFileName,
+                                                                      params.targetFileName);
+                var rtlTargetWithoutExtension = params.targetFileName.substr(0, params.targetFileName.lastIndexOf("."));
+
+                if (rtlResult.Success === true) {
+                    writer.write(JSON.stringify({
+                        Success: true,
+                        SourceFileName: params.sourceFileName,
+                        TargetFileName: params.targetFileName,
+                        MapFileName: params.mapFileName,
+                        RtlSourceFileName: params.targetFileName,
+                        RtlTargetFileName: rtlTargetWithoutExtension + ".rtl.css",
+                        RtlMapFileName: rtlTargetWithoutExtension + ".rtl.css.map",
+                        Remarks: "Successful!",
+                        Content: css,
+                        Map: JSON.stringify(map),
+                        RtlContent: rtlResult.css,
+                        RtlMap: JSON.stringify(rtlResult.map)
+                    }));
+
+                    writer.end();
+                } else {
+                    throw new Error("Error while processing RTLCSS");
+                }
+            } else {
+                writer.write(JSON.stringify({
+                    Success: true,
+                    SourceFileName: params.sourceFileName,
+                    TargetFileName: params.targetFileName,
+                    MapFileName: params.mapFileName,
+                    Remarks: "Successful!",
+                    Content: css,
+                    Map: JSON.stringify(map)
+                }));
+            }
+
             writer.end();
         },
         error: function (error) {

@@ -56,7 +56,7 @@ namespace MadsKristensen.EditorExtensions
                 return result;
             }
 
-            string resultString = PostProcessResult(result);
+            string resultString = PostProcessResult(result.Result, result.TargetFileName, result.SourceFileName);
 
             if (!onlyPreview)
             {
@@ -75,15 +75,36 @@ namespace MadsKristensen.EditorExtensions
                     ProjectHelpers.CheckOutFileFromSourceControl(result.MapFileName);
                     await FileHelpers.WriteAllTextRetry(result.MapFileName, result.ResultMap);
                 }
+
+                await RtlVariantHandler(result);
             }
 
             return CompilerResult.UpdateResult(result, resultString);
         }
 
-        protected virtual string PostProcessResult(CompilerResult result)
+        public static string GetOrCreateGlobalSettings(string fileName)
         {
-            Logger.Log(ServiceName + ": " + Path.GetFileName(result.SourceFileName) + " compiled.");
-            return result.Result;
+            string globalFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), fileName);
+
+            if (!File.Exists(globalFile))
+            {
+                string extensionDir = Path.GetDirectoryName(typeof(NodeExecutorBase).Assembly.Location);
+                string settingsFile = Path.Combine(extensionDir, @"Resources\settings-defaults\", fileName);
+                File.Copy(settingsFile, globalFile);
+            }
+
+            return globalFile;
+        }
+
+        protected virtual Task RtlVariantHandler(CompilerResult result)
+        {
+            return new Task(() => { });
+        }
+
+        protected virtual string PostProcessResult(string result, string targetFileName, string sourceFileName)
+        {
+            Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
+            return result;
         }
 
         protected abstract string GetPath(string sourceFileName, string targetFileName);

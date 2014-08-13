@@ -26,12 +26,12 @@ namespace MadsKristensen.EditorExtensions.JavaScript
         public static bool NotJsOrMinifiedOrDocumentOrNotExists(string file)
         {
             return !Path.GetExtension(file).Equals(".js", StringComparison.OrdinalIgnoreCase) ||
-                file.EndsWith(".min.js", StringComparison.OrdinalIgnoreCase) ||
-                file.EndsWith(".debug.js", StringComparison.OrdinalIgnoreCase) ||
-                file.EndsWith(".intellisense.js", StringComparison.OrdinalIgnoreCase) ||
-                file.EndsWith("_references.js", StringComparison.OrdinalIgnoreCase) ||
-                file.Contains("-vsdoc.js") ||
-                !File.Exists(file);
+                    file.EndsWith(".min.js", StringComparison.OrdinalIgnoreCase) ||
+                    file.EndsWith(".debug.js", StringComparison.OrdinalIgnoreCase) ||
+                    file.EndsWith(".intellisense.js", StringComparison.OrdinalIgnoreCase) ||
+                    file.EndsWith("_references.js", StringComparison.OrdinalIgnoreCase) ||
+                    file.Contains("-vsdoc.js") ||
+                   !File.Exists(file);
         }
 
         public static bool ShouldIgnore(string file)

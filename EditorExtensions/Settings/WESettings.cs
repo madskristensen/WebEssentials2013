@@ -376,6 +376,20 @@ namespace MadsKristensen.EditorExtensions.Settings
         public string AutoprefixerBrowsers { get; set; }
         #endregion
 
+        #region RTLCSS
+        [Category("RTLCSS")]
+        [DisplayName("Generate RTL variant")]
+        [Description("Generate right-to-left variant of compiled CSS file from.")]
+        [DefaultValue(false)]
+        public bool RtlCss { get; set; }
+
+        [Category("RTLCSS")]
+        [DisplayName("Generate RTL source-maps")]
+        [Description("Generate right-to-left variant source maps. Note, this settings only applies to CSS RTL. For LESS and SASS, RTL shares the existing setting.")]
+        [DefaultValue(true)]
+        public bool GenerateRtlSourceMaps { get; set; }
+        #endregion
+
         #region Minification
         [Category("Minification")]
         [DisplayName("Minify files on save")]
