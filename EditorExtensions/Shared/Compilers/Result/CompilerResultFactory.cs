@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions
             if (result == null && File.Exists(targetFileName))
                 result = await FileHelpers.ReadAllTextRetry(targetFileName);
 
-            if (targetFileName != null && Path.GetExtension(targetFileName).Equals(".css", StringComparison.OrdinalIgnoreCase) && File.Exists(mapFileName))
+            if (targetFileName != null && Path.GetExtension(targetFileName).Equals(".css", StringComparison.OrdinalIgnoreCase))
                 instance = CssCompilerResult.GenerateResult(sourceFileName, targetFileName, mapFileName, isSuccess, result, resultMap, errors, rtlSourceFileName, rtlTargetFileName, rtlMapFileName, rtlResult, rtlResultMap, hasResult);
             else
                 instance = CompilerResult.GenerateResult(sourceFileName, targetFileName, mapFileName, isSuccess, result, resultMap, errors, hasResult);

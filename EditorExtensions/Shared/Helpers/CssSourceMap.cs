@@ -71,10 +71,19 @@ namespace MadsKristensen.EditorExtensions
             if (map == null)
                 return;
 
-            MapNodes = Base64Vlq.Decode(map.mappings, _directory, map.sources);
+            try
+            {
+                MapNodes = Base64Vlq.Decode(map.mappings, _directory, map.sources);
 
-            if (MapNodes.Count() == 0)
+
+                if (MapNodes.Count() == 0)
+                    return;
+            }
+            catch (VlqException vlqExcept)
+            {
+                Logger.Log("VLQ: " + vlqExcept.Message);
                 return;
+            }
 
             CollectRules(targetFileContents).DoNotWait("collecting maps");
         }

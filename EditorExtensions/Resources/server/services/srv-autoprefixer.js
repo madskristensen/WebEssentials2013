@@ -26,16 +26,23 @@ var processAutoprefixer = function (cssContent, mapContent, browsers, sourceFile
             css: result.process(cssContent).css
         };
 
+    // Clone object
+    var oldMap = JSON.parse(JSON.stringify(mapContent));
+
     result = result.process(cssContent, {
         map: { prev: mapContent },
         from: sourceFileName,
         to: targetFileName
     });
 
+    // Curate maps
+    mapContent = JSON.parse(JSON.stringify(result.map));
+    mapContent.sources = oldMap.sources;
+
     return {
         Success: true,
         css: result.css,
-        map: result.map
+        map: mapContent
     };
 };
 //#endregion

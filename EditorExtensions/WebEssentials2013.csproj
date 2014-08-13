@@ -367,7 +367,7 @@
     <Compile Include="JSON\Validation\JsonErrorTag.cs" />
     <Compile Include="JSON\Validation\RefMemberNameItemValidator.cs" />
     <Compile Include="Misc\MenuItems\RtlCssMenu.cs" />
-    <Compile Include="Misc\RTLCss\Compilers\RtlCssCompiler.cs" />
+    <Compile Include="Misc\RtlCss\Compilers\RtlCssCompiler.cs" />
     <Compile Include="Misc\Autoprefixer\Compilers\AutoprefixerCompiler.cs" />
     <Compile Include="Misc\Bundles\BundleFilesObserver.cs" />
     <Compile Include="Misc\Bundles\IBundleDocument.cs" />

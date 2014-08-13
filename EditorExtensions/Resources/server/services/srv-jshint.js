@@ -1,5 +1,6 @@
 //#region Imports
-var jshint = require("jshint/src/cli");
+var jshint = require("jshint/src/cli"),
+    path = require("path");
 //#endregion
 
 //#region Reporter

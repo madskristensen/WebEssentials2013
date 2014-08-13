@@ -51,6 +51,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(result.RtlTargetFileName);
                 await FileHelpers.WriteAllTextRetry(result.RtlTargetFileName, value);
+                ProjectHelpers.AddFileToProject(result.RtlSourceFileName, result.RtlTargetFileName);
             }
 
             // Write map file
@@ -59,6 +60,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(result.RtlMapFileName);
                 await FileHelpers.WriteAllTextRetry(result.RtlMapFileName, result.RtlResultMap);
+                ProjectHelpers.AddFileToProject(result.RtlTargetFileName, result.RtlMapFileName);
             }
         }
     }

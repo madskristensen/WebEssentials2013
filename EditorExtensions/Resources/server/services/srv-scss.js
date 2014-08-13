@@ -19,6 +19,7 @@ var handleSass = function (writer, params) {
         success: function (css, map) {
             map = JSON.parse(map);
             map.file = path.basename(params.targetFileName);
+
             if (params.autoprefixer !== undefined) {
                 var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, params.autoprefixerBrowsers, params.sourceFileName, params.targetFileName);
                 css = autoprefixedOutput.css;
