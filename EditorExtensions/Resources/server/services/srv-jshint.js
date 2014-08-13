@@ -48,6 +48,7 @@ var handleJSHint = function (writer, params) {
 
     jshint.run({
         args: [params.sourceFileName],
+        cwd: path.dirname(params.sourceFileName),
         reporter: function (results) { reporter(results, writer, params); }
     });
 };
