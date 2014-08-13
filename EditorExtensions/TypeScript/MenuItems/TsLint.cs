@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions.TypeScript
 
         private void EditGlobalTsLintFile()
         {
-            string fileName = TsLintCompiler.GetOrCreateGlobalSettings(TsLintCompiler.ConfigFileName);
+            string fileName = NodeExecutorBase.GetOrCreateGlobalSettings(TsLintCompiler.ConfigFileName);
             _dte.ItemOperations.OpenFile(fileName);
         }
 

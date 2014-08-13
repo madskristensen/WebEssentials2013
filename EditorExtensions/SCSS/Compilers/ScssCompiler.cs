@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.Composition;
 using System.Globalization;
+using MadsKristensen.EditorExtensions.RtlCss;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
@@ -18,7 +19,8 @@ namespace MadsKristensen.EditorExtensions.Scss
 
         protected override string GetPath(string sourceFileName, string targetFileName)
         {
-            string mapFileName = targetFileName + ".map";
+            GetOrCreateGlobalSettings(RtlCssCompiler.ConfigFileName);
+
             string outputStyle = WESettings.Instance.Scss.OutputStyle.ToString().ToLowerInvariant();
             string numberPrecision = WESettings.Instance.Scss.NumberPrecision.ToString(CultureInfo.InvariantCulture);
 
@@ -27,7 +29,7 @@ namespace MadsKristensen.EditorExtensions.Scss
             parameters.Add("service", ServiceName);
             parameters.Add("sourceFileName", sourceFileName);
             parameters.Add("targetFileName", targetFileName);
-            parameters.Add("mapFileName", mapFileName);
+            parameters.Add("mapFileName", targetFileName + ".map");
             parameters.Add("precision", numberPrecision);
             parameters.Add("outputStyle", outputStyle);
 
@@ -41,6 +43,9 @@ namespace MadsKristensen.EditorExtensions.Scss
                 if (!string.IsNullOrWhiteSpace(WESettings.Instance.Css.AutoprefixerBrowsers))
                     parameters.UriComponentsDictionary.Add("autoprefixerBrowsers", WESettings.Instance.Css.AutoprefixerBrowsers);
             }
+
+            if (WESettings.Instance.Css.RtlCss)
+                parameters.Add("rtlcss");
 
             return parameters.FlattenParameters();
         }

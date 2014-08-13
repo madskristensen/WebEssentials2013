@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions.JavaScript
@@ -27,20 +25,6 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             return CompileAsync(sourcePath, null);
         }
 
-        public static string GetOrCreateGlobalSettings(string fileName)
-        {
-            string globalFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), fileName);
-
-            if (!File.Exists(globalFile))
-            {
-                string extensionDir = Path.GetDirectoryName(typeof(JsHintCompiler).Assembly.Location);
-                string settingsFile = Path.Combine(extensionDir, @"Resources\settings-defaults\", fileName);
-                File.Copy(settingsFile, globalFile);
-            }
-
-            return globalFile;
-        }
-
         protected override string GetPath(string sourceFileName, string targetFileName)
         {
             GetOrCreateGlobalSettings(ConfigFileName); // Ensure that default settings exist
@@ -53,9 +37,9 @@ namespace MadsKristensen.EditorExtensions.JavaScript
             return parameters.FlattenParameters();
         }
 
-        protected override string PostProcessResult(CompilerResult result)
+        protected override string PostProcessResult(string result, string targetFileName, string sourceFileName)
         {
-            return result.Result;
+            return result;
         }
     }
 }

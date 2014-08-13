@@ -44,7 +44,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
             if (compilerProvider == null)
                 return;
-            
+
             var compilerRunner = compilerProvider.GetCompiler(contentType);
 
             var graph = GetGraph(contentType);

@@ -1,4 +1,5 @@
-﻿namespace MadsKristensen.EditorExtensions
+﻿
+namespace MadsKristensen.EditorExtensions
 {
     public abstract class JsCompilerBase : NodeExecutorBase
     {

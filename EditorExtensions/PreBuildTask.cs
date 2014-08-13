@@ -73,7 +73,8 @@ namespace MadsKristensen.EditorExtensions
                 InstallModuleAsync("LiveScript", "LiveScript"),
                 InstallModuleAsync("coffeelint", "coffeelint"),
                 InstallModuleAsync("sjs", "sweet.js"),
-                InstallModuleAsync("xregexp", "xregexp")
+                InstallModuleAsync("xregexp", "xregexp"),
+                InstallModuleAsync("rtlcss", "rtlcss")
             ).Result.Where(r => r != ModuleInstallResult.AlreadyPresent);
 
             if (moduleResults.Contains(ModuleInstallResult.Error))

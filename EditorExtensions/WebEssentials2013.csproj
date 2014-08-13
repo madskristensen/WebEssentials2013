@@ -366,6 +366,8 @@
     <Compile Include="JSON\Schemas\SchemaExporter.cs" />
     <Compile Include="JSON\Validation\JsonErrorTag.cs" />
     <Compile Include="JSON\Validation\RefMemberNameItemValidator.cs" />
+    <Compile Include="Misc\MenuItems\RtlCssMenu.cs" />
+    <Compile Include="Misc\RTLCss\Compilers\RtlCssCompiler.cs" />
     <Compile Include="Misc\Autoprefixer\Compilers\AutoprefixerCompiler.cs" />
     <Compile Include="Misc\Bundles\BundleFilesObserver.cs" />
     <Compile Include="Misc\Bundles\IBundleDocument.cs" />
@@ -849,6 +851,7 @@
     <Content Include="Resources\server\services\srv-coffeescript.js" />
     <Content Include="Resources\server\services\srv-icedcoffeescript.js" />
     <Content Include="Resources\server\services\srv-coffeelint.js" />
+    <Content Include="Resources\server\services\srv-rtlcss.js" />
     <Content Include="Resources\server\services\srv-less.js" />
     <Content Include="Resources\server\services\srv-livescript.js" />
     <Content Include="Resources\server\services\srv-scss.js" />
@@ -936,6 +939,9 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\settings-defaults\.jscsrc">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\settings-defaults\.rtlcssrc">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Resource Include="Resources\Images\graph_id.png" />
@@ -1051,7 +1057,7 @@
       <Content Include="Resources\nodejs\tools\**" Exclude="&#xD;&#xA; **\node-sass\**; **\less\**; &#xD;&#xA;               **\mocha\**; **\jade\**; &#xD;&#xA;               **\*.md; **\*.markdown; **\*.html; **\*.txt; **\LICENSE; **\README; **\CHANGELOG; **\CNAME; **\*.old; **\*.patch; **\*.ico; &#xD;&#xA;               **\*.json; **\.*; **\Makefile.*; **\Rakefile; **\*.yml; &#xD;&#xA;               **\test.*; **\generate-*; &#xD;&#xA;               **\*.min.js; **\*-min.js; &#xD;&#xA;               **\media\**; **\images\**; **\man\**; &#xD;&#xA;               **\.bin\**; **\benchmark\**; **\build\**; **\scripts\**; &#xD;&#xA;               **\vendor\**; &#xD;&#xA;               **\test\**; **\tst\**; **\tests\**; **\testing\**; &#xD;&#xA;               **\examples\**; **\example\**; **\tools\**\tools\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\tools\node_modules\node-sass\sass.js; Resources\nodejs\tools\node_modules\node-sass\bin\node-sass; Resources\nodejs\tools\node_modules\node-sass\lib\**; Resources\nodejs\tools\node_modules\node-sass\bin\win32-ia32-*\**; Resources\nodejs\tools\node_modules\tslint\**; Resources\nodejs\tools\node_modules\jscs\**; Resources\nodejs\tools\node_modules\coffeelint\**">
+      <Content Include="Resources\nodejs\tools\node_modules\node-sass\sass.js; Resources\nodejs\tools\node_modules\node-sass\bin\node-sass; Resources\nodejs\tools\node_modules\node-sass\lib\**; Resources\nodejs\tools\node_modules\node-sass\bin\win32-ia32-*\**; Resources\nodejs\tools\node_modules\tslint\**; Resources\nodejs\tools\node_modules\jscs\**; Resources\nodejs\tools\node_modules\coffeelint\**;    Resources\nodejs\tools\node_modules\rtlcss\lib\**;    Resources\nodejs\tools\node_modules\rtlcss\bin\rtlcss.js;">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <Content Include="Resources\nodejs\tools\node_modules\less\lib\**; Resources\nodejs\tools\node_modules\less\bin\**">

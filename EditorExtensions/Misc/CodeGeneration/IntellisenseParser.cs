@@ -365,7 +365,7 @@ namespace MadsKristensen.EditorExtensions
                     break;
 
                 // Strip the leading & trailing quotes
-                return value.Value.Trim('@','\'','"');
+                return value.Value.Trim('@', '\'', '"');
             }
 
             return property.Name.Trim('@');

@@ -433,6 +433,14 @@
         </Strings>
       </Button>
 
+      <Button guid="guidDiffCmdSet" id="cmdEditGlobalRtlCss" priority="0x0104" type="Button">
+        <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
+        <Icon guid="guidMenuImages" id="bmpScript"/>
+        <Strings>
+          <ButtonText>Edit global RTLCSS settings (.rtlcssrc)...</ButtonText>
+        </Strings>
+      </Button>
+      
       <Button guid="guidDiffCmdSet" id="cmdSolutionColors" priority="0x0105" type="Button">
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -494,6 +502,14 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Run JSCS</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidDiffCmdSet" id="cmdRtlCss" priority="0x0110" type="Button">
+        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Run RTLCSS</ButtonText>
         </Strings>
       </Button>
 
@@ -894,6 +910,7 @@
       <IDSymbol name="cmdTsLint" value="0x1092" />
       <IDSymbol name="cmdCoffeeLint" value="0x1096" />
       <IDSymbol name="cmdJsCodeStyle" value="0x1095" />
+      <IDSymbol name="cmdRtlCss" value="0x2066" />
       <IDSymbol name="cmdProjectSettings" value="0x1043" />
       <IDSymbol name="cmdSolutionSettings" value="0x1044" />
       <IDSymbol name="cmdSolutionColors" value="0x1045" />
@@ -905,6 +922,7 @@
       <IDSymbol name="cmdEditGlobalTsLint" value="0x1098" />
       <IDSymbol name="cmdEditGlobalCoffeeLint" value="0x1100" />
       <IDSymbol name="cmdEditGlobalJsCodeStyle" value="0x1099" />
+      <IDSymbol name="cmdEditGlobalRtlCss" value="0x1081" />
       <IDSymbol name="cmdMarkdownCompile" value="0x1039" />
     </GuidSymbol>
 

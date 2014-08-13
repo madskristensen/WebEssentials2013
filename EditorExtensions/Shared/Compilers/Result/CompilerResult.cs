@@ -11,9 +11,15 @@ namespace MadsKristensen.EditorExtensions
         public bool IsSuccess { get; protected set; }
         public bool HasSkipped { get; protected set; }
         public IEnumerable<CompilerError> Errors { get; protected set; }
-
         public string Result { get; private set; }
         public string ResultMap { get; private set; }
+
+        // RTL variants
+        public string RtlSourceFileName { get; set; }
+        public string RtlTargetFileName { get; set; }
+        public string RtlMapFileName { get; set; }
+        public string RtlResult { get; set; }
+        public string RtlResultMap { get; set; }
 
         protected CompilerResult(string sourceFileName, string targetFileName, string mapFileName, bool isSuccess, string result, string resultMap, IEnumerable<CompilerError> errors, bool hasSkipped)
         {
@@ -25,6 +31,16 @@ namespace MadsKristensen.EditorExtensions
             Result = result;
             ResultMap = resultMap;
             HasSkipped = hasSkipped;
+        }
+
+        protected CompilerResult(string sourceFileName, string targetFileName, string mapFileName, bool isSuccess, string result, string resultMap, IEnumerable<CompilerError> errors, bool hasSkipped, string rtlSourceFileName, string rtlTargetFileName, string rtlMapFileName, string rtlResult, string rtlResultMap)
+            : this(sourceFileName, targetFileName, mapFileName, isSuccess, result, resultMap, errors, hasSkipped)
+        {
+            RtlSourceFileName = rtlSourceFileName;
+            RtlTargetFileName = rtlTargetFileName;
+            RtlMapFileName = rtlMapFileName;
+            RtlResult = rtlResult;
+            RtlResultMap = rtlResultMap;
         }
 
         public static CompilerResult GenerateResult(string sourceFileName, string targetFileName, string mapFileName, bool isSuccess, string result, string resultMap, IEnumerable<CompilerError> errors, bool hasSkipped = false)

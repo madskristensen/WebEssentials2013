@@ -1,42 +1,65 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Helpers;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
 
 namespace MadsKristensen.EditorExtensions
 {
     public abstract class CssCompilerBase : NodeExecutorBase
     {
-        protected override string PostProcessResult(CompilerResult result)
+        protected override string PostProcessResult(string result, string targetFileName, string sourceFileName)
         {
-            string resultString = result.Result;
-
             // If the caller wants us to renormalize URLs to a different filename, do so.
-            if (result.TargetFileName != null &&
-                Path.GetDirectoryName(result.TargetFileName) != Path.GetDirectoryName(result.SourceFileName) &&
-                result.Result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
+            if (targetFileName != null &&
+                Path.GetDirectoryName(targetFileName) != Path.GetDirectoryName(sourceFileName) &&
+                result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
             {
                 try
                 {
-                    resultString = CssUrlNormalizer.NormalizeUrls(
-                        tree: new CssParser().Parse(result.Result, true),
-                        targetFile: result.TargetFileName,
-                        oldBasePath: result.SourceFileName
-                    );
+                    result = CssUrlNormalizer.NormalizeUrls(
+                                   tree: new CssParser().Parse(result, true),
+                                   targetFile: targetFileName,
+                                   oldBasePath: sourceFileName);
 
-                    Logger.Log(ServiceName + ": " + Path.GetFileName(result.SourceFileName) + " compiled.");
+                    Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(ServiceName + ": An error occurred while normalizing generated paths in " + result.SourceFileName + "\r\n" + ex);
+                    Logger.Log(ServiceName + ": An error occurred while normalizing generated paths in " + sourceFileName + "\r\n" + ex);
                 }
             }
             else
             {
-                Logger.Log(ServiceName + ": " + Path.GetFileName(result.SourceFileName) + " compiled.");
+                Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
             }
 
-            return resultString;
+            return result;
+        }
+
+        protected async override Task RtlVariantHandler(CompilerResult result)
+        {
+            if (!WESettings.Instance.Css.RtlCss || result.RtlTargetFileName == null)
+                return;
+
+            string value = PostProcessResult(result.RtlResult, result.RtlTargetFileName, result.RtlSourceFileName);
+
+            // Write output file
+            if (result.RtlTargetFileName != null && (MinifyInPlace || !File.Exists(result.RtlTargetFileName) ||
+                value != await FileHelpers.ReadAllTextRetry(result.RtlTargetFileName)))
+            {
+                ProjectHelpers.CheckOutFileFromSourceControl(result.RtlTargetFileName);
+                await FileHelpers.WriteAllTextRetry(result.RtlTargetFileName, value);
+            }
+
+            // Write map file
+            if (GenerateSourceMap && (!File.Exists(result.RtlMapFileName) ||
+                result.RtlResultMap != await FileHelpers.ReadAllTextRetry(result.RtlMapFileName)))
+            {
+                ProjectHelpers.CheckOutFileFromSourceControl(result.RtlMapFileName);
+                await FileHelpers.WriteAllTextRetry(result.RtlMapFileName, result.RtlResultMap);
+            }
         }
     }
 }

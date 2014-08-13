@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions.CoffeeScript
 
         private void EditGlobalCoffeeLintFile()
         {
-            string fileName = CoffeeLintCompiler.GetOrCreateGlobalSettings(CoffeeLintCompiler.ConfigFileName);
+            string fileName = NodeExecutorBase.GetOrCreateGlobalSettings(CoffeeLintCompiler.ConfigFileName);
             _dte.ItemOperations.OpenFile(fileName);
         }
 

@@ -70,6 +70,7 @@
       <Word>Autoprefix</Word>
       <Word>Autoprefixer</Word>
       <Word>Eval</Word>
+      <Word>Rtl</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>
