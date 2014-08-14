@@ -17,6 +17,7 @@ namespace MadsKristensen.EditorExtensions.Margin
     [Name("MarginFactory")]
     [Order(After = PredefinedMarginNames.RightControl)]
     [MarginContainer(PredefinedMarginNames.Right)]
+    [ContentType(CssContentTypeDefinition.CssContentType)]
     [ContentType(LessContentTypeDefinition.LessContentType)]
     [ContentType(ScssContentTypeDefinition.ScssContentType)]
     [ContentType(CoffeeContentTypeDefinition.CoffeeContentType)]
@@ -37,6 +38,7 @@ namespace MadsKristensen.EditorExtensions.Margin
             { "CoffeeScript",      (document, sourceView) => new TextViewMargin("JavaScript", document, sourceView) },
             { "IcedCoffeeScript",  (document, sourceView) => new TextViewMargin("JavaScript", document, sourceView) },
             { "LiveScript",        (document, sourceView) => new TextViewMargin("JavaScript", document, sourceView) },
+            { "CSS",               (document, sourceView) => new CssTextViewMargin("CSS", document, sourceView) },
             { "LESS",              (document, sourceView) => new CssTextViewMargin("CSS", document, sourceView) },
             { "Markdown",          (document, sourceView) => new MarkdownMargin(document) },
             { "SCSS",              (document, sourceView) => new CssTextViewMargin("CSS", document, sourceView) },

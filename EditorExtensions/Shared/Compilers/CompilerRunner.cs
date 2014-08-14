@@ -112,10 +112,13 @@ namespace MadsKristensen.EditorExtensions.Compilers
         {
             var ext = TargetExtension;
 
-            if (Settings.MinifyInPlace && WESettings.Instance.ForContentType<IMinifierSettings>(TargetContentType).AutoMinify)
+            if (Settings != null && Settings.MinifyInPlace && WESettings.Instance.ForContentType<IMinifierSettings>(TargetContentType).AutoMinify)
                 ext = ".min" + ext;
 
-            if (string.IsNullOrEmpty(Settings.OutputDirectory))
+            if (SourceContentType.TypeName == "css")
+                return Path.ChangeExtension(sourcePath, ".rtl.css");
+
+            if (Settings == null || string.IsNullOrEmpty(Settings.OutputDirectory))
                 return Path.ChangeExtension(sourcePath, ext);
 
             string compiledFileName = Path.GetFileName(Path.ChangeExtension(sourcePath, ext));
@@ -159,7 +162,14 @@ namespace MadsKristensen.EditorExtensions.Compilers
                     return result;
 
                 foreach (var listener in _listeners)
-                    await listener.FileSaved(TargetContentType, result.TargetFileName, true, Settings.MinifyInPlace);
+                {
+                    await listener.FileSaved(TargetContentType, result.TargetFileName, true, Settings != null ? Settings.MinifyInPlace : false);
+
+                    if (File.Exists(result.RtlTargetFileName))
+                    {
+                        await listener.FileSaved(TargetContentType, result.RtlTargetFileName, true, Settings != null ? Settings.MinifyInPlace : false);
+                    }
+                }
             }
 
             return result;
@@ -169,6 +179,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     }
 
     [Export(typeof(ICompilerRunnerProvider))]
+    [ContentType(CssContentTypeDefinition.CssContentType)]
     [ContentType(LessContentTypeDefinition.LessContentType)]
     [ContentType(ScssContentTypeDefinition.ScssContentType)]
     [ContentType(CoffeeContentTypeDefinition.CoffeeContentType)]
