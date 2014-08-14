@@ -33,7 +33,9 @@ namespace MadsKristensen.EditorExtensions
 
             if (bundleChanged)
             {
-                ProjectHelpers.CheckOutFileFromSourceControl(bundleFile);
+                if (!ProjectHelpers.CheckOutFileFromSourceControl(bundleFile))
+                    throw new Exception("There was a problem checking out the file: " + bundleFile);
+                    
                 await FileHelpers.WriteAllTextRetry(bundleFile, combinedContent);
                 Logger.Log("Web Essentials: Updated bundle: " + Path.GetFileName(bundleFile));
             }
