@@ -379,7 +379,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         #region RTLCSS
         [Category("RTLCSS")]
         [DisplayName("Generate RTL variant")]
-        [Description("Generate right-to-left variant of compiled CSS file from.")]
+        [Description("Generate right-to-left variant of compiled CSS file from LESS and SASS. Also, to enable or disable RTL generation on saving a CSS file. With 'Run RTLCSS' option in Solution Explorer menu for CSS file(s) or folder containing CSS files, this option is ignored.")]
         [DefaultValue(false)]
         public bool RtlCss { get; set; }
 
