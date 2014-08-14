@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
         private static bool MinifiedOrIncorrectExtOrRtlOrNotExists(string file)
         {
-            return !file.EndsWith(".css",StringComparison.OrdinalIgnoreCase) ||
+            return !file.EndsWith(".css", StringComparison.OrdinalIgnoreCase) ||
                     file.EndsWith(".rtl.css", StringComparison.OrdinalIgnoreCase) ||
                     file.EndsWith(".rtl.min.css", StringComparison.OrdinalIgnoreCase) ||
                    !File.Exists(file);
