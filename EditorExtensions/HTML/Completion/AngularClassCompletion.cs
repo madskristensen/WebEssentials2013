@@ -1,69 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Media.Imaging;
-using Microsoft.Html.Core;
+using System.Windows.Threading;
 using Microsoft.Html.Editor.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions.Html
 {
-    [HtmlCompletionProvider(CompletionType.Values, "*", "class")]
+    [HtmlCompletionProvider(CompletionType.GroupAttributes, "*", "*")]
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
-    public class AngularClassCompletion : IHtmlCompletionListProvider, IHtmlTreeVisitor
+    public class AngularLogoCompletion : IHtmlCompletionListProvider
     {
         private static BitmapFrame _icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/angular.png", UriKind.RelativeOrAbsolute));
-        private static List<string> _classes = new List<string>()
-        {
-            "ng-bind",
-            "ng-class",
-            "ng-class-even",
-            "ng-class-odd",
-            "ng-form",
-            "ng-hide",
-            "ng-include",
-            "ng-init",
-            "ng-style",
-        };
 
         public CompletionType CompletionType
         {
-            get { return CompletionType.Values; }
+            get { return CompletionType.GroupAttributes; }
         }
 
         public IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
         {
-            HashSet<bool> isAngular = new HashSet<bool>();
-            context.Document.HtmlEditorTree.RootNode.Accept(this, isAngular);
-
-            if (isAngular.Count == 0)
-                return new List<HtmlCompletion>();
-
-            return CreateCompletionItems(context).ToArray();
+            return ChangeIcons(context);
         }
 
-        private static IEnumerable<HtmlCompletion> CreateCompletionItems(HtmlCompletionContext context)
+        public static IList<HtmlCompletion> ChangeIcons(HtmlCompletionContext context)
         {
-            foreach (string item in _classes)
+            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
-                yield return new SimpleHtmlCompletion(item, context.Session) { IconSource = _icon };
-            }
+                if (context.Session.CompletionSets.Count == 0)
+                    return;
+
+                foreach (var item in context.Session.CompletionSets[0].Completions)
+                {
+                    if (item.DisplayText.StartsWith("ng-") || item.DisplayText.StartsWith("data-ng-"))
+                        item.IconSource = _icon;
+                }
+            }), DispatcherPriority.Normal, null);
+
+            return new List<HtmlCompletion>();
+        }
+    }
+
+    [HtmlCompletionProvider(CompletionType.Attributes, "*", "*")]
+    [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
+    public class AngularLogo2Completion : IHtmlCompletionListProvider
+    {
+        public CompletionType CompletionType
+        {
+            get { return CompletionType.Attributes; }
         }
 
-        public bool Visit(ElementNode element, object parameter)
+        public IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
         {
-            // Search in class names to in order to make Intellisense show after typing "ng-" as a class value
-            if (element.Attributes.Any(a => (a.Name.StartsWith("ng-")
-                                         ||  a.Name.StartsWith("data-ng-")
-                                         || (a.Name == "class" && a.Value != null && a.Value.StartsWith("ng-")))))
-            {
-                var list = (HashSet<bool>)parameter;
-                list.Add(true);
-                return true;
-            }
-
-            return true;
+            return AngularLogoCompletion.ChangeIcons(context);
         }
     }
 }

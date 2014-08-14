@@ -316,6 +316,7 @@
     <Compile Include="CSS\Completion\Filter\ColorSwatchCompletionListFilter.cs" />
     <Compile Include="CSS\Completion\Filter\HideUncommonCompletionListFilter.cs" />
     <Compile Include="CSS\Validation\Filters\ExtendCssErrorFilter.cs" />
+    <Compile Include="HTML\Completion\AngularLogoCompletion.cs" />
     <Compile Include="HTML\Completion\AppleLinkCompletion.cs" />
     <Compile Include="HTML\Completion\AppleMetaCompletion.cs" />
     <Compile Include="HTML\Completion\AngularClassCompletion.cs" />
