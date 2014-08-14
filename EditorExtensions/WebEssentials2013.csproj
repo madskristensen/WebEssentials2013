@@ -318,6 +318,7 @@
     <Compile Include="CSS\Validation\Filters\ExtendCssErrorFilter.cs" />
     <Compile Include="HTML\Completion\AppleLinkCompletion.cs" />
     <Compile Include="HTML\Completion\AppleMetaCompletion.cs" />
+    <Compile Include="HTML\Completion\AngularClassCompletion.cs" />
     <Compile Include="HTML\Completion\HtmlDataListCompletion.cs" />
     <Compile Include="HTML\Completion\HtmlLabelForAttributeCompletion.cs" />
     <Compile Include="HTML\Completion\InputIdAttributeCompletion.cs" />
@@ -833,6 +834,7 @@
     <Content Include="Resources\Icons\Markdown.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Resource Include="Resources\Images\angular.png" />
     <Content Include="Resources\Images\preview.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
