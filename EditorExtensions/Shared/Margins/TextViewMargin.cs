@@ -87,7 +87,7 @@ namespace MadsKristensen.EditorExtensions.Margin
         protected void SetText(string text)
         {
             // Prevents race conditions when the file is saved before the preview is open.
-            if (!Settings.ShowPreviewPane || PreviewTextHost == null)
+            if (Settings == null || !Settings.ShowPreviewPane || PreviewTextHost == null)
                 return;
 
             try

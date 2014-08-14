@@ -43,8 +43,9 @@ namespace MadsKristensen.EditorExtensions
             CssSourceMap map = new CssSourceMap();
 
             map.MapNodes = Enumerable.Empty<CssSourceMapNode>();
+            var settings = WESettings.Instance.ForContentType<ICssSourceMapSettings>(contentType);
 
-            if (WESettings.Instance.ForContentType<ICssSourceMapSettings>(contentType).ProcessSourceMapsForEditorEnhancements)
+            if (settings != null && settings.ProcessSourceMapsForEditorEnhancements)
                 await Task.Run(() => map.Initialize(targetFileContents, mapFileContents, directory, contentType));
 
             return map;

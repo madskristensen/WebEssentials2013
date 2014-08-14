@@ -489,14 +489,6 @@
         </Strings>
       </Button>
 
-      <Button guid="guidDiffCmdSet" id="cmdCoffeeLint" priority="0x0106" type="Button">
-        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>Run CoffeeLint</ButtonText>
-        </Strings>
-      </Button>
-      
       <Button guid="guidDiffCmdSet" id="cmdJsCodeStyle" priority="0x0106" type="Button">
         <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -505,11 +497,19 @@
         </Strings>
       </Button>
 
-      <Button guid="guidDiffCmdSet" id="cmdRtlCss" priority="0x0110" type="Button">
+      <Button guid="guidDiffCmdSet" id="cmdRtlCss" priority="0x0106" type="Button">
         <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Run RTLCSS</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidDiffCmdSet" id="cmdCoffeeLint" priority="0x0106" type="Button">
+        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Run CoffeeLint</ButtonText>
         </Strings>
       </Button>
 

@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions
             Document = document;
             Settings = settings;
 
-            if (settings.ShowPreviewPane)
+            if (settings != null ? settings.ShowPreviewPane : false)
             {
                 _dispatcher.BeginInvoke(
                     new Action(CreateMarginControls), DispatcherPriority.ApplicationIdle, null);
@@ -190,7 +190,7 @@ namespace MadsKristensen.EditorExtensions
 
         protected override void CreateMarginControls()
         {
-            if (!Settings.ShowPreviewPane)
+            if (Settings == null || !Settings.ShowPreviewPane)
                 return;
 
             base.CreateMarginControls();
@@ -204,7 +204,7 @@ namespace MadsKristensen.EditorExtensions
         ///<param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (Settings != null && disposing)
             {
                 Notifier.Dispose();
             }

@@ -13,7 +13,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
     public class JsHintCompiler : NodeExecutorBase, ILintCompiler
     {
         public static readonly string ConfigFileName = ".jshintrc";
-   
+
         protected virtual string ConfigFile { get { return ConfigFileName; } }
         public virtual IEnumerable<string> SourceExtensions { get { return new[] { ".js" }; } }
 

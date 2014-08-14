@@ -18,6 +18,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     }
 
     [Export(typeof(ICompilationNotifierProvider))]
+    [ContentType("CSS")]
     [ContentType("LESS")]
     [ContentType("SCSS")]
     [ContentType("CoffeeScript")]

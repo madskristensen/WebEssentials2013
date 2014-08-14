@@ -47,16 +47,17 @@ namespace MadsKristensen.EditorExtensions.Css
             OleMenuCommand menuCommand = sender as OleMenuCommand;
 
             files = ProjectHelpers.GetSelectedFilePaths()
-                                  .Where(f => !MinifiedOrRtlOrNotExists(f)).ToList();
+                                  .Where(f => !MinifiedOrIncorrectExtOrRtlOrNotExists(f)).ToList();
 
             menuCommand.Enabled = files.Count > 0;
         }
 
-        private static bool MinifiedOrRtlOrNotExists(string file)
+        private static bool MinifiedOrIncorrectExtOrRtlOrNotExists(string file)
         {
-            return file.EndsWith(".rtl.css", StringComparison.OrdinalIgnoreCase) ||
-                   file.EndsWith(".rtl.min.css", StringComparison.OrdinalIgnoreCase) ||
-                  !File.Exists(file);
+            return !file.EndsWith(".css",StringComparison.OrdinalIgnoreCase) ||
+                    file.EndsWith(".rtl.css", StringComparison.OrdinalIgnoreCase) ||
+                    file.EndsWith(".rtl.min.css", StringComparison.OrdinalIgnoreCase) ||
+                   !File.Exists(file);
         }
 
         private static string GetTargetPath(string file)

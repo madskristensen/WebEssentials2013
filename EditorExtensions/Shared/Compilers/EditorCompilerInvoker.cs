@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using EnvDTE;
+using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Task = System.Threading.Tasks.Task;
@@ -42,7 +43,10 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         private void Document_FileActionOccurred(object sender, TextDocumentFileActionEventArgs e)
         {
-            if (!CompilerRunner.Settings.CompileOnSave && !CompilerRunner.MarginSettings.ShowPreviewPane ||
+            if (CompilerRunner.SourceContentType.TypeName == "css" && !WESettings.Instance.Css.RtlCss)
+                return;
+
+            if (CompilerRunner.Settings != null && !CompilerRunner.Settings.CompileOnSave && !CompilerRunner.MarginSettings.ShowPreviewPane ||
                 e.FileActionType != FileActionTypes.ContentSavedToDisk)
                 return;
 
@@ -70,12 +74,12 @@ namespace MadsKristensen.EditorExtensions.Compilers
         {
             Logger.Log(CompilerRunner.SourceContentType + ": Compiling " + Path.GetFileName(sourcePath));
 
-            return InitiateCompilationAsync(sourcePath, save: CompilerRunner.Settings.CompileOnSave).HandleErrors("compiling " + sourcePath);
+            return InitiateCompilationAsync(sourcePath, save: CompilerRunner.Settings != null ? CompilerRunner.Settings.CompileOnSave : true).HandleErrors("compiling " + sourcePath);
         }
 
         public async void RequestCompilationResult(bool cached)
         {
-            if (cached && CompilerRunner.Settings.CompileOnSave)
+            if (cached && CompilerRunner.Settings != null && CompilerRunner.Settings.CompileOnSave)
             {
                 var targetPath = CompilerRunner.GetTargetPath(Document.FilePath);
 
