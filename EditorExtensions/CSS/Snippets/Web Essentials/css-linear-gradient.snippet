@@ -1,0 +1,35 @@
+﻿<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+    <CodeSnippet Format="1.0.0">
+        <Header>
+            <Title>Cross Browser Linear Gradient</Title>
+            <Author>Web Essentials</Author>
+            <Shortcut>linear-gradient</Shortcut>
+            <Description>A linear gradient snippet</Description>
+            <SnippetTypes>
+                <SnippetType>Expansion</SnippetType>
+            </SnippetTypes>
+        </Header>
+        <Snippet>
+            <Declarations>
+                <Literal>
+                    <ID>fromcolor</ID>
+                    <ToolTip>Initial color value</ToolTip>
+                    <Default>#cccccc</Default>
+                </Literal>
+                <Literal>
+                    <ID>tocolor</ID>
+                    <ToolTip>Resulting color value</ToolTip>
+                    <Default>#eeeeee</Default>
+                </Literal>
+            </Declarations>
+            <Code Language="css">
+                <![CDATA[background-color: $fromcolor$;
+background-image: -moz-linear-gradient(top, $fromcolor$, $tocolor$);
+background-image: -o-linear-gradient(top, $fromcolor$, $tocolor$);
+background-image: -webkit-gradient(linear, left top, left bottom, from($fromcolor$), to($tocolor$));
+background-image: -webkit-linear-gradient(top, $fromcolor$, $tocolor$);
+background-image: linear-gradient(to bottom, $fromcolor$, $tocolor$);$end$]]>
+            </Code>
+        </Snippet>
+    </CodeSnippet>
+</CodeSnippets>
