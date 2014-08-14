@@ -47,16 +47,15 @@ namespace MadsKristensen.EditorExtensions.Html
         {
             foreach (string item in _classes)
             {
-                var completion = new SimpleHtmlCompletion(item, context.Session);
-                completion.IconSource = _icon;
-                yield return completion;
+                yield return new SimpleHtmlCompletion(item, context.Session) { IconSource = _icon };
             }
         }
 
         public bool Visit(ElementNode element, object parameter)
         {
+            // Search in class names to in order to make Intellisense show after typing "ng-" as a class value
             if (element.Attributes.Any(a => (a.Name.StartsWith("ng-")
-                                         || a.Name.StartsWith("data-ng-")
+                                         ||  a.Name.StartsWith("data-ng-")
                                          || (a.Name == "class" && a.Value != null && a.Value.StartsWith("ng-")))))
             {
                 var list = (HashSet<bool>)parameter;
