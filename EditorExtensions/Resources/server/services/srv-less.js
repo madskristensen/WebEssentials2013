@@ -58,6 +58,17 @@ var handleLess = function (writer, params) {
                     writeSourceMap: function (output) {
                         output = JSON.parse(output);
                         output.file = path.basename(params.targetFileName);
+                        // There might be a configuration in toCSS which let us remove
+                        // the following fix to save a millisecond or such per compile.
+                        output.sources = output.sources.map(function (source) {
+                            var sourceDir = path.dirname(source);
+
+                            if (sourceDir !== '.' && mapDir !== sourceDir)
+                                return path.relative(mapDir, source).replace(/\\/g, '/');
+
+                            return source;
+                        });
+
                         map = output;
                     }
                 });
