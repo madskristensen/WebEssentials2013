@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Microsoft.Html.Core;
 using Microsoft.Html.Editor.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
@@ -21,12 +22,15 @@ namespace MadsKristensen.EditorExtensions.Html
             "alert",
             "arrow",
             "badge",
+            "bg-",
+            "blockquote-reverse",
             "bottom",
             "breadcrumb",
             "btn",
             "caption",
             "caret",
             "carousel",
+            "center-block",
             "checkbox",
             "clearfix",
             "close",
@@ -41,6 +45,7 @@ namespace MadsKristensen.EditorExtensions.Html
             "dl-horizontal",
             "dropdown",
             "dropup",
+            "embed-",
             "fade",
             "form-",
             "glyphicon",
@@ -58,6 +63,7 @@ namespace MadsKristensen.EditorExtensions.Html
             "icon",
             "img",
             "in",
+            "info",
             "initialism",
             "input",
             "invisible",
@@ -68,6 +74,7 @@ namespace MadsKristensen.EditorExtensions.Html
             "lead",
             "left",
             "list",
+            "mark",
             "media",
             "modal",
             "nav",
@@ -90,7 +97,8 @@ namespace MadsKristensen.EditorExtensions.Html
             "right",
             "row",
             "show",
-            "sr-only",
+            "small",
+            "sr-",
             "success",
             "tab",
             "tabbable",
@@ -116,10 +124,19 @@ namespace MadsKristensen.EditorExtensions.Html
                 if (context.Session.CompletionSets.Count == 0)
                     return;
 
-                foreach (var item in context.Session.CompletionSets[0].Completions)
+                var completions = context.Session.CompletionSets[0].Completions;
+
+                for (int i = completions.Count - 1; i >= 0; i--)
                 {
+                    var item = completions[i] as HtmlCompletion;
+
                     if (IsMatch(item.DisplayText))
+                    {
+                        //if (!IsAllowed(item.DisplayText, context.Element))
+                        //    completions.RemoveAt(i);
+                        //else
                         item.IconSource = _icon;
+                    }
                 }
 
             }), DispatcherPriority.Normal, null);
@@ -140,6 +157,39 @@ namespace MadsKristensen.EditorExtensions.Html
             }
 
             return false;
+        }
+
+        private static List<string> _inputElmts = new List<string> { "input", "select", "textarea" };
+        private static List<string> _btnElmts = new List<string> { "input", "button", "a" };
+        private static List<string> _btnNames = new List<string> { "btn", "btn-primary", "btn-default", "btn-success", "btn-info", "btn-warning", "btn-danger", "btn-link", "btn-lg", "btn-sm", "btn-xs", "btn-block", "", "", "" };
+
+        private static bool IsAllowed(string name, ElementNode element)
+        {
+            if (name.StartsWith("glyphicon") && element.Name != "span")
+                return false;
+
+            if (name.StartsWith("table") && !name.StartsWith("table-responsive") && element.Name != "table")
+                return false;
+
+            if (name == "form-control" && !_inputElmts.Contains(element.Name))
+                return false;
+
+            if (name == "control-label" && element.Name != "label")
+                return false;
+
+            if (_btnNames.Contains(name) && _btnElmts.Contains(element.Name))
+                return false;
+
+            if (name.StartsWith("img") && element.Name != "img")
+                return false;
+
+            if ((name.StartsWith("pagination") || name.StartsWith("pager")) && element.Name != "ul")
+                return false;
+
+            if (name.StartsWith("dl-horizontal") && element.Name != "dl")
+                return false;
+
+            return true;
         }
     }
 }

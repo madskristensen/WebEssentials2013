@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.Utilities;
 namespace MadsKristensen.EditorExtensions.JSON
 {
     [Export(typeof(IJSONCompletionListProvider))]
-    [Name("SchemaValueCompletionProvider")]
+    [Name("Default Schema")]
     internal class SchemaValueCompletionProvider : IJSONCompletionListProvider
     {
         public JSONCompletionContextType ContextType
@@ -22,10 +22,10 @@ namespace MadsKristensen.EditorExtensions.JSON
         {
             JSONMember member = context.ContextItem as JSONMember;
 
-            if (member == null || member.Name == null || member.Name.Text != "\"$schema\"")
+            if (member == null || member.UnquotedNameText != "$schema")
                 yield break;
 
-            foreach (var schema in VsJSONSchemaStore.SchemaStore.SchemaCache.Entries)
+            foreach (JSONSchemaCacheEntry schema in VsJSONSchemaStore.SchemaStore.SchemaCache.Entries)
             {
                 yield return new SimpleCompletionEntry(schema.OriginalPath, StandardGlyphGroup.GlyphReference, context.Session);
             }
