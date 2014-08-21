@@ -178,7 +178,7 @@ namespace MadsKristensen.EditorExtensions
             {
                 Parallel.ForEach(
                     Mef.GetSupportedContentTypes<ICompilerRunnerProvider>()
-                       .Where(c => WESettings.Instance.ForContentType<ICompilerInvocationSettings>(c).CompileOnBuild),
+                       .Where(c => { var settings = WESettings.Instance.ForContentType<ICompilerInvocationSettings>(c); return settings != null && settings.CompileOnBuild; }),
                     c => compiler.Value.CompileSolutionAsync(c).DoNotWait("compiling solution-wide " + c.DisplayName)
                 );
             }).DoNotWait("running solution-wide compilers");
