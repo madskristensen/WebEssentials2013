@@ -22,7 +22,7 @@ namespace MadsKristensen.EditorExtensions.Settings
                 {
                     searchPattern = searchPattern.Trim();
 
-                    if (string.IsNullOrEmpty(searchPattern))
+                    if (string.IsNullOrEmpty(searchPattern) || searchPattern.StartsWith("#"))
                         continue;
 
                     int index = searchPattern.LastIndexOf('\t');
