@@ -48,30 +48,50 @@ var handleLess = function (writer, params) {
                 var map;
                 var mapFileName = params.targetFileName + ".map";
                 var mapDir = path.dirname(mapFileName);
-                var css = tree.toCSS({
-                    paths: [path.dirname(params.sourceFileName)],
-                    sourceMap: mapFileName,
-                    sourceMapURL: params.sourceMapURL !== undefined ? path.basename(mapFileName) : null,
-                    sourceMapBasepath: mapDir,
-                    sourceMapOutputFilename: mapFileName,
-                    strictMath: params.strictMath !== undefined,
-                    writeSourceMap: function (output) {
-                        output = JSON.parse(output);
-                        output.file = path.basename(params.targetFileName);
-                        // There might be a configuration in toCSS which let us remove
-                        // the following fix to save a millisecond or such per compile.
-                        output.sources = output.sources.map(function (source) {
-                            var sourceDir = path.dirname(source);
+                try {
+                    var css = tree.toCSS({
+                        paths: [path.dirname(params.sourceFileName)],
+                        sourceMap: mapFileName,
+                        sourceMapURL: params.sourceMapURL !== undefined ? path.basename(mapFileName) : null,
+                        sourceMapBasepath: mapDir,
+                        sourceMapOutputFilename: mapFileName,
+                        strictMath: params.strictMath !== undefined,
+                        writeSourceMap: function (output) {
+                            output = JSON.parse(output);
+                            output.file = path.basename(params.targetFileName);
+                            // There might be a configuration in toCSS which let us remove
+                            // the following fix to save a millisecond or such per compile.
+                            output.sources = output.sources.map(function (source) {
+                                var sourceDir = path.dirname(source);
 
-                            if (sourceDir !== '.' && mapDir !== sourceDir)
-                                return path.relative(mapDir, source).replace(/\\/g, '/');
+                                if (sourceDir !== '.' && mapDir !== sourceDir)
+                                    return path.relative(mapDir, source).replace(/\\/g, '/');
 
-                            return source;
-                        });
+                                return source;
+                            });
 
-                        map = output;
-                    }
-                });
+                            map = output;
+                        }
+                    });
+
+                } catch (e) {
+                    writer.write(JSON.stringify({
+                        Success: false,
+                        SourceFileName: params.sourceFileName,
+                        TargetFileName: params.targetFileName,
+                        MapFileName: params.mapFileName,
+                        Remarks: "LESS: " + e.message,
+                        Details: e.message,
+                        Errors: [{
+                            Line: e.line,
+                            Column: e.column,
+                            Message: "LESS: " + e.message,
+                            FileName: params.sourceFileName
+                        }]
+                    }));
+                    writer.end();
+                    return;
+                }
 
                 if (params.autoprefixer !== undefined) {
                     var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, params.autoprefixerBrowsers, params.sourceFileName, params.targetFileName);
