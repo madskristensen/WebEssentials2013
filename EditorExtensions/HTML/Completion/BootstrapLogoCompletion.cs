@@ -158,38 +158,5 @@ namespace MadsKristensen.EditorExtensions.Html
 
             return false;
         }
-
-        private static List<string> _inputElmts = new List<string> { "input", "select", "textarea" };
-        private static List<string> _btnElmts = new List<string> { "input", "button", "a" };
-        private static List<string> _btnNames = new List<string> { "btn", "btn-primary", "btn-default", "btn-success", "btn-info", "btn-warning", "btn-danger", "btn-link", "btn-lg", "btn-sm", "btn-xs", "btn-block", "", "", "" };
-
-        private static bool IsAllowed(string name, ElementNode element)
-        {
-            if (name.StartsWith("glyphicon") && element.Name != "span")
-                return false;
-
-            if (name.StartsWith("table") && !name.StartsWith("table-responsive") && element.Name != "table")
-                return false;
-
-            if (name == "form-control" && !_inputElmts.Contains(element.Name))
-                return false;
-
-            if (name == "control-label" && element.Name != "label")
-                return false;
-
-            if (_btnNames.Contains(name) && _btnElmts.Contains(element.Name))
-                return false;
-
-            if (name.StartsWith("img") && element.Name != "img")
-                return false;
-
-            if ((name.StartsWith("pagination") || name.StartsWith("pager")) && element.Name != "ul")
-                return false;
-
-            if (name.StartsWith("dl-horizontal") && element.Name != "dl")
-                return false;
-
-            return true;
-        }
     }
 }

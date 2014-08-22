@@ -33,7 +33,7 @@ namespace MadsKristensen.EditorExtensions.Html
 
                 foreach (var item in context.Session.CompletionSets[0].Completions)
                 {
-                    if (item.DisplayText.StartsWith("ng-") || item.DisplayText.StartsWith("data-ng-"))
+                    if (item.DisplayText.StartsWith("ng-", StringComparison.Ordinal) || item.DisplayText.StartsWith("data-ng-", StringComparison.Ordinal))
                         item.IconSource = _icon;
                 }
             }), DispatcherPriority.Normal, null);
