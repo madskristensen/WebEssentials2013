@@ -54,9 +54,9 @@ namespace MadsKristensen.EditorExtensions.Html
         public bool Visit(ElementNode element, object parameter)
         {
             // Search in class names to in order to make Intellisense show after typing "ng-" as a class value
-            if (element.Attributes.Any(a => (a.Name.StartsWith("ng-")
-                                         ||  a.Name.StartsWith("data-ng-")
-                                         || (a.Name == "class" && a.Value != null && a.Value.StartsWith("ng-")))))
+            if (element.Attributes.Any(a => (a.Name.StartsWith("ng-", StringComparison.Ordinal)
+                                         || a.Name.StartsWith("data-ng-", StringComparison.Ordinal)
+                                         || (a.Name == "class" && a.Value != null && a.Value.StartsWith("ng-", StringComparison.Ordinal)))))
             {
                 var list = (HashSet<bool>)parameter;
                 list.Add(true);

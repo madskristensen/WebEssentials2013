@@ -113,7 +113,7 @@ namespace MadsKristensen.EditorExtensions
                 }
 
                 if (String.IsNullOrEmpty(fullPath))
-                    return "";
+                    return File.Exists(project.FullName) ? Path.GetDirectoryName(project.FullName) : "";
 
                 if (Directory.Exists(fullPath))
                     return fullPath;
@@ -194,7 +194,7 @@ namespace MadsKristensen.EditorExtensions
             if (file == null)
                 return null;
 
-            var baseFolder = file.Properties == null ? null : Path.GetDirectoryName(file.Properties.Item("FullPath").Value.ToString());
+            var baseFolder = file.Properties == null ? null : ProjectHelpers.GetProjectFolder(file);
             return ToAbsoluteFilePath(relativeUrl, GetProjectFolder(file), baseFolder);
         }
 
@@ -460,11 +460,6 @@ namespace MadsKristensen.EditorExtensions
             if (dependentItem != null && item.ContainingProject.GetType().Name == "OAProject" && item.ProjectItems != null)
             {
                 // WinJS
-
-                // check if the file already added ( adding second time fails with ADDRESULT_Cancel )
-                if (dependentItem.Kind != Guid.Empty.ToString("B"))
-                    return dependentItem;
-
                 ProjectItem addedItem = null;
 
                 try
@@ -476,6 +471,7 @@ namespace MadsKristensen.EditorExtensions
                         addedItem.Properties.Item("DependentUpon").Value = Path.GetFileName(parentFileName);
                 }
                 catch (COMException) { }
+                catch { return dependentItem; }
 
                 return addedItem;
             }
