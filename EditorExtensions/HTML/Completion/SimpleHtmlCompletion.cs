@@ -10,7 +10,7 @@ namespace MadsKristensen.EditorExtensions.Html
         private static ImageSource _glyph = GlyphService.GetGlyph(vs.StandardGlyphGroup.GlyphGroupVariable, vs.StandardGlyphItem.GlyphItemPublic);
 
         public SimpleHtmlCompletion(string displayText, vs.ICompletionSession session)
-            : base(displayText, displayText, null, _glyph, HtmlIconAutomationText.AttributeIconText, session)
+            : base(displayText, displayText, string.Empty, _glyph, HtmlIconAutomationText.AttributeIconText, session)
         { }
 
         public SimpleHtmlCompletion(string displayText, string description, vs.ICompletionSession session)
