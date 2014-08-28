@@ -15,6 +15,7 @@ namespace MadsKristensen.EditorExtensions.Images
         public IEnumerable<string> BundleAssets { get; set; }
         public bool Optimize { get; set; }
         public bool IsVertical { get; set; }
+        public int Margin { get; set; }
         public bool RunOnBuild { get; set; }
         public string FileExtension { get; set; }
         public bool UseFullPathForIdentifierName { get; set; }
@@ -31,6 +32,7 @@ namespace MadsKristensen.EditorExtensions.Images
             FileExtension = Path.GetExtension(imageFiles.First()).TrimStart('.');
             Optimize = WESettings.Instance.Sprite.Optimize;
             IsVertical = WESettings.Instance.Sprite.IsVertical;
+            Margin = WESettings.Instance.Sprite.Margin;
             RunOnBuild = WESettings.Instance.Sprite.RunOnBuild;
             UseFullPathForIdentifierName = WESettings.Instance.Sprite.UseFullPathForIdentifierName;
             UseAbsoluteUrl = WESettings.Instance.Sprite.UseAbsoluteUrl;
@@ -63,7 +65,9 @@ namespace MadsKristensen.EditorExtensions.Images
                             new XElement("optimize", Optimize.ToString().ToLowerInvariant()),
                             new XComment("Determines the orientation of images to form this sprite. The value must be vertical or horizontal."),
                             new XElement("orientation", IsVertical ? "vertical" : "horizontal"),
-                            new XComment("File extension of sprite image."),
+                            new XComment("The margin (in pixel) around and between the constituent images."),
+                            new XElement("margin", Margin),
+                             new XComment("File extension of sprite image."),
                             new XElement("outputType", FileExtension.ToString().ToLowerInvariant()),
                             new XComment("Determine whether to generate/re-generate this sprite on building the solution."),
                             new XElement("runOnBuild", RunOnBuild.ToString().ToLowerInvariant()),
@@ -132,6 +136,13 @@ namespace MadsKristensen.EditorExtensions.Images
 
             if (element != null)
                 sprite.IsVertical = element.Value.Equals("vertical", StringComparison.OrdinalIgnoreCase);
+
+            element = doc.Descendants("margin").FirstOrDefault();
+
+            sprite.Margin = 0; // So the current implementation (without margin support doesn't break.
+
+            if (element != null)
+                sprite.Margin = int.Parse(element.Value);
 
             element = doc.Descendants("runOnBuild").FirstOrDefault();
 

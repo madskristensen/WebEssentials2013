@@ -50,6 +50,12 @@ namespace MadsKristensen.EditorExtensions.Settings
         public bool IsVertical { get; set; }
 
         [Category("Sprite")]
+        [DisplayName("Margin")]
+        [Description("The margin (in pixel) around and between constituent images.")]
+        [DefaultValue(1)]
+        public int Margin { get; set; }
+
+        [Category("Sprite")]
         [DisplayName("Run on build")]
         [Description("Regenerate the sprite when building the solution.")]
         [DefaultValue(false)]
