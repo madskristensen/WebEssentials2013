@@ -202,7 +202,8 @@ namespace MadsKristensen.EditorExtensions
         {
             _dte.StatusBar.Text = "Generating bundle...";
 
-            ProjectHelpers.AddFileToProject(Path.GetDirectoryName(bundle.FileName), bundle.FileName);
+            if (ProjectHelpers.GetProjectItem(bundle.FileName) == null)
+                ProjectHelpers.AddFileToActiveProject(bundle.FileName);
 
             string bundleFile = Path.Combine(Path.GetDirectoryName(bundle.FileName), Path.GetFileNameWithoutExtension(bundle.FileName));
 
