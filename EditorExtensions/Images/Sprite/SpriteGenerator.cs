@@ -14,8 +14,8 @@ namespace MadsKristensen.EditorExtensions.Images
 
             Dictionary<string, Image> images = await WatchFiles(document, updateSprite);
 
-            int width = document.IsVertical ? images.Values.Max(i => i.Width) : images.Values.Sum(i => i.Width);
-            int height = document.IsVertical ? images.Values.Sum(img => img.Height) : images.Values.Max(img => img.Height);
+            int width = document.IsVertical ? images.Values.Max(i => i.Width) + (document.Margin * 2) : images.Values.Sum(i => i.Width) + (document.Margin * images.Count) + document.Margin;
+            int height = document.IsVertical ? images.Values.Sum(img => img.Height) + (document.Margin * images.Count) + document.Margin : images.Values.Max(img => img.Height) + (document.Margin * 2);
 
             List<SpriteFragment> fragments = new List<SpriteFragment>();
 
@@ -24,9 +24,9 @@ namespace MadsKristensen.EditorExtensions.Images
                 using (Graphics canvas = Graphics.FromImage(bitmap))
                 {
                     if (document.IsVertical)
-                        Vertical(images, fragments, canvas);
+                        Vertical(images, fragments, canvas, document.Margin);
                     else
-                        Horizontal(images, fragments, canvas);
+                        Horizontal(images, fragments, canvas, document.Margin);
                 }
 
                 bitmap.Save(imageFile, PasteImage.GetImageFormat("." + document.FileExtension));
@@ -52,31 +52,31 @@ namespace MadsKristensen.EditorExtensions.Images
             return images;
         }
 
-        private static void Vertical(Dictionary<string, Image> images, List<SpriteFragment> fragments, Graphics canvas)
+        private static void Vertical(Dictionary<string, Image> images, List<SpriteFragment> fragments, Graphics canvas, int margin)
         {
-            int currentY = 0;
+            int currentY = margin;
 
             foreach (string file in images.Keys)
             {
                 Image img = images[file];
-                fragments.Add(new SpriteFragment(file, img.Width, img.Height, 0, currentY));
+                fragments.Add(new SpriteFragment(file, img.Width, img.Height, margin, currentY));
 
-                canvas.DrawImage(img, 0, currentY);
-                currentY += img.Height;
+                canvas.DrawImage(img, margin, currentY);
+                currentY += img.Height + margin;
             }
         }
 
-        private static void Horizontal(Dictionary<string, Image> images, List<SpriteFragment> fragments, Graphics canvas)
+        private static void Horizontal(Dictionary<string, Image> images, List<SpriteFragment> fragments, Graphics canvas, int margin)
         {
-            int currentX = 0;
+            int currentX = margin;
 
             foreach (string file in images.Keys)
             {
                 Image img = images[file];
-                fragments.Add(new SpriteFragment(file, img.Width, img.Height, currentX, 0));
+                fragments.Add(new SpriteFragment(file, img.Width, img.Height, currentX, margin));
 
-                canvas.DrawImage(img, currentX, 0);
-                currentX += img.Width;
+                canvas.DrawImage(img, currentX, margin);
+                currentX += img.Width + margin;
             }
         }
 
