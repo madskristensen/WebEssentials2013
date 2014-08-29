@@ -100,10 +100,12 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
             var minFileName = Path.ChangeExtension(fileName, ".min.html");
 
             File.WriteAllText(fileName, "Hi\n#Header\n\n**Bold!**");
+
+            File.Create(Path.Combine(Path.ChangeExtension(fileName, ".html"))).Close();     // Only files that have a .html will be compiled
             File.Create(Path.Combine(minFileName)).Close();     // Only files that have a .min will be minified.
 
             DTE.ItemOperations.OpenFile(fileName).Document.Save();
-            await WaitFor(() => new FileInfo(minFileName).Length > 0, 10);
+            await WaitFor(() => new FileInfo(minFileName).Length > 5, 10);
         }
     }
 }

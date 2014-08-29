@@ -253,7 +253,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
             var result = new MarkdownSharp.Markdown(WESettings.Instance.Markdown).Transform(await FileHelpers.ReadAllTextRetry(sourcePath));
 
             if (!string.IsNullOrEmpty(targetPath) &&
-               (!File.Exists(targetPath) || await FileHelpers.ReadAllTextRetry(targetPath) == result))
+               (!File.Exists(targetPath) || await FileHelpers.ReadAllTextRetry(targetPath) != result))
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(targetPath);
 
