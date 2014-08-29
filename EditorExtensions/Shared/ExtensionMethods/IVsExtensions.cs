@@ -8,8 +8,10 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor.EditorHelpers;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -100,11 +102,16 @@ namespace MadsKristensen.EditorExtensions
             return completions;
         }
 
-        public static string GetFileName(this IPropertyOwner owner)
+        public static string GetFileName(this ITextBuffer buffer)
         {
+            // TextBufferExtensions.GetFileName uses ITextDocument; I don't know if
+            // it's possible for a buffer (eg, from a native editor) to not have it
+            var firstTry = TextBufferExtensions.GetFileName(buffer);
+            if (firstTry != null)
+                return firstTry;
             IVsTextBuffer bufferAdapter;
 
-            if (!owner.Properties.TryGetProperty(typeof(IVsTextBuffer), out bufferAdapter))
+            if (!buffer.Properties.TryGetProperty(typeof(IVsTextBuffer), out bufferAdapter))
                 return null;
 
             var persistFileFormat = bufferAdapter as IPersistFileFormat;
