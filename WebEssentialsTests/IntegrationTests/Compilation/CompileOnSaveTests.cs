@@ -50,12 +50,13 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
         public async Task CompileLessOnSaveWithoutProject()
         {
             SettingsStore.EnterTestMode();
+            WESettings.Instance.Css.AutoMinify = false;
             var fileName = Path.Combine(TestCaseDirectory, "Compile-" + Guid.NewGuid() + ".less");
 
             File.WriteAllText(fileName, @"a{b{color:red;}}");
             DTE.ItemOperations.OpenFile(fileName).Document.Save();
             await WaitFor(() => File.Exists(Path.ChangeExtension(fileName, ".css")), 10);
-            File.Exists(Path.ChangeExtension(fileName, ".min.css")).Should().BeFalse("Should not minify by default");
+            File.Exists(Path.ChangeExtension(fileName, ".min.css")).Should().BeFalse("Should not minify when disabled");
         }
 
         [HostType("VS IDE")]
@@ -100,10 +101,12 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
             var minFileName = Path.ChangeExtension(fileName, ".min.html");
 
             File.WriteAllText(fileName, "Hi\n#Header\n\n**Bold!**");
+
+            File.Create(Path.Combine(Path.ChangeExtension(fileName, ".html"))).Close();     // Only files that have a .html will be compiled
             File.Create(Path.Combine(minFileName)).Close();     // Only files that have a .min will be minified.
 
             DTE.ItemOperations.OpenFile(fileName).Document.Save();
-            await WaitFor(() => new FileInfo(minFileName).Length > 0, 10);
+            await WaitFor(() => new FileInfo(minFileName).Length > 5, 10);
         }
     }
 }

@@ -57,6 +57,7 @@ namespace MadsKristensen.EditorExtensions
 
         private static async Task<bool> HearbeatCheck()
         {
+            if (_server == null) return false;
             try
             {
                 await _server.CallWebServer(_server._address);

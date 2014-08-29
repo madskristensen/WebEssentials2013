@@ -73,7 +73,7 @@ namespace MadsKristensen.EditorExtensions
                 InstallModuleAsync("LiveScript", "LiveScript"),
                 InstallModuleAsync("coffeelint", "coffeelint"),
                 InstallModuleAsync("sjs", "sweet.js"),
-                InstallModuleAsync("xregexp", "xregexp"),
+                InstallModuleAsync(null, "xregexp"),
                 InstallModuleAsync("rtlcss", "rtlcss")
             ).Result.Where(r => r != ModuleInstallResult.AlreadyPresent);
 
@@ -179,8 +179,16 @@ namespace MadsKristensen.EditorExtensions
 
         async Task<ModuleInstallResult> InstallModuleAsync(string cmdName, string moduleName)
         {
-            if (File.Exists(@"resources\nodejs\tools\node_modules\.bin\" + cmdName + ".cmd"))
-                return ModuleInstallResult.AlreadyPresent;
+            if (string.IsNullOrEmpty(cmdName))
+            {
+                if (File.Exists(@"resources\nodejs\tools\node_modules\" + moduleName + @"\package.json"))
+                    return ModuleInstallResult.AlreadyPresent;
+            }
+            else
+            {
+                if (File.Exists(@"resources\nodejs\tools\node_modules\.bin\" + cmdName + ".cmd"))
+                    return ModuleInstallResult.AlreadyPresent;
+            }
 
             Log.LogMessage(MessageImportance.High, "npm install " + moduleName + " ...");
 
