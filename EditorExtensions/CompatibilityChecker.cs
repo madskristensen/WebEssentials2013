@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.ExtensionManager;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -184,16 +185,18 @@ namespace MadsKristensen.EditorExtensions
         {
             get
             {
-                // TODO: See if there is a way to detect the version of the VSIX
 
                 string versionString = string.Empty;
 
-                // Get the version of this DLL
-                foreach (AssemblyFileVersionAttribute versionAttribute in
-                    typeof(WebEssentialsPackage).Assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false))
+                var extensionManager = Package.GetGlobalService(typeof(SVsExtensionManager)) as IVsExtensionManager;
+                if (extensionManager != null)
                 {
-                    versionString = versionAttribute.Version;
-                    break;
+                    //Get the extension using the extension manager
+                    var extension = extensionManager.GetInstalledExtension(CommandGuids.guidEditorExtensionsPkgString);
+                    if (extension != null)
+                    {
+                        versionString = extension.Header.Version.ToString();
+                    }
                 }
 
                 return versionString;
