@@ -50,12 +50,13 @@ namespace WebEssentialsTests.IntegrationTests.Compilation
         public async Task CompileLessOnSaveWithoutProject()
         {
             SettingsStore.EnterTestMode();
+            WESettings.Instance.Css.AutoMinify = false;
             var fileName = Path.Combine(TestCaseDirectory, "Compile-" + Guid.NewGuid() + ".less");
 
             File.WriteAllText(fileName, @"a{b{color:red;}}");
             DTE.ItemOperations.OpenFile(fileName).Document.Save();
             await WaitFor(() => File.Exists(Path.ChangeExtension(fileName, ".css")), 10);
-            File.Exists(Path.ChangeExtension(fileName, ".min.css")).Should().BeFalse("Should not minify by default");
+            File.Exists(Path.ChangeExtension(fileName, ".min.css")).Should().BeFalse("Should not minify when disabled");
         }
 
         [HostType("VS IDE")]
