@@ -41,7 +41,7 @@ Guidelines for bug reports:
 2. **Check if the issue has been fixed** &mdash; try to reproduce it using the
    latest `master` or development branch in the repository.
 
-3. **Isolate the problem** &mdash; ideally create an 
+3. **Isolate the problem** &mdash; ideally create an
    [SSCCE](http://www.sscce.org/) and a live example.
    Uploading the project on cloud storage (OneDrive, DropBox, et el.)
    or creating a sample GitHub repository is also helpful.
@@ -65,7 +65,7 @@ Example:
 > 2. This is the second step
 > 3. Further steps, etc.
 >
-> `<url>` - a link to the project/file uploaded on cloud storage or other publically accessible medium.
+> `<url>` - a link to the project/file uploaded on cloud storage or other publicly accessible medium.
 >
 > Any other information you want to share that is relevant to the issue being
 > reported. This might include the lines of code that you have identified as
@@ -83,7 +83,7 @@ provide as much detail and context as possible.
 
 ## Pull requests
 
-Good pull requests—patches, improvements, new features—are a fantastic
+Good pull requestsï¿½patches, improvements, new featuresï¿½are a fantastic
 help. They should remain focused in scope and avoid containing unrelated
 commits.
 
@@ -152,6 +152,6 @@ included in the project:
 
 - Always use proper indentation.
 - In Visual Studio under `Tools > Options > Text Editor > C# > Advanced`, make sure `Place 'System' directives first when sorting usings` option is enabled (checked).
-- Before commiting, organize usings for each updated C# source file. Either you can right-click editor and select `Organize Usings > Remove and sort` OR use extension like [BatchFormat](http://visualstudiogallery.msdn.microsoft.com/a7f75c34-82b4-4357-9c66-c18e32b9393e).
-- Before commiting, run Code Analysis in `Debug` configuration and follow the guidlines to fix CA issues.
+- Before committing, organize usings for each updated C# source file. Either you can right-click editor and select `Organize Usings > Remove and sort` OR use extension like [BatchFormat](http://visualstudiogallery.msdn.microsoft.com/a7f75c34-82b4-4357-9c66-c18e32b9393e).
+- Before committing, run Code Analysis in `Debug` configuration and follow the guidelines to fix CA issues.
   Code Analysis commits can be made separately.
