@@ -19,13 +19,15 @@ and [submitting pull requests](#pull-requests), but please respect the following
 restrictions:
 
 * Please **do not** use the issue tracker for personal support requests.  Stack
-  Overflow ([`web-essentials`](http://stackoverflow.com/questions/tagged/web-essentials) tag) is better place to get help.
+  Overflow ([`web-essentials`](http://stackoverflow.com/questions/tagged/web-essentials) tag)
+  is a better place to get help.
 
 * Please **do not** derail or troll issues. Keep the discussion on topic and
   respect the opinions of others.
 
-* Please **do not** open issues or pull requests which *belongs to* the third party components
-  SignalR, LESS, SASS, CoffeeScript, LiveScript, TypeScript, NodeJs etc.
+* Please **do not** open issues or pull requests which *belongs to* the third party
+  components such as SignalR, LESS, SASS, CoffeeScript, LiveScript, TypeScript, Node.js,
+  etc.
 
 
 ## Bug reports
@@ -58,8 +60,8 @@ Example:
 
 > Short and descriptive example bug report title
 >
-> A summary of the issue and the Web Essentials, Visual Studio, browser, OS environments in which it occurs. If
-> suitable, include the steps required to reproduce the bug.
+> A summary of the issue and the Web Essentials, Visual Studio, browser, OS environments
+> in which it occurs. If suitable, include the steps required to reproduce the bug.
 >
 > 1. This is the first step
 > 2. This is the second step
@@ -151,7 +153,10 @@ included in the project:
 ## Code guidelines
 
 - Always use proper indentation.
-- In Visual Studio under `Tools > Options > Text Editor > C# > Advanced`, make sure `Place 'System' directives first when sorting usings` option is enabled (checked).
-- Before committing, organize usings for each updated C# source file. Either you can right-click editor and select `Organize Usings > Remove and sort` OR use extension like [BatchFormat](http://visualstudiogallery.msdn.microsoft.com/a7f75c34-82b4-4357-9c66-c18e32b9393e).
-- Before committing, run Code Analysis in `Debug` configuration and follow the guidelines to fix CA issues.
-  Code Analysis commits can be made separately.
+- In Visual Studio under `Tools > Options > Text Editor > C# > Advanced`, make sure
+  `Place 'System' directives first when sorting usings` option is enabled (checked).
+- Before committing, organize usings for each updated C# source file. Either you can
+  right-click editor and select `Organize Usings > Remove and sort` OR use extension
+  like [BatchFormat](http://visualstudiogallery.msdn.microsoft.com/a7f75c34-82b4-4357-9c66-c18e32b9393e).
+- Before committing, run Code Analysis in `Debug` configuration and follow the guidelines
+  to fix CA issues. Code Analysis commits can be made separately.
