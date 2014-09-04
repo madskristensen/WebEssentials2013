@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,11 +25,21 @@ namespace MadsKristensen.EditorExtensions.Markdown
             : base(WESettings.Instance.Markdown, document)
         { }
 
+        public static bool HasCustomStylesheet
+        {
+            get
+            {
+                return File.Exists(GetCustomStylesheetFilePath());
+            }
+        }
+
         public static string GetStylesheet()
         {
-            string file = GetCustomStylesheetFilePath();
+            string file = (from path in GetStylesheetFilePaths()
+                           where path != null && File.Exists(path)
+                           select path).FirstOrDefault();
 
-            if (File.Exists(file))
+            if (file != null)
             {
                 string linkFormat = "<link rel=\"stylesheet\" href=\"{0}\" />";
 
@@ -37,7 +49,13 @@ namespace MadsKristensen.EditorExtensions.Markdown
             return "<style>body{font: 1.1em 'Century Gothic'}</style>";
         }
 
-        public static string GetCustomStylesheetFilePath()
+        private static IEnumerable<string> GetStylesheetFilePaths()
+        {
+            yield return GetCustomStylesheetFilePath();
+            yield return GetGlobalStylesheetFilePath();
+        }
+
+        private static string GetCustomStylesheetFilePath()
         {
             string folder = ProjectHelpers.GetSolutionFolderPath();
 
@@ -45,6 +63,16 @@ namespace MadsKristensen.EditorExtensions.Markdown
                 return null;
 
             return Path.Combine(folder, _stylesheet);
+        }
+
+        private static string GetGlobalStylesheetFilePath()
+        {
+            string folder = System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+            if (string.IsNullOrEmpty (folder))
+                return null;
+
+            return Path.Combine (folder, _stylesheet);
         }
 
         public async static Task CreateStylesheet()
