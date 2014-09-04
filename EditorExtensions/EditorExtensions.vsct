@@ -440,7 +440,7 @@
           <ButtonText>Edit global RTLCSS settings (.rtlcssrc)...</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidDiffCmdSet" id="cmdSolutionColors" priority="0x0105" type="Button">
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -502,6 +502,22 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Run RTLCSS</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidDiffCmdSet" id="cmdRunCson2Json" priority="0x0106" type="Button">
+        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Run CSON 2 JSON</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidDiffCmdSet" id="cmdRunJson2Cson" priority="0x0106" type="Button">
+        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Run JSON 2 CSON</ButtonText>
         </Strings>
       </Button>
 
@@ -732,14 +748,14 @@
         </Strings>
       </Button>
 
-        <Button guid="guidTypeScriptTypingsCmdSet" id="AddHubT4CommandId" priority="0x0106" type="Button">
-            <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
-            <CommandFlag>DefaultInvisible</CommandFlag>
-            <CommandFlag>DynamicVisibility</CommandFlag>
-            <Strings>
-                <ButtonText>Add Hubs.tt</ButtonText>
-            </Strings>
-        </Button>
+      <Button guid="guidTypeScriptTypingsCmdSet" id="AddHubT4CommandId" priority="0x0106" type="Button">
+        <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Add Hubs.tt</ButtonText>
+        </Strings>
+      </Button>
 
       <!--<Button guid="guidEditorExtensionsCmdSet" id="cmdChainCompile" priority="0x2201" type="Button">
         <Parent guid="guidSolutionExplorerCmdSet" id="MySubGroup"/>
@@ -911,6 +927,8 @@
       <IDSymbol name="cmdCoffeeLint" value="0x1096" />
       <IDSymbol name="cmdJsCodeStyle" value="0x1095" />
       <IDSymbol name="cmdRtlCss" value="0x2066" />
+      <IDSymbol name="cmdRunCson2Json" value="0x2067" />
+      <IDSymbol name="cmdRunJson2Cson" value="0x2068" />
       <IDSymbol name="cmdProjectSettings" value="0x1043" />
       <IDSymbol name="cmdSolutionSettings" value="0x1044" />
       <IDSymbol name="cmdSolutionColors" value="0x1045" />
@@ -1014,9 +1032,9 @@
       <IDSymbol name="IDG_BROWSERLINK_COMMANDS" value="0x2001" />
     </GuidSymbol>
 
-      <GuidSymbol name="guidTypeScriptTypingsCmdSet" value="{6147C315-9D10-45E8-B410-CE8F3C22E030}">
-          <IDSymbol name="AddHubT4CommandId" value="0x4001" />
-      </GuidSymbol>
+    <GuidSymbol name="guidTypeScriptTypingsCmdSet" value="{6147C315-9D10-45E8-B410-CE8F3C22E030}">
+      <IDSymbol name="AddHubT4CommandId" value="0x4001" />
+    </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{51f54cc4-4444-4ae5-a1a6-d44f9a6b7cbc}" >
       <IDSymbol name="bmpPic1" value="1" />

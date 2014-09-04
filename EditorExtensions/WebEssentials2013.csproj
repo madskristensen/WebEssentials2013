@@ -243,6 +243,9 @@
     <Compile Include="BrowserLink\BrowserInfo\BrowserInfo.cs" />
     <Compile Include="BrowserLink\UnusedCss\ScssDocument.cs" />
     <Compile Include="CompatibilityChecker.cs" />
+    <Compile Include="CSON\Compilers\CsonCompiler.cs" />
+    <Compile Include="CSON\ContentType\CsonContentTypeDefinition.cs" />
+    <Compile Include="CSON\MenuItems\CsonMenu.cs" />
     <Compile Include="CSS\Adornments\ColorAdornment.cs" />
     <Compile Include="CSS\Adornments\ColorAdornmentTagger.cs" />
     <Compile Include="CSS\Adornments\ColorAdornmentTaggerProvider.cs" />
@@ -859,6 +862,7 @@
     <Content Include="Resources\Scripts\JSDocComments.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\server\services\srv-cson.js" />
     <Content Include="Resources\server\services\srv-autoprefixer.js" />
     <Content Include="Resources\server\services\srv-coffeescript.js" />
     <Content Include="Resources\server\services\srv-icedcoffeescript.js" />
@@ -1073,6 +1077,10 @@
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <Content Include="Resources\nodejs\tools\node_modules\less\lib\**; Resources\nodejs\tools\node_modules\less\bin\**">
+        <IncludeInVSIX>true</IncludeInVSIX>
+      </Content>
+      <!-- Explicitly inclusions for CSON -->
+      <Content Include="Resources\nodejs\tools\node_modules\cson\package.json; Resources\nodejs\tools\node_modules\cson\out\**; Resources\nodejs\tools\node_modules\js2coffee\package.json;">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
       <!-- Explicitly include JSON files that are actually needed at runtime -->

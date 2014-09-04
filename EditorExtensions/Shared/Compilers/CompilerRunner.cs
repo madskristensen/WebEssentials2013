@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using EnvDTE;
+using MadsKristensen.EditorExtensions.CoffeeScript;
 using MadsKristensen.EditorExtensions.Commands;
 using MadsKristensen.EditorExtensions.IcedCoffeeScript;
 using MadsKristensen.EditorExtensions.LiveScript;
@@ -183,6 +184,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     [ContentType(LessContentTypeDefinition.LessContentType)]
     [ContentType(ScssContentTypeDefinition.ScssContentType)]
     [ContentType(CoffeeContentTypeDefinition.CoffeeContentType)]
+    [ContentType(CsonContentTypeDefinition.CsonContentType)]
     [ContentType(IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType)]
     [ContentType(LiveScriptContentTypeDefinition.LiveScriptContentType)]
     [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]

@@ -107,6 +107,8 @@ namespace MadsKristensen.EditorExtensions
         RunCoffeeLint = 0x1096,
         RunJsCodeStyle = 0x1095,
         RunRtlCss = 0x2066,
+        RunCson2Json = 0x2067,
+        RunJson2Cson = 0x2068,
         CreateSolutionSettings = 0x1044,
         CreateSolutionColorPalete = 0x1045,
         CreateMarkdownStylesheet = 0x1046,
