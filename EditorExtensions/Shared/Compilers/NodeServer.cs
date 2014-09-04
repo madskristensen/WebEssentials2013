@@ -24,7 +24,7 @@ namespace MadsKristensen.EditorExtensions
         {
             AsyncLock mutex = new AsyncLock();
 
-            if (await HearbeatCheck())
+            if (await HeartbeatCheck())
                 return;
 
             while (true)
@@ -39,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     await task.ConfigureAwait(false);
 
-                    if (await HearbeatCheck())
+                    if (await HeartbeatCheck())
                         break;
                 }
             }
@@ -55,7 +55,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static async Task<bool> HearbeatCheck()
+        private static async Task<bool> HeartbeatCheck()
         {
             if (_server == null) return false;
             try
