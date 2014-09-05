@@ -37,7 +37,6 @@
     <StartArguments>/rootsuffix Exp</StartArguments>
     <ZipPackageCompressionLevel>Normal</ZipPackageCompressionLevel>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup>
@@ -1085,5 +1084,4 @@
       </Content>
     </ItemGroup>
   </Target>
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>
