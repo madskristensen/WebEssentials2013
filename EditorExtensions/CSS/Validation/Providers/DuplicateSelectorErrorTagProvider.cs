@@ -44,7 +44,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
             if (dupe != null)
             {
-                SelectorErrorTag tag = new SelectorErrorTag(rule.Selectors);
+                SelectorErrorTag tag = new SelectorErrorTag(rule.Selectors, "The selector " + ruleText + " is already specified earlier.  Consider combining the two rulesets.");
                 context.AddError(tag);
             }
 
@@ -54,7 +54,7 @@ namespace MadsKristensen.EditorExtensions.Css
         private static string GetSelectorText(RuleSet rule)
         {
             var selectorsText = rule.Selectors.OrderBy(s => s.Text.Trim(',')).Select(s => s.Text.Trim(','));
-            return string.Concat(selectorsText);
+            return string.Join(", ", selectorsText);
         }
 
         public IEnumerable<Type> ItemTypes

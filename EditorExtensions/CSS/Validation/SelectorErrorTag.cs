@@ -8,10 +8,11 @@ namespace MadsKristensen.EditorExtensions.Css
     {
         private SortedRangeList<Selector> _range;
 
-        public SelectorErrorTag(SortedRangeList<Selector> range)
+        public SelectorErrorTag(SortedRangeList<Selector> range, string text)
         {
             _range = range;
             Flags = WESettings.Instance.Css.ValidationLocation.ToCssErrorFlags();
+            Text = text;
         }
 
         public ParseItem Item
@@ -19,7 +20,7 @@ namespace MadsKristensen.EditorExtensions.Css
             get { return _range.First(); }
         }
 
-        public string Text { get { return null; } } // TODO: Add text?
+        public string Text { get; private set; }
 
         public int AfterEnd
         {
