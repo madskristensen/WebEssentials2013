@@ -361,6 +361,7 @@
     <Compile Include="JSON-LD\Vocabularies\VocabularyFactory.cs" />
     <Compile Include="JSON\Commands\FormatCommandTarget.cs" />
     <Compile Include="JSON\Commands\JsonCreationListener.cs" />
+    <Compile Include="JSON\Completion\FormatCompletionProvider.cs" />
     <Compile Include="JSON\Completion\HyperSchemaCompletionProvider.cs" />
     <Compile Include="JSON\Completion\RefValueCompletionProvider.cs" />
     <Compile Include="JSON\Completion\RequireCompletionProvider.cs" />
