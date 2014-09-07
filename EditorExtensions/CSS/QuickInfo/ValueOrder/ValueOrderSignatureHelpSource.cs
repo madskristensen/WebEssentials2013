@@ -46,7 +46,7 @@ namespace MadsKristensen.EditorExtensions
                 Dispatcher.CurrentDispatcher.BeginInvoke(
                     new Action(() =>
                     {
-                        if (session == null)
+                        if (session == null || session.Properties == null)
                             return;
 
                         session.Properties.AddProperty("dec", dec);
