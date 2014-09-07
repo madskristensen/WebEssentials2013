@@ -2,11 +2,12 @@
 using MadsKristensen.EditorExtensions.RtlCss;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions.Less
 {
     [Export(typeof(NodeExecutorBase))]
-    [ContentType("LESS")]
+    [ContentType(LessContentTypeDefinition.LessContentType)]
     public class LessCompiler : CssCompilerBase
     {
         protected override bool Previewing { get { return WESettings.Instance.Less.ShowPreviewPane; } }

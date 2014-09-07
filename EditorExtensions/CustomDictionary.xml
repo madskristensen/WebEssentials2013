@@ -71,6 +71,7 @@
       <Word>Autoprefixer</Word>
       <Word>Eval</Word>
       <Word>Rtl</Word>
+      <Word>Cson</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>

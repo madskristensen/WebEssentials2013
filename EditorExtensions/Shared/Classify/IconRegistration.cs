@@ -20,6 +20,9 @@ namespace MadsKristensen.EditorExtensions
                     if (classes == null)
                         return;
 
+                    // CSON
+                    AddIcon(classes, "CoffeeScript.ico", ".cson");
+
                     // IcedCoffeeScript
                     AddIcon(classes, "CoffeeScript.ico", ".iced");
 

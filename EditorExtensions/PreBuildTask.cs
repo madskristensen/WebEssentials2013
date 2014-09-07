@@ -74,7 +74,8 @@ namespace MadsKristensen.EditorExtensions
                 InstallModuleAsync("coffeelint", "coffeelint"),
                 InstallModuleAsync("sjs", "sweet.js"),
                 InstallModuleAsync(null, "xregexp"),
-                InstallModuleAsync("rtlcss", "rtlcss")
+                InstallModuleAsync("rtlcss", "rtlcss"),
+                InstallModuleAsync("cson", "cson")
             ).Result.Where(r => r != ModuleInstallResult.AlreadyPresent);
 
             if (moduleResults.Contains(ModuleInstallResult.Error))
