@@ -28,17 +28,21 @@ namespace MadsKristensen.EditorExtensions.Css
             // Remove parameters if any; c:/temp/myfile.ext?#iefix
             fileName = fileName.Split('?', '#')[0];
 
-            FileInfo file = new FileInfo(fileName);
-
-            if (file.Exists && file.Length < (1024 * 3))
+            try
             {
-                Declaration dec = url.FindType<Declaration>();
-                if (dec != null && dec.PropertyName != null && dec.PropertyName.Text[0] != '*' && dec.PropertyName.Text[0] != '_')
+                FileInfo file = new FileInfo(fileName);
+
+                if (file.Exists && file.Length < (1024 * 3))
                 {
-                    string error = string.Format(CultureInfo.CurrentCulture, Resources.PerformanceEmbedImageAsDataUri, file.Length);
-                    context.AddError(new SimpleErrorTag(url.UrlString, error));
+                    Declaration dec = url.FindType<Declaration>();
+                    if (dec != null && dec.PropertyName != null && dec.PropertyName.Text[0] != '*' && dec.PropertyName.Text[0] != '_')
+                    {
+                        string error = string.Format(CultureInfo.CurrentCulture, Resources.PerformanceEmbedImageAsDataUri, file.Length);
+                        context.AddError(new SimpleErrorTag(url.UrlString, error));
+                    }
                 }
             }
+            catch { /* Ignore any error here */ }
 
             return ItemCheckResult.Continue;
         }
