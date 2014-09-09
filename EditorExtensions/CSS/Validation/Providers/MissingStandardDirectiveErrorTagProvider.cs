@@ -27,7 +27,8 @@ namespace MadsKristensen.EditorExtensions.Css
             {
                 var visitor = new CssItemCollector<AtDirective>();
                 directive.Parent.Accept(visitor);
-                if (!visitor.Items.Any(a => "@" + a.Keyword.Text == entry.DisplayText))
+
+                if (!visitor.Items.Any(a => a != null && a.Keyword != null && "@" + a.Keyword.Text == entry.DisplayText))
                 {
                     string message = string.Format(CultureInfo.InvariantCulture, Resources.BestPracticeAddMissingStandardDirective, entry.DisplayText);
                     context.AddError(new SimpleErrorTag(directive.Keyword, message));
