@@ -220,16 +220,40 @@ namespace MadsKristensen.EditorExtensions.Settings
         public bool EnableEnterFormat { get; set; }
 
         [Category("Minification")]
+        [DisplayName("Attribute quotes removal mode")]
+        [Description("Sets the removal mode of HTML attribute quotes.")]
+        [DefaultValue(HtmlAttributeQuotesRemovalMode.KeepQuotes)]
+        public HtmlAttributeQuotesRemovalMode AttributeQuotesRemovalMode { get; set; }
+
+        [Category("Minification")]
+        [DisplayName("Custom Angular directives with expressions")]
+        [Description(@"Specify comma-separated list of names of custom Angular.js directives (e.g. ""myDir, btfCarousel""), that contain expressions.")]
+        [DefaultValue(null)]
+        public string CustomAngularDirectiveList { get; set; }
+
+        [Category("Minification")]
+        [DisplayName("Minify Angular.js binding expressions")]
+        [Description("Minify Angular.js binding expressions in double curly brackets and directives.")]
+        [DefaultValue(false)]
+        public bool MinifyAngularBindingExpressions { get; set; }
+
+        [Category("Minification")]
         [DisplayName("Minify files on save")]
         [Description("Update any .min.html file when saving the corresponding .html file. To create a .min.html file, right-click a .html file.")]
         [DefaultValue(false)]
         public bool AutoMinify { get; set; }
 
         [Category("Minification")]
-        [DisplayName("Minification Mode")]
-        [Description("Sets the mode of how the HTML minifier should minify")]
-        [DefaultValue(HtmlAttributeQuotesRemovalMode.KeepQuotes)]
-        public HtmlAttributeQuotesRemovalMode MinificationMode { get; set; }
+        [DisplayName("Minify Knockout.js binding expressions")]
+        [Description("Minify Knockout.js binding expressions in data-bind attributes and containerless comments.")]
+        [DefaultValue(false)]
+        public bool MinifyKnockoutBindingExpressions { get; set; }
+
+        [Category("Minification")]
+        [DisplayName("Processable script types")]
+        [Description(@"Specify comma-separated list of types of script tags, that are processed by minifier (e.g. ""text/html, text/ng-template"").")]
+        [DefaultValue(null)]
+        public string ProcessableScriptTypeList { get; set; }
 
         [Category("Minification")]
         [DisplayName("Create gzipped files")]
