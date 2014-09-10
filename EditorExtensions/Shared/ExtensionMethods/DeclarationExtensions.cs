@@ -11,7 +11,7 @@ namespace MadsKristensen.EditorExtensions
     {
         public static bool IsVendorSpecific(this Declaration declaration)
         {
-            return declaration.PropertyName.Length > 0 ? declaration.PropertyName.Text[0] == '-' : false;
+            return declaration.PropertyName.Text.StartsWith("-", StringComparison.Ordinal);
         }
 
         public static bool TryGetStandardPropertyName(this Declaration declaration, out string standardName, ICssSchemaInstance schema)
