@@ -65,13 +65,22 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
     {
         public override string MinifyString(string source)
         {
+            var weHtmlSettings = WESettings.Instance.Html;
             var settings = new HtmlMinificationSettings
             {
+                // Tags
                 RemoveOptionalEndTags = false,
-
-                AttributeQuotesRemovalMode = WESettings.Instance.Html.MinificationMode,
-                RemoveRedundantAttributes = false,
                 //EmptyTagRenderMode = HtmlEmptyTagRenderMode.Slash,
+
+                // Attributes
+                AttributeQuotesRemovalMode = weHtmlSettings.AttributeQuotesRemovalMode,
+                RemoveRedundantAttributes = false,
+
+                // JavaScript templating
+                ProcessableScriptTypeList = weHtmlSettings.ProcessableScriptTypeList,
+                MinifyKnockoutBindingExpressions = weHtmlSettings.MinifyKnockoutBindingExpressions,
+                MinifyAngularBindingExpressions = weHtmlSettings.MinifyAngularBindingExpressions,
+                CustomAngularDirectiveList = weHtmlSettings.CustomAngularDirectiveList
             };
 
             var minifier = new HtmlMinifier(settings);
