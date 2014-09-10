@@ -13,11 +13,14 @@ namespace MadsKristensen.EditorExtensions.Css
     {
         public void FilterErrorList(IList<ICssError> errors, ICssCheckerContext context)
         {
+            if (errors == null || context == null)
+                return;
+
             for (int i = errors.Count - 1; i > -1; i--)
             {
                 ICssError error = errors[i];
 
-                if (!(error.Item.StyleSheet is LessStyleSheet))
+                if (error.Item == null || error.Item.StyleSheet == null || string.IsNullOrEmpty(error.Item.Text) || !(error.Item.StyleSheet is LessStyleSheet))
                     continue;
 
                 // Remove errors from using the :extend pseudo class
