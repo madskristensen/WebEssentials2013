@@ -39,7 +39,7 @@ namespace MadsKristensen.EditorExtensions
                     AddIcon(classes, "Bundle.ico", ".bundle");
 
                     // Fonts
-                    AddIcon(classes, "Font.ico", ".wof", ".woff", ".eot");
+                    AddIcon(classes, "Font.ico", ".wof", ".woff", ".woff2", ".eot");
 
                     // Git
                     AddIcon(classes, "Git.ico", ".gitignore", ".gitattributes");
