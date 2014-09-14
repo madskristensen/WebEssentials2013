@@ -217,20 +217,7 @@ namespace MadsKristensen.EditorExtensions
 
             FlattenNodeModules(@"resources\nodejs\tools");
 
-            // Fix node-sass-middleware require:
-            FixRequired();
-
             return true;
-        }
-
-        private void FixRequired()
-        {
-            string requiredFile = @"resources\nodejs\tools\node_modules\node-sass-middleware\middleware.js";
-            string text = File.ReadAllText(requiredFile);
-
-            text = Regex.Replace(text, @"require\(\'node-sass\'\)", @"require('../node-sass/bin/node-sass')");
-
-            File.WriteAllText(requiredFile, text);
         }
 
         /// <summary>
