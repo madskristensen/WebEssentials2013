@@ -31,8 +31,7 @@ var handleSweetJS = function (writer, params) {
         }
 
         try {
-            compiled = sweetjs.compile(data, options);
-
+            var compiled = sweetjs.compile(data, options);
             var targetDir = path.dirname(params.targetFileName);
             var map = JSON.parse(compiled.sourceMap);
             map.file = path.basename(params.targetFileName);
@@ -56,6 +55,8 @@ var handleSweetJS = function (writer, params) {
             writer.end();
         } catch (error) {
             var regex = xRegex.exec(error, xRegex(".+:.*?\\n*.*?Line.+\\d+: (?<fullMessage>.*(\\n*.*)*)", 'gi'));
+            var message = regex ? regex.fullMessage : "Unknown error.";
+
             writer.write(JSON.stringify({
                 Success: false,
                 SourceFileName: params.sourceFileName,
@@ -66,9 +67,9 @@ var handleSweetJS = function (writer, params) {
                 Errors: [{
                     Line: error.lineNumber,
                     Column: error.column,
-                    Message: "SweetJS: " + error.description,
-                    FileName: param.sourceFileName,
-                    FullMessage: "SweetJS: " + regex.fullMessage
+                    Message: "SweetJS: " + (error.description || message),
+                    FileName: params.sourceFileName,
+                    FullMessage: "SweetJS: " + message
                 }]
             }));
             writer.end();
