@@ -60,15 +60,6 @@ namespace MadsKristensen.EditorExtensions
             foreach (string asset in document.OriginalBundleAssets)
             {
                 string absolute = asset.Contains(":\\") ? asset : ProjectHelpers.ToAbsoluteFilePath(asset, document.FileName);
-                string absoluteActual = GetActualAsset(absolute);
-
-                if (!File.Exists(absoluteActual))
-                {
-                    WebEssentialsPackage.DTE.ItemOperations.OpenFile(document.FileName);
-                    Logger.ShowMessage(String.Format(CultureInfo.CurrentCulture, "Bundle error: The file '{0}' doesn't exist", asset));
-
-                    return null;
-                }
 
                 if (!File.Exists(absolute))
                 {
@@ -78,29 +69,18 @@ namespace MadsKristensen.EditorExtensions
                     return null;
                 }
 
-                if (!files.ContainsKey(absoluteActual))
+                if (!files.ContainsKey(absolute))
                 {
                     if (Path.IsPathRooted(asset))
                         files.Add(absolute, asset);
                     else
                         files.Add(absolute, FileHelpers.RelativePath(bundleFile, Path.GetFullPath(Path.Combine(Path.GetDirectoryName(document.FileName), asset))));
 
-                    await new BundleFileObserver().AttachFileObserver(document, absoluteActual, updateBundle);
+                    await new BundleFileObserver().AttachFileObserver(document, absolute, updateBundle);
                 }
             }
 
             return files;
-        }
-
-        private static string GetActualAsset(string path)
-        {
-            const string typeScriptExtension = ".ts";
-
-            //If we actually have a type script file in the javascript bundle, we'll want to include its js file.
-            if (Path.GetExtension(path).Equals(typeScriptExtension, StringComparison.OrdinalIgnoreCase))
-                return Path.ChangeExtension(path, ".js");
-
-            return path;
         }
 
         private async static Task<string> CombineFiles(Dictionary<string, string> files, string extension, BundleDocument bundle, string bundleFile)
@@ -109,11 +89,11 @@ namespace MadsKristensen.EditorExtensions
 
             foreach (string file in files.Keys)
             {
-                string actualFile = GetActualAsset(file);
+                string actualFile = file;
 
                 if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase) && WESettings.Instance.JavaScript.GenerateSourceMaps)
                 {
-                    sb.AppendLine("///#source 1 1 " + GetActualAsset(files[file]));
+                    sb.AppendLine("///#source 1 1 " + files[file]);
                 }
 
                 var source = await FileHelpers.ReadAllTextRetry(actualFile);
@@ -136,7 +116,7 @@ namespace MadsKristensen.EditorExtensions
                     // If it is a Type Script include, we might want to alter the define(... at the start of the script to specify the resource location.
                     if (source.StartsWith("define([\"require\", \"exports\""))
                     {
-                        string moduleName = GetActualAsset(files[file]);
+                        string moduleName = files[file];
 
                         moduleName = Path.Combine(Path.GetDirectoryName(moduleName), Path.GetFileNameWithoutExtension(moduleName)).Replace('\\', '/');
 
