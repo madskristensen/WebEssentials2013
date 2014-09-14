@@ -72,6 +72,7 @@
       <Word>Eval</Word>
       <Word>Rtl</Word>
       <Word>Cson</Word>
+      <Word>Processable</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>

@@ -44,7 +44,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
             if (dupe != null)
             {
-                SelectorErrorTag tag = new SelectorErrorTag(rule.Selectors, "The selector " + ruleText + " is already specified earlier.  Consider combining the two rulesets.");
+                SelectorErrorTag tag = new SelectorErrorTag(rule.Selectors, "The selector " + ruleText + " is already specified earlier.  Consider combining the two rule-sets.");
                 context.AddError(tag);
             }
 
