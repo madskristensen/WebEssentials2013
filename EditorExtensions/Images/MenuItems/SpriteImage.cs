@@ -65,7 +65,7 @@ namespace MadsKristensen.EditorExtensions.Images
             catch (Exception ex)
             {
                 Logger.Log(ex);
-                MessageBox.Show("Error generating the sprite. See output window for details");
+                Logger.Log("Error generating the sprite. See output window for details");
                 _dte.StatusBar.Text = "Sprite was not created";
             }
         }
@@ -112,13 +112,13 @@ namespace MadsKristensen.EditorExtensions.Images
             catch (FileNotFoundException ex)
             {
                 Logger.Log(ex.Message);
-                MessageBox.Show("The file '" + Path.GetFileName(ex.Message) + "' does not exist");
+                Logger.Log("The file '" + Path.GetFileName(ex.Message) + "' does not exist");
                 _dte.StatusBar.Text = "Sprite was not created";
             }
             catch (Exception ex)
             {
                 Logger.Log(ex);
-                MessageBox.Show("Error generating the sprite. See output window for details");
+                Logger.Log("Error generating the sprite. See output window for details");
             }
         }
 
