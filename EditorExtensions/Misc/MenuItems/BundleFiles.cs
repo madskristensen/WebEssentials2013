@@ -166,13 +166,13 @@ namespace MadsKristensen.EditorExtensions
             catch (FileNotFoundException ex)
             {
                 Logger.Log(ex.Message);
-                MessageBox.Show("The file '" + Path.GetFileName(ex.Message) + "' does not exist");
+                Logger.Log("The file '" + Path.GetFileName(ex.Message) + "' does not exist");
                 _dte.StatusBar.Text = "Bundle was not created";
             }
             catch (Exception ex)
             {
                 Logger.Log(ex);
-                MessageBox.Show("Error generating the bundle. See output window for details");
+                Logger.Log("Error generating the bundle. See output window for details");
             }
         }
 
@@ -193,7 +193,7 @@ namespace MadsKristensen.EditorExtensions
             catch (Exception ex)
             {
                 Logger.Log(ex);
-                MessageBox.Show("Error generating the bundle. See output window for details");
+                Logger.Log("Error generating the bundle. See output window for details");
                 _dte.StatusBar.Text = "Bundle was not created";
             }
         }
