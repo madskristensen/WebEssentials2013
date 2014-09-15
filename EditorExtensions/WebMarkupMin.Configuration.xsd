@@ -211,7 +211,7 @@
 		</xs:attribute>
 		<xs:attribute name="removeHtmlComments" type="Boolean_SchemaType" use="optional" default="true">
 			<xs:annotation>
-				<xs:documentation>Flag for whether to remove all HTML comments except conditional, noindex and Knockout containerless comments</xs:documentation>
+				<xs:documentation>Flag for whether to remove all HTML comments except conditional, noindex, KnockoutJS containerless comments and AngularJS comment directives</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="removeHtmlCommentsFromScriptsAndStyles" type="Boolean_SchemaType" use="optional" default="true">
@@ -269,8 +269,28 @@
 				<xs:documentation>Flag for whether to minify JS code in event attributes and hyperlinks with javascript: pseudo-protocol</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="processableScriptTypeList" type="xs:string" use="optional" default="">
+			<xs:annotation>
+				<xs:documentation>Comma-separated list of types of <code>script</code> tags, that are processed by minifier (e.g. "text/html, text/ng-template")</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="minifyKnockoutBindingExpressions" type="Boolean_SchemaType" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Flag for whether to minify the KnockoutJS binding expressions in `data-bind` attributes and containerless comments</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="minifyAngularBindingExpressions" type="Boolean_SchemaType" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Flag for whether to minify the AngularJS binding expressions in Mustache-style tags (`{{}}`) and directives</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="customAngularDirectiveList" type="xs:string" use="optional" default="">
+			<xs:annotation>
+				<xs:documentation>Comma-separated list of names of custom AngularJS directives (e.g. "myDir, btfCarousel"), that contain expressions</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
-	
+
 	<xs:complexType name="XmlMinificationConfiguration_SchemaType">
 		<xs:attribute name="minifyWhitespace" type="Boolean_SchemaType" use="optional" default="true">
 			<xs:annotation>
@@ -523,7 +543,12 @@ Leave all other color names or hex values as-specified.</xs:documentation>
 				<xs:attribute name="alwaysEscapeNonAscii" type="Boolean_SchemaType" use="optional" default="false">
 					<xs:annotation>
 						<xs:documentation>Flag indicating whether to always escape non-ASCII characters as \uXXXX or to let the output encoding object handle that via the JsEncoderFallback object for the specified output encoding format</xs:documentation>
-					</xs:annotation>				
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="amdSupport" type="Boolean_SchemaType" use="optional" default="false">
+					<xs:annotation>
+						<xs:documentation>Flag indicating whether to perform extra tasks on AMD-style defines</xs:documentation>
+					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="collapseToLiteral" type="Boolean_SchemaType" use="optional" default="true">
 					<xs:annotation>
@@ -876,6 +901,11 @@ Not easily human-readable.</xs:documentation>
 					<xs:maxInclusive value="5000000" />
 				</xs:restriction>
 			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="disableCopyrightHttpHeaders" type="Boolean_SchemaType" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Flag for whether to disable the WebMarkupMin copyright HTTP headers (e.g. "X-HTML-Minification-Powered-By: WebMarkupMin")</xs:documentation>
+			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
 	<!-- /Web extensions configuration settings -->
