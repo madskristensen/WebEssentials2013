@@ -33,10 +33,10 @@ namespace MadsKristensen.EditorExtensions.Compilers
                     .Select(fileName =>
                         {
                             string targetPath = runner.GetTargetPath(fileName);
-                            if (File.Exists(targetPath))
+                            //if (File.Exists(targetPath))
                                 return runner.CompileAsync(fileName, targetPath).HandleErrors("compiling" + fileName);
-                            else
-                                return Task.FromResult<CompilerResult>(null);
+                            //else
+                            //    return Task.FromResult<CompilerResult>(null);
                         })
             );
         }
