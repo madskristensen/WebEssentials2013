@@ -43,14 +43,17 @@ namespace WebEssentialsTests
                 Assert.IsFalse(result);
             }
 
+            /// <summary>
+            /// It's OK if there is only one 'column'. So let the Columns Validator check for that.
+            /// </summary>
             [TestMethod]
-            public void ColumnClassButMissingSize_Error()
+            public void ColumnClassButMissingSize_OK()
             {
                 var input = @"columns highlight";
 
                 var result = FoundationClassValidator.ColumnPairElementsOk(input);
 
-                Assert.IsFalse(result);
+                Assert.IsTrue(result);
             }
             [TestMethod]
             public void NoWarningForFoundationBlockGridClass()
@@ -106,8 +109,11 @@ namespace WebEssentialsTests
                 System.Console.WriteLine(compiled[0].Message);
             }
 
+            /// <summary>
+            ///  It's OK if there is only one 'column'. So let the Columns Validator check for that.
+            /// </summary>
             [TestMethod]
-            public void MissingSizeClass()
+            public void MissingSizeClass_OkIfOnlyOneColum()
             {
                 FoundationClassValidator validator = new FoundationClassValidator();
 
@@ -119,12 +125,9 @@ namespace WebEssentialsTests
 
                 IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0]);
 
-                int expected = 1;
-                string expectedMessagePart = "When using \"columns\"";
+                int expected = 0;
 
                 Assert.AreEqual(expected, compiled.Count);
-                Assert.IsTrue(compiled[0].Message.Contains(expectedMessagePart));
-                System.Console.WriteLine(compiled[0].Message);
             }
 
             [TestMethod]

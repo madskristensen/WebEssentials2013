@@ -55,7 +55,8 @@ namespace MadsKristensen.EditorExtensions.Html
                                                     .Any(y => y.StartsWith(x, StringComparison.Ordinal)));
 
             // If both are there, or both are missing it's OK
-            if ((containColumnClass && containSizeClass) || (!containColumnClass && !containSizeClass))
+            // Ok too if only column without size. The FoundationColumnsValidator will check if it's realy OK (only one column class).
+            if ((containColumnClass && containSizeClass) || (!containColumnClass && !containSizeClass) || (containColumnClass && !containSizeClass))
                 return true;
             else
                 return false;
