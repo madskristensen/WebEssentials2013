@@ -14,7 +14,7 @@ var processAutoprefixer = function (cssContent, mapContent, browsers, sourceFile
             // Return same css and map back so compilers can continue.
             return {
                 Success: false,
-                Remarks: "Autoprefixer: Invalid browser provided! See autoprefixer docs for list of valid browsers options.",
+                Remarks: "Invalid browser provided! See autoprefixer docs for list of valid browsers options.",
                 css: cssContent,
                 map: mapContent
             };
