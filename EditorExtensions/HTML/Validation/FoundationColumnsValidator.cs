@@ -22,6 +22,7 @@ namespace MadsKristensen.EditorExtensions.Html
         private static string _errorRowMissing = "Foundation: When using \"{0}\", you must also specify the class \"row\" on the parent element.";
         private static string _errorOver12Columns = "Foundation: \"{0}\" - If you define more than 12 columns, the sum should be a multiple of 12. For examples: http://foundation.zurb.com/docs/components/grid.html";
         private static string _errorUnder12Columns = "Foundation: \"{0}\" - When declaring less then 12 columns, the last column need the 'end' class element.";
+        private static string _onlyOneColumnWithoutSizeAllowed = "Foundation: When declaring column without size, only one element with the class 'column' (or 'columns') is allowed for a parent 'row' element.";
 
         public override IList<IHtmlValidationError> ValidateElement(ElementNode element)
         {
@@ -73,6 +74,13 @@ namespace MadsKristensen.EditorExtensions.Html
 
                 if (containCenteredElement)
                     return results;
+            }
+
+            // Ok to not have size class only if there is only one column defined (that will be 100%)
+            if (classList.Count() == 0 && !IsParentDivContainOnlyOneChildColumnElement(element))
+            {
+                var index = element.Attributes.IndexOf(elementClasses);
+                results.AddAttributeError(element, _onlyOneColumnWithoutSizeAllowed, HtmlValidationErrorLocation.AttributeValue, index);
             }
 
             foreach (var columnSize in classList)
@@ -154,6 +162,18 @@ namespace MadsKristensen.EditorExtensions.Html
                 // For the grid system of Foundation, the row class must be on the direct parent element.
                 return true;
             }
+        }
+
+        private static bool IsParentDivContainOnlyOneChildColumnElement(ElementNode element)
+        {
+            var sumOfColumns = element.Parent.Children
+                            .Where(x => x.HasAttribute("class"))
+                            .Where(x => x.GetAttribute("class").Value.Contains("column") || x.GetAttribute("class").Value.Contains("columns")).Count();
+
+            if (sumOfColumns == 1)
+                return true;
+            else
+                return false;
         }
     }
 }

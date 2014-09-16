@@ -53,6 +53,47 @@ namespace WebEssentialsTests
         }
 
         [TestMethod]
+        public void MinimalistCorrectColumnUsage()
+        {
+            FoundationColumnsValidator validator = new FoundationColumnsValidator();
+
+            var source = @"<div class='row'>
+                              <div class='columns'>12 columns</div>
+                           </div>";
+
+            var tree = new HtmlTree(new TextStream(source));
+
+            tree.Build();
+
+            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0].Children[0]);
+
+            int expected = 0;
+
+            Assert.AreEqual(expected, compiled.Count);
+        }
+
+        [TestMethod]
+        public void TwoColumnsElementWithoutSize_Error()
+        {
+            FoundationColumnsValidator validator = new FoundationColumnsValidator();
+
+            var source = @"<div class='row'>
+                              <div class='columns'>6 columns</div>
+                              <div class='columns'>6 columns</div>
+                           </div>";
+
+            var tree = new HtmlTree(new TextStream(source));
+
+            tree.Build();
+
+            IList<IHtmlValidationError> compiled = validator.ValidateElement(tree.RootNode.Children[0].Children[0]);
+
+            int expected = 1;
+
+            Assert.AreEqual(expected, compiled.Count);
+        }
+
+        [TestMethod]
         public void CorrectComplexColumnsUsage()
         {
             FoundationColumnsValidator validator = new FoundationColumnsValidator();
