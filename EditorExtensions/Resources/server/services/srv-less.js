@@ -95,6 +95,24 @@ var handleLess = function (writer, params) {
 
                 if (params.autoprefixer !== undefined) {
                     var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, params.autoprefixerBrowsers, params.sourceFileName, params.targetFileName);
+
+                    if (!autoprefixedOutput.Success) {
+                        writer.write(JSON.stringify({
+                            Success: false,
+                            SourceFileName: params.sourceFileName,
+                            TargetFileName: params.targetFileName,
+                            MapFileName: params.mapFileName,
+                            Remarks: "LESS: " + autoprefixedOutput.Remarks,
+                            Details: autoprefixedOutput.Remarks,
+                            Errors: [{
+                                Message: "LESS: " + autoprefixedOutput.Remarks,
+                                FileName: params.sourceFileName
+                            }]
+                        }));
+                        writer.end();
+                        return;
+                    }
+
                     css = autoprefixedOutput.css;
                     map = autoprefixedOutput.map;
                 }
