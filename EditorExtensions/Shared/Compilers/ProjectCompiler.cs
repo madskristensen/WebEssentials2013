@@ -33,9 +33,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
                     .Select(fileName =>
                         {
                             string targetPath = runner.GetTargetPath(fileName);
-                            var solution = WebEssentialsPackage.DTE.Solution;
-                            var targetProjectItem = solution.FindProjectItem(targetPath);
-                            if (File.Exists(targetPath) || targetProjectItem != null)
+                            if (File.Exists(targetPath) || ProjectHelpers.GetProjectItem(targetPath) != null)
                                 return runner.CompileAsync(fileName, targetPath).HandleErrors("compiling" + fileName);
                             else
                                 return Task.FromResult<CompilerResult>(null);
