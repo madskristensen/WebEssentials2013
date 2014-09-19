@@ -208,8 +208,6 @@ namespace MadsKristensen.EditorExtensions
             foreach (Tuple<string, FileSystemWatcher> tuple in tuples)
             {
                 tuple.Item2.EnableRaisingEvents = false;
-
-                tuple.Item2.Dispose();
             }
         }
 
