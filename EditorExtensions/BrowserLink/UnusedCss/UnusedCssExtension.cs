@@ -132,6 +132,9 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
         [BrowserLinkCallback]
         public void GetIgnoreList()
         {
+            if (_connection == null)
+                return;
+
             Browsers.Client(_connection).Invoke("installIgnorePatterns", IgnorePatternList);
 
             //Apply any deferred actions
