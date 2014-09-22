@@ -6,19 +6,16 @@ var sass = require("node-sass"),
 
 //#region Handler
 var handleSass = function (writer, params) {
-    params.targetFileName = params.targetFileName.replace(/\\/g, '/');
-    params.sourceFileName = params.sourceFileName.replace(/\\/g, '/');
-    params.mapFileName = params.mapFileName.replace(/\\/g, '/');
-
     sass.render({
         file: params.sourceFileName,
+        outFile: params.targetFileName,
         includePaths: [path.dirname(params.sourceFileName)],
         precision: parseInt(params.precision, 10),
         outputStyle: params.outputStyle,
         sourceMap: params.mapFileName,
+        omitSourceMapUrl: params.sourceMapURL === undefined,
         success: function (css, map) {
             map = JSON.parse(map);
-            map.file = path.basename(params.targetFileName);
 
             if (params.autoprefixer !== undefined) {
                 var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, params.autoprefixerBrowsers, params.sourceFileName, params.targetFileName);
@@ -42,16 +39,6 @@ var handleSass = function (writer, params) {
 
                 css = autoprefixedOutput.css;
                 map = autoprefixedOutput.map;
-            }
-
-            // SASS doesn't generate source-maps without source-map comments
-            // (unlike LESS and CoffeeScript). So we need to delete the comment
-            // manually if its not present in params.
-            if (params.sourceMapURL === undefined) {
-                var soucemapCommentLineIndex = css.lastIndexOf("\n");
-                if (soucemapCommentLineIndex > 0) {
-                    css = css.substring(0, soucemapCommentLineIndex);
-                }
             }
 
             if (params.rtlcss !== undefined) {
