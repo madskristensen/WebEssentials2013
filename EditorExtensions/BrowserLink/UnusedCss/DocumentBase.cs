@@ -53,13 +53,19 @@ namespace MadsKristensen.EditorExtensions.BrowserLink.UnusedCss
 
         public void Dispose()
         {
+            if (!_isDisposed)
+            {
+                _watcher.Changed -= Reparse;
+                _watcher.Renamed -= ProxyRename;
+                _watcher.Created -= Reparse;
+                _watcher.Deleted -= CleanUpWarnings;
+
+                _watcher.Dispose();
+
+                GC.SuppressFinalize(this);
+            }
+
             _isDisposed = true;
-            _watcher.Changed -= Reparse;
-            _watcher.Renamed -= ProxyRename;
-
-            _watcher.Dispose();
-
-            GC.SuppressFinalize(this);
         }
 
         private void ProxyRename(object sender, RenamedEventArgs e)
