@@ -19,7 +19,7 @@ namespace MadsKristensen.EditorExtensions.JSON
         private static Dictionary<string, IEnumerable<string>> _schemas = new Dictionary<string, IEnumerable<string>>();
         private static Options _options = new Options { AllowWindowsPaths = true };
         private static bool _isDownloading;
-        private const int _days = 7;
+        private const int _days = 3;
 
         public IEnumerable<string> GetAvailableSchemas()
         {
