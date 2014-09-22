@@ -101,7 +101,7 @@ namespace MadsKristensen.EditorExtensions.Images
 
         private static string GetSelector(string fileName, SpriteDocument sprite, ExportFormat format)
         {
-            string className = FileHelpers.GetFileNameWithoutExtension(fileName);
+            string className = Path.GetFileNameWithoutExtension(fileName).Replace(".", "-");
 
             if (sprite.UseFullPathForIdentifierName)
             {
