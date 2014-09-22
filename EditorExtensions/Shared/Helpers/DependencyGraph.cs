@@ -48,7 +48,16 @@ namespace MadsKristensen.EditorExtensions.Helpers
         public async Task<IEnumerable<string>> GetRecursiveDependentsAsync(string fileName)
         {
             HashSet<GraphNode> visited;
-            fileName = Path.GetFullPath(fileName);
+
+            try
+            {
+                fileName = Path.GetFullPath(fileName);
+            }
+            catch (ArgumentException)
+            {
+                return Enumerable.Empty<string>();
+            }
+
             using (await rwLock.ReadLockAsync())
             {
                 GraphNode rootNode;

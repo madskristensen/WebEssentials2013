@@ -89,11 +89,6 @@ namespace MadsKristensen.EditorExtensions
             if (!FlattenModulesAsync().Result)
                 return false;
 
-            // Patch to disqualify node-sass-middleware
-            string middleware = @"resources\nodejs\tools\node_modules\node-sass-middleware\middleware.js";
-            if (File.Exists(middleware))
-                File.Create(middleware);
-
             return true;
         }
 
