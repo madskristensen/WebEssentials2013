@@ -11,8 +11,7 @@ var processRtlCSS = function (cssContent, mapContent, autoprefixer, autoprefixer
         mapContent = { prev: mapContent };
     }
 
-    var result;
-
+    var result, css, map;
     try {
         var config = configLoader.load(null, path.dirname(sourceFileName), { options: { minify: false } });
 
@@ -21,8 +20,11 @@ var processRtlCSS = function (cssContent, mapContent, autoprefixer, autoprefixer
             from: sourceFileName,
             to: targetFileName
         });
+
+        css = result.css;
+        map = result.map;
     } catch (e) {
-        // Return same css and map back so compilers can continue.
+        // Return same css and map back so the upstream compilers can continue.
         return {
             Success: false,
             Remarks: "RTLCSS: Exception occured: " + e.message,
@@ -31,8 +33,6 @@ var processRtlCSS = function (cssContent, mapContent, autoprefixer, autoprefixer
         };
     }
 
-    var css = result.css;
-    var map = result.map;
 
     if (autoprefixer !== undefined) {
         var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, autoprefixerBrowsers, sourceFileName, targetFileName);
