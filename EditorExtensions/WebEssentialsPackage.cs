@@ -46,7 +46,7 @@ namespace MadsKristensen.EditorExtensions
     [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling"), PackageRegistration(UseManagedResourcesOnly = true)]
     public sealed class WebEssentialsPackage : Package
     {
-        public const string Version = "2.3.3";
+        public const string Version = "2.3.4";
 
         private static DTE2 _dte;
         private static IVsRegisterPriorityCommandTarget _pct;
