@@ -22,7 +22,11 @@ namespace MadsKristensen.EditorExtensions.Html
 
         protected override bool Execute(FormattingCommandId commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            HtmlEditorDocument document = HtmlEditorDocument.FromTextView(_view);
+            HtmlEditorDocument document = HtmlEditorDocument.TryFromTextView(_view);
+
+            if (document == null)
+                return false;
+
             var tree = document.HtmlEditorTree;
 
             int start = _view.Selection.Start.Position.Position;

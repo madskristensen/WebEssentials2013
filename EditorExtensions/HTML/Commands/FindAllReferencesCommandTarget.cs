@@ -15,7 +15,9 @@ namespace MadsKristensen.EditorExtensions.Html
         public HtmlFindAllReferences(IVsTextView adapter, IWpfTextView textView)
             : base(adapter, textView, VSConstants.VSStd97CmdID.FindReferences)
         {
-            _tree = HtmlEditorDocument.FromTextView(textView).HtmlEditorTree;
+            HtmlEditorDocument document = HtmlEditorDocument.TryFromTextView(textView);
+
+            _tree = document == null ? null : document.HtmlEditorTree;
         }
 
         protected override bool Execute(VSConstants.VSStd97CmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)

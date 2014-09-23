@@ -58,7 +58,11 @@ namespace MadsKristensen.EditorExtensions
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
                 var view = ProjectHelpers.GetCurentTextView();
-                var html = HtmlEditorDocument.FromTextView(view);
+                var html = HtmlEditorDocument.TryFromTextView(view);
+
+                if (html == null)
+                    return;
+
                 ElementNode element;
                 AttributeNode attribute;
 
