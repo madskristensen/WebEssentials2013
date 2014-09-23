@@ -37,7 +37,6 @@ var processAutoprefixer = function (cssContent, mapContent, browsers, sourceFile
 
     // Curate maps
     mapContent = result.map.toJSON();
-    mapContent.sources = oldMap.sources;
 
     return {
         Success: true,
