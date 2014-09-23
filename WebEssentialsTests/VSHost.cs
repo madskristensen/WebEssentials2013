@@ -17,48 +17,18 @@ namespace WebEssentialsTests
 {
     public static class VSHost
     {
-        static readonly string BaseDirectory = "";//Path.GetDirectoryName(typeof(VSHost).Assembly.Location);
+        static readonly string BaseDirectory = Path.GetDirectoryName(typeof(VSHost).Assembly.Location);
         public static readonly string FixtureDirectory = Path.Combine(BaseDirectory, "fixtures", "Visual Studio");
 
-        public static DTE DTE
-        {
-            get
-            {
-#if NCRUNCH
-            return null;
-#else
+        public static DTE DTE { get { return VsIdeTestHostContext.Dte; } }
+        public static System.IServiceProvider ServiceProvider { get { return VsIdeTestHostContext.ServiceProvider; } }
 
-                return VsIdeTestHostContext.Dte;
-#endif
-            }
-        }
-        public static System.IServiceProvider ServiceProvider
-        {
-            get
-            {
-#if NCRUNCH
-            return null;
-#else
-                return VsIdeTestHostContext.ServiceProvider;
-#endif
-            }
-        }
-
-        public static T GetService<T>(Type idType)
-        {
-#if NCRUNCH
-            return default(T);
-#else
-            return (T)ServiceProvider.GetService(idType);
-#endif
-        }
+        public static T GetService<T>(Type idType) { return (T)ServiceProvider.GetService(idType); }
 
         ///<summary>Ensures that the specified solution is open.</summary>
         ///<param name="relativePath">The path to the solution file, relative to fixtures\Visual Studio.</param>
         public static Solution EnsureSolution(string relativePath)
         {
-            return null;
-
             var fileName = Path.GetFullPath(Path.Combine(FixtureDirectory, relativePath));
             if (!File.Exists(fileName))
                 throw new FileNotFoundException("Solution file does not exist", fileName);
@@ -70,44 +40,25 @@ namespace WebEssentialsTests
 
         public static async Task<IWpfTextView> TypeText(string extension, string keystrokes)
         {
-#if NCRUNCH
-            return null;
-#else
             DTE.ItemOperations.NewFile(Name: Guid.NewGuid() + "." + extension.TrimStart('.'));
             await TypeString(keystrokes);
             return ProjectHelpers.GetCurentTextView();
-#endif
         }
 
         public static Task TypeString(string s)
         {
-#if NCRUNCH
-            return null;
-#else
             // Wait for ApplicationIdle to make sure that all targets have been registered
             return Dispatcher.InvokeAsync(() => TypeChars(s), DispatcherPriority.ApplicationIdle).Task;
-#endif
         }
-
 
         public static Dispatcher Dispatcher
         {
-            get
-            {
-#if  NCRUNCH
-                return null;
-#else
-                return Dispatcher.FromThread(WebEditor.UIThread);
-#endif
-            }
+            get { return Dispatcher.FromThread(WebEditor.UIThread); }
         }
 
         ///<summary>Sends a series of keypress command to Visual Studio.</summary>
         public static void TypeChars(string s)
         {
-#if NCRUNCH
-            return ;
-#endif
             var target = (IOleCommandTarget)ProjectHelpers.GetCurrentNativeTextView();
 
             IntPtr variantIn = IntPtr.Zero;
