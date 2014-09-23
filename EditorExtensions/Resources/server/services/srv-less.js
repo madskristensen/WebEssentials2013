@@ -120,8 +120,6 @@ var handleLess = function (writer, params) {
                 if (params.rtlcss !== undefined) {
                     var rtlResult = require("./srv-rtlcss").processRtlCSS(css,
                                                                           map,
-                                                                          undefined,
-                                                                          undefined,
                                                                           params.sourceFileName,
                                                                           params.targetFileName);
                     var rtlTargetWithoutExtension = params.targetFileName.substr(0, params.targetFileName.lastIndexOf("."));

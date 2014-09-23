@@ -44,8 +44,6 @@ var handleSass = function (writer, params) {
             if (params.rtlcss !== undefined) {
                 var rtlResult = require("./srv-rtlcss").processRtlCSS(css,
                                                                       map,
-                                                                      params.autoprefixer,
-                                                                      params.autoprefixerBrowsers,
                                                                       params.sourceFileName,
                                                                       params.targetFileName);
                 var rtlTargetWithoutExtension = params.targetFileName.substr(0, params.targetFileName.lastIndexOf("."));
