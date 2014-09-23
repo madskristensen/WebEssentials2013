@@ -30,7 +30,7 @@ namespace MadsKristensen.EditorExtensions
             try
             {
                 Assembly a = null;
-                a = Assembly.LoadFrom(Path.GetDirectoryName(Environment.CurrentDirectory) + @"\packages\Pri.LongPath.1.0.1.0\lib\net45\Pri.LongPath.dll");
+                a = Assembly.LoadFrom(Path.GetDirectoryName(Environment.CurrentDirectory) + @"\packages\Pri.LongPath.1.2.2.0\lib\net45\Pri.LongPath.dll");
                 _path = a.GetType("Pri.LongPath.Path");
                 _directory = a.GetType("Pri.LongPath.Directory");
                 _directoryInfo = a.GetType("Pri.LongPath.DirectoryInfo");
