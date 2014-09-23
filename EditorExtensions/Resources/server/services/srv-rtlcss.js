@@ -6,7 +6,7 @@ var rtlcss = require("rtlcss"),
 //#endregion
 
 //#region Process
-var processRtlCSS = function (cssContent, mapContent, autoprefixer, autoprefixerBrowsers, sourceFileName, targetFileName) {
+var processRtlCSS = function (cssContent, mapContent, sourceFileName, targetFileName, autoprefixer, autoprefixerBrowsers) {
     if (mapContent !== true) {
         mapContent = { prev: mapContent };
     }
@@ -69,10 +69,10 @@ var handleRtlCSS = function (writer, params) {
 
         var output = processRtlCSS(data,
                                    true,
-                                   params.autoprefixer,
-                                   params.autoprefixerBrowsers,
                                    params.sourceFileName,
-                                   params.targetFileName);
+                                   params.targetFileName,
+                                   params.autoprefixer,
+                                   params.autoprefixerBrowsers);
 
         if (!output.Success) {
             writer.write(JSON.stringify({

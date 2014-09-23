@@ -18,12 +18,12 @@ var handleSass = function (writer, params) {
             map = JSON.parse(map);
 
             if (params.autoprefixer !== undefined) {
-                var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, params.autoprefixerBrowsers, params.sourceFileName, params.targetFileName);
+                var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, params.autoprefixerBrowsers, params.targetFileName, params.targetFileName);
 
                 if (!autoprefixedOutput.Success) {
                     writer.write(JSON.stringify({
                         Success: false,
-                        SourceFileName: params.sourceFileName,
+                        SourceFileName: params.targetFileName,
                         TargetFileName: params.targetFileName,
                         MapFileName: params.mapFileName,
                         Remarks: "SASS: " + autoprefixedOutput.Remarks,
@@ -42,23 +42,24 @@ var handleSass = function (writer, params) {
             }
 
             if (params.rtlcss !== undefined) {
+                var rtlTargetWithoutExtension = params.targetFileName.substr(0, params.targetFileName.lastIndexOf("."));
+                var rtlTargetFileName = rtlTargetWithoutExtension + ".rtl.css";
+                var rtlMapFileName = rtlTargetFileName + ".map";
                 var rtlResult = require("./srv-rtlcss").processRtlCSS(css,
                                                                       map,
-                                                                      params.autoprefixer,
-                                                                      params.autoprefixerBrowsers,
-                                                                      params.sourceFileName,
-                                                                      params.targetFileName);
-                var rtlTargetWithoutExtension = params.targetFileName.substr(0, params.targetFileName.lastIndexOf("."));
+                                                                      params.targetFileName,
+                                                                      rtlTargetFileName);
+                
 
                 if (rtlResult.Success === true) {
                     writer.write(JSON.stringify({
                         Success: true,
-                        SourceFileName: params.sourceFileName,
-                        TargetFileName: params.targetFileName,
-                        MapFileName: params.mapFileName,
+                        SourceFileName: params.targetFileName,
+                        TargetFileName: rtlTargetFileName,
+                        MapFileName: rtlMapFileName,
                         RtlSourceFileName: params.targetFileName,
-                        RtlTargetFileName: rtlTargetWithoutExtension + ".rtl.css",
-                        RtlMapFileName: rtlTargetWithoutExtension + ".rtl.css.map",
+                        RtlTargetFileName: rtlTargetFileName,
+                        RtlMapFileName: rtlMapFileName,
                         Remarks: "Successful!",
                         Content: css,
                         Map: JSON.stringify(map),
