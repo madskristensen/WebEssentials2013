@@ -30,19 +30,19 @@ var processAutoprefixer = function (cssContent, mapContent, browsers, sourceFile
     var oldMap = JSON.parse(JSON.stringify(mapContent));
 
     result = result.process(cssContent, {
-        map: typeof mapContent === "string" ? { prev: mapContent } : (typeof mapContent === "object" ? { prev: JSON.stringify(mapContent) } : mapContent),
+        map: { prev: mapContent },
         from: sourceFileName,
         to: targetFileName
     });
 
     // Curate maps
-    if (typeof mapContent === "object")
-      result.map.sources = mapContent.sources;
+    mapContent = result.map.toJSON();
+    mapContent.sources = oldMap.sources;
 
     return {
         Success: true,
         css: result.css,
-        map: result.map
+        map: mapContent
     };
 };
 //#endregion

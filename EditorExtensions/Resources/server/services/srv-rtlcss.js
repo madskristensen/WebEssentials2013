@@ -7,34 +7,22 @@ var rtlcss = require("rtlcss"),
 
 //#region Process
 var processRtlCSS = function (cssContent, mapContent, autoprefixer, autoprefixerBrowsers, sourceFileName, targetFileName) {
+    if (mapContent !== true) {
+        mapContent = { prev: mapContent };
+    }
+
     var result, css, map;
     try {
         var config = configLoader.load(null, path.dirname(sourceFileName), { options: { minify: false } });
 
-        if (!mapContent) {
-
-          css = rtlcss.configure(config).process(cssContent).css;
-          map = mapContent;
-
-        } else {
-
-          // Clone object
-          var oldMap = JSON.parse(JSON.stringify(mapContent));
-
-          result = rtlcss.configure(config).process(cssContent, {
-            map: typeof mapContent === "string" ? { prev: mapContent } : (typeof mapContent === "object" ? { prev: JSON.stringify(mapContent) } : mapContent),
+        result = rtlcss.configure(config).process(cssContent, {
+            map: mapContent,
             from: sourceFileName,
             to: targetFileName
-          });
+        });
 
-          // Curate maps
-          if (typeof mapContent === "object")
-            result.map.sources = mapContent.sources;
-
-          css = result.css;
-          map = result.map;
-        }
-
+        css = result.css;
+        map = result.map.toJSON();
     } catch (e) {
         // Return same css and map back so the upstream compilers can continue.
         return {
