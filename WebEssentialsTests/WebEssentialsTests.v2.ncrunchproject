@@ -1,7 +1,8 @@
 <ProjectConfiguration>
+  <BuildPriority>1000</BuildPriority>
   <CopyReferencedAssembliesToWorkspace>true</CopyReferencedAssembliesToWorkspace>
   <ConsiderInconclusiveTestsAsPassing>false</ConsiderInconclusiveTestsAsPassing>
-  <PreloadReferencedAssemblies>false</PreloadReferencedAssemblies>
+  <PreloadReferencedAssemblies>true</PreloadReferencedAssemblies>
   <AllowDynamicCodeContractChecking>true</AllowDynamicCodeContractChecking>
   <AllowStaticCodeContractChecking>false</AllowStaticCodeContractChecking>
   <AllowCodeAnalysis>false</AllowCodeAnalysis>
@@ -19,21 +20,7 @@
   <UseBuildPlatform></UseBuildPlatform>
   <ProxyProcessPath></ProxyProcessPath>
   <UseCPUArchitecture>AutoDetect</UseCPUArchitecture>
-  <MSTestThreadApartmentState>STA</MSTestThreadApartmentState>
+  <MSTestThreadApartmentState>MTA</MSTestThreadApartmentState>
   <BuildProcessArchitecture>x86</BuildProcessArchitecture>
-  <IgnoredTests>
-    <FixtureTestSelector>
-      <FixtureName>WebEssentialsTests.VSHostTest</FixtureName>
-    </FixtureTestSelector>
-    <FixtureTestSelector>
-      <FixtureName>WebEssentialsTests.Tests.IntellisenseGeneration.Parsing_CollectionModel_Tests</FixtureName>
-    </FixtureTestSelector>
-    <FixtureTestSelector>
-      <FixtureName>WebEssentialsTests.Tests.IntellisenseGeneration.Parsing_SimpleNullable_Tests</FixtureName>
-    </FixtureTestSelector>
-    <FixtureTestSelector>
-      <FixtureName>WebEssentialsTests.Tests.IntellisenseGeneration.Parsing_SimpleClass_Tests</FixtureName>
-    </FixtureTestSelector>
-  </IgnoredTests>
   <AdditionalFilesToInclude>..\EditorExtensions\Resources\**.*</AdditionalFilesToInclude>
 </ProjectConfiguration>
