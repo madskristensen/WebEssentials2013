@@ -36,7 +36,11 @@ namespace MadsKristensen.EditorExtensions.Html
 
         private bool HandleElement()
         {
-            HtmlEditorDocument document = HtmlEditorDocument.FromTextView(_view);
+            HtmlEditorDocument document = HtmlEditorDocument.TryFromTextView(_view);
+
+            if (document == null)
+                return false;
+
             var tree = document.HtmlEditorTree;
 
             int position = _view.Caret.Position.BufferPosition.Position;

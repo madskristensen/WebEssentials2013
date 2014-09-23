@@ -18,7 +18,10 @@ namespace MadsKristensen.EditorExtensions.Html
             if (!point.HasValue)
                 return;
 
-            HtmlEditorTree tree = HtmlEditorDocument.FromTextView(session.TextView).HtmlEditorTree;
+            HtmlEditorTree tree = HtmlEditorDocument.TryFromTextView(session.TextView).HtmlEditorTree;
+
+            if (tree == null)
+                return;
 
             ElementNode node = null;
             AttributeNode attr = null;

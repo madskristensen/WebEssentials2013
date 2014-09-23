@@ -27,14 +27,16 @@ namespace MadsKristensen.EditorExtensions.Html
         public EnterFormat(IVsTextView adapter, IWpfTextView textView, IEditorFormatterProvider formatterProvider, ICompletionBroker broker)
             : base(adapter, textView, VSConstants.VSStd2KCmdID.RETURN)
         {
-            _tree = HtmlEditorDocument.FromTextView(textView).HtmlEditorTree;
+            HtmlEditorDocument document = HtmlEditorDocument.TryFromTextView(textView);
+
+            _tree = document == null ? null : document.HtmlEditorTree;
             _formatter = formatterProvider.CreateRangeFormatter();
             _broker = broker;
         }
 
         protected override bool Execute(VSConstants.VSStd2KCmdID commandId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
-            if (_broker.IsCompletionActive(TextView) || !IsValidTextBuffer() || !WESettings.Instance.Html.EnableEnterFormat)
+            if (_tree == null || _broker.IsCompletionActive(TextView) || !IsValidTextBuffer() || !WESettings.Instance.Html.EnableEnterFormat)
                 return false;
 
             int position = TextView.Caret.Position.BufferPosition.Position;
@@ -111,7 +113,12 @@ namespace MadsKristensen.EditorExtensions.Html
 
                 element = GetFirstBlockParent(element, schemas);
 
-                ITextBuffer buffer = HtmlEditorDocument.FromTextView(TextView).TextBuffer;
+                HtmlEditorDocument document = HtmlEditorDocument.TryFromTextView(TextView);
+
+                if (document == null)
+                    return;
+
+                ITextBuffer buffer = document.TextBuffer;
                 SnapshotSpan span = new SnapshotSpan(buffer.CurrentSnapshot, element.Start, element.Length);
 
                 _formatter.FormatRange(TextView, buffer, span, true);
