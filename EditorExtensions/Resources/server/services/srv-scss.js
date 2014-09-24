@@ -23,7 +23,7 @@ var handleSass = function (writer, params) {
                 if (!autoprefixedOutput.Success) {
                     writer.write(JSON.stringify({
                         Success: false,
-                        SourceFileName: params.targetFileName,
+                        SourceFileName: params.sourceFileName,
                         TargetFileName: params.targetFileName,
                         MapFileName: params.mapFileName,
                         Remarks: "SASS: " + autoprefixedOutput.Remarks,
@@ -54,9 +54,9 @@ var handleSass = function (writer, params) {
                 if (rtlResult.Success === true) {
                     writer.write(JSON.stringify({
                         Success: true,
-                        SourceFileName: params.targetFileName,
-                        TargetFileName: rtlTargetFileName,
-                        MapFileName: rtlMapFileName,
+                        SourceFileName: params.sourceFileName,
+                        TargetFileName: params.targetFileName,
+                        MapFileName: params.mapFileName,
                         RtlSourceFileName: params.targetFileName,
                         RtlTargetFileName: rtlTargetFileName,
                         RtlMapFileName: rtlMapFileName,
