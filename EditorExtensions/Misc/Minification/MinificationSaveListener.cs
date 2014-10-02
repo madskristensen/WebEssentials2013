@@ -54,7 +54,8 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
         {
             var baseName = Path.GetFileNameWithoutExtension(path);
             return !baseName.EndsWith(".min", StringComparison.OrdinalIgnoreCase)
-                && !baseName.EndsWith(".bundle", StringComparison.OrdinalIgnoreCase);
+                && !baseName.EndsWith(".bundle", StringComparison.OrdinalIgnoreCase)
+                && !baseName.EndsWith(".hbs", StringComparison.OrdinalIgnoreCase);
         }
 
         public async static Task CreateMinFile(IContentType contentType, string sourcePath)

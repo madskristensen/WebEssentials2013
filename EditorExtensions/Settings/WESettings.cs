@@ -659,8 +659,15 @@ namespace MadsKristensen.EditorExtensions.Settings
     }
     public sealed class SweetJsSettings : CompilationSettings<SweetJsSettings> { }
 
-    public sealed class HandlebarsSettings : SettingsBase<HandlebarsSettings>, ICompilerInvocationSettings
+    public sealed class HandlebarsSettings : SettingsBase<HandlebarsSettings>, ICompilerInvocationSettings, IHandlebarsSettings
     {
+        [Category("Compilation")]
+        [DisplayName("Compiler Version")]
+        [Description("Which compiler version to use")]
+        [DefaultValue(Handlebars.Compilation.Compiler.Version.One)]
+        public Handlebars.Compilation.Compiler.Version CompilerVersion { get; set; }
+
+
         [Category("Compilation")]
         [DisplayName("Compile files on save")]
         [Description("Compile files when saving them, if a compiled file already exists.")]
@@ -762,6 +769,11 @@ namespace MadsKristensen.EditorExtensions.Settings
         bool MakeMinified { get; }
         bool RunOnBuild { get; }
         string OutputDirectory { get; }
+    }
+
+    public interface IHandlebarsSettings
+    {
+        Handlebars.Compilation.Compiler.Version CompilerVersion { get; }
     }
 
     public interface ISourceMapSettings

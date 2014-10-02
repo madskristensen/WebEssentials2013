@@ -469,7 +469,7 @@
         <Parent guid="guidDiffCmdSet" id="MarkdownGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Compile HandleBars Template</ButtonText>
+          <ButtonText>Compile Handlebars Template</ButtonText>
         </Strings>
       </Button>
 

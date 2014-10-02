@@ -321,6 +321,7 @@
     <Compile Include="CSS\Completion\Filter\ColorSwatchCompletionListFilter.cs" />
     <Compile Include="CSS\Completion\Filter\HideUncommonCompletionListFilter.cs" />
     <Compile Include="CSS\Validation\Filters\ExtendCssErrorFilter.cs" />
+    <Compile Include="Handlebars\Compilation\CompilationSaveListener.cs" />
     <Compile Include="Handlebars\Compilation\Compiler.cs" />
     <Compile Include="Handlebars\ContentType\HandlebarsContentTypeDefinition.cs" />
     <Compile Include="Handlebars\ContentType\HandlebarsContentTypeHandler.cs" />
@@ -826,6 +827,7 @@
     </Content>
     <None Include="PreBuildTask.cs" />
     <EmbeddedResource Include="Handlebars\Script\handlebars-v2.0.0.js" />
+    <EmbeddedResource Include="Handlebars\Script\handlebars-v1.3.0.js" />
     <Content Include="Resources\Icons\Bundle.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

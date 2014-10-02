@@ -32,6 +32,7 @@ namespace MadsKristensen.EditorExtensions
     [InstalledProductRegistration("#110", "#112", WebEssentialsPackage.Version, IconResourceID = 400)]
     [ProvideOptionPage(typeof(Settings.CssOptions), "Web Essentials", "CSS", 101, 102, true, new[] { "Minify", "Minification", "W3C", "CSS3" })]
     [ProvideOptionPage(typeof(Settings.LessOptions), "Web Essentials", "LESS", 101, 105, true, new[] { "LESS", "Complier", "Minification", "Minify" })]
+    [ProvideOptionPage(typeof(Settings.HandlebarsOptions), "Web Essentials", "Handlebars", 101, 109, true, new[] { "handlebars", "hbs", "templates" })]
     [ProvideOptionPage(typeof(Settings.HtmlOptions), "Web Essentials", "HTML", 101, 111, true, new[] { "html", "angular", "xhtml" })]
     [ProvideOptionPage(typeof(Settings.ScssOptions), "Web Essentials", "SASS", 101, 113, true, new[] { "SASS", "Complier", "Minification", "Minify" })]
     [ProvideOptionPage(typeof(Settings.SpriteOptions), "Web Essentials", "Sprite", 101, 211, true, new[] { "Sprite", "image" })]

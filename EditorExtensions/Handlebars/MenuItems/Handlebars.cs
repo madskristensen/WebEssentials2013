@@ -59,17 +59,8 @@ namespace MadsKristensen.EditorExtensions.Handlebars
         {
             var paths = ProjectHelpers.GetSelectedItemPaths(_dte);
             var contentType = ContentTypeManager.GetContentType("Handlebars");
-
-            
-            var import = Mef.GetImport<ICompilerRunnerProvider>(contentType);
-            var compiler = import.GetCompiler(contentType);
-
-            Parallel.ForEach(paths, f => compiler.CompileAsync(f, GetTargetPath(f)).DoNotWait("compiling " + f));
-        }
-
-        private string GetTargetPath(string sourcePath)
-        {
-            return sourcePath + ".js";
+            var compiler = Mef.GetImport<ICompilerRunnerProvider>(contentType).GetCompiler(contentType);
+            Parallel.ForEach(paths, f => compiler.CompileToDefaultOutputAsync(f).DoNotWait("compiling " + f));
         }
 
     }

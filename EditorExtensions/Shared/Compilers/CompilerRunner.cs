@@ -257,11 +257,11 @@ namespace MadsKristensen.EditorExtensions.Compilers
     {
         public HandlebarsCompilerRunner(IContentType contentType) : base(contentType){}
         public override bool GenerateSourceMap { get { return false; } }
-        public override string TargetExtension { get { return ".hbs"; } }
+        public override string TargetExtension { get { return ".hbs.js"; } }
 
         protected async override Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
         {
-            var result = Handlebars.Compilation.Compiler.GetCompiledTemplateJS(sourcePath, targetPath, await FileHelpers.ReadAllTextRetry(sourcePath));
+            var result = Handlebars.Compilation.Compiler.GetCompiledTemplateJS(sourcePath, targetPath, await FileHelpers.ReadAllTextRetry(sourcePath), SourceContentType);
 
             if (!string.IsNullOrEmpty(targetPath) &&
                (!File.Exists(targetPath) || await FileHelpers.ReadAllTextRetry(targetPath) != result))

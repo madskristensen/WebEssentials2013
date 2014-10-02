@@ -22,6 +22,18 @@ namespace MadsKristensen.EditorExtensions.Compilers
     }
 
     [Export(typeof(ICompilationNotifierProvider))]
+    [ContentType("Handlebars")]
+    class HandlebarsCompilerNotifierProvider : ICompilationNotifierProvider
+    {
+        public ICompilationNotifier GetCompilationNotifier(ITextDocument doc)
+        {
+            return doc.TextBuffer.Properties.GetOrCreateSingletonProperty<EditorCompilerInvoker>(
+                       () => new EditorCompilerInvoker(doc, new HandlebarsCompilerRunner(doc.TextBuffer.ContentType))
+                   );
+        }
+    }
+
+    [Export(typeof(ICompilationNotifierProvider))]
     [ContentType(CssContentTypeDefinition.CssContentType)]
     [ContentType(LessContentTypeDefinition.LessContentType)]
     [ContentType(ScssContentTypeDefinition.ScssContentType)]
