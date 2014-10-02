@@ -12,6 +12,7 @@ using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using MadsKristensen.EditorExtensions.CoffeeScript;
 using MadsKristensen.EditorExtensions.Compilers;
 using MadsKristensen.EditorExtensions.Css;
+using MadsKristensen.EditorExtensions.Handlebars;
 using MadsKristensen.EditorExtensions.Images;
 using MadsKristensen.EditorExtensions.JavaScript;
 using MadsKristensen.EditorExtensions.Markdown;
@@ -104,6 +105,7 @@ namespace MadsKristensen.EditorExtensions
                 SolutionColorsMenu solutionColorsMenu = new SolutionColorsMenu(mcs);
                 BuildMenu buildMenu = new BuildMenu(DTE, mcs);
                 MarkdownMenu markdownMenu = new MarkdownMenu(DTE, mcs);
+                HandlebarsMenu handlebarsMenu = new HandlebarsMenu(DTE, mcs);
                 AddIntellisenseFileMenu intellisenseFile = new AddIntellisenseFileMenu(DTE, mcs);
                 UnusedCssMenu unusedCssMenu = new UnusedCssMenu(mcs);
                 PixelPushingMenu pixelPushingMenu = new PixelPushingMenu(mcs);
@@ -119,6 +121,7 @@ namespace MadsKristensen.EditorExtensions
                 unusedCssMenu.SetupCommands();
                 intellisenseFile.SetupCommands();
                 markdownMenu.SetupCommands();
+                handlebarsMenu.SetupCommands();
                 buildMenu.SetupCommands();
                 solutionColorsMenu.SetupCommands();
                 projectSettingsMenu.SetupCommands();

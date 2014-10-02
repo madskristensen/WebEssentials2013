@@ -465,6 +465,14 @@
         </Strings>
       </Button>
 
+      <Button guid="guidDiffCmdSet" id="cmdHandleBarsCompile" priority="0x0102" type="Button">
+        <Parent guid="guidDiffCmdSet" id="MarkdownGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Compile HandleBars Template</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guidDiffCmdSet" id="cmdDiff" priority="0x0104" type="Button">
         <Parent guid="guidDiffCmdSet" id="MyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -942,6 +950,7 @@
       <IDSymbol name="cmdEditGlobalJsCodeStyle" value="0x1099" />
       <IDSymbol name="cmdEditGlobalRtlCss" value="0x1081" />
       <IDSymbol name="cmdMarkdownCompile" value="0x1039" />
+      <IDSymbol name="cmdHandleBarsCompile" value="0x1101" />
     </GuidSymbol>
 
     <GuidSymbol name="guidMinifyCmdSet" value="{e396b698-e00e-444b-9f5f-3dcb1ef74e61}">
