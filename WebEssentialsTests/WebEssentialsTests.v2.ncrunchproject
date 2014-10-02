@@ -1,4 +1,5 @@
 <ProjectConfiguration>
+  <BuildPriority>1000</BuildPriority>
   <CopyReferencedAssembliesToWorkspace>true</CopyReferencedAssembliesToWorkspace>
   <ConsiderInconclusiveTestsAsPassing>false</ConsiderInconclusiveTestsAsPassing>
   <PreloadReferencedAssemblies>false</PreloadReferencedAssemblies>
@@ -35,5 +36,5 @@
       <FixtureName>WebEssentialsTests.Tests.IntellisenseGeneration.Parsing_SimpleClass_Tests</FixtureName>
     </FixtureTestSelector>
   </IgnoredTests>
-  <AdditionalFilesToInclude>..\EditorExtensions\Resources\**.*</AdditionalFilesToInclude>
+  <AdditionalFilesToInclude>..\EditorExtensions\Resources\**.*;..\EditorExtensions\bin\Debug\WebEssentials2013.vsix</AdditionalFilesToInclude>
 </ProjectConfiguration>
