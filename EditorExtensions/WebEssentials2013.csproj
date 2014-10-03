@@ -95,10 +95,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\ConfOxide.1.4.0.0\lib\net40\ConfOxide.dll</HintPath>
     </Reference>
-    <Reference Include="Jurassic, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Jurassic.2.2.0\lib\Jurassic.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
@@ -325,7 +321,6 @@
     <Compile Include="Handlebars\Compilation\CompilationSaveListener.cs" />
     <Compile Include="Handlebars\Compilation\Compiler.cs" />
     <Compile Include="Handlebars\ContentType\HandlebarsContentTypeDefinition.cs" />
-    <Compile Include="Handlebars\ContentType\HandlebarsContentTypeHandler.cs" />
     <Compile Include="Handlebars\MenuItems\Handlebars.cs" />
     <Compile Include="HTML\Completion\BootstrapLogoCompletion.cs" />
     <Compile Include="HTML\Completion\AngularLogoCompletion.cs" />
@@ -877,6 +872,7 @@
     <Content Include="Resources\server\services\srv-coffeescript.js" />
     <Content Include="Resources\server\services\srv-icedcoffeescript.js" />
     <Content Include="Resources\server\services\srv-coffeelint.js" />
+    <Content Include="Resources\server\services\srv-handlebars.js" />
     <Content Include="Resources\server\services\srv-rtlcss.js" />
     <Content Include="Resources\server\services\srv-less.js" />
     <Content Include="Resources\server\services\srv-livescript.js" />

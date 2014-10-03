@@ -1,0 +1,201 @@
+//#region Imports
+var hbs = require("handlebars"),
+    fs = require("fs"),
+    path = require("path");
+//#endregion
+
+//#region Handler
+var handleHandlebars = function (writer, params) {
+    fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
+        if (err) {
+            writer.write(JSON.stringify({
+                Success: false,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                MapFileName: params.mapFileName,
+                Remarks: "HANDLEBARS: Error reading input file.",
+                Details: err,
+                Errors: [{
+                    Message: "HANDLEBARS" + err,
+                    FileName: params.sourceFileName
+                }]
+            }));
+            writer.end();
+            return;
+        }
+
+        try {
+            var compiled = hbs.precompile(data);
+            compiled = ("var " + params.compiledTemplateName + " = Handlebars.template(" + compiled + ");");
+
+
+            writer.write(JSON.stringify({
+                            Success: true,
+                            SourceFileName: params.sourceFileName,
+                            TargetFileName: params.targetFileName,
+                            Remarks: "Successful!",
+                            Content: compiled
+                        }));
+                    writer.end();
+
+
+            //new (less.Parser)({ filename: params.sourceFileName, relativeUrls: true }).parse(data, function (e, tree) {
+            //    if (e) {
+            //        writer.write(JSON.stringify({
+            //            Success: false,
+            //            SourceFileName: params.sourceFileName,
+            //            TargetFileName: params.targetFileName,
+            //            MapFileName: params.mapFileName,
+            //            Remarks: "LESS: Error parsing input file.",
+            //            Details: e.message,
+            //            Errors: [{
+            //                Line: e.line,
+            //                Column: e.column,
+            //                Message: "LESS: " + e.message,
+            //                FileName: e.filename
+            //            }]
+            //        }));
+            //        writer.end();
+            //        return;
+            //    }
+
+            //    var map;
+            //    var mapFileName = params.targetFileName + ".map";
+            //    var mapDir = path.dirname(mapFileName);
+            //    try {
+            //        var css = tree.toCSS({
+            //            paths: [path.dirname(params.sourceFileName)],
+            //            sourceMap: mapFileName,
+            //            sourceMapURL: params.sourceMapURL !== undefined ? path.basename(mapFileName) : null,
+            //            sourceMapBasepath: mapDir,
+            //            sourceMapOutputFilename: mapFileName,
+            //            strictMath: params.strictMath !== undefined,
+            //            writeSourceMap: function (output) {
+            //                output = JSON.parse(output);
+            //                output.file = path.basename(params.targetFileName);
+            //                // There might be a configuration in toCSS which let us remove
+            //                // the following fix to save a millisecond or such per compile.
+            //                output.sources = output.sources.map(function (source) {
+            //                    var sourceDir = path.dirname(source);
+
+            //                    if (sourceDir !== '.' && mapDir !== sourceDir)
+            //                        return path.relative(mapDir, source).replace(/\\/g, '/');
+
+            //                    return source;
+            //                });
+
+            //                map = output;
+            //            }
+            //        });
+
+            //    } catch (e) {
+            //        writer.write(JSON.stringify({
+            //            Success: false,
+            //            SourceFileName: params.sourceFileName,
+            //            TargetFileName: params.targetFileName,
+            //            MapFileName: params.mapFileName,
+            //            Remarks: "LESS: " + e.message,
+            //            Details: e.message,
+            //            Errors: [{
+            //                Line: e.line,
+            //                Column: e.column,
+            //                Message: "LESS: " + e.message,
+            //                FileName: params.sourceFileName
+            //            }]
+            //        }));
+            //        writer.end();
+            //        return;
+            //    }
+
+            //    if (params.autoprefixer !== undefined) {
+            //        var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, params.autoprefixerBrowsers, params.targetFileName, params.targetFileName);
+
+            //        if (!autoprefixedOutput.Success) {
+            //            writer.write(JSON.stringify({
+            //                Success: false,
+            //                SourceFileName: params.sourceFileName,
+            //                TargetFileName: params.targetFileName,
+            //                MapFileName: params.mapFileName,
+            //                Remarks: "LESS: " + autoprefixedOutput.Remarks,
+            //                Details: autoprefixedOutput.Remarks,
+            //                Errors: [{
+            //                    Message: "LESS: " + autoprefixedOutput.Remarks,
+            //                    FileName: params.sourceFileName
+            //                }]
+            //            }));
+            //            writer.end();
+            //            return;
+            //        }
+
+            //        css = autoprefixedOutput.css;
+            //        map = autoprefixedOutput.map;
+            //    }
+
+            //    if (params.rtlcss !== undefined) {
+            //        var rtlTargetWithoutExtension = params.targetFileName.substr(0, params.targetFileName.lastIndexOf("."));
+            //        var rtlTargetFileName = rtlTargetWithoutExtension + ".rtl.css";
+            //        var rtlMapFileName = rtlTargetFileName + ".map";
+            //        var rtlResult = require("./srv-rtlcss").processRtlCSS(css,
+            //                                                              map,
+            //                                                              params.targetFileName,
+            //                                                              rtlTargetFileName);
+
+
+            //        if (rtlResult.Success) {
+            //            writer.write(JSON.stringify({
+            //                Success: true,
+            //                SourceFileName: params.sourceFileName,
+            //                TargetFileName: params.targetFileName,
+            //                MapFileName: params.mapFileName,
+            //                RtlSourceFileName: params.targetFileName,
+            //                RtlTargetFileName: rtlTargetFileName,
+            //                RtlMapFileName: rtlMapFileName,
+            //                Remarks: "Successful!",
+            //                Content: css,
+            //                Map: JSON.stringify(map),
+            //                RtlContent: rtlResult.css,
+            //                RtlMap: JSON.stringify(rtlResult.map)
+            //            }));
+
+            //            writer.end();
+            //        } else {
+            //            throw new Error("Error while processing RTLCSS");
+            //        }
+            //    } else {
+            //        writer.write(JSON.stringify({
+            //            Success: true,
+            //            SourceFileName: params.sourceFileName,
+            //            TargetFileName: params.targetFileName,
+            //            MapFileName: params.mapFileName,
+            //            Remarks: "Successful!",
+            //            Content: css,
+            //            Map: JSON.stringify(map)
+            //        }));
+            //    }
+
+            //    writer.end();
+            //});
+        } catch (e) {
+            writer.write(JSON.stringify({
+                Success: false,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                MapFileName: params.mapFileName,
+                Remarks: "HANDLEBARS: " + e.message,
+                Details: e.message,
+                Errors: [{
+                    Line: e.line,
+                    Column: e.column,
+                    Message: "HANDLEBARS: " + e.message,
+                    FileName: params.sourceFileName
+                }]
+            }));
+            writer.end();
+        }
+    });
+};
+//#endregion
+
+//#region Exports
+module.exports = handleHandlebars;
+//#endregion

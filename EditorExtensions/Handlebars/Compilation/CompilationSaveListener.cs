@@ -41,6 +41,6 @@ namespace MadsKristensen.EditorExtensions.Handlebars.Compilation
             var baseName = Path.GetFileNameWithoutExtension(path);
             return !baseName.EndsWith(".js", StringComparison.OrdinalIgnoreCase);
         }
-        
+
     }
 }

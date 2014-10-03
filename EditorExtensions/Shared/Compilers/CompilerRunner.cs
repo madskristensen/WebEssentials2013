@@ -188,6 +188,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     [ContentType(IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType)]
     [ContentType(LiveScriptContentTypeDefinition.LiveScriptContentType)]
     [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
+    [ContentType(Handlebars.HandlebarsContentTypeDefinition.HandlebarsContentType)]
     public class NodeCompilerRunnerProvider : ICompilerRunnerProvider
     {
         public CompilerRunnerBase GetCompiler(IContentType contentType) { return new NodeCompilerRunner(contentType); }
@@ -243,40 +244,6 @@ namespace MadsKristensen.EditorExtensions.Compilers
     {
         public CompilerRunnerBase GetCompiler(IContentType contentType) { return new MarkdownCompilerRunner(contentType); }
     }
-
-    [Export(typeof(ICompilerRunnerProvider))]
-    [ContentType(Handlebars.HandlebarsContentTypeDefinition.HandlebarsContentType)]
-    public class HandlebarsCompilerRunnerProvider : ICompilerRunnerProvider
-    {
-        public CompilerRunnerBase GetCompiler(IContentType contentType) { return new HandlebarsCompilerRunner(contentType); }
-    }
-
-
-    ///<summary>Compiles files asynchronously using MarkdownSharp and reports the results.</summary>
-    class HandlebarsCompilerRunner : CompilerRunnerBase
-    {
-        public HandlebarsCompilerRunner(IContentType contentType) : base(contentType){}
-        public override bool GenerateSourceMap { get { return false; } }
-        public override string TargetExtension { get { return ".hbs.js"; } }
-
-        protected async override Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
-        {
-            var result = Handlebars.Compilation.Compiler.GetCompiledTemplateJS(sourcePath, targetPath, await FileHelpers.ReadAllTextRetry(sourcePath), SourceContentType);
-
-            if (!string.IsNullOrEmpty(targetPath) &&
-               (!File.Exists(targetPath) || await FileHelpers.ReadAllTextRetry(targetPath) != result))
-            {
-                ProjectHelpers.CheckOutFileFromSourceControl(targetPath);
-
-                await FileHelpers.WriteAllTextRetry(targetPath, result);
-            }
-
-            var compilerResult = await CompilerResultFactory.GenerateResult(sourcePath, targetPath, true, result, null);
-
-            return compilerResult;
-        }
-    }
-
 
 
     ///<summary>Compiles files asynchronously using MarkdownSharp and reports the results.</summary>

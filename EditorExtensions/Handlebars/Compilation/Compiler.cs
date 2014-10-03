@@ -1,49 +1,45 @@
 ﻿using System;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Reflection;
-using Jurassic;
+using MadsKristensen.EditorExtensions.RtlCss;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions.Handlebars.Compilation
 {
-    public class Compiler
+    [Export(typeof(NodeExecutorBase))]
+    [ContentType(HandlebarsContentTypeDefinition.HandlebarsContentType)]
+    public class HandlebarsCompiler : NodeExecutorBase
     {
-        public enum Version
+        public override string TargetExtension { get { return ".hbs.js"; } }
+        public override bool MinifyInPlace
         {
-            One,
-            Two
-        }
-        public static string GetCompiledTemplateJS(string sourcePath, string targetPath, string template, IContentType contentType)
-        {
-
-            var settings = WESettings.Instance.ForContentType<IHandlebarsSettings>(contentType);
-            var compiledTemplateName = Path.GetFileNameWithoutExtension(sourcePath); 
-            var engine = new ScriptEngine();
-            var jsStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(string.Format("MadsKristensen.EditorExtensions.Handlebars.Script.handlebars-v{0}.js", GetVersionNumber(settings)));
-            string js;
-            using (var reader = new StreamReader(jsStream))
-            {
-                js = reader.ReadToEnd();
-            }
-            engine.Execute(js);
-            engine.Execute(@"var precompile = Handlebars.precompile;");
-            var compiled = string.Format("var {0} = Handlebars.template({1});", compiledTemplateName, engine.CallGlobalFunction("precompile", template).ToString());
-            return compiled;
+            get { return WESettings.Instance.Handlebars.MinifyInPlace; }
         }
 
-        public static string GetVersionNumber(IHandlebarsSettings settings)
+        public override bool GenerateSourceMap
         {
-            switch (settings.CompilerVersion)
-            {
-                case Version.One:
-                    return "1.3.0";
-                case Version.Two:
-                    return "2.0.0";
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            get { return false; }
         }
-        
+
+        public override string ServiceName
+        {
+            get { return "HANDLEBARS"; }
+        }
+
+        protected override string GetPath(string sourceFileName, string targetFileName)
+        {
+
+            var parameters = new NodeServerUtilities.Parameters();
+
+            parameters.Add("service", ServiceName);
+            parameters.Add("sourceFileName", sourceFileName);
+            parameters.Add("targetFileName", targetFileName);
+            parameters.Add("compiledTemplateName", Path.GetFileNameWithoutExtension(sourceFileName));
+
+            return parameters.FlattenParameters();
+        }
     }
 }

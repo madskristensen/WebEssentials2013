@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using EnvDTE80;
-using Jurassic;
 using MadsKristensen.EditorExtensions.Compilers;
 using Microsoft.Html.Editor;
 using Microsoft.VisualStudio.Shell;

@@ -659,14 +659,8 @@ namespace MadsKristensen.EditorExtensions.Settings
     }
     public sealed class SweetJsSettings : CompilationSettings<SweetJsSettings> { }
 
-    public sealed class HandlebarsSettings : SettingsBase<HandlebarsSettings>, ICompilerInvocationSettings, IHandlebarsSettings
+    public sealed class HandlebarsSettings : SettingsBase<HandlebarsSettings>, ICompilerInvocationSettings
     {
-        [Category("Compilation")]
-        [DisplayName("Compiler Version")]
-        [Description("Which compiler version to use")]
-        [DefaultValue(Handlebars.Compilation.Compiler.Version.One)]
-        public Handlebars.Compilation.Compiler.Version CompilerVersion { get; set; }
-
 
         [Category("Compilation")]
         [DisplayName("Compile files on save")]
@@ -771,10 +765,6 @@ namespace MadsKristensen.EditorExtensions.Settings
         string OutputDirectory { get; }
     }
 
-    public interface IHandlebarsSettings
-    {
-        Handlebars.Compilation.Compiler.Version CompilerVersion { get; }
-    }
 
     public interface ISourceMapSettings
     {

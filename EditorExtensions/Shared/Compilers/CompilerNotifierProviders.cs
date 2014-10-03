@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.Composition;
 using MadsKristensen.EditorExtensions.CoffeeScript;
+using MadsKristensen.EditorExtensions.Handlebars;
 using MadsKristensen.EditorExtensions.IcedCoffeeScript;
 using MadsKristensen.EditorExtensions.LiveScript;
 using MadsKristensen.EditorExtensions.SweetJs;
@@ -21,17 +22,6 @@ namespace MadsKristensen.EditorExtensions.Compilers
         }
     }
 
-    [Export(typeof(ICompilationNotifierProvider))]
-    [ContentType("Handlebars")]
-    class HandlebarsCompilerNotifierProvider : ICompilationNotifierProvider
-    {
-        public ICompilationNotifier GetCompilationNotifier(ITextDocument doc)
-        {
-            return doc.TextBuffer.Properties.GetOrCreateSingletonProperty<EditorCompilerInvoker>(
-                       () => new EditorCompilerInvoker(doc, new HandlebarsCompilerRunner(doc.TextBuffer.ContentType))
-                   );
-        }
-    }
 
     [Export(typeof(ICompilationNotifierProvider))]
     [ContentType(CssContentTypeDefinition.CssContentType)]
@@ -42,6 +32,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     [ContentType(IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType)]
     [ContentType(LiveScriptContentTypeDefinition.LiveScriptContentType)]
     [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
+    [ContentType(HandlebarsContentTypeDefinition.HandlebarsContentType)]
     class NodeCompilerNotifierProvider : ICompilationNotifierProvider
     {
         public ICompilationNotifier GetCompilationNotifier(ITextDocument doc)
