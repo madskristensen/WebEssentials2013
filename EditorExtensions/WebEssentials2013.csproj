@@ -822,8 +822,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <None Include="PreBuildTask.cs" />
-    <EmbeddedResource Include="Handlebars\Script\handlebars-v2.0.0.js" />
-    <EmbeddedResource Include="Handlebars\Script\handlebars-v1.3.0.js" />
     <Content Include="Resources\Icons\Bundle.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
