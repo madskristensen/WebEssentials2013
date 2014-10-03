@@ -4,14 +4,14 @@ using Microsoft.VisualStudio.Utilities;
 namespace MadsKristensen.EditorExtensions.Handlebars
 {
     /// <summary>
-    /// Exports the Markdown content type and file extension
+    /// Exports the Handlebars content type and file extension
     /// </summary>
     public class HandlebarsContentTypeDefinition
     {
         public const string HandlebarsContentType = "handlebars";
 
         /// <summary>
-        /// Exports the Markdown HTML content type
+        /// Exports the Handlebars HTML content type
         /// </summary>
         [Export(typeof(ContentTypeDefinition))]
         [Name(HandlebarsContentType)]
@@ -24,7 +24,7 @@ namespace MadsKristensen.EditorExtensions.Handlebars
         [Export(typeof(FileExtensionToContentTypeDefinition))]
         [ContentType(HandlebarsContentType)]
         [FileExtension(".hbs")]
-        public FileExtensionToContentTypeDefinition HBSFileExtension { get; set; }
+        public FileExtensionToContentTypeDefinition HbsFileExtension { get; set; }
 
         [Export(typeof(FileExtensionToContentTypeDefinition))]
         [ContentType(HandlebarsContentType)]
