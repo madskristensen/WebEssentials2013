@@ -1082,7 +1082,7 @@
       <Content Include="Resources\nodejs\tools\node_modules\less\lib\**; Resources\nodejs\tools\node_modules\less\bin\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <!-- Explicitly inclusions for CSON -->
+      <!-- Explicit inclusions for CSON -->
       <Content Include="Resources\nodejs\tools\node_modules\cson\package.json; Resources\nodejs\tools\node_modules\cson\out\**; Resources\nodejs\tools\node_modules\js2coffee\package.json;">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
