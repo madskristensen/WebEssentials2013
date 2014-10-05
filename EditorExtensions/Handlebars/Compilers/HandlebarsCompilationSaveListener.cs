@@ -11,7 +11,7 @@ using MadsKristensen.EditorExtensions.Compilers;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 
-namespace MadsKristensen.EditorExtensions.Handlebars.Compilation
+namespace MadsKristensen.EditorExtensions.Handlebars
 {
     [Export(typeof(IFileSaveListener))]
     [ContentType("Handlebars")]

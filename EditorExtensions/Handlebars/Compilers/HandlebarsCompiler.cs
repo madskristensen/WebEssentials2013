@@ -7,7 +7,7 @@ using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
-namespace MadsKristensen.EditorExtensions.Handlebars.Compilation
+namespace MadsKristensen.EditorExtensions.Handlebars
 {
     [Export(typeof(NodeExecutorBase))]
     [ContentType(HandlebarsContentTypeDefinition.HandlebarsContentType)]
