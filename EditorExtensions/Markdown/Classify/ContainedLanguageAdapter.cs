@@ -383,6 +383,14 @@ namespace MadsKristensen.EditorExtensions.Markdown
                 ppSP = null;
                 return VSConstants.E_NOTIMPL;
             }
+            public int GetNestedHierarchy([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.REFIID")]ref Guid iidHierarchyNested, out IntPtr ppHierarchyNested, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]out uint pitemidNested)
+            {
+                // Docs say: If itemid is not a nested hierarchy, this method returns E_FAIL.
+                iidHierarchyNested = Guid.Empty;
+                ppHierarchyNested = IntPtr.Zero;
+                pitemidNested = 0;
+                return VSConstants.E_FAIL;
+            }
 
             public int AddItem([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemidLoc, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSADDITEMOPERATION")]VSADDITEMOPERATION dwAddItemOperation, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string pszItemName, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.ULONG")]uint cFilesToOpen, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")]string[] rgpszFilesToOpen, IntPtr hwndDlgOwner, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSADDRESULT")]VSADDRESULT[] pResult)
             { throw new NotImplementedException(); }
@@ -394,8 +402,6 @@ namespace MadsKristensen.EditorExtensions.Markdown
             public int GetCanonicalName([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, out string pbstrName)
             { throw new NotImplementedException(); }
             public int GetGuidProperty([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSHPROPID")]int propid, out Guid pguid)
-            { throw new NotImplementedException(); }
-            public int GetNestedHierarchy([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.REFIID")]ref Guid iidHierarchyNested, out IntPtr ppHierarchyNested, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]out uint pitemidNested)
             { throw new NotImplementedException(); }
             public int GetSite(out Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP) { throw new NotImplementedException(); }
             public int OpenItem([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSITEMID")]uint itemid, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.REFGUID")]ref Guid rguidLogicalView, IntPtr punkDocDataExisting, out IVsWindowFrame ppWindowFrame)
