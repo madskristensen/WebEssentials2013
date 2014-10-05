@@ -318,7 +318,7 @@
     <Compile Include="CSS\Completion\Filter\ColorSwatchCompletionListFilter.cs" />
     <Compile Include="CSS\Completion\Filter\HideUncommonCompletionListFilter.cs" />
     <Compile Include="CSS\Validation\Filters\ExtendCssErrorFilter.cs" />
-    <Compile Include="Handlebars\Compilers\HandlebarsCompilationSaveListener.cs" />
+    <Compile Include="Handlebars\Commands\HandlebarsCreationListener.cs" />
     <Compile Include="Handlebars\Compilers\HandlebarsCompiler.cs" />
     <Compile Include="Handlebars\ContentType\HandlebarsContentTypeDefinition.cs" />
     <Compile Include="Handlebars\MenuItems\Handlebars.cs" />
