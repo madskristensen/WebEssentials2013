@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using Microsoft.Html.Editor;
 using Microsoft.Html.Editor.Projection;
+using Microsoft.JSON.Core.Format;
+using Microsoft.JSON.Editor;
+using Microsoft.JSON.Editor.Format;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
@@ -104,22 +109,20 @@ namespace MadsKristensen.EditorExtensions.Markdown
 
         public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer)
         {
-            EventHandler<EventArgs> h = null;
-            h = delegate
+            WindowHelpers.WaitFor(delegate
             {
                 // Make sure we don't set up ContainedLanguages until the buffer is ready
                 // When loading lots of Markdown files on solution load, we might need to
                 // wait for multiple idle cycles.
                 var doc = ServiceManager.GetService<HtmlEditorDocument>(editorBuffer);
-                if (doc == null) return;
-                if (doc.PrimaryView == null) return;
+                if (doc == null) return false;
+                if (doc.PrimaryView == null) return false;
 
-                WebEditor.OnIdle -= h;
                 Guid guid = FindGuid();
                 if (guid != Guid.Empty)
                     ContainedLanguageAdapter.ForBuffer(editorBuffer).AddIntellisenseProjectLanguage(projectionBuffer, guid);
-            };
-            WebEditor.OnIdle += h;
+                return true;
+            });
         }
 
         public virtual string GlobalPrefix { get { return ""; } }
@@ -195,6 +198,62 @@ namespace MadsKristensen.EditorExtensions.Markdown
                                 Return Await Task.FromResult(New Object())
                             End Function
                             End Class" };
+        }
+    }
+
+
+    // Ugly hacks because JSONIndenter uses textView.TextBuffer and
+    // tries to operate with the outer Markdown TextBuffer, instead
+    // of the inner JSON ProjectionBuffer.  To fix this, we need to
+    // make sure that it uses the JSONEditorDocument from the inner
+    // buffer, and that it successfully finds IJSONFormatterFactory
+    // for Markdown.
+    [Export(typeof(ICodeLanguageEmbedder))]
+    [ContentType("JSON")]
+    public class JSONEmbedder : ICodeLanguageEmbedder
+    {
+        public string GlobalPrefix { get { return ""; } }
+        public string GlobalSuffix { get { return ""; } }
+
+        public IReadOnlyCollection<string> GetBlockWrapper(IEnumerable<string> code)
+        {
+            return null;
+        }
+
+        public void OnBlockCreated(ITextBuffer editorBuffer, LanguageProjectionBuffer projectionBuffer)
+        {
+            WindowHelpers.WaitFor(delegate
+            {
+                var textView = TextViewConnectionListener.GetFirstViewForBuffer(editorBuffer);
+                if (textView == null)
+                    return false;
+                // Add the inner buffer's EditorDocument to the outer buffer before
+                // broken editor code tries to create a new EditorDocument from the
+                // outer buffer.
+                var editorDocument = JSONEditorDocument.FromTextBuffer(projectionBuffer.IProjectionBuffer);
+                ServiceManager.AddService(editorDocument, textView.TextBuffer);
+                editorDocument.Closing += delegate { ServiceManager.RemoveService<JSONEditorDocument>(textView.TextBuffer); };
+
+                // JSONIndenter uses TextView.TextBuffer, and therefore operates on the
+                // entire Markdown buffer, breaking everything.  I manually force it to
+                // use the inner projection buffer instead. Beware that this breaks its
+                // ViewCaret property, and I can't fix that unless I mock its TextView.
+                var indenter = ServiceManager.GetService<ISmartIndent>(textView);
+                indenter.GetType().GetField("_textBuffer", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .SetValue(indenter, projectionBuffer.IProjectionBuffer);
+                return true;
+            });
+        }
+    }
+
+    [Export(typeof(IJSONFormatterFactory))]
+    [ContentType("HTMLXProjection")]
+    [Name("Hack")]
+    public class JSONFormatterPassthroughFactoryHack : IJSONFormatterFactory
+    {
+        public IJSONFormatter CreateFormatter()
+        {
+            return JSONFormatterLocator.FindComponent(ContentTypeManager.GetContentType("JSON")).CreateFormatter();
         }
     }
 }

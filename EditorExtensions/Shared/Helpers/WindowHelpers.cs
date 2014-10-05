@@ -5,11 +5,24 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.Web.Editor;
 
 namespace MadsKristensen.EditorExtensions
 {
     public static class WindowHelpers
     {
+
+        ///<summary>Keeps running a method in the WebEditor.OnIdle event until it returns false.</summary>
+        public static void WaitFor(Func<bool> method)
+        {
+            EventHandler<EventArgs> h = null;
+            h = delegate
+            {
+                if (method())
+                    WebEditor.OnIdle -= h;
+            };
+            WebEditor.OnIdle += h;
+        }
         /// <summary>
         /// Returns an IVsTextView for the given file path, if the given file is open in Visual Studio.
         /// </summary>
