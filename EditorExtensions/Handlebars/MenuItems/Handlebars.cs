@@ -45,7 +45,6 @@ namespace MadsKristensen.EditorExtensions.Handlebars
             _mcs.AddCommand(compileCommand);
         }
 
-
         private void IsHandlebarsFile(object sender, System.EventArgs e)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
@@ -61,6 +60,5 @@ namespace MadsKristensen.EditorExtensions.Handlebars
             var compiler = Mef.GetImport<ICompilerRunnerProvider>(contentType).GetCompiler(contentType);
             Parallel.ForEach(paths, f => compiler.CompileToDefaultOutputAsync(f).DoNotWait("compiling " + f));
         }
-
     }
 }

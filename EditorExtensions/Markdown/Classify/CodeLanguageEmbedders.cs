@@ -249,7 +249,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
     [Export(typeof(IJSONFormatterFactory))]
     [ContentType("HTMLXProjection")]
     [Name("Hack")]
-    public class JSONFormatterPassthroughFactoryHack : IJSONFormatterFactory
+    public class JSONFormatterPassThroughFactoryHack : IJSONFormatterFactory
     {
         public IJSONFormatter CreateFormatter()
         {

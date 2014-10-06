@@ -667,7 +667,6 @@ namespace MadsKristensen.EditorExtensions.Settings
 
     public sealed class HandlebarsSettings : SettingsBase<HandlebarsSettings>, ICompilerInvocationSettings
     {
-
         [Category("Compilation")]
         [DisplayName("Compile files on save")]
         [Description("Compile files when saving them, if a compiled file already exists.")]
