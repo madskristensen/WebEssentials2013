@@ -125,6 +125,12 @@ namespace MadsKristensen.EditorExtensions.Settings
         public bool SvgPreviewPane { get; set; }
 
         bool IMarginSettings.ShowPreviewPane { get { return SvgPreviewPane; } }
+
+        [Category("WE Ignore")]
+        [DisplayName("Show ignore logs")]
+        [Description("Show the log messages in Output Window for each file ignored by .weignore.")]
+        [DefaultValue(true)]
+        public bool ShowWEIgnoreLogs { get; set; }
     }
 
     public sealed class BrowserLinkSettings : SettingsBase<BrowserLinkSettings>
