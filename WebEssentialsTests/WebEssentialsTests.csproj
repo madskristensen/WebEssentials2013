@@ -148,7 +148,7 @@
     <Compile Include="TestCodeExtensions.cs" />
     <Compile Include="Tests\NodeExecutors\JsHintTests.cs" />
     <Compile Include="Tests\NodeExecutors\LessCompilationTests.cs" />
-    <Compile Include="Tests\Less\LessDocumentTests.cs">
+    <Compile Include="Tests\LESS\LessDocumentTests.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tests\Markdown\MarkdownOutlinerTests.cs" />
