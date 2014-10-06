@@ -67,7 +67,7 @@ namespace MadsKristensen.EditorExtensions.Images
                             new XElement("orientation", IsVertical ? "vertical" : "horizontal"),
                             new XComment("The margin (in pixel) around and between the constituent images."),
                             new XElement("margin", Margin),
-                             new XComment("File extension of sprite image."),
+                            new XComment("File extension of sprite image."),
                             new XElement("outputType", FileExtension.ToString().ToLowerInvariant()),
                             new XComment("Determine whether to generate/re-generate this sprite on building the solution."),
                             new XElement("runOnBuild", RunOnBuild.ToString().ToLowerInvariant()),
@@ -139,7 +139,7 @@ namespace MadsKristensen.EditorExtensions.Images
 
             element = doc.Descendants("margin").FirstOrDefault();
 
-            sprite.Margin = 0; // So the current implementation (without margin support doesn't break.
+            sprite.Margin = WESettings.Instance.Sprite.Margin; // So the current implementation (without margin support) doesn't break.
 
             if (element != null)
                 sprite.Margin = int.Parse(element.Value);
