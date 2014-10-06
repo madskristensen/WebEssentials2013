@@ -22,7 +22,7 @@ namespace WebEssentialsTests.Tests.Handlebars
 
         }
 
-
+    
         private static readonly string BaseDirectory = Path.GetDirectoryName(typeof(NodeModuleImportedTests).Assembly.Location);
 
         [TestMethod]
@@ -39,6 +39,8 @@ namespace WebEssentialsTests.Tests.Handlebars
 
                 var compiledCode = await new HandlebarsCompiler().CompileToStringAsync(handlebarsFileName);
 
+                compiledCode = compiledCode.Replace("\r", "").Replace("\n", "").Replace(" ", "");
+                expectedCompiledCode = expectedCompiledCode.Replace("\r", "").Replace("\n", "").Replace(" ", "");
 
                 compiledCode.Trim().Should().Be(expectedCompiledCode.Trim());
             }
