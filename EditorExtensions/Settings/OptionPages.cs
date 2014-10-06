@@ -110,5 +110,4 @@ namespace MadsKristensen.EditorExtensions.Settings
 
         public static event EventHandler SettingsUpdated;
     }
-
 }

@@ -10,8 +10,6 @@ namespace WebEssentialsTests.Tests.Handlebars
     [TestClass]
     public class HandlebarsCompilationTests
     {
-
-
         [ClassInitialize]
         public static void Initialize(TestContext c)
         {
@@ -19,10 +17,8 @@ namespace WebEssentialsTests.Tests.Handlebars
             {
                 Handlebars = { MinifyInPlace = false }
             });
-
         }
 
-    
         private static readonly string BaseDirectory = Path.GetDirectoryName(typeof(NodeModuleImportedTests).Assembly.Location);
 
         [TestMethod]

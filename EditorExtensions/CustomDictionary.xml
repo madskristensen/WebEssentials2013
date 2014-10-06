@@ -73,6 +73,7 @@
       <Word>Rtl</Word>
       <Word>Cson</Word>
       <Word>Processable</Word>
+      <Word>Hbs</Word>
     </Recognized>
     <DiscreteExceptions>
       <Term>CoffeeScript</Term>

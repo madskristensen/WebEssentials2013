@@ -66,15 +66,8 @@ namespace MadsKristensen.EditorExtensions.Html
             var classList = columnSizeClasses.Where(x => elementClasses.Value.Split(' ').Any(y => y.StartsWith(x, StringComparison.Ordinal)));
 
             // ...only if the doesn't contains '[size]-centered' or '[size]-uncentered' elements
-            if (classList.Any())
-            {
-                string[] columnSizeCenteredClasses = new string[] { "small-centered", "medium-centered", "large-centered",
-                                                                    "small-uncentered", "medium-uncentered", "large-uncentered"};
-                bool containCenteredElement = columnSizeCenteredClasses.Any(x => elementClasses.Value.Split(' ').Any(y => y.Equals(x, StringComparison.OrdinalIgnoreCase)));
-
-                if (containCenteredElement)
-                    return results;
-            }
+            if (classList.Any() && GetCenteredElement(elementClasses))
+                return results;
 
             // Ok to not have size class only if there is only one column defined (that will be 100%)
             if (classList.Count() == 0 && !IsParentDivContainOnlyOneChildColumnElement(element))
@@ -106,6 +99,14 @@ namespace MadsKristensen.EditorExtensions.Html
             }
 
             return results;
+        }
+
+        private static bool GetCenteredElement(AttributeNode elementClasses)
+        {
+            string[] columnSizeCenteredClasses = new string[] { "small-centered", "medium-centered", "large-centered",
+                                                                    "small-uncentered", "medium-uncentered", "large-uncentered"};
+
+            return columnSizeCenteredClasses.Any(x => elementClasses.Value.Split(' ').Any(y => y.Equals(x, StringComparison.OrdinalIgnoreCase)));
         }
 
         private static bool IsLastColumnsContainEndClass(ElementNode element)

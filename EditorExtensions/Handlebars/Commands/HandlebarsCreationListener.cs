@@ -16,7 +16,6 @@ namespace MadsKristensen.EditorExtensions.Handlebars
         [Import]
         public ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
 
-        
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)
         {
             ITextDocument document;
@@ -26,7 +25,6 @@ namespace MadsKristensen.EditorExtensions.Handlebars
                     Mef.GetImport<ICompilationNotifierProvider>(ContentTypeManager.GetContentType("Handlebars"))
                     .GetCompilationNotifier(document));
             }
-            
         }
 
         public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers)

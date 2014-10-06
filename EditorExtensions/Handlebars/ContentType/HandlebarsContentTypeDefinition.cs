@@ -30,7 +30,5 @@ namespace MadsKristensen.EditorExtensions.Handlebars
         [ContentType(HandlebarsContentType)]
         [FileExtension(".handlebars")]
         public FileExtensionToContentTypeDefinition HandlebarsFileExtension { get; set; }
-
-       
     }
 }
