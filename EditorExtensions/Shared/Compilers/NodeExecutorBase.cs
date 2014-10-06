@@ -24,7 +24,10 @@ namespace MadsKristensen.EditorExtensions
 
             if (WEIgnore.TestWEIgnore(sourceFileName, this is ILintCompiler ? "linter" : "compiler", ServiceName.ToLowerInvariant()))
             {
-                Logger.Log(String.Format(CultureInfo.CurrentCulture, "{0}: The file {1} is ignored by .weignore. Skipping..", ServiceName, Path.GetFileName(sourceFileName)));
+                if (WESettings.Instance.General.ShowWEIgnoreLogs)
+                    Logger.Log(String.Format(CultureInfo.CurrentCulture,
+                                            "{0}: The file {1} is ignored by .weignore. Skipping..",
+                                             ServiceName, Path.GetFileName(sourceFileName)));
 
                 if (!Previewing)
                     return await CompilerResultFactory.GenerateResult(sourceFileName, targetFileName, string.Empty, false, string.Empty, string.Empty, Enumerable.Empty<CompilerError>(), true);
