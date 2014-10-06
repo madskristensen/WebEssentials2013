@@ -124,6 +124,7 @@
     <Compile Include="Tests\Foundation\FoundationValidationTests.cs" />
     <Compile Include="Tests\Foundation\FoundationColumnsValidatorTests.cs" />
     <Compile Include="Tests\Bootstrap\BootstrapColumnsValidatorTests.cs" />
+    <Compile Include="Tests\Handlebars\HandlebarsCompilationTests.cs" />
     <Compile Include="Tests\NodeExecutors\SweetJsCompilationTests.cs" />
     <Compile Include="Tests\SCSS\ScssDocumentTests.cs" />
     <Compile Include="Tests\Shared\Base64Vlq.cs" />
@@ -171,6 +172,7 @@
     <Content Include="fixtures\coffee\source\test.js">
       <DependentUpon>test.coffee</DependentUpon>
     </Content>
+    <Content Include="fixtures\handlebars\compiled\test.hbs.js" />
     <Content Include="fixtures\iced\compiled\test.js" />
     <Content Include="fixtures\jshint\config\clean.js" />
     <Content Include="fixtures\jshint\skip.js" />
@@ -213,6 +215,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <Content Include="fixtures\less\URLs.css" />
+    <None Include="fixtures\handlebars\source\test.hbs" />
     <None Include="fixtures\iced\source\test.iced" />
     <Content Include="fixtures\jshint\config\.jshintrc" />
     <None Include="fixtures\jshint\.jshintignore" />
@@ -246,6 +249,7 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
