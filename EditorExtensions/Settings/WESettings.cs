@@ -32,6 +32,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         public CoffeeScriptSettings CoffeeScript { get; private set; }
         public LiveScriptSettings LiveScript { get; private set; }
         public MarkdownSettings Markdown { get; private set; }
+        public HandlebarsSettings Handlebars { get; private set; }
         public SweetJsSettings SweetJs { get; private set; }
     }
 
@@ -664,6 +665,34 @@ namespace MadsKristensen.EditorExtensions.Settings
     }
     public sealed class SweetJsSettings : CompilationSettings<SweetJsSettings> { }
 
+    public sealed class HandlebarsSettings : SettingsBase<HandlebarsSettings>, ICompilerInvocationSettings
+    {
+
+        [Category("Compilation")]
+        [DisplayName("Compile files on save")]
+        [Description("Compile files when saving them, if a compiled file already exists.")]
+        [DefaultValue(true)]
+        public bool CompileOnSave { get; set; }
+
+        [Category("Compilation")]
+        [DisplayName("Compile files on build")]
+        [Description("Compile all files that have matching compiled files when building the project.")]
+        [DefaultValue(false)]
+        public bool CompileOnBuild { get; set; }
+
+        [Category("Compilation")]
+        [DisplayName("Custom output directory")]
+        [Description("Specifies a custom subfolder to save compiled files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
+        [DefaultValue(null)]
+        public string OutputDirectory { get; set; }
+
+        [Category("Compilation")]
+        [DisplayName("Don't save raw compilation output")]
+        [Description("Don't save separate unminified compiler output. This option has no effect when Minify On Save is disabled for HTML.")]
+        [DefaultValue(false)]
+        public bool MinifyInPlace { get; set; }
+    }
+
     public sealed class MarkdownSettings : SettingsBase<MarkdownSettings>, ICompilerInvocationSettings, IMarginSettings, IMarkdownOptions
     {
         #region Compilation
@@ -741,6 +770,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         bool RunOnBuild { get; }
         string OutputDirectory { get; }
     }
+
 
     public interface ISourceMapSettings
     {

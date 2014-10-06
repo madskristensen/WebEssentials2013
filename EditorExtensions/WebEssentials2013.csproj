@@ -318,6 +318,10 @@
     <Compile Include="CSS\Completion\Filter\ColorSwatchCompletionListFilter.cs" />
     <Compile Include="CSS\Completion\Filter\HideUncommonCompletionListFilter.cs" />
     <Compile Include="CSS\Validation\Filters\ExtendCssErrorFilter.cs" />
+    <Compile Include="Handlebars\Commands\HandlebarsCreationListener.cs" />
+    <Compile Include="Handlebars\Compilers\HandlebarsCompiler.cs" />
+    <Compile Include="Handlebars\ContentType\HandlebarsContentTypeDefinition.cs" />
+    <Compile Include="Handlebars\MenuItems\Handlebars.cs" />
     <Compile Include="HTML\Completion\BootstrapLogoCompletion.cs" />
     <Compile Include="HTML\Completion\AngularLogoCompletion.cs" />
     <Compile Include="HTML\Completion\AppleLinkCompletion.cs" />
@@ -866,6 +870,7 @@
     <Content Include="Resources\server\services\srv-coffeescript.js" />
     <Content Include="Resources\server\services\srv-icedcoffeescript.js" />
     <Content Include="Resources\server\services\srv-coffeelint.js" />
+    <Content Include="Resources\server\services\srv-handlebars.js" />
     <Content Include="Resources\server\services\srv-rtlcss.js" />
     <Content Include="Resources\server\services\srv-less.js" />
     <Content Include="Resources\server\services\srv-livescript.js" />
@@ -1077,7 +1082,7 @@
       <Content Include="Resources\nodejs\tools\node_modules\less\lib\**; Resources\nodejs\tools\node_modules\less\bin\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <!-- Explicitly inclusions for CSON -->
+      <!-- Explicit inclusions for CSON -->
       <Content Include="Resources\nodejs\tools\node_modules\cson\package.json; Resources\nodejs\tools\node_modules\cson\out\**; Resources\nodejs\tools\node_modules\js2coffee\package.json;">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>

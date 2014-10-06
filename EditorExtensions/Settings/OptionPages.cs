@@ -85,6 +85,10 @@ namespace MadsKristensen.EditorExtensions.Settings
     {
         public MarkdownOptions() : base(s => s.Markdown) { }
     }
+    class HandlebarsOptions : SettingsOptionPage<HandlebarsSettings>
+    {
+        public HandlebarsOptions() : base(s => s.Handlebars) { }
+    }
     class SweetJsOptions : SettingsOptionPage<SweetJsSettings>
     {
         public SweetJsOptions() : base(s => s.SweetJs) { }

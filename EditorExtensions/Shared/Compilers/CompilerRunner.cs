@@ -188,10 +188,12 @@ namespace MadsKristensen.EditorExtensions.Compilers
     [ContentType(IcedCoffeeScriptContentTypeDefinition.IcedCoffeeScriptContentType)]
     [ContentType(LiveScriptContentTypeDefinition.LiveScriptContentType)]
     [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
+    [ContentType(Handlebars.HandlebarsContentTypeDefinition.HandlebarsContentType)]
     public class NodeCompilerRunnerProvider : ICompilerRunnerProvider
     {
         public CompilerRunnerBase GetCompiler(IContentType contentType) { return new NodeCompilerRunner(contentType); }
     }
+
 
     ///<summary>Compiles files using <see cref="NodeExecutorBase"/> classes and reports the results.</summary>
     class NodeCompilerRunner : CompilerRunnerBase
@@ -242,6 +244,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     {
         public CompilerRunnerBase GetCompiler(IContentType contentType) { return new MarkdownCompilerRunner(contentType); }
     }
+
 
     ///<summary>Compiles files asynchronously using MarkdownSharp and reports the results.</summary>
     class MarkdownCompilerRunner : CompilerRunnerBase

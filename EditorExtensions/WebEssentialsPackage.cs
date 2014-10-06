@@ -12,6 +12,7 @@ using MadsKristensen.EditorExtensions.BrowserLink.UnusedCss;
 using MadsKristensen.EditorExtensions.CoffeeScript;
 using MadsKristensen.EditorExtensions.Compilers;
 using MadsKristensen.EditorExtensions.Css;
+using MadsKristensen.EditorExtensions.Handlebars;
 using MadsKristensen.EditorExtensions.Images;
 using MadsKristensen.EditorExtensions.JavaScript;
 using MadsKristensen.EditorExtensions.Markdown;
@@ -31,6 +32,7 @@ namespace MadsKristensen.EditorExtensions
     [InstalledProductRegistration("#110", "#112", WebEssentialsPackage.Version, IconResourceID = 400)]
     [ProvideOptionPage(typeof(Settings.CssOptions), "Web Essentials", "CSS", 101, 102, true, new[] { "Minify", "Minification", "W3C", "CSS3" })]
     [ProvideOptionPage(typeof(Settings.LessOptions), "Web Essentials", "LESS", 101, 105, true, new[] { "LESS", "Complier", "Minification", "Minify" })]
+    [ProvideOptionPage(typeof(Settings.HandlebarsOptions), "Web Essentials", "Handlebars", 101, 109, true, new[] { "handlebars", "hbs", "templates" })]
     [ProvideOptionPage(typeof(Settings.HtmlOptions), "Web Essentials", "HTML", 101, 111, true, new[] { "html", "angular", "xhtml" })]
     [ProvideOptionPage(typeof(Settings.ScssOptions), "Web Essentials", "SASS", 101, 113, true, new[] { "SASS", "Complier", "Minification", "Minify" })]
     [ProvideOptionPage(typeof(Settings.SpriteOptions), "Web Essentials", "Sprite", 101, 211, true, new[] { "Sprite", "image" })]
@@ -104,6 +106,7 @@ namespace MadsKristensen.EditorExtensions
                 SolutionColorsMenu solutionColorsMenu = new SolutionColorsMenu(mcs);
                 BuildMenu buildMenu = new BuildMenu(DTE, mcs);
                 MarkdownMenu markdownMenu = new MarkdownMenu(DTE, mcs);
+                HandlebarsMenu handlebarsMenu = new HandlebarsMenu(DTE, mcs);
                 AddIntellisenseFileMenu intellisenseFile = new AddIntellisenseFileMenu(DTE, mcs);
                 UnusedCssMenu unusedCssMenu = new UnusedCssMenu(mcs);
                 PixelPushingMenu pixelPushingMenu = new PixelPushingMenu(mcs);
@@ -119,6 +122,7 @@ namespace MadsKristensen.EditorExtensions
                 unusedCssMenu.SetupCommands();
                 intellisenseFile.SetupCommands();
                 markdownMenu.SetupCommands();
+                handlebarsMenu.SetupCommands();
                 buildMenu.SetupCommands();
                 solutionColorsMenu.SetupCommands();
                 projectSettingsMenu.SetupCommands();
