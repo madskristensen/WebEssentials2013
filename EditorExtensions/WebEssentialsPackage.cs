@@ -74,7 +74,7 @@ namespace MadsKristensen.EditorExtensions
         }
         public static WebEssentialsPackage Instance { get; private set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
+        [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         protected async override void Initialize()
         {
             base.Initialize();
