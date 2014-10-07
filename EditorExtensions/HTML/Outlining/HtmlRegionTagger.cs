@@ -14,7 +14,6 @@ namespace MadsKristensen.EditorExtensions.Html
     [Export(typeof(ITaggerProvider))]
     [TagType(typeof(IOutliningRegionTag))]
     [ContentType("html")]
-    [ContentType("htmlx")]
     [ContentType("XML")]
     internal sealed class HtmlRegionTaggerProvider : ITaggerProvider
     {
