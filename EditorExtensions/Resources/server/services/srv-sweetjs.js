@@ -40,8 +40,8 @@ var handleSweetJS = function (writer, params) {
             });
 
             var js = compiled.code;
-            if (params.sourceMapURL != undefined)
-                js = "" + js + "\n//# sourceMappingURL=" + path.basename(params.targetFileName) + ".map\n";
+            if (params.sourceMapURL !== undefined)
+                js += "\n//# sourceMappingURL=" + path.basename(params.targetFileName) + ".map\n";
 
             writer.write(JSON.stringify({
                 Success: true,

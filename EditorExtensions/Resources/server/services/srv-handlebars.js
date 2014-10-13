@@ -30,13 +30,13 @@ var handleHandlebars = function (writer, params) {
 
 
             writer.write(JSON.stringify({
-                            Success: true,
-                            SourceFileName: params.sourceFileName,
-                            TargetFileName: params.targetFileName,
-                            Remarks: "Successful!",
-                            Content: compiled
-                        }));
-                    writer.end();
+                Success: true,
+                SourceFileName: params.sourceFileName,
+                TargetFileName: params.targetFileName,
+                Remarks: "Successful!",
+                Content: compiled
+            }));
+            writer.end();
 
         } catch (e) {
             writer.write(JSON.stringify({

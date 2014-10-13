@@ -49,7 +49,7 @@ var handleSass = function (writer, params) {
                                                                       map,
                                                                       params.targetFileName,
                                                                       rtlTargetFileName);
-                
+
 
                 if (rtlResult.Success === true) {
                     writer.write(JSON.stringify({

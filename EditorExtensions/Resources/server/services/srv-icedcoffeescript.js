@@ -9,7 +9,7 @@ var icedcoffeescript = require("iced-coffee-script"),
 var handleIcedCoffeeScript = function (writer, params) {
     var options = {
         filename: params.sourceFileName,
-        bare: params.bare != null,
+        bare: params.bare !== undefined,
         runtime: "inline",
         sourceMap: true,
         sourceRoot: "",
@@ -35,15 +35,15 @@ var handleIcedCoffeeScript = function (writer, params) {
         }
 
         try {
-            compiled = icedcoffeescript.compile(data, options);
+            var compiled = icedcoffeescript.compile(data, options);
 
             var map = JSON.parse(compiled.v3SourceMap);
             map.file = path.basename(params.targetFileName);
             delete map.sourceRoot;
 
             var js = compiled.js;
-            if (params.sourceMapURL != undefined)
-                js = "" + js + "\n//# sourceMappingURL=" + path.basename(params.targetFileName) + ".map\n";
+            if (params.sourceMapURL !== undefined)
+                js += "\n//# sourceMappingURL=" + path.basename(params.targetFileName) + ".map\n";
 
             writer.write(JSON.stringify({
                 Success: true,

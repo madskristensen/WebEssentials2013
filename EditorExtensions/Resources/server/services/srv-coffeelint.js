@@ -21,7 +21,7 @@ var reporter = function (results, writer, path) {
         Errors: errorItems
     }));
     writer.end();
-}
+};
 //#endregion
 
 //#region Handler

@@ -25,31 +25,32 @@ var handleLess = function (writer, params) {
         }
 
         try {
-            new (less.Parser)({ filename: params.sourceFileName, relativeUrls: true }).parse(data, function (e, tree) {
-                if (e) {
+            new (less.Parser)({ filename: params.sourceFileName, relativeUrls: true }).parse(data, function (parseErrors, tree) {
+                if (parseErrors) {
                     writer.write(JSON.stringify({
                         Success: false,
                         SourceFileName: params.sourceFileName,
                         TargetFileName: params.targetFileName,
                         MapFileName: params.mapFileName,
                         Remarks: "LESS: Error parsing input file.",
-                        Details: e.message,
+                        Details: parseErrors.message,
                         Errors: [{
-                            Line: e.line,
-                            Column: e.column,
-                            Message: "LESS: " + e.message,
-                            FileName: e.filename
+                            Line: parseErrors.line,
+                            Column: parseErrors.column,
+                            Message: "LESS: " + parseErrors.message,
+                            FileName: parseErrors.filename
                         }]
                     }));
                     writer.end();
                     return;
                 }
 
-                var map;
+                var css, map;
                 var mapFileName = params.targetFileName + ".map";
                 var mapDir = path.dirname(mapFileName);
+
                 try {
-                    var css = tree.toCSS({
+                    css = tree.toCSS({
                         paths: [path.dirname(params.sourceFileName)],
                         sourceMap: mapFileName,
                         sourceMapURL: params.sourceMapURL !== undefined ? path.basename(mapFileName) : null,
@@ -125,7 +126,7 @@ var handleLess = function (writer, params) {
                                                                           map,
                                                                           params.targetFileName,
                                                                           rtlTargetFileName);
-                    
+
 
                     if (rtlResult.Success) {
                         writer.write(JSON.stringify({

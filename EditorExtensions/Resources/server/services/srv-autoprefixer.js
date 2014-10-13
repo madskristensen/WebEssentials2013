@@ -7,7 +7,7 @@ var autoprefixer = require("autoprefixer"),
 var processAutoprefixer = function (cssContent, mapContent, browsers, sourceFileName, targetFileName) {
     var result = autoprefixer;
 
-    if (browsers != undefined)
+    if (browsers !== undefined)
         try {
             result = autoprefixer(browsers.split(",").map(function (s) { return s.trim(); }));
         } catch (e) {
@@ -25,9 +25,6 @@ var processAutoprefixer = function (cssContent, mapContent, browsers, sourceFile
             Success: true,
             css: result.process(cssContent).css
         };
-
-    // Clone object
-    var oldMap = JSON.parse(JSON.stringify(mapContent));
 
     result = result.process(cssContent, {
         map: { prev: mapContent },
@@ -82,7 +79,7 @@ var handleAutoPrefixer = function (writer, params) {
 
         var output = processAutoprefixer(data, null, params.autoprefixerBrowsers);
 
-        if (!output.Success)
+        if (!output.Success) {
             writer.write(JSON.stringify({
                 Success: false,
                 SourceFileName: params.sourceFileName,
@@ -93,7 +90,7 @@ var handleAutoPrefixer = function (writer, params) {
                     FileName: params.sourceFileName
                 }]
             }));
-        else
+        } else {
             writer.write(JSON.stringify({
                 Success: true,
                 SourceFileName: params.sourceFileName,
@@ -101,6 +98,7 @@ var handleAutoPrefixer = function (writer, params) {
                 Remarks: "Successful!",
                 Content: output.css
             }));
+        }
 
         writer.end();
     });
