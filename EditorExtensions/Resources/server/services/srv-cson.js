@@ -10,16 +10,16 @@ var processCSON2JSON = function (data, sourceFileName, targetFileName, writer) {
         data = CSON.parseSync(data);
 
     if (!data) {
-        err = "CSON: Invalid CSON content found";
+        var error = "CSON: Invalid CSON content found";
 
         writer.write(JSON.stringify({
             Success: false,
             SourceFileName: sourceFileName,
             TargetFileName: targetFileName,
-            Remarks: err,
-            Details: err,
+            Remarks: error,
+            Details: error,
             Errors: [{
-                Message: err,
+                Message: error,
                 FileName: sourceFileName
             }]
         }));
@@ -112,10 +112,11 @@ var handleCSON = function (writer, params) {
             return;
         }
 
-        if (path.extname(params.sourceFileName).toUpperCase() === ".JSON")
+        if (path.extname(params.sourceFileName).toUpperCase() === ".JSON") {
             processJSON2CSON(data, params.sourceFileName, params.targetFileName, writer);
-        else
+        } else {
             processCSON2JSON(data, params.sourceFileName, params.targetFileName, writer);
+        }
     });
 };
 //#endregion

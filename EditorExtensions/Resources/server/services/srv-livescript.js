@@ -8,7 +8,7 @@ var livescript = require("LiveScript"),
 var handleLiveScript = function (writer, params) {
     var options = {
         filename: params.sourceFileName,
-        bare: params.bare != null
+        bare: params.bare !== undefined
     };
 
     fs.readFile(params.sourceFileName, 'utf8', function (err, data) {
@@ -30,7 +30,7 @@ var handleLiveScript = function (writer, params) {
         }
 
         try {
-            compiled = livescript.compile(data, options);
+            var compiled = livescript.compile(data, options);
 
             writer.write(JSON.stringify({
                 Success: true,

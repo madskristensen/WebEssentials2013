@@ -974,6 +974,7 @@
     <Content Include="Resources\settings-defaults\Hubs.tt">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <None Include="Resources\server\.jshintrc" />
     <None Include="Source.extension.vsixmanifest" />
     <Resource Include="Resources\Images\vsgallery.png" />
     <Content Include="CSS\Schemas\css-we-settings.xml">
@@ -1066,7 +1067,7 @@
     <MadsKristensen.EditorExtensions.PreBuildTask />
     <!-- Copy node.js server and services to tools -->
     <ItemGroup>
-      <NodeServerSource Include="$(MSBuildProjectDirectory)\Resources\server\**\*.*" />
+      <NodeServerSource Include="$(MSBuildProjectDirectory)\Resources\server\**\*.*" Exclude="$(MSBuildProjectDirectory)\Resources\server\.jshintrc" />
     </ItemGroup>
     <Copy SourceFiles="@(NodeServerSource)" DestinationFolder="$(MSBuildProjectDirectory)\Resources\nodejs\tools\server\%(RecursiveDir)" SkipUnchangedFiles="true" />
     <!-- Include newly downloaded files now.. -->
