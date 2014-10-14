@@ -68,7 +68,9 @@ namespace MadsKristensen.EditorExtensions.Css
             yield return new CompletionListEntry("min-monochrome");
 
             yield return new CompletionListEntry("pointer");
+            yield return new CompletionListEntry("any-pointer");
             yield return new CompletionListEntry("hover");
+            yield return new CompletionListEntry("any-hover");
             yield return new CompletionListEntry("light-level");
             yield return new CompletionListEntry("scripting");
 

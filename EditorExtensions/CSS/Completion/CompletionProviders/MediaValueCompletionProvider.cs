@@ -58,12 +58,14 @@ namespace MadsKristensen.EditorExtensions.Css
                     break;
 
                 case "pointer":
+                case "any-pointer":
                     yield return new CompletionListEntry("none");
                     yield return new CompletionListEntry("coarse");
                     yield return new CompletionListEntry("fine");
                     break;
 
                 case "hover":
+                case "any-hover":
                     yield return new CompletionListEntry("none");
                     yield return new CompletionListEntry("on-demand");
                     yield return new CompletionListEntry("hover");
