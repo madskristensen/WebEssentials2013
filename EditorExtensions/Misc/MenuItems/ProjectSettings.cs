@@ -42,9 +42,14 @@ namespace MadsKristensen.EditorExtensions
 
         private async void SolutionEvents_Opened()
         {
-            foreach (Project project in ProjectHelpers.GetAllProjects())
+            var projects = ProjectHelpers.GetAllProjects();
+
+            if (projects == null)
+                return;
+
+            foreach (Project project in projects)
             {
-                if (project.ProjectItems.Count == 0)
+                if (project.ProjectItems == null || project.ProjectItems.Count == 0)
                     continue;
 
                 string folder = ProjectHelpers.GetRootFolder(project);
