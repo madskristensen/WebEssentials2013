@@ -233,7 +233,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         public HtmlAttributeQuotesRemovalMode AttributeQuotesRemovalMode { get; set; }
 
         [Category("Minification")]
-        [DisplayName("Custom Angular directives with expressions")]
+		[DisplayName("Custom Angular.js directives with expressions")]
         [Description(@"Specify comma-separated list of names of custom Angular.js directives (e.g. ""myDir, btfCarousel""), that contain expressions.")]
         [DefaultValue(null)]
         public string CustomAngularDirectiveList { get; set; }
