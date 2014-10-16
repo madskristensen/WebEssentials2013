@@ -169,7 +169,7 @@ if (program.rawArgs.length === 10 && program.environment === "production") {
     // and throws otherwise (with SGNL 0 it doesn't kill the process).
     setInterval(function () {
         if (!checkIfParentExists(program.processId))
-            exit(1);
+            process.exit(0);
     }, 300000);
 }
 
