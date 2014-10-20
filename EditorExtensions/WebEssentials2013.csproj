@@ -859,6 +859,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\Tools\sass.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\Scripts\Modern.Intellisense.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
