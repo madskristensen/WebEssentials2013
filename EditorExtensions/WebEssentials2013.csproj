@@ -859,6 +859,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\server\services\srv-rubyscss.js" />
     <Content Include="Resources\Tools\sass.exe">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

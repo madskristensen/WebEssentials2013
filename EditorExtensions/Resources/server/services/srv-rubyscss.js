@@ -1,21 +1,36 @@
-//#region Imports
-var sass = require("node-sass"),
+﻿//#region Imports
+var exec = require("child_process").exec,
+    fs = require("fs"),
     path = require("path"),
     xRegex = require("xregexp").XRegExp;
 //#endregion
 
 //#region Handler
 var handleSass = function (writer, params) {
-    sass.render({
-        file: params.sourceFileName,
-        outFile: params.targetFileName,
-        includePaths: [path.dirname(params.sourceFileName)],
-        precision: parseInt(params.precision, 10),
-        outputStyle: params.outputStyle,
-        sourceMap: params.mapFileName,
-        omitSourceMapUrl: params.sourceMapURL === undefined,
-        success: function (css, map) {
-            map = JSON.parse(map);
+
+    // Call SassBuild (located at https://github.com/davidtme/SassBuild)
+
+    var command = "..\\Tools\\sass";
+
+    command += ' --quiet'
+    command += ' --style ' + params.outputStyle;
+    command += ' --load-path "' + path.dirname(params.sourceFileName) + '"';
+    command += ' --cache-location "' + path.dirname(params.sourceFileName) + '\\.sass-cache"';
+
+    if (params.sourceMapURL === undefined) {
+        command += '  --sourcemap=none';
+    }
+
+    command += ' "' + params.sourceFileName + '"';
+    command += ' "' + params.targetFileName + '"';
+
+    var child = exec(command);
+
+    child.on('exit', function (code) {
+        if (code === 0) {
+
+            var css = fs.readFileSync(params.targetFileName);
+            var map = JSON.parse(fs.readFileSync(params.mapFileName));
 
             if (params.autoprefixer !== undefined) {
                 var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, params.autoprefixerBrowsers, params.targetFileName, params.targetFileName);
@@ -84,9 +99,11 @@ var handleSass = function (writer, params) {
             }
 
             writer.end();
-        },
-        error: function (error) {
-            var regex = xRegex.exec(error, xRegex("(?<fileName>.+):(?<line>.\\d+): error: (?<fullMessage>(?<message>.*))", 'gi'));
+
+        } else {
+            var error = fs.readFileSync(params.targetFileName);
+            var regex = xRegex.exec(error, xRegex("Error: (?<fullMessage>(?<message>.*))\r\n +?on line (?<line>[0-9]+) of (?<fileName>.+?)\r\n", 'gi'));
+
             writer.write(JSON.stringify({
                 Success: false,
                 SourceFileName: params.sourceFileName,

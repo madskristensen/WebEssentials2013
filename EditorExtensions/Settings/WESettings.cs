@@ -626,6 +626,12 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Used to determine how many digits after the decimal will be allowed.")]
         [DefaultValue(5)]
         public int NumberPrecision { get; set; }
+
+        [Category("Compilation")]
+        [DisplayName("Use Ruby Runtime")]
+        [Description("Use Ruby Sass instead of Libsass.")]
+        [DefaultValue(false)]
+        public bool UseRubyRuntime { get; set; } 
     }
 
     public sealed class CoffeeScriptSettings : CompilationSettings<CoffeeScriptSettings>, ILinterSettings

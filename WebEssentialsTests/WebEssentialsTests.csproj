@@ -125,6 +125,7 @@
     <Compile Include="Tests\Foundation\FoundationColumnsValidatorTests.cs" />
     <Compile Include="Tests\Bootstrap\BootstrapColumnsValidatorTests.cs" />
     <Compile Include="Tests\Handlebars\HandlebarsCompilationTests.cs" />
+    <Compile Include="Tests\NodeExecutors\RubyScssCompilationTests.cs" />
     <Compile Include="Tests\NodeExecutors\SweetJsCompilationTests.cs" />
     <Compile Include="Tests\SCSS\ScssDocumentTests.cs" />
     <Compile Include="Tests\Shared\Base64Vlq.cs" />
@@ -183,11 +184,29 @@
     <Content Include="fixtures\less\sub1\css\_Entry2.css" />
     <Content Include="fixtures\less\sub1\deeper\css\_Entry3.css" />
     <Content Include="fixtures\less\sub1\deeper\css\_lib.css" />
+    <Content Include="fixtures\less\sub1\deeper\_Entry3.min.css">
+      <DependentUpon>_Entry3.css</DependentUpon>
+    </Content>
     <Content Include="fixtures\less\sub1\deeper\_lib.css" />
     <Content Include="fixtures\less\sub1\deeper\_Entry3.css" />
+    <Content Include="fixtures\less\sub1\deeper\_lib.min.css">
+      <DependentUpon>_lib.css</DependentUpon>
+    </Content>
     <Content Include="fixtures\less\sub1\_Entry2.css" />
+    <Content Include="fixtures\less\sub1\_Entry2.min.css">
+      <DependentUpon>_Entry2.css</DependentUpon>
+    </Content>
+    <Content Include="fixtures\less\URLs.min.css">
+      <DependentUpon>URLs.css</DependentUpon>
+    </Content>
     <Content Include="fixtures\less\_Deep Inclusion.css" />
+    <Content Include="fixtures\less\_Deep Inclusion.min.css">
+      <DependentUpon>_Deep Inclusion.css</DependentUpon>
+    </Content>
     <Content Include="fixtures\less\_Entry1.css" />
+    <Content Include="fixtures\less\_Entry1.min.css">
+      <DependentUpon>_Entry1.css</DependentUpon>
+    </Content>
     <Content Include="fixtures\module-resolution\a.js" />
     <Content Include="fixtures\module-resolution\b\c.js" />
     <Content Include="fixtures\module-resolution\b\d.js" />
@@ -210,6 +229,12 @@
     <Content Include="fixtures\module-resolution\node_modules\node_modules\bar.js" />
     <Content Include="fixtures\module-resolution\packages\main-index\package-main-module\index.js" />
     <Content Include="fixtures\module-resolution\packages\main\package-main-module.js" />
+    <Content Include="fixtures\ruby-scss\nested.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="fixtures\ruby-scss\extend.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="fixtures\sweet.js\compiled\test.js" />
   </ItemGroup>
   <ItemGroup>
@@ -219,11 +244,29 @@
     <None Include="fixtures\iced\source\test.iced" />
     <Content Include="fixtures\jshint\config\.jshintrc" />
     <None Include="fixtures\jshint\.jshintignore" />
+    <None Include="fixtures\less\sub1\deeper\_Entry3.css.map">
+      <DependentUpon>_Entry3.css</DependentUpon>
+    </None>
+    <None Include="fixtures\less\sub1\deeper\_lib.css.map">
+      <DependentUpon>_lib.css</DependentUpon>
+    </None>
+    <None Include="fixtures\less\sub1\_Entry2.css.map">
+      <DependentUpon>_Entry2.css</DependentUpon>
+    </None>
+    <None Include="fixtures\less\URLs.css.map">
+      <DependentUpon>URLs.css</DependentUpon>
+    </None>
     <None Include="fixtures\less\URLs.less" />
     <None Include="fixtures\less\sub1\deeper\_lib.less" />
     <None Include="fixtures\less\sub1\deeper\_Entry3.less" />
     <None Include="fixtures\less\sub1\_Entry2.less" />
+    <None Include="fixtures\less\_Deep Inclusion.css.map">
+      <DependentUpon>_Deep Inclusion.css</DependentUpon>
+    </None>
     <None Include="fixtures\less\_Deep Inclusion.less" />
+    <None Include="fixtures\less\_Entry1.css.map">
+      <DependentUpon>_Entry1.css</DependentUpon>
+    </None>
     <None Include="fixtures\less\_Entry1.less" />
     <None Include="fixtures\module-resolution\empty\.gitkeep" />
     <None Include="fixtures\module-resolution\foo" />
@@ -231,6 +274,12 @@
     <None Include="fixtures\module-resolution\packages\main\package.json" />
     <None Include="fixtures\coffee\source\test.coffee" />
     <Content Include="fixtures\scss\extend.css" />
+    <Content Include="fixtures\ruby-scss\extend.scss">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="fixtures\ruby-scss\nested.scss">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="fixtures\scss\extend.scss" />
     <None Include="fixtures\sweet.js\source\test.sjs" />
     <None Include="packages.config" />

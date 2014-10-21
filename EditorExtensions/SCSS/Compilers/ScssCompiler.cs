@@ -26,7 +26,7 @@ namespace MadsKristensen.EditorExtensions.Scss
 
             var parameters = new NodeServerUtilities.Parameters();
 
-            parameters.Add("service", ServiceName);
+            parameters.Add("service", WESettings.Instance.Scss.UseRubyRuntime ? ServiceName : "RubySCSS");
             parameters.Add("sourceFileName", sourceFileName);
             parameters.Add("targetFileName", targetFileName);
             parameters.Add("mapFileName", targetFileName + ".map");
