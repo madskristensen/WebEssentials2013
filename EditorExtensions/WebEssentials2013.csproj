@@ -765,6 +765,9 @@
     <Compile Include="Settings\LegacySettings.cs" />
     <Compile Include="HTML\Validation\OpenGraphPrefixValidator.cs" />
     <Compile Include="HTML\Validation\ItemTypeValidator.cs" />
+    <Content Include="Resources\Tools\sass.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <EmbeddedResource Include="BrowserLink\BrowserInfo\BrowserInfo.js" />
     <Content Include="CSS\Snippets\snippets.pkgdef">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -859,10 +862,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\server\services\srv-rubyscss.js" />
-    <Content Include="Resources\Tools\sass.exe">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="Resources\Scripts\Modern.Intellisense.js">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -878,6 +877,7 @@
     <Content Include="Resources\server\services\srv-rtlcss.js" />
     <Content Include="Resources\server\services\srv-less.js" />
     <Content Include="Resources\server\services\srv-livescript.js" />
+    <Content Include="Resources\server\services\srv-rubyscss.js" />
     <Content Include="Resources\server\services\srv-scss.js" />
     <Content Include="Resources\server\services\srv-sweetjs.js" />
     <Content Include="Resources\server\services\srv-jscs.js" />
