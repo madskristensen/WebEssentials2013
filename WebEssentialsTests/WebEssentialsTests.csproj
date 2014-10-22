@@ -229,12 +229,9 @@
     <Content Include="fixtures\module-resolution\node_modules\node_modules\bar.js" />
     <Content Include="fixtures\module-resolution\packages\main-index\package-main-module\index.js" />
     <Content Include="fixtures\module-resolution\packages\main\package-main-module.js" />
-    <Content Include="fixtures\ruby-scss\nested.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="fixtures\ruby-scss\extend.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="fixtures\ruby-scss\compiled\multiple-assignment.css" />
+    <Content Include="fixtures\ruby-scss\compiled\nested-rules.css" />
+    <Content Include="fixtures\ruby-scss\compiled\referencing-parent-selectors.css" />
     <Content Include="fixtures\sweet.js\compiled\test.js" />
   </ItemGroup>
   <ItemGroup>
@@ -274,12 +271,9 @@
     <None Include="fixtures\module-resolution\packages\main\package.json" />
     <None Include="fixtures\coffee\source\test.coffee" />
     <Content Include="fixtures\scss\extend.css" />
-    <Content Include="fixtures\ruby-scss\extend.scss">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="fixtures\ruby-scss\nested.scss">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <None Include="fixtures\ruby-scss\source\multiple-assignment.scss" />
+    <None Include="fixtures\ruby-scss\source\nested-rules.scss" />
+    <None Include="fixtures\ruby-scss\source\referencing-parent-selectors.scss" />
     <None Include="fixtures\scss\extend.scss" />
     <None Include="fixtures\sweet.js\source\test.sjs" />
     <None Include="packages.config" />
