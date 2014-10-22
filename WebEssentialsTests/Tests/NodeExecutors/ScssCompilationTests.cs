@@ -4,6 +4,7 @@ using FluentAssertions;
 using MadsKristensen.EditorExtensions.Scss;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Text.RegularExpressions;
 
 namespace WebEssentialsTests
 {
@@ -20,6 +21,8 @@ namespace WebEssentialsTests
         }
 
         private static readonly string BaseDirectory = Path.GetDirectoryName(typeof(ScssCompilationTests).Assembly.Location);
+        private static readonly Regex BlockComments = new Regex(@"/\*(.*?)\*/", RegexOptions.IgnoreCase);
+
 
         [TestMethod]
         public async Task ScssBasicCompilationTest()
@@ -31,12 +34,19 @@ namespace WebEssentialsTests
                 if (!File.Exists(compiledFile))
                     continue;
 
-                var expected = File.ReadAllText(compiledFile)
-                                   .Replace("\r", "");
+                var expected = CleanCss(File.ReadAllText(compiledFile));
                 var compiled = await new ScssCompiler().CompileToStringAsync(sourceFile);
 
-                compiled.Trim().Should().Be(expected.Trim());
+                CleanCss(compiled).Should().Be(expected);
             }
+        }
+
+        private static string CleanCss(string css)
+        {
+            css = css.Replace("\n", "").Replace("\r", "").Replace(" ", "");
+            css = BlockComments.Replace(css, "");
+
+            return css.Trim();
         }
     }
 }
