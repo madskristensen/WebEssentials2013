@@ -1,0 +1,17 @@
+﻿.puma-icon {
+    background-image: url("/images/puma.png");
+    border: 2px solid black;
+    cursor: default;
+}
+
+.sea-slug-icon {
+    background-image: url("/images/sea-slug.png");
+    border: 2px solid blue;
+    cursor: pointer;
+}
+
+.egret-icon {
+    background-image: url("/images/egret.png");
+    border: 2px solid white;
+    cursor: move;
+}

@@ -1,0 +1,12 @@
+﻿a {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+body.firefox a {
+    font-weight: normal;
+}
