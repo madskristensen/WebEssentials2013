@@ -107,7 +107,6 @@ namespace MadsKristensen.EditorExtensions
 
         public static async Task<BundleDocument> FromFile(string fileName)
         {
-            var extension = Path.GetExtension(fileName).TrimStart('.').ToLowerInvariant();
             string root = ProjectHelpers.GetProjectFolder(fileName);
             string folder = Path.GetDirectoryName(root);
 
@@ -151,7 +150,7 @@ namespace MadsKristensen.EditorExtensions
             if (element != null)
                 bundle.RunOnBuild = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
 
-            if (extension == "css")
+            if (bundle.isCss)
             {
                 element = doc.Descendants("adjustRelativePaths").FirstOrDefault();
 
