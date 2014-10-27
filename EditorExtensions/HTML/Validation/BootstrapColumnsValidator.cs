@@ -31,56 +31,34 @@ namespace MadsKristensen.EditorExtensions.Html
             var elementClasses = element.GetAttribute("class");
 
             if (elementClasses == null || !elementClasses.Value.Split(' ').Any(x => x.StartsWith("col-", StringComparison.CurrentCulture)))
-            {
                 return results;
-            }
 
             // Bootstrap grid system require a parent <div class='row ... to work
             if (IsParentDivElementMissingRowClass(element))
-            {
-                int index = element.Attributes.IndexOf(elementClasses);
-                string columnsClass = elementClasses.Value.Split(' ').Where(x => x.StartsWith("col-", StringComparison.CurrentCulture)).First();
-                string error = string.Format(CultureInfo.CurrentCulture, _errorRowMissing, columnsClass, "");
-
-                results.AddAttributeError(element, error, HtmlValidationErrorLocation.AttributeValue, index);
-            }
+                results.AddAttributeError(element,
+                                          string.Format(CultureInfo.CurrentCulture, _errorRowMissing, elementClasses.Value.Split(' ').Where(x => x.StartsWith("col-", StringComparison.CurrentCulture)).First()),
+                                          HtmlValidationErrorLocation.AttributeValue,
+                                          element.Attributes.IndexOf(elementClasses));
 
             return results;
         }
 
         private static bool IsParentDivElementMissingRowClass(ElementNode element)
         {
-
-            bool isRowClassPresent = false;
-
             if (element.Parent == null)
                 return false; // Don't want false alert so better to suppose that it's a partial view of the 'row' class on the parent view.
 
             var classNames = element.Parent.GetAttribute("class");
+
             if (classNames != null && classNames.Value.Split(' ').Any(x => x.Equals("row")))
-                isRowClassPresent = true;
-
-            if (isRowClassPresent)
-            {
                 return false;
-            }
-            else
-            {
-                if (element.Parent.Name == "html")
-                {
-                    // Now at the top and no row class on this element. Confirm, it's missing. 
-                    return true;
-                }
 
-                // Check if a parent element have the row class.
-                return IsParentDivElementMissingRowClass(element.Parent);
-            }
+            // Now at the top and no row class on this element. Confirm, it's missing. 
+            if (element.Parent.Name == "html")
+                return true;
 
-            ////if (classNames.Value.Split(' ').Any(x => x.Equals("row")))
-            ////    return false;
-
-            //// No strong confirmation, be safe.
-            //return false;
+            // Check if a parent element have the row class.
+            return IsParentDivElementMissingRowClass(element.Parent);
         }
     }
 }
