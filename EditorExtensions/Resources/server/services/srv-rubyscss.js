@@ -12,7 +12,7 @@ var handleSass = function (writer, params) {
 
     var command = "..\\Tools\\sass";
 
-    command += ' --quiet'
+    command += ' --quiet';
     command += ' --style ' + params.outputStyle;
     command += ' --load-path "' + path.dirname(params.sourceFileName) + '"';
     command += ' --cache-location "' + path.dirname(params.sourceFileName) + '\\.sass-cache"';
@@ -65,7 +65,6 @@ var handleSass = function (writer, params) {
                                                                       params.targetFileName,
                                                                       rtlTargetFileName);
 
-
                 if (rtlResult.Success === true) {
                     writer.write(JSON.stringify({
                         Success: true,
@@ -99,7 +98,6 @@ var handleSass = function (writer, params) {
             }
 
             writer.end();
-
         } else {
             var error = fs.readFileSync(params.targetFileName);
             var regex = xRegex.exec(error, xRegex("Error: (?<fullMessage>(?<message>.*))\r\n +?on line (?<line>[0-9]+) of (?<fileName>.+?)\r\n", 'gi'));
