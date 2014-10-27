@@ -35,23 +35,19 @@ namespace MadsKristensen.EditorExtensions.Html
                 return results;
 
             var classNames = element.GetAttribute("class");
-            List<string> childrenClassNames = null;
 
             if (classNames == null)
                 return results;
 
             foreach (string token in _tokens)
             {
-                childrenClassNames = GetIfTokenIsDependent(token, element);
+                if (IsCorrect(classNames.Value, token, GetIfTokenIsDependent(token, element)))
+                    continue;
 
-                if (!IsCorrect(classNames.Value, token, childrenClassNames))
-                {
-                    int index = element.Attributes.IndexOf(classNames);
-                    string offender = GetOffendingClassName(classNames.Value, token);
-                    string error = string.Format(CultureInfo.CurrentCulture, _error, offender, token);
-
-                    results.AddAttributeError(element, error, HtmlValidationErrorLocation.AttributeValue, index);
-                }
+                results.AddAttributeError(element,
+                                          string.Format(CultureInfo.CurrentCulture, _error, GetOffendingClassName(classNames.Value, token), token),
+                                          HtmlValidationErrorLocation.AttributeValue,
+                                          element.Attributes.IndexOf(classNames));
             }
 
             return results;
@@ -59,32 +55,23 @@ namespace MadsKristensen.EditorExtensions.Html
 
         private static List<string> GetIfTokenIsDependent(string token, ElementNode element)
         {
-            List<string> childrenClassNames = null;
+            if (!_childDependentTokens.Any(tk => token.StartsWith(tk, StringComparison.Ordinal)))
+                return null;
 
-            if (_childDependentTokens.Any(tk => token.StartsWith(tk, StringComparison.Ordinal)))
-            {
-                childrenClassNames = new List<string>();
-                // childrenClassNames = element.Children.Select<ElementNode, string>(child => child.GetAttribute("class") == null ? "" : child.GetAttribute("class").Value).ToList<string>();
-                childrenClassNames = element.Children.Where(child => child.GetAttribute("class") != null).Select(child => child.GetAttribute("class").Value).ToList();
-            }
-
-            return childrenClassNames;
+            return element.Children.Where(child => child.GetAttribute("class") != null)
+                          .Select(child => child.GetAttribute("class").Value).ToList();
         }
 
         private static bool IsCorrect(string input, string token, List<string> childrenClassNames = null)
         {
-            if (input.Contains(token + "-") &&
-                 !(input.Contains(token + " ") || input.EndsWith(token, StringComparison.CurrentCulture) || IsWhitelisted(input, token)) &&
-                ((childrenClassNames != null && !childrenClassNames.All(cn => cn.Contains(token + " ") || cn.EndsWith(token, StringComparison.CurrentCulture))) || childrenClassNames == null))
-                return false;
-
-            return true;
+            return !(input.Contains(token + "-") &&
+                   !(input.Contains(token + " ") || input.EndsWith(token, StringComparison.CurrentCulture) || IsWhitelisted(input, token)) &&
+                   ((childrenClassNames != null && !childrenClassNames.All(cn => cn.Contains(token + " ") || cn.EndsWith(token, StringComparison.CurrentCulture))) || childrenClassNames == null));
         }
 
         private static string GetOffendingClassName(string input, string token)
         {
-            string[] classes = input.Split(' ');
-            return classes.FirstOrDefault(c => c.StartsWith(token + "-", StringComparison.CurrentCulture));
+            return input.Split(' ').FirstOrDefault(c => c.StartsWith(token + "-", StringComparison.CurrentCulture));
         }
 
         private static bool IsWhitelisted(string input, string token)

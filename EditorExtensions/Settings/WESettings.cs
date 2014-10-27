@@ -631,7 +631,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         [DisplayName("Use Ruby Runtime")]
         [Description("Use Ruby Sass instead of Libsass.")]
         [DefaultValue(false)]
-        public bool UseRubyRuntime { get; set; } 
+        public bool UseRubyRuntime { get; set; }
     }
 
     public sealed class CoffeeScriptSettings : CompilationSettings<CoffeeScriptSettings>, ILinterSettings

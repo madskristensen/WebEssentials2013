@@ -32,149 +32,111 @@ namespace MadsKristensen.EditorExtensions.Html
                 return results;
 
             var elementClasses = element.GetAttribute("class");
-            bool useNameColumn;
-            bool useNameColumns;
 
             if (elementClasses == null)
-            {
                 return results;
-            }
-            else
-            {
-                // 'column' and 'columns' are allowed... unfortunately for this validator: lot of duplicate checks
-                useNameColumn = elementClasses.Value.Split(' ').Any(x => x.Contains("column"));
-                useNameColumns = elementClasses.Value.Split(' ').Any(x => x.Contains("columns"));
 
-                // No columns class, exit
-                if (!useNameColumn && !useNameColumns)
-                    return results;
-            }
+            string[] classes = elementClasses.Value.Split(' ');
+            bool useNameColumn = classes.Any(x => x.Contains("column"));
 
-            var columnNameUsed = useNameColumn ? "column" : "columns";
+            // No columns class, exit
+            if (!useNameColumn && !classes.Any(x => x.Contains("columns")))
+                return results;
 
             // Foundation grid system require a direct parent <div class='row ... to work
             if (IsParentDivElementMissingRowClass(element))
-            {
-                int index = element.Attributes.IndexOf(elementClasses);
-                string error = string.Format(CultureInfo.CurrentCulture, _errorRowMissing, columnNameUsed, "");
-
-                results.AddAttributeError(element, error, HtmlValidationErrorLocation.AttributeValue, index);
-            }
+                results.AddAttributeError(element,
+                                          string.Format(CultureInfo.CurrentCulture, _errorRowMissing, useNameColumn ? "column" : "columns"),
+                                          HtmlValidationErrorLocation.AttributeValue,
+                                          element.Attributes.IndexOf(elementClasses));
 
             // Check for number of columns...
-            string[] columnSizeClasses = new string[] { "small-", "medium-", "large-" };
-            var classList = columnSizeClasses.Where(x => elementClasses.Value.Split(' ').Any(y => y.StartsWith(x, StringComparison.Ordinal)));
+            var classList = new[] { "small-", "medium-", "large-" }
+                           .Where(x => classes.Any(y => y.StartsWith(x, StringComparison.Ordinal)));
 
-            // ...only if the doesn't contains '[size]-centered' or '[size]-uncentered' elements
-            if (classList.Any() && GetCenteredElement(elementClasses))
-                return results;
-
-            // Ok to not have size class only if there is only one column defined (that will be 100%)
-            if (classList.Count() == 0 && !IsParentDivContainOnlyOneChildColumnElement(element))
+            if (classList.Any())
             {
-                var index = element.Attributes.IndexOf(elementClasses);
-                results.AddAttributeError(element, _onlyOneColumnWithoutSizeAllowed, HtmlValidationErrorLocation.AttributeValue, index);
+                // ...only if the doesn't contains '[size]-centered' or '[size]-uncentered' elements
+                if (GetCenteredElement(classes))
+                    return results;
             }
+            // Ok to not have size class only if there is only one column defined (that will be 100%)
+            else if (!IsParentDivContainOnlyOneChildColumnElement(element))
+                results.AddAttributeError(element,
+                                          _onlyOneColumnWithoutSizeAllowed,
+                                          HtmlValidationErrorLocation.AttributeValue,
+                                          element.Attributes.IndexOf(elementClasses));
 
             foreach (var columnSize in classList)
             {
                 var sumColumnsCurrentRow = GetSumOfColumns(element, columnSize);
+                var index = element.Attributes.IndexOf(elementClasses);
 
+                if (sumColumnsCurrentRow == 12)
+                    continue;
                 // It's OK to use < 12 columsn only if the end class is there
-                if (sumColumnsCurrentRow < 12 && !IsLastColumnsContainEndClass(element))
+                else if (sumColumnsCurrentRow < 12)
                 {
-                    var index = element.Attributes.IndexOf(elementClasses);
-                    var error = string.Format(CultureInfo.CurrentCulture, _errorUnder12Columns, columnSize);
-
-                    results.AddAttributeError(element, error, HtmlValidationErrorLocation.AttributeValue, index);
+                    if (!IsLastColumnsContainEndClass(element))
+                        results.AddAttributeError(element,
+                                                  string.Format(CultureInfo.CurrentCulture, _errorUnder12Columns, columnSize),
+                                                  HtmlValidationErrorLocation.AttributeValue,
+                                                  index);
                 }
-
-                if (sumColumnsCurrentRow > 12 && sumColumnsCurrentRow % 12 != 0)
-                {
-                    var index = element.Attributes.IndexOf(elementClasses);
-                    var error = string.Format(CultureInfo.CurrentCulture, _errorOver12Columns, columnSize);
-
-                    results.AddAttributeError(element, error, HtmlValidationErrorLocation.AttributeValue, index);
-                }
+                else if (sumColumnsCurrentRow % 12 != 0)
+                    results.AddAttributeError(element,
+                                              string.Format(CultureInfo.CurrentCulture, _errorOver12Columns, columnSize),
+                                              HtmlValidationErrorLocation.AttributeValue,
+                                              index);
             }
 
             return results;
         }
 
-        private static bool GetCenteredElement(AttributeNode elementClasses)
+        private static bool GetCenteredElement(string[] classes)
         {
-            string[] columnSizeCenteredClasses = new string[] { "small-centered", "medium-centered", "large-centered",
-                                                                    "small-uncentered", "medium-uncentered", "large-uncentered"};
-
-            return columnSizeCenteredClasses.Any(x => elementClasses.Value.Split(' ').Any(y => y.Equals(x, StringComparison.OrdinalIgnoreCase)));
+            return new[] { "small-centered", "medium-centered", "large-centered", "small-uncentered",
+                           "medium-uncentered", "large-uncentered"}
+                           .Any(x => classes.Any(y => y.Equals(x, StringComparison.OrdinalIgnoreCase)));
         }
 
         private static bool IsLastColumnsContainEndClass(ElementNode element)
         {
             return element.Parent.Children
-                    .Where(x => x.HasAttribute("class"))
-                    .Where(x => x.GetAttribute("class").Value.Contains("columns"))
-                    .Last()
-                    .GetAttribute("class").Value.Contains("end");
+                  .Where(x => x.HasAttribute("class") && x.GetAttribute("class").Value.Contains("columns"))
+                  .Last().GetAttribute("class").Value.Contains("end");
         }
 
         private static int GetSumOfColumns(ElementNode element, string columnSize)
         {
-            var columnFilter = columnSize;
-            var columnFilterOffset = string.Format(CultureInfo.CurrentCulture, "{0}offset-", columnFilter);
-
-            var sumOfColumns = element.Parent.Children
-                                .Where(x => x.HasAttribute("class"))
-                                .Where(x => x.GetAttribute("class").Value.Contains(columnFilter))
-                                .Select(x => x.GetAttribute("class").Value.Split(' '))
-                                .SelectMany(x => x)
-                                .Where(x => x.StartsWith(columnFilter, StringComparison.CurrentCulture))
-                                .Where(x => !x.Contains("push") && !x.Contains("pull"))
-                                .Sum(x => Int32.Parse(x.Replace(columnFilterOffset, string.Empty)
-                                                       .Replace(columnFilter, string.Empty),
-                                                       CultureInfo.CurrentCulture));
-
-            return sumOfColumns;
+            return element.Parent.Children
+                  .Where(x => x.HasAttribute("class") && x.GetAttribute("class").Value.Contains(columnSize))
+                  .Select(x => x.GetAttribute("class").Value.Split(' '))
+                  .SelectMany(x => x)
+                  .Where(x => x.StartsWith(columnSize, StringComparison.CurrentCulture) &&
+                             !x.Contains("push") && !x.Contains("pull"))
+                  .Sum(x => Int32.Parse(x.Replace(columnSize + "offset-", string.Empty)
+                                         .Replace(columnSize, string.Empty),
+                                          CultureInfo.CurrentCulture));
         }
 
         private static bool IsParentDivElementMissingRowClass(ElementNode element)
         {
-            bool isRowClassPresent = false;
-
             if (element.Parent == null || string.IsNullOrEmpty(element.Parent.Name))
                 return false; // Don't want false alert so better to suppose that it's a partial view of the 'row' class on the parent view.
 
             var classNames = element.Parent.GetAttribute("class");
-            if (classNames != null && classNames.Value.Split(' ').Any(x => x.Equals("row")))
-                isRowClassPresent = true;
 
-            if (isRowClassPresent)
-            {
-                return false;
-            }
-            else
-            {
-                if (element.Parent.Name == "html")
-                {
-                    // Now at the top and no row class on this element. Confirm, it's missing. 
-                    return true;
-                }
-
-                // For the grid system of Foundation, the row class must be on the direct parent element.
-                return true;
-            }
+            return classNames == null || !classNames.Value.Split(' ').Any(x => x.Equals("row"));
         }
 
         private static bool IsParentDivContainOnlyOneChildColumnElement(ElementNode element)
         {
-            var sumOfColumns = element.Parent.Children
-                            .Where(x => x.HasAttribute("class"))
-                            .Where(x => x.GetAttribute("class").Value.Contains("column") || x.GetAttribute("class").Value.Contains("columns")).Count();
-
-            if (sumOfColumns == 1)
-                return true;
-            else
-                return false;
+            return element.Parent.Children
+                  .Where(x => x.HasAttribute("class") &&
+                             (x.GetAttribute("class").Value.Contains("column") ||
+                              x.GetAttribute("class").Value.Contains("columns")))
+                  .Count() == 1;
         }
     }
 }
