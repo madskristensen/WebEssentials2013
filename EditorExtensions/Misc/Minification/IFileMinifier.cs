@@ -201,7 +201,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             }
 
             string content = minifier.MinifyJavaScript(await FileHelpers.ReadAllTextRetry(file), settings);
-            content += "\r\n/*\r\n//# sourceMappingURL=" + Path.GetFileName(minFile) + ".map\r\n*/";
+            content += "\r\n//# sourceMappingURL=" + Path.GetFileName(minFile) + ".map";
 
             if (File.Exists(minFile) && content == await FileHelpers.ReadAllTextRetry(minFile))
                 return false;
