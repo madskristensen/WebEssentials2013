@@ -56,7 +56,7 @@ namespace MadsKristensen.EditorExtensions.Settings
                     }
 
                     if (searchPattern[0] == '!' &&
-                        new Minimatcher(searchPattern, new Options { AllowWindowsPaths = true }).IsMatch(sourcePath))
+                        new Minimatcher(searchPattern.Substring(1), new Options { AllowWindowsPaths = true }).IsMatch(sourcePath))
                         return false;
                     else if (new Minimatcher(searchPattern, new Options { AllowWindowsPaths = true }).IsMatch(sourcePath))
                         return true;
