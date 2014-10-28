@@ -6,6 +6,7 @@ using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor.Schemas;
 using Microsoft.VisualStudio.Utilities;
+using Microsoft.CSS.Editor.Intellisense;
 
 namespace MadsKristensen.EditorExtensions.Css
 {
@@ -27,11 +28,23 @@ namespace MadsKristensen.EditorExtensions.Css
             ICssSchemaInstance rootSchema = CssSchemaManager.SchemaManager.GetSchemaRoot(null);
             ICssSchemaInstance schema = CssSchemaManager.SchemaManager.GetSchemaForItem(rootSchema, item);
 
-            if (schema.GetProperty(dec.PropertyName.Text) == null)
+            ICssCompletionListEntry prop = schema.GetProperty(dec.PropertyName.Text);
+
+            if (prop == null)
             {
                 string message = string.Format(CultureInfo.CurrentCulture, Resources.ValidationVendorDeclarations, dec.PropertyName.Text);
                 context.AddError(new SimpleErrorTag(dec.PropertyName, message, CssErrorFlags.TaskListWarning | CssErrorFlags.UnderlineRed));
                 return ItemCheckResult.CancelCurrentItem;
+            }
+            else
+            {
+                string obsolete = prop.GetAttribute("obsolete");
+                if (!string.IsNullOrEmpty(obsolete))
+                {
+                    string message = string.Format(CultureInfo.CurrentCulture, Resources.BestPracticeRemoveObsolete, dec.PropertyName.Text, obsolete);
+                    context.AddError(new SimpleErrorTag(dec.PropertyName, message, CssErrorFlags.TaskListMessage));
+                    return ItemCheckResult.CancelCurrentItem;
+                }
             }
 
             return ItemCheckResult.Continue;
@@ -60,12 +73,23 @@ namespace MadsKristensen.EditorExtensions.Css
             ICssSchemaInstance schema = CssSchemaManager.SchemaManager.GetSchemaForItem(rootSchema, item);
 
             string normalized = item.Text.Trim(':');
+            ICssCompletionListEntry pseudo = schema.GetPseudo(item.Text);
 
-            if (normalized.Length > 0 && normalized[0] == '-' && schema.GetPseudo(item.Text) == null)
+            if (normalized.Length > 0 && normalized[0] == '-' && pseudo == null)
             {
                 string message = string.Format(CultureInfo.CurrentCulture, Resources.ValidationVendorPseudo, item.Text);
                 context.AddError(new SimpleErrorTag(item, message, CssErrorFlags.TaskListWarning | CssErrorFlags.UnderlineRed));
                 return ItemCheckResult.CancelCurrentItem;
+            }
+            else if (pseudo != null)
+            {
+                string obsolete = pseudo.GetAttribute("obsolete");
+                if (!string.IsNullOrEmpty(obsolete))
+                {
+                    string message = string.Format(CultureInfo.CurrentCulture, Resources.BestPracticeRemoveObsolete, normalized, obsolete);
+                    context.AddError(new SimpleErrorTag(item, message, CssErrorFlags.TaskListMessage));
+                    return ItemCheckResult.CancelCurrentItem;
+                }
             }
 
             return ItemCheckResult.Continue;
@@ -96,11 +120,23 @@ namespace MadsKristensen.EditorExtensions.Css
             ICssSchemaInstance rootSchema = CssSchemaManager.SchemaManager.GetSchemaRoot(null);
             ICssSchemaInstance schema = CssSchemaManager.SchemaManager.GetSchemaForItem(rootSchema, dir);
 
-            if (schema.GetAtDirective("@" + dir.Keyword.Text) == null)
+            ICssCompletionListEntry at = schema.GetAtDirective("@" + dir.Keyword.Text);
+
+            if (at == null)
             {
                 string message = string.Format(CultureInfo.CurrentCulture, Resources.ValidationVendorDirective, dir.Keyword.Text);
                 context.AddError(new SimpleErrorTag(dir.Keyword, message, CssErrorFlags.TaskListWarning | CssErrorFlags.UnderlineRed));
                 return ItemCheckResult.CancelCurrentItem;
+            }
+            else
+            {
+                string obsolete = at.GetAttribute("obsolete");
+                if (!string.IsNullOrEmpty(obsolete))
+                {
+                    string message = string.Format(CultureInfo.CurrentCulture, Resources.BestPracticeRemoveObsolete, "@" + dir.Keyword.Text, obsolete);
+                    context.AddError(new SimpleErrorTag(dir.Keyword, message, CssErrorFlags.TaskListMessage));
+                    return ItemCheckResult.CancelCurrentItem;
+                }
             }
 
             return ItemCheckResult.Continue;
