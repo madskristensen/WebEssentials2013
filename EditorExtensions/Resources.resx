@@ -144,11 +144,14 @@
   <data name="BestPracticePseudosAfterOtherSelectors" xml:space="preserve">
     <value>Best practice: "{0}" should be placed before any pseudo classes/elements</value>
   </data>
+  <data name="BestPracticeRemoveObsolete" xml:space="preserve">
+    <value>Browser compatibility: "{0}" has been deprecated and is no longer needed. {1}</value>
+  </data>
   <data name="BestPracticeStandardPropertyOrder" xml:space="preserve">
     <value>Browser compatibility: Place the standard property below its vendor specific implementations</value>
   </data>
   <data name="BestPracticeZeroUnit" xml:space="preserve">
-    <value>Best Practice: Don't specify the unit type ({0}) when the value is zero. (Disable this check in Tools -&gt; Options)</value>
+    <value>Best practice: Don't specify the unit type ({0}) when the value is zero. (Disable this check in Tools -&gt; Options)</value>
   </data>
   <data name="IE6OnlyPropertyHackName" xml:space="preserve">
     <value>Make visible to IE6 only</value>
@@ -208,13 +211,13 @@
     <value>Validation (WE): Pseudo elements ("{0}") must be specified after pseudo classes ("{1}").</value>
   </data>
   <data name="ValidationVendorDeclarations" xml:space="preserve">
-    <value>Validation (WE): "{0}" is not a valid vendor specific property or it may have been deprecated.</value>
+    <value>Validation (WE): "{0}" is not a valid vendor specific property.</value>
   </data>
   <data name="ValidationVendorDirective" xml:space="preserve">
-    <value>Validation (WE): "{0}" is not a valid vendor specific @-directive or it may have been deprecated.</value>
+    <value>Validation (WE): "{0}" is not a valid vendor specific @-directive.</value>
   </data>
   <data name="ValidationVendorPseudo" xml:space="preserve">
-    <value>Validation (WE): "{0}" is not a valid vendor specific pseudo class/element or it may have been deprecated.</value>
+    <value>Validation (WE): "{0}" is not a valid vendor specific pseudo class/element.</value>
   </data>
   <data name="VendorOrderSmartTagActionName" xml:space="preserve">
     <value>Move property below last vendor specific</value>

@@ -51,7 +51,7 @@ namespace MadsKristensen.EditorExtensions
             foreach (string prefix in VendorHelpers.GetPrefixes(schema))
             {
                 ICssCompletionListEntry entry = schema.GetProperty(prefix + text);
-                if (entry != null)
+                if (entry != null && string.IsNullOrEmpty(entry.GetAttribute("obsolete")))
                     yield return entry.DisplayText;
             }
         }

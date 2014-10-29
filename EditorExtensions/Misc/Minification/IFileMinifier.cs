@@ -174,7 +174,6 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
                 settings.SymbolsMap = sourceMap;
                 sourceMap.StartPackage(minFile, mapPath);
 
-                // This fails when debugger is attached. Bug raised with Ron Logan
                 result = await MinifyFile(file, minFile, settings);
             }
 
@@ -201,7 +200,6 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             }
 
             string content = minifier.MinifyJavaScript(await FileHelpers.ReadAllTextRetry(file), settings);
-            content += "\r\n/*\r\n//# sourceMappingURL=" + Path.GetFileName(minFile) + ".map\r\n*/";
 
             if (File.Exists(minFile) && content == await FileHelpers.ReadAllTextRetry(minFile))
                 return false;

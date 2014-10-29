@@ -51,8 +51,7 @@ namespace WebEssentialsTests
             var sourcePath = Path.Combine(BaseDirectory, "fixtures\\less");
             foreach (var lessFilename in Directory.EnumerateFiles(sourcePath, "*.less", SearchOption.AllDirectories))
             {
-                var expected = File.ReadAllText(Path.ChangeExtension(lessFilename, ".css"))
-                               .Replace("\r", "");
+                var expected = File.ReadAllText(Path.ChangeExtension(lessFilename, ".css")).Replace("\r", "");
                 var compiled = await new LessCompiler().CompileToStringAsync(lessFilename);
 
                 compiled.Trim().Should().Be(expected.Trim());

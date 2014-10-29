@@ -219,7 +219,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WebMarkupMin.Core">
-      <HintPath>..\packages\WebMarkupMin.Core.0.9.7\lib\net40\WebMarkupMin.Core.dll</HintPath>
+      <HintPath>..\packages\WebMarkupMin.Core.0.9.8\lib\net40\WebMarkupMin.Core.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="ZenCoding, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -317,6 +317,7 @@
     <Compile Include="CSS\Completion\CompletionProviders\BrowserLinkCompletionProvider.cs" />
     <Compile Include="CSS\Completion\Filter\ColorSwatchCompletionListFilter.cs" />
     <Compile Include="CSS\Completion\Filter\HideUncommonCompletionListFilter.cs" />
+    <Compile Include="CSS\Completion\Filter\ObsoleteCompletionListFilter.cs" />
     <Compile Include="CSS\Validation\Filters\ExtendCssErrorFilter.cs" />
     <Compile Include="Handlebars\Commands\HandlebarsCreationListener.cs" />
     <Compile Include="Handlebars\Compilers\HandlebarsCompiler.cs" />
@@ -770,61 +771,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <EmbeddedResource Include="BrowserLink\BrowserInfo\BrowserInfo.js" />
-    <Content Include="CSS\Snippets\snippets.pkgdef">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\media query desktop laptop.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\media query ipad landscape.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\media query ipad portrait.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\media query ipad.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\media query iphone 4 landscape.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\media query iphone 4 portrait.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\media query iphone 4.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\media query iphone 5 landscape.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\media query iphone 5 portrait.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\media query iphone 5.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\media query large screen.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\media query smartphone landscape.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\media query smartphone portrait.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\media query smartphone.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\media query windows snap view.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\css-linear-gradient.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="CSS\Snippets\Web Essentials\css-radial-gradient.snippet">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <None Include="PreBuildTask.cs" />
     <Content Include="Resources\Icons\Bundle.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
