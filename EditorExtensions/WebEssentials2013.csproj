@@ -374,6 +374,10 @@
     <Compile Include="JSON\Completion\SchemaValueCompletionProvider.cs" />
     <Compile Include="JSON\Completion\SimpleCompletionEntry.cs" />
     <Compile Include="JSON\Helpers\JsonTreeVisitor.cs" />
+    <Compile Include="JSON\QuickInfo\MemberInfo\PropertyQuickInfo.cs" />
+    <Compile Include="JSON\QuickInfo\MemberInfo\PropertyQuickInfoController.cs" />
+    <Compile Include="JSON\QuickInfo\MemberInfo\PropertyQuickInfoControllerProvider.cs" />
+    <Compile Include="JSON\QuickInfo\MemberInfo\PropertyQuickInfoSourceProvider.cs" />
     <Compile Include="JSON\Schemas\SchemaExporter.cs" />
     <Compile Include="JSON\Validation\JsonErrorTag.cs" />
     <Compile Include="JSON\Validation\RefMemberNameItemValidator.cs" />
