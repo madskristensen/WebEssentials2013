@@ -8,14 +8,13 @@ using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-
 namespace MadsKristensen.EditorExtensions
 {
-    public sealed class NodeServer : IDisposable
+    public sealed class RubyScssServer : IDisposable
     {
-        private static readonly string _nodePath = Path.Combine(Path.Combine(Path.GetDirectoryName(typeof(NodeServer).Assembly.Location), @"Resources"), @"nodejs\node.exe");
+        private static readonly string _sassServerPath = Path.Combine(Path.Combine(Path.GetDirectoryName(typeof(RubyScssServer).Assembly.Location), @"Resources"), @"Tools\sass.exe");
         private string _authenticationToken;
-        private static NodeServer _server;
+        private static RubyScssServer _server;
         private HttpClient _client;
         private Process _process;
         private string _address;
@@ -33,7 +32,7 @@ namespace MadsKristensen.EditorExtensions
                 using (await mutex.LockAsync())
                 {
                     if (_server == null || _server._process == null || _server._process.HasExited)
-                        _server = new NodeServer();
+                        _server = new RubyScssServer();
                 }
 
                 using (Task task = Task.Delay(200))
@@ -61,19 +60,13 @@ namespace MadsKristensen.EditorExtensions
             if (_server == null) return false;
             try
             {
-                await _server.CallWebServer(_server._address);
+                await _server.CallWebServer(_server._address + "/status");
                 return true;
             }
             catch { return false; }
         }
 
-        public static async Task<CompilerResult> CallServiceAsync(string path, bool reattempt = false)
-        {
-            await Up();
-            return await _server.CallService(path, reattempt);
-        }
-
-        private NodeServer()
+        public RubyScssServer()
         {
             SelectAvailablePort();
             _address = string.Format(CultureInfo.InvariantCulture, "http://127.0.0.1:{0}/", _port);
@@ -81,10 +74,6 @@ namespace MadsKristensen.EditorExtensions
 
             Initialize();
 
-            _client.DefaultRequestHeaders.Add("origin", "web essentials");
-            _client.DefaultRequestHeaders.Add("user-agent", "web essentials");
-            _client.DefaultRequestHeaders.Add("web-essentials", "web essentials");
-            _client.DefaultRequestHeaders.Add("auth", _authenticationToken);
         }
 
         private void SelectAvailablePort()
@@ -106,11 +95,11 @@ namespace MadsKristensen.EditorExtensions
 
             _authenticationToken = Convert.ToBase64String(randomNumber);
 
-            ProcessStartInfo start = new ProcessStartInfo(_nodePath)
+            ProcessStartInfo start = new ProcessStartInfo(_sassServerPath)
             {
-                WorkingDirectory = Path.GetDirectoryName(_nodePath),
+                WorkingDirectory = Path.GetDirectoryName(_sassServerPath),
                 WindowStyle = ProcessWindowStyle.Hidden,
-                Arguments = string.Format(CultureInfo.InvariantCulture, @"tools\server\we-nodejs-server.js --port {0} --anti-forgery-token {1} --environment production --process-id {2}", _port, _authenticationToken, Process.GetCurrentProcess().Id),
+                Arguments = string.Format(CultureInfo.InvariantCulture, @"start {0} {1}", _port, _authenticationToken),
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
@@ -118,41 +107,6 @@ namespace MadsKristensen.EditorExtensions
             _process = Process.Start(start);
         }
 
-        private async Task<CompilerResult> CallService(string path, bool reattempt)
-        {
-            string newPath = string.Format("{0}?{1}", _address, path);
-            HttpResponseMessage response;
-            try
-            {
-                response = await CallWebServer(newPath);
-
-                // Retry once.
-                if (!response.IsSuccessStatusCode && !reattempt)
-                    return await RetryOnce(path);
-
-                var responseData = await response.Content.ReadAsAsync<NodeServerUtilities.Response>();
-
-                return await responseData.GetCompilerResult();
-            }
-            catch
-            {
-                Logger.Log("Something went wrong reaching: " + Uri.EscapeUriString(newPath));
-            }
-
-            // Retry once.
-            if (!reattempt)
-                return await RetryOnce(path);
-
-            return null;
-        }
-
-        private async Task<CompilerResult> RetryOnce(string path)
-        {
-            return await NodeServer.CallServiceAsync(path, true);
-        }
-
-        // Making this a separate method so it can throw to caller
-        // which is a test criterion for HearbeatCheck.
         private async Task<HttpResponseMessage> CallWebServer(string path)
         {
             return await _client.GetAsync(path);
@@ -162,8 +116,13 @@ namespace MadsKristensen.EditorExtensions
         {
             if (disposing)
             {
-                if (!_process.HasExited)
-                    _process.Kill();
+                try
+                {
+                    if (!_process.HasExited)
+                        _process.Kill();
+                }
+                catch (InvalidOperationException e) { }
+                catch { throw; }
 
                 _client.Dispose();
             }
@@ -173,6 +132,22 @@ namespace MadsKristensen.EditorExtensions
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public static string AuthenticationToken
+        {
+            get
+            {
+                return _server._authenticationToken;
+            }
+        }
+
+        public static int Port
+        {
+            get
+            {
+                return _server._port;
+            }
         }
     }
 }

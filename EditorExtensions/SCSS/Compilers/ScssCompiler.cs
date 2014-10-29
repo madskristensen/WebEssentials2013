@@ -4,6 +4,7 @@ using MadsKristensen.EditorExtensions.RtlCss;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
+using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions.Scss
 {
@@ -26,7 +27,22 @@ namespace MadsKristensen.EditorExtensions.Scss
 
             var parameters = new NodeServerUtilities.Parameters();
 
-            parameters.Add("service", !WESettings.Instance.Scss.UseRubyRuntime ? ServiceName : "RubySCSS");
+            if (!WESettings.Instance.Scss.UseRubyRuntime)
+            {
+                parameters.Add("service", ServiceName);
+            }
+            else
+            {
+                Task.Factory.StartNew(() =>
+                {
+                    return RubyScssServer.Up();
+                }).Wait();
+
+                parameters.Add("service", "RubySCSS");
+                parameters.Add("rubyAuth", RubyScssServer.AuthenticationToken);
+                parameters.Add("rubyPort", RubyScssServer.Port.ToString());
+            }
+
             parameters.Add("sourceFileName", sourceFileName);
             parameters.Add("targetFileName", targetFileName);
             parameters.Add("mapFileName", targetFileName + ".map");
