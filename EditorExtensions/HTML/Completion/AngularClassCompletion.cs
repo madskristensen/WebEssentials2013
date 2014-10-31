@@ -28,14 +28,19 @@ namespace MadsKristensen.EditorExtensions.Html
         {
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
-                if (context.Session.CompletionSets.Count == 0)
-                    return;
-
-                foreach (var item in context.Session.CompletionSets[0].Completions)
+                try
                 {
-                    if (item.DisplayText.StartsWith("ng-", StringComparison.Ordinal) || item.DisplayText.StartsWith("data-ng-", StringComparison.Ordinal))
-                        item.IconSource = _icon;
+                    if (context == null || context.Session == null || context.Session.CompletionSets == null || context.Session.CompletionSets.Count == 0)
+                        return;
+
+                    foreach (var item in context.Session.CompletionSets[0].Completions)
+                    {
+                        if (!string.IsNullOrEmpty(item.DisplayText) && (item.DisplayText.StartsWith("ng-", StringComparison.Ordinal) || item.DisplayText.StartsWith("data-ng-", StringComparison.Ordinal)))
+                            item.IconSource = _icon;
+                    }
                 }
+                catch { /* Ignore. Internal error in VS */ }
+
             }), DispatcherPriority.Normal, null);
 
             return new List<HtmlCompletion>();
