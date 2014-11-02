@@ -397,6 +397,7 @@
     <Compile Include="Shared\Compilers\Result\CompilerError.cs" />
     <Compile Include="Shared\Compilers\Result\CssCompilerResult.cs" />
     <Compile Include="Shared\Compilers\RubyScssServer.cs" />
+    <Compile Include="Shared\Compilers\ServerBase.cs" />
     <Compile Include="Shared\Completion\ColorSwatchIntellisense.cs" />
     <Compile Include="Markdown\Classify\BufferGenerator.cs" />
     <Compile Include="Markdown\Classify\CodeArtifactProcessor.cs" />

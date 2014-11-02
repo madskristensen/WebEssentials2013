@@ -5,6 +5,7 @@ using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace MadsKristensen.EditorExtensions.Scss
 {
@@ -17,6 +18,16 @@ namespace MadsKristensen.EditorExtensions.Scss
         public override string TargetExtension { get { return ".css"; } }
         public override bool MinifyInPlace { get { return WESettings.Instance.Scss.MinifyInPlace; } }
         public override bool GenerateSourceMap { get { return WESettings.Instance.Scss.GenerateSourceMaps && !MinifyInPlace; } }
+
+        public override async Task<CompilerResult> CompileAsync(string sourceFileName, string targetFileName)
+        {
+            if (WESettings.Instance.Scss.UseRubyRuntime)
+            {
+                await RubyScssServer.Up();
+            }
+
+            return await base.CompileAsync(sourceFileName, targetFileName);
+        }
 
         protected override string GetPath(string sourceFileName, string targetFileName)
         {
@@ -33,13 +44,8 @@ namespace MadsKristensen.EditorExtensions.Scss
             }
             else
             {
-                Task.Factory.StartNew(() =>
-                {
-                    return RubyScssServer.Up();
-                }).Wait();
-
                 parameters.Add("service", "RubySCSS");
-                parameters.Add("rubyAuth", RubyScssServer.AuthenticationToken);
+                parameters.Add("rubyAuth",  HttpUtility.UrlEncode(RubyScssServer.AuthenticationToken));
                 parameters.Add("rubyPort", RubyScssServer.Port.ToString());
             }
 
