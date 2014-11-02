@@ -4,6 +4,8 @@ using MadsKristensen.EditorExtensions.RtlCss;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace MadsKristensen.EditorExtensions.Scss
 {
@@ -17,6 +19,16 @@ namespace MadsKristensen.EditorExtensions.Scss
         public override bool MinifyInPlace { get { return WESettings.Instance.Scss.MinifyInPlace; } }
         public override bool GenerateSourceMap { get { return WESettings.Instance.Scss.GenerateSourceMaps && !MinifyInPlace; } }
 
+        public override async Task<CompilerResult> CompileAsync(string sourceFileName, string targetFileName)
+        {
+            if (WESettings.Instance.Scss.UseRubyRuntime)
+            {
+                await RubyScssServer.Up();
+            }
+
+            return await base.CompileAsync(sourceFileName, targetFileName);
+        }
+
         protected override string GetPath(string sourceFileName, string targetFileName)
         {
             GetOrCreateGlobalSettings(RtlCssCompiler.ConfigFileName);
@@ -26,7 +38,17 @@ namespace MadsKristensen.EditorExtensions.Scss
 
             var parameters = new NodeServerUtilities.Parameters();
 
-            parameters.Add("service", !WESettings.Instance.Scss.UseRubyRuntime ? ServiceName : "RubySCSS");
+            if (!WESettings.Instance.Scss.UseRubyRuntime)
+            {
+                parameters.Add("service", ServiceName);
+            }
+            else
+            {
+                parameters.Add("service", "RubySCSS");
+                parameters.Add("rubyAuth",  HttpUtility.UrlEncode(RubyScssServer.AuthenticationToken));
+                parameters.Add("rubyPort", RubyScssServer.Port.ToString());
+            }
+
             parameters.Add("sourceFileName", sourceFileName);
             parameters.Add("targetFileName", targetFileName);
             parameters.Add("mapFileName", targetFileName + ".map");

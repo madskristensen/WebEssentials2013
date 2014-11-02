@@ -18,7 +18,7 @@ namespace MadsKristensen.EditorExtensions
         public abstract string TargetExtension { get; }
         public abstract string ServiceName { get; }
 
-        public async Task<CompilerResult> CompileAsync(string sourceFileName, string targetFileName)
+        public virtual async Task<CompilerResult> CompileAsync(string sourceFileName, string targetFileName)
         {
             bool onlyPreview = false;
 

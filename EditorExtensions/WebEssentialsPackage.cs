@@ -282,7 +282,10 @@ namespace MadsKristensen.EditorExtensions
         protected override void Dispose(bool disposing)
         {
             if (disposing)
+            {
+                RubyScssServer.Down();
                 NodeServer.Down();
+            }
 
             base.Dispose(true);
         }
