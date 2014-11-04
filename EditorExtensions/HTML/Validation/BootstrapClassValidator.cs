@@ -24,7 +24,8 @@ namespace MadsKristensen.EditorExtensions.Html
         private static string _error = "When using \"{0}\", you must also specify the class \"{1}\".";
         private static Dictionary<string, string[]> _whitelist = new Dictionary<string, string[]>
         {
-            { "btn", new [] { "btn-group", "btn-toolbar" } }
+            { "btn", new [] { "btn-group", "btn-toolbar" } },
+            { "alert", new [] { "alert-link" } }
         };
 
         public override IList<IHtmlValidationError> ValidateElement(ElementNode element)
