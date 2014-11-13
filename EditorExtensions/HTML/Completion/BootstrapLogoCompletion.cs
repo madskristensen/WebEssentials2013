@@ -118,21 +118,21 @@ namespace MadsKristensen.EditorExtensions.Html
 
         public IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
         {
-            if (context == null || context.Session == null || context.Session.CompletionSets == null)
-                return new List<HtmlCompletion>();
-
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
-                if (context.Session.CompletionSets.Count == 0)
+                if (context == null || context.Session == null || context.Session.CompletionSets == null || context.Session.CompletionSets.Count == 0)
                     return;
 
                 var completions = context.Session.CompletionSets[0].Completions;
+
+                if (completions == null)
+                    return;
 
                 for (int i = completions.Count - 1; i >= 0; i--)
                 {
                     var item = completions[i] as HtmlCompletion;
 
-                    if (IsMatch(item.DisplayText))
+                    if (item != null && IsMatch(item.DisplayText))
                     {
                         //if (!IsAllowed(item.DisplayText, context.Element))
                         //    completions.RemoveAt(i);
