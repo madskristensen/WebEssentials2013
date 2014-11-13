@@ -118,6 +118,9 @@ namespace MadsKristensen.EditorExtensions.Html
 
         public IList<HtmlCompletion> GetEntries(HtmlCompletionContext context)
         {
+            if (context == null || context.Session == null || context.Session.CompletionSets == null)
+                return new List<HtmlCompletion>();
+
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
                 if (context.Session.CompletionSets.Count == 0)
