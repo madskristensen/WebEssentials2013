@@ -87,22 +87,20 @@ namespace MadsKristensen.EditorExtensions.Images
 
             foreach (string file in sprite.BundleAssets)
             {
-                if (System.IO.File.Exists(file))
-                {
-                    Image image = Image.FromFile(file);
-
-                    // Only touch the resolution of the image if it isn't 96. 
-                    // That way we keep the original image 'as is' in all other cases.
-                    if (Math.Round(image.VerticalResolution) != 96F || Math.Round(image.HorizontalResolution) != 96F)
-                        image = new Bitmap(image);
-
-                    images.Add(file, image);
-                }
-                else
+                if (!System.IO.File.Exists(file))
                 {
                     Logger.Log(string.Format("The image file {0} for sprite {1} was not found", file, sprite.FileName));
                     return null;
                 }
+
+                Image image = Image.FromFile(file);
+
+                // Only touch the resolution of the image if it isn't 96. 
+                // That way we keep the original image 'as is' in all other cases.
+                if (Math.Round(image.VerticalResolution) != 96F || Math.Round(image.HorizontalResolution) != 96F)
+                    image = new Bitmap(image);
+
+                images.Add(file, image);
             }
 
             return images;
