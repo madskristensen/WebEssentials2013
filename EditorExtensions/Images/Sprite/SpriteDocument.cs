@@ -125,74 +125,72 @@ namespace MadsKristensen.EditorExtensions.Images
 
             IEnumerable<string> imageFiles = ProjectHelpers.GetBundleConstituentFiles(doc.Descendants("file").Select(s => s.Value), root, folder, fileName);
 
-            if (imageFiles.Count() > 0)
-            {
-                SpriteDocument sprite = new SpriteDocument(fileName, imageFiles.ToArray());
-
-                element = doc.Descendants("optimize").FirstOrDefault();
-
-                if (element != null)
-                    sprite.Optimize = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
-
-                element = doc.Descendants("orientation").FirstOrDefault();
-
-                if (element != null)
-                    sprite.IsVertical = element.Value.Equals("vertical", StringComparison.OrdinalIgnoreCase);
-
-                element = doc.Descendants("margin").FirstOrDefault();
-
-                sprite.Margin = WESettings.Instance.Sprite.Margin; // So the current implementation (without margin support) doesn't break.
-
-                if (element != null)
-                    sprite.Margin = int.Parse(element.Value);
-
-                element = doc.Descendants("runOnBuild").FirstOrDefault();
-
-                if (element != null)
-                    sprite.RunOnBuild = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
-
-                element = doc.Descendants("outputType").FirstOrDefault();
-
-                if (element != null)
-                    sprite.FileExtension = element.Value;
-
-                element = doc.Descendants("fullPathForIdentifierName").FirstOrDefault();
-
-                if (element != null)
-                    sprite.UseFullPathForIdentifierName = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
-
-                element = doc.Descendants("outputDirectory").FirstOrDefault();
-
-                if (element != null)
-                    sprite.OutputDirectory = element.Value;
-
-                element = doc.Descendants("useAbsoluteUrl").FirstOrDefault();
-
-                if (element != null)
-                    sprite.UseAbsoluteUrl = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
-
-                element = doc.Descendants("outputDirectoryForCss").FirstOrDefault();
-
-                if (element != null)
-                    sprite.CssOutputDirectory = element.Value;
-
-                element = doc.Descendants("outputDirectoryForLess").FirstOrDefault();
-
-                if (element != null)
-                    sprite.LessOutputDirectory = element.Value;
-
-                element = doc.Descendants("outputDirectoryForScss").FirstOrDefault();
-
-                if (element != null)
-                    sprite.ScssOutputDirectory = element.Value;
-
-                return sprite;
-            }
-            else
+            if (!imageFiles.Any())
             {
                 Logger.Log(string.Format("Invalid Sprite File {0} found", Path.GetFileName(fileName)));
                 return null;
             }
+
+            SpriteDocument sprite = new SpriteDocument(fileName, imageFiles.ToArray());
+
+            element = doc.Descendants("optimize").FirstOrDefault();
+
+            if (element != null)
+                sprite.Optimize = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+
+            element = doc.Descendants("orientation").FirstOrDefault();
+
+            if (element != null)
+                sprite.IsVertical = element.Value.Equals("vertical", StringComparison.OrdinalIgnoreCase);
+
+            element = doc.Descendants("margin").FirstOrDefault();
+
+            sprite.Margin = WESettings.Instance.Sprite.Margin; // So the current implementation (without margin support) doesn't break.
+
+            if (element != null)
+                sprite.Margin = int.Parse(element.Value);
+
+            element = doc.Descendants("runOnBuild").FirstOrDefault();
+
+            if (element != null)
+                sprite.RunOnBuild = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+
+            element = doc.Descendants("outputType").FirstOrDefault();
+
+            if (element != null)
+                sprite.FileExtension = element.Value;
+
+            element = doc.Descendants("fullPathForIdentifierName").FirstOrDefault();
+
+            if (element != null)
+                sprite.UseFullPathForIdentifierName = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+
+            element = doc.Descendants("outputDirectory").FirstOrDefault();
+
+            if (element != null)
+                sprite.OutputDirectory = element.Value;
+
+            element = doc.Descendants("useAbsoluteUrl").FirstOrDefault();
+
+            if (element != null)
+                sprite.UseAbsoluteUrl = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+
+            element = doc.Descendants("outputDirectoryForCss").FirstOrDefault();
+
+            if (element != null)
+                sprite.CssOutputDirectory = element.Value;
+
+            element = doc.Descendants("outputDirectoryForLess").FirstOrDefault();
+
+            if (element != null)
+                sprite.LessOutputDirectory = element.Value;
+
+            element = doc.Descendants("outputDirectoryForScss").FirstOrDefault();
+
+            if (element != null)
+                sprite.ScssOutputDirectory = element.Value;
+
+            return sprite;
         }
     }
 }
