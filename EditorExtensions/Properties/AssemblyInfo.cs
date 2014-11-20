@@ -32,5 +32,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion(MadsKristensen.EditorExtensions.WebEssentialsPackage.Version)]
 [assembly: AssemblyFileVersion(MadsKristensen.EditorExtensions.WebEssentialsPackage.Version)]
 
+#if !CI
 [assembly: InternalsVisibleTo("WebEssentialsTests")]
-
+#endif
