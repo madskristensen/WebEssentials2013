@@ -92,6 +92,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
     <DeployExtension>False</DeployExtension>
   </PropertyGroup>
