@@ -94,6 +94,7 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>FinalPublicKey.snk</AssemblyOriginatorKeyFile>
     <DeployExtension>False</DeployExtension>
   </PropertyGroup>
   <ItemGroup>
