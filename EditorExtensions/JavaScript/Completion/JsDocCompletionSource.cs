@@ -54,6 +54,7 @@ namespace MadsKristensen.EditorExtensions.JavaScript
                 AddCompletion("author", "Indicate the author of the code being documented");
                 AddCompletion("borrows", "that as this - Document that class's member as if it were a member of this class");
                 AddCompletion("class", "Provide a description of the class (versus the constructor)");
+                AddCompletion("callback", "Information about a callback function that can be passed to other functions, including the callback's parameters and return value");
                 AddCompletion("constant", "Indicate that a variable's value is a constant");
                 AddCompletion("constructor", "Marks a function as a constructor");
                 AddCompletion("constructs", "Identicate that a lent function will be used as a constructor");
