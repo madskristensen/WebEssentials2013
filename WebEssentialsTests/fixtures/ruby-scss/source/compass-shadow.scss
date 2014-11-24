@@ -1,0 +1,10 @@
+﻿@import 'compass';
+
+*{
+    padding: 0;
+    margin: 0;
+}
+
+.shadow {
+    @include box-shadow(#000 5px 5px 5px);
+}
