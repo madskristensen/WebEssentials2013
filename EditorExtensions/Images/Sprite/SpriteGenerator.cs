@@ -41,12 +41,13 @@ namespace MadsKristensen.EditorExtensions.Images
                 return null;
 
             Dictionary<string, Image> images = GetImages(document);
-
-            await new BundleFileObserver().AttachFileObserver(document, document.FileName, updateSprite);
-
-            foreach (string file in images.Keys)
+            if (images != null)
             {
-                await new BundleFileObserver().AttachFileObserver(document, file, updateSprite);
+                await new BundleFileObserver().AttachFileObserver(document, document.FileName, updateSprite);
+                foreach (string file in images.Keys)
+                {
+                    await new BundleFileObserver().AttachFileObserver(document, file, updateSprite);
+                }
             }
 
             return images;
@@ -86,6 +87,12 @@ namespace MadsKristensen.EditorExtensions.Images
 
             foreach (string file in sprite.BundleAssets)
             {
+                if (!System.IO.File.Exists(file))
+                {
+                    Logger.Log(string.Format("The image file {0} for sprite {1} was not found", file, sprite.FileName));
+                    return null;
+                }
+
                 Image image = Image.FromFile(file);
 
                 // Only touch the resolution of the image if it isn't 96. 
