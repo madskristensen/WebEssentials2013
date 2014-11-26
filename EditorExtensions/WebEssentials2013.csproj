@@ -229,6 +229,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WebMarkupMin.Core">
+      <HintPath>..\packages\WebMarkupMin.Core.0.9.7\lib\net40\WebMarkupMin.Core.dll</HintPath>
       <HintPath>..\packages\WebMarkupMin.Core.0.9.8\lib\net40\WebMarkupMin.Core.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
