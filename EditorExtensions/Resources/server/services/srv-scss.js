@@ -5,7 +5,7 @@ var sass = require("node-sass"),
 //#endregion
 
 //#region Handler
-var handleSass = function (writer, params) {
+var handleSass = function(writer, params) {
     sass.render({
         file: params.sourceFileName,
         outFile: params.targetFileName,
@@ -14,11 +14,13 @@ var handleSass = function (writer, params) {
         outputStyle: params.outputStyle,
         sourceMap: params.mapFileName,
         omitSourceMapUrl: params.sourceMapURL === undefined,
-        success: function (css, map) {
+        success: function(css, map) {
             map = JSON.parse(map);
 
             if (params.autoprefixer !== undefined) {
-                var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, params.autoprefixerBrowsers, params.targetFileName, params.targetFileName);
+                var autoprefixedOutput = require("./srv-autoprefixer")
+                                        .processAutoprefixer(css, map, params.autoprefixerBrowsers,
+                                                             params.targetFileName, params.targetFileName);
 
                 if (!autoprefixedOutput.Success) {
                     writer.write(JSON.stringify({
@@ -45,13 +47,10 @@ var handleSass = function (writer, params) {
                 var rtlTargetWithoutExtension = params.targetFileName.substr(0, params.targetFileName.lastIndexOf("."));
                 var rtlTargetFileName = rtlTargetWithoutExtension + ".rtl.css";
                 var rtlMapFileName = rtlTargetFileName + ".map";
-                var rtlResult = require("./srv-rtlcss").processRtlCSS(css,
-                                                                      map,
-                                                                      params.targetFileName,
-                                                                      rtlTargetFileName);
+                var rtlResult = require("./srv-rtlcss")
+                               .processRtlCSS(css, map, params.targetFileName, rtlTargetFileName);
 
-
-                if (rtlResult.Success === true) {
+                if (rtlResult.Success) {
                     writer.write(JSON.stringify({
                         Success: true,
                         SourceFileName: params.sourceFileName,
@@ -85,7 +84,7 @@ var handleSass = function (writer, params) {
 
             writer.end();
         },
-        error: function (error) {
+        error: function(error) {
             var regex = xRegex.exec(error, xRegex("(?<fileName>.+):(?<line>.\\d+): error: (?<fullMessage>(?<message>.*))", 'gi'));
             writer.write(JSON.stringify({
                 Success: false,

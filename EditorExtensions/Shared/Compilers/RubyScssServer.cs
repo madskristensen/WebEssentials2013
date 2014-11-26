@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Net.NetworkInformation;
-using System.Security.Cryptography;
+﻿using System.IO;
 using System.Threading.Tasks;
+
 namespace MadsKristensen.EditorExtensions
 {
     public sealed class RubyScssServer : ServerBase
     {
-        private static readonly string _sassServerPath = Path.Combine(Path.Combine(Path.GetDirectoryName(typeof(RubyScssServer).Assembly.Location), @"Resources"), @"Tools\sass.exe");
         private static RubyScssServer _server;
+
+        public RubyScssServer()
+            : base(@"start {0} {1} {2}",
+                   Path.Combine(Path.Combine(Path.GetDirectoryName(typeof(RubyScssServer).Assembly.Location), @"Resources"), @"Tools\sass.exe"))
+        { }
 
         public static async Task Up()
         {
@@ -25,49 +22,10 @@ namespace MadsKristensen.EditorExtensions
             ServerBase.Down(_server);
         }
 
-        public RubyScssServer()
-            : base()
-        {
-        }
+        protected override string HeartbeatCheckPath { get { return "status"; } }
 
-        protected override string HeartbeatCheckPath
-        {
-            get
-            {
-                return "status";
-            }
-        }
+        public static string AuthenticationToken { get { return _server.BaseAuthenticationToken; } }
 
-        protected override string ProcessStartArgumentsFormat
-        {
-            get
-            {
-                return @"start {0} {1} {2}";
-            }
-        }
-
-        protected override string ServerPath
-        {
-            get
-            {
-                return _sassServerPath;
-            }
-        }
-
-        public static string AuthenticationToken
-        {
-            get
-            {
-                return _server._authenticationToken;
-            }
-        }
-
-        public static int Port
-        {
-            get
-            {
-                return _server._port;
-            }
-        }
+        public static int Port { get { return _server.BasePort; } }
     }
 }

@@ -1,7 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
+﻿using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions.Scss;
 using MadsKristensen.EditorExtensions.Settings;

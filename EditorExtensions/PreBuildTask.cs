@@ -87,6 +87,10 @@ namespace MadsKristensen.EditorExtensions
 
             Log.LogMessage(MessageImportance.High, "Installed " + moduleResults.Count() + " modules.  Flattening...");
 
+            // Delete .tscache
+            if (Directory.Exists(@"resources\nodejs\tools\node_modules\tslint\.tscache"))
+                Directory.Delete(@"resources\nodejs\tools\node_modules\tslint\.tscache", true);
+
             if (!FlattenModulesAsync().Result)
                 return false;
 

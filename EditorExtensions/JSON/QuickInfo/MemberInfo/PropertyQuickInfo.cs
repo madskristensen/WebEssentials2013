@@ -1,4 +1,7 @@
-﻿using Microsoft.JSON.Core.Parser;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.JSON.Core.Parser;
 using Microsoft.JSON.Core.Schema;
 using Microsoft.JSON.Core.Schema.Adapters;
 using Microsoft.JSON.Core.Schema.Completion;
@@ -6,9 +9,6 @@ using Microsoft.JSON.Editor;
 using Microsoft.JSON.Editor.Schema.Def;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MadsKristensen.EditorExtensions
 {
@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
 
             if (schema != null)
             {
-                IJSONSchemaPropertyNameCompletionInfo info = Foo(schema, member);
+                IJSONSchemaPropertyNameCompletionInfo info = GetInfo(schema, member);
 
                 if (info != null && !string.IsNullOrEmpty(info.PropertyDocumentation))
                 {
@@ -58,7 +58,7 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        public IJSONSchemaPropertyNameCompletionInfo Foo(IJSONSchema schema, JSONMember member)
+        public static IJSONSchemaPropertyNameCompletionInfo GetInfo(IJSONSchema schema, JSONMember member)
         {
             var adapter = (IJSONProperty)JSONParseItemAdapter.Create(member, schema);
             var owner = (JSONObjectAdapter)adapter.Parent;

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Microsoft.Html.Editor.Intellisense;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace MadsKristensen.EditorExtensions.Html
 {
