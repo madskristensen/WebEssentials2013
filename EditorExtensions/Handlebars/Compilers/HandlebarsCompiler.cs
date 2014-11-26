@@ -21,9 +21,14 @@ namespace MadsKristensen.EditorExtensions.Handlebars
             parameters.Add("service", ServiceName);
             parameters.Add("sourceFileName", sourceFileName);
             parameters.Add("targetFileName", targetFileName);
-            parameters.Add("compiledTemplateName", Path.GetFileNameWithoutExtension(sourceFileName));
+            parameters.Add("compiledTemplateName", CleanTemplateNameForJs(Path.GetFileNameWithoutExtension(sourceFileName)));
 
             return parameters.FlattenParameters();
+        }
+
+        private string CleanTemplateNameForJs(string templateName)
+        {
+            return templateName.Replace("-", "_");
         }
     }
 }
