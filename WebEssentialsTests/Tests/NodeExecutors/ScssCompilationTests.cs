@@ -1,10 +1,10 @@
 ﻿using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FluentAssertions;
 using MadsKristensen.EditorExtensions.Scss;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Text.RegularExpressions;
 
 namespace WebEssentialsTests
 {

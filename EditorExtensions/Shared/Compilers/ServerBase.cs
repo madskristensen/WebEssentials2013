@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -7,27 +6,25 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace MadsKristensen.EditorExtensions
 {
     public abstract class ServerBase : IDisposable
     {
+        private Process _process;
+        private string _address;
 
-        protected string _authenticationToken;
-        protected Process _process;
-        protected HttpClient _client;
-        protected string _address;
-        protected int _port;
+        protected int BasePort { get; private set; }
+        protected string BaseAuthenticationToken { get; private set; }
 
-        public ServerBase()
+        protected ServerBase(string processStartArgumentsFormat, string serverPath)
         {
             SelectAvailablePort();
-            _address = string.Format(CultureInfo.InvariantCulture, "http://127.0.0.1:{0}/", _port);
-            _client = new HttpClient();
+            _address = string.Format(CultureInfo.InvariantCulture, "http://127.0.0.1:{0}/", BasePort);
+            Client = new HttpClient();
 
-            Initialize();
+            Initialize(processStartArgumentsFormat, serverPath);
         }
 
         private void SelectAvailablePort()
@@ -36,44 +33,29 @@ namespace MadsKristensen.EditorExtensions
             TcpConnectionInformation[] connections = IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpConnections();
 
             do
-                _port = rand.Next(1024, 65535);
-            while (connections.Any(t => t.LocalEndPoint.Port == _port));
+                BasePort = rand.Next(1024, 65535);
+            while (connections.Any(t => t.LocalEndPoint.Port == BasePort));
         }
 
-        protected virtual string HeartbeatCheckPath
-        {
-            get
-            {
-                return "";
-            }
-        }
+        protected HttpClient Client { get; set; }
 
-        protected abstract string ProcessStartArgumentsFormat
-        {
-            get;
-        }
+        protected virtual string HeartbeatCheckPath { get { return ""; } }
 
-        protected abstract string ServerPath
+        private void Initialize(string processStartArgumentsFormat, string serverPath)
         {
-            get;
-        }
-
-        private void Initialize()
-        {
-            var serverPath = ServerPath;
-
             byte[] randomNumber = new byte[32];
 
             using (RandomNumberGenerator crypto = RNGCryptoServiceProvider.Create())
                 crypto.GetBytes(randomNumber);
 
-            _authenticationToken = Convert.ToBase64String(randomNumber);
+            BaseAuthenticationToken = Convert.ToBase64String(randomNumber);
 
             ProcessStartInfo start = new ProcessStartInfo(serverPath)
             {
                 WorkingDirectory = Path.GetDirectoryName(serverPath),
                 WindowStyle = ProcessWindowStyle.Hidden,
-                Arguments = string.Format(CultureInfo.InvariantCulture, ProcessStartArgumentsFormat, _port, _authenticationToken, Process.GetCurrentProcess().Id),
+                Arguments = string.Format(CultureInfo.InvariantCulture, processStartArgumentsFormat,
+                                         BasePort, BaseAuthenticationToken, Process.GetCurrentProcess().Id),
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
@@ -90,49 +72,49 @@ namespace MadsKristensen.EditorExtensions
                     if (!_process.HasExited)
                         _process.Kill();
                 }
-                catch (InvalidOperationException e) { }
+                catch (InvalidOperationException) { }
                 catch { throw; }
 
-                _client.Dispose();
+                Client.Dispose();
             }
         }
 
-        protected static async Task<T> Up<T>(T _server)
+        protected static async Task<T> Up<T>(T server)
             where T : ServerBase, new()
         {
             AsyncLock mutex = new AsyncLock();
 
-            if (await HeartbeatCheck(_server))
-                return _server;
+            if (await HeartbeatCheck(server))
+                return server;
 
             while (true)
             {
                 using (await mutex.LockAsync())
                 {
-                    if (_server == null || _server._process == null || _server._process.HasExited)
-                        _server = new T();
+                    if (server == null || server._process == null || server._process.HasExited)
+                        server = new T();
                 }
 
                 using (Task task = Task.Delay(200))
                 {
                     await task.ConfigureAwait(false);
 
-                    if (await HeartbeatCheck(_server))
+                    if (await HeartbeatCheck(server))
                         break;
                 }
             }
 
-            return _server;
+            return server;
         }
 
-        protected static void Down<T>(T _server)
+        protected static void Down<T>(T server)
             where T : ServerBase, new()
         {
-            if (_server != null && !_server._process.HasExited)
+            if (server != null && !server._process.HasExited)
             {
-                _server._process.Kill();
-                _server._process.Dispose();
-                _server.Dispose();
+                server._process.Kill();
+                server._process.Dispose();
+                server.Dispose();
             }
         }
 
@@ -185,7 +167,7 @@ namespace MadsKristensen.EditorExtensions
         // which is a test criterion for HearbeatCheck.
         private async Task<HttpResponseMessage> CallWebServer(string path)
         {
-            return await _client.GetAsync(path).ConfigureAwait(false);
+            return await Client.GetAsync(path).ConfigureAwait(false);
         }
 
         public void Dispose()

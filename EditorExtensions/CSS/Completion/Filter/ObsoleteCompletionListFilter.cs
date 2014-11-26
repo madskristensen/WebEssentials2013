@@ -1,9 +1,9 @@
-﻿using Microsoft.CSS.Editor.Intellisense;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using Microsoft.CSS.Editor.Intellisense;
 using Microsoft.CSS.Editor.Schemas;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor.Intellisense;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
 
 namespace MadsKristensen.EditorExtensions.Css
 {
@@ -34,7 +34,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
                 case CssCompletionContextType.PropertyName:
                     return schema.GetProperty(entry.DisplayText);
-                    
+
                 case CssCompletionContextType.PseudoClassOrElement:
                     return schema.GetPseudo(entry.DisplayText);
             }

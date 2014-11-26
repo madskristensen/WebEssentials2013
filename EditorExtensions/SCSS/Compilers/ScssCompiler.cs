@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.Composition;
 using System.Globalization;
+using System.Threading.Tasks;
+using System.Web;
 using MadsKristensen.EditorExtensions.RtlCss;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace MadsKristensen.EditorExtensions.Scss
 {
@@ -45,8 +45,8 @@ namespace MadsKristensen.EditorExtensions.Scss
             else
             {
                 parameters.Add("service", "RubySCSS");
-                parameters.Add("rubyAuth",  HttpUtility.UrlEncode(RubyScssServer.AuthenticationToken));
-                parameters.Add("rubyPort", RubyScssServer.Port.ToString());
+                parameters.Add("rubyAuth", HttpUtility.UrlEncode(RubyScssServer.AuthenticationToken));
+                parameters.Add("rubyPort", RubyScssServer.Port.ToString(CultureInfo.InvariantCulture));
             }
 
             parameters.Add("sourceFileName", sourceFileName);

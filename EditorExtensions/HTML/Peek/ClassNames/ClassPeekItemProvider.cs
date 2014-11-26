@@ -12,10 +12,8 @@ namespace MadsKristensen.EditorExtensions.Html
     [SupportsStandaloneFiles(false)]
     class ClassPeekItemProvider : IPeekableItemSourceProvider
     {
-#pragma warning disable 649 // "field never assigned to" -- field is set by MEF.
         [Import]
-        private IPeekResultFactory _peekResultFactory;
-#pragma warning restore 649
+        public IPeekResultFactory _peekResultFactory;
 
         public IPeekableItemSource TryCreatePeekableItemSource(ITextBuffer textBuffer)
         {
