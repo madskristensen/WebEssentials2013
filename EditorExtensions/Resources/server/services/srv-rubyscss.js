@@ -34,7 +34,18 @@ var handleSass = function (writer, params) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
 
-            var result = JSON.parse(chunk);
+            try {
+                var result = JSON.parse(chunk);
+            }
+            catch (ex) { ///got a bad response from the compiler, lets report something useful instead of crashing
+                writer.write(JSON.stringify({
+                    Success: true,
+                    SourceFileName: params.sourceFileName,
+                    TargetFileName: params.targetFileName,
+                    MapFileName: params.mapFileName,
+                    Remarks: "Unable to Compile"
+                }));
+            }
 
             if (result.css !== undefined) {
 
@@ -43,7 +54,6 @@ var handleSass = function (writer, params) {
 
                 var css = result.css;
                 var map = result.map;
-
 
                 if (params.autoprefixer !== undefined) {
                     var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, params.autoprefixerBrowsers, params.targetFileName, params.targetFileName);
