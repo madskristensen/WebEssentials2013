@@ -33,18 +33,20 @@ var handleSass = function (writer, params) {
     var post_req = http.request(post_options, function (res) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
-
+            var result = null;
             try {
-                var result = JSON.parse(chunk);
+                result = JSON.parse(chunk);
             }
             catch (ex) { ///got a bad response from the compiler, lets report something useful instead of crashing
                 writer.write(JSON.stringify({
-                    Success: true,
+                    Success: false,
                     SourceFileName: params.sourceFileName,
                     TargetFileName: params.targetFileName,
                     MapFileName: params.mapFileName,
                     Remarks: "Unable to Compile"
                 }));
+
+                return;
             }
 
             if (result.css !== undefined) {
