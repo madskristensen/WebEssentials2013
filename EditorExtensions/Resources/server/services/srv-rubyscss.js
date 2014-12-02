@@ -43,6 +43,23 @@ var handleSass = function (writer, params) {
 
             if (result.css !== undefined) {
 
+                var stripedCss = result.css.replace(/[\t\n\r ]/g, "").replace(/\/\*.+?\*\//g, "");
+                if (stripedCss === "") {
+                    // The striped css is a blank so return a successful but empty result.
+                    writer.write(JSON.stringify({
+                        Success: true,
+                        SourceFileName: params.sourceFileName,
+                        TargetFileName: params.targetFileName,
+                        MapFileName: params.mapFileName,
+                        Remarks: "Successful!",
+                        Content: "",
+                        Map: JSON.stringify(map)
+                    }));
+
+                    writer.end();
+                    return;
+                }
+
                 fs.writeFileSync(params.targetFileName, result.css);
                 fs.writeFileSync(params.mapFileName, JSON.stringify(result.map));
 
