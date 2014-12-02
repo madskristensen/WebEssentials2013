@@ -5,8 +5,8 @@ var less = require("less"),
 //#endregion
 
 //#region Handler
-var handleLess = function(writer, params) {
-    fs.readFile(params.sourceFileName, 'utf8', function(err, data) {
+var handleLess = function (writer, params) {
+    fs.readFile(params.sourceFileName, { encoding: 'utf8' }, function (err, data) {
         if (err) {
             writer.write(JSON.stringify({
                 Success: false,
@@ -24,6 +24,7 @@ var handleLess = function(writer, params) {
             return;
         }
 
+        //data = data.replace('\uFEFF', '');  //strip BOM
         var css, map;
         var mapFileName = params.targetFileName + ".map";
         var sourceDir = path.dirname(params.sourceFileName);
@@ -41,8 +42,80 @@ var handleLess = function(writer, params) {
             strictMath: params.strictMath !== undefined,
         };
 
-        less.render(data, options, function(error, output) {
-            if (error) {
+        less.render(data, options)
+            .then(function (output) {
+                css = output.css;
+
+                if (output.map)
+                    map = JSON.parse(output.map);
+
+                if (params.autoprefixer !== undefined) {
+                    var autoprefixedOutput = require("./srv-autoprefixer")
+                                            .processAutoprefixer(css, map, params.autoprefixerBrowsers,
+                                                                 params.targetFileName, params.targetFileName);
+
+                    if (!autoprefixedOutput.Success) {
+                        writer.write(JSON.stringify({
+                            Success: false,
+                            SourceFileName: params.sourceFileName,
+                            TargetFileName: params.targetFileName,
+                            MapFileName: params.mapFileName,
+                            Remarks: "LESS: " + autoprefixedOutput.Remarks,
+                            Details: autoprefixedOutput.Remarks,
+                            Errors: [{
+                                Message: "LESS: " + autoprefixedOutput.Remarks,
+                                FileName: params.sourceFileName
+                            }]
+                        }));
+                        writer.end();
+                        return;
+                    }
+
+                    css = autoprefixedOutput.css;
+                    map = autoprefixedOutput.map;
+                }
+
+                if (params.rtlcss !== undefined) {
+                    var rtlTargetWithoutExtension = params.targetFileName.substr(0, params.targetFileName.lastIndexOf("."));
+                    var rtlTargetFileName = rtlTargetWithoutExtension + ".rtl.css";
+                    var rtlMapFileName = rtlTargetFileName + ".map";
+                    var rtlResult = require("./srv-rtlcss").processRtlCSS(css, map, params.targetFileName, rtlTargetFileName);
+
+                    if (rtlResult.Success) {
+                        writer.write(JSON.stringify({
+                            Success: true,
+                            SourceFileName: params.sourceFileName,
+                            TargetFileName: params.targetFileName,
+                            MapFileName: params.mapFileName,
+                            RtlSourceFileName: params.targetFileName,
+                            RtlTargetFileName: rtlTargetFileName,
+                            RtlMapFileName: rtlMapFileName,
+                            Remarks: "Successful!",
+                            Content: css,
+                            Map: JSON.stringify(map),
+                            RtlContent: rtlResult.css,
+                            RtlMap: JSON.stringify(rtlResult.map)
+                        }));
+
+                    } else {
+                        throw new Error("Error while processing RTLCSS");
+                    }
+                } else {
+                    writer.write(JSON.stringify({
+                        Success: true,
+                        SourceFileName: params.sourceFileName,
+                        TargetFileName: params.targetFileName,
+                        MapFileName: params.mapFileName,
+                        Remarks: "Successful!",
+                        Content: css,
+                        Map: JSON.stringify(map)
+                    }));
+                }
+
+                writer.end();
+                return;
+            },
+            function (error) {
                 writer.write(JSON.stringify({
                     Success: false,
                     SourceFileName: params.sourceFileName,
@@ -59,78 +132,7 @@ var handleLess = function(writer, params) {
                 }));
                 writer.end();
                 return;
-            }
-
-            css = output.css;
-            map = JSON.parse(output.map);
-
-            if (params.autoprefixer !== undefined) {
-                var autoprefixedOutput = require("./srv-autoprefixer")
-                                        .processAutoprefixer(css, map, params.autoprefixerBrowsers,
-                                                             params.targetFileName, params.targetFileName);
-
-                if (!autoprefixedOutput.Success) {
-                    writer.write(JSON.stringify({
-                        Success: false,
-                        SourceFileName: params.sourceFileName,
-                        TargetFileName: params.targetFileName,
-                        MapFileName: params.mapFileName,
-                        Remarks: "LESS: " + autoprefixedOutput.Remarks,
-                        Details: autoprefixedOutput.Remarks,
-                        Errors: [{
-                            Message: "LESS: " + autoprefixedOutput.Remarks,
-                            FileName: params.sourceFileName
-                        }]
-                    }));
-                    writer.end();
-                    return;
-                }
-
-                css = autoprefixedOutput.css;
-                map = autoprefixedOutput.map;
-            }
-
-            if (params.rtlcss !== undefined) {
-                var rtlTargetWithoutExtension = params.targetFileName.substr(0, params.targetFileName.lastIndexOf("."));
-                var rtlTargetFileName = rtlTargetWithoutExtension + ".rtl.css";
-                var rtlMapFileName = rtlTargetFileName + ".map";
-                var rtlResult = require("./srv-rtlcss")
-                               .processRtlCSS(css, map, params.targetFileName, rtlTargetFileName);
-
-                if (rtlResult.Success) {
-                    writer.write(JSON.stringify({
-                        Success: true,
-                        SourceFileName: params.sourceFileName,
-                        TargetFileName: params.targetFileName,
-                        MapFileName: params.mapFileName,
-                        RtlSourceFileName: params.targetFileName,
-                        RtlTargetFileName: rtlTargetFileName,
-                        RtlMapFileName: rtlMapFileName,
-                        Remarks: "Successful!",
-                        Content: css,
-                        Map: JSON.stringify(map),
-                        RtlContent: rtlResult.css,
-                        RtlMap: JSON.stringify(rtlResult.map)
-                    }));
-
-                    writer.end();
-                } else {
-                    throw new Error("Error while processing RTLCSS");
-                }
-            } else {
-                writer.write(JSON.stringify({
-                    Success: true,
-                    SourceFileName: params.sourceFileName,
-                    TargetFileName: params.targetFileName,
-                    MapFileName: params.mapFileName,
-                    Remarks: "Successful!",
-                    Content: css,
-                    Map: JSON.stringify(map)
-                }));
-            }
-
-            writer.end();
-        });
+            });
     });
 };
 //#endregion
