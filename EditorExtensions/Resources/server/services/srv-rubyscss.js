@@ -32,9 +32,14 @@ var handleSass = function (writer, params) {
     // Set up the request
     var post_req = http.request(post_options, function (res) {
         res.setEncoding('utf8');
-        res.on('data', function (chunk) {
 
-            var result = JSON.parse(chunk);
+        var completeResponse = "";
+        res.on('data', function (chunk) {
+            completeResponse += chunk;
+        });
+
+        res.on('end', function () {
+            var result = JSON.parse(completeResponse);
 
             if (result.css !== undefined) {
 
