@@ -32,17 +32,28 @@ var handleSass = function (writer, params) {
     // Set up the request
     var post_req = http.request(post_options, function (res) {
         res.setEncoding('utf8');
-
         var completeResponse = "";
         res.on('data', function (chunk) {
             completeResponse += chunk;
         });
-
         res.on('end', function () {
-            var result = JSON.parse(completeResponse);
+            var result = null;
+            try {
+                result = JSON.parse(completeResponse);
+            }
+            catch (ex) { ///got a bad response from the compiler, lets report something useful instead of crashing
+                writer.write(JSON.stringify({
+                    Success: false,
+                    SourceFileName: params.sourceFileName,
+                    TargetFileName: params.targetFileName,
+                    MapFileName: params.mapFileName,
+                    Remarks: "Unable to Compile"
+                }));
+
+                return;
+            }
 
             if (result.css !== undefined) {
-
                 var stripedCss = result.css.replace(/[\t\n\r ]/g, "").replace(/\/\*.+?\*\//g, "");
                 if (stripedCss === "") {
                     // The striped css is a blank so return a successful but empty result.
@@ -65,7 +76,6 @@ var handleSass = function (writer, params) {
 
                 var css = result.css;
                 var map = result.map;
-
 
                 if (params.autoprefixer !== undefined) {
                     var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, params.autoprefixerBrowsers, params.targetFileName, params.targetFileName);
