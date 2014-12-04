@@ -310,6 +310,10 @@ namespace MadsKristensen.EditorExtensions
             if (string.IsNullOrEmpty(fileName))
                 return null;
 
+            // If the file doesn't exists we don't need to try 500 time to open it.
+            if (!File.Exists(fileName))
+                return null;
+
             int retryCount = 500;
 
             try
