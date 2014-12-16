@@ -149,7 +149,7 @@
         }
     }
 
-    var splitAtRegExp = /[ *]*[\r\n][ *]*/;
+    var splitAtRegExp = /[\s*]*[\r\n][\w*]*/;
 
     function processComment(commentString) {
         //replace the first "*" with a "*\r\n"
