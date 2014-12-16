@@ -364,6 +364,7 @@
     <Compile Include="HTML\Validation\FoundationColumnsValidator.cs" />
     <Compile Include="HTML\Validation\BootstrapColumnsValidator.cs" />
     <Compile Include="IcedCoffeeScript\ContentType\IcedCoffeeScriptContentTypeDefinition.cs" />
+    <Compile Include="JavaScript\Completion\GruntTaskCompletionSourceProvider.cs" />
     <Compile Include="JavaScript\MenuItems\Unminify.cs" />
     <Compile Include="JavaScript\Outlining\JavaScriptRegionTagger.cs">
       <SubType>Code</SubType>
