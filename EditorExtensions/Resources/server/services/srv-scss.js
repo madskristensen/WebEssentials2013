@@ -1,11 +1,10 @@
 //#region Imports
 var sass = require("node-sass"),
-    path = require("path"),
-    xRegex = require("xregexp").XRegExp;
+    path = require("path")
 //#endregion
 
 //#region Handler
-var handleSass = function(writer, params) {
+var handleSass = function (writer, params) {
     sass.render({
         file: params.sourceFileName,
         outFile: params.targetFileName,
@@ -14,7 +13,9 @@ var handleSass = function(writer, params) {
         outputStyle: params.outputStyle,
         sourceMap: params.mapFileName,
         omitSourceMapUrl: params.sourceMapURL === undefined,
-        success: function(css, map) {
+        success: function (result) {
+            var css = result.css;
+            var map = result.map;
             map = JSON.parse(map);
 
             if (params.autoprefixer !== undefined) {
@@ -84,20 +85,19 @@ var handleSass = function(writer, params) {
 
             writer.end();
         },
-        error: function(error) {
-            var regex = xRegex.exec(error, xRegex("(?<fileName>.+):(?<line>.\\d+): error: (?<fullMessage>(?<message>.*))", 'gi'));
+        error: function (error) {
             writer.write(JSON.stringify({
                 Success: false,
                 SourceFileName: params.sourceFileName,
                 TargetFileName: params.targetFileName,
                 MapFileName: params.mapFileName,
                 Remarks: "SASS: An error has occured while processing your request.",
-                Details: regex.message,
+                Details: error.message,
                 Errors: [{
-                    Line: regex.line,
-                    Message: "SASS: " + regex.message,
-                    FileName: regex.fileName,
-                    FullMessage: "SASS" + regex.fullMessage
+                    //Line: regex.line,
+                    Message: "SASS: " + error.message,
+                    FileName: params.sourceFileName,
+                    FullMessage: "SASS" + error.fullMessage
                 }]
             }));
             writer.end();
