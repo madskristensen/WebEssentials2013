@@ -120,6 +120,7 @@ var start = function (port) {
 
             service(response, params);
         } catch (e) {
+            console.logLine(e.message);
             response.write(JSON.stringify({ Success: false, Remarks: e.stack }));
             response.end();
         }

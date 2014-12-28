@@ -16,7 +16,6 @@ var handleSass = function (writer, params) {
         success: function (result) {
             var css = result.css;
             var map = result.map;
-            map = JSON.parse(map);
 
             if (params.autoprefixer !== undefined) {
                 var autoprefixedOutput = require("./srv-autoprefixer")
@@ -94,10 +93,11 @@ var handleSass = function (writer, params) {
                 Remarks: "SASS: An error has occured while processing your request.",
                 Details: error.message,
                 Errors: [{
-                    //Line: regex.line,
-                    Message: "SASS: " + error.message,
-                    FileName: params.sourceFileName,
-                    FullMessage: "SASS" + error.fullMessage
+                    Line: error.line,
+                    Column: error.column,
+                    Message: "Message: " + error.message,
+                    FileName: error.file,
+                    FullMessage: "Code: " + error.code + " Message: " + error.message
                 }]
             }));
             writer.end();
