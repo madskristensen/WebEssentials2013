@@ -87,6 +87,7 @@ namespace MadsKristensen.EditorExtensions
             if (await HeartbeatCheck(server))
                 return server;
 
+            int tries = 0;
             while (true)
             {
                 using (await mutex.LockAsync())
@@ -97,10 +98,30 @@ namespace MadsKristensen.EditorExtensions
 
                 using (Task task = Task.Delay(200))
                 {
+                    Logger.Log(string.Format("Looking for resource @ {0}", server._address));
                     await task.ConfigureAwait(false);
 
                     if (await HeartbeatCheck(server))
                         break;
+                    else
+                    {
+                        if(server._process.HasExited)
+                        {
+                            Logger.Log("Unable to start resource, aborting");
+                            server.Dispose();
+                            return null;
+                        }
+
+                        tries++;
+                        if (tries > 5)
+                        {
+                            Logger.Log("Unable to find resource, aborting");
+                            if (!server._process.HasExited)
+                                server._process.Kill();
+
+                            return null;
+                        }
+                    }
                 }
             }
 
@@ -124,8 +145,11 @@ namespace MadsKristensen.EditorExtensions
             if (_server == null) return false;
             try
             {
-                await _server.CallWebServer(_server._address + _server.HeartbeatCheckPath);
-                return true;
+                HttpResponseMessage response = await _server.CallWebServer(_server._address + _server.HeartbeatCheckPath);
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    return true;
+                else
+                    return false;
             }
             catch { return false; }
         }

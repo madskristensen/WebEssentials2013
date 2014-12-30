@@ -20,7 +20,10 @@ namespace MadsKristensen.EditorExtensions
         public static async Task<CompilerResult> CallServiceAsync(string path, bool reattempt = false)
         {
             await Up();
-            return await _server.CallService(path, reattempt);
+            if (_server != null)
+                return await _server.CallService(path, reattempt);
+            else
+                return CompilerResult.GenerateResult(path, "", "", false, "Unable to start node", "", null, false);
         }
 
         public NodeServer()

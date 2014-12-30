@@ -20,6 +20,39 @@ namespace MadsKristensen.EditorExtensions
     /// </summary>
     public class PreBuildTask : Microsoft.Build.Utilities.Task
     {
+        private List<string> toRemove = new List<string>()
+        {
+            "*.md",
+            "*.markdown",
+            "*.html",
+            "*.txt",
+            "LICENSE",
+            "README",
+            "CHANGELOG",
+            "CNAME",
+            "*.old",
+            "*.patch",
+            "*.ico",
+            "Makefile.*",
+            "Rakefile",
+            "*.yml",
+            "test.*",
+            "generate-*",
+            "media",
+            "images",
+            "man",
+            "benchmark",
+            "build",
+            "scripts",
+            "test",
+            "tst",
+            "tests",
+            "testing",
+            "examples",
+            "*.tscache",
+            "example",
+        };
+
         Type _path;
         Type _directory;
         Type _directoryInfo;
@@ -42,6 +75,7 @@ namespace MadsKristensen.EditorExtensions
 
         public override bool Execute()
         {
+            ClearPath(@"resources\nodejs");
             Directory.CreateDirectory(@"resources\nodejs\tools");
             // Force npm to install modules to the subdirectory
             // https://npmjs.org/doc/files/npm-folders.html#More-Information
@@ -87,14 +121,55 @@ namespace MadsKristensen.EditorExtensions
 
             Log.LogMessage(MessageImportance.High, "Installed " + moduleResults.Count() + " modules.  Flattening...");
 
-            // Delete .tscache
-            if (Directory.Exists(@"resources\nodejs\tools\node_modules\tslint\.tscache"))
-                Directory.Delete(@"resources\nodejs\tools\node_modules\tslint\.tscache", true);
-
             if (!FlattenModulesAsync().Result)
                 return false;
 
+            CleanPath(@"resources\nodejs\tools\node_modules");
             return true;
+        }
+
+        private void ClearPath(string path)
+        {
+            string[] dirs = (string[])_directory.GetMethod("GetDirectories", new Type[] { typeof(string) }).Invoke(null, new object[] { path });
+            foreach (string dir in dirs)
+            {
+                Log.LogMessage(MessageImportance.High, "Removing " + dir + "...");
+                _directory.GetMethod("Delete", new Type[] { typeof(string), typeof(bool) }).Invoke(null, new object[] { dir, true });
+            }
+
+            string[] files = (string[])_directory.GetMethod("GetFiles", new Type[] { typeof(string) }).Invoke(null, new object[] { path });
+            foreach (string file in files)
+            {
+                Log.LogMessage(MessageImportance.High, "Removing " + file + "...");
+                _file.GetMethod("Delete", new Type[] { typeof(string) }).Invoke(null, new object[] { file });
+            }
+        }
+
+        private void CleanPath(string path)
+        {
+            Log.LogMessage(MessageImportance.High, "Working on " + path + "...");
+            foreach (string pattern in toRemove)
+            {
+                string[] dirs = (string[])_directory.GetMethod("GetDirectories", new Type[] { typeof(string), typeof(string) }).Invoke(null, new object[] { path, pattern });
+                foreach (string dir in dirs)
+                {
+                    Log.LogMessage(MessageImportance.High, "Removing " + dir + "...");
+                    _directory.GetMethod("Delete", new Type[] { typeof(string), typeof(bool) }).Invoke(null, new object[] { dir, true });
+                }
+
+                string[] files = (string[])_directory.GetMethod("GetFiles", new Type[] { typeof(string), typeof(string) }).Invoke(null, new object[] { path, pattern });
+                foreach (string file in files)
+                {
+                    Log.LogMessage(MessageImportance.High, "Removing " + file + "...");
+                    _file.GetMethod("Delete", new Type[] { typeof(string) }).Invoke(null, new object[] { file });
+                }
+            }
+
+            string[] tocheck = (string[])_directory.GetMethod("GetDirectories", new Type[] { typeof(string) }).Invoke(null, new object[] { path });
+            foreach (string s in tocheck)
+            {
+                CleanPath(s);
+            }
         }
 
         Task DownloadNodeAsync()
@@ -267,7 +342,8 @@ namespace MadsKristensen.EditorExtensions
                     }
 
                     string targetDir = Path.Combine(baseDir.FullName, "node_modules", module.Name);
-                    if (!Directory.Exists(targetDir))
+                    bool dircheck = (bool)_directory.GetMethod("Exists", new Type[] { typeof(string) }).Invoke(null, new object[] { targetDir });
+                    if (!dircheck)
                     {
                         enumerateDirectories = _directoryInfo.GetMethod("MoveTo", new Type[] { typeof(string) });
                         //module.MoveTo(targetDir);
