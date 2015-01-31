@@ -44,6 +44,11 @@ namespace MadsKristensen.EditorExtensions.Markdown
             cssCommand.BeforeQueryStatus += HasStylesheet;
             _mcs.AddCommand(cssCommand);
 
+            CommandID htmlTemplate = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.CreateMarkdownHtmlTemplate);
+            OleMenuCommand htmlTemplateCommand = new OleMenuCommand(async (s, e) => await AddHtmlTemplate(), htmlTemplate);
+            htmlTemplateCommand.BeforeQueryStatus += HasHtmlTemplate;
+            _mcs.AddCommand(htmlTemplateCommand);
+
             CommandID compile = new CommandID(CommandGuids.guidDiffCmdSet, (int)CommandId.MarkdownCompile);
             OleMenuCommand compileCommand = new OleMenuCommand((s, e) => AddHtmlFiles(), compile);
             compileCommand.BeforeQueryStatus += IsMarkdownFile;
@@ -54,7 +59,15 @@ namespace MadsKristensen.EditorExtensions.Markdown
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;
 
-            menuCommand.Enabled = !File.Exists(MarkdownMargin.GetCustomStylesheetFilePath());
+            menuCommand.Enabled = !File.Exists(MarkdownMargin.GetCustomSolutionStylesheetFilePath());
+        }
+
+        
+        private void HasHtmlTemplate(object sender, System.EventArgs e)
+        {
+            OleMenuCommand menuCommand = sender as OleMenuCommand;
+
+            menuCommand.Enabled = !File.Exists(MarkdownMargin.GetCustomSolutionHtmlTemplateFilePath());
         }
 
         private void IsMarkdownFile(object sender, System.EventArgs e)
@@ -77,6 +90,11 @@ namespace MadsKristensen.EditorExtensions.Markdown
         private async static System.Threading.Tasks.Task AddStylesheet()
         {
             await MarkdownMargin.CreateStylesheet();
+        }
+
+        private async static System.Threading.Tasks.Task AddHtmlTemplate()
+        {
+            await MarkdownMargin.CreateHtmlTemplate();
         }
     }
 }

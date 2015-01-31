@@ -457,6 +457,14 @@
         </Strings>
       </Button>
 
+      <Button guid="guidDiffCmdSet" id="cmdMarkdownHtmlTemplate" priority="0x0107" type="Button">
+        <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Add Markdown solution html template</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guidDiffCmdSet" id="cmdMarkdownCompile" priority="0x0102" type="Button">
         <Parent guid="guidDiffCmdSet" id="MarkdownGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -943,6 +951,7 @@
       <IDSymbol name="cmdMarkdownStylesheet" value="0x1046" />
       <IDSymbol name="cmdJavaScriptIntellisense" value="0x1047" />
       <IDSymbol name="cmdTypeScriptIntellisense" value="0x1048" />
+      <IDSymbol name="cmdMarkdownHtmlTemplate" value="0x1102" />
       <IDSymbol name="MarkdownGroup" value="0x1049" />
       <IDSymbol name="cmdEditGlobalJsHint" value="0x1038" />
       <IDSymbol name="cmdEditGlobalTsLint" value="0x1098" />

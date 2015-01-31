@@ -58,13 +58,6 @@ namespace MadsKristensen.EditorExtensions.Settings
             target.Markdown.CompileOnSave = GetBoolean("MarkdownEnableCompiler");
             target.Markdown.OutputDirectory = GetNonBooleanString("MarkdownCompileToLocation");
 
-            target.Markdown.AutoHyperlink = GetBoolean("MarkdownAutoHyperlinks");
-            target.Markdown.LinkEmails = GetBoolean("MarkdownLinkEmails");
-            target.Markdown.AutoNewLines = GetBoolean("MarkdownAutoNewLine");
-            target.Markdown.GenerateXHTML = GetBoolean("MarkdownGenerateXHTML");
-            target.Markdown.EncodeProblemUrlCharacters = GetBoolean("MarkdownEncodeProblemUrlCharacters");
-            target.Markdown.StrictBoldItalic = GetBoolean("MarkdownStrictBoldItalic");
-
             // SVG
             target.General.SvgPreviewPane = GetBoolean("SvgShowPreviewWindow");
 
