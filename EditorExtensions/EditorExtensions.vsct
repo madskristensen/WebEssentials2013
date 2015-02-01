@@ -453,7 +453,7 @@
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Add Markdown solution stylesheet</ButtonText>
+          <ButtonText>Create Markdown stylesheet for solution</ButtonText>
         </Strings>
       </Button>
 
