@@ -4,10 +4,12 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Web;
 using System.Windows.Forms;
 using MadsKristensen.EditorExtensions.Markdown;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Editor.DragDrop;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.Web.Editor;
@@ -16,7 +18,6 @@ namespace MadsKristensen.EditorExtensions.Images
 {
     internal class PasteImage : CommandTargetBase<VSConstants.VSStd97CmdID>
     {
-        private string _format;
         private static string _lastPath;
 
         public PasteImage(IVsTextView adapter, IWpfTextView textView)
@@ -36,7 +37,7 @@ namespace MadsKristensen.EditorExtensions.Images
             bool textFormat = formats.Any(x => new[] { "Text", "Rich Text Format" }.Contains(x));
             bool hasBitmap = data.GetDataPresent("System.Drawing.Bitmap") || data.GetDataPresent(DataFormats.FileDrop);
 
-            if (!hasBitmap || !trueBitmap || textFormat || !IsValidTextBuffer())
+            if (!hasBitmap || !trueBitmap || textFormat)
                 return false;
 
             string fileName = null;
@@ -47,71 +48,10 @@ namespace MadsKristensen.EditorExtensions.Images
             _lastPath = Path.GetDirectoryName(fileName);
 
             SaveClipboardImageToFile(data, fileName);
-            UpdateTextBuffer(fileName);
+
+            TextView.InsertLinkToImageFile(fileName);
 
             return true;
-        }
-
-        private bool IsValidTextBuffer()
-        {
-            var projection = TextView.TextBuffer as IProjectionBuffer;
-
-            if (projection != null)
-            {
-                var snapshotPoint = TextView.Caret.Position.BufferPosition;
-
-                var buffers = projection.SourceBuffers.Where(
-                    s =>
-                        s.ContentType.IsOfType("CSS")
-                        || s.ContentType.IsOfType("JavaScript")
-                        || s.ContentType.IsOfType("TypeScript")
-                        || s.ContentType.IsOfType("CoffeeScript")
-                        || s.ContentType.IsOfType("Markdown"));
-
-                foreach (ITextBuffer buffer in buffers)
-                {
-                    SnapshotPoint? point = TextView.BufferGraph.MapDownToBuffer(snapshotPoint, PointTrackingMode.Negative, buffer, PositionAffinity.Predecessor);
-
-                    if (point.HasValue)
-                    {
-                        _format = GetFormat(buffer);
-                        return true;
-                    }
-                }
-
-                _format = GetFormat(null);
-                return true;
-            }
-            else
-            {
-                _format = GetFormat(TextView.TextBuffer);
-                return true;
-            }
-        }
-
-        private static string GetFormat(ITextBuffer buffer)
-        {
-            // CSS
-            if (buffer != null)
-            {
-                if (buffer.ContentType.IsOfType(CssContentTypeDefinition.CssContentType))
-                    return "background-image: url('{0}');";
-
-                if (buffer.ContentType.IsOfType("JavaScript") || buffer.ContentType.IsOfType("TypeScript"))
-                    return "var img = new Image();"
-                         + Environment.NewLine
-                         + "img.src = \"{0}\";";
-
-                if (buffer.ContentType.IsOfType("CoffeeScript"))
-                    return "img = new Image()"
-                         + Environment.NewLine
-                         + "img.src = \"{0}\"";
-
-                if (buffer.ContentType.IsOfType(MarkdownContentTypeDefinition.MarkdownContentType))
-                    return "![alt text]({0})";
-            }
-
-            return "<img src=\"{0}\" alt=\"\" />";
         }
 
         private static bool GetFileName(IDataObject data, out string fileName)
@@ -168,32 +108,7 @@ namespace MadsKristensen.EditorExtensions.Images
             return "png";
         }
 
-        private void UpdateTextBuffer(string fileName)
-        {
-            int position = TextView.Caret.Position.BufferPosition.Position;
-            string relative = FileHelpers.RelativePath(ProjectHelpers.GetRootFolder() ?? "/", fileName);
-            string text = string.Format(CultureInfo.InvariantCulture, _format, relative);
-
-            using (WebEssentialsPackage.UndoContext("Insert Image"))
-            {
-                TextView.TextBuffer.Insert(position, text);
-
-                try
-                {
-                    SnapshotSpan span = new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, position, _format.Length);
-                    TextView.Selection.Select(span, false);
-
-                    WebEssentialsPackage.ExecuteCommand("Edit.FormatSelection");
-                    TextView.Selection.Clear();
-                }
-                catch
-                {
-                    // Try to format the selection. Some editors handle this differently, so try/catch
-                }
-            }
-        }
-
-        public static async void SaveClipboardImageToFile(IDataObject data, string fileName)
+        private static async void SaveClipboardImageToFile(IDataObject data, string fileName)
         {
             if (data.GetDataPresent(DataFormats.FileDrop))
             {
@@ -207,7 +122,7 @@ namespace MadsKristensen.EditorExtensions.Images
                 using (Bitmap image = (Bitmap)data.GetData("System.Drawing.Bitmap"))
                 using (MemoryStream ms = new MemoryStream())
                 {
-                    image.Save(ms, GetImageFormat(Path.GetExtension(fileName)));
+                    image.Save(ms, ImageHelpers.GetImageFormatFromExtension(Path.GetExtension(fileName)));
                     byte[] buffer = ms.ToArray();
                     await FileHelpers.WriteAllBytesRetry(fileName, buffer);
                 }
@@ -219,26 +134,7 @@ namespace MadsKristensen.EditorExtensions.Images
             ProjectHelpers.AddFileToActiveProject(fileName);
         }
 
-        public static ImageFormat GetImageFormat(string extension)
-        {
-            switch (extension.ToLowerInvariant())
-            {
-                case ".jpg":
-                case ".jpeg":
-                    return ImageFormat.Jpeg;
-
-                case ".gif":
-                    return ImageFormat.Gif;
-
-                case ".bmp":
-                    return ImageFormat.Bmp;
-
-                case ".ico":
-                    return ImageFormat.Icon;
-            }
-
-            return ImageFormat.Png;
-        }
+        
 
         protected override bool IsEnabled()
         {
