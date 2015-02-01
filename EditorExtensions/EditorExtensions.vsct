@@ -461,7 +461,7 @@
         <Parent guid="guidTopMenu" id="SolutionSubMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Add Markdown solution html template</ButtonText>
+          <ButtonText>Create Markdown compilation template for solution</ButtonText>
         </Strings>
       </Button>
 
