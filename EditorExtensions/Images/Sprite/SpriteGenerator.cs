@@ -29,7 +29,7 @@ namespace MadsKristensen.EditorExtensions.Images
                         Horizontal(images, fragments, canvas, document.Margin);
                 }
 
-                bitmap.Save(imageFile, PasteImage.GetImageFormat("." + document.FileExtension));
+                bitmap.Save(imageFile, ImageHelpers.GetImageFormatFromExtension("." + document.FileExtension));
             }
 
             return fragments;

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Windows.Forms;
+using MadsKristensen.EditorExtensions.Images;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.DragDrop;
 using Microsoft.VisualStudio.Utilities;
@@ -142,7 +143,7 @@ namespace MadsKristensen.EditorExtensions.Css
 
         public bool IsDropEnabled(DragDropInfo dragDropInfo)
         {
-            draggedFilename = GetImageFilename(dragDropInfo);
+            draggedFilename = dragDropInfo.GetFilePath();
 
             if (!string.IsNullOrEmpty(draggedFilename))
             {
@@ -153,26 +154,6 @@ namespace MadsKristensen.EditorExtensions.Css
             }
 
             return false;
-        }
-
-        public static string GetImageFilename(DragDropInfo info)
-        {
-            DataObject data = new DataObject(info.Data);
-
-            if (info.Data.GetDataPresent("FileDrop"))
-            {
-                // The drag and drop operation came from the file system
-                StringCollection files = data.GetFileDropList();
-
-                if (files != null && files.Count == 1)
-                    return files[0];
-            }
-            else if (info.Data.GetDataPresent("CF_VSSTGPROJECTITEMS"))
-                return data.GetText(); // The drag and drop operation came from the VS solution explorer
-            else if (info.Data.GetDataPresent("MultiURL"))
-                return data.GetText();
-
-            return null;
         }
     }
 }

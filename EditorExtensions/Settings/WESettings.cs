@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using ConfOxide;
-using MarkdownSharp;
 using Microsoft.Ajax.Utilities;
 using Microsoft.VisualStudio.Shell;
 using WebMarkupMin.Core;
@@ -698,14 +697,15 @@ namespace MadsKristensen.EditorExtensions.Settings
         public bool MinifyInPlace { get; set; }
     }
 
-    public sealed class MarkdownSettings : SettingsBase<MarkdownSettings>, ICompilerInvocationSettings, IMarginSettings, IMarkdownOptions
+    public sealed class MarkdownSettings : SettingsBase<MarkdownSettings>, ICompilerInvocationSettings, IMarginSettings
     {
-        #region Compilation
         [Category("Editor")]
         [DisplayName("Show preview pane")]
         [Description("Show a preview pane containing the rendered output in the editor.")]
         [DefaultValue(true)]
         public bool ShowPreviewPane { get; set; }
+
+        #region Compilation
 
         [Category("Compilation")]
         [DisplayName("Compile files on save")]
@@ -723,50 +723,14 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Specifies a custom subfolder to save compiled files to. By default, compiled output will be placed in the same folder and nested under the original file.")]
         [DefaultValue(null)]
         public string OutputDirectory { get; set; }
-        #endregion
-
-        [Category("Compile Options")]
-        [DisplayName("Make bare URLs into hyperlinks")]
-        [Description("When true, (most) bare plain Urls are auto-hyperlinked. WARNING: this is a significant deviation from the Markdown spec.")]
-        [DefaultValue(false)]
-        public bool AutoHyperlink { get; set; }
-
-        [Category("Compile Options")]
-        [DisplayName("Make bare emails into links")]
-        [Description("When false, email addresses will never be auto-linked. WARNING: this is a significant deviation from the Markdown spec.")]
-        [DefaultValue(false)]
-        public bool LinkEmails { get; set; }
-
-        [Category("Compile Options")]
-        [DisplayName("Make return into a newline")]
-        [Description("When true, RETURN becomes a literal newline. WARNING: this is a significant deviation from the Markdown spec.")]
-        [DefaultValue(false)]
-        public bool AutoNewLines { get; set; }
-
-        [Category("Compile Options")]
-        [DisplayName("Generate XHTML output")]
-        [Description("When true, the output is valid XHTML. Otherwise regular HTML it output. In this case, when true (mostly) means that single tags are closed with `/>` instead of `>`.")]
-        [DefaultValue(true)]
-        public bool GenerateXHTML { get; set; }
-
-        [Category("Compile Options")]
-        [DisplayName("Encode problem Url characters")]
-        [Description("When true, problematic Url characters like [, ], (, and so forth will be encoded. WARNING: this is a significant deviation from the Markdown spec.")]
-        [DefaultValue(false)]
-        public bool EncodeProblemUrlCharacters { get; set; }
-
-        [Category("Compile Options")]
-        [DisplayName("Require non-word characters for bold/italic")]
-        [Description("When true, bold and italic require non-word characters on both sides. WARNING: this is a significant deviation from the Markdown spec.")]
-        [DefaultValue(false)]
-        public bool StrictBoldItalic { get; set; }
-        string IMarkdownOptions.EmptyElementSuffix { get { return GenerateXHTML ? " />" : ">"; } }
 
         [Category("Compilation")]
         [DisplayName("Don't save raw compilation output")]
         [Description("Don't save separate unminified compiler output. This option has no effect when Minify On Save is disabled for HTML.")]
         [DefaultValue(false)]
         public bool MinifyInPlace { get; set; }
+
+        #endregion
     }
 
     public interface IBundleSettings
