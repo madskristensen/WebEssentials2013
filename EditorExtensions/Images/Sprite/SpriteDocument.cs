@@ -125,6 +125,12 @@ namespace MadsKristensen.EditorExtensions.Images
 
             IEnumerable<string> imageFiles = ProjectHelpers.GetBundleConstituentFiles(doc.Descendants("file").Select(s => s.Value), root, folder, fileName);
 
+            if (!imageFiles.Any())
+            {
+                Logger.Log(string.Format("Invalid Sprite File {0} found", Path.GetFileName(fileName)));
+                return null;
+            }
+
             SpriteDocument sprite = new SpriteDocument(fileName, imageFiles.ToArray());
 
             element = doc.Descendants("optimize").FirstOrDefault();

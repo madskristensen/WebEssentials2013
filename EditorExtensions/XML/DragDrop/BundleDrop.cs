@@ -2,6 +2,7 @@
 using System.ComponentModel.Composition;
 using System.Globalization;
 using MadsKristensen.EditorExtensions.Css;
+using MadsKristensen.EditorExtensions.Images;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.DragDrop;
 using Microsoft.VisualStudio.Utilities;
@@ -62,7 +63,7 @@ namespace MadsKristensen.EditorExtensions
 
         public bool IsDropEnabled(DragDropInfo dragDropInfo)
         {
-            _draggedFilename = FontDropHandler.GetImageFilename(dragDropInfo);
+            _draggedFilename = dragDropInfo.GetFilePath();
 
             return true;
         }

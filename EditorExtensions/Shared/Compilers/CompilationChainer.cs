@@ -50,6 +50,9 @@ namespace MadsKristensen.EditorExtensions.Compilers
             var graph = GetGraph(contentType);
             notifier.CompilationReady += async (s, e) =>
             {
+                if (!e.CompilerResult.IsSuccess)
+                    return;
+
                 if (!settings.CompileOnSave || !settings.EnableChainCompilation || (bool)s)
                     return;
 

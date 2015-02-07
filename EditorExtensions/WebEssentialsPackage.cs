@@ -48,7 +48,7 @@ namespace MadsKristensen.EditorExtensions
     [SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling"), PackageRegistration(UseManagedResourcesOnly = true)]
     public sealed class WebEssentialsPackage : Package
     {
-        public const string Version = "2.4";
+        public const string Version = "2.5.3.1";
 
         private static DTE2 _dte;
         private static IVsRegisterPriorityCommandTarget _pct;
@@ -282,7 +282,10 @@ namespace MadsKristensen.EditorExtensions
         protected override void Dispose(bool disposing)
         {
             if (disposing)
+            {
+                RubyScssServer.Down();
                 NodeServer.Down();
+            }
 
             base.Dispose(true);
         }

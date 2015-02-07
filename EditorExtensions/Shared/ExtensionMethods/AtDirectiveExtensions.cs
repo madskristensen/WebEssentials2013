@@ -51,7 +51,7 @@ namespace MadsKristensen.EditorExtensions
             foreach (string prefix in VendorHelpers.GetPrefixes(schema).Where(p => p != "-o-")) // Remove -o- since the parser doesn't recognize -o-keyframes
             {
                 ICssCompletionListEntry entry = schema.GetAtDirective("@" + prefix + text);
-                if (entry != null)
+                if (entry != null && string.IsNullOrEmpty(entry.GetAttribute("obsolete")))
                     yield return entry.DisplayText;
             }
         }

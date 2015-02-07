@@ -135,35 +135,43 @@ namespace MadsKristensen.EditorExtensions
             XElement element = null;
             IEnumerable<string> rawConstituents = doc.Descendants("file").Select(s => s.Value);
             IEnumerable<string> constituentFiles = ProjectHelpers.GetBundleConstituentFiles(rawConstituents, root, folder, fileName);
-            BundleDocument bundle = new BundleDocument(fileName, constituentFiles.ToArray())
+            if (constituentFiles.Count() > 0)
             {
-                OriginalBundleAssets = new List<string>(rawConstituents)
-            };
 
-            element = doc.Descendants("minify").FirstOrDefault();
+                BundleDocument bundle = new BundleDocument(fileName, constituentFiles.ToArray())
+                {
+                    OriginalBundleAssets = new List<string>(rawConstituents)
+                };
 
-            if (element != null)
-                bundle.Minified = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
-
-            element = doc.Descendants("runOnBuild").FirstOrDefault();
-
-            if (element != null)
-                bundle.RunOnBuild = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
-
-            if (bundle.isCss)
-            {
-                element = doc.Descendants("adjustRelativePaths").FirstOrDefault();
+                element = doc.Descendants("minify").FirstOrDefault();
 
                 if (element != null)
-                    bundle.AdjustRelativePaths = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+                    bundle.Minified = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+
+                element = doc.Descendants("runOnBuild").FirstOrDefault();
+
+                if (element != null)
+                    bundle.RunOnBuild = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+
+                if (bundle.isCss)
+                {
+                    element = doc.Descendants("adjustRelativePaths").FirstOrDefault();
+
+                    if (element != null)
+                        bundle.AdjustRelativePaths = element.Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+                }
+
+                element = doc.Descendants("outputDirectory").FirstOrDefault();
+
+                if (element != null)
+                    bundle.OutputDirectory = element.Value;
+
+                return bundle;
             }
-
-            element = doc.Descendants("outputDirectory").FirstOrDefault();
-
-            if (element != null)
-                bundle.OutputDirectory = element.Value;
-
-            return bundle;
+            else
+            {
+                return null;
+            }
         }
 
         private static async Task<XDocument> MigrateBundle(XDocument doc, string fileName, string root, string folder)
@@ -179,15 +187,22 @@ namespace MadsKristensen.EditorExtensions
                 return doc;
 
             IEnumerable<string> constituentFiles = ProjectHelpers.GetBundleConstituentFiles(doc.Descendants("file").Select(s => s.Value), root, folder, fileName);
-            BundleDocument newDoc = new BundleDocument(fileName, constituentFiles.ToArray());
+            if (constituentFiles.Count() > 0)
+            {
+                BundleDocument newDoc = new BundleDocument(fileName, constituentFiles.ToArray());
 
-            if (attributes.Contains("runOnBuild"))
-                newDoc.RunOnBuild = bundle.Attribute("runOnBuild").Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+                if (attributes.Contains("runOnBuild"))
+                    newDoc.RunOnBuild = bundle.Attribute("runOnBuild").Value.Equals("true", StringComparison.OrdinalIgnoreCase);
 
-            if (attributes.Contains("minify"))
-                newDoc.Minified = bundle.Attribute("minify").Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+                if (attributes.Contains("minify"))
+                    newDoc.Minified = bundle.Attribute("minify").Value.Equals("true", StringComparison.OrdinalIgnoreCase);
 
-            return await newDoc.WriteBundleRecipe();
+                return await newDoc.WriteBundleRecipe();
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

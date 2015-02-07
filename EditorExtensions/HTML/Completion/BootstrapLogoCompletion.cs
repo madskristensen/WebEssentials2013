@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Microsoft.Html.Editor.Intellisense;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
@@ -120,24 +121,24 @@ namespace MadsKristensen.EditorExtensions.Html
         {
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
-                if (context.Session.CompletionSets.Count == 0)
-                    return;
+                //the getter for context.Session.CompletionSets can throw an exception, so checking for null is not good enough to prevent crashes
+                IList<Completion> completions = null;
 
-                var completions = context.Session.CompletionSets[0].Completions;
-
-                for (int i = completions.Count - 1; i >= 0; i--)
+                try
                 {
-                    var item = completions[i] as HtmlCompletion;
-
-                    if (IsMatch(item.DisplayText))
-                    {
-                        //if (!IsAllowed(item.DisplayText, context.Element))
-                        //    completions.RemoveAt(i);
-                        //else
-                        item.IconSource = _icon;
-                    }
+                    completions = context.Session.CompletionSets[0].Completions;
+                }
+                catch
+                {
+                    return;
                 }
 
+                foreach (var completion in completions.Where(r => IsMatch(r.DisplayText)))
+                {
+                    var item = completion as HtmlCompletion;
+                    if (item != null)
+                        item.IconSource = _icon;
+                }
             }), DispatcherPriority.Normal, null);
 
             return new List<HtmlCompletion>();

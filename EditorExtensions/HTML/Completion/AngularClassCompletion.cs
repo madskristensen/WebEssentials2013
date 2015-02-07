@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions.Html
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
     public class AngularLogoCompletion : IHtmlCompletionListProvider
     {
-        private static BitmapFrame _icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/angular.png", UriKind.RelativeOrAbsolute));
+        private static BitmapFrame _icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2015;component/Resources/Images/angular.png", UriKind.RelativeOrAbsolute));
 
         public CompletionType CompletionType
         {
@@ -28,14 +28,22 @@ namespace MadsKristensen.EditorExtensions.Html
         {
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
             {
-                if (context.Session.CompletionSets.Count == 0)
-                    return;
-
-                foreach (var item in context.Session.CompletionSets[0].Completions)
+                try
                 {
-                    if (item.DisplayText.StartsWith("ng-", StringComparison.Ordinal) || item.DisplayText.StartsWith("data-ng-", StringComparison.Ordinal))
-                        item.IconSource = _icon;
+                    if (context.Session.CompletionSets.Count == 0)
+                        return;
+
+                    foreach (var item in context.Session.CompletionSets[0].Completions)
+                    {
+                        if (item.DisplayText.StartsWith("ng-", StringComparison.Ordinal) || item.DisplayText.StartsWith("data-ng-", StringComparison.Ordinal))
+                            item.IconSource = _icon;
+                    }
                 }
+                catch (Exception ex)
+                {
+                    Logger.Log(ex);
+                }
+
             }), DispatcherPriority.Normal, null);
 
             return new List<HtmlCompletion>();

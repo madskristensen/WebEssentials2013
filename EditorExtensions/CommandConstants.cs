@@ -114,6 +114,7 @@ namespace MadsKristensen.EditorExtensions
         CreateMarkdownStylesheet = 0x1046,
         CreateJavaScriptIntellisenseFile = 0x1047,
         CreateTypeScriptIntellisenseFile = 0x1048,
+        CreateMarkdownHtmlTemplate = 0x1102,
         MarkdownCompile = 0x1039,
         HandlebarsCompile = 0x1101,
         EditGlobalJsHint = 0x1038,

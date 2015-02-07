@@ -1,8 +1,9 @@
 ﻿//#region Imports
-var exec = require("child_process").exec,
-    fs = require("fs"),
+var fs = require("fs"),
     path = require("path"),
-    xRegex = require("xregexp").XRegExp;
+    xRegex = require("xregexp").XRegExp,
+    querystring = require('querystring'),
+    http = require('http');
 //#endregion
 
 //#region Handler
@@ -10,116 +11,167 @@ var handleSass = function (writer, params) {
 
     // Call SassBuild (located at https://github.com/davidtme/SassBuild)
 
-    var command = "..\\Tools\\sass";
+    var post_data = querystring.stringify({
+        'sourceFileName': params.sourceFileName,
+        'targetFileName': params.targetFileName,
+        'mapFileName': params.mapFileName
+    });
 
-    command += ' --quiet';
-    command += ' --style ' + params.outputStyle;
-    command += ' --load-path "' + path.dirname(params.sourceFileName) + '"';
-    command += ' --cache-location "' + path.dirname(params.sourceFileName) + '\\.sass-cache"';
+    var post_options = {
+        host: 'localhost',
+        port: params.rubyPort,
+        path: '/convert',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': post_data.length,
+            'auth': params.rubyAuth
+        }
+    };
 
-    if (params.sourceMapURL === undefined) {
-        command += '  --sourcemap=none';
-    }
+    // Set up the request
+    var post_req = http.request(post_options, function (res) {
+        res.setEncoding('utf8');
+        var completeResponse = "";
+        res.on('data', function (chunk) {
+            completeResponse += chunk;
+        });
+        res.on('end', function () {
+            var result = null;
+            try {
+                result = JSON.parse(completeResponse);
+            }
+            catch (ex) { ///got a bad response from the compiler, lets report something useful instead of crashing
+                writer.write(JSON.stringify({
+                    Success: false,
+                    SourceFileName: params.sourceFileName,
+                    TargetFileName: params.targetFileName,
+                    MapFileName: params.mapFileName,
+                    Remarks: "Unable to Compile"
+                }));
 
-    command += ' "' + params.sourceFileName + '"';
-    command += ' "' + params.targetFileName + '"';
-
-    var child = exec(command);
-
-    child.on('exit', function (code) {
-        if (code === 0) {
-
-            var css = fs.readFileSync(params.targetFileName);
-            var map = JSON.parse(fs.readFileSync(params.mapFileName));
-
-            if (params.autoprefixer !== undefined) {
-                var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, params.autoprefixerBrowsers, params.targetFileName, params.targetFileName);
-
-                if (!autoprefixedOutput.Success) {
-                    writer.write(JSON.stringify({
-                        Success: false,
-                        SourceFileName: params.sourceFileName,
-                        TargetFileName: params.targetFileName,
-                        MapFileName: params.mapFileName,
-                        Remarks: "SASS: " + autoprefixedOutput.Remarks,
-                        Details: autoprefixedOutput.Remarks,
-                        Errors: [{
-                            Message: "SASS: " + autoprefixedOutput.Remarks,
-                            FileName: params.sourceFileName
-                        }]
-                    }));
-                    writer.end();
-                    return;
-                }
-
-                css = autoprefixedOutput.css;
-                map = autoprefixedOutput.map;
+                return;
             }
 
-            if (params.rtlcss !== undefined) {
-                var rtlTargetWithoutExtension = params.targetFileName.substr(0, params.targetFileName.lastIndexOf("."));
-                var rtlTargetFileName = rtlTargetWithoutExtension + ".rtl.css";
-                var rtlMapFileName = rtlTargetFileName + ".map";
-                var rtlResult = require("./srv-rtlcss").processRtlCSS(css,
-                                                                      map,
-                                                                      params.targetFileName,
-                                                                      rtlTargetFileName);
-
-                if (rtlResult.Success === true) {
+            if (result.css !== undefined) {
+                var stripedCss = result.css.replace(/[\t\n\r ]/g, "").replace(/\/\*.+?\*\//g, "");
+                if (stripedCss === "") {
+                    // The striped css is a blank so return a successful but empty result.
                     writer.write(JSON.stringify({
                         Success: true,
                         SourceFileName: params.sourceFileName,
                         TargetFileName: params.targetFileName,
                         MapFileName: params.mapFileName,
-                        RtlSourceFileName: params.targetFileName,
-                        RtlTargetFileName: rtlTargetFileName,
-                        RtlMapFileName: rtlMapFileName,
                         Remarks: "Successful!",
-                        Content: css,
-                        Map: JSON.stringify(map),
-                        RtlContent: rtlResult.css,
-                        RtlMap: JSON.stringify(rtlResult.map)
+                        Content: "",
+                        Map: JSON.stringify(map)
                     }));
 
                     writer.end();
-                } else {
-                    throw new Error("Error while processing RTLCSS");
+                    return;
                 }
+
+                fs.writeFileSync(params.targetFileName, result.css);
+                fs.writeFileSync(params.mapFileName, JSON.stringify(result.map));
+
+                var css = result.css;
+                var map = result.map;
+
+                if (params.autoprefixer !== undefined) {
+                    var autoprefixedOutput = require("./srv-autoprefixer").processAutoprefixer(css, map, params.autoprefixerBrowsers, params.targetFileName, params.targetFileName);
+
+                    if (!autoprefixedOutput.Success) {
+                        writer.write(JSON.stringify({
+                            Success: false,
+                            SourceFileName: params.sourceFileName,
+                            TargetFileName: params.targetFileName,
+                            MapFileName: params.mapFileName,
+                            Remarks: "SASS: " + autoprefixedOutput.Remarks,
+                            Details: autoprefixedOutput.Remarks,
+                            Errors: [{
+                                Message: "SASS: " + autoprefixedOutput.Remarks,
+                                FileName: params.sourceFileName
+                            }]
+                        }));
+                        writer.end();
+                        return;
+                    }
+
+                    css = autoprefixedOutput.css;
+                    map = autoprefixedOutput.map;
+                }
+
+                if (params.rtlcss !== undefined) {
+                    var rtlTargetWithoutExtension = params.targetFileName.substr(0, params.targetFileName.lastIndexOf("."));
+                    var rtlTargetFileName = rtlTargetWithoutExtension + ".rtl.css";
+                    var rtlMapFileName = rtlTargetFileName + ".map";
+                    var rtlResult = require("./srv-rtlcss").processRtlCSS(css,
+                                                                          map,
+                                                                          params.targetFileName,
+                                                                          rtlTargetFileName);
+
+
+                    if (rtlResult.Success === true) {
+                        writer.write(JSON.stringify({
+                            Success: true,
+                            SourceFileName: params.sourceFileName,
+                            TargetFileName: params.targetFileName,
+                            MapFileName: params.mapFileName,
+                            RtlSourceFileName: params.targetFileName,
+                            RtlTargetFileName: rtlTargetFileName,
+                            RtlMapFileName: rtlMapFileName,
+                            Remarks: "Successful!",
+                            Content: css,
+                            Map: JSON.stringify(map),
+                            RtlContent: rtlResult.css,
+                            RtlMap: JSON.stringify(rtlResult.map)
+                        }));
+
+                        writer.end();
+                    } else {
+                        throw new Error("Error while processing RTLCSS");
+                    }
+                } else {
+                    writer.write(JSON.stringify({
+                        Success: true,
+                        SourceFileName: params.sourceFileName,
+                        TargetFileName: params.targetFileName,
+                        MapFileName: params.mapFileName,
+                        Remarks: "Successful!",
+                        Content: css,
+                        Map: JSON.stringify(map)
+                    }));
+                }
+
+                writer.end();
+
             } else {
+
                 writer.write(JSON.stringify({
-                    Success: true,
+                    Success: false,
                     SourceFileName: params.sourceFileName,
                     TargetFileName: params.targetFileName,
                     MapFileName: params.mapFileName,
-                    Remarks: "Successful!",
-                    Content: css,
-                    Map: JSON.stringify(map)
+                    Remarks: "SASS: An error has occured while processing your request.",
+                    Details: result.message,
+                    Errors: [{
+                        Line: result.line,
+                        Message: "SASS: " + result.message,
+                        FileName: result.fileName,
+                        FullMessage: "SASS" + result.message
+                    }]
                 }));
+                writer.end();
             }
-
-            writer.end();
-        } else {
-            var error = fs.readFileSync(params.targetFileName);
-            var regex = xRegex.exec(error, xRegex("Error: (?<fullMessage>(?<message>.*))\r\n +?on line (?<line>[0-9]+) of (?<fileName>.+?)\r\n", 'gi'));
-
-            writer.write(JSON.stringify({
-                Success: false,
-                SourceFileName: params.sourceFileName,
-                TargetFileName: params.targetFileName,
-                MapFileName: params.mapFileName,
-                Remarks: "SASS: An error has occured while processing your request.",
-                Details: regex.message,
-                Errors: [{
-                    Line: regex.line,
-                    Message: "SASS: " + regex.message,
-                    FileName: regex.fileName,
-                    FullMessage: "SASS" + regex.fullMessage
-                }]
-            }));
-            writer.end();
-        }
+        });
     });
+
+    // post the data
+    post_req.write(post_data);
+    post_req.end();
 };
+
+
 //#endregion
 
 //#region Exports

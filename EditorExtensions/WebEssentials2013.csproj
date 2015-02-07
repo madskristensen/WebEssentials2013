@@ -43,9 +43,6 @@
   <PropertyGroup>
     <ApplicationManifest>Source.extension.vsixmanifest</ApplicationManifest>
   </PropertyGroup>
-  <PropertyGroup>
-    <DelaySign>false</DelaySign>
-  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -86,10 +83,27 @@
     <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
     <CopyVsixExtensionLocation>bin/release/new folder</CopyVsixExtensionLocation>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CI|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>CI</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>FinalPublicKey.snk</AssemblyOriginatorKeyFile>
+    <DeployExtension>False</DeployExtension>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AjaxMin, Version=5.10.5260.16959, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+    <Reference Include="AjaxMin, Version=5.12.5436.22729, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AjaxMin.5.11.5295.12309\lib\net40\AjaxMin.dll</HintPath>
+      <HintPath>..\packages\AjaxMin.5.12.5436.22734\lib\net40\AjaxMin.dll</HintPath>
+    </Reference>
+    <Reference Include="CommonMark, Version=0.1.0.0, Culture=neutral, PublicKeyToken=001ef8810438905d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\CommonMark.NET.0.8.0\lib\net45\CommonMark.dll</HintPath>
     </Reference>
     <Reference Include="ConfOxide, Version=1.4.0.0, Culture=neutral, PublicKeyToken=934faed64f82030e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -110,10 +124,6 @@
     </Reference>
     <Reference Include="EnvDTE90, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="MarkdownSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MarkdownSharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Collections.Immutable, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.CSharp" />
@@ -195,9 +205,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Web.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.5.17707, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -220,6 +230,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WebMarkupMin.Core">
       <HintPath>..\packages\WebMarkupMin.Core.0.9.7\lib\net40\WebMarkupMin.Core.dll</HintPath>
+      <HintPath>..\packages\WebMarkupMin.Core.0.9.8\lib\net40\WebMarkupMin.Core.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="ZenCoding, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -317,6 +328,7 @@
     <Compile Include="CSS\Completion\CompletionProviders\BrowserLinkCompletionProvider.cs" />
     <Compile Include="CSS\Completion\Filter\ColorSwatchCompletionListFilter.cs" />
     <Compile Include="CSS\Completion\Filter\HideUncommonCompletionListFilter.cs" />
+    <Compile Include="CSS\Completion\Filter\ObsoleteCompletionListFilter.cs" />
     <Compile Include="CSS\Validation\Filters\ExtendCssErrorFilter.cs" />
     <Compile Include="Handlebars\Commands\HandlebarsCreationListener.cs" />
     <Compile Include="Handlebars\Compilers\HandlebarsCompiler.cs" />
@@ -352,6 +364,8 @@
     <Compile Include="HTML\Validation\FoundationColumnsValidator.cs" />
     <Compile Include="HTML\Validation\BootstrapColumnsValidator.cs" />
     <Compile Include="IcedCoffeeScript\ContentType\IcedCoffeeScriptContentTypeDefinition.cs" />
+    <Compile Include="Images\ImageExtensions.cs" />
+    <Compile Include="JavaScript\Completion\GruntTaskCompletionSourceProvider.cs" />
     <Compile Include="JavaScript\MenuItems\Unminify.cs" />
     <Compile Include="JavaScript\Outlining\JavaScriptRegionTagger.cs">
       <SubType>Code</SubType>
@@ -373,6 +387,10 @@
     <Compile Include="JSON\Completion\SchemaValueCompletionProvider.cs" />
     <Compile Include="JSON\Completion\SimpleCompletionEntry.cs" />
     <Compile Include="JSON\Helpers\JsonTreeVisitor.cs" />
+    <Compile Include="JSON\QuickInfo\MemberInfo\PropertyQuickInfo.cs" />
+    <Compile Include="JSON\QuickInfo\MemberInfo\PropertyQuickInfoController.cs" />
+    <Compile Include="JSON\QuickInfo\MemberInfo\PropertyQuickInfoControllerProvider.cs" />
+    <Compile Include="JSON\QuickInfo\MemberInfo\PropertyQuickInfoSourceProvider.cs" />
     <Compile Include="JSON\Schemas\SchemaExporter.cs" />
     <Compile Include="JSON\Validation\JsonErrorTag.cs" />
     <Compile Include="JSON\Validation\RefMemberNameItemValidator.cs" />
@@ -395,6 +413,8 @@
     <Compile Include="Shared\Compilers\Result\CompilerResultFactory.cs" />
     <Compile Include="Shared\Compilers\Result\CompilerError.cs" />
     <Compile Include="Shared\Compilers\Result\CssCompilerResult.cs" />
+    <Compile Include="Shared\Compilers\RubyScssServer.cs" />
+    <Compile Include="Shared\Compilers\ServerBase.cs" />
     <Compile Include="Shared\Completion\ColorSwatchIntellisense.cs" />
     <Compile Include="Markdown\Classify\BufferGenerator.cs" />
     <Compile Include="Markdown\Classify\CodeArtifactProcessor.cs" />
@@ -406,6 +426,7 @@
     <Compile Include="Markdown\Classify\MarkdownParser.cs" />
     <Compile Include="SCSS\SmartTags\ScssExtractVariableSmartTagProvider.cs" />
     <Compile Include="Shared\Completion\ColorSwatchIntellisenseProvider.cs" />
+    <Compile Include="Shared\ExtensionMethods\DragDropExtensions.cs" />
     <Compile Include="Shared\ExtensionMethods\TaskExtensions.cs" />
     <Compile Include="Shared\Helpers\AsyncLock.cs" />
     <Compile Include="Shared\Helpers\Policies\PolicyFactory.cs" />
@@ -588,8 +609,6 @@
     <Compile Include="Shared\Helpers\Css\StyleSheetHelpers.cs" />
     <Compile Include="Shared\Helpers\WindowHelpers.cs" />
     <Compile Include="JavaScript\MenuItems\ReferenceJs.cs" />
-    <Compile Include="CSS\NavigateTo\CssGoToLineTag.cs" />
-    <Compile Include="CSS\NavigateTo\CssGoToLineProvider.cs" />
     <Compile Include="Shared\Classify\IconRegistration.cs" />
     <Compile Include="CSS\SmartTags\Actions\RemoveCssRuleSmartTagAction.cs" />
     <Compile Include="CSS\SmartTags\Providers\RemoveCssRuleSmartTagProvider.cs" />
@@ -681,7 +700,6 @@
     <Compile Include="Misc\MenuItems\MinifyFile.cs" />
     <Compile Include="Misc\MenuItems\Diff.cs" />
     <Compile Include="Misc\MenuItems\Transform.cs" />
-    <Compile Include="CSS\NavigateTo\CssGoToLineProviderFactory.cs" />
     <Compile Include="Settings\ProjectSettingsTextViewListener.cs" />
     <Compile Include="HTML\QuickInfo\ImageHtml\ImageQuickInfo.cs" />
     <Compile Include="HTML\QuickInfo\ImageHtml\ImageQuickInfoController.cs" />
@@ -1021,29 +1039,41 @@
     <Copy SourceFiles="@(NodeServerSource)" DestinationFolder="$(MSBuildProjectDirectory)\Resources\nodejs\tools\server\%(RecursiveDir)" SkipUnchangedFiles="true" />
     <!-- Include newly downloaded files now.. -->
     <ItemGroup>
+      <Content Include="Resources\nodejs\tools\**">
+        <IncludeInVSIX>true</IncludeInVSIX>
+      </Content>
       <!-- Exclude LESS & SASS because they have too many extra files; use a whitelist instead -->
+      <!--
+      -->
       <!-- Mocha comes from some package that forgot about "devDependencies"; Jade comes from Mocha -->
+      <!--
       <Content Include="Resources\nodejs\tools\**" Exclude="&#xD;&#xA; **\node-sass\**; **\less\**; &#xD;&#xA;               **\mocha\**; **\jade\**; &#xD;&#xA;               **\*.md; **\*.markdown; **\*.html; **\*.txt; **\LICENSE; **\README; **\CHANGELOG; **\CNAME; **\*.old; **\*.patch; **\*.ico; &#xD;&#xA;               **\*.json; **\.*; **\Makefile.*; **\Rakefile; **\*.yml; &#xD;&#xA;               **\test.*; **\generate-*; &#xD;&#xA;               **\*.min.js; **\*-min.js; &#xD;&#xA;               **\media\**; **\images\**; **\man\**; &#xD;&#xA;               **\.bin\**; **\benchmark\**; **\build\**; **\scripts\**; &#xD;&#xA;               **\vendor\**; &#xD;&#xA;               **\test\**; **\tst\**; **\tests\**; **\testing\**; &#xD;&#xA;               **\examples\**; **\example\**; **\tools\**\tools\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\tools\node_modules\node-sass\sass.js; Resources\nodejs\tools\node_modules\node-sass\bin\node-sass; Resources\nodejs\tools\node_modules\node-sass\lib\**; Resources\nodejs\tools\node_modules\node-sass\bin\win32-ia32-*\**; Resources\nodejs\tools\node_modules\tslint\**; Resources\nodejs\tools\node_modules\jscs\**; Resources\nodejs\tools\node_modules\coffeelint\**;    Resources\nodejs\tools\node_modules\rtlcss\lib\**;    Resources\nodejs\tools\node_modules\rtlcss\bin\rtlcss.js;">
+      <Content Include="Resources\nodejs\tools\node_modules\node-sass\index.js; Resources\nodejs\tools\node_modules\node-sass\bin\node-sass; Resources\nodejs\tools\node_modules\node-sass\lib\**; Resources\nodejs\tools\node_modules\node-sass\vendor\win32-ia32\**; Resources\nodejs\tools\node_modules\tslint\**; Resources\nodejs\tools\node_modules\jscs\**; Resources\nodejs\tools\node_modules\coffeelint\**;    Resources\nodejs\tools\node_modules\rtlcss\lib\**;    Resources\nodejs\tools\node_modules\rtlcss\bin\rtlcss.js;">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-      <Content Include="Resources\nodejs\tools\node_modules\less\lib\**; Resources\nodejs\tools\node_modules\less\bin\**">
+      <Content Include="Resources\nodejs\tools\node_modules\less\index.js; Resources\nodejs\tools\node_modules\less\lib\**; Resources\nodejs\tools\node_modules\less\bin\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
+      -->
       <!-- Explicit inclusions for CSON -->
+      <!--
       <Content Include="Resources\nodejs\tools\node_modules\cson\package.json; Resources\nodejs\tools\node_modules\cson\out\**; Resources\nodejs\tools\node_modules\js2coffee\package.json;">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
+      -->
       <!-- Explicitly include JSON files that are actually needed at runtime -->
+      <!--
       <Content Include="Resources\nodejs\tools\node_modules\htmlparser2\lib\entities\**; Resources\nodejs\tools\node_modules\jshint\package.json; Resources\nodejs\tools\node_modules\node-sass\package.json; Resources\nodejs\tools\node_modules\less\package.json; Resources\nodejs\tools\node_modules\resolve\lib\core.json; Resources\nodejs\tools\node_modules\escodegen\package.json;  Resources\nodejs\tools\node_modules\caniuse-db\**\*.json;">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
+      -->
       <!-- Explicitly include files that are needed for JsHint -->
+      <!--
       <Content Include="Resources\nodejs\tools\node_modules\entities\maps\**; Resources\nodejs\tools\node_modules\shelljs\src\test.js;">
         <IncludeInVSIX>true</IncludeInVSIX>
-      </Content>
+      </Content>-->
     </ItemGroup>
   </Target>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

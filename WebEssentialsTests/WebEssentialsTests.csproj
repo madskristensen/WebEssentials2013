@@ -55,10 +55,6 @@
     <Reference Include="FluentAssertions.Core">
       <HintPath>..\packages\FluentAssertions.3.0.107\lib\net45\FluentAssertions.Core.dll</HintPath>
     </Reference>
-    <Reference Include="MarkdownSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\MarkdownSharp.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.CSS.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.CSS.Editor, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -229,6 +225,7 @@
     <Content Include="fixtures\module-resolution\node_modules\node_modules\bar.js" />
     <Content Include="fixtures\module-resolution\packages\main-index\package-main-module\index.js" />
     <Content Include="fixtures\module-resolution\packages\main\package-main-module.js" />
+    <Content Include="fixtures\ruby-scss\compiled\compass-shadow.css" />
     <Content Include="fixtures\ruby-scss\compiled\multiple-assignment.css" />
     <Content Include="fixtures\ruby-scss\compiled\nested-rules.css" />
     <Content Include="fixtures\ruby-scss\compiled\referencing-parent-selectors.css" />
@@ -271,6 +268,7 @@
     <None Include="fixtures\module-resolution\packages\main\package.json" />
     <None Include="fixtures\coffee\source\test.coffee" />
     <Content Include="fixtures\scss\extend.css" />
+    <None Include="fixtures\ruby-scss\source\compass-shadow.scss" />
     <None Include="fixtures\ruby-scss\source\multiple-assignment.scss" />
     <None Include="fixtures\ruby-scss\source\nested-rules.scss" />
     <None Include="fixtures\ruby-scss\source\referencing-parent-selectors.scss" />

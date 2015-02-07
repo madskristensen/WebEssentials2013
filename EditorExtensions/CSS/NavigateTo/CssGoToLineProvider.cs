@@ -163,7 +163,7 @@ namespace MadsKristensen.EditorExtensions.Css
         {
             Debug.Assert(_currentWorker == null);
 
-            if (searchValue.Length > 0 && (searchValue[0] == '.' || searchValue[0] == '#'))
+            if (!string.IsNullOrEmpty(searchValue) && (searchValue[0] == '.' || searchValue[0] == '#'))
             {
                 _currentWorker = new Worker(_owner, callback, searchValue);
             }

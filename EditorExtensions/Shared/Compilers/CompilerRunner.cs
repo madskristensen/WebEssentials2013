@@ -255,7 +255,12 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         protected async override Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
         {
-            var result = new MarkdownSharp.Markdown(WESettings.Instance.Markdown).Transform(await FileHelpers.ReadAllTextRetry(sourcePath));
+            var sourceText = await FileHelpers.ReadAllTextRetry(sourcePath);
+            var settings = new CommonMark.CommonMarkSettings
+            {
+                OutputFormat = CommonMark.OutputFormat.Html
+            };
+            var result = CommonMark.CommonMarkConverter.Convert(sourceText, settings);
 
             if (!string.IsNullOrEmpty(targetPath) &&
                (!File.Exists(targetPath) || await FileHelpers.ReadAllTextRetry(targetPath) != result))
