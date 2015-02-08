@@ -263,7 +263,8 @@ namespace MadsKristensen.EditorExtensions.Compilers
 
         protected async override Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
         {
-            var sourceText = await FileHelpers.ReadAllTextRetry(sourcePath, _document.Encoding);
+            Encoding encoding = _document == null ? null : _document.Encoding;
+            var sourceText = await FileHelpers.ReadAllTextRetry(sourcePath, encoding);
             var settings = new CommonMark.CommonMarkSettings
             {
                 OutputFormat = CommonMark.OutputFormat.Html
@@ -271,7 +272,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
             var result = CommonMark.CommonMarkConverter.Convert(sourceText, settings);
 
             if (!string.IsNullOrEmpty(targetPath) &&
-               (!File.Exists(targetPath) || await FileHelpers.ReadAllTextRetry(targetPath, _document.Encoding) != result))
+               (!File.Exists(targetPath) || await FileHelpers.ReadAllTextRetry(targetPath, encoding) != result))
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(targetPath);
 
