@@ -17,7 +17,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
         public ICompilationNotifier GetCompilationNotifier(ITextDocument doc)
         {
             return doc.TextBuffer.Properties.GetOrCreateSingletonProperty<EditorCompilerInvoker>(
-                       () => new EditorCompilerInvoker(doc, new MarkdownCompilerRunner(doc.TextBuffer.ContentType))
+                       () => new EditorCompilerInvoker(doc, new MarkdownCompilerRunner(doc.TextBuffer.ContentType, doc))
                    );
         }
     }

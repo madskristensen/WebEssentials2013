@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using EnvDTE;
 using MadsKristensen.EditorExtensions.CoffeeScript;
@@ -11,6 +12,7 @@ using MadsKristensen.EditorExtensions.IcedCoffeeScript;
 using MadsKristensen.EditorExtensions.LiveScript;
 using MadsKristensen.EditorExtensions.Settings;
 using MadsKristensen.EditorExtensions.SweetJs;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
@@ -249,13 +251,20 @@ namespace MadsKristensen.EditorExtensions.Compilers
     ///<summary>Compiles files asynchronously using MarkdownSharp and reports the results.</summary>
     class MarkdownCompilerRunner : CompilerRunnerBase
     {
-        public MarkdownCompilerRunner(IContentType contentType) : base(contentType) { }
+        private readonly ITextDocument _document;
+
+        public MarkdownCompilerRunner(IContentType contentType, ITextDocument document = null) : base(contentType) 
+        {
+            _document = document;
+        }
+
         public override bool GenerateSourceMap { get { return false; } }
         public override string TargetExtension { get { return ".html"; } }
 
         protected async override Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
         {
-            var sourceText = await FileHelpers.ReadAllTextRetry(sourcePath);
+            Encoding encoding = _document == null ? null : _document.Encoding;
+            var sourceText = await FileHelpers.ReadAllTextRetry(sourcePath, encoding);
             var settings = new CommonMark.CommonMarkSettings
             {
                 OutputFormat = CommonMark.OutputFormat.Html
@@ -263,7 +272,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
             var result = CommonMark.CommonMarkConverter.Convert(sourceText, settings);
 
             if (!string.IsNullOrEmpty(targetPath) &&
-               (!File.Exists(targetPath) || await FileHelpers.ReadAllTextRetry(targetPath) != result))
+               (!File.Exists(targetPath) || await FileHelpers.ReadAllTextRetry(targetPath, encoding) != result))
             {
                 ProjectHelpers.CheckOutFileFromSourceControl(targetPath);
 

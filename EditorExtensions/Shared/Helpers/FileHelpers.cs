@@ -305,7 +305,7 @@ namespace MadsKristensen.EditorExtensions
         /// </summary>
         /// <param name="fileName">The file to open for reading.</param>
         /// <returns>Task which ultimately returns a string containing all lines of the file.</returns>
-        public async static Task<string> ReadAllTextRetry(string fileName)
+        public async static Task<string> ReadAllTextRetry(string fileName, Encoding encoding = null)
         {
             if (string.IsNullOrEmpty(fileName))
                 return null;
@@ -318,8 +318,13 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
+                // Keep the previous behavior if no encoding is provided.
                 return await PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount)
-                            .ExecuteAsync(() => Task.FromResult<string>(File.ReadAllText(fileName)));
+                            .ExecuteAsync(() =>
+                                    encoding == null ? 
+                                    Task.FromResult<string>(File.ReadAllText(fileName)) :
+                                    Task.FromResult<string>(File.ReadAllText(fileName, encoding)) 
+                                );
             }
             catch (IOException)
             {
