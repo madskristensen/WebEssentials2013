@@ -234,8 +234,8 @@ namespace MadsKristensen.EditorExtensions.Markdown
 
             if (htmlTemplateFilePath != null)
             {
-                var solutionPathUrl = ConvertLocalDirectoryPathToUrl(solutionPath);
-                var projectPathUrl = ConvertLocalDirectoryPathToUrl(projectPath);
+                var solutionPathUrl = solutionPath == null ?  currentDocumentPathUrl : ConvertLocalDirectoryPathToUrl(solutionPath);
+                var projectPathUrl = projectPath == null ? currentDocumentPathUrl : ConvertLocalDirectoryPathToUrl(projectPath);
 
                 //Load the template and replace the placeholder with the generated html
                 var htmlTemplate = File.ReadAllText(htmlTemplateFilePath);
