@@ -15,6 +15,7 @@ namespace MadsKristensen.EditorExtensions.Html
     internal class ZenCoding : CommandTargetBase<VSConstants.VSStd2KCmdID>
     {
         private ICompletionBroker _broker;
+        private ITrackingSpan _trackingSpan;
 
         private static Regex _bracket = new Regex(@"<([a-z0-9]*)\b[^>]*>([^<]*)</\1>", RegexOptions.IgnoreCase);
         private static Regex _quotes = new Regex("(=\"()\")", RegexOptions.IgnoreCase);
@@ -29,7 +30,18 @@ namespace MadsKristensen.EditorExtensions.Html
         {
             if (commandId == VSConstants.VSStd2KCmdID.TAB && !_broker.IsCompletionActive(TextView))
             {
-                if (InvokeZenCoding())
+                if(InvokeZenCoding())
+                {
+                    return true;
+                }
+                else if(MoveToNextEmptySlot())
+                {
+                    return true;
+                }
+            }
+            else if(commandId == VSConstants.VSStd2KCmdID.BACKTAB && !_broker.IsCompletionActive(TextView))
+            {
+                if (MoveToPrevEmptySlot())
                 {
                     return true;
                 }
@@ -60,6 +72,11 @@ namespace MadsKristensen.EditorExtensions.Html
 
                         Span newSpan = new Span(zenSpan.Start, selection.SelectedSpans[0].Length);
 
+                        if(result.Count(c => c == '>') > 2)
+                        {
+                            _trackingSpan = TextView.TextBuffer.CurrentSnapshot.CreateTrackingSpan(newSpan, SpanTrackingMode.EdgeExclusive);
+                        }
+
                         WebEssentialsPackage.ExecuteCommand("Edit.FormatSelection");
                         SetCaret(newSpan, false);
 
@@ -68,6 +85,46 @@ namespace MadsKristensen.EditorExtensions.Html
                 }), DispatcherPriority.ApplicationIdle, null);
 
                 return true;
+            }
+
+            return false;
+        }
+
+        private bool MoveToNextEmptySlot()
+        {
+            if(_trackingSpan == null)
+                return false;
+
+            int position = TextView.Caret.Position.BufferPosition.Position + 1;
+            Span ts = _trackingSpan.GetSpan(TextView.TextBuffer.CurrentSnapshot);
+
+            if(ts.Contains(position))
+            {
+                Span span = new Span(position, ts.End - position);
+                SetCaret(span, false);
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool MoveToPrevEmptySlot()
+        {
+            if(_trackingSpan == null)
+                return false;
+
+            int position = TextView.Caret.Position.BufferPosition.Position;
+
+            if(position > 0)
+            {
+                Span ts = _trackingSpan.GetSpan(TextView.TextBuffer.CurrentSnapshot);
+
+                if(ts.Contains(position - 1))
+                {
+                    Span span = new Span(ts.Start, position - ts.Start - 1);
+                    SetCaret(span, true);
+                    return true;
+                }
             }
 
             return false;
