@@ -5,6 +5,8 @@ var sass = require("node-sass"),
 
 //#region Handler
 var handleSass = function (writer, params) {
+    var omitSourceMap = typeof params.sourceMapURL === 'undefined';
+
     sass.render({
         file: params.sourceFileName,
         outFile: params.targetFileName,
@@ -12,10 +14,11 @@ var handleSass = function (writer, params) {
         precision: parseInt(params.precision, 10),
         outputStyle: params.outputStyle,
         sourceMap: params.mapFileName,
-        omitSourceMapUrl: params.sourceMapURL === undefined,
+        omitSourceMapUrl: omitSourceMap,
         success: function (result) {
-            var css = result.css;
-            var map = result.map;
+            var css = result.css, map;
+            if (!omitSourceMap)
+                map = result.map;
 
             if (params.autoprefixer !== undefined) {
                 var autoprefixedOutput = require("./srv-autoprefixer")
