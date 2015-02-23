@@ -7,22 +7,26 @@ var rtlcss = require("rtlcss"),
 
 //#region Process
 var processRtlCSS = function (cssContent, mapContent, sourceFileName, targetFileName, autoprefixer, autoprefixerBrowsers) {
-    if (mapContent !== true) {
-        mapContent = { prev: mapContent };
-    }
+    var result, css, map = false;
+    //wrap source map.
+    if (typeof (mapContent) === 'object')
+        map = { prev: mapContent, inline: false };
+    else if (mapContent === true)
+        map = { inline: false };
 
-    var result, css, map;
     try {
         var config = configLoader.load(null, path.dirname(sourceFileName), { options: { minify: false } });
 
         result = rtlcss.configure(config).process(cssContent, {
-            map: mapContent,
+            map: map,
             from: sourceFileName,
             to: targetFileName
         });
 
         css = result.css;
-        map = result.map.toJSON();
+        //set map if exists
+        if (typeof result.map !== 'undefined')
+            map = result.map.toJSON();
     } catch (e) {
         // Return same css and map back so the upstream compilers can continue.
         return {
@@ -66,9 +70,8 @@ var handleRtlCSS = function (writer, params) {
             writer.end();
             return;
         }
-
         var output = processRtlCSS(data,
-                                   true,
+                                   typeof params.sourceMapURL !== 'undefined',
                                    params.sourceFileName,
                                    params.targetFileName,
                                    params.autoprefixer,
