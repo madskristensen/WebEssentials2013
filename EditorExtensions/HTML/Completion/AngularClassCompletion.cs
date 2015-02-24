@@ -12,7 +12,7 @@ namespace MadsKristensen.EditorExtensions.Html
     [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
     public class AngularLogoCompletion : IHtmlCompletionListProvider
     {
-        private static BitmapFrame _icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2015;component/Resources/Images/angular.png", UriKind.RelativeOrAbsolute));
+        private static BitmapFrame _icon = BitmapFrame.Create(new Uri("pack://application:,,,/WebEssentials2013;component/Resources/Images/angular.png", UriKind.RelativeOrAbsolute));
 
         public CompletionType CompletionType
         {
