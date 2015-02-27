@@ -218,7 +218,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         public bool ShowPreviewPane { get; set; }
     }
 
-    public sealed class HtmlSettings : SettingsBase<HtmlSettings>, IMinifierSettings, IBundleSettings
+    public sealed class HtmlSettings : SettingsBase<HtmlSettings>, ICompilerInvocationSettings, IMarginSettings, IMinifierSettings, IBundleSettings
     {
         [DisplayName("Auto-format HTML on Enter")]
         [Description("Automatically format HTML source when pressing Enter.")]
@@ -284,6 +284,22 @@ namespace MadsKristensen.EditorExtensions.Settings
 
         [Browsable(false)]
         public ObservableCollection<ImageDropFormat> ImageDropFormats { get; private set; }
+
+        bool ICompilerInvocationSettings.CompileOnSave { get { return false; } }
+
+        bool IMarginSettings.ShowPreviewPane { get { return this.ShowZenPane; } }
+
+        [DisplayName("Show Zen representation")]
+        [Description("Shows a window with a Zen like representation for better reading.")]
+        [DefaultValue(false)]
+        public bool ShowZenPane { get; set; }
+
+        bool ICompilerInvocationSettings.CompileOnBuild { get { return false; } }
+
+        string ICompilerInvocationSettings.OutputDirectory { get { return ""; } }
+
+        bool ICompilerInvocationSettings.MinifyInPlace { get { return false; } }
+
         protected override void ResetCustom()
         {
             ImageDropFormats.Add(new ImageDropFormat("Simple Image Tag", @"<img src=""{0}"" alt="""" />"));

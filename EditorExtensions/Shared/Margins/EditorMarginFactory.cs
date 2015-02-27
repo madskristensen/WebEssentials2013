@@ -17,6 +17,8 @@ namespace MadsKristensen.EditorExtensions.Margin
     [Name("MarginFactory")]
     [Order(After = PredefinedMarginNames.RightControl)]
     [MarginContainer(PredefinedMarginNames.Right)]
+    [ContentType(RazorContentTypeDefinition.RazorContentType)]
+    [ContentType(HtmlContentTypeDefinition.HtmlContentType)]
     [ContentType(CssContentTypeDefinition.CssContentType)]
     [ContentType(LessContentTypeDefinition.LessContentType)]
     [ContentType(ScssContentTypeDefinition.ScssContentType)]
@@ -35,6 +37,8 @@ namespace MadsKristensen.EditorExtensions.Margin
 
         static readonly Dictionary<string, Func<ITextDocument, IWpfTextView, IWpfTextViewMargin>> marginFactories = new Dictionary<string, Func<ITextDocument, IWpfTextView, IWpfTextViewMargin>>(StringComparer.OrdinalIgnoreCase)
         {
+            { "htmlx",             (document, sourceView) => new TextViewMargin("RazorZen", document, sourceView, synchronizedViewport: true) },
+            { "RazorCSharp",       (document, sourceView) => new TextViewMargin("RazorZen", document, sourceView, synchronizedViewport: true) },
             { "CoffeeScript",      (document, sourceView) => new TextViewMargin("JavaScript", document, sourceView) },
             { "IcedCoffeeScript",  (document, sourceView) => new TextViewMargin("JavaScript", document, sourceView) },
             { "LiveScript",        (document, sourceView) => new TextViewMargin("JavaScript", document, sourceView) },
@@ -44,7 +48,7 @@ namespace MadsKristensen.EditorExtensions.Margin
             { "SCSS",              (document, sourceView) => new CssTextViewMargin("CSS", document, sourceView) },
             { "Svg",               (document, sourceView) => new SvgMargin(document) },
             { "SweetJs",           (document, sourceView) => new TextViewMargin("JavaScript", document, sourceView) },
-            { "TypeScript",        (document, sourceView) => document.FilePath.EndsWith(".d.ts", StringComparison.OrdinalIgnoreCase) 
+            { "TypeScript",        (document, sourceView) => document.FilePath.EndsWith(".d.ts", StringComparison.OrdinalIgnoreCase)
                                                              ? null : new TextViewMargin("JavaScript", document, sourceView) }
         };
 

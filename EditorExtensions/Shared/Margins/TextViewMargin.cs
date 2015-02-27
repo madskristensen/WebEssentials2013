@@ -17,11 +17,15 @@ namespace MadsKristensen.EditorExtensions.Margin
         protected IWpfTextViewHost PreviewTextHost { get; set; }
         protected IWpfTextView SourceTextView { get; set; }
 
-        public TextViewMargin(string targetContentType, ITextDocument document, IWpfTextView sourceView)
+        public bool SynchronizedViewport { get; set; }
+        private bool OtherHasSynchronized { get; set; }
+
+        public TextViewMargin(string targetContentType, ITextDocument document, IWpfTextView sourceView, bool synchronizedViewport = false)
             : base(WESettings.Instance.ForContentType<IMarginSettings>(document.TextBuffer.ContentType), document)
         {
             SourceTextView = sourceView;
             _previewContentType = targetContentType;
+            SynchronizedViewport = synchronizedViewport;
         }
 
         protected override FrameworkElement CreatePreviewControl()
@@ -35,6 +39,12 @@ namespace MadsKristensen.EditorExtensions.Margin
             PreviewTextHost.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.LineNumberMarginId, true);
             PreviewTextHost.TextView.VisualElement.KeyDown += TextView_KeyUp;
             PreviewTextHost.TextView.VisualElement.PreviewMouseRightButtonUp += new MouseButtonEventHandler(OnMenuClicked);
+
+            if (SynchronizedViewport)
+            {
+                SourceTextView.LayoutChanged += SourceTextView_LayoutChanged;
+                this.PreviewTextHost.TextView.LayoutChanged += TextView_LayoutChanged;
+            }
 
             var menu = new ContextMenu();
 
@@ -68,7 +78,7 @@ namespace MadsKristensen.EditorExtensions.Margin
             return host;
         }
 
-        void TextView_KeyUp(object sender, KeyEventArgs e)
+         void TextView_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.PageDown)
                 PreviewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByPage(ScrollDirection.Down);
@@ -183,6 +193,64 @@ namespace MadsKristensen.EditorExtensions.Margin
             // For key gestures.
             PreviewTextHost.TextView.VisualElement.CommandBindings.Add(copyCommand);
             PreviewTextHost.TextView.VisualElement.CommandBindings.Add(selectAllCommand);
+        }
+
+        private void TextView_LayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
+        {
+            if (!OtherHasSynchronized)
+            {
+                SourceTextView.ZoomLevel = PreviewTextHost.TextView.ZoomLevel;
+
+                var verticalDifferenz = SourceTextView.ViewportTop - PreviewTextHost.TextView.ViewportTop;
+                if (verticalDifferenz >= 1 || verticalDifferenz <= -1)
+                {
+                    OtherHasSynchronized = true;
+                    SourceTextView.ViewScroller.ScrollViewportVerticallyByPixels(verticalDifferenz);
+                }
+
+                var horizontalDifferenz = (PreviewTextHost.TextView.ViewportLeft
+                    / (PreviewTextHost.TextView.MaxTextRightCoordinate - PreviewTextHost.TextView.ViewportWidth)
+                    * (SourceTextView.MaxTextRightCoordinate - SourceTextView.ViewportWidth)
+                    - SourceTextView.ViewportLeft);
+                if (horizontalDifferenz >= 1 || horizontalDifferenz <= -1)
+                {
+                    OtherHasSynchronized = true;
+                    SourceTextView.ViewScroller.ScrollViewportHorizontallyByPixels(horizontalDifferenz);
+                }
+            }
+            else
+            {
+                OtherHasSynchronized = false;
+            }
+        }
+
+        private void SourceTextView_LayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
+        {
+            if (!OtherHasSynchronized)
+            {
+                PreviewTextHost.TextView.ZoomLevel = SourceTextView.ZoomLevel;
+
+                var verticalDifferenz = PreviewTextHost.TextView.ViewportTop - SourceTextView.ViewportTop;
+                if (verticalDifferenz >= 1 || verticalDifferenz <= -1)
+                {
+                    OtherHasSynchronized = true;
+                    PreviewTextHost.TextView.ViewScroller.ScrollViewportVerticallyByPixels(verticalDifferenz);
+                }
+
+                var horizontalDifferenz = (SourceTextView.ViewportLeft
+                    / (SourceTextView.MaxTextRightCoordinate - SourceTextView.ViewportWidth)
+                    * (PreviewTextHost.TextView.MaxTextRightCoordinate - PreviewTextHost.TextView.ViewportWidth)
+                    - PreviewTextHost.TextView.ViewportLeft);
+                if (horizontalDifferenz >= 1 || horizontalDifferenz <= -1)
+                {
+                    OtherHasSynchronized = true;
+                    PreviewTextHost.TextView.ViewScroller.ScrollViewportHorizontallyByPixels(horizontalDifferenz);
+                }
+            }
+            else
+            {
+                OtherHasSynchronized = false;
+            }
         }
     }
 }
