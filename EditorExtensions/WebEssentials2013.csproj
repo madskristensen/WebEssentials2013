@@ -403,6 +403,13 @@
     <Compile Include="Misc\Bundles\BundleDocument.cs" />
     <Compile Include="LiveScript\Compilers\LiveScriptCompiler.cs" />
     <Compile Include="LiveScript\ContentType\LiveScriptContentTypeDefinition.cs" />
+    <Compile Include="RazorZen\Classify\RazorZenClassificationTypes.cs" />
+    <Compile Include="RazorZen\Classify\RazorZenClassifier.cs" />
+    <Compile Include="RazorZen\Classify\RazorZenClassifierProvider.cs" />
+    <Compile Include="RazorZen\Commands\RazorZenCreationListener.cs" />
+    <Compile Include="RazorZen\ContentType\RazorZenContentTypeDefinition.cs" />
+    <Compile Include="RazorZen\Converter\RazorZenConverter.cs" />
+    <Compile Include="RazorZen\Margin\RazorZenMargin.cs" />
     <Compile Include="SCSS\Commands\ScssCreationListener.cs" />
     <Compile Include="SCSS\Commands\ScssExtractMixinCommandTarget.cs" />
     <Compile Include="SCSS\Commands\ScssExtractVariableCommandTarget.cs" />
@@ -435,6 +442,7 @@
     <Compile Include="Shared\Helpers\CssSourceMap.cs" />
     <Compile Include="Shared\Helpers\Base64Vlq.cs" />
     <Compile Include="Shared\Margins\CssTextViewMargin.cs" />
+    <Compile Include="StringExtention.cs" />
     <Compile Include="SweetJs\ContentType\SweetJsContentTypeDefinition.cs" />
     <Compile Include="RobotsTxt\Classify\RobotsTxtClassificationTypes.cs" />
     <Compile Include="RobotsTxt\Classify\RobotsTxtClassifier.cs" />

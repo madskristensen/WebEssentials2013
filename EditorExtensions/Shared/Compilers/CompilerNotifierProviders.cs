@@ -22,6 +22,29 @@ namespace MadsKristensen.EditorExtensions.Compilers
         }
     }
 
+    [Export(typeof(ICompilationNotifierProvider))]
+    [ContentType("Htmlx")]
+    internal class HtmlxCompilerNotifierProvider : ICompilationNotifierProvider
+    {
+        public ICompilationNotifier GetCompilationNotifier(ITextDocument doc)
+        {
+            return doc.TextBuffer.Properties.GetOrCreateSingletonProperty<EditorCompilerInvoker>(
+                       () => new EditorCompilerInvoker(doc, new RazorZenCompilerRunner(doc.TextBuffer.ContentType, doc))
+                   );
+        }
+    }
+
+    [Export(typeof(ICompilationNotifierProvider))]
+    [ContentType("Razor")]
+    internal class RazorCompilerNotifierProvider : ICompilationNotifierProvider
+    {
+        public ICompilationNotifier GetCompilationNotifier(ITextDocument doc)
+        {
+            return doc.TextBuffer.Properties.GetOrCreateSingletonProperty<EditorCompilerInvoker>(
+                       () => new EditorCompilerInvoker(doc, new RazorZenCompilerRunner(doc.TextBuffer.ContentType, doc))
+                   );
+        }
+    }
 
     [Export(typeof(ICompilationNotifierProvider))]
     [ContentType(CssContentTypeDefinition.CssContentType)]
@@ -33,7 +56,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     [ContentType(LiveScriptContentTypeDefinition.LiveScriptContentType)]
     [ContentType(SweetJsContentTypeDefinition.SweetJsContentType)]
     [ContentType(HandlebarsContentTypeDefinition.HandlebarsContentType)]
-    class NodeCompilerNotifierProvider : ICompilationNotifierProvider
+     class NodeCompilerNotifierProvider : ICompilationNotifierProvider
     {
         public ICompilationNotifier GetCompilationNotifier(ITextDocument doc)
         {

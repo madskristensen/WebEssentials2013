@@ -33,18 +33,18 @@ namespace MadsKristensen.EditorExtensions.Css
         {
             var ignoreList = includeUnstyled ? _cssIgnore : _basicIgnore;
 
-            foreach (var schema in Schemas)
-                foreach (var element in schema.GetTopLevelElements())
-                {
-                    if (!ignoreList.Contains(element.Name))
-                        yield return new CompletionListEntry(element.Name) { Description = element.Description.Description };
-
-                    foreach (var child in element.GetChildren())
+            foreach (var schema in Schemas) if (schema != null)
+                    foreach (var element in schema.GetTopLevelElements())
                     {
-                        if (!ignoreList.Contains(child.Name))
-                            yield return new CompletionListEntry(child.Name) { Description = child.Description.Description };
+                        if (!ignoreList.Contains(element.Name))
+                            yield return new CompletionListEntry(element.Name) { Description = element.Description.Description };
+
+                        foreach (var child in element.GetChildren())
+                        {
+                            if (!ignoreList.Contains(child.Name))
+                                yield return new CompletionListEntry(child.Name) { Description = child.Description.Description };
+                        }
                     }
-                }
         }
 
         public static IEnumerable<IHtmlSchema> Schemas

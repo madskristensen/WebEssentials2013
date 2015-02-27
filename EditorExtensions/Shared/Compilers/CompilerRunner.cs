@@ -10,6 +10,7 @@ using MadsKristensen.EditorExtensions.CoffeeScript;
 using MadsKristensen.EditorExtensions.Commands;
 using MadsKristensen.EditorExtensions.IcedCoffeeScript;
 using MadsKristensen.EditorExtensions.LiveScript;
+using MadsKristensen.EditorExtensions.RazorZen.Converter;
 using MadsKristensen.EditorExtensions.Settings;
 using MadsKristensen.EditorExtensions.SweetJs;
 using Microsoft.VisualStudio.Text;
@@ -253,7 +254,7 @@ namespace MadsKristensen.EditorExtensions.Compilers
     {
         private readonly ITextDocument _document;
 
-        public MarkdownCompilerRunner(IContentType contentType, ITextDocument document = null) : base(contentType) 
+        public MarkdownCompilerRunner(IContentType contentType, ITextDocument document = null) : base(contentType)
         {
             _document = document;
         }
@@ -270,6 +271,53 @@ namespace MadsKristensen.EditorExtensions.Compilers
                 OutputFormat = CommonMark.OutputFormat.Html
             };
             var result = CommonMark.CommonMarkConverter.Convert(sourceText, settings);
+
+            if (!string.IsNullOrEmpty(targetPath) &&
+               (!File.Exists(targetPath) || await FileHelpers.ReadAllTextRetry(targetPath, encoding) != result))
+            {
+                ProjectHelpers.CheckOutFileFromSourceControl(targetPath);
+
+                await FileHelpers.WriteAllTextRetry(targetPath, result);
+            }
+
+            var compilerResult = await CompilerResultFactory.GenerateResult(sourcePath, targetPath, true, result, null);
+
+            return compilerResult;
+        }
+    }
+
+    [Export(typeof(ICompilerRunnerProvider))]
+    [ContentType(RazorZen.RazorZenContentTypeDefinition.RazorZenContentType)]
+    public class RazorZenCompilerRunnerProvider : ICompilerRunnerProvider
+    {
+        public CompilerRunnerBase GetCompiler(IContentType contentType)
+        {
+            return new RazorZenCompilerRunner(contentType);
+        }
+    }
+
+    internal class RazorZenCompilerRunner : CompilerRunnerBase
+    {
+        private readonly ITextDocument _document;
+
+        public RazorZenCompilerRunner(IContentType contentType, ITextDocument document = null)
+            : base(contentType)
+        {
+            _document = document;
+        }
+
+        public override bool GenerateSourceMap { get { return false; } }
+
+        public override string TargetExtension { get { return ".cszen"; } }
+
+        protected async override Task<CompilerResult> RunCompilerAsync(string sourcePath, string targetPath)
+        {
+            var encoding = _document == null ? null : _document.Encoding;
+            var sourceText = await FileHelpers.ReadAllTextRetry(sourcePath, encoding);
+
+            var converter = new RazorZenConverter();
+
+            var result = converter.Convert(sourceText);
 
             if (!string.IsNullOrEmpty(targetPath) &&
                (!File.Exists(targetPath) || await FileHelpers.ReadAllTextRetry(targetPath, encoding) != result))
