@@ -86,10 +86,10 @@ var handleSass = function (writer, params) {
                             SourceFileName: params.sourceFileName,
                             TargetFileName: params.targetFileName,
                             MapFileName: params.mapFileName,
-                            Remarks: "SASS: " + autoprefixedOutput.Remarks,
+                            Remarks: "Sass: " + autoprefixedOutput.Remarks,
                             Details: autoprefixedOutput.Remarks,
                             Errors: [{
-                                Message: "SASS: " + autoprefixedOutput.Remarks,
+                                Message: "Sass: " + autoprefixedOutput.Remarks,
                                 FileName: params.sourceFileName
                             }]
                         }));
@@ -152,13 +152,13 @@ var handleSass = function (writer, params) {
                     SourceFileName: params.sourceFileName,
                     TargetFileName: params.targetFileName,
                     MapFileName: params.mapFileName,
-                    Remarks: "SASS: An error has occured while processing your request.",
+                    Remarks: "Sass: An error has occured while processing your request.",
                     Details: result.message,
                     Errors: [{
                         Line: result.line,
-                        Message: "SASS: " + result.message,
+                        Message: "Sass: " + result.message,
                         FileName: result.fileName,
-                        FullMessage: "SASS" + result.message
+                        FullMessage: "Sass" + result.message
                     }]
                 }));
                 writer.end();
