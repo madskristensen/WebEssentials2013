@@ -13,10 +13,10 @@ var handleLess = function (writer, params) {
                 SourceFileName: params.sourceFileName,
                 TargetFileName: params.targetFileName,
                 MapFileName: params.mapFileName,
-                Remarks: "LESS: Error reading input file.",
+                Remarks: "Less: Error reading input file.",
                 Details: err,
                 Errors: [{
-                    Message: "LESS" + err,
+                    Message: "Less" + err,
                     FileName: params.sourceFileName
                 }]
             }));
@@ -60,10 +60,10 @@ var handleLess = function (writer, params) {
                             SourceFileName: params.sourceFileName,
                             TargetFileName: params.targetFileName,
                             MapFileName: params.mapFileName,
-                            Remarks: "LESS: " + autoprefixedOutput.Remarks,
+                            Remarks: "Less: " + autoprefixedOutput.Remarks,
                             Details: autoprefixedOutput.Remarks,
                             Errors: [{
-                                Message: "LESS: " + autoprefixedOutput.Remarks,
+                                Message: "Less: " + autoprefixedOutput.Remarks,
                                 FileName: params.sourceFileName
                             }]
                         }));
@@ -121,12 +121,12 @@ var handleLess = function (writer, params) {
                     SourceFileName: params.sourceFileName,
                     TargetFileName: params.targetFileName,
                     MapFileName: params.mapFileName,
-                    Remarks: "LESS: Error parsing input file.",
+                    Remarks: "Less: Error parsing input file.",
                     Details: error.message,
                     Errors: [{
                         Line: error.line,
                         Column: error.column,
-                        Message: "LESS: " + error.message,
+                        Message: "Less: " + error.message,
                         FileName: error.filename
                     }]
                 }));

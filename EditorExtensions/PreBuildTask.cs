@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -63,7 +64,7 @@ namespace MadsKristensen.EditorExtensions
             try
             {
                 Assembly a = null;
-                a = Assembly.LoadFrom(Path.GetDirectoryName(Environment.CurrentDirectory) + @"\packages\Pri.LongPath.1.2.2.0\lib\net45\Pri.LongPath.dll");
+                a = Assembly.LoadFrom(Path.GetDirectoryName(Environment.CurrentDirectory) + @"\packages\Pri.LongPath.1.3.2.0\lib\net45\Pri.LongPath.dll");
                 _path = a.GetType("Pri.LongPath.Path");
                 _directory = a.GetType("Pri.LongPath.Directory");
                 _directoryInfo = a.GetType("Pri.LongPath.DirectoryInfo");
@@ -75,7 +76,9 @@ namespace MadsKristensen.EditorExtensions
 
         public override bool Execute()
         {
-            ClearPath(@"resources\nodejs");
+            if (Directory.Exists(@"resources\nodejs"))
+                ClearPath(@"resources\nodejs");
+
             Directory.CreateDirectory(@"resources\nodejs\tools");
             // Force npm to install modules to the subdirectory
             // https://npmjs.org/doc/files/npm-folders.html#More-Information
@@ -175,8 +178,10 @@ namespace MadsKristensen.EditorExtensions
         Task DownloadNodeAsync()
         {
             var file = new FileInfo(@"resources\nodejs\node.exe");
+
             if (file.Exists && file.Length > 0)
                 return Task.FromResult<object>(null);
+
             Log.LogMessage(MessageImportance.High, "Downloading nodejs ...");
             return WebClientDoAsync(wc => wc.DownloadFileTaskAsync("http://nodejs.org/dist/latest/node.exe", @"resources\nodejs\node.exe"));
         }
@@ -184,16 +189,26 @@ namespace MadsKristensen.EditorExtensions
         async Task DownloadNpmAsync()
         {
             var file = new FileInfo(@"resources\nodejs\node_modules\npm\bin\npm.cmd");
+
             if (file.Exists && file.Length > 0)
                 return;
 
+            await WebClientDoAsync(wc => wc.DownloadFileTaskAsync("https://raw.githubusercontent.com/joyent/node/master/deps/npm/package.json", @"resources\nodejs\package.json"));
+
+            dynamic nodeInfo = Json.Decode(File.ReadAllText(@"resources\nodejs\package.json"));
+            string npmVersion = nodeInfo.version;
+
+            string npmUrl = string.Format(CultureInfo.CurrentCulture, "https://github.com/npm/npm/archive/v{0}.zip", npmVersion);
+
+            File.Delete(@"resources\nodejs\package.json");
+
             Log.LogMessage(MessageImportance.High, "Downloading npm ...");
 
-            var npmZip = await WebClientDoAsync(wc => wc.OpenReadTaskAsync("http://nodejs.org/dist/npm/npm-1.3.23.zip"));
+            var npmZip = await WebClientDoAsync(wc => wc.OpenReadTaskAsync(npmUrl));
 
             try
             {
-                ExtractZipWithOverwrite(npmZip, @"resources\nodejs");
+                ExtractZipWithOverwrite(npmZip, @"resources\nodejs", npmVersion);
             }
             catch
             {
@@ -201,6 +216,8 @@ namespace MadsKristensen.EditorExtensions
                 Directory.Delete(@"resources\nodejs\node_modules\npm", true);
                 throw;
             }
+
+            File.Move(string.Format(@"resources\nodejs\node_modules\npm\bin\npm.cmd", npmVersion), @"resources\nodejs\npm.cmd");
         }
 
         async Task WebClientDoAsync(Func<WebClient, Task> transactor)
@@ -334,10 +351,11 @@ namespace MadsKristensen.EditorExtensions
                             if (!main.StartsWith("."))
                                 main = "./" + main;
 
-                            File.WriteAllText(
-                                Path.Combine(module.FullName, "index.js"),
-                                "module.exports = require(" + Json.Encode(main) + ");"
-                            );
+                            _file.GetMethod("WriteAllText", new Type[] { typeof(string), typeof(string) })
+                                 .Invoke(null, new object[]{
+                                     Path.Combine(module.FullName, "index.js"),
+                                     "module.exports = require(" + Json.Encode(main) + ");"
+                                 });
                         }
                     }
 
@@ -413,7 +431,7 @@ namespace MadsKristensen.EditorExtensions
             return processTaskCompletionSource.Task;
         }
 
-        void ExtractZipWithOverwrite(Stream sourceZip, string destinationDirectoryName)
+        void ExtractZipWithOverwrite(Stream sourceZip, string destinationDirectoryName, string version)
         {
             using (var source = new ZipArchive(sourceZip, ZipArchiveMode.Read))
             {
@@ -422,11 +440,11 @@ namespace MadsKristensen.EditorExtensions
                     const string prefix = "node_modules/npm/node_modules/";
 
                     // Collapse nested node_modules folders to avoid MAX_PATH issues from Path.GetFullPath
-                    var targetSubPath = entry.FullName;
+                    var targetSubPath = entry.FullName.Replace(string.Format("npm-{0}/", version), "node_modules/npm/");
                     if (targetSubPath.StartsWith(prefix) && targetSubPath.Length > prefix.Length)
                     {
                         // If there is another node_modules folder after the prefix, collapse them
-                        var lastModule = entry.FullName.LastIndexOf("node_modules/");
+                        var lastModule = targetSubPath.LastIndexOf("node_modules/");
                         if (lastModule > prefix.Length)
                             targetSubPath = targetSubPath.Remove(prefix.Length, lastModule + "node_modules/".Length - prefix.Length);
                         Log.LogMessage(MessageImportance.Low, entry.FullName + "\t=> " + targetSubPath);
