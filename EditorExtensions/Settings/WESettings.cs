@@ -38,8 +38,8 @@ namespace MadsKristensen.EditorExtensions.Settings
     public sealed class SpriteSettings : SettingsBase<SpriteSettings>
     {
         [Category("Sprite")]
-        [DisplayName("Optmize sprite files")]
-        [Description("Optmize sprite using image optmizer. Set it to false, if you need maximum resolution.")]
+        [DisplayName("Optimize sprite files")]
+        [Description("Optimize sprite using image optmizer. Set it to false, if you need maximum resolution.")]
         [DefaultValue(true)]
         public bool Optimize { get; set; }
 
