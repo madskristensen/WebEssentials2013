@@ -228,8 +228,9 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="WebMarkupMin.Core">
-      <HintPath>..\packages\WebMarkupMin.Core.0.9.11\lib\net40\WebMarkupMin.Core.dll</HintPath>
+    <Reference Include="WebMarkupMin.Core, Version=0.9.12.0, Culture=neutral, PublicKeyToken=99472178d266584b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebMarkupMin.Core.0.9.12\lib\net40\WebMarkupMin.Core.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="ZenCoding, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -1039,9 +1040,7 @@
     <!-- Include newly downloaded files now.. -->
     <ItemGroup>
       <!-- Exclude LESS & SASS because they have too many extra files; use a whitelist instead -->
-
       <!-- Mocha comes from some package that forgot about "devDependencies"; Jade comes from Mocha -->
-
       <Content Include="Resources\nodejs\tools\**" Exclude="&#xD;&#xA; **\node-sass\**; **\less\**; &#xD;&#xA;               **\mocha\**; **\jade\**; &#xD;&#xA;               **\*.md; **\*.markdown; **\*.html; **\*.txt; **\LICENSE; **\README; **\CHANGELOG; **\CNAME; **\*.old; **\*.patch; **\*.ico; &#xD;&#xA;               **\*.json; **\.*; **\Makefile.*; **\Rakefile; **\*.yml; &#xD;&#xA;               **\test.*; **\generate-*; &#xD;&#xA;               **\*.min.js; **\*-min.js; &#xD;&#xA;               **\media\**; **\images\**; **\man\**; &#xD;&#xA;               **\.bin\**; **\benchmark\**; **\build\**; **\scripts\**; &#xD;&#xA;               **\vendor\**; &#xD;&#xA;               **\test\**; **\tst\**; **\tests\**; **\testing\**; &#xD;&#xA;               **\examples\**; **\example\**; **\tools\**\tools\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
@@ -1051,15 +1050,11 @@
       <Content Include="Resources\nodejs\tools\node_modules\less\index.js; Resources\nodejs\tools\node_modules\less\lib\**; Resources\nodejs\tools\node_modules\less\bin\**">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-
       <!-- Explicitly include JSON files that are actually needed at runtime -->
-
       <Content Include="Resources\nodejs\tools\node_modules\htmlparser2\lib\entities\**; Resources\nodejs\tools\node_modules\cson\package.json; Resources\nodejs\tools\node_modules\jshint\package.json; Resources\nodejs\tools\node_modules\node-sass\package.json; Resources\nodejs\tools\node_modules\less\package.json; Resources\nodejs\tools\node_modules\resolve\lib\core.json; Resources\nodejs\tools\node_modules\escodegen\package.json;  Resources\nodejs\tools\node_modules\caniuse-db\**\*.json;">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
-
       <!-- Explicitly include files that are needed for JsHint -->
-
       <Content Include="Resources\nodejs\tools\node_modules\entities\maps\**; Resources\nodejs\tools\node_modules\shelljs\src\**;">
         <IncludeInVSIX>true</IncludeInVSIX>
       </Content>
