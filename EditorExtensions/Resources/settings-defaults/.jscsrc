@@ -75,7 +75,7 @@
     "requireSpacesInsideObjectBrackets": "allButNested",
     "requireSpacesInsideParentheses": "all",
     "requireTrailingComma": true,
-    "safeContextKeyword": true,
+    "safeContextKeyword": ["that"],
     "validateIndentation": 4,
     "validateJSDoc": {
         "checkParamNames": true,
