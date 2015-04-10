@@ -699,11 +699,19 @@ namespace MadsKristensen.EditorExtensions.Settings
 
     public sealed class MarkdownSettings : SettingsBase<MarkdownSettings>, ICompilerInvocationSettings, IMarginSettings
     {
+        #region Editor
         [Category("Editor")]
         [DisplayName("Show preview pane")]
         [Description("Show a preview pane containing the rendered output in the editor.")]
         [DefaultValue(true)]
         public bool ShowPreviewPane { get; set; }
+
+        [Category("Editor")]
+        [DisplayName("Global CSS for Preview Pane")]
+        [Description("This CSS file will be applied to the preview pane so long as it's path is valid and there's no solution level custom css. To add a solution level CSS file, add a file with the filename ‘WE-Markdown.css’ in your solutions root directory or in a projects root directory. (Please note after setting this change, you'll need to close and reopen all markdown files)")]
+        [DefaultValue(null)]
+        public string GlobalPreviewCSSFile { get; set; }
+        #endregion
 
         #region Compilation
 
