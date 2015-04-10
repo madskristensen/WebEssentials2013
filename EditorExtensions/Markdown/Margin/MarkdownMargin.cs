@@ -19,14 +19,16 @@ namespace MadsKristensen.EditorExtensions.Markdown
 
         private const string _htmlTemplate = "WE-Markdown.html";
         private const string _stylesheet = "WE-Markdown.css";
+        private readonly string _globalStylesheetPath;
         private double _cachedPosition = 0,
                        _cachedHeight = 0,
                        _positionPercentage = 0;
-        
 
         public MarkdownMargin(ITextDocument document)
             : base(WESettings.Instance.Markdown, document)
-        { }
+        {
+            _globalStylesheetPath = WESettings.Instance.Markdown.GlobalPreviewCSSFile;
+        }
 
         /// <summary>
         /// Combine a relative filename with a list of folders and return each one of them in order.
@@ -151,9 +153,12 @@ namespace MadsKristensen.EditorExtensions.Markdown
         /// Otherwise it return a default html style element string literal.
         /// </summary>
         /// <returns></returns>
-        public static string GetStylesheet(params string[] folders)
+        public static string GetStylesheet(string globalStylesheetPath, params string[] folders)
         {
             string filePath = GetExistingFilesInFolders(_stylesheet, folders).FirstOrDefault();
+
+            if (null == filePath)
+                filePath = globalStylesheetPath;
 
             if (filePath != null)
             {
@@ -223,7 +228,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
         /// </remarks>
         /// <param name="compilerResult">The result of the markdown compilation</param>
         /// <returns>The html string</returns>
-        public static string CompileHtmlDocumentString(string currentDocumentPath, CompilerResult compilerResult)
+        public static string CompileHtmlDocumentString(string currentDocumentPath, string globalStylesheetPath, CompilerResult compilerResult)
         {
             // The Markdown compiler cannot return errors
             var solutionPath = ProjectHelpers.GetSolutionFolderPath();
@@ -234,7 +239,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
 
             if (htmlTemplateFilePath != null)
             {
-                var solutionPathUrl = solutionPath == null ?  currentDocumentPathUrl : ConvertLocalDirectoryPathToUrl(solutionPath);
+                var solutionPathUrl = solutionPath == null ? currentDocumentPathUrl : ConvertLocalDirectoryPathToUrl(solutionPath);
                 var projectPathUrl = projectPath == null ? currentDocumentPathUrl : ConvertLocalDirectoryPathToUrl(projectPath);
 
                 //Load the template and replace the placeholder with the generated html
@@ -264,7 +269,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
                         </body>
                     </html>",
                 currentDocumentPathUrl,
-                GetStylesheet(projectPath, solutionPath),
+                GetStylesheet(globalStylesheetPath, projectPath, solutionPath),
                 compilerResult.Result
             );
         }
@@ -274,7 +279,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
             if (_browser == null)
                 return;
 
-            var htmlString = CompileHtmlDocumentString(Document.FilePath, result);
+            var htmlString = CompileHtmlDocumentString(Document.FilePath, _globalStylesheetPath, result);
             if (_browser.Document == null)
             {
                 _browser.NavigateToString(htmlString);
