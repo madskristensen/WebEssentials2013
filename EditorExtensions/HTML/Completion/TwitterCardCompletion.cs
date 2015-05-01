@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions.Html
         public TwitterCardCompletion()
             : base(new Dictionary<string, IEnumerable<string>>(StringComparer.OrdinalIgnoreCase)
             {
-                { "twitter:card",  Values("app", "gallery", "photo", "player", "product", "summary", "summary_large-image") }
+                { "twitter:card",  Values("app", "gallery", "photo", "player", "product", "summary", "summary_large_image") }
             }) { }
     }
 }
