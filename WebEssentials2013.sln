@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{140A15DE-0F66-4377-BB52-BC24C7FC46E9}"
 	ProjectSection(SolutionItems) = preProject
@@ -17,16 +17,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ZenCoding.dll = ZenCoding.dll
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEssentials2013", "EditorExtensions\WebEssentials2013.csproj", "{10D05BC1-CDEE-4D14-B88F-F91C0BDC7861}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEssentialsTests", "WebEssentialsTests\WebEssentialsTests.csproj", "{E05B0E57-CF56-4513-9D24-18B6EE7C3712}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{6A26D63B-3436-438D-8F27-C42E100B2254}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEssentials2013", "EditorExtensions\WebEssentials2013.csproj", "{10D05BC1-CDEE-4D14-B88F-F91C0BDC7861}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebEssentialsTests", "WebEssentialsTests\WebEssentialsTests.csproj", "{E05B0E57-CF56-4513-9D24-18B6EE7C3712}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
