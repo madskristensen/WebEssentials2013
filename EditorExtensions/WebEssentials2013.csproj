@@ -10,7 +10,6 @@
     <TargetDevEnvDir>$(VSINSTALLDIR)\Common7\IDE</TargetDevEnvDir>
     <VSSDKTargetsPath>$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(TargetVisualStudioVersion)\VSSDK</VSSDKTargetsPath>
     <VSSDKTargetPlatformRegRoot>Software\Microsoft\VisualStudio\$(TargetVisualStudioVersion)</VSSDKTargetPlatformRegRoot>
-
     <ExtensionsDeploymentSubPath Condition="'$(ExtensionsDeploymentSubPath)' == ''">Microsoft\VisualStudio\$(TargetVisualStudioVersion)$(VSSDKTargetPlatformRegRootSuffix)\Extensions\</ExtensionsDeploymentSubPath>
   </PropertyGroup>
   <PropertyGroup>
@@ -799,7 +798,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <EmbeddedResource Include="BrowserLink\BrowserInfo\BrowserInfo.js" />
-    <None Include="PreBuildTask.cs" />
     <Content Include="Resources\Icons\Bundle.ico">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -1016,7 +1014,13 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\BuildTasks\BuildTasks.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Project>{929ebbb6-004e-45c6-91ae-ee495540d2b8}</Project>
+      <Name>BuildTasks</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>
@@ -1033,17 +1037,9 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <UsingTask TaskName="MadsKristensen.EditorExtensions.PreBuildTask" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll">
-    <Task>
-      <Reference Include="Microsoft.CSharp" />
-      <Reference Include="System.IO.Compression" />
-      <Reference Include="System.IO.Compression.FileSystem" />
-      <Reference Include="System.Web.Helpers" />
-      <Code Language="cs" Source="PreBuildTask.cs" />
-    </Task>
-  </UsingTask>
+  <UsingTask TaskName="WebEssentials.BuildTasks.NodeInstaller" AssemblyFile="$(SolutionDir)BuildTasks\bin\$(Configuration)\BuildTasks.dll" />
   <Target Name="BeforeBuild">
-    <MadsKristensen.EditorExtensions.PreBuildTask />
+    <WebEssentials.BuildTasks.NodeInstaller />
     <!-- Copy node.js server and services to tools -->
     <ItemGroup>
       <NodeServerSource Include="$(MSBuildProjectDirectory)\Resources\server\**\*.*" Exclude="$(MSBuildProjectDirectory)\Resources\server\.jshintrc" />
