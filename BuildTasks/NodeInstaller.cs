@@ -129,20 +129,20 @@ namespace WebEssentials.BuildTasks
 
         private void CleanPath(string path)
         {
-            Log.LogMessage(MessageImportance.High, "Working on " + path + "...");
+            Log.LogMessage(MessageImportance.High, "Cleaning extra files from " + path + "...");
             foreach (string pattern in toRemove)
             {
                 string[] dirs = Directory.GetDirectories(path, pattern, IO.SearchOption.AllDirectories);
                 foreach (string dir in dirs)
                 {
-                    Log.LogMessage(MessageImportance.High, "Removing " + dir + "...");
+                    Log.LogMessage(MessageImportance.Low, "Removing " + dir + "...");
                     Directory.Delete(dir, true);
                 }
 
                 string[] files = Directory.GetFiles(path, pattern, IO.SearchOption.AllDirectories);
                 foreach (string file in files)
                 {
-                    Log.LogMessage(MessageImportance.High, "Removing " + file + "...");
+                    Log.LogMessage(MessageImportance.Low, "Removing " + file + "...");
                     File.Delete(file);
                 }
             }
@@ -322,10 +322,21 @@ namespace WebEssentials.BuildTasks
                         }
                     }
 
-                    string targetDir = Path.Combine(baseDir.FullName, "node_modules", module.Name);
-                    if (!Directory.Exists(targetDir))
+                    if (module.Name == ".bin")
+                        continue;
+
+                    var intermediatePath = Path.GetFullPath(baseDir.FullName).TrimEnd('\\');
+                    foreach (var part in module.FullName.Substring(intermediatePath.Length).Split(new[] { @"\node_modules\" }, StringSplitOptions.None))
+                    {
+                        intermediatePath = (intermediatePath + "\\" + part).TrimEnd('\\');
+                        if (intermediatePath.EndsWith("node_modules"))
+                            continue;
+                        string targetDir = Path.Combine(intermediatePath, "node_modules", module.Name);
+                        if (Directory.Exists(targetDir))
+                            continue;
                         module.MoveTo(targetDir);
-                    else if (module.Name != ".bin")
+                    }
+                    if (module.Exists)
                         Log.LogMessage(MessageImportance.High, "Not collapsing conflicting module " + module.FullName);
                 }
 
