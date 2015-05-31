@@ -55,8 +55,8 @@ namespace WebEssentials.BuildTasks
 
         public override bool Execute()
         {
-            if (Directory.Exists(@"resources\nodejs"))
-                ClearPath(@"resources\nodejs");
+            if (Directory.Exists(@"resources\nodejs\tools\node_modules"))
+                ClearPath(@"resources\nodejs\tools\node_modules");
 
             Directory.CreateDirectory(@"resources\nodejs\tools");
             // Force npm to install modules to the subdirectory
@@ -103,10 +103,13 @@ namespace WebEssentials.BuildTasks
 
             Log.LogMessage(MessageImportance.High, "Installed " + moduleResults.Count() + " modules.  Flattening...");
 
-            if (!FlattenModulesAsync().Result)
+            if (!DedupeAsync().Result)
                 return false;
 
+            // Delete test directories before flattening (since some tests have node_modules folders)
             CleanPath(@"resources\nodejs\tools\node_modules");
+            FlattenNodeModules(@"resources\nodejs\tools");
+
             return true;
         }
 
@@ -190,6 +193,7 @@ namespace WebEssentials.BuildTasks
                 throw;
             }
 
+            File.Delete(@"resources\nodejs\npm.cmd");
             File.Move(string.Format(@"resources\nodejs\node_modules\npm\bin\npm.cmd", npmVersion), @"resources\nodejs\npm.cmd");
         }
 
@@ -269,20 +273,14 @@ namespace WebEssentials.BuildTasks
             return ModuleInstallResult.Installed;
         }
 
-        async Task<bool> FlattenModulesAsync()
+        async Task<bool> DedupeAsync()
         {
             var output = await ExecWithOutputAsync(@"cmd", @"/c ..\npm.cmd dedup ", @"resources\nodejs\tools");
 
             if (output != null)
-            {
                 Log.LogError("npm dedup error: " + output);
 
-                return false;
-            }
-
-            FlattenNodeModules(@"resources\nodejs\tools");
-
-            return true;
+            return output == null;
         }
 
         /// <summary>
@@ -322,10 +320,18 @@ namespace WebEssentials.BuildTasks
                         }
                     }
 
-                    if (module.Name == ".bin")
+                    // If this is already a top-level module, don't move it.
+                    if (module.Parent.Parent.FullName == baseDir.FullName)
                         continue;
+                    else if (module.Name == ".bin")
+                    {
+                        // We don't care about any .bin folders in nested modules (we do need the top-level one)
+                        module.Delete(recursive: true);
+                        continue;
+                    }
 
-                    var intermediatePath = Path.GetFullPath(baseDir.FullName).TrimEnd('\\');
+                    var intermediatePath = baseDir.FullName;
+                    dynamic sourcePackage = JsonConvert.DeserializeObject(File.ReadAllText(module.FullName + @"\package.json"));
                     // Try to move the module to the node_modules folder in the
                     // base directory, then to that same folder in every parent
                     // module up to this module's immediate parent.
@@ -335,7 +341,17 @@ namespace WebEssentials.BuildTasks
                             intermediatePath += @"\node_modules\" + part;
                         string targetDir = Path.Combine(intermediatePath, "node_modules", module.Name);
                         if (Directory.Exists(targetDir))
-                            continue;
+                        {
+                            dynamic targetPackage = JsonConvert.DeserializeObject(File.ReadAllText(targetDir + @"\package.json"));
+                            // If the existing package is a different version, keep
+                            // going, and move it to a different folder. Otherwise,
+                            // delete it and keep the other one, then stop looking.
+                            if (targetPackage.version != sourcePackage.version)
+                                continue;
+                            Log.LogMessage(MessageImportance.High, "Deleting " + module.FullName + " in favor of " + targetDir);
+                            module.Delete(recursive: true);
+                            break;
+                        }
                         module.MoveTo(targetDir);
                         break;
                     }
