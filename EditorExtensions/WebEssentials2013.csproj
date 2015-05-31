@@ -2,15 +2,16 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
     <TargetVisualStudioVersion>12.0</TargetVisualStudioVersion>
+    
+    <!-- Including the specific version of the SDK targets will deploy to that version even when building a later version. -->
     <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(TargetVisualStudioVersion)</VSToolsPath>
+    
+    <!-- However, we still need to calculate DevEnvDir by hand to locate referenced VS assemblies from the target version. -->
     <VSINSTALLDIR>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\SxS\VS7@$(TargetVisualStudioVersion))</VSINSTALLDIR>
     <VSINSTALLDIR Condition="'$(VSINSTALLDIR)' == ''">$(registry:HKEY_CURRENT_USER\SOFTWARE\Microsoft\VisualStudio\SxS\VS7@12.0)</VSINSTALLDIR>
     <VSINSTALLDIR Condition="'$(VSINSTALLDIR)' == ''">$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7@12.0)</VSINSTALLDIR>
     <VSINSTALLDIR Condition="'$(VSINSTALLDIR)' == ''">$(registry:HKEY_CURRENT_USER\SOFTWARE\Wow6432Node\Microsoft\VisualStudio\SxS\VS7@12.0)</VSINSTALLDIR>
     <TargetDevEnvDir>$(VSINSTALLDIR)\Common7\IDE</TargetDevEnvDir>
-    <VSSDKTargetsPath>$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(TargetVisualStudioVersion)\VSSDK</VSSDKTargetsPath>
-    <VSSDKTargetPlatformRegRoot>Software\Microsoft\VisualStudio\$(TargetVisualStudioVersion)</VSSDKTargetPlatformRegRoot>
-    <ExtensionsDeploymentSubPath Condition="'$(ExtensionsDeploymentSubPath)' == ''">Microsoft\VisualStudio\$(TargetVisualStudioVersion)$(VSSDKTargetPlatformRegRootSuffix)\Extensions\</ExtensionsDeploymentSubPath>
   </PropertyGroup>
   <PropertyGroup>
     <!-- Necessary to open the project in any version of VS. -->
