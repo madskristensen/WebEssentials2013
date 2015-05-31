@@ -326,15 +326,18 @@ namespace WebEssentials.BuildTasks
                         continue;
 
                     var intermediatePath = Path.GetFullPath(baseDir.FullName).TrimEnd('\\');
-                    foreach (var part in module.FullName.Substring(intermediatePath.Length).Split(new[] { @"\node_modules\" }, StringSplitOptions.None))
+                    // Try to move the module to the node_modules folder in the
+                    // base directory, then to that same folder in every parent
+                    // module up to this module's immediate parent.
+                    foreach (var part in module.Parent.Parent.FullName.Substring(intermediatePath.Length).Split(new[] { @"\node_modules\" }, StringSplitOptions.None))
                     {
-                        intermediatePath = (intermediatePath + "\\" + part).TrimEnd('\\');
-                        if (intermediatePath.EndsWith("node_modules"))
-                            continue;
+                        if (!string.IsNullOrEmpty(part))
+                            intermediatePath += @"\node_modules\" + part;
                         string targetDir = Path.Combine(intermediatePath, "node_modules", module.Name);
                         if (Directory.Exists(targetDir))
                             continue;
                         module.MoveTo(targetDir);
+                        break;
                     }
                     if (module.Exists)
                         Log.LogMessage(MessageImportance.High, "Not collapsing conflicting module " + module.FullName);
