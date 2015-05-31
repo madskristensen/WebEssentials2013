@@ -10,8 +10,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Microsoft.Build.Framework;
+using Newtonsoft.Json;
 using Pri.LongPath;
 using IO = System.IO;
 
@@ -133,22 +133,20 @@ namespace WebEssentials.BuildTasks
         private void CleanPath(string path)
         {
             Log.LogMessage(MessageImportance.High, "Cleaning extra files from " + path + "...");
+            int count = 0;
             foreach (string pattern in toRemove)
             {
                 string[] dirs = Directory.GetDirectories(path, pattern, IO.SearchOption.AllDirectories);
                 foreach (string dir in dirs)
-                {
-                    Log.LogMessage(MessageImportance.Low, "Removing " + dir + "...");
                     Directory.Delete(dir, true);
-                }
+                count += dirs.Length;
 
                 string[] files = Directory.GetFiles(path, pattern, IO.SearchOption.AllDirectories);
                 foreach (string file in files)
-                {
-                    Log.LogMessage(MessageImportance.Low, "Removing " + file + "...");
                     File.Delete(file);
-                }
+                count += files.Length;
             }
+            Log.LogMessage(MessageImportance.High, "Deleted " + count+ " items");
         }
 
         Task DownloadNodeAsync()
