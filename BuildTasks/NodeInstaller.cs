@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Helpers;
+using Newtonsoft.Json;
 using Microsoft.Build.Framework;
 using Pri.LongPath;
 using IO = System.IO;
@@ -168,7 +168,7 @@ namespace WebEssentials.BuildTasks
 
             await WebClientDoAsync(wc => wc.DownloadFileTaskAsync("https://raw.githubusercontent.com/joyent/node/master/deps/npm/package.json", @"resources\nodejs\package.json"));
 
-            dynamic nodeInfo = Json.Decode(File.ReadAllText(@"resources\nodejs\package.json"));
+            dynamic nodeInfo = JsonConvert.DeserializeObject(File.ReadAllText(@"resources\nodejs\package.json"));
             string npmVersion = nodeInfo.version;
 
             string npmUrl = string.Format(CultureInfo.CurrentCulture, "https://github.com/npm/npm/archive/v{0}.zip", npmVersion);
@@ -308,7 +308,7 @@ namespace WebEssentials.BuildTasks
                     // can find it without package.json.
                     if (module.Name != ".bin" && !File.Exists(Path.Combine(module.FullName, "index.js")))
                     {
-                        dynamic package = Json.Decode(File.ReadAllText(module.FullName + "\\package.json"));
+                        dynamic package = JsonConvert.DeserializeObject(File.ReadAllText(module.FullName + "\\package.json"));
                         string main = package.main;
 
                         if (!string.IsNullOrEmpty(main))
@@ -317,7 +317,7 @@ namespace WebEssentials.BuildTasks
                                 main = "./" + main;
                             File.WriteAllText(
                                 Path.Combine(module.FullName, "index.js"),
-                                "module.exports = require(" + Json.Encode(main) + ");"
+                                "module.exports = require(" + JsonConvert.ToString(main) + ");"
                             );
                         }
                     }
