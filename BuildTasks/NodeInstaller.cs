@@ -1,8 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
@@ -11,15 +10,14 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Helpers;
 using Microsoft.Build.Framework;
+using Newtonsoft.Json;
+using Pri.LongPath;
+using IO = System.IO;
 
-namespace MadsKristensen.EditorExtensions
+namespace WebEssentials.BuildTasks
 {
-    /// <summary>
-    /// This is not compiled (ItemType=None) but is invoked by the Inline Task (http://msdn.microsoft.com/en-us/library/dd722601) in the csproj file.
-    /// </summary>
-    public class PreBuildTask : Microsoft.Build.Utilities.Task
+    public class NodeInstaller : Microsoft.Build.Utilities.Task
     {
         private List<string> toRemove = new List<string>()
         {
@@ -54,30 +52,11 @@ namespace MadsKristensen.EditorExtensions
             "example",
         };
 
-        Type _path;
-        Type _directory;
-        Type _directoryInfo;
-        Type _file;
-
-        public PreBuildTask()
-        {
-            try
-            {
-                Assembly a = null;
-                a = Assembly.LoadFrom(Path.GetDirectoryName(Environment.CurrentDirectory) + @"\packages\Pri.LongPath.1.3.2.0\lib\net45\Pri.LongPath.dll");
-                _path = a.GetType("Pri.LongPath.Path");
-                _directory = a.GetType("Pri.LongPath.Directory");
-                _directoryInfo = a.GetType("Pri.LongPath.DirectoryInfo");
-                _file = a.GetType("Pri.LongPath.File");
-            }
-            catch (Exception)
-            { }
-        }
 
         public override bool Execute()
         {
-            if (Directory.Exists(@"resources\nodejs"))
-                ClearPath(@"resources\nodejs");
+            if (Directory.Exists(@"resources\nodejs\tools\node_modules"))
+                ClearPath(@"resources\nodejs\tools\node_modules");
 
             Directory.CreateDirectory(@"resources\nodejs\tools");
             // Force npm to install modules to the subdirectory
@@ -124,55 +103,50 @@ namespace MadsKristensen.EditorExtensions
 
             Log.LogMessage(MessageImportance.High, "Installed " + moduleResults.Count() + " modules.  Flattening...");
 
-            if (!FlattenModulesAsync().Result)
+            if (!DedupeAsync().Result)
                 return false;
 
+            // Delete test directories before flattening (since some tests have node_modules folders)
             CleanPath(@"resources\nodejs\tools\node_modules");
+            FlattenNodeModules(@"resources\nodejs\tools");
+
             return true;
         }
 
         private void ClearPath(string path)
         {
-            string[] dirs = (string[])_directory.GetMethod("GetDirectories", new Type[] { typeof(string) }).Invoke(null, new object[] { path });
+            string[] dirs = Directory.GetDirectories(path);
             foreach (string dir in dirs)
             {
-                Log.LogMessage(MessageImportance.High, "Removing " + dir + "...");
-                _directory.GetMethod("Delete", new Type[] { typeof(string), typeof(bool) }).Invoke(null, new object[] { dir, true });
+                Log.LogMessage(MessageImportance.Low, "Removing " + dir + "...");
+                Directory.Delete(dir, true);
             }
 
-            string[] files = (string[])_directory.GetMethod("GetFiles", new Type[] { typeof(string) }).Invoke(null, new object[] { path });
+            string[] files = Directory.GetFiles(path);
             foreach (string file in files)
             {
-                Log.LogMessage(MessageImportance.High, "Removing " + file + "...");
-                _file.GetMethod("Delete", new Type[] { typeof(string) }).Invoke(null, new object[] { file });
+                Log.LogMessage(MessageImportance.Low, "Removing " + file + "...");
+                File.Delete(file);
             }
         }
 
         private void CleanPath(string path)
         {
-            Log.LogMessage(MessageImportance.High, "Working on " + path + "...");
+            Log.LogMessage(MessageImportance.High, "Cleaning extra files from " + path + "...");
+            int count = 0;
             foreach (string pattern in toRemove)
             {
-                string[] dirs = (string[])_directory.GetMethod("GetDirectories", new Type[] { typeof(string), typeof(string) }).Invoke(null, new object[] { path, pattern });
+                string[] dirs = Directory.GetDirectories(path, pattern, IO.SearchOption.AllDirectories);
                 foreach (string dir in dirs)
-                {
-                    Log.LogMessage(MessageImportance.High, "Removing " + dir + "...");
-                    _directory.GetMethod("Delete", new Type[] { typeof(string), typeof(bool) }).Invoke(null, new object[] { dir, true });
-                }
+                    Directory.Delete(dir, true);
+                count += dirs.Length;
 
-                string[] files = (string[])_directory.GetMethod("GetFiles", new Type[] { typeof(string), typeof(string) }).Invoke(null, new object[] { path, pattern });
+                string[] files = Directory.GetFiles(path, pattern, IO.SearchOption.AllDirectories);
                 foreach (string file in files)
-                {
-                    Log.LogMessage(MessageImportance.High, "Removing " + file + "...");
-                    _file.GetMethod("Delete", new Type[] { typeof(string) }).Invoke(null, new object[] { file });
-                }
+                    File.Delete(file);
+                count += files.Length;
             }
-
-            string[] tocheck = (string[])_directory.GetMethod("GetDirectories", new Type[] { typeof(string) }).Invoke(null, new object[] { path });
-            foreach (string s in tocheck)
-            {
-                CleanPath(s);
-            }
+            Log.LogMessage(MessageImportance.High, "Deleted " + count+ " items");
         }
 
         Task DownloadNodeAsync()
@@ -195,7 +169,7 @@ namespace MadsKristensen.EditorExtensions
 
             await WebClientDoAsync(wc => wc.DownloadFileTaskAsync("https://raw.githubusercontent.com/joyent/node/master/deps/npm/package.json", @"resources\nodejs\package.json"));
 
-            dynamic nodeInfo = Json.Decode(File.ReadAllText(@"resources\nodejs\package.json"));
+            dynamic nodeInfo = JsonConvert.DeserializeObject(File.ReadAllText(@"resources\nodejs\package.json"));
             string npmVersion = nodeInfo.version;
 
             string npmUrl = string.Format(CultureInfo.CurrentCulture, "https://github.com/npm/npm/archive/v{0}.zip", npmVersion);
@@ -217,6 +191,7 @@ namespace MadsKristensen.EditorExtensions
                 throw;
             }
 
+            File.Delete(@"resources\nodejs\npm.cmd");
             File.Move(string.Format(@"resources\nodejs\node_modules\npm\bin\npm.cmd", npmVersion), @"resources\nodejs\npm.cmd");
         }
 
@@ -296,20 +271,14 @@ namespace MadsKristensen.EditorExtensions
             return ModuleInstallResult.Installed;
         }
 
-        async Task<bool> FlattenModulesAsync()
+        async Task<bool> DedupeAsync()
         {
             var output = await ExecWithOutputAsync(@"cmd", @"/c ..\npm.cmd dedup ", @"resources\nodejs\tools");
 
             if (output != null)
-            {
                 Log.LogError("npm dedup error: " + output);
 
-                return false;
-            }
-
-            FlattenNodeModules(@"resources\nodejs\tools");
-
-            return true;
+            return output == null;
         }
 
         /// <summary>
@@ -320,61 +289,76 @@ namespace MadsKristensen.EditorExtensions
         void FlattenNodeModules(string baseNodeModuleDir)
         {
             var baseDir = new DirectoryInfo(baseNodeModuleDir);
-            object instance = Activator.CreateInstance(_directoryInfo, new Object[] { baseNodeModuleDir });
-            MethodInfo enumerateDirectories = _directoryInfo.GetMethod("EnumerateDirectories", new Type[] { typeof(string), typeof(SearchOption) });
 
-            var nodeModulesDirs = from dir in (IEnumerable<dynamic>)enumerateDirectories.Invoke(instance, new object[] { "*", SearchOption.AllDirectories })
-                                  where dir.Name.Equals("node_modules", StringComparison.OrdinalIgnoreCase)
-                                  //orderby dir.FullName.ToString().Count(c => c == Path.DirectorySeparatorChar) descending // Get deepest first
-                                  select dir;
+            var modules = from dir in new DirectoryInfo(baseNodeModuleDir).GetDirectories("*", IO.SearchOption.AllDirectories)
+                          where dir.Name.Equals("node_modules", StringComparison.OrdinalIgnoreCase)
+                          orderby dir.FullName.Count(c => c == Path.DirectorySeparatorChar) descending // Get deepest first
+                          select dir;
 
-            // Since IEnumerable<dynamic> can't use orderby (throws CS1977), we will use custom sort.
-            var nodeModulesDirsList = nodeModulesDirs.ToList();
-            nodeModulesDirsList.Sort((dir1, dir2) => dir2.FullName.Split(Path.DirectorySeparatorChar).Length.CompareTo(dir1.FullName.Split(Path.DirectorySeparatorChar).Length));
-
-            foreach (var nodeModules in nodeModulesDirsList)
+            foreach (var nodeModule in modules)
             {
-                foreach (var module in nodeModules.EnumerateDirectories())
+                foreach (var module in nodeModule.EnumerateDirectories())
                 {
                     // If the package uses a non-default main file,
                     // add a redirect in index.js so that require()
                     // can find it without package.json.
                     if (module.Name != ".bin" && !File.Exists(Path.Combine(module.FullName, "index.js")))
                     {
-                        enumerateDirectories = _file.GetMethod("ReadAllText", new Type[] { typeof(string) });
-                        string path = (string)enumerateDirectories.Invoke(null, new object[] { module.FullName + "\\package.json" });
-                        dynamic package = Json.Decode(path);
+                        dynamic package = JsonConvert.DeserializeObject(File.ReadAllText(module.FullName + "\\package.json"));
                         string main = package.main;
 
                         if (!string.IsNullOrEmpty(main))
                         {
                             if (!main.StartsWith("."))
                                 main = "./" + main;
-
-                            _file.GetMethod("WriteAllText", new Type[] { typeof(string), typeof(string) })
-                                 .Invoke(null, new object[]{
-                                     Path.Combine(module.FullName, "index.js"),
-                                     "module.exports = require(" + Json.Encode(main) + ");"
-                                 });
+                            File.WriteAllText(
+                                Path.Combine(module.FullName, "index.js"),
+                                "module.exports = require(" + JsonConvert.ToString(main) + ");"
+                            );
                         }
                     }
 
-                    string targetDir = Path.Combine(baseDir.FullName, "node_modules", module.Name);
-                    bool dircheck = (bool)_directory.GetMethod("Exists", new Type[] { typeof(string) }).Invoke(null, new object[] { targetDir });
-                    if (!dircheck)
+                    // If this is already a top-level module, don't move it.
+                    if (module.Parent.Parent.FullName == baseDir.FullName)
+                        continue;
+                    else if (module.Name == ".bin")
                     {
-                        enumerateDirectories = _directoryInfo.GetMethod("MoveTo", new Type[] { typeof(string) });
-                        //module.MoveTo(targetDir);
-                        enumerateDirectories.Invoke(module, new object[] { targetDir });
+                        // We don't care about any .bin folders in nested modules (we do need the top-level one)
+                        module.Delete(recursive: true);
+                        continue;
                     }
-                    else if (module.Name != ".bin")
+
+                    var intermediatePath = baseDir.FullName;
+                    dynamic sourcePackage = JsonConvert.DeserializeObject(File.ReadAllText(module.FullName + @"\package.json"));
+                    // Try to move the module to the node_modules folder in the
+                    // base directory, then to that same folder in every parent
+                    // module up to this module's immediate parent.
+                    foreach (var part in module.Parent.Parent.FullName.Substring(intermediatePath.Length).Split(new[] { @"\node_modules\" }, StringSplitOptions.None))
+                    {
+                        if (!string.IsNullOrEmpty(part))
+                            intermediatePath += @"\node_modules\" + part;
+                        string targetDir = Path.Combine(intermediatePath, "node_modules", module.Name);
+                        if (Directory.Exists(targetDir))
+                        {
+                            dynamic targetPackage = JsonConvert.DeserializeObject(File.ReadAllText(targetDir + @"\package.json"));
+                            // If the existing package is a different version, keep
+                            // going, and move it to a different folder. Otherwise,
+                            // delete it and keep the other one, then stop looking.
+                            if (targetPackage.version != sourcePackage.version)
+                                continue;
+                            Log.LogMessage(MessageImportance.High, "Deleting " + module.FullName + " in favor of " + targetDir);
+                            module.Delete(recursive: true);
+                            break;
+                        }
+                        module.MoveTo(targetDir);
+                        break;
+                    }
+                    if (module.Exists)
                         Log.LogMessage(MessageImportance.High, "Not collapsing conflicting module " + module.FullName);
                 }
 
-                enumerateDirectories = _directoryInfo.GetMethod("EnumerateFileSystemInfos", Type.EmptyTypes);
-
-                if (!(enumerateDirectories.Invoke(nodeModules, new object[] { }) as IEnumerable<dynamic>).Any())
-                    nodeModules.Delete();
+                if (!nodeModule.GetFileSystemInfos().Any())
+                    nodeModule.Delete();
             }
         }
 
@@ -382,17 +366,17 @@ namespace MadsKristensen.EditorExtensions
         /// <returns>Null if the process exited successfully; the process' full output if it failed.</returns>
         static async Task<string> ExecWithOutputAsync(string filename, string args, string workingDirectory = null)
         {
-            var error = new StringWriter();
+            var error = new IO.StringWriter();
             int result = await ExecAsync(filename, args, workingDirectory, null, error);
 
             return result == 0 ? null : error.ToString().Trim();
         }
 
         /// <summary>Invokes a command-line process asynchronously.</summary>
-        static Task<int> ExecAsync(string filename, string args, string workingDirectory = null, TextWriter stdout = null, TextWriter stderr = null)
+        static Task<int> ExecAsync(string filename, string args, string workingDirectory = null, IO.TextWriter stdout = null, IO.TextWriter stderr = null)
         {
-            stdout = stdout ?? TextWriter.Null;
-            stderr = stderr ?? TextWriter.Null;
+            stdout = stdout ?? IO.TextWriter.Null;
+            stderr = stderr ?? IO.TextWriter.Null;
 
             var p = new Process
             {
@@ -431,7 +415,7 @@ namespace MadsKristensen.EditorExtensions
             return processTaskCompletionSource.Task;
         }
 
-        void ExtractZipWithOverwrite(Stream sourceZip, string destinationDirectoryName, string version)
+        void ExtractZipWithOverwrite(IO.Stream sourceZip, string destinationDirectoryName, string version)
         {
             using (var source = new ZipArchive(sourceZip, ZipArchiveMode.Read))
             {
