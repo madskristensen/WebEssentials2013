@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -52,9 +53,28 @@ namespace WebEssentials.BuildTasks
             "example",
         };
 
+        static DateTime GetSourceVersion([CallerFilePath] string path = null) { return File.GetLastWriteTimeUtc(path); }
 
+
+        // Stores the timestamp of the last successful build.  This file will be deleted
+        // at the beginning of each non-cached build, so there is no risk of caching the
+        // results of a failed build.
+        const string VersionStampFileName = @"resources\nodejs\tools\node_modules\successful-version-timestamp.txt";
         public override bool Execute()
         {
+            DateTime existingVersion;
+            if (File.Exists(VersionStampFileName)
+             && DateTime.TryParse(
+                 File.ReadAllText(VersionStampFileName),
+                 CultureInfo.InvariantCulture,
+                 DateTimeStyles.AllowWhiteSpaces | DateTimeStyles.AdjustToUniversal,
+                 out existingVersion)
+             && existingVersion > DateTime.UtcNow - TimeSpan.FromDays(14)
+             && existingVersion > GetSourceVersion())
+            {
+                Log.LogMessage(MessageImportance.High, "Reusing existing installed Node modules from " + existingVersion);
+                return true;
+            }
             if (Directory.Exists(@"resources\nodejs\tools\node_modules"))
                 ClearPath(@"resources\nodejs\tools\node_modules");
 
@@ -110,6 +130,8 @@ namespace WebEssentials.BuildTasks
             CleanPath(@"resources\nodejs\tools\node_modules");
             FlattenNodeModules(@"resources\nodejs\tools");
 
+            File.WriteAllText(VersionStampFileName, DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture));
+
             return true;
         }
 
@@ -146,7 +168,7 @@ namespace WebEssentials.BuildTasks
                     File.Delete(file);
                 count += files.Length;
             }
-            Log.LogMessage(MessageImportance.High, "Deleted " + count+ " items");
+            Log.LogMessage(MessageImportance.High, "Deleted " + count + " items");
         }
 
         Task DownloadNodeAsync()
