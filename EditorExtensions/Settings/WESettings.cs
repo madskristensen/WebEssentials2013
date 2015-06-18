@@ -313,6 +313,16 @@ namespace MadsKristensen.EditorExtensions.Settings
         public string OutputDirectory { get; set; }
 
         #endregion
+
+        #region Validations
+
+        [Category("Validations")]
+        [DisplayName("Enable SEO validation")]
+        [Description("Enable or disable SEO validation for microdata. Microdata helps adding semantic meaning to a website.")]
+        [DefaultValue(true)]
+        public bool EnableSEOValidation { get; set; }
+
+        #endregion
     }
 
     public sealed class ImageDropFormat : SettingsBase<ImageDropFormat>
