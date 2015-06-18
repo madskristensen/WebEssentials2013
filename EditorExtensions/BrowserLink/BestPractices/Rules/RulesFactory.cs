@@ -1,6 +1,4 @@
 ﻿
-using MadsKristensen.EditorExtensions.Settings;
-
 namespace MadsKristensen.EditorExtensions
 {
     public static class RulesFactory
@@ -14,9 +12,7 @@ namespace MadsKristensen.EditorExtensions
                 //case "favicon":
                 //    return new Favicon();
                 case "microdata":
-                    if (WESettings.Instance.Html.EnableSEOValidation)
-                        return new Microdata();
-                    break;
+                    return new Microdata();
                 case "description":
                     return new Description(data, extension);
                 case "viewport":

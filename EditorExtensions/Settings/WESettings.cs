@@ -317,10 +317,10 @@ namespace MadsKristensen.EditorExtensions.Settings
         #region Validations
 
         [Category("Validations")]
-        [DisplayName("Enable SEO validation")]
+        [DisplayName("Enable microdata validation")]
         [Description("Enable or disable SEO validation for microdata. Microdata helps adding semantic meaning to a website.")]
         [DefaultValue(true)]
-        public bool EnableSEOValidation { get; set; }
+        public bool EnableMicrodataValidation { get; set; }
 
         #endregion
     }
