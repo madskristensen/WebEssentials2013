@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.Composition;
 using System.Globalization;
+using System.IO;
 using System.Threading.Tasks;
 using System.Web;
 using MadsKristensen.EditorExtensions.RtlCss;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
-using System.IO;
 
 namespace MadsKristensen.EditorExtensions.Scss
 {

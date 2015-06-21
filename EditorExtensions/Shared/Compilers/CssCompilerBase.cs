@@ -13,6 +13,7 @@ namespace MadsKristensen.EditorExtensions
         {
             // If the caller wants us to renormalize URLs to a different filename, do so.
             if (targetFileName != null &&
+                WESettings.Instance.ForContentType<ICssChainableCompilerSettings>(Mef.GetContentType(ServiceName)).AdjustRelativePaths &&
                 Path.GetDirectoryName(targetFileName) != Path.GetDirectoryName(sourceFileName) &&
                 result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
             {

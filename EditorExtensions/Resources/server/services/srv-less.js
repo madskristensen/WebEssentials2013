@@ -30,7 +30,6 @@ var handleLess = function (writer, params) {
         var sourceDir = path.dirname(params.sourceFileName);
         var options = {
             filename: params.sourceFileName,
-            relativeUrls: true,
             paths: [sourceDir],
             sourceMap: {
                 sourceMapFullFilename: mapFileName,
@@ -70,7 +69,7 @@ var handleLess = function (writer, params) {
                     }
 
                     css = autoprefixedOutput.css;
-                    map = JSON.stringify(autoprefixedOutput.map);
+                    map = autoprefixedOutput.map;
                 }
 
                 if (params.rtlcss !== undefined) {
