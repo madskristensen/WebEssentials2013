@@ -71,7 +71,6 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-
         public virtual async Task RunLinterAsync()
         {
             if (_isDisposed)
@@ -87,7 +86,6 @@ namespace MadsKristensen.EditorExtensions
             // See https://github.com/madskristensen/WebEssentials2013/issues/392#issuecomment-31566419
             ReadResult(result.Errors);
         }
-
 
         private void ReadResult(IEnumerable<CompilerError> results)
         {
@@ -141,8 +139,8 @@ namespace MadsKristensen.EditorExtensions
         {
             ErrorTask task = new ErrorTask()
             {
-                Line = error.Line,
-                Column = error.Column,
+                Line = error.Line - 1,
+                Column = error.Column - 1,
                 ErrorCategory = Settings.LintResultLocation,
                 Category = TaskCategory.Html,
                 Document = error.FileName,
@@ -162,11 +160,8 @@ namespace MadsKristensen.EditorExtensions
 
             _provider.Navigate(task, new Guid(Constants.vsViewKindPrimary));
 
-            if (task.Column > 0)
-            {
-                var doc = (TextDocument)WebEssentialsPackage.DTE.ActiveDocument.Object("textdocument");
-                doc.Selection.MoveToDisplayColumn(task.Line, task.Column);
-            }
+            var doc = (TextDocument)WebEssentialsPackage.DTE.ActiveDocument.Object("textdocument");
+            doc.Selection.MoveToDisplayColumn(task.Line + 1, task.Column + 1);
         }
 
         public void Dispose()
