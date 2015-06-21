@@ -209,12 +209,20 @@ namespace WebEssentials.BuildTasks
             catch
             {
                 // Make sure the next build doesn't see a half-installed npm
-                Directory.Delete(@"resources\nodejs\node_modules\npm", true);
+                var npmDirectory = @"resources\nodejs\node_modules\npm";
+
+                if (Directory.Exists(npmDirectory))
+                    Directory.Delete(npmDirectory, true);
+
                 throw;
             }
 
-            File.Delete(@"resources\nodejs\npm.cmd");
-            File.Move(string.Format(@"resources\nodejs\node_modules\npm\bin\npm.cmd", npmVersion), @"resources\nodejs\npm.cmd");
+            var npmDestination = @"resources\nodejs\npm.cmd";
+
+            if (File.Exists(npmDestination))
+                File.Delete(npmDestination);
+
+            File.Move(string.Format(@"resources\nodejs\node_modules\npm\bin\npm.cmd", npmVersion), npmDestination);
         }
 
         async Task WebClientDoAsync(Func<WebClient, Task> transactor)
