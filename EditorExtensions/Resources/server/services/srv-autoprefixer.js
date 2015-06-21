@@ -32,13 +32,10 @@ var processAutoprefixer = function (cssContent, mapContent, browsers, sourceFile
         to: targetFileName
     });
 
-    // Curate maps
-    mapContent = result.map.toJSON();
-
     return {
         Success: true,
         css: result.css,
-        map: mapContent
+        map: result.map
     };
 };
 //#endregion

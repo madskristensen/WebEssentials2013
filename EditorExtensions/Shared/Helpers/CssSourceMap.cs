@@ -74,7 +74,7 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                MapNodes = Base64Vlq.Decode(map.mappings, _directory, map.sources);
+                MapNodes = Base64Vlq.Decode(map.mappings, _directory, map.sources).ToList();
 
 
                 if (MapNodes.Count() == 0)
@@ -96,9 +96,6 @@ namespace MadsKristensen.EditorExtensions
                                .ThenBy(x => x.OriginalLine)
                                .ThenBy(x => x.OriginalColumn);
 
-            if (_contentType.DisplayName.Equals("SCSS", StringComparison.OrdinalIgnoreCase))
-                MapNodes = await CorrectionsForScss(targetFileContents);
-
             MapNodes = await ProcessSourceMaps();
 
             // Sort collection for generated file.
@@ -106,120 +103,6 @@ namespace MadsKristensen.EditorExtensions
                                .ThenBy(x => x.GeneratedColumn);
 
             MapNodes = ProcessGeneratedMaps(targetFileContents);
-        }
-
-        // A very ugly hack for a very ugly bug: https://github.com/hcatlin/libsass/issues/324
-        // Remove this and its caller in previous method, when it is fixed in original repo
-        // and https://github.com/andrew/node-sass/ is released with the fix.
-        // Overwriting all positions belonging to original/source file.
-        private async Task<IEnumerable<CssSourceMapNode>> CorrectionsForScss(string cssFileContents)
-        {
-            // Sort collection for generated file.
-            var sortedForGenerated = MapNodes.OrderBy(x => x.GeneratedLine)
-                                             .ThenBy(x => x.GeneratedColumn)
-                                             .ToList();
-
-            ParseItem item = null;
-            Selector selector = null;
-            SimpleSelector simple = null;
-            StyleSheet styleSheet = null, cssStyleSheet = null;
-            int start = 0, indexInCollection, targetDepth;
-            string fileContents = null, simpleText = "";
-            var result = new List<CssSourceMapNode>();
-            var contentCollection = new HashSet<string>(); // So we don't have to read file for each map item.
-            var parser = new CssParser();
-
-            cssStyleSheet = parser.Parse(cssFileContents, false);
-
-            foreach (var node in MapNodes)
-            {
-                // Cache source file contents.
-                if (!contentCollection.Contains(node.SourceFilePath))
-                {
-                    if (!File.Exists(node.SourceFilePath)) // Lets say someone deleted the reference file.
-                        continue;
-
-                    fileContents = await FileHelpers.ReadAllTextRetry(node.SourceFilePath);
-
-                    contentCollection.Add(node.SourceFilePath);
-
-                    styleSheet = _parser.Parse(fileContents, false);
-                }
-
-                start = cssFileContents.NthIndexOfCharInString('\n', node.GeneratedLine);
-                start += node.GeneratedColumn;
-
-                item = cssStyleSheet.ItemAfterPosition(start);
-
-                if (item == null)
-                    continue;
-
-                selector = item.FindType<Selector>();
-                simple = item.FindType<SimpleSelector>();
-
-                if (selector == null || simple == null)
-                    continue;
-
-                simpleText = simple.Text;
-
-                indexInCollection = sortedForGenerated.FindIndex(e => e.Equals(node));//sortedForGenerated.IndexOf(node);
-
-                targetDepth = 0;
-
-                for (int i = indexInCollection;
-                     i >= 0 && node.GeneratedLine == sortedForGenerated[i].GeneratedLine;
-                     targetDepth++, --i) ;
-
-                start = fileContents.NthIndexOfCharInString('\n', node.OriginalLine);
-                start += node.OriginalColumn;
-
-                item = styleSheet.ItemAfterPosition(start);
-
-                if (item == null)
-                    continue;
-
-                while (item.TreeDepth > targetDepth)
-                {
-                    item = item.Parent;
-                }
-
-                // selector = item.FindType<RuleSet>().Selectors.First();
-
-                RuleSet rule;
-                ScssRuleBlock scssRuleBlock = item as ScssRuleBlock;
-
-                rule = scssRuleBlock == null ? item as RuleSet : scssRuleBlock.RuleSets.FirstOrDefault();
-
-                if (rule == null)
-                    continue;
-
-                // Because even on the same TreeDepth, there may be mulitple ruleblocks
-                // and the selector names may include & or other symbols which are diff
-                // fromt he generated counterpart, here is the guess work
-                item = rule.Children.FirstOrDefault(r => r is Selector && r.Text.Trim() == simpleText) as Selector;
-
-                selector = item == null ? null : item as Selector;
-
-                if (selector == null)
-                {
-                    // One more try: look for the selector in neighboring rule blocks then skip.
-                    selector = rule.Children.Where(r => r is RuleBlock)
-                                            .SelectMany(r => (r as RuleBlock).Children
-                                            .Where(s => s is RuleSet)
-                                            .Select(s => (s as RuleSet).Selectors.FirstOrDefault(sel => sel.Text.Trim() == simpleText)))
-                                            .FirstOrDefault();
-
-                    if (selector == null)
-                        continue;
-                }
-
-                node.OriginalLine = fileContents.Substring(0, selector.Start).Count(s => s == '\n');
-                node.OriginalColumn = fileContents.GetLineColumn(selector.Start, node.OriginalLine);
-
-                result.Add(node);
-            }
-
-            return result;
         }
 
         private async Task<IEnumerable<CssSourceMapNode>> ProcessSourceMaps()
