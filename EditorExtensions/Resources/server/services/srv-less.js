@@ -45,9 +45,7 @@ var handleLess = function (writer, params) {
         less.render(data, options)
             .then(function (output) {
                 css = output.css;
-
-                if (output.map)
-                    map = JSON.parse(output.map);
+                map = output.map;
 
                 if (params.autoprefixer !== undefined) {
                     var autoprefixedOutput = require("./srv-autoprefixer")
@@ -72,7 +70,7 @@ var handleLess = function (writer, params) {
                     }
 
                     css = autoprefixedOutput.css;
-                    map = autoprefixedOutput.map;
+                    map = JSON.stringify(autoprefixedOutput.map);
                 }
 
                 if (params.rtlcss !== undefined) {
