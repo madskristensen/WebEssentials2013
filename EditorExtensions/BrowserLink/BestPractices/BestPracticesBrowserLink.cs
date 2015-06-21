@@ -60,6 +60,10 @@ namespace MadsKristensen.EditorExtensions
 
             if (rule != null)
             {
+                // Force/fake the success flag if a specific validation is disabled
+                if (id == "microdata" && !Settings.WESettings.Instance.Html.EnableMicrodataValidation)
+                    success = true;
+
                 CreateTask(id, rule, success);
                 ErrorList.Tasks.Clear();
 
