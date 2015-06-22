@@ -14,8 +14,8 @@ reporter.prototype.format = function (results) {
             var lineAndCharacter = result.getStartPosition().getLineAndCharacter();
 
             return {
-                Line: lineAndCharacter.line() + 1,
-                Column: lineAndCharacter.character() + 1,
+                Line: lineAndCharacter.line + 1,
+                Column: lineAndCharacter.character + 1,
                 Message: "TsLint: " + result.getFailure(),
                 FileName: result.getFileName()
             };
