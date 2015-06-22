@@ -604,7 +604,16 @@ namespace MadsKristensen.EditorExtensions.Settings
         }
     }
 
-    public sealed class LessSettings : ChainableCompilationSettings<LessSettings>
+    public abstract class CssChainableCompilationSettings<T> : ChainableCompilationSettings<T>, ICssChainableCompilerSettings where T : CssChainableCompilationSettings<T>
+    {
+        [Category("Compilation")]
+        [DisplayName("Adjust Relative Paths")]
+        [Description("Adjust relative paths in post-processing step. This option only works when \"Custom output directory\" is used.")]
+        [DefaultValue(true)]
+        public bool AdjustRelativePaths { get; set; }
+    }
+
+    public sealed class LessSettings : CssChainableCompilationSettings<LessSettings>
     {
         [Category("Compilation")]
         [DisplayName("Strict Math")]
@@ -613,9 +622,8 @@ namespace MadsKristensen.EditorExtensions.Settings
         public bool StrictMath { get; set; }
     }
 
-    public sealed class ScssSettings : ChainableCompilationSettings<ScssSettings>
+    public sealed class ScssSettings : CssChainableCompilationSettings<ScssSettings>
     {
-
         public enum OutputFormat
         {
             Expanded,
@@ -786,6 +794,11 @@ namespace MadsKristensen.EditorExtensions.Settings
     {
         bool EnableChainCompilation { get; }
         event EventHandler EnableChainCompilationChanged;
+    }
+
+    public interface ICssChainableCompilerSettings : IChainableCompilerSettings
+    {
+        bool AdjustRelativePaths { get; }
     }
 
     public interface IMinifierSettings
