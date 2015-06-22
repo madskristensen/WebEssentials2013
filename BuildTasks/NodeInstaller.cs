@@ -42,7 +42,7 @@ namespace WebEssentials.BuildTasks
             "images",
             "man",
             "benchmark",
-            "build",
+            "docs",
             "scripts",
             "test",
             "tst",
