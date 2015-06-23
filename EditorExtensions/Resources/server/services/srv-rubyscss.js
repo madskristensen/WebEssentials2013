@@ -1,7 +1,5 @@
 ﻿//#region Imports
 var fs = require("fs"),
-    path = require("path"),
-    xRegex = require("xregexp").XRegExp,
     querystring = require('querystring'),
     http = require('http');
 //#endregion
