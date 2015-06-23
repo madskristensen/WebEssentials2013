@@ -222,7 +222,7 @@ namespace WebEssentials.BuildTasks
             if (File.Exists(npmDestination))
                 File.Delete(npmDestination);
 
-            File.Move(string.Format(@"resources\nodejs\node_modules\npm\bin\npm.cmd", npmVersion), npmDestination);
+            File.Move(@"resources\nodejs\node_modules\npm\bin\npm.cmd", npmDestination);
         }
 
         async Task WebClientDoAsync(Func<WebClient, Task> transactor)
@@ -290,7 +290,7 @@ namespace WebEssentials.BuildTasks
 
             Log.LogMessage(MessageImportance.High, "npm install " + moduleName + " ...");
 
-            var output = await ExecWithOutputAsync(@"cmd", @"/c ..\npm.cmd install " + moduleName, @"resources\nodejs\tools");
+            var output = await ExecWithOutputAsync(@"cmd", @"/c ..\npm.cmd install " + moduleName + "@latest", @"resources\nodejs\tools");
 
             if (output != null)
             {

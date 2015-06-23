@@ -2,10 +2,8 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
     <TargetVisualStudioVersion>12.0</TargetVisualStudioVersion>
-    
     <!-- Including the specific version of the SDK targets will deploy to that version even when building a later version. -->
     <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(TargetVisualStudioVersion)</VSToolsPath>
-    
     <!-- However, we still need to calculate DevEnvDir by hand to locate referenced VS assemblies from the target version. -->
     <VSINSTALLDIR>$(registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\SxS\VS7@$(TargetVisualStudioVersion))</VSINSTALLDIR>
     <VSINSTALLDIR Condition="'$(VSINSTALLDIR)' == ''">$(registry:HKEY_CURRENT_USER\SOFTWARE\Microsoft\VisualStudio\SxS\VS7@12.0)</VSINSTALLDIR>
@@ -113,13 +111,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\AjaxMin.5.14.5506.26202\lib\net40\AjaxMin.dll</HintPath>
     </Reference>
-    <Reference Include="CommonMark, Version=0.1.0.0, Culture=neutral, PublicKeyToken=001ef8810438905d, processorArchitecture=MSIL">
+    <Reference Include="CommonMark, Version=0.9.0.0, Culture=neutral, PublicKeyToken=001ef8810438905d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\CommonMark.NET.0.8.5\lib\net45\CommonMark.dll</HintPath>
+      <HintPath>..\packages\CommonMark.NET.0.9.0\lib\net45\CommonMark.dll</HintPath>
     </Reference>
-    <Reference Include="ConfOxide, Version=1.4.0.0, Culture=neutral, PublicKeyToken=934faed64f82030e, processorArchitecture=MSIL">
+    <Reference Include="ConfOxide, Version=1.4.2.0, Culture=neutral, PublicKeyToken=934faed64f82030e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ConfOxide.1.4.0.0\lib\net40\ConfOxide.dll</HintPath>
+      <HintPath>..\packages\ConfOxide.1.4.2.0\lib\net40\ConfOxide.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -217,9 +215,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(TargetDevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Web.Editor.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -1014,13 +1012,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BuildTasks\BuildTasks.csproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <Project>{929ebbb6-004e-45c6-91ae-ee495540d2b8}</Project>
-      <Name>BuildTasks</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>

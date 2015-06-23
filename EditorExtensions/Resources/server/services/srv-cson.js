@@ -6,10 +6,9 @@ var CSON = require("cson"),
 
 //#region Process
 var processCSON2JSON = function (data, sourceFileName, targetFileName, writer) {
-    if (data)
-        data = CSON.parseSync(data);
+    data = CSON.parseCSONString(data);
 
-    if (!data) {
+    if (typeof data === 'Error') {
         var error = "CSON: Invalid CSON content found";
 
         writer.write(JSON.stringify({
@@ -32,24 +31,15 @@ var processCSON2JSON = function (data, sourceFileName, targetFileName, writer) {
         SourceFileName: sourceFileName,
         TargetFileName: targetFileName,
         Remarks: "Successful!",
-        Content: JSON.stringify(data)
+        Content: CSON.createJSONString(data)
     }));
     writer.end();
 };
 
 var processJSON2CSON = function (data, sourceFileName, targetFileName, writer) {
-    var success = true;
+    data = CSON.parseJSONString(data);
 
-    data = data.substr(data.indexOf("{"), data.lastIndexOf("}"));
-
-    if (data)
-        try {
-            data = JSON.parse(data);
-        } catch (e) {
-            success = false;
-        }
-
-    if (!data || !success) {
+    if (typeof data === 'Error') {
         var err = "CSON: Invalid JSON content found";
 
         writer.write(JSON.stringify({
@@ -72,7 +62,7 @@ var processJSON2CSON = function (data, sourceFileName, targetFileName, writer) {
         SourceFileName: sourceFileName,
         TargetFileName: targetFileName,
         Remarks: "Successful!",
-        Content: CSON.stringifySync(data)
+        Content: CSON.createCSONString(data)
     }));
     writer.end();
 };

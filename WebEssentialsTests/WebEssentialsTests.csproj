@@ -37,9 +37,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ConfOxide, Version=1.4.0.0, Culture=neutral, PublicKeyToken=934faed64f82030e, processorArchitecture=MSIL">
+    <Reference Include="ConfOxide, Version=1.4.2.0, Culture=neutral, PublicKeyToken=934faed64f82030e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ConfOxide.1.4.0.0\lib\net40\ConfOxide.dll</HintPath>
+      <HintPath>..\packages\ConfOxide.1.4.2.0\lib\net40\ConfOxide.dll</HintPath>
     </Reference>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <SpecificVersion>False</SpecificVersion>
@@ -50,10 +50,10 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="FluentAssertions">
-      <HintPath>..\packages\FluentAssertions.3.0.107\lib\net45\FluentAssertions.dll</HintPath>
+      <HintPath>..\packages\FluentAssertions.3.3.0\lib\net45\FluentAssertions.dll</HintPath>
     </Reference>
     <Reference Include="FluentAssertions.Core">
-      <HintPath>..\packages\FluentAssertions.3.0.107\lib\net45\FluentAssertions.Core.dll</HintPath>
+      <HintPath>..\packages\FluentAssertions.3.3.0\lib\net45\FluentAssertions.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.CSS.Core, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -87,9 +87,8 @@
       <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\Web\Editor\Microsoft.Web.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Editor, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
