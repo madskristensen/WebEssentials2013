@@ -33,6 +33,9 @@ namespace MadsKristensen.EditorExtensions.Less
             if (WESettings.Instance.Less.StrictMath)
                 parameters.Add("strictMath");
 
+            if (WESettings.Instance.Less.AdjustRelativePaths)
+                parameters.Add("relativeUrls");
+
             if (WESettings.Instance.Css.Autoprefix)
             {
                 parameters.Add("autoprefixer");

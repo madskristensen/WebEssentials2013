@@ -31,6 +31,7 @@ var handleLess = function (writer, params) {
         var options = {
             filename: params.sourceFileName,
             paths: [sourceDir],
+            relativeUrls: params.relativeUrls !== undefined,
             sourceMap: {
                 sourceMapFullFilename: mapFileName,
                 sourceMapURL: params.sourceMapURL !== undefined ? path.basename(mapFileName) : null,
