@@ -1,10 +1,13 @@
-﻿using System.ComponentModel.Composition;
+﻿using System;
+using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using System.Web;
+using MadsKristensen.EditorExtensions.Helpers;
 using MadsKristensen.EditorExtensions.RtlCss;
 using MadsKristensen.EditorExtensions.Settings;
+using Microsoft.CSS.Core;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Web.Editor;
 
@@ -80,6 +83,35 @@ namespace MadsKristensen.EditorExtensions.Scss
                 parameters.Add("rtlcss");
 
             return parameters.FlattenParameters();
+        }
+
+        protected override string PostProcessResult(string result, string targetFileName, string sourceFileName)
+        {
+            // If the caller wants us to renormalize URLs to a different filename, do so.
+            if (targetFileName != null &&
+                WESettings.Instance.Scss.AdjustRelativePaths &&
+                result.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0)
+            {
+                try
+                {
+                    result = CssUrlNormalizer.NormalizeUrls(
+                                   tree: new CssParser().Parse(result, true),
+                                   targetFile: targetFileName,
+                                   oldBasePath: sourceFileName);
+
+                    Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(ServiceName + ": An error occurred while normalizing generated paths in " + sourceFileName + "\r\n" + ex);
+                }
+            }
+            else
+            {
+                Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
+            }
+
+            return result;
         }
     }
 }
