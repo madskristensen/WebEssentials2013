@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -8,7 +7,6 @@ using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.CSS.Core;
 using Microsoft.CSS.Editor;
-using Microsoft.Scss.Core;
 using Microsoft.VisualStudio.Utilities;
 using Newtonsoft.Json;
 

@@ -604,7 +604,7 @@ namespace MadsKristensen.EditorExtensions.Settings
         }
     }
 
-    public abstract class CssChainableCompilationSettings<T> : ChainableCompilationSettings<T>, ICssChainableCompilerSettings where T : CssChainableCompilationSettings<T>
+    public abstract class CssChainableCompilationSettings<T> : ChainableCompilationSettings<T>, IChainableCompilerSettings where T : CssChainableCompilationSettings<T>
     {
         [Category("Compilation")]
         [DisplayName("Adjust Relative Paths")]
@@ -794,11 +794,6 @@ namespace MadsKristensen.EditorExtensions.Settings
     {
         bool EnableChainCompilation { get; }
         event EventHandler EnableChainCompilationChanged;
-    }
-
-    public interface ICssChainableCompilerSettings : IChainableCompilerSettings
-    {
-        bool AdjustRelativePaths { get; }
     }
 
     public interface IMinifierSettings

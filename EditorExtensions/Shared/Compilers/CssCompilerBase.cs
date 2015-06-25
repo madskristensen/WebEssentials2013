@@ -6,11 +6,14 @@ namespace MadsKristensen.EditorExtensions
 {
     public abstract class CssCompilerBase : NodeExecutorBase
     {
-        protected async override Task RtlVariantHandler(CompilerResult result)
+        protected async override Task PostWritingResult(CompilerResult result)
         {
-            if (!WESettings.Instance.Css.RtlCss || result.RtlTargetFileName == null)
-                return;
+            if (WESettings.Instance.Css.RtlCss && result.RtlTargetFileName != null)
+                await HandleRtlCss(result);
+        }
 
+        private async Task HandleRtlCss(CompilerResult result)
+        {
             string value = PostProcessResult(result.RtlResult, result.RtlTargetFileName, result.RtlSourceFileName);
 
             // Write output file

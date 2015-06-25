@@ -61,7 +61,7 @@ namespace MadsKristensen.EditorExtensions
 
             string resultString = PostProcessResult(result.Result, result.TargetFileName, result.SourceFileName);
 
-            if (!onlyPreview)
+            if ((this is ILintCompiler) && !onlyPreview)
             {
                 // Write output file
                 if (result.TargetFileName != null && (MinifyInPlace || !File.Exists(result.TargetFileName) ||
@@ -69,9 +69,7 @@ namespace MadsKristensen.EditorExtensions
                 {
                     ProjectHelpers.CheckOutFileFromSourceControl(result.TargetFileName);
                     await FileHelpers.WriteAllTextRetry(result.TargetFileName, resultString);
-
-                    if (!(this is ILintCompiler))
-                        ProjectHelpers.AddFileToProject(result.SourceFileName, result.TargetFileName);
+                    ProjectHelpers.AddFileToProject(result.SourceFileName, result.TargetFileName);
                 }
 
                 // Write map file
@@ -80,12 +78,10 @@ namespace MadsKristensen.EditorExtensions
                 {
                     ProjectHelpers.CheckOutFileFromSourceControl(result.MapFileName);
                     await FileHelpers.WriteAllTextRetry(result.MapFileName, result.ResultMap);
-
-                    if (!(this is ILintCompiler))
-                        ProjectHelpers.AddFileToProject(result.TargetFileName, result.MapFileName);
+                    ProjectHelpers.AddFileToProject(result.TargetFileName, result.MapFileName);
                 }
 
-                await RtlVariantHandler(result);
+                await PostWritingResult(result);
             }
 
             return CompilerResult.UpdateResult(result, resultString);
@@ -105,7 +101,7 @@ namespace MadsKristensen.EditorExtensions
             return globalFile;
         }
 
-        protected virtual Task RtlVariantHandler(CompilerResult result)
+        protected virtual Task PostWritingResult(CompilerResult result)
         {
             return Task.Factory.StartNew(() => { });
         }

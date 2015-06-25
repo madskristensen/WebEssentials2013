@@ -62,7 +62,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
             menuCommand.Enabled = !File.Exists(MarkdownMargin.GetCustomSolutionStylesheetFilePath());
         }
 
-        
+
         private void HasHtmlTemplate(object sender, System.EventArgs e)
         {
             OleMenuCommand menuCommand = sender as OleMenuCommand;

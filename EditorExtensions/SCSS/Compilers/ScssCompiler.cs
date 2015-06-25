@@ -98,18 +98,15 @@ namespace MadsKristensen.EditorExtensions.Scss
                                    tree: new CssParser().Parse(result, true),
                                    targetFile: targetFileName,
                                    oldBasePath: sourceFileName);
-
-                    Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
                 }
                 catch (Exception ex)
                 {
                     Logger.Log(ServiceName + ": An error occurred while normalizing generated paths in " + sourceFileName + "\r\n" + ex);
+                    return result;
                 }
             }
-            else
-            {
-                Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
-            }
+
+            Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
 
             return result;
         }

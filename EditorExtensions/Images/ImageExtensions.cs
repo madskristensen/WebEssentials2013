@@ -63,9 +63,9 @@ namespace MadsKristensen.EditorExtensions.Images
                 foreach (ITextBuffer buffer in buffers)
                 {
                     var point = textView.BufferGraph.MapDownToBuffer(
-                        snapshotPoint, 
-                        PointTrackingMode.Negative, 
-                        buffer, 
+                        snapshotPoint,
+                        PointTrackingMode.Negative,
+                        buffer,
                         PositionAffinity.Predecessor
                     );
 
@@ -86,8 +86,8 @@ namespace MadsKristensen.EditorExtensions.Images
             if (activeDocument == null)
                 return null;
 
-            var baseFolder = activeDocument.FullName; 
-            
+            var baseFolder = activeDocument.FullName;
+
             var result = FileHelpers.RelativePath(baseFolder, fileName);
 
             if (result.Contains("://"))
@@ -149,7 +149,7 @@ namespace MadsKristensen.EditorExtensions.Images
 
             string format = GetFormat(textView);
             int position = textView.Caret.Position.BufferPosition.Position;
-            
+
             string text = string.Format(CultureInfo.InvariantCulture, format, relative, Path.GetFileName(absoluteImageFilePath));
 
             using (WebEssentialsPackage.UndoContext("Insert Image"))

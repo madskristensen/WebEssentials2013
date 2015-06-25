@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.IO;
-using System.Web;
-using MadsKristensen.EditorExtensions.Css;
 using MadsKristensen.EditorExtensions.Images;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.DragDrop;
 using Microsoft.VisualStudio.Utilities;
@@ -32,7 +27,7 @@ namespace MadsKristensen.EditorExtensions.Html
     // but apparently visual studio get confused by content type inheritance or does not 
     // handle it correcly.
     [Order(Before = "DefaultFileDropHandler")]
-    [Order(Before = "HtmlViewFileDropHandlerProvider")] 
+    [Order(Before = "HtmlViewFileDropHandlerProvider")]
     public class MarkdownImageDropHandlerProvider : IDropHandlerProvider
     {
         public IDropHandler GetAssociatedDropHandler(IWpfTextView wpfTextView)
