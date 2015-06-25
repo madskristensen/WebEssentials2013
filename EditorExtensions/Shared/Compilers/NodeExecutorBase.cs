@@ -59,16 +59,19 @@ namespace MadsKristensen.EditorExtensions
                 return result;
             }
 
-            string resultString = PostProcessResult(result.Result, result.TargetFileName, result.SourceFileName);
+            if (this is ILintCompiler)
+                return result;
 
-            if ((this is ILintCompiler) && !onlyPreview)
+            Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
+
+            if (!onlyPreview)
             {
                 // Write output file
                 if (result.TargetFileName != null && (MinifyInPlace || !File.Exists(result.TargetFileName) ||
-                    resultString != await FileHelpers.ReadAllTextRetry(result.TargetFileName)))
+                    result.Result != await FileHelpers.ReadAllTextRetry(result.TargetFileName)))
                 {
                     ProjectHelpers.CheckOutFileFromSourceControl(result.TargetFileName);
-                    await FileHelpers.WriteAllTextRetry(result.TargetFileName, resultString);
+                    await FileHelpers.WriteAllTextRetry(result.TargetFileName, result.Result);
                     ProjectHelpers.AddFileToProject(result.SourceFileName, result.TargetFileName);
                 }
 
@@ -84,7 +87,7 @@ namespace MadsKristensen.EditorExtensions
                 await PostWritingResult(result);
             }
 
-            return CompilerResult.UpdateResult(result, resultString);
+            return result;
         }
 
         public static string GetOrCreateGlobalSettings(string fileName)
@@ -104,12 +107,6 @@ namespace MadsKristensen.EditorExtensions
         protected virtual Task PostWritingResult(CompilerResult result)
         {
             return Task.Factory.StartNew(() => { });
-        }
-
-        protected virtual string PostProcessResult(string result, string targetFileName, string sourceFileName)
-        {
-            Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
-            return result;
         }
 
         protected abstract string GetPath(string sourceFileName, string targetFileName);

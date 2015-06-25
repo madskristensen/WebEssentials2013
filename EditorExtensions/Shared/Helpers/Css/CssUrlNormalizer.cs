@@ -12,10 +12,11 @@ namespace MadsKristensen.EditorExtensions.Helpers
     {
         readonly string targetFile, oldBaseDirectory;
         readonly List<Tuple<TextRange, string>> replacements = new List<Tuple<TextRange, string>>();
+
         private CssUrlNormalizer(string targetFile, string oldBasePath)
         {
-            this.targetFile = Path.GetFullPath(targetFile);
-            this.oldBaseDirectory = Path.GetDirectoryName(oldBasePath);
+            targetFile = Path.GetFullPath(targetFile);
+            oldBaseDirectory = Path.GetDirectoryName(oldBasePath);
         }
 
         ///<summary>Normalizes all URLs in a CSS parse tree to be relative to the specified directory.</summary>
@@ -34,6 +35,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
         public static string NormalizeUrls(BlockItem tree, string targetFile, string oldBasePath)
         {
             var normalizer = new CssUrlNormalizer(targetFile, oldBasePath);
+
             tree.Accept(normalizer);
 
             var retVal = new StringBuilder(tree.Text);
@@ -45,6 +47,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
                 retVal.Remove(range.Start, range.Length);
                 retVal.Insert(range.Start, HttpUtility.UrlPathEncode(url));
             }
+
             return retVal.ToString();
         }
 
@@ -55,6 +58,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
                 return VisitItemResult.Continue;
 
             var newUrl = FixPath(DecodeStringLiteral(urlItem.UrlString.Text));
+
             if (newUrl == null) // No change
                 return VisitItemResult.Continue;
 

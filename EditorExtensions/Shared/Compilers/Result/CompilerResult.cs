@@ -47,11 +47,5 @@ namespace MadsKristensen.EditorExtensions
         {
             return new CompilerResult(sourceFileName, targetFileName, mapFileName, isSuccess, result, resultMap, errors, hasSkipped);
         }
-
-        internal static CompilerResult UpdateResult(CompilerResult result, string resultString)
-        {
-            result.Result = resultString;
-            return result;
-        }
     }
 }

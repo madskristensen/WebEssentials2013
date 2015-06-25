@@ -14,7 +14,7 @@ namespace MadsKristensen.EditorExtensions
 
         private async Task HandleRtlCss(CompilerResult result)
         {
-            string value = PostProcessResult(result.RtlResult, result.RtlTargetFileName, result.RtlSourceFileName);
+            string value = result.RtlResult;
 
             // Write output file
             if (result.RtlTargetFileName != null && (MinifyInPlace || !File.Exists(result.RtlTargetFileName) ||

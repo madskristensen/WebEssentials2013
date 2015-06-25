@@ -604,25 +604,22 @@ namespace MadsKristensen.EditorExtensions.Settings
         }
     }
 
-    public abstract class CssChainableCompilationSettings<T> : ChainableCompilationSettings<T>, IChainableCompilerSettings where T : CssChainableCompilationSettings<T>
-    {
-        [Category("Compilation")]
-        [DisplayName("Adjust Relative Paths")]
-        [Description("Adjust relative paths in post-processing step. This option only works when \"Custom output directory\" is used.")]
-        [DefaultValue(true)]
-        public bool AdjustRelativePaths { get; set; }
-    }
-
-    public sealed class LessSettings : CssChainableCompilationSettings<LessSettings>
+    public sealed class LessSettings : ChainableCompilationSettings<LessSettings>
     {
         [Category("Compilation")]
         [DisplayName("Strict Math")]
         [Description("With this option turned off, LESS will try and process all maths in your CSS.")]
         [DefaultValue(false)]
         public bool StrictMath { get; set; }
+
+        [Category("Compilation")]
+        [DisplayName("Adjust Relative Paths")]
+        [Description("Adjust relative paths in post-processing step.")]
+        [DefaultValue(true)]
+        public bool AdjustRelativePaths { get; set; }
     }
 
-    public sealed class ScssSettings : CssChainableCompilationSettings<ScssSettings>
+    public sealed class ScssSettings : ChainableCompilationSettings<ScssSettings>
     {
         public enum OutputFormat
         {
