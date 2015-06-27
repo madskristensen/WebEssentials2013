@@ -1,8 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using MadsKristensen.EditorExtensions.Settings;
+﻿using System.Windows.Forms;
 using Microsoft.VisualStudio.Text.Editor.DragDrop;
 
 namespace MadsKristensen.EditorExtensions

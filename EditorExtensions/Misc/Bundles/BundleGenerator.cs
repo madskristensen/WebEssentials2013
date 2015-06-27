@@ -106,10 +106,9 @@ namespace MadsKristensen.EditorExtensions
                         source.IndexOf("url(", StringComparison.OrdinalIgnoreCase) > 0 &&
                         bundle.AdjustRelativePaths)
                         source = CssUrlNormalizer.NormalizeUrls(
-                            tree: new CssParser().Parse(source, true),
-                            targetFile: bundleFile,
-                            oldBasePath: actualFile
-                        );
+                                     tree: new CssParser().Parse(source, true),
+                                     targetFile: bundleFile,
+                                     oldBasePath: actualFile);
                 }
                 else if (Path.GetExtension(file).Equals(".ts", StringComparison.OrdinalIgnoreCase))
                 {

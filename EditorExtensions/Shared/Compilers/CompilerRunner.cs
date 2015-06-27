@@ -253,7 +253,8 @@ namespace MadsKristensen.EditorExtensions.Compilers
     {
         private readonly ITextDocument _document;
 
-        public MarkdownCompilerRunner(IContentType contentType, ITextDocument document = null) : base(contentType) 
+        public MarkdownCompilerRunner(IContentType contentType, ITextDocument document = null)
+            : base(contentType)
         {
             _document = document;
         }

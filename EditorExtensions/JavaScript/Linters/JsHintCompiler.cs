@@ -38,10 +38,5 @@ namespace MadsKristensen.EditorExtensions.JavaScript
 
             return parameters.FlattenParameters();
         }
-
-        protected override string PostProcessResult(string result, string targetFileName, string sourceFileName)
-        {
-            return result;
-        }
     }
 }

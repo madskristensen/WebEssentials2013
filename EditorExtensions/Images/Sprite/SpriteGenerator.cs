@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -89,7 +90,7 @@ namespace MadsKristensen.EditorExtensions.Images
             {
                 if (!System.IO.File.Exists(file))
                 {
-                    Logger.Log(string.Format("The image file {0} for sprite {1} was not found", file, sprite.FileName));
+                    Logger.Log(string.Format(CultureInfo.CurrentCulture, "The image file {0} for sprite {1} was not found", file, sprite.FileName));
                     return null;
                 }
 

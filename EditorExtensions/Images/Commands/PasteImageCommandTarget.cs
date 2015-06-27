@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Windows.Forms;
-using MadsKristensen.EditorExtensions.Markdown;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Editor.DragDrop;
-using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.Web.Editor;
 
@@ -133,8 +127,6 @@ namespace MadsKristensen.EditorExtensions.Images
 
             ProjectHelpers.AddFileToActiveProject(fileName);
         }
-
-        
 
         protected override bool IsEnabled()
         {

@@ -59,19 +59,20 @@ namespace MadsKristensen.EditorExtensions
                 return result;
             }
 
-            string resultString = PostProcessResult(result.Result, result.TargetFileName, result.SourceFileName);
+            if (this is ILintCompiler)
+                return result;
+
+            Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
 
             if (!onlyPreview)
             {
                 // Write output file
                 if (result.TargetFileName != null && (MinifyInPlace || !File.Exists(result.TargetFileName) ||
-                    resultString != await FileHelpers.ReadAllTextRetry(result.TargetFileName)))
+                    result.Result != await FileHelpers.ReadAllTextRetry(result.TargetFileName)))
                 {
                     ProjectHelpers.CheckOutFileFromSourceControl(result.TargetFileName);
-                    await FileHelpers.WriteAllTextRetry(result.TargetFileName, resultString);
-
-                    if (!(this is ILintCompiler))
-                        ProjectHelpers.AddFileToProject(result.SourceFileName, result.TargetFileName);
+                    await FileHelpers.WriteAllTextRetry(result.TargetFileName, result.Result);
+                    ProjectHelpers.AddFileToProject(result.SourceFileName, result.TargetFileName);
                 }
 
                 // Write map file
@@ -80,15 +81,13 @@ namespace MadsKristensen.EditorExtensions
                 {
                     ProjectHelpers.CheckOutFileFromSourceControl(result.MapFileName);
                     await FileHelpers.WriteAllTextRetry(result.MapFileName, result.ResultMap);
-
-                    if (!(this is ILintCompiler))
-                        ProjectHelpers.AddFileToProject(result.TargetFileName, result.MapFileName);
+                    ProjectHelpers.AddFileToProject(result.TargetFileName, result.MapFileName);
                 }
 
-                await RtlVariantHandler(result);
+                await PostWritingResult(result);
             }
 
-            return CompilerResult.UpdateResult(result, resultString);
+            return result;
         }
 
         public static string GetOrCreateGlobalSettings(string fileName)
@@ -105,15 +104,9 @@ namespace MadsKristensen.EditorExtensions
             return globalFile;
         }
 
-        protected virtual Task RtlVariantHandler(CompilerResult result)
+        protected virtual Task PostWritingResult(CompilerResult result)
         {
             return Task.Factory.StartNew(() => { });
-        }
-
-        protected virtual string PostProcessResult(string result, string targetFileName, string sourceFileName)
-        {
-            Logger.Log(ServiceName + ": " + Path.GetFileName(sourceFileName) + " compiled.");
-            return result;
         }
 
         protected abstract string GetPath(string sourceFileName, string targetFileName);

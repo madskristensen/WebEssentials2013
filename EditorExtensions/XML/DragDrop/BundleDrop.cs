@@ -1,8 +1,6 @@
 ﻿using System;
 using System.ComponentModel.Composition;
 using System.Globalization;
-using MadsKristensen.EditorExtensions.Css;
-using MadsKristensen.EditorExtensions.Images;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.DragDrop;
 using Microsoft.VisualStudio.Utilities;

@@ -105,7 +105,7 @@ namespace MadsKristensen.EditorExtensions
                         break;
                     else
                     {
-                        if(server._process.HasExited)
+                        if (server._process.HasExited)
                         {
                             Logger.Log("Unable to start resource, aborting");
                             server.Dispose();

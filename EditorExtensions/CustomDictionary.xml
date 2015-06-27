@@ -90,10 +90,11 @@
   </Words>
   <Acronyms>
     <CasingExceptions>
-      <Acronym>XHTML</Acronym>
+      <Acronym>BOM</Acronym>
+      <Acronym>CSS</Acronym>
       <Acronym>JSON</Acronym>
       <Acronym>JSONLD</Acronym>
-      <Acronym>BOM</Acronym>
+      <Acronym>XHTML</Acronym>
     </CasingExceptions>
   </Acronyms>
 </Dictionary>

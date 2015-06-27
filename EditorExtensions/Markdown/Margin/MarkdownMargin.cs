@@ -78,12 +78,12 @@ namespace MadsKristensen.EditorExtensions.Markdown
         /// <returns></returns>
         private static string ConvertLocalDirectoryPathToUrl(string absoluteOrRelativePath, bool ensureTrailingSlash = true)
         {
-            if (ensureTrailingSlash && !absoluteOrRelativePath.EndsWith("\\"))
+            if (ensureTrailingSlash && !absoluteOrRelativePath.EndsWith("\\", StringComparison.Ordinal))
                 absoluteOrRelativePath = absoluteOrRelativePath + "\\";
-            
+
             return string.Format(
                 CultureInfo.InvariantCulture,
-                "file:///{0}", 
+                "file:///{0}",
                 absoluteOrRelativePath.Replace("\\", "/")
             );
         }
@@ -298,7 +298,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
             _browser.HorizontalAlignment = HorizontalAlignment.Stretch;
 
             // This can be done only once
-            _browser.ObjectForScripting = new JavaScriptToManagedConnector((errorMsg, document, line) => 
+            _browser.ObjectForScripting = new JavaScriptToManagedConnector((errorMsg, document, line) =>
             {
                 // Unfortunatly, when the error is in a file other than the main document the errorMsg 
                 // and line are not available.
@@ -306,7 +306,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
                 // This is another IE "feature" to "protect" you :).
                 Log("Error in ({0}:{1}): {2}", document, line, errorMsg);
             });
-            
+
             _browser.Navigated += (sender, ev) =>
             {
                 if (!ShouldHandleNavigationEvent(ev))
@@ -315,16 +315,16 @@ namespace MadsKristensen.EditorExtensions.Markdown
                 var browser = sender as WebBrowser;
                 InjectJavascriptErrorsRedirection(browser);
             };
-            
-            _browser.LoadCompleted += (sender,ev) => 
+
+            _browser.LoadCompleted += (sender, ev) =>
             {
-                if (!ShouldHandleNavigationEvent(ev)) 
+                if (!ShouldHandleNavigationEvent(ev))
                     return;
 
                 var browser = sender as WebBrowser;
                 RestoreDocumentVerticalPosition(browser);
             };
-            
+
             return _browser;
         }
 
@@ -376,7 +376,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
             // If the user click on a link in the preview window, @event.Uri is null.
             return @event.Uri == null;
         }
-        
+
         /// <summary>
         /// Hook the the DOM onerror event and redirect it to the managed host that 
         /// will then write it to the visual studio output pane.
@@ -405,7 +405,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
                 }
             }
         }
-        
+
         private static void Log(string format, params object[] args)
         {
             Logger.Log(string.Format(CultureInfo.InvariantCulture, "[markdown]: " + format, args));
@@ -428,17 +428,20 @@ namespace MadsKristensen.EditorExtensions.Markdown
         {
         }
 
-        public InternetExplorerFeatureControlSecurityException(string message) : base(message)
+        public InternetExplorerFeatureControlSecurityException(string message)
+            : base(message)
         {
         }
 
-        public InternetExplorerFeatureControlSecurityException(string message, Exception inner) : base(message, inner)
+        public InternetExplorerFeatureControlSecurityException(string message, Exception inner)
+            : base(message, inner)
         {
         }
 
         protected InternetExplorerFeatureControlSecurityException(
             SerializationInfo info,
-            StreamingContext context) : base(info, context)
+            StreamingContext context)
+            : base(info, context)
         {
         }
     }
@@ -449,7 +452,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
     /// </summary>
     internal class InternetExplorerBrowserFeatureControl
     {
-        
+
         private const string InternetExplorerRootKey = @"Software\Microsoft\Internet Explorer";
         private const string BrowserEmulationKey = InternetExplorerRootKey + @"\Main\FeatureControl\FEATURE_BROWSER_EMULATION";
         private const string BlockCrossProtocolFileNavigation = InternetExplorerRootKey + @"\MAIN\FeatureControl\FEATURE_BLOCK_CROSS_PROTOCOL_FILE_NAVIGATION";
@@ -482,7 +485,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
         /// The RegistryKey instance that can be used to access 
         /// the registry sub key
         /// </returns>
-        private static Microsoft.Win32.RegistryKey OpenOrCreateKey(Microsoft.Win32.RegistryKey key, 
+        private static Microsoft.Win32.RegistryKey OpenOrCreateKey(Microsoft.Win32.RegistryKey key,
             string subkeyName, bool writable)
         {
             var subKey = key.OpenSubKey(subkeyName, writable);
@@ -514,7 +517,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
         /// execute this operation.
         /// </exception>
         private static T UseRegistryKey<T>(
-            Microsoft.Win32.RegistryKey key, string subkeyName, 
+            Microsoft.Win32.RegistryKey key, string subkeyName,
             bool writable, Func<Microsoft.Win32.RegistryKey, T> useKey
         )
         {
@@ -530,11 +533,11 @@ namespace MadsKristensen.EditorExtensions.Markdown
                 // The user does not have the permissions required to read from the registry key.
                 throw new InternetExplorerFeatureControlSecurityException(
                     string.Format(
-                        CultureInfo.CurrentCulture, 
+                        CultureInfo.CurrentCulture,
                         "The current user does not have the rights to open the registry key: '{0}\\{1}'", key, subkeyName),
                     se
                 );
-                
+
             }
             catch (UnauthorizedAccessException uaEx)
             {
@@ -562,7 +565,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
                         if (separator != -1)
                         {
                             if (!int.TryParse(version.Substring(0, separator), out result))
-                            {   
+                            {
                                 // Make CodeAnalisys happy :)
                                 result = 0;
                             }
@@ -696,7 +699,7 @@ namespace MadsKristensen.EditorExtensions.Markdown
         {
         }
 
-        public JavaScriptToManagedConnector(Action<object,object,object> errorHandler)
+        public JavaScriptToManagedConnector(Action<object, object, object> errorHandler)
         {
             _errorHandler = errorHandler;
         }

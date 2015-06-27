@@ -321,9 +321,9 @@ namespace MadsKristensen.EditorExtensions
                 // Keep the previous behavior if no encoding is provided.
                 return await PolicyFactory.GetPolicy(new FileTransientErrorDetectionStrategy(), retryCount)
                             .ExecuteAsync(() =>
-                                    encoding == null ? 
+                                    encoding == null ?
                                     Task.FromResult<string>(File.ReadAllText(fileName)) :
-                                    Task.FromResult<string>(File.ReadAllText(fileName, encoding)) 
+                                    Task.FromResult<string>(File.ReadAllText(fileName, encoding))
                                 );
             }
             catch (IOException)
