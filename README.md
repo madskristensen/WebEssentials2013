@@ -1,6 +1,8 @@
 [Web Essentials](http://vswebessentials.com) for Visual Studio 2013
 =================
 
+[![Build status](https://ci.appveyor.com/api/projects/status/cbj68q39ikks96dm?svg=true)](https://ci.appveyor.com/project/madskristensen/webessentials2013)
+
 Web Essentials extends Visual Studio with lots of new features that web developers have been missing for many years. 
 
 If you ever write CSS, HTML, JavaScript, TypeScript, CoffeeScript, LiveScript or LESS, then you will find many useful features that make your life as a developer easier. 
