@@ -1,0 +1,14 @@
+version: 1.0.{build}
+
+install:
+  - ps: Start-FileDownload https://raw.githubusercontent.com/madskristensen/ExtensionScripts/master/AppVeyor/vsix.ps1
+  - ps: Import-Module './vsix.ps1'
+
+before_build:
+  - ps: Vsix-IncrementVsixVersion | Vsix-UpdateBuildVersion
+
+build_script:
+  - msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
+
+after_build:
+  - ps: Vsix-PushArtifacts
