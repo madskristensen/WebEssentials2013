@@ -2,8 +2,8 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
         <Identity Id="5fb7364d-2e8c-44a4-95eb-2a382e30fec8" Version="2.6.0" Language="en-US" Publisher="Mads Kristensen" />
-        <DisplayName>Web Essentials 2013 for Update 4/5</DisplayName>
-        <Description xml:space="preserve">Adds many useful features to Visual Studio for web developers. Requires VS2013 Update 4/5</Description>
+        <DisplayName>Web Essentials 2013 for Update 4</DisplayName>
+        <Description xml:space="preserve">Adds many useful features to Visual Studio for web developers. Requires VS2013 Update 4 or 5</Description>
         <MoreInfo>http://vswebessentials.com/</MoreInfo>
         <License>License.txt</License>
         <GettingStartedGuide>http://vswebessentials.com/changelog</GettingStartedGuide>
