@@ -32,7 +32,6 @@ namespace WebEssentials.BuildTasks
             "Makefile.*",
             "Rakefile",
             "*.yml",
-            "test.*",
             "generate-*",
             "media",
             "images",
