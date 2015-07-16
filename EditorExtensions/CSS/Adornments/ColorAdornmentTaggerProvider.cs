@@ -21,6 +21,7 @@ namespace MadsKristensen.EditorExtensions.Css
     [Export(typeof(IViewTaggerProvider))]
     [ContentType("css")]
     [TagType(typeof(IntraTextAdornmentTag))]
+    [TextViewRole(PredefinedTextViewRoles.Document)]
     internal sealed class ColorAdornmentTaggerProvider : IViewTaggerProvider
     {
 #pragma warning disable 649 // "field never assigned to" -- field is set by MEF.
