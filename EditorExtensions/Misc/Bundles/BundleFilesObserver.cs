@@ -13,6 +13,7 @@ namespace MadsKristensen.EditorExtensions
         private string _bundleFileName;
         private IBundleDocument _document;
         private FileSystemWatcher _watcher;
+        private FileSystemEventHandler _changeEvent;
         private string[] _extensions = new[] { ".bundle", ".sprite" };
         private readonly AsyncReaderWriterLock rwLock = new AsyncReaderWriterLock();
         private static Dictionary<string, HashSet<Tuple<string, FileSystemWatcher>>> _watchedFiles = new Dictionary<string, HashSet<Tuple<string, FileSystemWatcher>>>();
@@ -55,11 +56,13 @@ namespace MadsKristensen.EditorExtensions
                     return;
             }
 
-            _watcher.Changed += new FileSystemEventHandler((_, __) => Changed(updateBundle));
-            _watcher.Deleted += new FileSystemEventHandler((_, __) => Deleted(fileName));
+            _changeEvent = (_, __) => Changed(updateBundle);
+
+            _watcher.Changed += _changeEvent;
+            _watcher.Deleted += (_, __) => Deleted(fileName);
 
             if (_extensions.Any(e => fileName.EndsWith(e, StringComparison.OrdinalIgnoreCase)))
-                _watcher.Renamed += new RenamedEventHandler((_, renamedEventArgument) => Renamed(renamedEventArgument, updateBundle));
+                _watcher.Renamed += (_, renamedEventArgument) => Renamed(renamedEventArgument, updateBundle);
 
             _watcher.EnableRaisingEvents = true;
 
@@ -114,6 +117,7 @@ namespace MadsKristensen.EditorExtensions
         private void Changed(Func<string, bool, Task> updateBundle)
         {
             _watcher.EnableRaisingEvents = false;
+            _watcher.Changed -= _changeEvent;
 
             Task.Run(async () =>
             {
@@ -142,6 +146,7 @@ namespace MadsKristensen.EditorExtensions
             try
             {
                 _watcher.EnableRaisingEvents = true;
+                _watcher.Changed += _changeEvent;
             }
             catch (FileNotFoundException)
             {
