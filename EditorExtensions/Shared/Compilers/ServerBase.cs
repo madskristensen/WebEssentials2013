@@ -21,7 +21,7 @@ namespace MadsKristensen.EditorExtensions
         protected ServerBase(string processStartArgumentsFormat, string serverPath)
         {
             SelectAvailablePort();
-            _address = string.Format(CultureInfo.InvariantCulture, "http://localhost.:{0}/", BasePort);
+            _address = string.Format(CultureInfo.InvariantCulture, "http://localhost:{0}/", BasePort);
             Client = new HttpClient();
 
             Initialize(processStartArgumentsFormat, serverPath);
