@@ -10,13 +10,13 @@ namespace MadsKristensen.EditorExtensions.Helpers
 {
     class CssUrlNormalizer : ICssSimpleTreeVisitor
     {
-        readonly string targetFile, oldBaseDirectory;
-        readonly List<Tuple<TextRange, string>> replacements = new List<Tuple<TextRange, string>>();
+        private readonly string _targetFile, _oldBaseDirectory;
+        private readonly List<Tuple<TextRange, string>> Replacements = new List<Tuple<TextRange, string>>();
 
         private CssUrlNormalizer(string targetFile, string oldBasePath)
         {
-            targetFile = Path.GetFullPath(targetFile);
-            oldBaseDirectory = Path.GetDirectoryName(oldBasePath);
+            _targetFile = Path.GetFullPath(targetFile);
+            _oldBaseDirectory = Path.GetDirectoryName(oldBasePath);
         }
 
         ///<summary>Normalizes all URLs in a CSS parse tree to be relative to the specified directory.</summary>
@@ -39,10 +39,10 @@ namespace MadsKristensen.EditorExtensions.Helpers
             tree.Accept(normalizer);
 
             var retVal = new StringBuilder(tree.Text);
-            for (int i = normalizer.replacements.Count - 1; i >= 0; i--)
+            for (int i = normalizer.Replacements.Count - 1; i >= 0; i--)
             {
-                var range = normalizer.replacements[i].Item1;
-                var url = normalizer.replacements[i].Item2;
+                var range = normalizer.Replacements[i].Item1;
+                var url = normalizer.Replacements[i].Item2;
 
                 retVal.Remove(range.Start, range.Length);
                 retVal.Insert(range.Start, HttpUtility.UrlPathEncode(url));
@@ -62,7 +62,7 @@ namespace MadsKristensen.EditorExtensions.Helpers
             if (newUrl == null) // No change
                 return VisitItemResult.Continue;
 
-            replacements.Add(Tuple.Create(urlItem.UrlString.Range, newUrl));
+            Replacements.Add(Tuple.Create(urlItem.UrlString.Range, newUrl));
 
             return VisitItemResult.Continue;
         }
@@ -91,14 +91,14 @@ namespace MadsKristensen.EditorExtensions.Helpers
             }
 
             if (Path.IsPathRooted(url))
-                return FileHelpers.RelativePath(targetFile, Path.GetFullPath(url)) + suffix;
+                return FileHelpers.RelativePath(_targetFile, Path.GetFullPath(url)) + suffix;
 
-            if (string.IsNullOrEmpty(oldBaseDirectory))
+            if (string.IsNullOrEmpty(_oldBaseDirectory))
                 return null;
 
             return FileHelpers.RelativePath(
-                targetFile,
-                Path.GetFullPath(Path.Combine(oldBaseDirectory, url)) + suffix
+                _targetFile,
+                Path.GetFullPath(Path.Combine(_oldBaseDirectory, url)) + suffix
             );
         }
     }
