@@ -21,7 +21,6 @@ namespace MadsKristensen.EditorExtensions
         protected ServerBase(string processStartArgumentsFormat, string serverPath)
         {
             SelectAvailablePort();
-            _address = string.Format(CultureInfo.InvariantCulture, "http://localhost.:{0}/", BasePort);
             Client = new HttpClient();
 
             Initialize(processStartArgumentsFormat, serverPath);
@@ -92,8 +91,11 @@ namespace MadsKristensen.EditorExtensions
             {
                 using (await mutex.LockAsync())
                 {
-                    if (server == null || server._process == null || server._process.HasExited)
+                    if (server == null || server._address == null || server._process == null || server._process.HasExited)
+                    {
                         server = new T();
+                        server._address = string.Format(CultureInfo.InvariantCulture, "http://localhost.:{0}/", server.BasePort);
+                    }
                 }
 
                 using (Task task = Task.Delay(200))
@@ -113,13 +115,23 @@ namespace MadsKristensen.EditorExtensions
                         }
 
                         tries++;
-                        if (tries > 5)
+
+                        if (tries == 15)
                         {
                             Logger.Log("Unable to find resource, aborting");
                             if (!server._process.HasExited)
                                 server._process.Kill();
 
                             return null;
+                        }
+
+                        if (tries == 5)
+                        {
+                            server._address = string.Format(CultureInfo.InvariantCulture, "http://localhost:{0}/", server.BasePort);
+                        }
+                        else if (tries == 10)
+                        {
+                            server._address = string.Format(CultureInfo.InvariantCulture, "http://127.0.0.1:{0}/", server.BasePort);
                         }
                     }
                 }
@@ -139,17 +151,16 @@ namespace MadsKristensen.EditorExtensions
             }
         }
 
-        private static async Task<bool> HeartbeatCheck<T>(T _server)
+        private static async Task<bool> HeartbeatCheck<T>(T server)
             where T : ServerBase, new()
         {
-            if (_server == null) return false;
+            if (server == null) return false;
+
             try
             {
-                HttpResponseMessage response = await _server.CallWebServer(_server._address + _server.HeartbeatCheckPath);
-                if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                    return true;
-                else
-                    return false;
+                HttpResponseMessage response = await server.CallWebServer(server._address + server.HeartbeatCheckPath);
+
+                return response.StatusCode == System.Net.HttpStatusCode.OK;
             }
             catch { return false; }
         }
