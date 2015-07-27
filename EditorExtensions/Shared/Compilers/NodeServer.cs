@@ -20,6 +20,7 @@ namespace MadsKristensen.EditorExtensions
         public static async Task<CompilerResult> CallServiceAsync(string path, bool reattempt = false)
         {
             await Up();
+
             if (_server != null)
                 return await _server.CallService(path, reattempt);
             else
