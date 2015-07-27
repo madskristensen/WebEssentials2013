@@ -32,6 +32,7 @@ var handleLess = function (writer, params) {
             filename: params.sourceFileName,
             paths: [sourceDir],
             relativeUrls: params.relativeUrls !== undefined,
+            rootpath: path.dirname(path.relative(path.dirname(params.targetFileName), params.sourceFileName)).replace(/\\/g, '/') + "/",
             sourceMap: {
                 sourceMapFullFilename: mapFileName,
                 sourceMapURL: params.sourceMapURL !== undefined ? path.basename(mapFileName) : null,
