@@ -71,7 +71,7 @@ var handleLess = function (writer, params) {
                     }
 
                     css = autoprefixedOutput.css;
-                    map = autoprefixedOutput.map;
+                    map = JSON.stringify(autoprefixedOutput.map);
                 }
 
                 if (params.rtlcss !== undefined) {
@@ -91,7 +91,7 @@ var handleLess = function (writer, params) {
                             RtlMapFileName: rtlMapFileName,
                             Remarks: "Successful!",
                             Content: css,
-                            Map: JSON.stringify(map),
+                            Map: map,
                             RtlContent: rtlResult.css,
                             RtlMap: JSON.stringify(rtlResult.map)
                         }));
@@ -107,7 +107,7 @@ var handleLess = function (writer, params) {
                         MapFileName: params.mapFileName,
                         Remarks: "Successful!",
                         Content: css,
-                        Map: JSON.stringify(map)
+                        Map: map
                     }));
                 }
 

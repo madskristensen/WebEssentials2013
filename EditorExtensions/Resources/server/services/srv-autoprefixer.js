@@ -1,6 +1,7 @@
 //#region Imports
 var autoprefixer = require("autoprefixer"),
-    fs = require("fs");
+    fs = require("fs"),
+    postcss = require('postcss');
 //#endregion
 
 //#region Process
@@ -9,7 +10,7 @@ var processAutoprefixer = function (cssContent, mapContent, browsers, sourceFile
 
     if (browsers !== undefined)
         try {
-            result = autoprefixer(browsers.split(",").map(function (s) { return s.trim(); }));
+            result = postcss([autoprefixer(browsers.split(",").map(function (s) { return s.trim(); }))]);
         } catch (e) {
             // Return same css and map back so compilers can continue.
             return {
