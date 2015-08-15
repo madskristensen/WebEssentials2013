@@ -361,6 +361,7 @@
     <Compile Include="HTML\Completion\TwitterCardCompletion.cs" />
     <Compile Include="HTML\Completion\ViewportCompletion.cs" />
     <Compile Include="HTML\Helpers\HtmlHelpers.cs" />
+    <Compile Include="HTML\Outlining\KoTagger.cs" />
     <Compile Include="HTML\Outlining\HtmlRegionTagger.cs" />
     <Compile Include="HTML\Peek\IDs\IdPeekDefinitionItem.cs" />
     <Compile Include="HTML\Peek\IDs\IdPeekItemProvider.cs" />
