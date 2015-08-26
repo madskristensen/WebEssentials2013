@@ -369,6 +369,12 @@ namespace MadsKristensen.EditorExtensions.Settings
         [Description("Forces all rules to be terminated with semicolons when true.")]
         [DefaultValue(true)]
         public bool TermSemicolons { get; set; }
+
+		[Category("Bundle")]
+		[DisplayName("Custom base url for resources")]
+		[Description("Specifies a base path to be prepended in bundled .js, in case the assets are hosted from a virtual directory.")]
+		[DefaultValue("")]
+		public string BaseUrl { get; set; }
         #endregion
 
         [Category("Editor")]
