@@ -93,7 +93,7 @@ namespace MadsKristensen.EditorExtensions
 
                 if (extension.Equals(".js", StringComparison.OrdinalIgnoreCase) && WESettings.Instance.JavaScript.GenerateSourceMaps)
                 {
-                    sb.AppendLine("///#source 1 1 " + files[file]);
+                    sb.AppendLine("///#source 1 1 " + string.Format("{0}{1}", WESettings.Instance.JavaScript.BaseUrl, files[file]));
                 }
 
                 var source = await FileHelpers.ReadAllTextRetry(actualFile);
