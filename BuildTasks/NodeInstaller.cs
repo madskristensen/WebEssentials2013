@@ -174,7 +174,7 @@ namespace WebEssentials.BuildTasks
                 return Task.FromResult<object>(null);
 
             Log.LogMessage(MessageImportance.High, "Downloading nodejs ...");
-            return WebClientDoAsync(wc => wc.DownloadFileTaskAsync("http://nodejs.org/dist/latest/node.exe", @"resources\nodejs\node.exe"));
+            return WebClientDoAsync(wc => wc.DownloadFileTaskAsync("http://nodejs.org/dist/latest/win-x86/node.exe", @"resources\nodejs\node.exe"));
         }
 
         async Task DownloadNpmAsync()
