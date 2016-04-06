@@ -68,6 +68,8 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             var weHtmlSettings = WESettings.Instance.Html;
             var settings = new HtmlMinificationSettings
             {
+                PreserveCase = weHtmlSettings.PreserveCase;
+
                 // Tags
                 RemoveOptionalEndTags = false,
                 //EmptyTagRenderMode = HtmlEmptyTagRenderMode.Slash,

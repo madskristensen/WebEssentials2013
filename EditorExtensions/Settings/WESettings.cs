@@ -256,6 +256,12 @@ namespace MadsKristensen.EditorExtensions.Settings
         public bool MinifyKnockoutBindingExpressions { get; set; }
 
         [Category("Minification")]
+        [DisplayName("Preserve case of tag and attribute names")]
+        [Description("Preserve case of HTML tag and attribute names during minification.")]
+        [DefaultValue(false)]
+        public bool PreserveCase { get; set; }
+
+        [Category("Minification")]
         [DisplayName("Processable script types")]
         [Description(@"Specify comma-separated list of types of script tags, that are processed by minifier (e.g. ""text/html, text/ng-template"").")]
         [DefaultValue(null)]
