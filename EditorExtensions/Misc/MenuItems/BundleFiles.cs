@@ -64,8 +64,8 @@ namespace MadsKristensen.EditorExtensions
 
             _files = ProjectHelpers.GetSelectedFilePaths();
 
-            menuCommand.Enabled = _files.All(file => extensions.Contains(Path.GetExtension(file))) &&
-                                  _files.Count() > 1;
+            menuCommand.Enabled = _files.Any(file => extensions.Contains(Path.GetExtension(file))) &&
+                          _files.Count(file => extensions.Contains(Path.GetExtension(file))) > 1;
         }
 
         private bool GetFileName(out string fileName, string extension)
@@ -185,7 +185,7 @@ namespace MadsKristensen.EditorExtensions
 
             try
             {
-                BundleDocument doc = new BundleDocument(bundleFile, _files.ToArray());
+                BundleDocument doc = new BundleDocument(bundleFile, _files.Where(file => Path.GetExtension(file) == extension).ToArray());
 
                 await doc.WriteBundleRecipe();
                 await GenerateAsync(doc, extension);
