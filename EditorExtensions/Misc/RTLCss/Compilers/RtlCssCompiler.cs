@@ -26,6 +26,9 @@ namespace MadsKristensen.EditorExtensions.RtlCss
             parameters.UriComponentsDictionary.Add("targetFileName", targetFileName);
             parameters.Add("mapFileName", targetFileName + ".map");
 
+            if (GenerateSourceMap)
+                parameters.Add("sourceMapURL");
+
             if (WESettings.Instance.Css.RtlCss)
                 parameters.Add("rtlcss");
 

@@ -28,7 +28,7 @@ var processAutoprefixer = function (cssContent, mapContent, browsers, sourceFile
         };
 
     result = result.process(cssContent, {
-        map: { prev: mapContent },
+        map: { prev: mapContent, inline: false },
         from: sourceFileName,
         to: targetFileName
     });

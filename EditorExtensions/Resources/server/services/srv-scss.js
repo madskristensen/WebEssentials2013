@@ -35,8 +35,9 @@ var handleSass = function(writer, params) {
             writer.end();
         }
 
-        var css = result.css.toString();
-        var map = result.map.toString();
+        var map, css = result.css.toString();
+        if (!options.omitSourceMapUrl)
+            map = result.map.toString();
 
         if (params.autoprefixer !== undefined) {
             var autoprefixedOutput = require("./srv-autoprefixer")
