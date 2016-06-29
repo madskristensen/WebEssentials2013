@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using MadsKristensen.EditorExtensions.Settings;
 using Microsoft.Ajax.Utilities;
 using Microsoft.VisualStudio.Utilities;
-using WebMarkupMin.Core.Minifiers;
-using WebMarkupMin.Core.Settings;
+using WebMarkupMin.Core;
 
 namespace MadsKristensen.EditorExtensions.Optimization.Minification
 {
@@ -68,7 +67,7 @@ namespace MadsKristensen.EditorExtensions.Optimization.Minification
             var weHtmlSettings = WESettings.Instance.Html;
             var settings = new HtmlMinificationSettings
             {
-                PreserveCase = weHtmlSettings.PreserveCase;
+                PreserveCase = weHtmlSettings.PreserveCase,
 
                 // Tags
                 RemoveOptionalEndTags = false,
